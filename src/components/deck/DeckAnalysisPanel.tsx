@@ -5,7 +5,8 @@ import { ArchetypeTag } from "./ArchetypeTag";
 import { WinRateChart } from "./WinRateChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Target } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -66,7 +67,16 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
     );
   }
 
-  if (!analysis) return null;
+  if (!analysis) {
+    return (
+      <EmptyState
+        icon={Target}
+        title="No Deck Analysis Available"
+        description="Unable to generate deck analysis at this time. Make sure you have recent battle data and try refreshing."
+        variant="card"
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">

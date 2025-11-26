@@ -13,7 +13,9 @@ interface MatchCardProps {
 }
 
 export function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
-  const playerTeam = battle.team.find(p => p.tag === playerTag);
+  // Normalize player tags - API returns with '#', URL param might not have it
+  const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+  const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
   const opponent = battle.opponent[0];
   
   if (!playerTeam || !opponent) return null;

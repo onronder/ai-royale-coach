@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench } from "lucide-react";
+import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -31,6 +31,7 @@ import { AchievementDashboard } from "@/components/achievements/AchievementDashb
 import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
+import { EmptyState } from "@/components/ui/empty-state";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -102,7 +103,8 @@ const Dashboard = () => {
                   <Swords className="h-4 w-4 text-success" />
                   <span className="font-rajdhani font-semibold">
                     {((battles.filter(b => {
-                      const playerTeam = b.team.find(p => p.tag === playerTag);
+                      const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
+                      const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
                       return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
                     }).length / battles.length) * 100).toFixed(0)}% WR
                   </span>
@@ -219,13 +221,15 @@ const Dashboard = () => {
                       <StatCard
                         title="Win Rate"
                         value={battles ? `${((battles.filter(b => {
-                          const playerTeam = b.team.find(p => p.tag === playerTag);
+                          const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
+                          const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
                           return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
                         }).length / battles.length) * 100).toFixed(1)}%` : 'N/A'}
                         icon={Swords}
                         description="Last 25 battles"
                         trend={battles && (battles.filter(b => {
-                          const playerTeam = b.team.find(p => p.tag === playerTag);
+                          const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
+                          const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
                           return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
                         }).length / battles.length) >= 0.5 ? 'up' : 'down'}
                         tooltip={statTooltips.winRate}
@@ -301,7 +305,12 @@ const Dashboard = () => {
                         ))}
                       </div>
                     ) : battlesError ? (
-                      <p className="text-muted-foreground">Failed to load battles</p>
+                      <EmptyState
+                        icon={Swords}
+                        title="Failed to Load Battles"
+                        description="Unable to fetch your battle history. Please try again later."
+                        variant="compact"
+                      />
                     ) : battles && battles.length > 0 ? (
                       <div className="space-y-3">
                         {battles.slice(0, 15).map((battle, idx) => (
@@ -319,7 +328,12 @@ const Dashboard = () => {
                         ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">No battles found</p>
+                      <EmptyState
+                        icon={Swords}
+                        title="No Battles Yet"
+                        description="Play some matches in Clash Royale and come back to track your performance!"
+                        variant="compact"
+                      />
                     )}
                   </CardContent>
                 </Card>

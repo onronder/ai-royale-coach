@@ -7,6 +7,7 @@ import { RefreshCw, TrendingUp, Trophy, Swords } from "lucide-react";
 import { DeckTrendChart } from "./DeckTrendChart";
 import { MostUsedCardsGrid } from "./MostUsedCardsGrid";
 import { DeckUsageBreakdown } from "./DeckUsageBreakdown";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface DeckStatsDashboardProps {
   playerTag: string;
@@ -33,6 +34,32 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
   const totalWins = aggregated.reduce((sum, deck) => sum + deck.battles_won, 0);
   const overallWinRate = totalBattles > 0 ? (totalWins / totalBattles) * 100 : 0;
   const totalTrophyChange = aggregated.reduce((sum, deck) => sum + deck.total_trophy_change, 0);
+
+  if (!isLoading && totalBattles === 0) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-heading text-foreground">Deck Statistics</h2>
+            <p className="text-muted-foreground">Track your deck performance over time</p>
+          </div>
+          <Button onClick={handleSync} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Sync Stats
+          </Button>
+        </div>
+        <EmptyState
+          icon={TrendingUp}
+          title="No Deck Stats Yet"
+          description="Sync your battle history to start tracking deck performance, win rates, and trends over time."
+          action={{
+            label: "Sync Stats Now",
+            onClick: handleSync,
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
