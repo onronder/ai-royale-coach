@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Users, Trophy, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Clan {
   id: string;
@@ -103,6 +104,20 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
             [...Array(3)].map((_, i) => (
               <Skeleton key={i} className="h-32 w-full" />
             ))
+          ) : clans.length === 0 && searchQuery.trim() === "" ? (
+            <EmptyState
+              icon={Search}
+              title="Find Your Perfect Clan"
+              description="Search for clans by name or tag to find the perfect match for your playstyle."
+              variant="compact"
+            />
+          ) : clans.length === 0 ? (
+            <EmptyState
+              icon={Users}
+              title="No Clans Found"
+              description="Try adjusting your search criteria or explore different clan names."
+              variant="compact"
+            />
           ) : (
             clans.map((clan) => (
               <Card key={clan.id} className="hover:bg-muted/50 transition-colors cursor-pointer"

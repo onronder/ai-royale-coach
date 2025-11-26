@@ -1,7 +1,8 @@
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { CardImage } from "./CardImage";
-import { Zap } from "lucide-react";
+import { Zap, PackageOpen } from "lucide-react";
 import { GameTooltip, statTooltips } from "@/components/ui/tooltip-helpers";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface DeckGridProps {
   cards: ClashRoyaleCard[];
@@ -11,6 +12,17 @@ interface DeckGridProps {
 
 export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProps) {
   const avgElixir = cards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / cards.length;
+
+  if (cards.length === 0) {
+    return (
+      <EmptyState
+        icon={PackageOpen}
+        title="No Cards in Deck"
+        description="This deck appears to be empty. Add cards to see them here."
+        variant="compact"
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">
