@@ -547,6 +547,51 @@ export type Database = {
         }
         Relationships: []
       }
+      operation_progress: {
+        Row: {
+          completed_at: string | null
+          current_step: string | null
+          error: string | null
+          id: string
+          operation_type: string
+          player_tag: string
+          progress: number
+          started_at: string
+          status: string
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          current_step?: string | null
+          error?: string | null
+          id?: string
+          operation_type: string
+          player_tag: string
+          progress?: number
+          started_at?: string
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          current_step?: string | null
+          error?: string | null
+          id?: string
+          operation_type?: string
+          player_tag?: string
+          progress?: number
+          started_at?: string
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       player_profiles: {
         Row: {
           created_at: string | null

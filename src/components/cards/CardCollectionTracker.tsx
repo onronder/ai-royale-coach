@@ -9,6 +9,8 @@ import { CardImage } from "./CardImage";
 import { Sparkles, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateNotification } from "@/hooks/useNotifications";
+import { useOperationProgress } from "@/hooks/useOperationProgress";
+import { ProgressIndicator } from "@/components/ui/progress-indicator";
 
 interface CardCollectionItem {
   id: string;
@@ -46,10 +48,13 @@ const UPGRADE_REQUIREMENTS: Record<string, number[]> = {
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
   const [collection, setCollection] = useState<CardCollectionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncProgress, setSyncProgress] = useState(0);
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
   const { mutate: createNotification } = useCreateNotification();
+  const { progress: syncProgress } = useOperationProgress({
+    playerTag,
+    operationType: 'card_collection_sync',
+    enabled: true,
+  });
 
   useEffect(() => {
     fetchCollection();
@@ -75,29 +80,12 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   };
 
   const syncCollection = async () => {
-    setIsSyncing(true);
-    setSyncProgress(0);
-    
-    toast.loading('Syncing card collection with Clash Royale API...', { id: 'card-collection-sync' });
+    toast.loading('Syncing card collection...', { id: 'card-collection-sync' });
     
     try {
-      // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
-        setSyncProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 15;
-        });
-      }, 200);
-      
       const { error } = await supabase.functions.invoke('sync-card-collection', {
         body: { playerTag, userId }
       });
-
-      clearInterval(progressInterval);
-      setSyncProgress(100);
 
       if (error) {
         console.error('Error syncing collection:', error);
@@ -105,7 +93,6 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       } else {
         toast.success('Card collection synced successfully!', { id: 'card-collection-sync' });
         
-        // Save to notification history
         createNotification({
           player_tag: playerTag,
           type: 'sync',
@@ -114,18 +101,11 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
           icon_name: 'sparkles'
         });
         
-        // Refetch after sync
-        setTimeout(() => {
-          fetchCollection();
-          setIsSyncing(false);
-          setSyncProgress(0);
-        }, 500);
+        setTimeout(() => fetchCollection(), 500);
       }
     } catch (error) {
       console.error('Sync error:', error);
       toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
-      setIsSyncing(false);
-      setSyncProgress(0);
     }
   };
 
@@ -186,17 +166,26 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
             <Sparkles className="w-5 h-5" />
             Card Collection ({collection.length} cards)
           </CardTitle>
-          {isSyncing && (
+          {syncProgress?.status === 'running' && (
             <Badge variant="secondary" className="animate-pulse">
-              Syncing {syncProgress}%
+              Syncing {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
             </Badge>
           )}
         </div>
-        {isSyncing && (
-          <Progress value={syncProgress} className="h-2 mt-3" />
-        )}
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Progress Indicator */}
+        {syncProgress && (
+          <ProgressIndicator
+            progress={syncProgress.progress}
+            total={syncProgress.total}
+            currentStep={syncProgress.current_step || undefined}
+            status={syncProgress.status}
+            startedAt={syncProgress.started_at}
+            variant="compact"
+          />
+        )}
+
         {/* Rarity Filter Tabs */}
         <Tabs value={selectedRarity} onValueChange={setSelectedRarity}>
           <TabsList className="w-full grid grid-cols-6">

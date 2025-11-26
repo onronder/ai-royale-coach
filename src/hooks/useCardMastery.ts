@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCreateNotification } from "./useNotifications";
+import { useOperationProgress } from "./useOperationProgress";
 
 export interface CardMastery {
   id: string;
@@ -49,28 +50,30 @@ export const useCardMastery = (playerTag: string) => {
   });
 };
 
-export const useCalculateCardMastery = () => {
+export const useCalculateCardMastery = (playerTag: string) => {
   const queryClient = useQueryClient();
   const { mutate: createNotification } = useCreateNotification();
+  const { progress } = useOperationProgress({
+    playerTag,
+    operationType: 'card_mastery_calculation',
+    enabled: true,
+  });
   
-  return useMutation({
-    mutationFn: async (playerTag: string) => {
-      toast.loading('Calculating card mastery...', { id: 'card-mastery-calc' });
-      
+  const mutation = useMutation({
+    mutationFn: async (tag: string) => {
       const { data, error } = await supabase.functions.invoke('calculate-card-mastery', {
-        body: { playerTag }
+        body: { playerTag: tag }
       });
       
       if (error) throw error;
       return data;
     },
-    onSuccess: (_, playerTag) => {
-      queryClient.invalidateQueries({ queryKey: ['card-mastery', playerTag] });
-      toast.success('Card mastery calculated successfully!', { id: 'card-mastery-calc' });
+    onSuccess: (_, tag) => {
+      queryClient.invalidateQueries({ queryKey: ['card-mastery', tag] });
       
       // Save to notification history
       createNotification({
-        player_tag: playerTag,
+        player_tag: tag,
         type: 'calculation',
         title: 'Card Mastery Calculated',
         message: 'Your card mastery levels have been updated with the latest data',
@@ -78,10 +81,15 @@ export const useCalculateCardMastery = () => {
       });
     },
     onError: (error) => {
-      toast.error('Failed to calculate card mastery', { id: 'card-mastery-calc' });
+      toast.error('Failed to calculate card mastery');
       console.error('Card mastery calculation error:', error);
     },
   });
+
+  return {
+    ...mutation,
+    progress,
+  };
 };
 
 export const useGenerateCardTips = () => {
