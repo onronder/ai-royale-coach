@@ -27,6 +27,10 @@ import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DeckStatsDashboard } from "@/components/analytics/DeckStatsDashboard";
 import { CardMasteryTracker } from "@/components/mastery/CardMasteryTracker";
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
+import { AchievementDashboard } from "@/components/achievements/AchievementDashboard";
+import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
+import { AchievementNotification } from "@/components/achievements/AchievementNotification";
+import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -34,6 +38,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
+  const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   
   const { data: player, isLoading: playerLoading, error: playerError } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError } = useClashRoyaleBattles(playerTag || null);
@@ -273,6 +278,9 @@ const Dashboard = () => {
                     ) : null}
                   </CardContent>
                 </Card>
+
+                {/* Achievement Badge Widget */}
+                <AchievementBadgeWidget playerTag={playerTag!} />
               </div>
             </PageTransition>
           </TabsContent>
@@ -404,9 +412,10 @@ const Dashboard = () => {
           <TabsContent value="analytics" className="mt-6">
             <PageTransition delay={100}>
               <Tabs defaultValue="deckstats" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="deckstats">Deck Stats</TabsTrigger>
                   <TabsTrigger value="mastery">Card Mastery</TabsTrigger>
+                  <TabsTrigger value="achievements">Achievements</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="deckstats" className="mt-6">
@@ -415,6 +424,10 @@ const Dashboard = () => {
                 
                 <TabsContent value="mastery" className="mt-6">
                   <CardMasteryTracker playerTag={playerTag!} />
+                </TabsContent>
+
+                <TabsContent value="achievements" className="mt-6">
+                  <AchievementDashboard playerTag={playerTag!} />
                 </TabsContent>
               </Tabs>
             </PageTransition>
@@ -453,6 +466,14 @@ const Dashboard = () => {
               }, 0) / battles.length
             ).toFixed(1)
           }}
+        />
+      )}
+
+      {/* Achievement Notification */}
+      {newAchievement && (
+        <AchievementNotification
+          achievement={newAchievement}
+          onDismiss={dismissNotification}
         />
       )}
     </div>

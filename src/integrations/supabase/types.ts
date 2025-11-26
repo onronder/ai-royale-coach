@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_progress: {
+        Row: {
+          achievements_unlocked: number
+          id: string
+          learning_phase: string
+          player_tag: string
+          skill_levels: Json
+          total_mastery_points: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievements_unlocked?: number
+          id?: string
+          learning_phase?: string
+          player_tag: string
+          skill_levels?: Json
+          total_mastery_points?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievements_unlocked?: number
+          id?: string
+          learning_phase?: string
+          player_tag?: string
+          skill_levels?: Json
+          total_mastery_points?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      achievements: {
+        Row: {
+          category: string
+          created_at: string | null
+          criteria: Json
+          description: string
+          icon_name: string
+          id: string
+          name: string
+          points: number
+          tier: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          criteria: Json
+          description: string
+          icon_name: string
+          id?: string
+          name: string
+          points?: number
+          tier: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          criteria?: Json
+          description?: string
+          icon_name?: string
+          id?: string
+          name?: string
+          points?: number
+          tier?: string
+        }
+        Relationships: []
+      }
       analyses: {
         Row: {
           analysis_type: string
@@ -703,6 +772,47 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          created_at: string | null
+          id: string
+          player_tag: string
+          progress: number
+          unlocked_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          created_at?: string | null
+          id?: string
+          player_tag: string
+          progress?: number
+          unlocked_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          created_at?: string | null
+          id?: string
+          player_tag?: string
+          progress?: number
+          unlocked_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
