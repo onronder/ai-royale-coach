@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardImage } from "@/components/cards/CardImage";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
-import { Sparkles, Save, Zap, TrendingUp, X } from "lucide-react";
+import { Sparkles, Save, Zap, X, Library, GitCompare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AnalysisLoader } from "@/components/ui/analysis-loader";
 import { AdvancedAnalysisTabs } from "./AdvancedAnalysisTabs";
+import { DeckTemplatesLibrary } from "./DeckTemplatesLibrary";
+import { DeckComparison } from "./DeckComparison";
 
 interface DeckBuilderProps {
   availableCards: ClashRoyaleCard[];
@@ -52,6 +55,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
   const [advancedAnalysis, setAdvancedAnalysis] = useState<AdvancedDeckAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState("builder");
 
   const addCard = (card: ClashRoyaleCard) => {
     if (selectedCards.length >= 8) {
@@ -63,12 +67,24 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
       return;
     }
     setSelectedCards([...selectedCards, card]);
-    setAnalysis(null); // Reset analysis when deck changes
+    setAnalysis(null);
   };
 
   const removeCard = (cardId: number) => {
     setSelectedCards(selectedCards.filter(c => c.id !== cardId));
     setAnalysis(null);
+  };
+
+  const importDeck = (cards: string[]) => {
+    const importedCards = cards
+      .map(cardName => availableCards.find(c => c.name === cardName))
+      .filter((c): c is ClashRoyaleCard => c !== undefined);
+    
+    setSelectedCards(importedCards);
+    setAnalysis(null);
+    setAdvancedAnalysis(null);
+    setActiveTab("builder");
+    toast.success(`Imported ${importedCards.length} cards!`);
   };
 
   const analyzeDeck = async () => {
@@ -79,7 +95,6 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
     setIsAnalyzing(true);
     try {
-      // Run both basic and advanced analysis in parallel
       const [basicResult, advancedResult] = await Promise.all([
         supabase.functions.invoke('analyze-deck-builder', {
           body: { cards: selectedCards }
@@ -141,140 +156,176 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
   return (
     <div className="space-y-6">
-      {/* Deck Slots */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Your Deck ({selectedCards.length}/8)</span>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Zap className="w-4 h-4" />
-              Avg: {avgElixir.toFixed(1)} elixir
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-3 mb-4">
-            {[...Array(8)].map((_, idx) => {
-              const card = selectedCards[idx];
-              return (
-                <div key={idx} className="relative">
-                  {card ? (
-                    <>
-                      <CardImage card={card} size="md" showLevel showElixir />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
-                        onClick={() => removeCard(card.id)}
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="w-20 h-28 border-2 border-dashed border-muted rounded-lg flex items-center justify-center text-muted-foreground">
-                      +
-                    </div>
-                  )}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="builder">Deck Builder</TabsTrigger>
+          <TabsTrigger value="templates">
+            <Library className="w-4 h-4 mr-2" />
+            Templates
+          </TabsTrigger>
+          <TabsTrigger value="compare" disabled={selectedCards.length < 8}>
+            <GitCompare className="w-4 h-4 mr-2" />
+            Compare
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="builder" className="space-y-6 mt-6">
+          {/* Deck Slots */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Your Deck ({selectedCards.length}/8)</span>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Zap className="w-4 h-4" />
+                  Avg: {avgElixir.toFixed(1)} elixir
                 </div>
-              );
-            })}
-          </div>
-
-          <div className="flex gap-2">
-            <Button 
-              onClick={analyzeDeck} 
-              disabled={selectedCards.length !== 8 || isAnalyzing}
-              className="flex-1"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              {isAnalyzing ? 'Analyzing...' : 'AI Analyze'}
-            </Button>
-            <Button 
-              onClick={saveDeck} 
-              disabled={selectedCards.length !== 8 || isSaving}
-              variant="outline"
-              className="flex-1"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save Deck'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Deck Form */}
-      {selectedCards.length === 8 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Deck Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Input
-              placeholder="Deck name (e.g., Fast Cycle Hog)"
-              value={deckName}
-              onChange={(e) => setDeckName(e.target.value)}
-            />
-            <Textarea
-              placeholder="Deck description (optional)"
-              value={deckDescription}
-              onChange={(e) => setDeckDescription(e.target.value)}
-              rows={3}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Analysis Results */}
-      {isAnalyzing && (
-        <Card>
-          <CardHeader>
-            <CardTitle>AI Analysis</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-          </CardContent>
-        </Card>
-      )}
-
-      {(analysis || advancedAnalysis) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              AI Deck Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AdvancedAnalysisTabs 
-              advancedAnalysis={advancedAnalysis}
-              basicAnalysis={analysis}
-              cardNames={selectedCards.map(c => c.name)}
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Available Cards */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Cards</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-96 overflow-y-auto">
-            {availableCards.map((card) => (
-              <div 
-                key={card.id} 
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => addCard(card)}
-              >
-                <CardImage card={card} size="sm" showElixir />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-4 gap-3 mb-4">
+                {[...Array(8)].map((_, idx) => {
+                  const card = selectedCards[idx];
+                  return (
+                    <div key={idx} className="relative">
+                      {card ? (
+                        <>
+                          <CardImage card={card} size="md" showLevel showElixir />
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                            onClick={() => removeCard(card.id)}
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </>
+                      ) : (
+                        <div className="w-20 h-28 border-2 border-dashed border-muted rounded-lg flex items-center justify-center text-muted-foreground">
+                          +
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+
+              <div className="flex gap-2">
+                <Button 
+                  onClick={analyzeDeck} 
+                  disabled={selectedCards.length !== 8 || isAnalyzing}
+                  className="flex-1"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {isAnalyzing ? 'Analyzing...' : 'AI Analyze'}
+                </Button>
+                <Button 
+                  onClick={saveDeck} 
+                  disabled={selectedCards.length !== 8 || isSaving}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSaving ? 'Saving...' : 'Save Deck'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Save Deck Form */}
+          {selectedCards.length === 8 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deck Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Input
+                  placeholder="Deck name (e.g., Fast Cycle Hog)"
+                  value={deckName}
+                  onChange={(e) => setDeckName(e.target.value)}
+                />
+                <Textarea
+                  placeholder="Deck description (optional)"
+                  value={deckDescription}
+                  onChange={(e) => setDeckDescription(e.target.value)}
+                  rows={3}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Analysis Results */}
+          {isAnalyzing && (
+            <AnalysisLoader
+              message="🔮 AI is analyzing your deck..."
+              icon="sparkles"
+              showProgress
+            />
+          )}
+
+          {(analysis || advancedAnalysis) && !isAnalyzing && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  AI Deck Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AdvancedAnalysisTabs 
+                  advancedAnalysis={advancedAnalysis}
+                  basicAnalysis={analysis}
+                  cardNames={selectedCards.map(c => c.name)}
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Available Cards */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Available Cards</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-96 overflow-y-auto">
+                {availableCards.map((card) => (
+                  <div 
+                    key={card.id} 
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => addCard(card)}
+                  >
+                    <CardImage card={card} size="sm" showElixir />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="templates" className="mt-6">
+          <DeckTemplatesLibrary onImportDeck={importDeck} />
+        </TabsContent>
+
+        <TabsContent value="compare" className="mt-6">
+          {selectedCards.length === 8 && (
+            <DeckComparison
+              deck1={{
+                name: deckName || "Current Deck",
+                cards: selectedCards.map(c => c.name),
+                avgElixir,
+                synergy: analysis?.synergy_score,
+                metaScore: analysis?.meta_score,
+              }}
+              deck2={{
+                name: "Hog 2.6 Cycle",
+                cards: ["Hog Rider", "Musketeer", "Ice Spirit", "Skeletons", "Ice Golem", "Cannon", "Fireball", "The Log"],
+                avgElixir: 2.6,
+                synergy: 85,
+                metaScore: 78,
+              }}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

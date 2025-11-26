@@ -247,6 +247,51 @@ export type Database = {
         }
         Relationships: []
       }
+      deck_templates: {
+        Row: {
+          archetype: string
+          avg_elixir: number | null
+          cards: Json
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          id: string
+          name: string
+          popularity_score: number | null
+          updated_at: string | null
+          usage_rate: number | null
+          win_rate: number | null
+        }
+        Insert: {
+          archetype: string
+          avg_elixir?: number | null
+          cards: Json
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          name: string
+          popularity_score?: number | null
+          updated_at?: string | null
+          usage_rate?: number | null
+          win_rate?: number | null
+        }
+        Update: {
+          archetype?: string
+          avg_elixir?: number | null
+          cards?: Json
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: string
+          name?: string
+          popularity_score?: number | null
+          updated_at?: string | null
+          usage_rate?: number | null
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
       leaderboard_entries: {
         Row: {
           arena_name: string | null
