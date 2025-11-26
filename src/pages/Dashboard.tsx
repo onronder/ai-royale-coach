@@ -12,6 +12,7 @@ import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
 import { usePlayerAnalysis } from "@/hooks/usePlayerAnalysis";
 import { formatDistanceToNow } from "date-fns";
+import { parseClashRoyaleDate } from "@/lib/utils";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -213,7 +214,7 @@ const Dashboard = () => {
                               {trophyChange >= 0 ? '+' : ''}{trophyChange}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(new Date(battle.battleTime), { addSuffix: true })}
+                              {formatDistanceToNow(parseClashRoyaleDate(battle.battleTime), { addSuffix: true })}
                             </p>
                           </div>
                         </div>
