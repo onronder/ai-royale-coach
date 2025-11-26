@@ -42,6 +42,7 @@ export interface SampleDeck {
   aiInsight: string;
   color: 'primary' | 'accent' | 'success' | 'warning';
   playstyle: string;
+  playstyles: string[]; // Array of playstyle tags for filtering
   strengths: string[];
   weaknesses: string[];
   synergies: CardSynergy[];
@@ -143,7 +144,8 @@ export const sampleDecks: SampleDeck[] = [
         ]
       }
     ],
-    counters: ["golem-beatdown", "xbow-siege"]
+    counters: ["golem-beatdown", "xbow-siege"],
+    playstyles: ['cycle', 'aggressive', 'pressure']
   },
   {
     id: "golem-beatdown",
@@ -224,7 +226,8 @@ export const sampleDecks: SampleDeck[] = [
         ]
       }
     ],
-    counters: ["xbow-siege", "log-bait"]
+    counters: ["xbow-siege", "log-bait"],
+    playstyles: ['beatdown', 'defensive', 'big-push']
   },
   {
     id: "log-bait",
@@ -305,7 +308,8 @@ export const sampleDecks: SampleDeck[] = [
         ]
       }
     ],
-    counters: ["hog-cycle", "golem-beatdown"]
+    counters: ["hog-cycle", "golem-beatdown"],
+    playstyles: ['control', 'bait', 'chip']
   },
   {
     id: "xbow-siege",
@@ -386,6 +390,7 @@ export const sampleDecks: SampleDeck[] = [
         ]
       }
     ],
-    counters: ["hog-cycle", "log-bait"]
+    counters: ["hog-cycle", "log-bait"],
+    playstyles: ['siege', 'defensive', 'control']
   }
 ];
