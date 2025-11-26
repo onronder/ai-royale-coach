@@ -14,6 +14,8 @@ import { CardSynergyVisualization } from './CardSynergyVisualization';
 import { MetaTimeline } from './MetaTimeline';
 import { DeckDifficultyBreakdown } from './DeckDifficultyBreakdown';
 import { CounterDeckRecommendations } from './CounterDeckRecommendations';
+import { AchievementBadges } from './AchievementBadges';
+import { DeckRecommendationEngine } from './DeckRecommendationEngine';
 
 export function DemoSection() {
   const { ref, isVisible } = useScrollAnimation(0.2);
@@ -100,61 +102,25 @@ export function DemoSection() {
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
-          {/* Deck Archetype Tabs */}
-          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-9 mb-8 bg-card/50 transition-all duration-500 ${
-            isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          }`}>
-            {sampleDecks.map((deck, idx) => (
-              <TabsTrigger 
-                key={deck.id} 
-                value={deck.id}
-                className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-accent/20 text-xs md:text-sm"
-                style={{ transitionDelay: isVisible ? `${idx * 100}ms` : '0ms' }}
-              >
-                {deck.stats.archetype}
-              </TabsTrigger>
-            ))}
+        <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-1 bg-card/50 backdrop-blur p-1">
+          {sampleDecks.map((deck, idx) => (
             <TabsTrigger 
-              value="difficulty"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-success/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${sampleDecks.length * 100}ms` : '0ms' }}
+              key={deck.id} 
+              value={deck.id}
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-accent/20 text-[10px] md:text-xs px-2"
+              style={{ transitionDelay: isVisible ? `${idx * 100}ms` : '0ms' }}
             >
-              <GraduationCap className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
-              <span className="hidden md:inline">Skills</span>
+              {deck.stats.archetype}
             </TabsTrigger>
-            <TabsTrigger 
-              value="counters"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-destructive/20 data-[state=active]:to-warning/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 1) * 100}ms` : '0ms' }}
-            >
-              <Shield className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
-              <span className="hidden md:inline">Counters</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="synergy"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-success/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 2) * 100}ms` : '0ms' }}
-            >
-              <Network className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
-              <span className="hidden md:inline">Synergy</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="meta"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-warning/20 data-[state=active]:to-accent/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 3) * 100}ms` : '0ms' }}
-            >
-              <Activity className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
-              <span className="hidden md:inline">Meta</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="compare"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-accent/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 4) * 100}ms` : '0ms' }}
-            >
-              <GitCompare className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
-              <span className="hidden md:inline">Compare</span>
-            </TabsTrigger>
-          </TabsList>
+          ))}
+          <TabsTrigger value="compare" className="text-[10px] md:text-xs px-2">Compare</TabsTrigger>
+          <TabsTrigger value="synergy" className="text-[10px] md:text-xs px-2">Synergy</TabsTrigger>
+          <TabsTrigger value="meta" className="text-[10px] md:text-xs px-2">Meta</TabsTrigger>
+          <TabsTrigger value="difficulty" className="text-[10px] md:text-xs px-2">Skills</TabsTrigger>
+          <TabsTrigger value="counters" className="text-[10px] md:text-xs px-2">Counters</TabsTrigger>
+          <TabsTrigger value="achievements" className="text-[10px] md:text-xs px-2">Badges</TabsTrigger>
+          <TabsTrigger value="recommend" className="text-[10px] md:text-xs px-2">Find Deck</TabsTrigger>
+        </TabsList>
 
           {/* Deck Content */}
           {sampleDecks.map((deck) => (
@@ -290,6 +256,40 @@ export function DemoSection() {
                   <CounterDeckRecommendations key={deck.id} deck={deck} isVisible={isVisible} />
                 ))}
               </div>
+            </div>
+          </TabsContent>
+
+          {/* Achievements Tab */}
+          <TabsContent value="achievements" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Achievement Badges & Milestones
+                </h3>
+                <p className="text-muted-foreground">
+                  Track your progress and mastery achievements
+                </p>
+              </div>
+              <div className="grid lg:grid-cols-2 gap-6">
+                {sampleDecks.map((deck) => (
+                  <AchievementBadges key={deck.id} deck={deck} isVisible={isVisible} />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Deck Recommendation Engine Tab */}
+          <TabsContent value="recommend" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Personalized Deck Finder
+                </h3>
+                <p className="text-muted-foreground">
+                  Find the perfect deck based on your skill level and playstyle preferences
+                </p>
+              </div>
+              <DeckRecommendationEngine />
             </div>
           </TabsContent>
 
