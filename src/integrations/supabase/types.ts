@@ -89,6 +89,63 @@ export type Database = {
         }
         Relationships: []
       }
+      card_mastery: {
+        Row: {
+          ai_tips: string | null
+          avg_elixir_decks: number | null
+          battles_lost: number | null
+          battles_won: number | null
+          best_partner_cards: string[] | null
+          card_id: number
+          card_name: string
+          id: string
+          last_updated: string | null
+          mastery_level: number | null
+          mastery_progress: number | null
+          player_tag: string
+          times_used: number | null
+          total_crowns: number | null
+          user_id: string
+          worst_matchup_cards: string[] | null
+        }
+        Insert: {
+          ai_tips?: string | null
+          avg_elixir_decks?: number | null
+          battles_lost?: number | null
+          battles_won?: number | null
+          best_partner_cards?: string[] | null
+          card_id: number
+          card_name: string
+          id?: string
+          last_updated?: string | null
+          mastery_level?: number | null
+          mastery_progress?: number | null
+          player_tag: string
+          times_used?: number | null
+          total_crowns?: number | null
+          user_id: string
+          worst_matchup_cards?: string[] | null
+        }
+        Update: {
+          ai_tips?: string | null
+          avg_elixir_decks?: number | null
+          battles_lost?: number | null
+          battles_won?: number | null
+          best_partner_cards?: string[] | null
+          card_id?: number
+          card_name?: string
+          id?: string
+          last_updated?: string | null
+          mastery_level?: number | null
+          mastery_progress?: number | null
+          player_tag?: string
+          times_used?: number | null
+          total_crowns?: number | null
+          user_id?: string
+          worst_matchup_cards?: string[] | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -289,6 +346,57 @@ export type Database = {
           updated_at?: string | null
           usage_rate?: number | null
           win_rate?: number | null
+        }
+        Relationships: []
+      }
+      deck_usage_stats: {
+        Row: {
+          avg_elixir: number | null
+          battles_lost: number | null
+          battles_played: number | null
+          battles_won: number | null
+          created_at: string | null
+          date: string
+          deck_cards: Json
+          deck_hash: string
+          id: string
+          player_tag: string
+          total_crowns: number | null
+          total_trophy_change: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_elixir?: number | null
+          battles_lost?: number | null
+          battles_played?: number | null
+          battles_won?: number | null
+          created_at?: string | null
+          date?: string
+          deck_cards: Json
+          deck_hash: string
+          id?: string
+          player_tag: string
+          total_crowns?: number | null
+          total_trophy_change?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_elixir?: number | null
+          battles_lost?: number | null
+          battles_played?: number | null
+          battles_won?: number | null
+          created_at?: string | null
+          date?: string
+          deck_cards?: Json
+          deck_hash?: string
+          id?: string
+          player_tag?: string
+          total_crowns?: number | null
+          total_trophy_change?: number | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
