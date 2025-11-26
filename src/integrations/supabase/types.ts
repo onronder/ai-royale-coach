@@ -508,6 +508,45 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          icon_name: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          player_tag: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icon_name?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          player_tag: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icon_name?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          player_tag?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       player_profiles: {
         Row: {
           created_at: string | null

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { NotificationCenter } from "./NotificationCenter";
 
 interface NavbarProps {
   user?: any;
@@ -28,7 +29,8 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          {user && <NotificationCenter />}
           {showAuth && (
             user ? (
               <Button variant="outline" size="sm" onClick={handleSignOut}>

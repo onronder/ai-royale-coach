@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useCreateNotification } from './useNotifications';
 
 interface Achievement {
   id: string;
@@ -104,6 +105,7 @@ export function useAllAchievements() {
 
 export function useSyncAchievements(playerTag: string) {
   const queryClient = useQueryClient();
+  const { mutate: createNotification } = useCreateNotification();
 
   return useMutation({
     mutationFn: async () => {
@@ -126,8 +128,28 @@ export function useSyncAchievements(playerTag: string) {
             description: data.newlyUnlocked.join(', '),
           }
         );
+        
+        // Save each achievement to notification history
+        data.newlyUnlocked.forEach((achievementName: string) => {
+          createNotification({
+            player_tag: playerTag,
+            type: 'achievement',
+            title: `Achievement Unlocked: ${achievementName}`,
+            message: `You've unlocked a new achievement!`,
+            icon_name: 'trophy'
+          });
+        });
       } else {
         toast.success('Achievements synced successfully');
+        
+        // Save sync notification
+        createNotification({
+          player_tag: playerTag,
+          type: 'sync',
+          title: 'Achievements Synced',
+          message: 'Your achievements have been synced successfully',
+          icon_name: 'refresh-cw'
+        });
       }
     },
     onError: (error) => {
