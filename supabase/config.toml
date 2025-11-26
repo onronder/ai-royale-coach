@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.suggest-card-replacements]
 verify_jwt = false
+
+[functions.sync-achievements]
+verify_jwt = false
