@@ -47,14 +47,6 @@ const Index = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar user={user} />
 
-      {/* Animated Background Pattern */}
-      <div className="fixed inset-0 -z-10 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px),
-                           repeating-linear-gradient(90deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px)`
-        }}></div>
-      </div>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden flex-1">
         <div className="absolute inset-0 bg-gradient-surface"></div>
