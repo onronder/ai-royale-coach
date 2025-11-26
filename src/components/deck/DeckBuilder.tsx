@@ -10,6 +10,7 @@ import { Sparkles, Save, Zap, TrendingUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdvancedAnalysisTabs } from "./AdvancedAnalysisTabs";
 
 interface DeckBuilderProps {
   availableCards: ClashRoyaleCard[];
@@ -25,11 +26,30 @@ interface DeckAnalysis {
   avg_elixir: number;
 }
 
+interface AdvancedDeckAnalysis {
+  elixirAnalysis: {
+    avgElixir: number;
+    cycleSpeed: 'fast' | 'medium' | 'slow';
+    defensiveCost: number;
+    offensiveCost: number;
+    elixirDistribution: { cost: number; count: number }[];
+    tradeScenarios: any[];
+  };
+  synergyMatrix: {
+    pairs: any[];
+    overallScore: number;
+    topSynergies: string[];
+    antiSynergies: string[];
+  };
+  matchupPredictions: any[];
+}
+
 export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
   const [analysis, setAnalysis] = useState<DeckAnalysis | null>(null);
+  const [advancedAnalysis, setAdvancedAnalysis] = useState<AdvancedDeckAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -59,13 +79,22 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
     setIsAnalyzing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('analyze-deck-builder', {
-        body: { cards: selectedCards }
-      });
+      // Run both basic and advanced analysis in parallel
+      const [basicResult, advancedResult] = await Promise.all([
+        supabase.functions.invoke('analyze-deck-builder', {
+          body: { cards: selectedCards }
+        }),
+        supabase.functions.invoke('analyze-deck-advanced', {
+          body: { cards: selectedCards }
+        })
+      ]);
 
-      if (error) throw error;
-      setAnalysis(data);
-      toast.success('Deck analyzed successfully!');
+      if (basicResult.error) throw basicResult.error;
+      if (advancedResult.error) throw advancedResult.error;
+      
+      setAnalysis(basicResult.data);
+      setAdvancedAnalysis(advancedResult.data);
+      toast.success('Complete deck analysis ready!');
     } catch (error) {
       console.error('Error analyzing deck:', error);
       toast.error('Failed to analyze deck');
@@ -204,67 +233,25 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           <CardContent className="space-y-2">
             <Skeleton className="h-20 w-full" />
             <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
           </CardContent>
         </Card>
       )}
 
-      {analysis && (
+      {(analysis || advancedAnalysis) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              AI Analysis
+              AI Deck Analysis
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-primary">{analysis.synergy_score}/100</p>
-                <p className="text-sm text-muted-foreground">Synergy Score</p>
-              </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-primary">{analysis.meta_score}/100</p>
-                <p className="text-sm text-muted-foreground">Meta Score</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <h4 className="font-semibold text-green-500 mb-2">Strengths</h4>
-                <ul className="space-y-1">
-                  {analysis.strengths.map((s, i) => (
-                    <li key={i} className="text-sm flex gap-2">
-                      <span className="text-green-500">✓</span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-red-500 mb-2">Weaknesses</h4>
-                <ul className="space-y-1">
-                  {analysis.weaknesses.map((w, i) => (
-                    <li key={i} className="text-sm flex gap-2">
-                      <span className="text-red-500">✗</span>
-                      <span>{w}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-primary mb-2">Recommendations</h4>
-                <ul className="space-y-1">
-                  {analysis.recommendations.map((r, i) => (
-                    <li key={i} className="text-sm flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>{r}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+          <CardContent>
+            <AdvancedAnalysisTabs 
+              advancedAnalysis={advancedAnalysis}
+              basicAnalysis={analysis}
+              cardNames={selectedCards.map(c => c.name)}
+            />
           </CardContent>
         </Card>
       )}

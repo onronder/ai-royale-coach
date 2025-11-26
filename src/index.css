@@ -79,6 +79,12 @@ All colors MUST be HSL.
     --chart-3: 24 95% 53%; /* Danger red */
     --chart-4: 221 83% 53%; /* Info blue */
     --chart-5: 280 100% 70%; /* Purple accent */
+    
+    /* Synergy matrix colors */
+    --synergy-strong: 142 71% 45%;
+    --synergy-good: 47 96% 53%;
+    --synergy-neutral: 217 32% 15%;
+    --synergy-weak: 0 84% 60%;
   }
 }
 
