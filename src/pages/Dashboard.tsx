@@ -4,13 +4,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trophy, Target, MessageSquare, Swords } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Zap, Users } from "lucide-react";
 import { toast } from "sonner";
+import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
+import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
+import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  
+  const { data: player, isLoading: playerLoading, error: playerError } = useClashRoyalePlayer(playerTag || null);
+  const { data: battles, isLoading: battlesLoading, error: battlesError } = useClashRoyaleBattles(playerTag || null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -82,12 +90,45 @@ const Dashboard = () => {
                 <CardHeader>
                   <CardTitle className="text-primary-foreground">Player Stats</CardTitle>
                   <CardDescription className="text-primary-foreground/80">
-                    Your current performance
+                    {player?.name || playerTag}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-primary-foreground">
-                  <p>Trophies: Loading...</p>
-                  <p>Win Rate: Loading...</p>
+                <CardContent className="text-primary-foreground space-y-3">
+                  {playerLoading ? (
+                    <>
+                      <Skeleton className="h-4 w-3/4 bg-primary-foreground/20" />
+                      <Skeleton className="h-4 w-2/3 bg-primary-foreground/20" />
+                      <Skeleton className="h-4 w-1/2 bg-primary-foreground/20" />
+                    </>
+                  ) : playerError ? (
+                    <p className="text-sm">Failed to load player data</p>
+                  ) : player ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5" />
+                        <span className="text-xl font-bold">{player.trophies.toLocaleString()}</span>
+                        <span className="text-sm opacity-80">/ {player.bestTrophies.toLocaleString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-4 w-4" />
+                        <span className="text-sm">{player.arena?.name || 'Unknown Arena'}</span>
+                      </div>
+                      {battles && (
+                        <div className="flex items-center gap-2">
+                          <Swords className="h-4 w-4" />
+                          <span className="text-sm">
+                            Win Rate: {((battles.filter(b => b.team[0]?.crowns > (b.opponent[0]?.crowns || 0)).length / battles.length) * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
+                      {player.clan && (
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          <span className="text-sm">{player.clan.name}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : null}
                 </CardContent>
               </Card>
 
@@ -97,7 +138,7 @@ const Dashboard = () => {
                   <CardDescription>Top insights from your AI coach</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Loading AI analysis...</p>
+                  <p className="text-muted-foreground">AI analysis coming soon...</p>
                 </CardContent>
               </Card>
             </div>
@@ -110,7 +151,50 @@ const Dashboard = () => {
                 <CardDescription>Your recent battles</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Loading matches...</p>
+                {battlesLoading ? (
+                  <div className="space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-20 w-full" />
+                    ))}
+                  </div>
+                ) : battlesError ? (
+                  <p className="text-muted-foreground">Failed to load battles</p>
+                ) : battles && battles.length > 0 ? (
+                  <div className="space-y-3">
+                    {battles.slice(0, 10).map((battle, idx) => {
+                      const playerCrowns = battle.team[0]?.crowns || 0;
+                      const opponentCrowns = battle.opponent[0]?.crowns || 0;
+                      const won = playerCrowns > opponentCrowns;
+                      const trophyChange = battle.team[0]?.trophyChange || 0;
+                      
+                      return (
+                        <div key={idx} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex items-center gap-4">
+                            <Badge variant={won ? "default" : "destructive"} className="w-16 justify-center">
+                              {won ? "WIN" : "LOSS"}
+                            </Badge>
+                            <div>
+                              <p className="font-medium">{battle.type}</p>
+                              <p className="text-sm text-muted-foreground">
+                                vs {battle.opponent[0]?.name || "Unknown"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-bold ${trophyChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                              {trophyChange >= 0 ? '+' : ''}{trophyChange}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(battle.battleTime), { addSuffix: true })}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">No battles found</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -118,11 +202,32 @@ const Dashboard = () => {
           <TabsContent value="deck" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Deck Analysis</CardTitle>
-                <CardDescription>AI-powered deck evaluation</CardDescription>
+                <CardTitle>Current Deck</CardTitle>
+                <CardDescription>Your active battle deck</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Loading deck analysis...</p>
+                {playerLoading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[...Array(8)].map((_, i) => (
+                      <Skeleton key={i} className="h-24 w-full" />
+                    ))}
+                  </div>
+                ) : playerError ? (
+                  <p className="text-muted-foreground">Failed to load deck</p>
+                ) : player?.currentDeck ? (
+                  <div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {player.currentDeck.map((card, idx) => (
+                        <div key={idx} className="border rounded-lg p-3 text-center">
+                          <p className="font-medium text-sm mb-1">{card.name}</p>
+                          <Badge variant="outline" className="text-xs">Lv {card.level}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground">No deck data available</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
