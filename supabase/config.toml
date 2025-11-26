@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.analyze-deck-builder]
 verify_jwt = false
+
+[functions.coach-chat]
+verify_jwt = false

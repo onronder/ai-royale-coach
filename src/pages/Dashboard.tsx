@@ -16,6 +16,9 @@ import { MatchDetailView } from "@/components/matches/MatchDetailView";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { StatCard } from "@/components/stats/StatCard";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
+import { CoachChat } from "@/components/coach/CoachChat";
+import { statTooltips } from "@/components/ui/tooltip-helpers";
+import { PageTransition, StatCardSkeleton, MatchCardSkeleton } from "@/components/ui/loading-states";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
 import { TournamentList } from "@/components/tournaments/TournamentList";
 import { ClanSearch } from "@/components/clans/ClanSearch";
@@ -177,53 +180,57 @@ const Dashboard = () => {
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
-            <div className="space-y-6">
-              {/* Stats Grid */}
-              <div className="grid gap-4 md:grid-cols-4">
-                {playerLoading ? (
-                  <>
-                    <Skeleton className="h-32" />
-                    <Skeleton className="h-32" />
-                    <Skeleton className="h-32" />
-                    <Skeleton className="h-32" />
-                  </>
-                ) : player ? (
-                  <>
-                    <StatCard
-                      title="Current Trophies"
-                      value={player.trophies.toLocaleString()}
-                      icon={Trophy}
-                      description={`Best: ${player.bestTrophies.toLocaleString()}`}
-                      trend="neutral"
-                    />
-                    <StatCard
-                      title="Arena"
-                      value={player.arena?.name.split(' ')[0] || 'Unknown'}
-                      icon={Crown}
-                      description={player.arena?.name || ''}
-                    />
-                    <StatCard
-                      title="Win Rate"
-                      value={battles ? `${((battles.filter(b => {
-                        const playerTeam = b.team.find(p => p.tag === playerTag);
-                        return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                      }).length / battles.length) * 100).toFixed(1)}%` : 'N/A'}
-                      icon={Swords}
-                      description="Last 25 battles"
-                      trend={battles && (battles.filter(b => {
-                        const playerTeam = b.team.find(p => p.tag === playerTag);
-                        return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                      }).length / battles.length) >= 0.5 ? 'up' : 'down'}
-                    />
-                    <StatCard
-                      title="Clan"
-                      value={player.clan?.name.split(' ')[0] || 'No Clan'}
-                      icon={Users}
-                      description={player.clan?.name || 'Join a clan'}
-                    />
-                  </>
-                ) : null}
-              </div>
+            <PageTransition>
+              <div className="space-y-6">
+                {/* Stats Grid */}
+                <div className="grid gap-4 md:grid-cols-4">
+                  {playerLoading ? (
+                    <>
+                      <StatCardSkeleton />
+                      <StatCardSkeleton />
+                      <StatCardSkeleton />
+                      <StatCardSkeleton />
+                    </>
+                  ) : player ? (
+                    <>
+                      <StatCard
+                        title="Current Trophies"
+                        value={player.trophies.toLocaleString()}
+                        icon={Trophy}
+                        description={`Best: ${player.bestTrophies.toLocaleString()}`}
+                        trend="neutral"
+                        tooltip={statTooltips.trophies}
+                      />
+                      <StatCard
+                        title="Arena"
+                        value={player.arena?.name.split(' ')[0] || 'Unknown'}
+                        icon={Crown}
+                        description={player.arena?.name || ''}
+                        tooltip={statTooltips.arena}
+                      />
+                      <StatCard
+                        title="Win Rate"
+                        value={battles ? `${((battles.filter(b => {
+                          const playerTeam = b.team.find(p => p.tag === playerTag);
+                          return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                        }).length / battles.length) * 100).toFixed(1)}%` : 'N/A'}
+                        icon={Swords}
+                        description="Last 25 battles"
+                        trend={battles && (battles.filter(b => {
+                          const playerTeam = b.team.find(p => p.tag === playerTag);
+                          return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                        }).length / battles.length) >= 0.5 ? 'up' : 'down'}
+                        tooltip={statTooltips.winRate}
+                      />
+                      <StatCard
+                        title="Clan"
+                        value={player.clan?.name.split(' ')[0] || 'No Clan'}
+                        icon={Users}
+                        description={player.clan?.name || 'Join a clan'}
+                      />
+                    </>
+                  ) : null}
+                </div>
 
               {/* AI Analysis Card */}
               <Card className="bg-gradient-primary shadow-glow">
@@ -260,45 +267,53 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </div>
-                  ) : null}
-                </CardContent>
-              </Card>
-            </div>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </div>
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="matches" className="mt-6">
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Match History</CardTitle>
-                  <CardDescription>Click on a match to view detailed analysis</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {battlesLoading ? (
-                    <div className="space-y-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Skeleton key={i} className="h-24 w-full" />
-                      ))}
-                    </div>
-                  ) : battlesError ? (
-                    <p className="text-muted-foreground">Failed to load battles</p>
-                  ) : battles && battles.length > 0 ? (
-                    <div className="space-y-3">
-                      {battles.slice(0, 15).map((battle, idx) => (
-                        <MatchCard
-                          key={idx}
-                          battle={battle}
-                          playerTag={playerTag!}
-                          onClick={() => handleMatchClick(battle)}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No battles found</p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            <PageTransition delay={100}>
+              <div className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Match History</CardTitle>
+                    <CardDescription>Click on a match to view detailed analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {battlesLoading ? (
+                      <div className="space-y-3">
+                        {[...Array(5)].map((_, i) => (
+                          <MatchCardSkeleton key={i} />
+                        ))}
+                      </div>
+                    ) : battlesError ? (
+                      <p className="text-muted-foreground">Failed to load battles</p>
+                    ) : battles && battles.length > 0 ? (
+                      <div className="space-y-3">
+                        {battles.slice(0, 15).map((battle, idx) => (
+                          <div
+                            key={idx}
+                            className="animate-slide-up"
+                            style={{ animationDelay: `${idx * 30}ms` }}
+                          >
+                            <MatchCard
+                              battle={battle}
+                              playerTag={playerTag!}
+                              onClick={() => handleMatchClick(battle)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground">No battles found</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </PageTransition>
 
             <MatchDetailView
               battle={selectedBattle}
@@ -309,7 +324,8 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="deck" className="mt-6">
-            <div className="space-y-6">
+            <PageTransition delay={100}>
+              <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Current Deck</CardTitle>
@@ -333,54 +349,90 @@ const Dashboard = () => {
               </Card>
 
               {player && battles && battles.length > 0 && (
-                <DeckAnalysisPanel player={player} battles={battles} />
-              )}
-            </div>
+                  <DeckAnalysisPanel player={player} battles={battles} />
+                )}
+              </div>
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="collection" className="mt-6">
-            {user && playerTag && (
-              <CardCollectionTracker 
-                playerTag={playerTag} 
-                userId={user.id}
-              />
-            )}
+            <PageTransition delay={100}>
+              {user && playerTag && (
+                <CardCollectionTracker 
+                  playerTag={playerTag} 
+                  userId={user.id}
+                />
+              )}
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="leaderboard" className="mt-6">
-            <LeaderboardView userClanTag={player?.clan?.tag} />
+            <PageTransition delay={100}>
+              <LeaderboardView userClanTag={player?.clan?.tag} />
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="tournaments" className="mt-6">
-            <TournamentList onSelectTournament={(id) => console.log('Tournament:', id)} />
+            <PageTransition delay={100}>
+              <TournamentList onSelectTournament={(id) => console.log('Tournament:', id)} />
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="clans" className="mt-6">
-            <ClanSearch 
-              onSelectClan={(clan) => console.log('Clan:', clan)} 
-              userPlayerTag={playerTag}
-            />
+            <PageTransition delay={100}>
+              <ClanSearch 
+                onSelectClan={(clan) => console.log('Clan:', clan)} 
+                userPlayerTag={playerTag}
+              />
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="builder" className="mt-6">
-            {player?.cards && user && (
-              <DeckBuilder 
-                availableCards={player.cards} 
-                userId={user.id}
-              />
-            )}
+            <PageTransition delay={100}>
+              {player?.cards && user && (
+                <DeckBuilder 
+                  availableCards={player.cards} 
+                  userId={user.id}
+                />
+              )}
+            </PageTransition>
           </TabsContent>
 
           <TabsContent value="coach" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Coach Chat</CardTitle>
-                <CardDescription>Ask your AI coach anything</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Chat interface coming soon...</p>
-              </CardContent>
-            </Card>
+            <PageTransition delay={100}>
+              {player && battles && (
+                <CoachChat
+                  playerTag={playerTag!}
+                  playerStats={{
+                    trophies: player.trophies,
+                    bestTrophies: player.bestTrophies,
+                    arena: player.arena?.name || 'Unknown',
+                    winRate: parseFloat((
+                      (battles.filter(b => {
+                        const playerTeam = b.team.find(p => p.tag === playerTag);
+                        return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                      }).length / battles.length) * 100
+                    ).toFixed(1))
+                  }}
+                  recentMatches={{
+                    wins: battles.filter(b => {
+                      const playerTeam = b.team.find(p => p.tag === playerTag);
+                      return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                    }).length,
+                    losses: battles.filter(b => {
+                      const playerTeam = b.team.find(p => p.tag === playerTag);
+                      return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
+                    }).length,
+                    avgTrophyChange: (
+                      battles.reduce((sum, b) => {
+                        const playerTeam = b.team.find(p => p.tag === playerTag);
+                        return sum + (playerTeam?.trophyChange || 0);
+                      }, 0) / battles.length
+                    ).toFixed(1)
+                  }}
+                />
+              )}
+            </PageTransition>
           </TabsContent>
         </Tabs>
       </main>
