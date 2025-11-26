@@ -1,6 +1,7 @@
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { CardImage } from "./CardImage";
 import { Zap } from "lucide-react";
+import { GameTooltip, statTooltips } from "@/components/ui/tooltip-helpers";
 
 interface DeckGridProps {
   cards: ClashRoyaleCard[];
@@ -31,12 +32,14 @@ export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProp
       </div>
       
       {showElixir && avgElixir > 0 && (
-        <div className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/10 border border-primary/20">
-          <Zap className="w-5 h-5 text-primary" />
-          <span className="font-rajdhani font-semibold text-foreground">
-            Average Elixir: <span className="text-primary text-lg">{avgElixir.toFixed(1)}</span>
-          </span>
-        </div>
+        <GameTooltip content={<p className="text-sm">{statTooltips.avgElixir}</p>}>
+          <div className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/10 border border-primary/20 cursor-help">
+            <Zap className="w-5 h-5 text-primary" />
+            <span className="font-rajdhani font-semibold text-foreground">
+              Average Elixir: <span className="text-primary text-lg">{avgElixir.toFixed(1)}</span>
+            </span>
+          </div>
+        </GameTooltip>
       )}
     </div>
   );

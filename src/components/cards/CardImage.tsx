@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GameTooltip, rarityTooltips } from "@/components/ui/tooltip-helpers";
 
 interface CardImageProps {
   card: ClashRoyaleCard;
@@ -45,7 +46,7 @@ export function CardImage({
 
   const rarity = card.rarity?.toLowerCase() || 'common';
 
-  return (
+  const cardContent = (
     <div className={cn(
       "relative rounded-lg overflow-hidden bg-card border-2 transition-all hover:-translate-y-1 group",
       sizeClasses[size],
@@ -93,5 +94,25 @@ export function CardImage({
         </div>
       )}
     </div>
+  );
+
+  return (
+    <GameTooltip
+      content={
+        <div className="space-y-2">
+          <p className="font-rajdhani font-bold text-base">{card.name}</p>
+          <p className="text-xs text-muted-foreground capitalize">
+            {rarity} • {card.elixirCost} Elixir • Level {card.level}
+          </p>
+          {card.rarity && (
+            <p className="text-xs text-primary/80 border-t border-border pt-2">
+              {rarityTooltips[rarity as keyof typeof rarityTooltips]}
+            </p>
+          )}
+        </div>
+      }
+    >
+      {cardContent}
+    </GameTooltip>
   );
 }

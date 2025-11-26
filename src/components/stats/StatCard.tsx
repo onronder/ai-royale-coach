@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { GameTooltip } from "@/components/ui/tooltip-helpers";
 
 interface StatCardProps {
   title: string;
@@ -10,6 +11,7 @@ interface StatCardProps {
   trend?: 'up' | 'down' | 'neutral';
   variant?: 'default' | 'gradient' | 'glow';
   className?: string;
+  tooltip?: string;
 }
 
 export function StatCard({ 
@@ -19,7 +21,8 @@ export function StatCard({
   description, 
   trend, 
   variant = 'default',
-  className 
+  className,
+  tooltip
 }: StatCardProps) {
   const trendColors = {
     up: 'text-success',
@@ -33,7 +36,7 @@ export function StatCard({
     glow: 'bg-card-elevated border-primary/20 hover:shadow-glow hover:border-primary/40'
   };
 
-  return (
+  const content = (
     <Card className={cn(
       "transition-all hover:-translate-y-1 duration-300",
       variantStyles[variant],
@@ -76,4 +79,14 @@ export function StatCard({
       </CardContent>
     </Card>
   );
+
+  if (tooltip) {
+    return (
+      <GameTooltip content={<p className="text-sm">{tooltip}</p>}>
+        {content}
+      </GameTooltip>
+    );
+  }
+
+  return content;
 }
