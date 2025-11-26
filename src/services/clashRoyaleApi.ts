@@ -1,3 +1,21 @@
+interface CardIconUrls {
+  medium: string;
+  evolutionMedium?: string;
+}
+
+export interface ClashRoyaleCard {
+  id: number;
+  name: string;
+  level: number;
+  maxLevel: number;
+  count?: number;
+  elixirCost?: number;
+  rarity?: string;
+  iconUrls: CardIconUrls;
+  evolutionLevel?: number;
+  starLevel?: number;
+}
+
 export interface ClashRoyalePlayer {
   tag: string;
   name: string;
@@ -13,19 +31,8 @@ export interface ClashRoyalePlayer {
     name: string;
     badgeId: number;
   };
-  cards?: Array<{
-    id: number;
-    name: string;
-    level: number;
-    maxLevel: number;
-    count: number;
-  }>;
-  currentDeck?: Array<{
-    id: number;
-    name: string;
-    level: number;
-    maxLevel: number;
-  }>;
+  cards?: ClashRoyaleCard[];
+  currentDeck?: ClashRoyaleCard[];
   wins: number;
   losses: number;
   battleCount: number;
@@ -58,11 +65,7 @@ export interface ClashRoyaleBattle {
     startingTrophies?: number;
     trophyChange?: number;
     crowns: number;
-    cards: Array<{
-      id: number;
-      name: string;
-      level: number;
-    }>;
+    cards: ClashRoyaleCard[];
   }>;
   opponent: Array<{
     tag: string;
@@ -70,11 +73,7 @@ export interface ClashRoyaleBattle {
     startingTrophies?: number;
     trophyChange?: number;
     crowns: number;
-    cards: Array<{
-      id: number;
-      name: string;
-      level: number;
-    }>;
+    cards: ClashRoyaleCard[];
   }>;
 }
 

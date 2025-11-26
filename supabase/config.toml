@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.analyze-player]
 verify_jwt = false
+
+[functions.analyze-match]
+verify_jwt = false
+
+[functions.analyze-deck]
+verify_jwt = false
