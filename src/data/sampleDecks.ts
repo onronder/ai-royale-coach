@@ -47,6 +47,20 @@ export interface SampleDeck {
   synergies: CardSynergy[];
   matchups: MatchupData[];
   history: HistoricalData[];
+  difficulty: 'beginner' | 'intermediate' | 'expert';
+  skillRequirements: {
+    cardPlacement: number; // 1-10
+    timing: number; // 1-10
+    elixirManagement: number; // 1-10
+    prediction: number; // 1-10
+    adaptation: number; // 1-10
+  };
+  learningPath: {
+    phase: string;
+    focus: string;
+    tips: string[];
+  }[];
+  counters: string[]; // deck ids that counter this deck
 }
 
 export const sampleDecks: SampleDeck[] = [
@@ -91,7 +105,45 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Oct 2024", winRate: 57.8, usageRate: 11.8 },
       { patch: "Sep 2024", winRate: 56.5, usageRate: 10.5 },
       { patch: "Aug 2024", winRate: 55.2, usageRate: 9.8 },
-    ]
+    ],
+    difficulty: "expert",
+    skillRequirements: {
+      cardPlacement: 9,
+      timing: 10,
+      elixirManagement: 8,
+      prediction: 7,
+      adaptation: 9,
+    },
+    learningPath: [
+      {
+        phase: "Foundation (Week 1-2)",
+        focus: "Master basic cycling mechanics",
+        tips: [
+          "Learn optimal Cannon placement vs different win conditions",
+          "Practice Musketeer positioning for defense",
+          "Get comfortable cycling quickly with 1-elixir cards",
+        ]
+      },
+      {
+        phase: "Intermediate (Week 3-4)",
+        focus: "Timing and spell value",
+        tips: [
+          "Learn when to commit Hog Rider vs defend",
+          "Practice predicting spell placements",
+          "Master Ice Golem kiting techniques",
+        ]
+      },
+      {
+        phase: "Advanced (Week 5+)",
+        focus: "Perfect execution under pressure",
+        tips: [
+          "Develop muscle memory for frame-perfect defenses",
+          "Learn all matchup-specific strategies",
+          "Master elixir counting and tracking",
+        ]
+      }
+    ],
+    counters: ["golem-beatdown", "xbow-siege"]
   },
   {
     id: "golem-beatdown",
@@ -134,7 +186,45 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Oct 2024", winRate: 63.2, usageRate: 9.1 },
       { patch: "Sep 2024", winRate: 64.1, usageRate: 10.2 },
       { patch: "Aug 2024", winRate: 62.7, usageRate: 8.8 },
-    ]
+    ],
+    difficulty: "intermediate",
+    skillRequirements: {
+      cardPlacement: 6,
+      timing: 7,
+      elixirManagement: 9,
+      prediction: 5,
+      adaptation: 6,
+    },
+    learningPath: [
+      {
+        phase: "Foundation (Week 1-2)",
+        focus: "Understanding beatdown fundamentals",
+        tips: [
+          "Learn when to start a Golem push safely",
+          "Practice building support troops behind Golem",
+          "Understand death damage synergies",
+        ]
+      },
+      {
+        phase: "Intermediate (Week 3-4)",
+        focus: "Push optimization",
+        tips: [
+          "Master Lightning timing on defensive buildings",
+          "Learn to use Tornado for King Tower activation",
+          "Practice managing elixir disadvantage",
+        ]
+      },
+      {
+        phase: "Advanced (Week 5+)",
+        focus: "Pressure adaptation",
+        tips: [
+          "Learn to defend opposite lane pressure",
+          "Master baiting out key defensive cards",
+          "Perfect your double elixir push timing",
+        ]
+      }
+    ],
+    counters: ["xbow-siege", "log-bait"]
   },
   {
     id: "log-bait",
@@ -177,7 +267,45 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Oct 2024", winRate: 56.3, usageRate: 15.1 },
       { patch: "Sep 2024", winRate: 57.1, usageRate: 16.2 },
       { patch: "Aug 2024", winRate: 55.5, usageRate: 14.8 },
-    ]
+    ],
+    difficulty: "intermediate",
+    skillRequirements: {
+      cardPlacement: 7,
+      timing: 9,
+      elixirManagement: 7,
+      prediction: 10,
+      adaptation: 8,
+    },
+    learningPath: [
+      {
+        phase: "Foundation (Week 1-2)",
+        focus: "Spell baiting basics",
+        tips: [
+          "Learn Princess placement behind King Tower",
+          "Practice Goblin Barrel placement variations",
+          "Understand which cards bait which spells",
+        ]
+      },
+      {
+        phase: "Intermediate (Week 3-4)",
+        focus: "Prediction mastery",
+        tips: [
+          "Learn to predict opponent's spell usage",
+          "Master Rocket cycling for chip damage",
+          "Practice baiting Log before Barrel",
+        ]
+      },
+      {
+        phase: "Advanced (Week 5+)",
+        focus: "Mind games and adaptation",
+        tips: [
+          "Develop reads on opponent's patterns",
+          "Learn all Goblin Barrel prediction spots",
+          "Master defensive Inferno Tower placement",
+        ]
+      }
+    ],
+    counters: ["hog-cycle", "golem-beatdown"]
   },
   {
     id: "xbow-siege",
@@ -220,6 +348,44 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Oct 2024", winRate: 52.1, usageRate: 7.2 },
       { patch: "Sep 2024", winRate: 53.5, usageRate: 8.1 },
       { patch: "Aug 2024", winRate: 51.9, usageRate: 7.4 },
-    ]
+    ],
+    difficulty: "expert",
+    skillRequirements: {
+      cardPlacement: 10,
+      timing: 9,
+      elixirManagement: 8,
+      prediction: 8,
+      adaptation: 10,
+    },
+    learningPath: [
+      {
+        phase: "Foundation (Week 1-2)",
+        focus: "X-Bow placement and protection",
+        tips: [
+          "Learn safe X-Bow placement positions",
+          "Practice Tesla placement for tank pulling",
+          "Understand when to go offensive vs defensive",
+        ]
+      },
+      {
+        phase: "Intermediate (Week 3-4)",
+        focus: "Matchup knowledge",
+        tips: [
+          "Learn which matchups favor offensive X-Bow",
+          "Master defensive X-Bow in bad matchups",
+          "Practice spell chip damage strategies",
+        ]
+      },
+      {
+        phase: "Advanced (Week 5+)",
+        focus: "Perfect execution",
+        tips: [
+          "Develop deep matchup understanding",
+          "Master frame-perfect defensive placements",
+          "Learn to adapt playstyle mid-match",
+        ]
+      }
+    ],
+    counters: ["hog-cycle", "log-bait"]
   }
 ];

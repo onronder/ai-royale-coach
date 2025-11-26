@@ -1,7 +1,7 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { AnimatedCounter } from './AnimatedCounter';
 import { Card } from '@/components/ui/card';
-import { Sparkles, TrendingUp, Zap, GitCompare, Network, Activity } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, GitCompare, Network, Activity, GraduationCap, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -12,6 +12,8 @@ import type { SampleDeck } from '@/data/sampleDecks';
 import { DeckComparisonView } from './DeckComparisonView';
 import { CardSynergyVisualization } from './CardSynergyVisualization';
 import { MetaTimeline } from './MetaTimeline';
+import { DeckDifficultyBreakdown } from './DeckDifficultyBreakdown';
+import { CounterDeckRecommendations } from './CounterDeckRecommendations';
 
 export function DemoSection() {
   const { ref, isVisible } = useScrollAnimation(0.2);
@@ -94,12 +96,12 @@ export function DemoSection() {
         </div>
 
         <Tabs defaultValue={sampleDecks[0].id} className="w-full" onValueChange={(value) => {
-          if (value === 'compare' || value === 'synergy' || value === 'meta') return; // Handle special tabs separately
+          if (['compare', 'synergy', 'meta', 'difficulty', 'counters'].includes(value)) return; // Handle special tabs separately
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
           {/* Deck Archetype Tabs */}
-          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-7 mb-8 bg-card/50 transition-all duration-500 ${
+          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-9 mb-8 bg-card/50 transition-all duration-500 ${
             isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
           }`}>
             {sampleDecks.map((deck, idx) => (
@@ -113,9 +115,25 @@ export function DemoSection() {
               </TabsTrigger>
             ))}
             <TabsTrigger 
+              value="difficulty"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-success/20 text-xs md:text-sm"
+              style={{ transitionDelay: isVisible ? `${sampleDecks.length * 100}ms` : '0ms' }}
+            >
+              <GraduationCap className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+              <span className="hidden md:inline">Skills</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="counters"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-destructive/20 data-[state=active]:to-warning/20 text-xs md:text-sm"
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 1) * 100}ms` : '0ms' }}
+            >
+              <Shield className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+              <span className="hidden md:inline">Counters</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="synergy"
               className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-success/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${sampleDecks.length * 100}ms` : '0ms' }}
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 2) * 100}ms` : '0ms' }}
             >
               <Network className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
               <span className="hidden md:inline">Synergy</span>
@@ -123,7 +141,7 @@ export function DemoSection() {
             <TabsTrigger 
               value="meta"
               className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-warning/20 data-[state=active]:to-accent/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 1) * 100}ms` : '0ms' }}
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 3) * 100}ms` : '0ms' }}
             >
               <Activity className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
               <span className="hidden md:inline">Meta</span>
@@ -131,7 +149,7 @@ export function DemoSection() {
             <TabsTrigger 
               value="compare"
               className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-accent/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
-              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 2) * 100}ms` : '0ms' }}
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 4) * 100}ms` : '0ms' }}
             >
               <GitCompare className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
               <span className="hidden md:inline">Compare</span>
@@ -236,6 +254,44 @@ export function DemoSection() {
               </div>
             </TabsContent>
           ))}
+
+          {/* Difficulty & Skills Tab */}
+          <TabsContent value="difficulty" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Skill Requirements & Learning Paths
+                </h3>
+                <p className="text-muted-foreground">
+                  Understand what it takes to master each archetype
+                </p>
+              </div>
+              <div className="grid lg:grid-cols-2 gap-6">
+                {sampleDecks.map((deck) => (
+                  <DeckDifficultyBreakdown key={deck.id} deck={deck} isVisible={isVisible} />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Counter Analysis Tab */}
+          <TabsContent value="counters" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Counter-Deck Analysis
+                </h3>
+                <p className="text-muted-foreground">
+                  Identify threats and leverage favorable matchups
+                </p>
+              </div>
+              <div className="grid lg:grid-cols-2 gap-6">
+                {sampleDecks.map((deck) => (
+                  <CounterDeckRecommendations key={deck.id} deck={deck} isVisible={isVisible} />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
 
           {/* Synergy Tab */}
           <TabsContent value="synergy" className="mt-0">
