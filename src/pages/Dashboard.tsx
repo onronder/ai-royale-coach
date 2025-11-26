@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users } from "lucide-react";
+import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -15,6 +15,8 @@ import { MatchCard } from "@/components/matches/MatchCard";
 import { MatchDetailView } from "@/components/matches/MatchDetailView";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { StatCard } from "@/components/stats/StatCard";
+import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
+import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 const Dashboard = () => {
@@ -78,7 +80,7 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">
               <Trophy className="mr-2 h-4 w-4" />
               Overview
@@ -90,6 +92,14 @@ const Dashboard = () => {
             <TabsTrigger value="deck">
               <Target className="mr-2 h-4 w-4" />
               Deck
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard">
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Leaderboard
+            </TabsTrigger>
+            <TabsTrigger value="collection">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Cards
             </TabsTrigger>
             <TabsTrigger value="coach">
               <MessageSquare className="mr-2 h-4 w-4" />
@@ -257,6 +267,19 @@ const Dashboard = () => {
                 <DeckAnalysisPanel player={player} battles={battles} />
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="collection" className="mt-6">
+            {user && playerTag && (
+              <CardCollectionTracker 
+                playerTag={playerTag} 
+                userId={user.id}
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent value="leaderboard" className="mt-6">
+            <LeaderboardView userClanTag={player?.clan?.tag} />
           </TabsContent>
 
           <TabsContent value="coach" className="mt-6">
