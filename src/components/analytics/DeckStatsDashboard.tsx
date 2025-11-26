@@ -7,7 +7,6 @@ import { RefreshCw, TrendingUp, Trophy, Swords } from "lucide-react";
 import { DeckTrendChart } from "./DeckTrendChart";
 import { MostUsedCardsGrid } from "./MostUsedCardsGrid";
 import { DeckUsageBreakdown } from "./DeckUsageBreakdown";
-import { toast } from "sonner";
 
 interface DeckStatsDashboardProps {
   playerTag: string;
@@ -15,17 +14,14 @@ interface DeckStatsDashboardProps {
 
 export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
   const { data, isLoading, refetch } = useDeckStats(playerTag, 30);
-  const trackStats = useTrackDeckStats();
+  const { mutate: trackStats } = useTrackDeckStats();
 
-  const handleSync = async () => {
-    try {
-      await trackStats(playerTag);
-      toast.success("Deck stats synced successfully");
-      refetch();
-    } catch (error) {
-      toast.error("Failed to sync deck stats");
-      console.error(error);
-    }
+  const handleSync = () => {
+    trackStats(playerTag, {
+      onSuccess: () => {
+        refetch();
+      }
+    });
   };
 
   if (isLoading) {

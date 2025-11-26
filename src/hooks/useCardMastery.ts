@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface CardMastery {
   id: string;
@@ -52,6 +53,8 @@ export const useCalculateCardMastery = () => {
   
   return useMutation({
     mutationFn: async (playerTag: string) => {
+      toast.loading('Calculating card mastery...', { id: 'card-mastery-calc' });
+      
       const { data, error } = await supabase.functions.invoke('calculate-card-mastery', {
         body: { playerTag }
       });
@@ -61,6 +64,11 @@ export const useCalculateCardMastery = () => {
     },
     onSuccess: (_, playerTag) => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', playerTag] });
+      toast.success('Card mastery calculated successfully!', { id: 'card-mastery-calc' });
+    },
+    onError: (error) => {
+      toast.error('Failed to calculate card mastery', { id: 'card-mastery-calc' });
+      console.error('Card mastery calculation error:', error);
     },
   });
 };
@@ -86,6 +94,8 @@ export const useGenerateCardTips = () => {
       cardId: number;
       playerTag: string;
     }) => {
+      toast.loading(`Generating AI tips for ${cardName}...`, { id: `card-tips-${cardId}` });
+      
       const { data, error } = await supabase.functions.invoke('generate-card-tips', {
         body: { cardName, winRate, timesUsed, bestPartners, worstMatchups }
       });
@@ -106,6 +116,11 @@ export const useGenerateCardTips = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', variables.playerTag] });
+      toast.success(`AI tips generated for ${variables.cardName}!`, { id: `card-tips-${variables.cardId}` });
+    },
+    onError: (error, variables) => {
+      toast.error(`Failed to generate tips for ${variables.cardName}`, { id: `card-tips-${variables.cardId}` });
+      console.error('Card tips generation error:', error);
     },
   });
 };

@@ -45,6 +45,8 @@ const UPGRADE_REQUIREMENTS: Record<string, number[]> = {
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
   const [collection, setCollection] = useState<CardCollectionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncProgress, setSyncProgress] = useState(0);
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
 
   useEffect(() => {
@@ -71,19 +73,47 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   };
 
   const syncCollection = async () => {
+    setIsSyncing(true);
+    setSyncProgress(0);
+    
+    toast.loading('Syncing card collection with Clash Royale API...', { id: 'card-collection-sync' });
+    
     try {
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setSyncProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 15;
+        });
+      }, 200);
+      
       const { error } = await supabase.functions.invoke('sync-card-collection', {
         body: { playerTag, userId }
       });
 
+      clearInterval(progressInterval);
+      setSyncProgress(100);
+
       if (error) {
         console.error('Error syncing collection:', error);
+        toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
       } else {
+        toast.success('Card collection synced successfully!', { id: 'card-collection-sync' });
         // Refetch after sync
-        setTimeout(fetchCollection, 1000);
+        setTimeout(() => {
+          fetchCollection();
+          setIsSyncing(false);
+          setSyncProgress(0);
+        }, 500);
       }
     } catch (error) {
       console.error('Sync error:', error);
+      toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
+      setIsSyncing(false);
+      setSyncProgress(0);
     }
   };
 
@@ -139,10 +169,20 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5" />
-          Card Collection ({collection.length} cards)
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5" />
+            Card Collection ({collection.length} cards)
+          </CardTitle>
+          {isSyncing && (
+            <Badge variant="secondary" className="animate-pulse">
+              Syncing {syncProgress}%
+            </Badge>
+          )}
+        </div>
+        {isSyncing && (
+          <Progress value={syncProgress} className="h-2 mt-3" />
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Rarity Filter Tabs */}

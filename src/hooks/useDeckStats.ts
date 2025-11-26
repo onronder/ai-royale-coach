@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface DeckStat {
   id: string;
@@ -68,12 +69,26 @@ export const useDeckStats = (playerTag: string, days = 30) => {
 };
 
 export const useTrackDeckStats = () => {
-  return async (playerTag: string) => {
-    const { data, error } = await supabase.functions.invoke('track-deck-stats', {
-      body: { playerTag }
-    });
-    
-    if (error) throw error;
-    return data;
-  };
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (playerTag: string) => {
+      toast.loading('Tracking deck statistics...', { id: 'deck-stats-track' });
+      
+      const { data, error } = await supabase.functions.invoke('track-deck-stats', {
+        body: { playerTag }
+      });
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, playerTag) => {
+      queryClient.invalidateQueries({ queryKey: ['deck-stats', playerTag] });
+      toast.success('Deck statistics updated successfully!', { id: 'deck-stats-track' });
+    },
+    onError: (error) => {
+      toast.error('Failed to update deck statistics', { id: 'deck-stats-track' });
+      console.error('Deck stats tracking error:', error);
+    },
+  });
 };
