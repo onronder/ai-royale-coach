@@ -1,1 +1,4 @@
 project_id = "vraqbzokccvqhthixoof"
+
+[functions.clash-royale-api]
+verify_jwt = false
