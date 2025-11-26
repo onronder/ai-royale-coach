@@ -26,6 +26,7 @@ import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DeckStatsDashboard } from "@/components/analytics/DeckStatsDashboard";
 import { CardMasteryTracker } from "@/components/mastery/CardMasteryTracker";
+import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -115,7 +116,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
           {/* Enhanced Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-10 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
             <TabsTrigger 
               value="overview" 
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
@@ -178,13 +179,6 @@ const Dashboard = () => {
             >
               <UserPlus className="mr-1 h-4 w-4" />
               <span className="hidden sm:inline">Clans</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="coach"
-              className="data-[state=active]:bg-gradient-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-accent-glow font-rajdhani font-semibold"
-            >
-              <MessageSquare className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Coach</span>
             </TabsTrigger>
           </TabsList>
 
@@ -425,45 +419,42 @@ const Dashboard = () => {
               </Tabs>
             </PageTransition>
           </TabsContent>
-
-          <TabsContent value="coach" className="mt-6">
-            <PageTransition delay={100}>
-              {player && battles && (
-                <CoachChat
-                  playerTag={playerTag!}
-                  playerStats={{
-                    trophies: player.trophies,
-                    bestTrophies: player.bestTrophies,
-                    arena: player.arena?.name || 'Unknown',
-                    winRate: parseFloat((
-                      (battles.filter(b => {
-                        const playerTeam = b.team.find(p => p.tag === playerTag);
-                        return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                      }).length / battles.length) * 100
-                    ).toFixed(1))
-                  }}
-                  recentMatches={{
-                    wins: battles.filter(b => {
-                      const playerTeam = b.team.find(p => p.tag === playerTag);
-                      return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                    }).length,
-                    losses: battles.filter(b => {
-                      const playerTeam = b.team.find(p => p.tag === playerTag);
-                      return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
-                    }).length,
-                    avgTrophyChange: (
-                      battles.reduce((sum, b) => {
-                        const playerTeam = b.team.find(p => p.tag === playerTag);
-                        return sum + (playerTeam?.trophyChange || 0);
-                      }, 0) / battles.length
-                    ).toFixed(1)
-                  }}
-                />
-              )}
-            </PageTransition>
-          </TabsContent>
         </Tabs>
       </main>
+
+      {/* Floating AI Coach Widget */}
+      {player && battles && (
+        <FloatingCoachButton
+          playerTag={playerTag!}
+          playerStats={{
+            trophies: player.trophies,
+            bestTrophies: player.bestTrophies,
+            arena: player.arena?.name || 'Unknown',
+            winRate: parseFloat((
+              (battles.filter(b => {
+                const playerTeam = b.team.find(p => p.tag === playerTag);
+                return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+              }).length / battles.length) * 100
+            ).toFixed(1))
+          }}
+          recentMatches={{
+            wins: battles.filter(b => {
+              const playerTeam = b.team.find(p => p.tag === playerTag);
+              return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+            }).length,
+            losses: battles.filter(b => {
+              const playerTeam = b.team.find(p => p.tag === playerTag);
+              return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
+            }).length,
+            avgTrophyChange: (
+              battles.reduce((sum, b) => {
+                const playerTeam = b.team.find(p => p.tag === playerTag);
+                return sum + (playerTeam?.trophyChange || 0);
+              }, 0) / battles.length
+            ).toFixed(1)
+          }}
+        />
+      )}
     </div>
   );
 };
