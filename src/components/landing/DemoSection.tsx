@@ -1,7 +1,7 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { AnimatedCounter } from './AnimatedCounter';
 import { Card } from '@/components/ui/card';
-import { Sparkles, TrendingUp, Zap, GitCompare } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, GitCompare, Network, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -10,6 +10,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { sampleDecks } from '@/data/sampleDecks';
 import type { SampleDeck } from '@/data/sampleDecks';
 import { DeckComparisonView } from './DeckComparisonView';
+import { CardSynergyVisualization } from './CardSynergyVisualization';
+import { MetaTimeline } from './MetaTimeline';
 
 export function DemoSection() {
   const { ref, isVisible } = useScrollAnimation(0.2);
@@ -92,31 +94,47 @@ export function DemoSection() {
         </div>
 
         <Tabs defaultValue={sampleDecks[0].id} className="w-full" onValueChange={(value) => {
-          if (value === 'compare') return; // Handle comparison tab separately
+          if (value === 'compare' || value === 'synergy' || value === 'meta') return; // Handle special tabs separately
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
           {/* Deck Archetype Tabs */}
-          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-5 mb-8 bg-card/50 transition-all duration-500 ${
+          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-7 mb-8 bg-card/50 transition-all duration-500 ${
             isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
           }`}>
             {sampleDecks.map((deck, idx) => (
               <TabsTrigger 
                 key={deck.id} 
                 value={deck.id}
-                className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-accent/20"
+                className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-accent/20 text-xs md:text-sm"
                 style={{ transitionDelay: isVisible ? `${idx * 100}ms` : '0ms' }}
               >
                 {deck.stats.archetype}
               </TabsTrigger>
             ))}
             <TabsTrigger 
-              value="compare"
-              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-accent/20 data-[state=active]:to-primary/20"
+              value="synergy"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-success/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
               style={{ transitionDelay: isVisible ? `${sampleDecks.length * 100}ms` : '0ms' }}
             >
-              <GitCompare className="h-4 w-4 mr-1" />
-              Compare
+              <Network className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+              <span className="hidden md:inline">Synergy</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="meta"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-warning/20 data-[state=active]:to-accent/20 text-xs md:text-sm"
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 1) * 100}ms` : '0ms' }}
+            >
+              <Activity className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+              <span className="hidden md:inline">Meta</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="compare"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-accent/20 data-[state=active]:to-primary/20 text-xs md:text-sm"
+              style={{ transitionDelay: isVisible ? `${(sampleDecks.length + 2) * 100}ms` : '0ms' }}
+            >
+              <GitCompare className="h-3 w-3 md:h-4 md:w-4 md:mr-1" />
+              <span className="hidden md:inline">Compare</span>
             </TabsTrigger>
           </TabsList>
 
@@ -219,9 +237,53 @@ export function DemoSection() {
             </TabsContent>
           ))}
 
+          {/* Synergy Tab */}
+          <TabsContent value="synergy" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Card Synergy Analysis
+                </h3>
+                <p className="text-muted-foreground">
+                  Discover powerful card combinations within each archetype
+                </p>
+              </div>
+              <div className="grid lg:grid-cols-2 gap-6">
+                {sampleDecks.map((deck) => (
+                  <CardSynergyVisualization key={deck.id} deck={deck} isVisible={isVisible} />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Meta Timeline Tab */}
+          <TabsContent value="meta" className="mt-0">
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Meta Evolution Timeline
+                </h3>
+                <p className="text-muted-foreground">
+                  Track how deck performance has changed across patches
+                </p>
+              </div>
+              <MetaTimeline decks={sampleDecks} isVisible={isVisible} />
+            </div>
+          </TabsContent>
+
           {/* Comparison Tab */}
           <TabsContent value="compare" className="mt-0">
-            <DeckComparisonView isVisible={isVisible} />
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
+                  Deck-vs-Deck Comparison
+                </h3>
+                <p className="text-muted-foreground">
+                  Analyze head-to-head matchups and tactical advantages
+                </p>
+              </div>
+              <DeckComparisonView isVisible={isVisible} />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

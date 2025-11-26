@@ -13,6 +13,27 @@ export interface DeckStats {
   archetype: string;
 }
 
+export interface CardSynergy {
+  card1: string;
+  card2: string;
+  strength: number; // 0-100
+  reason: string;
+}
+
+export interface MatchupData {
+  opponent: string; // deck id
+  winRate: number;
+  difficulty: 'favored' | 'even' | 'unfavored';
+  keyCards: string[];
+  tacticalTips: string[];
+}
+
+export interface HistoricalData {
+  patch: string;
+  winRate: number;
+  usageRate: number;
+}
+
 export interface SampleDeck {
   id: string;
   name: string;
@@ -23,6 +44,9 @@ export interface SampleDeck {
   playstyle: string;
   strengths: string[];
   weaknesses: string[];
+  synergies: CardSynergy[];
+  matchups: MatchupData[];
+  history: HistoricalData[];
 }
 
 export const sampleDecks: SampleDeck[] = [
@@ -49,7 +73,25 @@ export const sampleDecks: SampleDeck[] = [
     color: "primary",
     playstyle: "Fast-paced pressure with constant cycling",
     strengths: ["Fast cycle", "Versatile defense", "Chip damage"],
-    weaknesses: ["Low HP troops", "Spell vulnerable", "Requires skill"]
+    weaknesses: ["Low HP troops", "Spell vulnerable", "Requires skill"],
+    synergies: [
+      { card1: "Hog Rider", card2: "Ice Golem", strength: 85, reason: "Ice Golem tanks and kites defenders" },
+      { card1: "Musketeer", card2: "Cannon", strength: 90, reason: "Perfect defensive synergy vs tanks" },
+      { card1: "Fireball", card2: "Log", strength: 75, reason: "Spell cycle for chip damage" },
+      { card1: "Ice Spirit", card2: "Skeletons", strength: 95, reason: "Incredible cycle and distraction combo" },
+    ],
+    matchups: [
+      { opponent: "golem-beatdown", winRate: 35, difficulty: "unfavored", keyCards: ["Cannon", "Musketeer"], tacticalTips: ["Never give them value for Lightning", "Pressure opposite lane aggressively", "Save Fireball for Night Witch"] },
+      { opponent: "log-bait", winRate: 55, difficulty: "even", keyCards: ["Log", "Fireball"], tacticalTips: ["Log their Princess, Fireball their Goblin Gang", "Keep pressure to prevent Rocket cycling", "Predict Goblin Barrel placements"] },
+      { opponent: "xbow-siege", winRate: 60, difficulty: "favored", keyCards: ["Hog Rider", "Fireball"], tacticalTips: ["Pressure same lane as X-Bow to prevent locks", "Fireball their defensive buildings", "Cycle faster than they can defend"] },
+    ],
+    history: [
+      { patch: "Dec 2024", winRate: 58.2, usageRate: 12.5 },
+      { patch: "Nov 2024", winRate: 59.1, usageRate: 13.2 },
+      { patch: "Oct 2024", winRate: 57.8, usageRate: 11.8 },
+      { patch: "Sep 2024", winRate: 56.5, usageRate: 10.5 },
+      { patch: "Aug 2024", winRate: 55.2, usageRate: 9.8 },
+    ]
   },
   {
     id: "golem-beatdown",
@@ -74,7 +116,25 @@ export const sampleDecks: SampleDeck[] = [
     color: "accent",
     playstyle: "Heavy pushes with overwhelming force",
     strengths: ["High damage", "Tower destruction", "Death damage synergy"],
-    weaknesses: ["Expensive", "Slow cycle", "Vulnerable to pressure"]
+    weaknesses: ["Expensive", "Slow cycle", "Vulnerable to pressure"],
+    synergies: [
+      { card1: "Golem", card2: "Night Witch", strength: 95, reason: "Death spawn synergy creates unstoppable push" },
+      { card1: "Lightning", card2: "Tornado", strength: 85, reason: "Activates King Tower and clears defenses" },
+      { card1: "Baby Dragon", card2: "Tornado", strength: 80, reason: "Splash damage combos with pull" },
+      { card1: "Lumberjack", card2: "Golem", strength: 90, reason: "Rage on death accelerates push" },
+    ],
+    matchups: [
+      { opponent: "hog-cycle", winRate: 65, difficulty: "favored", keyCards: ["Golem", "Lightning"], tacticalTips: ["Ignore their chip damage", "Build big pushes in double elixir", "Lightning their defensive structures"] },
+      { opponent: "log-bait", winRate: 58, difficulty: "even", keyCards: ["Baby Dragon", "Barbarian Barrel"], tacticalTips: ["Baby Dragon counters their swarms", "Lightning Inferno Tower", "Push through their Rocket chip"] },
+      { opponent: "xbow-siege", winRate: 70, difficulty: "favored", keyCards: ["Golem", "Lightning"], tacticalTips: ["Tank X-Bow damage with Golem", "Lightning their Tesla + Archers", "They can't stop death damage"] },
+    ],
+    history: [
+      { patch: "Dec 2024", winRate: 62.4, usageRate: 8.3 },
+      { patch: "Nov 2024", winRate: 61.8, usageRate: 7.9 },
+      { patch: "Oct 2024", winRate: 63.2, usageRate: 9.1 },
+      { patch: "Sep 2024", winRate: 64.1, usageRate: 10.2 },
+      { patch: "Aug 2024", winRate: 62.7, usageRate: 8.8 },
+    ]
   },
   {
     id: "log-bait",
@@ -99,7 +159,25 @@ export const sampleDecks: SampleDeck[] = [
     color: "success",
     playstyle: "Reactive play with spell baiting tactics",
     strengths: ["Forces bad trades", "Strong defense", "Prediction plays"],
-    weaknesses: ["Spell timing crucial", "Passive early game", "Princess reliant"]
+    weaknesses: ["Spell timing crucial", "Passive early game", "Princess reliant"],
+    synergies: [
+      { card1: "Goblin Barrel", card2: "Princess", strength: 95, reason: "Ultimate Log bait combination" },
+      { card1: "Goblin Gang", card2: "Princess", strength: 85, reason: "Forces opponent to choose what to Log" },
+      { card1: "Inferno Tower", card2: "Knight", strength: 80, reason: "Knight tanks while Inferno melts" },
+      { card1: "Rocket", card2: "Princess", strength: 75, reason: "Chip damage accumulation strategy" },
+    ],
+    matchups: [
+      { opponent: "hog-cycle", winRate: 45, difficulty: "even", keyCards: ["Inferno Tower", "Knight"], tacticalTips: ["Inferno Tower counters Hog perfectly", "Bait their Log before Goblin Barrel", "Rocket cycle for overtime wins"] },
+      { opponent: "golem-beatdown", winRate: 42, difficulty: "unfavored", keyCards: ["Inferno Tower", "Rocket"], tacticalTips: ["Inferno Tower is your only answer", "Rocket their support troops", "Barrel opposite lane for chip"] },
+      { opponent: "xbow-siege", winRate: 52, difficulty: "even", keyCards: ["Knight", "Rocket"], tacticalTips: ["Knight tanks X-Bow shots", "Rocket their defensive setup", "Princess forces reactions"] },
+    ],
+    history: [
+      { patch: "Dec 2024", winRate: 55.8, usageRate: 14.2 },
+      { patch: "Nov 2024", winRate: 54.9, usageRate: 13.8 },
+      { patch: "Oct 2024", winRate: 56.3, usageRate: 15.1 },
+      { patch: "Sep 2024", winRate: 57.1, usageRate: 16.2 },
+      { patch: "Aug 2024", winRate: 55.5, usageRate: 14.8 },
+    ]
   },
   {
     id: "xbow-siege",
@@ -124,6 +202,24 @@ export const sampleDecks: SampleDeck[] = [
     color: "warning",
     playstyle: "Defensive X-Bow locks with chip damage",
     strengths: ["Range advantage", "Strong defense", "Forces reactions"],
-    weaknesses: ["Matchup dependent", "High skill cap", "Commitment heavy"]
+    weaknesses: ["Matchup dependent", "High skill cap", "Commitment heavy"],
+    synergies: [
+      { card1: "X-Bow", card2: "Tesla", strength: 90, reason: "Tesla protects X-Bow from tanks" },
+      { card1: "Ice Golem", card2: "Archers", strength: 85, reason: "Ice Golem tanks, Archers DPS" },
+      { card1: "Fireball", card2: "Log", strength: 80, reason: "Spell control and chip damage" },
+      { card1: "Skeletons", card2: "Ice Spirit", strength: 95, reason: "Cycle cards that distract effectively" },
+    ],
+    matchups: [
+      { opponent: "hog-cycle", winRate: 40, difficulty: "unfavored", keyCards: ["Tesla", "Ice Golem"], tacticalTips: ["Defend with Tesla, don't commit X-Bow", "Fireball + Log for chip damage", "Out-cycle their Fireball"] },
+      { opponent: "golem-beatdown", winRate: 30, difficulty: "unfavored", keyCards: ["X-Bow", "Fireball"], tacticalTips: ["Pressure opposite lane constantly", "Never let them build pushes", "Fireball their support troops"] },
+      { opponent: "log-bait", winRate: 48, difficulty: "even", keyCards: ["Archers", "Fireball"], tacticalTips: ["Archers for Princess", "Log their swarms", "Fireball + Log Goblin Gang"] },
+    ],
+    history: [
+      { patch: "Dec 2024", winRate: 51.3, usageRate: 6.8 },
+      { patch: "Nov 2024", winRate: 50.8, usageRate: 6.5 },
+      { patch: "Oct 2024", winRate: 52.1, usageRate: 7.2 },
+      { patch: "Sep 2024", winRate: 53.5, usageRate: 8.1 },
+      { patch: "Aug 2024", winRate: 51.9, usageRate: 7.4 },
+    ]
   }
 ];
