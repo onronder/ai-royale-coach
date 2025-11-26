@@ -8,6 +8,7 @@ import { AnalysisLoader } from "@/components/ui/analysis-loader";
 import { CardMasteryCard } from "./CardMasteryCard";
 import { RefreshCw, Trophy } from "lucide-react";
 import { toast } from "sonner";
+import { ProgressIndicator } from "@/components/ui/progress-indicator";
 
 interface CardMasteryTrackerProps {
   playerTag: string;
@@ -16,7 +17,7 @@ interface CardMasteryTrackerProps {
 export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
   const [sortBy, setSortBy] = useState<'level' | 'usage' | 'winrate'>('level');
   const { data: cards, isLoading, refetch } = useCardMastery(playerTag);
-  const calculateMastery = useCalculateCardMastery();
+  const calculateMastery = useCalculateCardMastery(playerTag);
 
   const handleSync = async () => {
     try {
@@ -70,6 +71,18 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
           Update Mastery
         </Button>
       </div>
+
+      {/* Progress Indicator */}
+      {calculateMastery.progress && (
+        <ProgressIndicator
+          progress={calculateMastery.progress.progress}
+          total={calculateMastery.progress.total}
+          currentStep={calculateMastery.progress.current_step || undefined}
+          status={calculateMastery.progress.status}
+          startedAt={calculateMastery.progress.started_at}
+          variant="default"
+        />
+      )}
 
       {/* Mastery Summary */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

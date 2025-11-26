@@ -30,19 +30,46 @@ serve(async (req) => {
       });
     }
 
+    // Helper function to update progress
+    const updateProgress = async (progress: number, total: number, currentStep: string, status = 'running') => {
+      await supabase.from('operation_progress').upsert({
+        user_id: user.id,
+        player_tag: playerTag,
+        operation_type: 'card_mastery_calculation',
+        status,
+        progress,
+        total,
+        current_step: currentStep,
+        started_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,player_tag,operation_type',
+        ignoreDuplicates: false,
+      });
+    };
+
+    // Initialize progress tracking
+    await updateProgress(0, 100, 'Starting calculation...');
+
     // Fetch battle log
+    await updateProgress(10, 100, 'Fetching battle history...');
+    
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
       body: { endpoint: `players/${encodeURIComponent(playerTag)}/battlelog` }
     });
 
     if (battleError || !battles) {
+      await updateProgress(0, 100, 'Failed to fetch battles', 'failed');
       throw new Error('Failed to fetch battle log');
     }
 
+    await updateProgress(20, 100, 'Processing battles...');
+
     // Aggregate card stats
     const cardStats = new Map<number, any>();
+    const totalBattles = battles.length;
     
-    for (const battle of battles) {
+    for (let i = 0; i < battles.length; i++) {
+      const battle = battles[i];
       if (!battle.team || !battle.team[0] || !battle.team[0].cards) continue;
       
       const isWin = battle.team[0].crowns > (battle.opponent?.[0]?.crowns || 0);
@@ -83,7 +110,15 @@ serve(async (req) => {
           });
         }
       }
+
+      // Update progress periodically (every 5 battles)
+      if (i % 5 === 0) {
+        const progressPercent = 20 + Math.floor((i / totalBattles) * 40); // 20-60%
+        await updateProgress(progressPercent, 100, `Processing battle ${i + 1}/${totalBattles}...`);
+      }
     }
+
+    await updateProgress(60, 100, 'Calculating mastery levels...');
 
     // Calculate mastery levels and prepare upserts
     const upsertPromises = Array.from(cardStats.values()).map(stats => {
@@ -130,7 +165,11 @@ serve(async (req) => {
       });
     });
 
+    await updateProgress(80, 100, 'Saving mastery data...');
+    
     await Promise.all(upsertPromises);
+
+    await updateProgress(100, 100, 'Completed!', 'completed');
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -141,6 +180,34 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in calculate-card-mastery:', error);
+    
+    // Try to update progress to failed state
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (authHeader) {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user } } = await supabase.auth.getUser(token);
+        
+        if (user) {
+          const { playerTag } = await req.json();
+          await supabase.from('operation_progress').upsert({
+            user_id: user.id,
+            player_tag: playerTag,
+            operation_type: 'card_mastery_calculation',
+            status: 'failed',
+            progress: 0,
+            total: 100,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          });
+        }
+      }
+    } catch (progressError) {
+      console.error('Failed to update progress:', progressError);
+    }
+    
     return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : 'Unknown error' 
     }), {

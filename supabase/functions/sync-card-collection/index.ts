@@ -29,7 +29,29 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Helper function to update progress
+    const updateProgress = async (progress: number, total: number, currentStep: string, status = 'running') => {
+      await supabase.from('operation_progress').upsert({
+        user_id: userId,
+        player_tag: playerTag,
+        operation_type: 'card_collection_sync',
+        status,
+        progress,
+        total,
+        current_step: currentStep,
+        started_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,player_tag,operation_type',
+        ignoreDuplicates: false,
+      });
+    };
+
+    // Initialize progress tracking
+    await updateProgress(0, 100, 'Starting sync...');
+
     // Fetch player data from Clash Royale API
+    await updateProgress(10, 100, 'Fetching player data...');
+    
     const normalizedTag = playerTag.replace('#', '');
     const response = await fetch(
       `https://proxy.royaleapi.dev/v1/players/%23${normalizedTag}`,
@@ -41,6 +63,7 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      await updateProgress(0, 100, 'Failed to fetch player data', 'failed');
       throw new Error(`Clash Royale API error: ${response.status}`);
     }
 
@@ -48,9 +71,13 @@ serve(async (req) => {
     const cards = playerData.cards || [];
 
     console.log(`Syncing ${cards.length} cards for player ${playerTag}`);
+    
+    await updateProgress(30, 100, `Syncing ${cards.length} cards...`);
 
     // Upsert each card into the collection
-    for (const card of cards) {
+    const totalCards = cards.length;
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
       const { error } = await supabase
         .from('card_collection')
         .upsert({
@@ -72,7 +99,15 @@ serve(async (req) => {
       if (error) {
         console.error(`Error upserting card ${card.name}:`, error);
       }
+
+      // Update progress every 10 cards
+      if (i % 10 === 0) {
+        const progressPercent = 30 + Math.floor((i / totalCards) * 50); // 30-80%
+        await updateProgress(progressPercent, 100, `Synced ${i + 1}/${totalCards} cards...`);
+      }
     }
+
+    await updateProgress(85, 100, 'Updating leaderboard...');
 
     // Also sync player to leaderboard
     const { error: leaderboardError } = await supabase
@@ -93,6 +128,8 @@ serve(async (req) => {
       console.error('Error updating leaderboard:', leaderboardError);
     }
 
+    await updateProgress(100, 100, 'Sync completed!', 'completed');
+
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -104,6 +141,29 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in sync-card-collection:', error);
+    
+    // Try to update progress to failed state
+    try {
+      const { playerTag, userId } = await req.json();
+      if (playerTag && userId) {
+        const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+        const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+        
+        await supabase.from('operation_progress').upsert({
+          user_id: userId,
+          player_tag: playerTag,
+          operation_type: 'card_collection_sync',
+          status: 'failed',
+          progress: 0,
+          total: 100,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    } catch (progressError) {
+      console.error('Failed to update progress:', progressError);
+    }
+    
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
