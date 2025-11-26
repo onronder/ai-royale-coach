@@ -24,6 +24,8 @@ import { TournamentList } from "@/components/tournaments/TournamentList";
 import { ClanSearch } from "@/components/clans/ClanSearch";
 import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
+import { DeckStatsDashboard } from "@/components/analytics/DeckStatsDashboard";
+import { CardMasteryTracker } from "@/components/mastery/CardMasteryTracker";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -113,7 +115,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
           {/* Enhanced Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-10 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
             <TabsTrigger 
               value="overview" 
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
@@ -141,6 +143,13 @@ const Dashboard = () => {
             >
               <Wrench className="mr-1 h-4 w-4" />
               <span className="hidden sm:inline">Builder</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics"
+              className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground font-rajdhani font-semibold"
+            >
+              <TrendingUp className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
             <TabsTrigger 
               value="collection"
@@ -395,6 +404,25 @@ const Dashboard = () => {
                   userId={user.id}
                 />
               )}
+            </PageTransition>
+          </TabsContent>
+
+          <TabsContent value="analytics" className="mt-6">
+            <PageTransition delay={100}>
+              <Tabs defaultValue="deckstats" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="deckstats">Deck Stats</TabsTrigger>
+                  <TabsTrigger value="mastery">Card Mastery</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="deckstats" className="mt-6">
+                  <DeckStatsDashboard playerTag={playerTag!} />
+                </TabsContent>
+                
+                <TabsContent value="mastery" className="mt-6">
+                  <CardMasteryTracker playerTag={playerTag!} />
+                </TabsContent>
+              </Tabs>
             </PageTransition>
           </TabsContent>
 
