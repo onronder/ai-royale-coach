@@ -55,7 +55,7 @@ function encodePlayerTag(tag: string): string {
 async function fetchFromClashApi(endpoint: string): Promise<any> {
   console.log(`Fetching from Clash Royale API: ${endpoint}`);
   
-  const response = await fetch(`https://api.clashroyale.com/v1${endpoint}`, {
+  const response = await fetch(`https://proxy.royaleapi.dev/v1${endpoint}`, {
     headers: {
       'Authorization': `Bearer ${CLASH_API_KEY}`,
       'Accept': 'application/json',
