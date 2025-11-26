@@ -41,6 +41,54 @@ export type Database = {
         }
         Relationships: []
       }
+      card_collection: {
+        Row: {
+          card_count: number
+          card_id: number
+          card_level: number
+          card_name: string
+          created_at: string | null
+          elixir_cost: number | null
+          icon_url: string | null
+          id: string
+          max_level: number
+          player_tag: string
+          rarity: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          card_count?: number
+          card_id: number
+          card_level: number
+          card_name: string
+          created_at?: string | null
+          elixir_cost?: number | null
+          icon_url?: string | null
+          id?: string
+          max_level: number
+          player_tag: string
+          rarity: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          card_count?: number
+          card_id?: number
+          card_level?: number
+          card_name?: string
+          created_at?: string | null
+          elixir_cost?: number | null
+          icon_url?: string | null
+          id?: string
+          max_level?: number
+          player_tag?: string
+          rarity?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -98,6 +146,45 @@ export type Database = {
           name?: string
           playstyle?: string
           tips?: string | null
+        }
+        Relationships: []
+      }
+      leaderboard_entries: {
+        Row: {
+          arena_name: string | null
+          clan_name: string | null
+          clan_tag: string | null
+          created_at: string | null
+          id: string
+          last_synced_at: string | null
+          player_name: string
+          player_tag: string
+          trophies: number
+          updated_at: string | null
+        }
+        Insert: {
+          arena_name?: string | null
+          clan_name?: string | null
+          clan_tag?: string | null
+          created_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          player_name: string
+          player_tag: string
+          trophies: number
+          updated_at?: string | null
+        }
+        Update: {
+          arena_name?: string | null
+          clan_name?: string | null
+          clan_tag?: string | null
+          created_at?: string | null
+          id?: string
+          last_synced_at?: string | null
+          player_name?: string
+          player_tag?: string
+          trophies?: number
+          updated_at?: string | null
         }
         Relationships: []
       }
