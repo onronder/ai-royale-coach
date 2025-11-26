@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Minus, Target, Shield, Zap } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState } from 'react';
+import { MatchupIndicator } from './MatchupIndicator';
 
 interface DeckComparisonViewProps {
   isVisible: boolean;
@@ -293,10 +294,19 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
         </div>
       </div>
 
+      {/* Matchup Analysis */}
+      <MatchupIndicator
+        deck1Name={deck1.name}
+        deck2Name={deck2.name}
+        deck1Matchup={deck1.matchups.find(m => m.opponent === deck2.id)}
+        deck2Matchup={deck2.matchups.find(m => m.opponent === deck1.id)}
+        isVisible={isVisible}
+      />
+
       {/* Key Differences Summary */}
       <Card className={`p-6 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 transition-all duration-700 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`} style={{ transitionDelay: '400ms' }}>
+      }`} style={{ transitionDelay: '600ms' }}>
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-5 w-5 text-primary" />
           <h4 className="font-rajdhani font-bold text-lg text-foreground">Key Differences</h4>
