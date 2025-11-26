@@ -29,6 +29,25 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // Helper function to check for cancellation
+    const checkCancellation = async () => {
+      try {
+        const { data } = await supabase
+          .from('operation_progress')
+          .select('status')
+          .eq('user_id', userId)
+          .eq('player_tag', playerTag)
+          .eq('operation_type', 'card_collection_sync')
+          .eq('status', 'cancelled')
+          .maybeSingle();
+        
+        return data !== null;
+      } catch (error) {
+        console.error('Error checking cancellation:', error);
+        return false;
+      }
+    };
+
     // Helper function to update progress
     const updateProgress = async (progress: number, total: number, currentStep: string, status = 'running') => {
       await supabase.from('operation_progress').upsert({
@@ -49,6 +68,16 @@ serve(async (req) => {
     // Initialize progress tracking
     await updateProgress(0, 100, 'Starting sync...');
 
+    // Check for cancellation
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     // Fetch player data from Clash Royale API
     await updateProgress(10, 100, 'Fetching player data...');
     
@@ -67,6 +96,16 @@ serve(async (req) => {
       throw new Error(`Clash Royale API error: ${response.status}`);
     }
 
+    // Check for cancellation
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     const playerData = await response.json();
     const cards = playerData.cards || [];
 
@@ -77,6 +116,16 @@ serve(async (req) => {
     // Upsert each card into the collection
     const totalCards = cards.length;
     for (let i = 0; i < cards.length; i++) {
+      // Check for cancellation every 10 cards
+      if (i % 10 === 0 && await checkCancellation()) {
+        console.log('Operation cancelled by user');
+        await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+        return new Response(
+          JSON.stringify({ success: false, message: 'Operation cancelled' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
+
       const card = cards[i];
       const { error } = await supabase
         .from('card_collection')

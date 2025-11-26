@@ -30,6 +30,25 @@ serve(async (req) => {
       });
     }
 
+    // Helper function to check for cancellation
+    const checkCancellation = async () => {
+      try {
+        const { data } = await supabase
+          .from('operation_progress')
+          .select('status')
+          .eq('user_id', user.id)
+          .eq('player_tag', playerTag)
+          .eq('operation_type', 'card_mastery_calculation')
+          .eq('status', 'cancelled')
+          .maybeSingle();
+        
+        return data !== null;
+      } catch (error) {
+        console.error('Error checking cancellation:', error);
+        return false;
+      }
+    };
+
     // Helper function to update progress
     const updateProgress = async (progress: number, total: number, currentStep: string, status = 'running') => {
       await supabase.from('operation_progress').upsert({
@@ -50,6 +69,16 @@ serve(async (req) => {
     // Initialize progress tracking
     await updateProgress(0, 100, 'Starting calculation...');
 
+    // Check for cancellation
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     // Fetch battle log
     await updateProgress(10, 100, 'Fetching battle history...');
     
@@ -60,6 +89,16 @@ serve(async (req) => {
     if (battleError || !battles) {
       await updateProgress(0, 100, 'Failed to fetch battles', 'failed');
       throw new Error('Failed to fetch battle log');
+    }
+
+    // Check for cancellation
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
 
     await updateProgress(20, 100, 'Processing battles...');
@@ -115,7 +154,27 @@ serve(async (req) => {
       if (i % 5 === 0) {
         const progressPercent = 20 + Math.floor((i / totalBattles) * 40); // 20-60%
         await updateProgress(progressPercent, 100, `Processing battle ${i + 1}/${totalBattles}...`);
+        
+        // Check for cancellation every 5 battles
+        if (await checkCancellation()) {
+          console.log('Operation cancelled by user');
+          await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+          return new Response(
+            JSON.stringify({ success: false, message: 'Operation cancelled' }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+          );
+        }
       }
+    }
+
+    // Check for cancellation
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
 
     await updateProgress(60, 100, 'Calculating mastery levels...');
@@ -164,6 +223,16 @@ serve(async (req) => {
         onConflict: 'user_id,card_id'
       });
     });
+
+    // Check for cancellation before saving
+    if (await checkCancellation()) {
+      console.log('Operation cancelled by user');
+      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
+      return new Response(
+        JSON.stringify({ success: false, message: 'Operation cancelled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
 
     await updateProgress(80, 100, 'Saving mastery data...');
     
