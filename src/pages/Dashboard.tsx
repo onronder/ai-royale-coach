@@ -10,6 +10,7 @@ import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Zap, Users } from
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
+import { usePlayerAnalysis } from "@/hooks/usePlayerAnalysis";
 import { formatDistanceToNow } from "date-fns";
 
 const Dashboard = () => {
@@ -19,6 +20,7 @@ const Dashboard = () => {
   
   const { data: player, isLoading: playerLoading, error: playerError } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError } = useClashRoyaleBattles(playerTag || null);
+  const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -135,10 +137,36 @@ const Dashboard = () => {
               <Card className="bg-card-elevated">
                 <CardHeader>
                   <CardTitle>AI Coach Summary</CardTitle>
-                  <CardDescription>Top insights from your AI coach</CardDescription>
+                  <CardDescription>Your personalized performance analysis</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">AI analysis coming soon...</p>
+                  {analysisLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-4/6" />
+                    </div>
+                  ) : analysisError ? (
+                    <p className="text-sm text-muted-foreground">Unable to generate analysis. Please try again later.</p>
+                  ) : analysis ? (
+                    <div className="space-y-4">
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <p className="text-sm whitespace-pre-wrap">{analysis.analysis}</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 pt-3 border-t">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-primary">{analysis.stats.winRate}%</p>
+                          <p className="text-xs text-muted-foreground">Win Rate</p>
+                        </div>
+                        <div className="text-center">
+                          <p className={`text-2xl font-bold ${parseFloat(analysis.stats.avgTrophyChange) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {parseFloat(analysis.stats.avgTrophyChange) >= 0 ? '+' : ''}{analysis.stats.avgTrophyChange}
+                          </p>
+                          <p className="text-xs text-muted-foreground">Avg Trophy Δ</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
                 </CardContent>
               </Card>
             </div>
