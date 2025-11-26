@@ -69,11 +69,11 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   if (!analysis) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Archetype Detection */}
-      <Card>
+      <Card className="bg-gradient-to-br from-card/80 to-card/40 backdrop-blur border-primary/20 shadow-glow">
         <CardHeader>
-          <CardTitle>Deck Archetype</CardTitle>
+          <CardTitle className="font-rajdhani text-xl">Deck Archetype</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <ArchetypeTag 
@@ -81,43 +81,55 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
             name={analysis.archetype.name}
             size="lg"
           />
-          <p className="text-sm text-muted-foreground">{analysis.archetype.tips}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{analysis.archetype.tips}</p>
         </CardContent>
       </Card>
 
       {/* Win Rate Chart */}
       {analysis.archetypeWinRates.length > 0 && (
-        <WinRateChart data={analysis.archetypeWinRates} />
+        <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <WinRateChart data={analysis.archetypeWinRates} />
+        </div>
       )}
 
       {/* Strengths & Weaknesses */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card>
+      <div className="grid md:grid-cols-2 gap-4 animate-slide-up" style={{ animationDelay: '200ms' }}>
+        <Card className="bg-card/50 backdrop-blur border-chart-1/30 hover:border-chart-1/50 transition-colors">
           <CardHeader>
-            <CardTitle className="text-green-500">Strengths</CardTitle>
+            <CardTitle className="flex items-center gap-2 font-rajdhani">
+              <span className="text-chart-1">✓</span>
+              <span className="bg-gradient-to-r from-chart-1 to-chart-1/70 bg-clip-text text-transparent">
+                Strengths
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {analysis.strengths.map((strength, idx) => (
-                <li key={idx} className="text-sm flex gap-2">
-                  <span className="text-green-500">✓</span>
-                  <span>{strength}</span>
+                <li key={idx} className="text-sm flex gap-3 items-start group">
+                  <span className="text-chart-1 text-lg flex-shrink-0 group-hover:scale-110 transition-transform">✓</span>
+                  <span className="text-foreground/90 leading-relaxed">{strength}</span>
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur border-chart-3/30 hover:border-chart-3/50 transition-colors">
           <CardHeader>
-            <CardTitle className="text-red-500">Weaknesses</CardTitle>
+            <CardTitle className="flex items-center gap-2 font-rajdhani">
+              <span className="text-chart-3">✗</span>
+              <span className="bg-gradient-to-r from-chart-3 to-chart-3/70 bg-clip-text text-transparent">
+                Weaknesses
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {analysis.weaknesses.map((weakness, idx) => (
-                <li key={idx} className="text-sm flex gap-2">
-                  <span className="text-red-500">✗</span>
-                  <span>{weakness}</span>
+                <li key={idx} className="text-sm flex gap-3 items-start group">
+                  <span className="text-chart-3 text-lg flex-shrink-0 group-hover:scale-110 transition-transform">✗</span>
+                  <span className="text-foreground/90 leading-relaxed">{weakness}</span>
                 </li>
               ))}
             </ul>
@@ -127,16 +139,21 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
 
       {/* Recommendations */}
       {analysis.recommendations.length > 0 && (
-        <Card>
+        <Card className="bg-gradient-to-br from-accent/10 to-accent/5 backdrop-blur border-accent/30 animate-slide-up" style={{ animationDelay: '300ms' }}>
           <CardHeader>
-            <CardTitle>Recommendations</CardTitle>
+            <CardTitle className="flex items-center gap-2 font-rajdhani">
+              <span className="text-accent text-xl">💡</span>
+              <span className="bg-gradient-accent bg-clip-text text-transparent">
+                AI Recommendations
+              </span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {analysis.recommendations.map((rec, idx) => (
-                <li key={idx} className="text-sm flex gap-2">
-                  <span className="text-primary">•</span>
-                  <span>{rec}</span>
+                <li key={idx} className="text-sm flex gap-3 items-start group">
+                  <span className="text-accent font-bold flex-shrink-0 group-hover:scale-110 transition-transform">→</span>
+                  <span className="text-foreground/90 leading-relaxed">{rec}</span>
                 </li>
               ))}
             </ul>

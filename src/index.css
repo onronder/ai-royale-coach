@@ -72,6 +72,13 @@ All colors MUST be HSL.
     
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Chart colors for data visualization */
+    --chart-1: 142 76% 36%; /* Success green */
+    --chart-2: 47 96% 53%; /* Warning yellow */
+    --chart-3: 24 95% 53%; /* Danger red */
+    --chart-4: 221 83% 53%; /* Info blue */
+    --chart-5: 280 100% 70%; /* Purple accent */
   }
 }
 
