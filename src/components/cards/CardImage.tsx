@@ -27,8 +27,32 @@ export function CardImage({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  const rarityColors = {
+    common: 'border-border',
+    rare: 'border-accent/50',
+    epic: 'border-primary/50',
+    legendary: 'border-[hsl(280_80%_60%)]',
+    champion: 'border-gold'
+  };
+
+  const rarityGlow = {
+    common: '',
+    rare: 'hover:shadow-accent-glow',
+    epic: 'hover:shadow-glow',
+    legendary: 'hover:shadow-[0_0_20px_hsl(280_80%_60%/0.4)]',
+    champion: 'hover:shadow-[0_0_20px_hsl(45_100%_55%/0.4)]'
+  };
+
+  const rarity = card.rarity?.toLowerCase() || 'common';
+
   return (
-    <div className={cn("relative rounded-lg overflow-hidden bg-card border border-border", sizeClasses[size], className)}>
+    <div className={cn(
+      "relative rounded-lg overflow-hidden bg-card border-2 transition-all hover:-translate-y-1 group",
+      sizeClasses[size],
+      rarityColors[rarity as keyof typeof rarityColors],
+      rarityGlow[rarity as keyof typeof rarityGlow],
+      className
+    )}>
       {!imageLoaded && !imageError && (
         <Skeleton className="absolute inset-0" />
       )}
@@ -43,7 +67,7 @@ export function CardImage({
           alt={card.name}
           loading="lazy"
           className={cn(
-            "w-full h-full object-cover transition-opacity duration-300",
+            "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
             imageLoaded ? "opacity-100" : "opacity-0"
           )}
           onLoad={() => setImageLoaded(true)}
@@ -52,19 +76,19 @@ export function CardImage({
       )}
 
       {showLevel && (
-        <div className="absolute bottom-1 right-1 bg-primary text-primary-foreground text-xs font-bold rounded px-1.5 py-0.5">
+        <div className="absolute bottom-1 right-1 bg-primary text-primary-foreground text-xs font-bold font-rajdhani rounded px-2 py-0.5 shadow-glow">
           {card.level}
         </div>
       )}
 
       {showElixir && card.elixirCost !== undefined && (
-        <div className="absolute top-1 left-1 bg-secondary text-secondary-foreground text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+        <div className="absolute top-1 left-1 bg-gradient-primary text-primary-foreground text-xs font-bold font-rajdhani rounded-full w-7 h-7 flex items-center justify-center shadow-glow">
           {card.elixirCost}
         </div>
       )}
 
       {card.evolutionLevel && (
-        <div className="absolute top-1 right-1 bg-accent text-accent-foreground text-xs font-bold rounded px-1 py-0.5">
+        <div className="absolute top-1 right-1 bg-gradient-legendary text-primary-foreground text-xs font-bold font-rajdhani rounded px-2 py-0.5 animate-pulse-glow">
           EVO
         </div>
       )}
