@@ -1,13 +1,15 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { AnimatedCounter } from './AnimatedCounter';
 import { Card } from '@/components/ui/card';
-import { Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, GitCompare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { sampleDecks } from '@/data/sampleDecks';
 import type { SampleDeck } from '@/data/sampleDecks';
+import { DeckComparisonView } from './DeckComparisonView';
 
 export function DemoSection() {
   const { ref, isVisible } = useScrollAnimation(0.2);
@@ -44,6 +46,39 @@ export function DemoSection() {
     warning: 'border-warning/20 hover:border-warning/50',
   };
 
+  const renderCardWithTooltip = (card: typeof selectedDeck.cards[0], deckColor: string) => (
+    <TooltipProvider key={card.name}>
+      <Tooltip delayDuration={200}>
+        <TooltipTrigger asChild>
+          <div 
+            className={`aspect-square rounded-lg bg-gradient-to-br from-${deckColor}/20 to-accent/20 border border-${deckColor}/30 flex items-center justify-center text-4xl hover:scale-110 hover:shadow-glow transition-all duration-300 cursor-help`}
+          >
+            {card.emoji}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-card border-border p-3">
+          <div className="space-y-1">
+            <p className="font-rajdhani font-bold text-foreground">{card.name}</p>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-primary flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                {card.elixir}
+              </span>
+              <span className={`font-semibold ${
+                card.rarity === 'Legendary' ? 'text-warning' :
+                card.rarity === 'Epic' ? 'text-accent' :
+                card.rarity === 'Rare' ? 'text-primary' : 'text-muted-foreground'
+              }`}>
+                {card.rarity}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">{card.role}</p>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
     <section ref={ref} className="py-20 px-4 relative overflow-hidden">
       <div className="container mx-auto max-w-6xl">
@@ -57,11 +92,12 @@ export function DemoSection() {
         </div>
 
         <Tabs defaultValue={sampleDecks[0].id} className="w-full" onValueChange={(value) => {
+          if (value === 'compare') return; // Handle comparison tab separately
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
           {/* Deck Archetype Tabs */}
-          <TabsList className={`grid w-full grid-cols-2 md:grid-cols-4 mb-8 bg-card/50 transition-all duration-500 ${
+          <TabsList className={`grid w-full grid-cols-3 md:grid-cols-5 mb-8 bg-card/50 transition-all duration-500 ${
             isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
           }`}>
             {sampleDecks.map((deck, idx) => (
@@ -74,6 +110,14 @@ export function DemoSection() {
                 {deck.stats.archetype}
               </TabsTrigger>
             ))}
+            <TabsTrigger 
+              value="compare"
+              className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-accent/20 data-[state=active]:to-primary/20"
+              style={{ transitionDelay: isVisible ? `${sampleDecks.length * 100}ms` : '0ms' }}
+            >
+              <GitCompare className="h-4 w-4 mr-1" />
+              Compare
+            </TabsTrigger>
           </TabsList>
 
           {/* Deck Content */}
@@ -96,14 +140,14 @@ export function DemoSection() {
                     {deck.cards.map((card, idx) => (
                       <div 
                         key={card.name}
-                        className={`aspect-square rounded-lg bg-gradient-to-br from-${deck.color}/20 to-accent/20 border border-${deck.color}/30 flex items-center justify-center text-4xl hover:scale-110 hover:shadow-glow transition-all duration-300 ${
+                        className={`transition-all duration-300 ${
                           isVisible ? 'opacity-100' : 'opacity-0'
                         }`}
                         style={{ 
                           transitionDelay: isVisible ? `${idx * 50}ms` : '0ms'
                         }}
                       >
-                        {card.emoji}
+                        {renderCardWithTooltip(card, deck.color)}
                       </div>
                     ))}
                   </div>
@@ -174,6 +218,11 @@ export function DemoSection() {
               </div>
             </TabsContent>
           ))}
+
+          {/* Comparison Tab */}
+          <TabsContent value="compare" className="mt-0">
+            <DeckComparisonView isVisible={isVisible} />
+          </TabsContent>
         </Tabs>
       </div>
     </section>
