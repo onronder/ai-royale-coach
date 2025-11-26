@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.sync-card-collection]
 verify_jwt = false
+
+[functions.analyze-deck-builder]
+verify_jwt = false

@@ -116,6 +116,104 @@ export type Database = {
         }
         Relationships: []
       }
+      clan_join_requests: {
+        Row: {
+          clan_id: string
+          created_at: string | null
+          id: string
+          message: string | null
+          player_name: string
+          player_tag: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clan_id: string
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          player_name: string
+          player_tag: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clan_id?: string
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          player_name?: string
+          player_tag?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clan_join_requests_clan_id_fkey"
+            columns: ["clan_id"]
+            isOneToOne: false
+            referencedRelation: "clans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clans: {
+        Row: {
+          badge_id: number | null
+          clan_tag: string
+          created_at: string | null
+          description: string | null
+          id: string
+          last_synced_at: string | null
+          leader_name: string | null
+          leader_tag: string | null
+          location: string | null
+          member_count: number | null
+          name: string
+          required_trophies: number | null
+          type: string | null
+          updated_at: string | null
+          war_trophies: number | null
+        }
+        Insert: {
+          badge_id?: number | null
+          clan_tag: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          last_synced_at?: string | null
+          leader_name?: string | null
+          leader_tag?: string | null
+          location?: string | null
+          member_count?: number | null
+          name: string
+          required_trophies?: number | null
+          type?: string | null
+          updated_at?: string | null
+          war_trophies?: number | null
+        }
+        Update: {
+          badge_id?: number | null
+          clan_tag?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          last_synced_at?: string | null
+          leader_name?: string | null
+          leader_tag?: string | null
+          location?: string | null
+          member_count?: number | null
+          name?: string
+          required_trophies?: number | null
+          type?: string | null
+          updated_at?: string | null
+          war_trophies?: number | null
+        }
+        Relationships: []
+      }
       deck_archetypes: {
         Row: {
           countered_by: string[] | null
@@ -235,6 +333,220 @@ export type Database = {
           email?: string | null
           id?: string
           preferred_language?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      saved_decks: {
+        Row: {
+          archetype: string | null
+          avg_elixir: number | null
+          cards: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          meta_score: number | null
+          name: string
+          synergy_score: number | null
+          updated_at: string | null
+          usage_count: number | null
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          archetype?: string | null
+          avg_elixir?: number | null
+          cards: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          meta_score?: number | null
+          name: string
+          synergy_score?: number | null
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          archetype?: string | null
+          avg_elixir?: number | null
+          cards?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          meta_score?: number | null
+          name?: string
+          synergy_score?: number | null
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: []
+      }
+      tournament_brackets: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          match_number: number
+          player1_id: string | null
+          player1_score: number | null
+          player2_id: string | null
+          player2_score: number | null
+          round_number: number
+          status: string
+          tournament_id: string
+          winner_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          match_number: number
+          player1_id?: string | null
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_score?: number | null
+          round_number: number
+          status?: string
+          tournament_id: string
+          winner_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          match_number?: number
+          player1_id?: string | null
+          player1_score?: number | null
+          player2_id?: string | null
+          player2_score?: number | null
+          round_number?: number
+          status?: string
+          tournament_id?: string
+          winner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_brackets_player1_id_fkey"
+            columns: ["player1_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_brackets_player2_id_fkey"
+            columns: ["player2_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_brackets_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_brackets_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_registrations: {
+        Row: {
+          id: string
+          is_eliminated: boolean | null
+          player_name: string
+          player_tag: string
+          ranking: number | null
+          registered_at: string | null
+          tournament_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_eliminated?: boolean | null
+          player_name: string
+          player_tag: string
+          ranking?: number | null
+          registered_at?: string | null
+          tournament_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_eliminated?: boolean | null
+          player_name?: string
+          player_tag?: string
+          ranking?: number | null
+          registered_at?: string | null
+          tournament_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_registrations_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          entry_fee: number
+          id: string
+          max_participants: number
+          name: string
+          prize_pool: number
+          start_date: string
+          status: string
+          tournament_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          entry_fee?: number
+          id?: string
+          max_participants: number
+          name: string
+          prize_pool?: number
+          start_date: string
+          status?: string
+          tournament_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          entry_fee?: number
+          id?: string
+          max_participants?: number
+          name?: string
+          prize_pool?: number
+          start_date?: string
+          status?: string
+          tournament_type?: string
           updated_at?: string | null
         }
         Relationships: []

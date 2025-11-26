@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles } from "lucide-react";
+import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -17,6 +17,9 @@ import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { StatCard } from "@/components/stats/StatCard";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
+import { TournamentList } from "@/components/tournaments/TournamentList";
+import { ClanSearch } from "@/components/clans/ClanSearch";
+import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 const Dashboard = () => {
@@ -80,29 +83,41 @@ const Dashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-9 text-xs">
             <TabsTrigger value="overview">
-              <Trophy className="mr-2 h-4 w-4" />
+              <Trophy className="mr-1 h-3 w-3" />
               Overview
             </TabsTrigger>
             <TabsTrigger value="matches">
-              <Swords className="mr-2 h-4 w-4" />
+              <Swords className="mr-1 h-3 w-3" />
               Matches
             </TabsTrigger>
             <TabsTrigger value="deck">
-              <Target className="mr-2 h-4 w-4" />
+              <Target className="mr-1 h-3 w-3" />
               Deck
             </TabsTrigger>
             <TabsTrigger value="leaderboard">
-              <TrendingUp className="mr-2 h-4 w-4" />
+              <TrendingUp className="mr-1 h-3 w-3" />
               Leaderboard
             </TabsTrigger>
             <TabsTrigger value="collection">
-              <Sparkles className="mr-2 h-4 w-4" />
+              <Sparkles className="mr-1 h-3 w-3" />
               Cards
             </TabsTrigger>
+            <TabsTrigger value="tournaments">
+              <Award className="mr-1 h-3 w-3" />
+              Tournaments
+            </TabsTrigger>
+            <TabsTrigger value="clans">
+              <UserPlus className="mr-1 h-3 w-3" />
+              Clans
+            </TabsTrigger>
+            <TabsTrigger value="builder">
+              <Wrench className="mr-1 h-3 w-3" />
+              Builder
+            </TabsTrigger>
             <TabsTrigger value="coach">
-              <MessageSquare className="mr-2 h-4 w-4" />
+              <MessageSquare className="mr-1 h-3 w-3" />
               Coach
             </TabsTrigger>
           </TabsList>
@@ -280,6 +295,26 @@ const Dashboard = () => {
 
           <TabsContent value="leaderboard" className="mt-6">
             <LeaderboardView userClanTag={player?.clan?.tag} />
+          </TabsContent>
+
+          <TabsContent value="tournaments" className="mt-6">
+            <TournamentList onSelectTournament={(id) => console.log('Tournament:', id)} />
+          </TabsContent>
+
+          <TabsContent value="clans" className="mt-6">
+            <ClanSearch 
+              onSelectClan={(clan) => console.log('Clan:', clan)} 
+              userPlayerTag={playerTag}
+            />
+          </TabsContent>
+
+          <TabsContent value="builder" className="mt-6">
+            {player?.cards && user && (
+              <DeckBuilder 
+                availableCards={player.cards} 
+                userId={user.id}
+              />
+            )}
           </TabsContent>
 
           <TabsContent value="coach" className="mt-6">
