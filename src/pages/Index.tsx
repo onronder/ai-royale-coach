@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Target, TrendingUp, Sparkles } from "lucide-react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { Shield, Target, TrendingUp, Sparkles, Zap, Users } from "lucide-react";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -42,95 +44,151 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar user={user} />
+
+      {/* Animated Background Pattern */}
+      <div className="fixed inset-0 -z-10 opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px),
+                           repeating-linear-gradient(90deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px)`
+        }}></div>
+      </div>
+
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <section className="relative overflow-hidden flex-1">
         <div className="absolute inset-0 bg-gradient-surface"></div>
-        <div className="relative container mx-auto px-4 py-20">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm text-primary font-medium">AI-Powered Coaching</span>
+        
+        <div className="relative container mx-auto px-4 py-20 md:py-32">
+          <div className="max-w-4xl mx-auto text-center space-y-8 animate-slide-up">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary/10 border border-primary/30 shadow-glow animate-pulse-glow">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <span className="text-sm font-rajdhani font-semibold text-primary uppercase tracking-wide">
+                AI-Powered Coaching Platform
+              </span>
             </div>
             
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
-                Level Up Your
+            {/* Main Heading */}
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold font-rajdhani tracking-tight">
+              <span className="bg-gradient-primary bg-clip-text text-transparent inline-block animate-float">
+                DOMINATE
               </span>
               <br />
-              <span className="text-foreground">Clash Royale Game</span>
+              <span className="text-foreground">THE ARENA</span>
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get personalized AI coaching, deck analysis, and strategic insights to dominate the arena
+            {/* Subheading */}
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              AI-powered analysis, strategic insights, and personalized coaching to take your Clash Royale game to the next level
             </p>
 
-            <Card className="bg-card-elevated shadow-glow border-primary/20">
+            {/* Player Count Badge */}
+            <div className="flex items-center justify-center gap-2 text-primary">
+              <Users className="h-5 w-5" />
+              <span className="font-rajdhani font-semibold">Join 10,000+ competitive players</span>
+            </div>
+
+            {/* CTA Card */}
+            <Card className="max-w-xl mx-auto bg-card-elevated shadow-primary-glow border-primary/30 hover:border-primary/50 transition-all">
               <CardHeader>
-                <CardTitle className="text-center">Enter Your Player Tag</CardTitle>
-                <CardDescription className="text-center">
-                  Find your tag in-game: Profile → Settings
+                <CardTitle className="text-2xl font-rajdhani">Start Your Analysis</CardTitle>
+                <CardDescription className="text-base">
+                  Enter your player tag to unlock AI insights
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="flex gap-2">
-                  <Input
-                    placeholder="#ABC123XYZ"
-                    value={playerTag}
-                    onChange={(e) => setPlayerTag(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button type="submit" className="bg-gradient-primary hover:shadow-glow">
-                    Analyze
-                  </Button>
-                </form>
-                {!user && (
-                  <div className="mt-4 text-center">
-                    <Button variant="link" onClick={() => navigate("/auth")}>
-                      Sign in to get started
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-1 relative">
+                      <Input
+                        placeholder="#ABC123XYZ"
+                        value={playerTag}
+                        onChange={(e) => setPlayerTag(e.target.value)}
+                        className="h-12 text-lg bg-input border-border/50 focus:border-primary"
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      size="lg"
+                      className="h-12 px-8 bg-gradient-primary hover:shadow-primary-glow font-rajdhani font-semibold text-base"
+                    >
+                      <Zap className="mr-2 h-5 w-5" />
+                      Analyze
                     </Button>
                   </div>
-                )}
+                  {!user && (
+                    <p className="text-sm text-muted-foreground">
+                      New here?{" "}
+                      <button
+                        type="button"
+                        onClick={() => navigate("/auth")}
+                        className="text-primary hover:underline font-semibold"
+                      >
+                        Create your free account
+                      </button>
+                    </p>
+                  )}
+                </form>
               </CardContent>
             </Card>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="bg-card hover:bg-card-elevated transition-colors">
-            <CardHeader>
-              <Shield className="h-12 w-12 text-primary mb-4" />
-              <CardTitle>Smart Analysis</CardTitle>
-              <CardDescription>
-                AI-powered insights from your battle history and deck composition
-              </CardDescription>
-            </CardHeader>
-          </Card>
+      <section className="py-20 bg-card/50 border-t border-border">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4">
+              POWERED BY AI
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Advanced machine learning algorithms analyze every aspect of your gameplay
+            </p>
+          </div>
 
-          <Card className="bg-card hover:bg-card-elevated transition-colors">
-            <CardHeader>
-              <Target className="h-12 w-12 text-accent mb-4" />
-              <CardTitle>Deck Optimization</CardTitle>
-              <CardDescription>
-                Get personalized deck recommendations based on your playstyle
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-glow hover:-translate-y-1 border-border/50 hover:border-primary/30">
+              <CardHeader className="space-y-4">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Shield className="h-7 w-7 text-primary" />
+                </div>
+                <CardTitle className="text-2xl font-rajdhani">Smart Analysis</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  Deep AI insights from your battle history, deck synergies, and win patterns
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-          <Card className="bg-card hover:bg-card-elevated transition-colors">
-            <CardHeader>
-              <TrendingUp className="h-12 w-12 text-success mb-4" />
-              <CardTitle>Performance Tracking</CardTitle>
-              <CardDescription>
-                Track your progress and win rate improvements over time
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-accent-glow hover:-translate-y-1 border-border/50 hover:border-accent/30">
+              <CardHeader className="space-y-4">
+                <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Target className="h-7 w-7 text-accent" />
+                </div>
+                <CardTitle className="text-2xl font-rajdhani">Deck Optimization</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  Meta-aware recommendations tailored to your playstyle and trophy range
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-victory hover:-translate-y-1 border-border/50 hover:border-success/30">
+              <CardHeader className="space-y-4">
+                <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <TrendingUp className="h-7 w-7 text-success" />
+                </div>
+                <CardTitle className="text-2xl font-rajdhani">Performance Tracking</CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  Real-time stats, win rate analytics, and progression insights over time
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <Footer />
     </div>
   );
 };

@@ -68,57 +68,111 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-primary">AI Royal</h1>
-            <p className="text-sm text-muted-foreground">Player: {playerTag}</p>
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm shadow-md">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Crown className="h-6 w-6 text-primary" />
+            <div>
+              <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYAL</h1>
+              <p className="text-xs text-muted-foreground">#{playerTag}</p>
+            </div>
           </div>
-          <Button variant="outline" onClick={handleSignOut}>
+          
+          {/* Quick Stats */}
+          {player && (
+            <div className="hidden md:flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-primary" />
+                <span className="font-rajdhani font-semibold">{player.trophies.toLocaleString()}</span>
+              </div>
+              {battles && (
+                <div className="flex items-center gap-2">
+                  <Swords className="h-4 w-4 text-success" />
+                  <span className="font-rajdhani font-semibold">
+                    {((battles.filter(b => {
+                      const playerTeam = b.team.find(p => p.tag === playerTag);
+                      return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                    }).length / battles.length) * 100).toFixed(0)}% WR
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          <Button variant="outline" size="sm" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-9 text-xs">
-            <TabsTrigger value="overview">
-              <Trophy className="mr-1 h-3 w-3" />
-              Overview
+          {/* Enhanced Tab Navigation */}
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
+            >
+              <Trophy className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Stats</span>
             </TabsTrigger>
-            <TabsTrigger value="matches">
-              <Swords className="mr-1 h-3 w-3" />
-              Matches
+            <TabsTrigger 
+              value="matches"
+              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
+            >
+              <Swords className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Matches</span>
             </TabsTrigger>
-            <TabsTrigger value="deck">
-              <Target className="mr-1 h-3 w-3" />
-              Deck
+            <TabsTrigger 
+              value="deck"
+              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
+            >
+              <Target className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Deck</span>
             </TabsTrigger>
-            <TabsTrigger value="leaderboard">
-              <TrendingUp className="mr-1 h-3 w-3" />
-              Leaderboard
+            <TabsTrigger 
+              value="builder"
+              className="data-[state=active]:bg-gradient-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-accent-glow font-rajdhani font-semibold"
+            >
+              <Wrench className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Builder</span>
             </TabsTrigger>
-            <TabsTrigger value="collection">
-              <Sparkles className="mr-1 h-3 w-3" />
-              Cards
+            <TabsTrigger 
+              value="collection"
+              className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground font-rajdhani font-semibold"
+            >
+              <Sparkles className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Cards</span>
             </TabsTrigger>
-            <TabsTrigger value="tournaments">
-              <Award className="mr-1 h-3 w-3" />
-              Tournaments
+            <TabsTrigger 
+              value="leaderboard"
+              className="data-[state=active]:bg-gradient-gold data-[state=active]:text-gold-foreground font-rajdhani font-semibold"
+            >
+              <TrendingUp className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Ranks</span>
             </TabsTrigger>
-            <TabsTrigger value="clans">
-              <UserPlus className="mr-1 h-3 w-3" />
-              Clans
+            <TabsTrigger 
+              value="tournaments"
+              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
+            >
+              <Award className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Tourneys</span>
             </TabsTrigger>
-            <TabsTrigger value="builder">
-              <Wrench className="mr-1 h-3 w-3" />
-              Builder
+            <TabsTrigger 
+              value="clans"
+              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
+            >
+              <UserPlus className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Clans</span>
             </TabsTrigger>
-            <TabsTrigger value="coach">
-              <MessageSquare className="mr-1 h-3 w-3" />
-              Coach
+            <TabsTrigger 
+              value="coach"
+              className="data-[state=active]:bg-gradient-accent data-[state=active]:text-accent-foreground data-[state=active]:shadow-accent-glow font-rajdhani font-semibold"
+            >
+              <MessageSquare className="mr-1 h-4 w-4" />
+              <span className="hidden sm:inline">Coach</span>
             </TabsTrigger>
           </TabsList>
 
