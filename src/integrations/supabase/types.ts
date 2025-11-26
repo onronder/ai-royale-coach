@@ -68,6 +68,39 @@ export type Database = {
         }
         Relationships: []
       }
+      deck_archetypes: {
+        Row: {
+          countered_by: string[] | null
+          counters: string[] | null
+          created_at: string | null
+          id: string
+          key_cards: string[]
+          name: string
+          playstyle: string
+          tips: string | null
+        }
+        Insert: {
+          countered_by?: string[] | null
+          counters?: string[] | null
+          created_at?: string | null
+          id?: string
+          key_cards: string[]
+          name: string
+          playstyle: string
+          tips?: string | null
+        }
+        Update: {
+          countered_by?: string[] | null
+          counters?: string[] | null
+          created_at?: string | null
+          id?: string
+          key_cards?: string[]
+          name?: string
+          playstyle?: string
+          tips?: string | null
+        }
+        Relationships: []
+      }
       player_profiles: {
         Row: {
           created_at: string | null
