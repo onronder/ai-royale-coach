@@ -8,6 +8,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Shield, Target, TrendingUp, Sparkles, Zap, Users } from "lucide-react";
 import { toast } from "sonner";
+import { DemoSection } from "@/components/landing/DemoSection";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ const Index = () => {
       <Navbar user={user} />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden flex-1">
+      <section className="relative overflow-hidden flex-1 animated-gradient-bg">
         <div className="absolute inset-0 bg-gradient-surface"></div>
         
         <div className="relative container mx-auto px-4 py-20 md:py-32">
@@ -128,19 +130,36 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-card/50 border-t border-border">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4">
-              POWERED BY AI
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Advanced machine learning algorithms analyze every aspect of your gameplay
-            </p>
-          </div>
+      {/* Demo Section */}
+      <DemoSection />
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {/* Features Section */}
+      <FeaturesSection />
+
+      <Footer />
+    </div>
+  );
+};
+
+function FeaturesSection() {
+  const { ref: ref1, isVisible: isVisible1 } = useScrollAnimation(0.2);
+  const { ref: ref2, isVisible: isVisible2 } = useScrollAnimation(0.2);
+  const { ref: ref3, isVisible: isVisible3 } = useScrollAnimation(0.2);
+
+  return (
+    <section className="py-20 bg-card/50 border-t border-border">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4">
+            POWERED BY AI
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Advanced machine learning algorithms analyze every aspect of your gameplay
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div ref={ref1} className={`opacity-0 ${isVisible1 ? 'animate-fade-in-up' : ''}`}>
             <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-glow hover:-translate-y-1 border-border/50 hover:border-primary/30">
               <CardHeader className="space-y-4">
                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -152,7 +171,9 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
 
+          <div ref={ref2} className={`opacity-0 ${isVisible2 ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '150ms' }}>
             <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-accent-glow hover:-translate-y-1 border-border/50 hover:border-accent/30">
               <CardHeader className="space-y-4">
                 <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -164,7 +185,9 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
 
+          <div ref={ref3} className={`opacity-0 ${isVisible3 ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '300ms' }}>
             <Card className="group bg-card hover:bg-card-elevated transition-all hover:shadow-victory hover:-translate-y-1 border-border/50 hover:border-success/30">
               <CardHeader className="space-y-4">
                 <div className="w-14 h-14 rounded-xl bg-success/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -178,11 +201,9 @@ const Index = () => {
             </Card>
           </div>
         </div>
-      </section>
-
-      <Footer />
-    </div>
+      </div>
+    </section>
   );
-};
+}
 
 export default Index;
