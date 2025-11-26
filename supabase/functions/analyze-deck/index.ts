@@ -1,5 +1,6 @@
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,7 +12,7 @@ interface DeckAnalysisRequest {
   battles: any[];
 }
 
-Deno.serve(async (req) => {
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -185,7 +186,7 @@ Keep each point to 1 sentence. Be specific about card interactions and matchups.
   } catch (error) {
     console.error('Error in analyze-deck:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
