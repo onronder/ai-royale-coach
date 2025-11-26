@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardImage } from "./CardImage";
 import { Sparkles, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
+import { useCreateNotification } from "@/hooks/useNotifications";
 
 interface CardCollectionItem {
   id: string;
@@ -48,6 +49,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(0);
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
+  const { mutate: createNotification } = useCreateNotification();
 
   useEffect(() => {
     fetchCollection();
@@ -102,6 +104,16 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
       } else {
         toast.success('Card collection synced successfully!', { id: 'card-collection-sync' });
+        
+        // Save to notification history
+        createNotification({
+          player_tag: playerTag,
+          type: 'sync',
+          title: 'Card Collection Synced',
+          message: 'Your card collection has been updated with the latest data from Clash Royale',
+          icon_name: 'sparkles'
+        });
+        
         // Refetch after sync
         setTimeout(() => {
           fetchCollection();

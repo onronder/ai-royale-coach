@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useCreateNotification } from "./useNotifications";
 
 export interface CardMastery {
   id: string;
@@ -50,6 +51,7 @@ export const useCardMastery = (playerTag: string) => {
 
 export const useCalculateCardMastery = () => {
   const queryClient = useQueryClient();
+  const { mutate: createNotification } = useCreateNotification();
   
   return useMutation({
     mutationFn: async (playerTag: string) => {
@@ -65,6 +67,15 @@ export const useCalculateCardMastery = () => {
     onSuccess: (_, playerTag) => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', playerTag] });
       toast.success('Card mastery calculated successfully!', { id: 'card-mastery-calc' });
+      
+      // Save to notification history
+      createNotification({
+        player_tag: playerTag,
+        type: 'calculation',
+        title: 'Card Mastery Calculated',
+        message: 'Your card mastery levels have been updated with the latest data',
+        icon_name: 'sparkles'
+      });
     },
     onError: (error) => {
       toast.error('Failed to calculate card mastery', { id: 'card-mastery-calc' });
