@@ -1,10 +1,10 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
+import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -29,6 +29,7 @@ import { AchievementDashboard } from "@/components/achievements/AchievementDashb
 import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
+import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -45,6 +46,9 @@ const Dashboard = () => {
   const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
+  
+  // Player profiles hook for saving/updating last seen
+  const { updateLastSeen } = usePlayerProfiles(user?.id || null);
 
   // Fetch additional data for AI coach context
   const [savedDecks, setSavedDecks] = useState<any[]>([]);
@@ -149,6 +153,13 @@ const Dashboard = () => {
     fetchPlayerContext();
   }, [user, playerTag]);
 
+  // Save/update player tag in player_profiles when visiting
+  useEffect(() => {
+    if (user?.id && playerTag) {
+      updateLastSeen(playerTag);
+    }
+  }, [user?.id, playerTag, updateLastSeen]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -219,9 +230,15 @@ const Dashboard = () => {
               onRefresh={handleRefreshData} 
               isRefreshing={isRefreshing} 
             />
+            <Link to="/select-player">
+              <Button variant="ghost" size="sm">
+                <UserCog className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Switch</span>
+              </Button>
+            </Link>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              <span className="hidden sm:inline">Sign Out</span>
             </Button>
           </div>
         </div>
@@ -491,7 +508,11 @@ const Dashboard = () => {
 
           <TabsContent value="leaderboard" className="mt-6">
             <PageTransition delay={100}>
-              <LeaderboardView userClanTag={player?.clan?.tag} />
+              <LeaderboardView 
+                userClanTag={player?.clan?.tag} 
+                userId={user?.id}
+                currentPlayerTag={playerTag}
+              />
             </PageTransition>
           </TabsContent>
 
