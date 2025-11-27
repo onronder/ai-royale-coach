@@ -33,6 +33,9 @@ export function FloatingCoachButton({
   cardCollection 
 }: FloatingCoachButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Normalize playerTag to ensure consistent format (with #)
+  const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
 
   return (
     <>
@@ -59,7 +62,7 @@ export function FloatingCoachButton({
       <CoachChatPanel
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        playerTag={playerTag}
+        playerTag={normalizedPlayerTag}
         playerStats={playerStats}
         recentMatches={recentMatches}
         savedDecks={savedDecks}

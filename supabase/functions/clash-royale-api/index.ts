@@ -113,7 +113,7 @@ async function getCachedOrFetch(
   try {
     const freshData = await fetchFn();
 
-    // Update player_cache table
+    // Update player_cache table with detailed logging
     const cacheUpdate: any = {
       player_tag: normalizedTag,
       updated_at: now.toISOString(),
@@ -125,13 +125,27 @@ async function getCachedOrFetch(
       cacheUpdate.battles_data = freshData;
     }
 
-    // Upsert to cache (fire and forget)
-    supabase
+    console.log(`Attempting to cache ${type} data for tag: ${normalizedTag}`);
+    
+    // Upsert to cache with await and detailed logging
+    const { data: cacheResult, error: cacheError } = await supabase
       .from('player_cache')
       .upsert(cacheUpdate, { onConflict: 'player_tag' })
-      .then(({ error }: any) => {
-        if (error) console.error('Failed to cache data:', error);
+      .select();
+    
+    if (cacheError) {
+      console.error(`Failed to cache ${type} data for ${normalizedTag}:`, {
+        error: cacheError,
+        code: cacheError.code,
+        message: cacheError.message,
+        details: cacheError.details
       });
+    } else {
+      console.log(`Successfully cached ${type} data for ${normalizedTag}:`, {
+        recordsAffected: cacheResult?.length || 0,
+        playerTag: normalizedTag
+      });
+    }
 
     return { data: freshData, cacheHit: false, stale: false };
   } catch (error) {

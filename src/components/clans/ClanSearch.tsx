@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Search, Users, Trophy, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ClanDetail } from "./ClanDetail";
 
 interface Clan {
   id: string;
@@ -30,6 +31,23 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [clans, setClans] = useState<Clan[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedClan, setSelectedClan] = useState<Clan | null>(null);
+  const [playerTag, setPlayerTag] = useState<string>("");
+  const [playerName, setPlayerName] = useState<string>("");
+
+  useEffect(() => {
+    // Get player info from session or localStorage
+    const getPlayerInfo = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (session.session?.user) {
+        const tag = userPlayerTag || localStorage.getItem('player_tag') || '';
+        const name = localStorage.getItem('player_name') || 'Player';
+        setPlayerTag(tag);
+        setPlayerName(name);
+      }
+    };
+    getPlayerInfo();
+  }, [userPlayerTag]);
 
   const searchClans = async () => {
     if (!searchQuery.trim()) {
@@ -111,7 +129,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
           ) : (
             clans.map((clan) => (
               <Card key={clan.id} className="hover:bg-muted/50 transition-colors cursor-pointer"
-                onClick={() => onSelectClan(clan)}>
+                onClick={() => setSelectedClan(clan)}>
                 <CardContent className="pt-4 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
@@ -149,6 +167,14 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
               </Card>
             ))
           )}
+
+          <ClanDetail
+            clan={selectedClan}
+            isOpen={!!selectedClan}
+            onClose={() => setSelectedClan(null)}
+            playerTag={playerTag}
+            playerName={playerName}
+          />
         </div>
       </CardContent>
     </Card>
