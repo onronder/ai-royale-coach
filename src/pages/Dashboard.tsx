@@ -521,14 +521,6 @@ const Dashboard = () => {
                 </Card>
               </div>
             </PageTransition>
-
-            <MatchDetailView
-              battle={selectedBattle}
-              playerTag={playerTag!}
-              open={matchDetailOpen}
-              onOpenChange={setMatchDetailOpen}
-              onOpenCoach={() => setCoachOpen(true)}
-            />
           </TabsContent>
 
           <TabsContent value="deck" className="mt-6">
@@ -631,6 +623,15 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Match Detail Dialog - Outside tabs so it always renders */}
+      <MatchDetailView
+        battle={selectedBattle}
+        playerTag={playerTag!}
+        open={matchDetailOpen}
+        onOpenChange={setMatchDetailOpen}
+        onOpenCoach={() => setCoachOpen(true)}
+      />
 
       {/* Floating AI Coach Widget */}
       {player && battles && (
