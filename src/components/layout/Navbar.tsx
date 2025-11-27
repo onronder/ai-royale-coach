@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut } from "lucide-react";
+import { Crown, LogOut, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
@@ -21,10 +21,13 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm">
+    <nav className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <Crown className="h-6 w-6 text-primary transition-transform group-hover:scale-110" />
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gold/30 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Crown className="h-7 w-7 text-gold transition-all group-hover:scale-110 relative z-10" />
+          </div>
           <span className="text-xl font-bold font-rajdhani text-foreground">
             AI ROYAL
           </span>
@@ -39,17 +42,17 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
           )}
           {showAuth && (
             user ? (
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign Out
               </Button>
             ) : (
               <Button 
-                variant="default" 
+                variant="golden" 
                 size="sm" 
                 onClick={() => navigate("/auth")}
-                className="shadow-glow"
               >
+                <Sparkles className="mr-2 h-4 w-4" />
                 Sign In
               </Button>
             )
