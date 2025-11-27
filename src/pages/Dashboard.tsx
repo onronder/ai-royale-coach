@@ -17,6 +17,7 @@ import { StatCard } from "@/components/stats/StatCard";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { statTooltips } from "@/components/ui/tooltip-helpers";
 import { PageTransition, StatCardSkeleton, MatchCardSkeleton } from "@/components/ui/loading-states";
+import { DashboardLoader } from "@/components/ui/page-loader";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
 import { TournamentList } from "@/components/tournaments/TournamentList";
 import { ClanSearch } from "@/components/clans/ClanSearch";
@@ -217,7 +218,14 @@ const Dashboard = () => {
     toast.success("Signed out successfully");
   };
 
-  if (!playerTag || !user) return null;
+  // Show loading state while checking authentication
+  if (!user) {
+    return <DashboardLoader />;
+  }
+
+  if (!playerTag) {
+    return <DashboardLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-background arena-bg">
