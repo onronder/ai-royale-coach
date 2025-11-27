@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Award, Trophy, RefreshCw, Target, Clock, Zap, Brain, TrendingUp, GraduationCap, Crown } from 'lucide-react';
 import { useAchievements, useAchievementProgress, useSyncAchievements } from '@/hooks/useAchievements';
-import { AnalysisLoader } from '@/components/ui/analysis-loader';
+import { DataLoader } from '@/components/ui/data-loader';
 import * as LucideIcons from 'lucide-react';
 
 interface AchievementDashboardProps {
@@ -56,7 +56,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
   };
 
   if (achievementsLoading || progressLoading) {
-    return <AnalysisLoader message="Loading your achievements..." />;
+    return <DataLoader context="achievements" variant="card" />;
   }
 
   return (

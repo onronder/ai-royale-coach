@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +10,7 @@ import { toast } from "sonner";
 import { useCreateNotification } from "@/hooks/useNotifications";
 import { useOperationProgress } from "@/hooks/useOperationProgress";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
+import { DataLoader } from "@/components/ui/data-loader";
 
 interface CardCollectionItem {
   id: string;
@@ -148,11 +148,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
           <CardTitle>Card Collection</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-40 w-full" />
-            ))}
-          </div>
+          <DataLoader context="collection" variant="inline" />
         </CardContent>
       </Card>
     );

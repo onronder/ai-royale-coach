@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { Trophy, Target, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,13 +56,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   };
 
   if (isLoading) {
-    return (
-      <AnalysisLoader
-        message="🏆 Predicting win rates across trophy ranges..."
-        icon="crown"
-        showProgress
-      />
-    );
+    return <DataLoader context="analytics" variant="card" customMessage="Predicting win rates across trophy ranges..." />;
   }
 
   return (

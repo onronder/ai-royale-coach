@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCardMastery, useCalculateCardMastery } from "@/hooks/useCardMastery";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { CardMasteryCard } from "./CardMasteryCard";
 import { RefreshCw, Trophy } from "lucide-react";
 import { toast } from "sonner";
@@ -31,7 +31,7 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
   };
 
   if (isLoading) {
-    return <AnalysisLoader message="Loading card mastery data..." icon="crown" variant="card" />;
+    return <DataLoader context="mastery" variant="card" />;
   }
 
   const sortedCards = [...(cards || [])].sort((a, b) => {

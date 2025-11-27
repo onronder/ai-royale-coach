@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDeckStats, useTrackDeckStats } from "@/hooks/useDeckStats";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, TrendingUp, Trophy, Swords } from "lucide-react";
 import { DeckTrendChart } from "./DeckTrendChart";
@@ -26,7 +26,7 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
   };
 
   if (isLoading) {
-    return <AnalysisLoader message="Loading deck statistics..." icon="shield" variant="card" />;
+    return <DataLoader context="analytics" variant="card" />;
   }
 
   const aggregated = data?.aggregated || [];
