@@ -11,6 +11,7 @@ import { useCreateNotification } from "@/hooks/useNotifications";
 import { useOperationProgress } from "@/hooks/useOperationProgress";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { DataLoader } from "@/components/ui/data-loader";
+import { getDisplayLevel } from "@/utils/cardLevelCalculator";
 
 interface CardCollectionItem {
   id: string;
@@ -249,7 +250,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                     <div className="space-y-1">
                       <Progress value={progress} className="h-1.5" />
                       <p className="text-xs text-center text-muted-foreground">
-                        {nextLevelReq! - card.card_count} to level {card.card_level + (14 - card.max_level) + 1}
+                        {nextLevelReq! - card.card_count} to level {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
                       </p>
                     </div>
                   ) : (
