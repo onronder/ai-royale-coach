@@ -74,6 +74,13 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
         </Button>
       </div>
 
+      {/* Data Source Info */}
+      <div className="flex flex-wrap gap-2 text-xs">
+        <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
+          All stats calculated from your real battle history
+        </span>
+      </div>
+
       {/* Performance Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

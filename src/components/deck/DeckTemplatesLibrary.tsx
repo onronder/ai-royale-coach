@@ -73,10 +73,21 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
         </div>
       </div>
 
-      {/* Demo Data Disclaimer */}
-      <div className="bg-warning/10 border border-warning/20 rounded-lg p-3">
+      {/* Data Source Disclaimer */}
+      <div className="bg-muted/50 border border-border rounded-lg p-3 space-y-2">
+        <div className="flex flex-wrap gap-2 text-xs">
+          <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
+            Avg Elixir: Real (calculated)
+          </span>
+          <span className="px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30">
+            Difficulty: Estimated
+          </span>
+          <span className="px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
+            Popularity: Admin-set ranking
+          </span>
+        </div>
         <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-warning">Note:</span> Difficulty ratings are estimated based on archetype complexity. Actual performance depends on player skill and card levels.
+          Win rates are calculated from YOUR battle history after you connect your player tag.
         </p>
       </div>
 
