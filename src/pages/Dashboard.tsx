@@ -43,8 +43,8 @@ const Dashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   
-  const { data: player, isLoading: playerLoading, error: playerError, refetch: refetchPlayer } = useClashRoyalePlayer(playerTag || null);
-  const { data: battles, isLoading: battlesLoading, error: battlesError, refetch: refetchBattles } = useClashRoyaleBattles(playerTag || null);
+  const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
+  const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
 
   // Fetch additional data for AI coach context
@@ -56,8 +56,8 @@ const Dashboard = () => {
   const handleRefreshData = async () => {
     setIsRefreshing(true);
     try {
-      await Promise.all([refetchPlayer(), refetchBattles()]);
-      toast.success('Data refreshed');
+      await Promise.all([forceRefreshPlayer(), forceRefreshBattles()]);
+      toast.success('Data refreshed from API');
     } catch (error) {
       toast.error('Failed to refresh data');
     } finally {
