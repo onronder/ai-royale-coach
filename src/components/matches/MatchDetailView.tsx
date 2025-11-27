@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Crown, Swords } from "lucide-react";
+import { Trophy, Crown, Swords, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -22,10 +22,53 @@ interface MatchAnalysis {
   recommendations: string[];
 }
 
+// Trophy celebration component
+function TrophyCelebration({ trophyChange }: { trophyChange: number }) {
+  if (trophyChange <= 0) return null;
+  
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Floating trophies animation */}
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute animate-trophy-float"
+          style={{
+            left: `${15 + i * 18}%`,
+            animationDelay: `${i * 0.15}s`,
+          }}
+        >
+          <Trophy className="w-5 h-5 text-gold drop-shadow-lg" />
+        </div>
+      ))}
+      {/* Sparkle burst */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Sparkles className="w-8 h-8 text-gold animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
 export function MatchDetailView({ battle, playerTag, open, onOpenChange }: MatchDetailViewProps) {
+  const [showCelebration, setShowCelebration] = useState(false);
+  
+  // Normalize player tag
+  const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+  
+  useEffect(() => {
+    if (open && battle) {
+      const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
+      if (playerTeam && (playerTeam.trophyChange || 0) > 0) {
+        setShowCelebration(true);
+        const timer = setTimeout(() => setShowCelebration(false), 2500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [open, battle, normalizedPlayerTag]);
+  
   if (!battle) return null;
 
-  const playerTeam = battle.team.find(p => p.tag === playerTag);
+  const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
   const opponent = battle.opponent[0];
   
   if (!playerTeam || !opponent) return null;
@@ -48,7 +91,10 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto relative">
+        {/* Trophy celebration overlay */}
+        {showCelebration && <TrophyCelebration trophyChange={trophyChange} />}
+        
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <Badge variant={isWin ? "default" : "destructive"} className="text-base">
@@ -60,15 +106,21 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
 
         <div className="space-y-6">
           {/* Battle Summary */}
-          <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
+          <div className={cn(
+            "grid grid-cols-3 gap-4 p-4 rounded-lg relative overflow-hidden transition-all",
+            isWin ? "bg-success/10 border border-success/20" : "bg-muted"
+          )}>
             <div className="text-center">
-              <Crown className="w-6 h-6 mx-auto mb-1 text-primary" />
-              <p className="text-2xl font-bold">{playerTeam.crowns} - {opponent.crowns}</p>
+              <Crown className={cn("w-6 h-6 mx-auto mb-1", isWin ? "text-gold" : "text-primary")} />
+              <p className="text-2xl font-bold font-rajdhani">{playerTeam.crowns} - {opponent.crowns}</p>
               <p className="text-xs text-muted-foreground">Crowns</p>
             </div>
             {trophyChange !== 0 && (
               <div className="text-center">
-                <Trophy className="w-6 h-6 mx-auto mb-1 text-primary" />
+                <Trophy className={cn(
+                  "w-6 h-6 mx-auto mb-1",
+                  trophyChange > 0 ? "text-gold trophy-shimmer" : "text-destructive"
+                )} />
                 <p className={cn(
                   "text-2xl font-bold",
                   trophyChange > 0 ? "text-green-500" : "text-red-500"

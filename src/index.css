@@ -194,6 +194,30 @@
   animation: page-fade-in 0.4s ease-out forwards;
 }
 
+/* Trophy celebration float animation */
+@keyframes trophy-float {
+  0% {
+    opacity: 0;
+    transform: translateY(100%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-100%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200%) scale(0.5);
+  }
+}
+
+.animate-trophy-float {
+  animation: trophy-float 2s ease-out forwards;
+}
+
 @keyframes border-glow {
   0%, 100% {
     border-color: hsl(45 100% 55% / 0.3);
