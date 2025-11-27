@@ -10,7 +10,7 @@ import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { Sparkles, Save, Zap, X, Library, GitCompare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { AdvancedAnalysisTabs } from "./AdvancedAnalysisTabs";
 import { DeckTemplatesLibrary } from "./DeckTemplatesLibrary";
 import { DeckComparison } from "./DeckComparison";
@@ -258,10 +258,10 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
           {/* Analysis Results */}
           {isAnalyzing && (
-            <AnalysisLoader
-              message="🔮 AI is analyzing your deck..."
-              icon="sparkles"
-              showProgress
+            <DataLoader 
+              context="deck-analysis" 
+              variant="card"
+              customMessage="AI is analyzing your deck strategy..."
             />
           )}
 

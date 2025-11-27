@@ -3,7 +3,7 @@ import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataLoader } from "@/components/ui/data-loader";
 import { Trophy, Crown, Swords } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -105,10 +105,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Match Analysis</h3>
             {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-20 w-full" />
-                <Skeleton className="h-20 w-full" />
-              </div>
+              <DataLoader context="match-analysis" variant="inline" />
             ) : analysis ? (
               <div className="space-y-4">
                 <div className="p-4 bg-card rounded-lg border">

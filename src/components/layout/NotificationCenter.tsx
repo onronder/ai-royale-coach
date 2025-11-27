@@ -1,4 +1,4 @@
-import { Bell, Check, CheckCheck, Trash2, Trophy, RefreshCw, Sparkles, Info, AlertCircle } from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2, Trophy, RefreshCw, Sparkles, Info, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -131,8 +131,9 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
         <Separator />
         <ScrollArea className="h-[400px]">
           {isLoading ? (
-            <div className="p-8 text-center text-sm text-muted-foreground">
-              Loading notifications...
+            <div className="flex items-center justify-center gap-2 p-8">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              <span className="text-sm text-muted-foreground">Loading notifications...</span>
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-8 text-center">

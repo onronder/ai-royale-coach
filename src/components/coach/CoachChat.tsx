@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataLoader } from "@/components/ui/data-loader";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Bot, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -229,16 +229,8 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
 
   if (loadingHistory) {
     return (
-      <Card className="h-[600px]">
-        <CardHeader>
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </CardContent>
+      <Card className="h-[600px] flex items-center justify-center">
+        <DataLoader context="coach" variant="inline" customMessage="Loading chat history..." />
       </Card>
     );
   }

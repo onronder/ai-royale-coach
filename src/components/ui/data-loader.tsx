@@ -12,10 +12,14 @@ type LoaderContext =
   | "analytics"
   | "leaderboard"
   | "tournaments"
+  | "tournament-detail"
   | "clans"
   | "achievements"
   | "coach"
   | "syncing"
+  | "notifications"
+  | "match-analysis"
+  | "replacements"
   | "generic";
 
 interface DataLoaderProps {
@@ -90,6 +94,26 @@ const contextConfig: Record<LoaderContext, { icon: typeof Loader2; message: stri
     icon: RefreshCw,
     message: "Syncing with Clash Royale servers...",
     color: "text-accent"
+  },
+  notifications: {
+    icon: Award,
+    message: "Loading notifications...",
+    color: "text-primary"
+  },
+  "tournament-detail": {
+    icon: Trophy,
+    message: "Loading tournament details...",
+    color: "text-gold"
+  },
+  "match-analysis": {
+    icon: Sparkles,
+    message: "AI analyzing match performance...",
+    color: "text-accent"
+  },
+  replacements: {
+    icon: Zap,
+    message: "Finding optimal card replacements...",
+    color: "text-chart-2"
   },
   generic: {
     icon: Database,

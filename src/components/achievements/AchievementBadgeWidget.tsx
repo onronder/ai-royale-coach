@@ -1,8 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Award } from 'lucide-react';
+import { Trophy, Award, Loader2 } from 'lucide-react';
 import { useAchievements, useAchievementProgress } from '@/hooks/useAchievements';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AchievementBadgeWidgetProps {
   playerTag: string;
@@ -16,10 +15,11 @@ export function AchievementBadgeWidget({ playerTag }: AchievementBadgeWidgetProp
     return (
       <Card className="p-4 bg-card/50 backdrop-blur border-primary/20">
         <div className="flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-lg" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-24" />
+          <div className="p-2 rounded-lg bg-primary/20 border border-primary/30 animate-pulse">
+            <Loader2 className="h-6 w-6 text-primary animate-spin" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-muted-foreground">Loading achievements...</p>
           </div>
         </div>
       </Card>
