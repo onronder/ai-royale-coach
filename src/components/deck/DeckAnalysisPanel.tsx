@@ -89,9 +89,14 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
         </CardContent>
       </Card>
 
-      {/* Win Rate Chart */}
+      {/* Win Rate Chart - CALCULATED from real battles */}
       {analysis.archetypeWinRates.length > 0 && (
         <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-xs px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
+              Calculated from your battles
+            </span>
+          </div>
           <WinRateChart data={analysis.archetypeWinRates} />
         </div>
       )}
@@ -141,14 +146,19 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
         </Card>
       </div>
 
-      {/* Recommendations */}
+      {/* Recommendations - AI GENERATED */}
       {analysis.recommendations.length > 0 && (
         <Card className="bg-gradient-to-br from-accent/10 to-accent/5 backdrop-blur border-accent/30 animate-slide-up" style={{ animationDelay: '300ms' }}>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 font-rajdhani">
-              <span className="text-accent text-xl">💡</span>
-              <span className="bg-gradient-accent bg-clip-text text-transparent">
-                AI Recommendations
+            <CardTitle className="flex items-center justify-between font-rajdhani">
+              <div className="flex items-center gap-2">
+                <span className="text-accent text-xl">💡</span>
+                <span className="bg-gradient-accent bg-clip-text text-transparent">
+                  AI Recommendations
+                </span>
+              </div>
+              <span className="text-xs px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30 font-normal">
+                AI Generated
               </span>
             </CardTitle>
           </CardHeader>

@@ -65,6 +65,16 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
       </TabsList>
 
       <TabsContent value="overview" className="space-y-4 mt-4">
+        {/* Data Source Legend */}
+        <div className="flex flex-wrap gap-2 text-xs pb-2 border-b border-border">
+          <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
+            Calculated = From your battles
+          </span>
+          <span className="px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30">
+            AI = Generated analysis
+          </span>
+        </div>
+
         {basicAnalysis && (
           <>
             {basicAnalysis.synergy_score !== null && basicAnalysis.meta_score !== null ? (
@@ -89,7 +99,10 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
 
             <div className="space-y-3">
               <div>
-                <h4 className="font-semibold text-success mb-2">Strengths</h4>
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-success">Strengths</h4>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                </div>
                 <ul className="space-y-1">
                   {basicAnalysis.strengths.map((s, i) => (
                     <li key={i} className="text-sm flex gap-2">
@@ -101,7 +114,10 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               </div>
 
               <div>
-                <h4 className="font-semibold text-destructive mb-2">Weaknesses</h4>
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-destructive">Weaknesses</h4>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                </div>
                 <ul className="space-y-1">
                   {basicAnalysis.weaknesses.map((w, i) => (
                     <li key={i} className="text-sm flex gap-2">
@@ -113,7 +129,10 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               </div>
 
               <div>
-                <h4 className="font-semibold text-primary mb-2">Recommendations</h4>
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-primary">Recommendations</h4>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                </div>
                 <ul className="space-y-1">
                   {basicAnalysis.recommendations.map((r, i) => (
                     <li key={i} className="text-sm flex gap-2">
