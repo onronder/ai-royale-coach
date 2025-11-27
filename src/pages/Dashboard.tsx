@@ -84,9 +84,42 @@ const Dashboard = () => {
     setMatchDetailOpen(true);
   };
 
+  // Fetch player context data for AI coach
   useEffect(() => {
     const fetchPlayerContext = async () => {
       if (!user?.id || !playerTag) return;
+      
+      // Fetch saved decks
+      const { data: decks } = await supabase
+        .from('saved_decks')
+        .select('*')
+        .eq('user_id', user.id);
+      if (decks) setSavedDecks(decks);
+
+      // Fetch card mastery
+      const { data: mastery } = await supabase
+        .from('card_mastery')
+        .select('*')
+        .eq('player_tag', playerTag);
+      if (mastery) setCardMastery(mastery);
+
+      // Fetch achievements
+      const { data: achievementsData } = await supabase
+        .from('user_achievements')
+        .select('*, achievement:achievements(*)')
+        .eq('player_tag', playerTag);
+      if (achievementsData) setAchievements(achievementsData);
+
+      // Fetch card collection
+      const { data: collection } = await supabase
+        .from('card_collection')
+        .select('*')
+        .eq('player_tag', playerTag);
+      if (collection) setCardCollection(collection);
+    };
+
+    fetchPlayerContext();
+  }, [user, playerTag]);
 
   // Auto-sync card collection, card mastery, and deck stats on first visit
   useEffect(() => {
@@ -150,10 +183,6 @@ const Dashboard = () => {
 
     runBackgroundSync();
   }, [user?.id, playerTag]);
-    };
-
-    fetchPlayerContext();
-  }, [user, playerTag]);
 
   // Save/update player tag in player_profiles when visiting
   useEffect(() => {
