@@ -118,6 +118,7 @@ export type Database = {
           card_name: string
           created_at: string | null
           elixir_cost: number | null
+          evolution_level: number | null
           icon_url: string | null
           id: string
           max_level: number
@@ -133,6 +134,7 @@ export type Database = {
           card_name: string
           created_at?: string | null
           elixir_cost?: number | null
+          evolution_level?: number | null
           icon_url?: string | null
           id?: string
           max_level: number
@@ -148,6 +150,7 @@ export type Database = {
           card_name?: string
           created_at?: string | null
           elixir_cost?: number | null
+          evolution_level?: number | null
           icon_url?: string | null
           id?: string
           max_level?: number

@@ -140,6 +140,7 @@ serve(async (req) => {
           rarity: card.rarity || 'Common',
           elixir_cost: card.elixirCost,
           icon_url: card.iconUrls?.medium,
+          evolution_level: card.evolutionLevel || 0,
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id,player_tag,card_id'
