@@ -8,15 +8,19 @@ import { Users, Trophy, Shield, MapPin, Send } from "lucide-react";
 import { toast } from "sonner";
 
 interface Clan {
-  id: string;
+  id?: string;
+  rank?: number;
   clan_tag: string;
   name: string;
-  description: string | null;
-  type: string | null;
-  required_trophies: number;
+  description?: string | null;
+  type?: string | null;
+  required_trophies?: number;
   member_count: number;
-  war_trophies: number;
-  location: string | null;
+  war_trophies?: number;
+  clan_score?: number;
+  clan_war_trophies?: number;
+  location?: string | null;
+  badge_id?: number;
 }
 
 interface ClanDetailProps {
@@ -118,15 +122,15 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
               <Trophy className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Required Trophies</p>
-                <p className="font-semibold">{clan.required_trophies.toLocaleString()}</p>
+                <p className="font-semibold">{(clan.required_trophies || 0).toLocaleString()}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               <Shield className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">War Trophies</p>
-                <p className="font-semibold">{clan.war_trophies.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">{clan.clan_score ? 'Clan Score' : 'War Trophies'}</p>
+                <p className="font-semibold">{(clan.clan_score || clan.war_trophies || 0).toLocaleString()}</p>
               </div>
             </div>
 
@@ -141,7 +145,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
             )}
           </div>
 
-          {clan.type !== 'closed' && (
+          {clan.type !== 'closed' && clan.id && (
             <div className="space-y-3 pt-4 border-t">
               <h3 className="font-semibold">Send Join Request</h3>
               <Textarea
@@ -159,6 +163,14 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
                 <Send className="w-4 h-4 mr-2" />
                 {isSending ? 'Sending...' : 'Send Join Request'}
               </Button>
+            </div>
+          )}
+
+          {clan.type !== 'closed' && !clan.id && (
+            <div className="pt-4 border-t text-center">
+              <p className="text-sm text-muted-foreground">
+                Search for this clan by tag to send a join request
+              </p>
             </div>
           )}
         </div>
