@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles } from "lucide-react";
+import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { usePlayerProfiles, PlayerProfile } from "@/hooks/usePlayerProfiles";
+import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
 import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
+import { AccountComparison } from "./AccountComparison";
+import { cn } from "@/lib/utils";
 
 interface PlayerTagSelectorProps {
   userId: string;
@@ -20,6 +22,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
   const navigate = useNavigate();
   const [newTag, setNewTag] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
   
   const { 
     profiles, 
@@ -73,6 +76,25 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
           {profiles.length}/3 accounts linked
         </Badge>
       </div>
+
+      {/* Compare Button */}
+      {profiles.length >= 2 && (
+        <div className="flex justify-center">
+          <Button
+            variant={showComparison ? "default" : "outline"}
+            onClick={() => setShowComparison(!showComparison)}
+            className="gap-2"
+          >
+            <GitCompare className="h-4 w-4" />
+            {showComparison ? "Hide Comparison" : "Compare Accounts"}
+          </Button>
+        </div>
+      )}
+
+      {/* Comparison View */}
+      {showComparison && profiles.length >= 2 && (
+        <AccountComparison profiles={profiles} />
+      )}
 
       {/* Player Tag Cards */}
       {profiles.length > 0 ? (
@@ -171,6 +193,9 @@ interface PlayerTagCardProps {
 }
 
 function PlayerTagCard({ profile, onSelect, onRemove, isRemoving }: PlayerTagCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
+  
   return (
     <Card 
       className="cursor-pointer transition-all hover:shadow-primary-glow hover:border-primary/50 hover:-translate-y-1 group"
@@ -179,9 +204,18 @@ function PlayerTagCard({ profile, onSelect, onRemove, isRemoving }: PlayerTagCar
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            {/* Avatar/Icon */}
-            <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow flex-shrink-0">
-              <Crown className="h-7 w-7 text-primary-foreground" />
+            {/* Avatar with Clan Badge */}
+            <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow flex-shrink-0 overflow-hidden">
+              {badgeUrl && !imageError ? (
+                <img 
+                  src={badgeUrl} 
+                  alt="Clan badge"
+                  className="w-10 h-10 object-contain"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <Crown className="h-7 w-7 text-primary-foreground" />
+              )}
             </div>
             
             {/* Player Info */}

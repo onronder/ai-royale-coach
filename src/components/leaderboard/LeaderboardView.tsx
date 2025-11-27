@@ -9,7 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataLoader } from "@/components/ui/data-loader";
-import { usePlayerProfiles, PlayerProfile } from "@/hooks/usePlayerProfiles";
+import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
 
 interface LeaderboardEntry {
   id: string;
@@ -153,6 +153,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
               const top100Rank = isInTop100(profile.player_tag);
               const trophies = profile.trophies || 0;
               const estimatedRank = estimateGlobalRank(trophies);
+              const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
               
               return (
                 <div
@@ -164,8 +165,19 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
-                      <Crown className="h-5 w-5 text-primary-foreground" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center overflow-hidden">
+                      {badgeUrl ? (
+                        <img 
+                          src={badgeUrl} 
+                          alt="Clan badge"
+                          className="w-7 h-7 object-contain"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <Crown className="h-5 w-5 text-primary-foreground" />
+                      )}
                     </div>
                     <div>
                       <p className="font-semibold">
