@@ -12,8 +12,20 @@ export interface PlayerProfile {
   // Extended fields from API (populated separately)
   player_name?: string;
   trophies?: number;
+  bestTrophies?: number;
   arena_name?: string;
   clan_name?: string;
+  clan_badge_id?: number;
+  wins?: number;
+  losses?: number;
+  battleCount?: number;
+  threeCrownWins?: number;
+  challengeMaxWins?: number;
+  challengeCardsWon?: number;
+  donations?: number;
+  donationsReceived?: number;
+  warDayWins?: number;
+  expLevel?: number;
 }
 
 export function usePlayerProfiles(userId: string | null) {
@@ -42,13 +54,25 @@ export function usePlayerProfiles(userId: string | null) {
             .maybeSingle();
           
           if (cache?.player_data) {
-            const playerData = cache.player_data as any;
+            const p = cache.player_data as any;
             return {
               ...profile,
-              player_name: playerData.name,
-              trophies: playerData.trophies,
-              arena_name: playerData.arena?.name,
-              clan_name: playerData.clan?.name,
+              player_name: p.name,
+              trophies: p.trophies,
+              bestTrophies: p.bestTrophies,
+              arena_name: p.arena?.name,
+              clan_name: p.clan?.name,
+              clan_badge_id: p.clan?.badgeId,
+              wins: p.wins,
+              losses: p.losses,
+              battleCount: p.battleCount,
+              threeCrownWins: p.threeCrownWins,
+              challengeMaxWins: p.challengeMaxWins,
+              challengeCardsWon: p.challengeCardsWon,
+              donations: p.donations,
+              donationsReceived: p.donationsReceived,
+              warDayWins: p.warDayWins,
+              expLevel: p.expLevel,
             };
           }
           return profile;
@@ -58,17 +82,15 @@ export function usePlayerProfiles(userId: string | null) {
       return enrichedProfiles as PlayerProfile[];
     },
     enabled: !!userId,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 30 * 1000,
   });
 
   const addProfileMutation = useMutation({
     mutationFn: async ({ playerTag, note }: { playerTag: string; note?: string }) => {
       if (!userId) throw new Error('Not authenticated');
       
-      // Normalize the tag
       const normalizedTag = playerTag.replace('#', '').toUpperCase();
       
-      // Check current count
       const { count } = await supabase
         .from('player_profiles')
         .select('*', { count: 'exact', head: true })
@@ -90,7 +112,7 @@ export function usePlayerProfiles(userId: string | null) {
         .single();
       
       if (error) {
-        if (error.code === '23505') { // Unique constraint violation
+        if (error.code === '23505') {
           throw new Error('This player tag is already added to your account');
         }
         throw error;
@@ -131,7 +153,6 @@ export function usePlayerProfiles(userId: string | null) {
       
       const normalizedTag = playerTag.replace('#', '').toUpperCase();
       
-      // First try to update existing
       const { data: existing } = await supabase
         .from('player_profiles')
         .select('id')
@@ -140,13 +161,11 @@ export function usePlayerProfiles(userId: string | null) {
         .maybeSingle();
       
       if (existing) {
-        // Update last_seen_at
         await supabase
           .from('player_profiles')
           .update({ last_seen_at: new Date().toISOString() })
           .eq('id', existing.id);
       } else {
-        // Auto-add if not exists and under limit
         const { count } = await supabase
           .from('player_profiles')
           .select('*', { count: 'exact', head: true })
@@ -179,4 +198,10 @@ export function usePlayerProfiles(userId: string | null) {
     isRemoving: removeProfileMutation.isPending,
     canAddMore: (profilesQuery.data?.length || 0) < 3,
   };
+}
+
+// Helper to get clan badge URL
+export function getClanBadgeUrl(badgeId: number | undefined): string {
+  if (!badgeId) return '';
+  return `https://royaleapi.github.io/cr-api-assets/badges/${badgeId}.png`;
 }
