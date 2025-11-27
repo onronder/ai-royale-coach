@@ -79,14 +79,16 @@ export function PlayerHeaderSkeleton() {
 
 export function PageTransition({ 
   children, 
-  delay = 0 
+  delay = 0,
+  className
 }: { 
   children: React.ReactNode;
   delay?: number;
+  className?: string;
 }) {
   return (
     <div 
-      className="animate-slide-up"
+      className={cn("animate-page-fade-in", className)}
       style={{ animationDelay: `${delay}ms` }}
     >
       {children}
