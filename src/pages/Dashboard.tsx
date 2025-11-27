@@ -228,7 +228,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background arena-bg">
+    <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md shadow-md">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">

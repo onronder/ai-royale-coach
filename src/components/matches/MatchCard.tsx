@@ -27,10 +27,10 @@ export function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
     <Card 
       variant={isWin ? "victory" : "defeat"}
       className={cn(
-        "p-4 cursor-pointer transition-all border-l-4 hover:-translate-y-1 golden-shine",
+        "p-4 cursor-pointer transition-all border-l-4 hover:-translate-y-1 animate-fade-in",
         isWin 
-          ? "border-l-success" 
-          : "border-l-destructive"
+          ? "border-l-success border-glow-victory" 
+          : "border-l-destructive border-glow-defeat"
       )}
       onClick={onClick}
     >

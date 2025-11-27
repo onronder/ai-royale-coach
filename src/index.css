@@ -178,6 +178,22 @@
   }
 }
 
+/* Page fade-in for account switching */
+@keyframes page-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-fade-in {
+  animation: page-fade-in 0.4s ease-out forwards;
+}
+
 @keyframes border-glow {
   0%, 100% {
     border-color: hsl(45 100% 55% / 0.3);
@@ -253,6 +269,32 @@
 /* Animated border glow */
 .border-glow-animated {
   animation: border-glow 2s ease-in-out infinite;
+}
+
+/* Subtle victory border glow - doesn't overlay text */
+.border-glow-victory {
+  box-shadow: 
+    0 0 0 1px hsl(142 70% 45% / 0.3),
+    0 0 12px -2px hsl(142 70% 45% / 0.25);
+  animation: victory-glow 3s ease-in-out infinite;
+}
+
+/* Subtle defeat border glow - doesn't overlay text */
+.border-glow-defeat {
+  box-shadow: 
+    0 0 0 1px hsl(0 70% 50% / 0.3),
+    0 0 12px -2px hsl(0 70% 50% / 0.2);
+  animation: defeat-glow 3s ease-in-out infinite;
+}
+
+@keyframes victory-glow {
+  0%, 100% { box-shadow: 0 0 0 1px hsl(142 70% 45% / 0.3), 0 0 12px -2px hsl(142 70% 45% / 0.25); }
+  50% { box-shadow: 0 0 0 1px hsl(142 70% 45% / 0.5), 0 0 20px -2px hsl(142 70% 45% / 0.35); }
+}
+
+@keyframes defeat-glow {
+  0%, 100% { box-shadow: 0 0 0 1px hsl(0 70% 50% / 0.3), 0 0 12px -2px hsl(0 70% 50% / 0.2); }
+  50% { box-shadow: 0 0 0 1px hsl(0 70% 50% / 0.5), 0 0 20px -2px hsl(0 70% 50% / 0.3); }
 }
 
 /* Floating particles container */
