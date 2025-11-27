@@ -195,13 +195,16 @@ export function DemoSection() {
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Synergy Score</span>
+                        <span className="text-muted-foreground">Deck Complexity</span>
                         <span className={`text-2xl text-${deck.color}`}>
                           {isVisible && selectedDeck.id === deck.id && (
                             <AnimatedCounter end={deck.stats.synergyScore} decimals={1} suffix="/10" delay={600} />
                           )}
                         </span>
                       </div>
+                      <p className="text-xs text-muted-foreground/70 italic mt-2">
+                        * Demo metrics for illustration
+                      </p>
                     </div>
                   </Card>
 

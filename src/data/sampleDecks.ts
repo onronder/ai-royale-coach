@@ -9,7 +9,7 @@ export interface DeckCard {
 export interface DeckStats {
   winRate: number; // DEMO DATA - Not real statistics
   avgElixir: number; // Real calculated value
-  synergyScore: number; // DEMO DATA - Would require battle history
+  synergyScore: number; // DEMO DATA - Represents deck complexity (1-10 scale)
   archetype: string;
 }
 
