@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataLoader } from "@/components/ui/data-loader";
 import { Trophy, Users, Calendar, DollarSign, CheckCircle2 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
@@ -129,11 +129,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
         </DialogHeader>
 
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-32 w-full" />
-          </div>
+          <DataLoader context="tournament-detail" variant="inline" />
         ) : tournament ? (
           <div className="space-y-6">
             <div className="flex items-start justify-between">

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { RefreshCw, TrendingUp, TrendingDown, Zap } from "lucide-react";
 import { toast } from "sonner";
 
@@ -94,13 +94,7 @@ export function CardReplacementSuggester({
   }
 
   if (isLoading) {
-    return (
-      <AnalysisLoader
-        message="🔍 Finding optimal card replacements..."
-        icon="zap"
-        showProgress
-      />
-    );
+    return <DataLoader context="replacements" variant="card" />;
   }
 
   return (

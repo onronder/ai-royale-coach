@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
@@ -362,10 +361,9 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent className="text-primary-foreground">
                   {analysisLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-full bg-primary-foreground/20" />
-                      <Skeleton className="h-4 w-5/6 bg-primary-foreground/20" />
-                      <Skeleton className="h-4 w-4/6 bg-primary-foreground/20" />
+                    <div className="flex items-center gap-3 py-4">
+                      <Sparkles className="h-5 w-5 animate-pulse text-primary-foreground" />
+                      <span className="text-sm text-primary-foreground/80">AI generating your analysis...</span>
                     </div>
                   ) : analysisError ? (
                     <p className="text-sm">Unable to generate analysis. Please try again later.</p>
