@@ -113,37 +113,43 @@ async function getCachedOrFetch(
   try {
     const freshData = await fetchFn();
 
-    // Update player_cache table with detailed logging
+    // Get existing cache to preserve other data
+    const { data: existingCache } = await supabase
+      .from('player_cache')
+      .select('player_data, battles_data')
+      .eq('player_tag', normalizedTag)
+      .maybeSingle();
+
+    // Build cache update preserving existing data
     const cacheUpdate: any = {
       player_tag: normalizedTag,
+      player_data: type === 'player' ? freshData : (existingCache?.player_data || null),
+      battles_data: type === 'battles' ? freshData : (existingCache?.battles_data || null),
       updated_at: now.toISOString(),
+      cached_at: now.toISOString(),
     };
-
-    if (type === 'player') {
-      cacheUpdate.player_data = freshData;
-    } else {
-      cacheUpdate.battles_data = freshData;
-    }
 
     console.log(`Attempting to cache ${type} data for tag: ${normalizedTag}`);
     
     // Upsert to cache with await and detailed logging
-    const { data: cacheResult, error: cacheError } = await supabase
+    const { data: cacheResult, error: upsertError } = await supabase
       .from('player_cache')
       .upsert(cacheUpdate, { onConflict: 'player_tag' })
       .select();
     
-    if (cacheError) {
+    if (upsertError) {
       console.error(`Failed to cache ${type} data for ${normalizedTag}:`, {
-        error: cacheError,
-        code: cacheError.code,
-        message: cacheError.message,
-        details: cacheError.details
+        error: upsertError,
+        code: upsertError.code,
+        message: upsertError.message,
+        details: upsertError.details
       });
     } else {
       console.log(`Successfully cached ${type} data for ${normalizedTag}:`, {
         recordsAffected: cacheResult?.length || 0,
-        playerTag: normalizedTag
+        playerTag: normalizedTag,
+        hasPlayerData: !!cacheUpdate.player_data,
+        hasBattlesData: !!cacheUpdate.battles_data
       });
     }
 
@@ -193,9 +199,27 @@ serve(async (req) => {
       );
     }
 
+    // Support both query params AND POST body for backward compatibility
+    let endpoint: string | null = null;
+    let playerTag: string | null = null;
+
     const url = new URL(req.url);
-    const endpoint = url.searchParams.get('endpoint');
-    const playerTag = url.searchParams.get('playerTag');
+    
+    // First try query params
+    endpoint = url.searchParams.get('endpoint');
+    playerTag = url.searchParams.get('playerTag');
+
+    // If not in query params, try POST body
+    if (!endpoint && req.method === 'POST') {
+      try {
+        const body = await req.json();
+        endpoint = body.endpoint;
+        playerTag = body.playerTag;
+        console.log('Using POST body params:', { endpoint, playerTag });
+      } catch (e) {
+        console.log('No JSON body or parse error:', e);
+      }
+    }
 
     if (!endpoint) {
       throw new Error('Missing endpoint parameter');

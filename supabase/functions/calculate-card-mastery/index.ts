@@ -11,25 +11,42 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Store request body early to avoid "Body already consumed" error
+  let playerTag: string;
   try {
-    const { playerTag } = await req.json();
-    
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const body = await req.json();
+    playerTag = body.playerTag;
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
 
-    // Get user from auth
-    const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
+  // Get user from auth
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+  
+  if (authError || !user) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
     // Helper function to check for cancellation
     const checkCancellation = async () => {
       try {
@@ -79,17 +96,24 @@ serve(async (req) => {
       );
     }
 
-    // Fetch battle log
+    // Fetch battle log using correct endpoint format
     await updateProgress(10, 100, 'Fetching battle history...');
     
+    console.log('Fetching battles for card mastery calculation:', playerTag);
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
-      body: { endpoint: `players/${encodeURIComponent(playerTag)}/battlelog` }
+      body: { 
+        endpoint: 'battles',
+        playerTag: playerTag 
+      }
     });
 
     if (battleError || !battles) {
+      console.error('Failed to fetch battle log:', battleError);
       await updateProgress(0, 100, 'Failed to fetch battles', 'failed');
       throw new Error('Failed to fetch battle log');
     }
+
+    console.log(`Processing ${battles.length} battles for card mastery`);
 
     // Check for cancellation
     if (await checkCancellation()) {
@@ -240,6 +264,8 @@ serve(async (req) => {
 
     await updateProgress(100, 100, 'Completed!', 'completed');
 
+    console.log(`Successfully calculated mastery for ${cardStats.size} cards`);
+
     return new Response(JSON.stringify({ 
       success: true, 
       cards_processed: cardStats.size 
@@ -250,29 +276,20 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in calculate-card-mastery:', error);
     
-    // Try to update progress to failed state
+    // Update progress to failed state using stored playerTag
     try {
-      const authHeader = req.headers.get('Authorization');
-      if (authHeader) {
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        const token = authHeader.replace('Bearer ', '');
-        const { data: { user } } = await supabase.auth.getUser(token);
-        
-        if (user) {
-          const { playerTag } = await req.json();
-          await supabase.from('operation_progress').upsert({
-            user_id: user.id,
-            player_tag: playerTag,
-            operation_type: 'card_mastery_calculation',
-            status: 'failed',
-            progress: 0,
-            total: 100,
-            error: error instanceof Error ? error.message : 'Unknown error',
-          });
-        }
-      }
+      await supabase.from('operation_progress').upsert({
+        user_id: user.id,
+        player_tag: playerTag,
+        operation_type: 'card_mastery_calculation',
+        status: 'failed',
+        progress: 0,
+        total: 100,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }, {
+        onConflict: 'user_id,player_tag,operation_type',
+        ignoreDuplicates: false,
+      });
     } catch (progressError) {
       console.error('Failed to update progress:', progressError);
     }
