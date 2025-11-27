@@ -30,25 +30,24 @@ serve(async (req) => {
 
     if (templatesError) throw templatesError;
 
-    // Calculate meta trends
+    // Calculate real trends from actual data
+    // Note: Without historical snapshots, we can't calculate real trends
+    // This would require storing daily/weekly meta snapshots
     const trends = archetypes.map((arch: any) => {
       const relatedTemplates = templates.filter((t: any) => t.archetype === arch.name);
-      const avgWinRate = relatedTemplates.reduce((sum: number, t: any) => sum + (t.win_rate || 50), 0) / (relatedTemplates.length || 1);
-      const avgUsageRate = relatedTemplates.reduce((sum: number, t: any) => sum + (t.usage_rate || 5), 0) / (relatedTemplates.length || 1);
       
-      // Simulate trend calculation (in production, this would compare historical data)
-      const change7d = (Math.random() - 0.5) * 10;
-      const trend = change7d > 3 ? 'hot' : change7d < -3 ? 'cold' : 'stable';
-      
-      const popularity = relatedTemplates.reduce((sum: number, t: any) => sum + (t.popularity_score || 50), 0) / (relatedTemplates.length || 1);
+      // Count actual usage from templates (real data from DB)
+      const templateCount = relatedTemplates.length;
+      const popularity = relatedTemplates.reduce((sum: number, t: any) => sum + (t.popularity_score || 0), 0) / (relatedTemplates.length || 1);
 
       return {
         archetype: arch.name,
-        win_rate: avgWinRate,
-        usage_rate: avgUsageRate,
-        trend,
-        change_7d: change7d,
+        template_count: templateCount,
         popularity,
+        // Trend calculation requires historical data snapshots
+        trend: 'stable',
+        change_7d: 0,
+        note: 'Historical trend data not available - requires time-series snapshots'
       };
     });
 

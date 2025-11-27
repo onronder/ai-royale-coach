@@ -13,18 +13,21 @@ interface AdvancedAnalysis {
     elixirDistribution: { cost: number; count: number }[];
     tradeScenarios: any[];
   };
-  synergyMatrix: {
-    pairs: any[];
-    overallScore: number;
-    topSynergies: string[];
-    antiSynergies: string[];
+  composition?: {
+    winConditions: string[];
+    defenseCards: string[];
+    cycleCards: string[];
+    spells: string[];
+    missingRoles: string[];
+    balanceNotes: string;
   };
-  matchupPredictions: any[];
+  synergyMatrix: any | null; // Null - requires battle history
+  matchupPredictions: any[] | null; // Null - requires battle history
 }
 
 interface BasicAnalysis {
-  synergy_score: number;
-  meta_score: number;
+  synergy_score: number | null; // Null - requires battle history
+  meta_score: number | null; // Null - requires battle history
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
@@ -51,11 +54,11 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
           <Zap className="w-4 h-4" />
           <span className="hidden sm:inline">Elixir</span>
         </TabsTrigger>
-        <TabsTrigger value="synergies" className="flex items-center gap-2" disabled={!advancedAnalysis}>
+        <TabsTrigger value="synergies" className="flex items-center gap-2" disabled={!advancedAnalysis?.synergyMatrix}>
           <GitMerge className="w-4 h-4" />
           <span className="hidden sm:inline">Synergies</span>
         </TabsTrigger>
-        <TabsTrigger value="matchups" className="flex items-center gap-2" disabled={!advancedAnalysis}>
+        <TabsTrigger value="matchups" className="flex items-center gap-2" disabled={!advancedAnalysis?.matchupPredictions}>
           <Swords className="w-4 h-4" />
           <span className="hidden sm:inline">Matchups</span>
         </TabsTrigger>
@@ -64,16 +67,25 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
       <TabsContent value="overview" className="space-y-4 mt-4">
         {basicAnalysis && (
           <>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-primary">{basicAnalysis.synergy_score}/100</p>
-                <p className="text-sm text-muted-foreground">Synergy Score</p>
+            {basicAnalysis.synergy_score !== null && basicAnalysis.meta_score !== null ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-muted rounded-lg">
+                  <p className="text-3xl font-bold text-primary">{basicAnalysis.synergy_score}/100</p>
+                  <p className="text-sm text-muted-foreground">Synergy Score</p>
+                </div>
+                <div className="text-center p-4 bg-muted rounded-lg">
+                  <p className="text-3xl font-bold text-primary">{basicAnalysis.meta_score}/100</p>
+                  <p className="text-sm text-muted-foreground">Meta Score</p>
+                </div>
               </div>
-              <div className="text-center p-4 bg-muted rounded-lg">
-                <p className="text-3xl font-bold text-primary">{basicAnalysis.meta_score}/100</p>
-                <p className="text-sm text-muted-foreground">Meta Score</p>
+            ) : (
+              <div className="p-4 bg-muted/50 rounded-lg border border-border">
+                <p className="text-sm text-muted-foreground text-center">
+                  📊 <span className="font-semibold">Synergy and Meta scores</span> require your actual battle history to calculate accurately. 
+                  Play some games with this deck to see real performance metrics!
+                </p>
               </div>
-            </div>
+            )}
 
             <div className="space-y-3">
               <div>

@@ -7,9 +7,9 @@ export interface DeckCard {
 }
 
 export interface DeckStats {
-  winRate: number;
-  avgElixir: number;
-  synergyScore: number;
+  winRate: number; // DEMO DATA - Not real statistics
+  avgElixir: number; // Real calculated value
+  synergyScore: number; // DEMO DATA - Would require battle history
   archetype: string;
 }
 
@@ -30,8 +30,8 @@ export interface MatchupData {
 
 export interface HistoricalData {
   patch: string;
-  winRate: number;
-  usageRate: number;
+  winRate: number; // DEMO DATA - Example historical trends
+  usageRate: number; // DEMO DATA - Example historical trends
 }
 
 export interface SampleDeck {
