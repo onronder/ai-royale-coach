@@ -39,25 +39,15 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
 
     setIsLoading(true);
     try {
-      // Search by name or tag
-      let query = supabase
-        .from('clans')
-        .select('*')
-        .order('war_trophies', { ascending: false })
-        .limit(20);
-
-      if (searchQuery.startsWith('#')) {
-        query = query.eq('clan_tag', searchQuery);
-      } else {
-        query = query.ilike('name', `%${searchQuery}%`);
-      }
-
-      const { data, error } = await query;
+      const { data, error } = await supabase.functions.invoke('search-clans', {
+        body: { query: searchQuery }
+      });
 
       if (error) throw error;
-      setClans(data || []);
       
-      if (data?.length === 0) {
+      setClans(data?.clans || []);
+      
+      if (data?.clans?.length === 0) {
         toast.info('No clans found');
       }
     } catch (error) {

@@ -11,15 +11,15 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, playerTag, playerStats, recentMatches } = await req.json();
+    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Build context-aware system prompt
-    const systemPrompt = `You are an expert Clash Royale AI coach. You provide strategic advice, deck recommendations, and gameplay tips.
+    // Build comprehensive context-aware system prompt
+    let systemPrompt = `You are an expert Clash Royale AI coach with full access to the player's profile. You provide strategic advice, deck recommendations, and gameplay tips based on their complete game data.
 
 ${playerStats ? `Player Stats:
 - Trophies: ${playerStats.trophies}
@@ -31,12 +31,23 @@ ${recentMatches ? `Recent Performance:
 - Last 10 matches: ${recentMatches.wins}W-${recentMatches.losses}L
 - Average trophy change: ${recentMatches.avgTrophyChange}` : ''}
 
+${savedDecks?.length > 0 ? `Saved Decks (${savedDecks.length} total):
+${savedDecks.slice(0, 3).map((deck: any, i: number) => `${i + 1}. ${deck.name} - ${deck.win_rate ? deck.win_rate.toFixed(1) + '% WR' : 'No stats yet'}`).join('\n')}` : ''}
+
+${cardMastery?.length > 0 ? `Top Mastered Cards (${cardMastery.length} tracked):
+${cardMastery.slice(0, 5).map((card: any, i: number) => `${i + 1}. ${card.card_name} - Level ${card.mastery_level || 1}, ${card.times_used || 0} uses, ${card.battles_won || 0}W-${card.battles_lost || 0}L`).join('\n')}` : ''}
+
+${achievements?.length > 0 ? `Achievements Unlocked: ${achievements.filter((a: any) => a.unlocked_at).length}/${achievements.length}` : ''}
+
+${cardCollection?.length > 0 ? `Card Collection: ${cardCollection.length} cards tracked` : ''}
+
 Guidelines:
 - Be concise and actionable
-- Focus on specific improvements
-- Reference their actual stats and matches when relevant
+- Focus on specific improvements based on their actual data
+- Reference their saved decks, card mastery, and achievements
+- Suggest deck improvements using cards they've mastered
 - Use gaming terminology but stay professional
-- Suggest concrete deck adjustments or gameplay tactics`;
+- Provide personalized strategies based on their playstyle`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

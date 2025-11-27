@@ -17,9 +17,21 @@ interface FloatingCoachButtonProps {
     losses: number;
     avgTrophyChange: string;
   };
+  savedDecks?: any[];
+  cardMastery?: any[];
+  achievements?: any[];
+  cardCollection?: any[];
 }
 
-export function FloatingCoachButton({ playerTag, playerStats, recentMatches }: FloatingCoachButtonProps) {
+export function FloatingCoachButton({ 
+  playerTag, 
+  playerStats, 
+  recentMatches,
+  savedDecks,
+  cardMastery,
+  achievements,
+  cardCollection 
+}: FloatingCoachButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -50,6 +62,10 @@ export function FloatingCoachButton({ playerTag, playerStats, recentMatches }: F
         playerTag={playerTag}
         playerStats={playerStats}
         recentMatches={recentMatches}
+        savedDecks={savedDecks}
+        cardMastery={cardMastery}
+        achievements={achievements}
+        cardCollection={cardCollection}
       />
     </>
   );

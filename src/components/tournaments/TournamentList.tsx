@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Trophy, Users, Calendar, DollarSign } from "lucide-react";
+import { Trophy, Users, Calendar, DollarSign, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { EmptyState } from "@/components/ui/empty-state";
+import { CreateTournamentForm } from "./CreateTournamentForm";
 
 interface Tournament {
   id: string;
@@ -24,6 +26,7 @@ interface Tournament {
 export function TournamentList({ onSelectTournament }: { onSelectTournament: (id: string) => void }) {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     fetchTournaments();
@@ -88,6 +91,35 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
 
   return (
     <div className="space-y-4">
+      {showCreateForm && (
+        <CreateTournamentForm 
+          onSuccess={() => {
+            setShowCreateForm(false);
+            fetchTournaments();
+          }} 
+        />
+      )}
+
+      {tournaments.length === 0 && !isLoading && !showCreateForm && (
+        <EmptyState
+          icon={Trophy}
+          title="No Tournaments Yet"
+          description="Create your first tournament to get players competing!"
+          variant="compact"
+        />
+      )}
+
+      {!showCreateForm && tournaments.length === 0 && !isLoading && (
+        <Button 
+          onClick={() => setShowCreateForm(true)}
+          className="w-full"
+          variant="outline"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create Tournament
+        </Button>
+      )}
+
       {tournaments.map((tournament) => (
         <Card key={tournament.id} className="hover:shadow-lg transition-shadow cursor-pointer"
           onClick={() => onSelectTournament(tournament.id)}>
@@ -138,13 +170,6 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
         </Card>
       ))}
 
-      {tournaments.length === 0 && (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No tournaments available at the moment
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

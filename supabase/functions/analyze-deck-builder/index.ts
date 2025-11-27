@@ -26,34 +26,7 @@ serve(async (req) => {
     const cardNames = cards.map((c: any) => c.name).join(', ');
     const avgElixir = cards.reduce((sum: number, c: any) => sum + (c.elixirCost || 0), 0) / 8;
 
-    const prompt = `Analyze this Clash Royale deck:
-
-**Cards:** ${cardNames}
-**Average Elixir:** ${avgElixir.toFixed(1)}
-
-Provide a comprehensive analysis with:
-
-1. **Synergy Score** (0-100): How well the cards work together
-2. **Meta Score** (0-100): How viable is this deck in the current meta
-3. **3 Strengths**: What this deck does well
-4. **3 Weaknesses**: What this deck struggles against
-5. **3 Recommendations**: Specific card swaps or strategy adjustments
-
-Format your response exactly like this:
-SYNERGY_SCORE: <number>
-META_SCORE: <number>
-STRENGTHS:
-- <strength 1>
-- <strength 2>
-- <strength 3>
-WEAKNESSES:
-- <weakness 1>
-- <weakness 2>
-- <weakness 3>
-RECOMMENDATIONS:
-- <recommendation 1>
-- <recommendation 2>
-- <recommendation 3>`;
+    const prompt = `Analyze this Clash Royale deck: ${cardNames} (Average Elixir: ${avgElixir.toFixed(1)})`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -66,11 +39,60 @@ RECOMMENDATIONS:
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert Clash Royale deck builder and strategist. Provide detailed, actionable analysis.' 
+            content: 'You are an expert Clash Royale deck builder. Provide detailed, structured analysis.' 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "analyze_deck",
+              description: "Analyze a Clash Royale deck and return structured scores and recommendations",
+              parameters: {
+                type: "object",
+                properties: {
+                  synergy_score: {
+                    type: "integer",
+                    description: "How well cards work together (0-100)",
+                    minimum: 0,
+                    maximum: 100
+                  },
+                  meta_score: {
+                    type: "integer",
+                    description: "How viable in current meta (0-100)",
+                    minimum: 0,
+                    maximum: 100
+                  },
+                  strengths: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 key strengths of the deck",
+                    minItems: 3,
+                    maxItems: 3
+                  },
+                  weaknesses: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 key weaknesses of the deck",
+                    minItems: 3,
+                    maxItems: 3
+                  },
+                  recommendations: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 concrete improvement suggestions",
+                    minItems: 3,
+                    maxItems: 3
+                  }
+                },
+                required: ["synergy_score", "meta_score", "strengths", "weaknesses", "recommendations"],
+                additionalProperties: false
+              }
+            }
+          }
+        ],
+        tool_choice: { type: "function", function: { name: "analyze_deck" } }
       }),
     });
 
@@ -81,47 +103,21 @@ RECOMMENDATIONS:
     }
 
     const aiData = await response.json();
-    const analysisText = aiData.choices[0].message.content;
-
-    // Parse the structured response
-    const lines = analysisText.split('\n');
-    let synergy_score = 75;
-    let meta_score = 70;
-    const strengths: string[] = [];
-    const weaknesses: string[] = [];
-    const recommendations: string[] = [];
-
-    let currentSection = '';
-    for (const line of lines) {
-      const trimmed = line.trim();
-      
-      if (trimmed.startsWith('SYNERGY_SCORE:')) {
-        synergy_score = parseInt(trimmed.split(':')[1].trim()) || 75;
-      } else if (trimmed.startsWith('META_SCORE:')) {
-        meta_score = parseInt(trimmed.split(':')[1].trim()) || 70;
-      } else if (trimmed === 'STRENGTHS:') {
-        currentSection = 'strengths';
-      } else if (trimmed === 'WEAKNESSES:') {
-        currentSection = 'weaknesses';
-      } else if (trimmed === 'RECOMMENDATIONS:') {
-        currentSection = 'recommendations';
-      } else if (trimmed.startsWith('-') || trimmed.startsWith('•')) {
-        const text = trimmed.replace(/^[-•]\s*/, '').trim();
-        if (text) {
-          if (currentSection === 'strengths') strengths.push(text);
-          else if (currentSection === 'weaknesses') weaknesses.push(text);
-          else if (currentSection === 'recommendations') recommendations.push(text);
-        }
-      }
+    const toolCall = aiData.choices[0].message.tool_calls?.[0];
+    
+    if (!toolCall || !toolCall.function.arguments) {
+      throw new Error('No tool call returned from AI');
     }
+
+    const analysis = JSON.parse(toolCall.function.arguments);
 
     return new Response(
       JSON.stringify({
-        synergy_score,
-        meta_score,
-        strengths: strengths.slice(0, 3),
-        weaknesses: weaknesses.slice(0, 3),
-        recommendations: recommendations.slice(0, 3),
+        synergy_score: analysis.synergy_score,
+        meta_score: analysis.meta_score,
+        strengths: analysis.strengths,
+        weaknesses: analysis.weaknesses,
+        recommendations: analysis.recommendations,
         avg_elixir: avgElixir,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -45,10 +45,68 @@ const Dashboard = () => {
   const { data: battles, isLoading: battlesLoading, error: battlesError } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
 
+  // Fetch additional data for AI coach context
+  const [savedDecks, setSavedDecks] = useState<any[]>([]);
+  const [cardMastery, setCardMastery] = useState<any[]>([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [cardCollection, setCardCollection] = useState<any[]>([]);
+
   const handleMatchClick = (battle: ClashRoyaleBattle) => {
     setSelectedBattle(battle);
     setMatchDetailOpen(true);
   };
+
+  useEffect(() => {
+    const fetchPlayerContext = async () => {
+      if (!user?.id || !playerTag) return;
+
+      try {
+        // Fetch saved decks
+        const { data: decks } = await supabase
+          .from('saved_decks')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false })
+          .limit(10);
+        
+        if (decks) setSavedDecks(decks);
+
+        // Fetch card mastery
+        const { data: mastery } = await supabase
+          .from('card_mastery')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('player_tag', playerTag)
+          .order('mastery_level', { ascending: false })
+          .limit(20);
+        
+        if (mastery) setCardMastery(mastery);
+
+        // Fetch achievements
+        const { data: achievementData } = await supabase
+          .from('user_achievements')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('player_tag', playerTag);
+        
+        if (achievementData) setAchievements(achievementData);
+
+        // Fetch card collection
+        const { data: collection } = await supabase
+          .from('card_collection')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('player_tag', playerTag)
+          .limit(50);
+        
+        if (collection) setCardCollection(collection);
+      } catch (error) {
+        console.error('Error fetching player context:', error);
+      }
+    };
+
+    fetchPlayerContext();
+  }, [user, playerTag]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -480,6 +538,10 @@ const Dashboard = () => {
               }, 0) / battles.length
             ).toFixed(1)
           }}
+          savedDecks={savedDecks}
+          cardMastery={cardMastery}
+          achievements={achievements}
+          cardCollection={cardCollection}
         />
       )}
 

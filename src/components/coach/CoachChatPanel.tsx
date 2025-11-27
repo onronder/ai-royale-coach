@@ -39,9 +39,23 @@ interface CoachChatPanelProps {
     losses: number;
     avgTrophyChange: string;
   };
+  savedDecks?: any[];
+  cardMastery?: any[];
+  achievements?: any[];
+  cardCollection?: any[];
 }
 
-export function CoachChatPanel({ isOpen, onClose, playerTag, playerStats, recentMatches }: CoachChatPanelProps) {
+export function CoachChatPanel({ 
+  isOpen, 
+  onClose, 
+  playerTag, 
+  playerStats, 
+  recentMatches,
+  savedDecks,
+  cardMastery,
+  achievements,
+  cardCollection 
+}: CoachChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -182,6 +196,10 @@ export function CoachChatPanel({ isOpen, onClose, playerTag, playerStats, recent
           playerTag,
           playerStats,
           recentMatches,
+          savedDecks,
+          cardMastery,
+          achievements,
+          cardCollection,
         }),
       });
 
