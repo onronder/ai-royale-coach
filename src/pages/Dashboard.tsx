@@ -104,16 +104,35 @@ const Dashboard = () => {
         // Auto-sync on first visit: Trigger syncs if tables are empty
         if (collection?.length === 0) {
           console.log('Auto-syncing card collection...');
+          toast.info("Syncing your card collection...", {
+            description: "Loading from cache, then updating in background"
+          });
+          
+          // Run sync in background without awaiting
           supabase.functions.invoke('sync-card-collection', {
-            body: { playerTag }
-          }).then(() => toast.info('Card collection synced'));
+            body: { playerTag, userId: user.id }
+          }).then(({ error }) => {
+            if (error) {
+              console.error('Auto-sync failed:', error);
+            } else {
+              toast.success('Card collection synced!');
+            }
+          });
         }
 
         if (mastery?.length === 0) {
           console.log('Auto-calculating card mastery...');
+          
+          // Run calculation in background without awaiting
           supabase.functions.invoke('calculate-card-mastery', {
             body: { playerTag }
-          }).then(() => toast.info('Card mastery calculated'));
+          }).then(({ error }) => {
+            if (error) {
+              console.error('Mastery calculation failed:', error);
+            } else {
+              toast.success('Card mastery calculated!');
+            }
+          });
         }
       } catch (error) {
         console.error('Error fetching player context:', error);

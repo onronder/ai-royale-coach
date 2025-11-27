@@ -10,10 +10,10 @@ const CLASH_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-// Rate limiting: Track requests per IP
+// Rate limiting: Track API calls per identifier
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 30;
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_MINUTE = 30; // Clash Royale API limit is ~60/min, we use 30 for safety
 
 // Cache TTLs (in seconds)
 const CACHE_TTL = {
@@ -26,21 +26,21 @@ interface ClashApiError {
   message: string;
 }
 
-function checkRateLimit(ip: string): boolean {
+function checkRateLimit(identifier: string): { allowed: boolean; resetIn?: number } {
   const now = Date.now();
-  const limit = rateLimitMap.get(ip);
-
+  const limit = rateLimitMap.get(identifier);
+  
   if (!limit || now > limit.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
-    return true;
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return { allowed: true };
   }
-
-  if (limit.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
+  
+  if (limit.count >= MAX_REQUESTS_PER_MINUTE) {
+    return { allowed: false, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
   }
-
+  
   limit.count++;
-  return true;
+  return { allowed: true };
 }
 
 function normalizePlayerTag(tag: string): string {
@@ -80,7 +80,7 @@ async function getCachedOrFetch(
   playerTag: string,
   type: 'player' | 'battles',
   fetchFn: () => Promise<any>
-): Promise<any> {
+): Promise<{ data: any; cacheHit: boolean; stale: boolean }> {
   const normalizedTag = normalizePlayerTag(playerTag);
   const now = new Date();
   const cacheTTL = CACHE_TTL[type];
@@ -92,41 +92,56 @@ async function getCachedOrFetch(
     .eq('player_tag', normalizedTag)
     .maybeSingle();
 
+  let cachedData = null;
+  let staleCache = false;
+
   if (cached && !cacheError) {
     const cacheAge = (now.getTime() - new Date(cached.updated_at).getTime()) / 1000;
-    const cachedData = type === 'player' ? cached.player_data : cached.battles_data;
+    cachedData = type === 'player' ? cached.player_data : cached.battles_data;
     
     if (cachedData && cacheAge < cacheTTL) {
       console.log(`Cache hit for ${type} (age: ${cacheAge.toFixed(1)}s)`);
-      return cachedData;
+      return { data: cachedData, cacheHit: true, stale: false };
     }
+    
+    staleCache = cacheAge >= cacheTTL && cachedData;
   }
 
   // Fetch fresh data
   console.log(`Cache miss for ${type}, fetching fresh data`);
-  const freshData = await fetchFn();
+  
+  try {
+    const freshData = await fetchFn();
 
-  // Update player_cache table
-  const cacheUpdate: any = {
-    player_tag: normalizedTag,
-    updated_at: now.toISOString(),
-  };
+    // Update player_cache table
+    const cacheUpdate: any = {
+      player_tag: normalizedTag,
+      updated_at: now.toISOString(),
+    };
 
-  if (type === 'player') {
-    cacheUpdate.player_data = freshData;
-  } else {
-    cacheUpdate.battles_data = freshData;
+    if (type === 'player') {
+      cacheUpdate.player_data = freshData;
+    } else {
+      cacheUpdate.battles_data = freshData;
+    }
+
+    // Upsert to cache (fire and forget)
+    supabase
+      .from('player_cache')
+      .upsert(cacheUpdate, { onConflict: 'player_tag' })
+      .then(({ error }: any) => {
+        if (error) console.error('Failed to cache data:', error);
+      });
+
+    return { data: freshData, cacheHit: false, stale: false };
+  } catch (error) {
+    // If API fails but we have stale cache, return it
+    if (staleCache && cachedData) {
+      console.warn(`API failed, returning stale cache for ${type}`);
+      return { data: cachedData, cacheHit: true, stale: true };
+    }
+    throw error;
   }
-
-  // Upsert to cache (fire and forget)
-  supabase
-    .from('player_cache')
-    .upsert(cacheUpdate, { onConflict: 'player_tag' })
-    .then(({ error }: any) => {
-      if (error) console.error('Failed to cache data:', error);
-    });
-
-  return freshData;
 }
 
 serve(async (req) => {
@@ -141,14 +156,25 @@ serve(async (req) => {
       throw new Error('CLASH_ROYALE_API_KEY not configured');
     }
 
-    // Rate limiting
-    const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!checkRateLimit(clientIp)) {
+    // Rate limiting check
+    const identifier = req.headers.get('x-forwarded-for') || req.headers.get('authorization') || 'anonymous';
+    const rateCheck = checkRateLimit(identifier);
+    
+    if (!rateCheck.allowed) {
+      console.warn(`Rate limit exceeded for ${identifier}, retry in ${rateCheck.resetIn}s`);
       return new Response(
-        JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-        {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        JSON.stringify({ 
+          error: 'Rate limit exceeded', 
+          message: `Too many requests. Please retry in ${rateCheck.resetIn} seconds.`,
+          retryAfter: rateCheck.resetIn 
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': rateCheck.resetIn?.toString() || '60'
+          } 
         }
       );
     }
@@ -164,7 +190,7 @@ serve(async (req) => {
     // Initialize Supabase client
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    let data;
+    let result;
 
     switch (endpoint) {
       case 'player': {
@@ -172,7 +198,7 @@ serve(async (req) => {
           throw new Error('Missing playerTag parameter');
         }
         const normalizedTag = normalizePlayerTag(playerTag);
-        data = await getCachedOrFetch(
+        result = await getCachedOrFetch(
           supabase,
           normalizedTag,
           'player',
@@ -186,7 +212,7 @@ serve(async (req) => {
           throw new Error('Missing playerTag parameter');
         }
         const normalizedTag = normalizePlayerTag(playerTag);
-        data = await getCachedOrFetch(
+        result = await getCachedOrFetch(
           supabase,
           normalizedTag,
           'battles',
@@ -199,9 +225,14 @@ serve(async (req) => {
         throw new Error(`Unknown endpoint: ${endpoint}`);
     }
 
-    return new Response(JSON.stringify(data), {
+    return new Response(JSON.stringify(result.data), {
       status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'application/json',
+        'X-Cache-Hit': result.cacheHit.toString(),
+        'X-Cache-Stale': result.stale.toString(),
+      },
     });
 
   } catch (error: any) {
