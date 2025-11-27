@@ -8,13 +8,13 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-br from-card via-card to-card/80 border-border/50 shadow-soft hover:shadow-md",
+        default: "bg-card border-border/50 shadow-soft hover:shadow-md",
         elevated: "bg-card-elevated border-border/50 shadow-md hover:shadow-glow",
-        arena: "bg-gradient-to-br from-card via-card to-background-accent border-gold/20 shadow-emboss hover:border-gold/40 hover:shadow-gold/20",
-        golden: "bg-gradient-to-br from-card via-card to-card/80 border-gold/30 shadow-gold/20 hover:shadow-gold animate-golden-pulse",
-        legendary: "bg-gradient-to-br from-card via-royal/10 to-card border-royal/30 shadow-royal/20 hover:shadow-royal",
-        victory: "bg-gradient-to-br from-card via-success/5 to-card border-success/30 shadow-victory/20",
-        defeat: "bg-gradient-to-br from-card via-destructive/5 to-card border-destructive/30 shadow-defeat/20",
+        arena: "bg-card border-gold/20 shadow-emboss hover:border-gold/40 hover:shadow-gold/20",
+        golden: "bg-card border-gold/30 shadow-gold/20 hover:shadow-gold hover:border-gold/50",
+        legendary: "bg-card border-royal/30 shadow-royal/20 hover:shadow-royal",
+        victory: "bg-card border-success/30 shadow-victory/20 hover:border-success/50",
+        defeat: "bg-card border-destructive/30 shadow-defeat/20 hover:border-destructive/50",
       },
     },
     defaultVariants: {
