@@ -23,6 +23,7 @@ interface CardCollectionItem {
   rarity: string;
   elixir_cost: number | null;
   icon_url: string | null;
+  evolution_level: number | null;
 }
 
 interface CardCollectionTrackerProps {
@@ -223,6 +224,8 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                       maxLevel: card.max_level,
                       iconUrls: { medium: card.icon_url },
                       elixirCost: card.elixir_cost || undefined,
+                      evolutionLevel: card.evolution_level || undefined,
+                      rarity: card.rarity,
                     }}
                     size="md"
                     showLevel={true}
