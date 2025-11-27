@@ -32,6 +32,7 @@ import { AchievementBadgeWidget } from "@/components/achievements/AchievementBad
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
 import { EmptyState } from "@/components/ui/empty-state";
+import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -39,10 +40,11 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   
-  const { data: player, isLoading: playerLoading, error: playerError } = useClashRoyalePlayer(playerTag || null);
-  const { data: battles, isLoading: battlesLoading, error: battlesError } = useClashRoyaleBattles(playerTag || null);
+  const { data: player, isLoading: playerLoading, error: playerError, refetch: refetchPlayer } = useClashRoyalePlayer(playerTag || null);
+  const { data: battles, isLoading: battlesLoading, error: battlesError, refetch: refetchBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
 
   // Fetch additional data for AI coach context
@@ -50,6 +52,18 @@ const Dashboard = () => {
   const [cardMastery, setCardMastery] = useState<any[]>([]);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [cardCollection, setCardCollection] = useState<any[]>([]);
+
+  const handleRefreshData = async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([refetchPlayer(), refetchBattles()]);
+      toast.success('Data refreshed');
+    } catch (error) {
+      toast.error('Failed to refresh data');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleMatchClick = (battle: ClashRoyaleBattle) => {
     setSelectedBattle(battle);
@@ -190,10 +204,18 @@ const Dashboard = () => {
             </div>
           )}
 
-          <Button variant="outline" size="sm" onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </Button>
+          {/* Cache Status & Sign Out */}
+          <div className="flex items-center gap-2">
+            <CacheStatusIndicator 
+              playerTag={playerTag} 
+              onRefresh={handleRefreshData} 
+              isRefreshing={isRefreshing} 
+            />
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
