@@ -79,7 +79,8 @@ async function getCachedOrFetch(
   supabase: any,
   playerTag: string,
   type: 'player' | 'battles',
-  fetchFn: () => Promise<any>
+  fetchFn: () => Promise<any>,
+  forceRefresh: boolean = false
 ): Promise<{ data: any; cacheHit: boolean; stale: boolean }> {
   const normalizedTag = normalizePlayerTag(playerTag);
   const now = new Date();
@@ -95,7 +96,7 @@ async function getCachedOrFetch(
   let cachedData = null;
   let staleCache = false;
 
-  if (cached && !cacheError) {
+  if (cached && !cacheError && !forceRefresh) {
     const cacheAge = (now.getTime() - new Date(cached.updated_at).getTime()) / 1000;
     cachedData = type === 'player' ? cached.player_data : cached.battles_data;
     
@@ -105,6 +106,13 @@ async function getCachedOrFetch(
     }
     
     staleCache = cacheAge >= cacheTTL && cachedData;
+  } else if (forceRefresh) {
+    console.log(`Force refresh requested for ${type}, bypassing cache`);
+    // Still get cached data for fallback
+    if (cached && !cacheError) {
+      cachedData = type === 'player' ? cached.player_data : cached.battles_data;
+      staleCache = !!cachedData;
+    }
   }
 
   // Fetch fresh data
@@ -202,12 +210,14 @@ serve(async (req) => {
     // Support both query params AND POST body for backward compatibility
     let endpoint: string | null = null;
     let playerTag: string | null = null;
+    let forceRefresh = false;
 
     const url = new URL(req.url);
     
     // First try query params
     endpoint = url.searchParams.get('endpoint');
     playerTag = url.searchParams.get('playerTag');
+    forceRefresh = url.searchParams.get('forceRefresh') === 'true';
 
     // If not in query params, try POST body
     if (!endpoint && req.method === 'POST') {
@@ -215,7 +225,8 @@ serve(async (req) => {
         const body = await req.json();
         endpoint = body.endpoint;
         playerTag = body.playerTag;
-        console.log('Using POST body params:', { endpoint, playerTag });
+        forceRefresh = body.forceRefresh === true;
+        console.log('Using POST body params:', { endpoint, playerTag, forceRefresh });
       } catch (e) {
         console.log('No JSON body or parse error:', e);
       }
@@ -240,7 +251,8 @@ serve(async (req) => {
           supabase,
           normalizedTag,
           'player',
-          () => fetchFromClashApi(`/players/${encodePlayerTag(normalizedTag)}`)
+          () => fetchFromClashApi(`/players/${encodePlayerTag(normalizedTag)}`),
+          forceRefresh
         );
         break;
       }
@@ -254,7 +266,8 @@ serve(async (req) => {
           supabase,
           normalizedTag,
           'battles',
-          () => fetchFromClashApi(`/players/${encodePlayerTag(normalizedTag)}/battlelog`)
+          () => fetchFromClashApi(`/players/${encodePlayerTag(normalizedTag)}/battlelog`),
+          forceRefresh
         );
         break;
       }
