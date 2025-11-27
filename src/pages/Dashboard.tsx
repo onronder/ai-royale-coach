@@ -100,6 +100,21 @@ const Dashboard = () => {
           .limit(50);
         
         if (collection) setCardCollection(collection);
+
+        // Auto-sync on first visit: Trigger syncs if tables are empty
+        if (collection?.length === 0) {
+          console.log('Auto-syncing card collection...');
+          supabase.functions.invoke('sync-card-collection', {
+            body: { playerTag }
+          }).then(() => toast.info('Card collection synced'));
+        }
+
+        if (mastery?.length === 0) {
+          console.log('Auto-calculating card mastery...');
+          supabase.functions.invoke('calculate-card-mastery', {
+            body: { playerTag }
+          }).then(() => toast.info('Card mastery calculated'));
+        }
       } catch (error) {
         console.error('Error fetching player context:', error);
       }
