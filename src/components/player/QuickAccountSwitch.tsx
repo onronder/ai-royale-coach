@@ -31,7 +31,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
   );
 
   const handleSwitchAccount = (playerTag: string) => {
-    navigate(`/dashboard/${playerTag}`);
+    navigate(`/player/${playerTag}`);
   };
 
   if (isLoading || profiles.length <= 1) {
