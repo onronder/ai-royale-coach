@@ -592,6 +592,30 @@ export type Database = {
         }
         Relationships: []
       }
+      player_cache: {
+        Row: {
+          battles_data: Json | null
+          cached_at: string | null
+          player_data: Json
+          player_tag: string
+          updated_at: string | null
+        }
+        Insert: {
+          battles_data?: Json | null
+          cached_at?: string | null
+          player_data: Json
+          player_tag: string
+          updated_at?: string | null
+        }
+        Update: {
+          battles_data?: Json | null
+          cached_at?: string | null
+          player_data?: Json
+          player_tag?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       player_profiles: {
         Row: {
           created_at: string | null

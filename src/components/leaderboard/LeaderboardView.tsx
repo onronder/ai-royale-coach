@@ -4,8 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Users, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Users, TrendingUp, RefreshCw } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface LeaderboardEntry {
   id: string;
@@ -26,6 +29,7 @@ export function LeaderboardView({ userClanTag }: LeaderboardViewProps) {
   const [globalLeaderboard, setGlobalLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [clanLeaderboard, setClanLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     fetchLeaderboards();
@@ -83,6 +87,22 @@ export function LeaderboardView({ userClanTag }: LeaderboardViewProps) {
     setIsLoading(false);
   };
 
+  const syncGlobalLeaderboard = async () => {
+    setIsSyncing(true);
+    try {
+      const { error } = await supabase.functions.invoke('sync-leaderboard');
+      if (error) throw error;
+      
+      toast.success('Global rankings synced successfully!');
+      await fetchLeaderboards();
+    } catch (error) {
+      console.error('Error syncing leaderboard:', error);
+      toast.error('Failed to sync global rankings');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const renderLeaderboard = (entries: LeaderboardEntry[]) => {
     if (isLoading) {
       return (
@@ -96,9 +116,12 @@ export function LeaderboardView({ userClanTag }: LeaderboardViewProps) {
 
     if (entries.length === 0) {
       return (
-        <p className="text-center text-muted-foreground py-8">
-          No players tracked yet
-        </p>
+        <EmptyState
+          icon={Trophy}
+          title="No Leaderboard Data"
+          description="Sync global rankings to see the top players"
+          variant="compact"
+        />
       );
     }
 
@@ -170,10 +193,21 @@ export function LeaderboardView({ userClanTag }: LeaderboardViewProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5" />
-          Leaderboard
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Leaderboard
+          </CardTitle>
+          <Button
+            onClick={syncGlobalLeaderboard}
+            disabled={isSyncing}
+            variant="outline"
+            size="sm"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync Global'}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="global">

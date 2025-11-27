@@ -85,21 +85,20 @@ async function getCachedOrFetch(
   const now = new Date();
   const cacheTTL = CACHE_TTL[type];
 
-  // Try to get from cache
+  // Try to get from player_cache table
   const { data: cached, error: cacheError } = await supabase
-    .from('analyses')
-    .select('output, created_at')
+    .from('player_cache')
+    .select('*')
     .eq('player_tag', normalizedTag)
-    .eq('analysis_type', `api_${type}`)
-    .order('created_at', { ascending: false })
-    .limit(1)
     .maybeSingle();
 
   if (cached && !cacheError) {
-    const cacheAge = (now.getTime() - new Date(cached.created_at).getTime()) / 1000;
-    if (cacheAge < cacheTTL) {
+    const cacheAge = (now.getTime() - new Date(cached.updated_at).getTime()) / 1000;
+    const cachedData = type === 'player' ? cached.player_data : cached.battles_data;
+    
+    if (cachedData && cacheAge < cacheTTL) {
       console.log(`Cache hit for ${type} (age: ${cacheAge.toFixed(1)}s)`);
-      return cached.output;
+      return cachedData;
     }
   }
 
@@ -107,18 +106,22 @@ async function getCachedOrFetch(
   console.log(`Cache miss for ${type}, fetching fresh data`);
   const freshData = await fetchFn();
 
-  // Create fingerprint for this data
-  const fingerprint = `${type}_${normalizedTag}_${now.toISOString()}`;
+  // Update player_cache table
+  const cacheUpdate: any = {
+    player_tag: normalizedTag,
+    updated_at: now.toISOString(),
+  };
 
-  // Store in cache (fire and forget)
+  if (type === 'player') {
+    cacheUpdate.player_data = freshData;
+  } else {
+    cacheUpdate.battles_data = freshData;
+  }
+
+  // Upsert to cache (fire and forget)
   supabase
-    .from('analyses')
-    .insert({
-      player_tag: normalizedTag,
-      analysis_type: `api_${type}`,
-      input_fingerprint: fingerprint,
-      output: freshData,
-    })
+    .from('player_cache')
+    .upsert(cacheUpdate, { onConflict: 'player_tag' })
     .then(({ error }: any) => {
       if (error) console.error('Failed to cache data:', error);
     });
