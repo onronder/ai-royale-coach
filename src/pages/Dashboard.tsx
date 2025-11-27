@@ -191,29 +191,32 @@ const Dashboard = () => {
   if (!playerTag || !user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background arena-bg">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm shadow-md">
+      <header className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md shadow-md">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Crown className="h-6 w-6 text-primary" />
+            <div className="relative">
+              <Crown className="h-7 w-7 text-gold" />
+              <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
+            </div>
             <div>
               <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYAL</h1>
-              <p className="text-xs text-muted-foreground">#{playerTag}</p>
+              <p className="text-xs text-muted-foreground font-mono">#{playerTag}</p>
             </div>
           </div>
           
           {/* Quick Stats */}
           {player && (
-            <div className="hidden md:flex items-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-primary" />
-                <span className="font-rajdhani font-semibold">{player.trophies.toLocaleString()}</span>
+            <div className="hidden md:flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/20">
+                <Trophy className="h-4 w-4 text-gold trophy-shimmer" />
+                <span className="font-rajdhani font-bold text-gold">{player.trophies.toLocaleString()}</span>
               </div>
               {battles && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-success/10 border border-success/20">
                   <Swords className="h-4 w-4 text-success" />
-                  <span className="font-rajdhani font-semibold">
+                  <span className="font-rajdhani font-bold text-success">
                     {((battles.filter(b => {
                       const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
                       const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
@@ -236,7 +239,7 @@ const Dashboard = () => {
               currentPlayerTag={playerTag} 
               userId={user?.id || null} 
             />
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               <span className="hidden sm:inline">Sign Out</span>
             </Button>
@@ -247,7 +250,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
           {/* Enhanced Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/50 border border-border rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/80 border border-gold/20 rounded-xl backdrop-blur-sm">
             <TabsTrigger 
               value="overview" 
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
@@ -377,7 +380,7 @@ const Dashboard = () => {
                 />
 
               {/* AI Analysis Card */}
-              <Card className="bg-gradient-primary shadow-glow">
+              <Card variant="arena" className="bg-gradient-royal shadow-royal golden-shine">
                 <CardHeader>
                   <CardTitle className="text-primary-foreground">AI Coach Summary</CardTitle>
                   <CardDescription className="text-primary-foreground/80">

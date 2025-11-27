@@ -21,7 +21,10 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
+        background: {
+          DEFAULT: "hsl(var(--background))",
+          accent: "hsl(var(--background-accent))",
+        },
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -65,6 +68,18 @@ export default {
           DEFAULT: "hsl(var(--gold))",
           foreground: "hsl(var(--gold-foreground))",
         },
+        royal: {
+          DEFAULT: "hsl(var(--royal))",
+          foreground: "hsl(var(--royal-foreground))",
+        },
+        crimson: {
+          DEFAULT: "hsl(var(--crimson))",
+          foreground: "hsl(var(--crimson-foreground))",
+        },
+        emerald: {
+          DEFAULT: "hsl(var(--emerald))",
+          foreground: "hsl(var(--emerald-foreground))",
+        },
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
@@ -72,6 +87,11 @@ export default {
         'gradient-surface': 'var(--gradient-surface)',
         'gradient-legendary': 'var(--gradient-legendary)',
         'gradient-gold': 'var(--gradient-gold)',
+        'gradient-arena': 'var(--gradient-arena)',
+        'gradient-royal': 'var(--gradient-royal)',
+        'gradient-victory': 'var(--gradient-victory)',
+        'gradient-battle': 'var(--gradient-battle)',
+        'gradient-card-shine': 'var(--gradient-card-shine)',
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
@@ -81,6 +101,10 @@ export default {
         'md': 'var(--shadow-md)',
         'victory': 'var(--shadow-victory)',
         'defeat': 'var(--shadow-defeat)',
+        'gold': 'var(--shadow-gold)',
+        'royal': 'var(--shadow-royal)',
+        'emboss': 'var(--shadow-emboss)',
+        'inset': 'var(--shadow-inset)',
       },
       transitionProperty: {
         'smooth': 'var(--transition-smooth)',
@@ -104,8 +128,8 @@ export default {
           "50%": { transform: "translateY(-10px)" },
         },
         "pulse-glow": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.6" },
+          "0%, 100%": { opacity: "1", boxShadow: "0 0 20px hsl(190 100% 50% / 0.3)" },
+          "50%": { opacity: "0.8", boxShadow: "0 0 40px hsl(190 100% 50% / 0.5)" },
         },
         "slide-up": {
           "0%": { opacity: "0", transform: "translateY(20px)" },
@@ -119,6 +143,34 @@ export default {
           "0%": { opacity: "0", transform: "translateY(40px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "golden-pulse": {
+          "0%, 100%": { 
+            boxShadow: "0 0 20px hsl(45 100% 55% / 0.3)",
+            borderColor: "hsl(45 100% 55% / 0.4)"
+          },
+          "50%": { 
+            boxShadow: "0 0 40px hsl(45 100% 55% / 0.5)",
+            borderColor: "hsl(45 100% 55% / 0.7)"
+          },
+        },
+        "trophy-shine": {
+          "0%": { filter: "drop-shadow(0 0 4px hsl(45 100% 55% / 0.5))" },
+          "50%": { filter: "drop-shadow(0 0 12px hsl(45 100% 55% / 0.8))" },
+          "100%": { filter: "drop-shadow(0 0 4px hsl(45 100% 55% / 0.5))" },
+        },
+        "arena-entrance": {
+          "0%": { opacity: "0", transform: "scale(0.95) translateY(10px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "hover-lift": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-4px)" },
+        },
+        "victory-burst": {
+          "0%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.1)", opacity: "0.8" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -128,6 +180,11 @@ export default {
         "slide-up": "slide-up 0.5s ease-out",
         "shimmer": "shimmer 2s linear infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
+        "golden-pulse": "golden-pulse 2.5s ease-in-out infinite",
+        "trophy-shine": "trophy-shine 2s ease-in-out infinite",
+        "arena-entrance": "arena-entrance 0.4s ease-out",
+        "hover-lift": "hover-lift 0.2s ease-out forwards",
+        "victory-burst": "victory-burst 0.5s ease-out",
       },
     },
   },

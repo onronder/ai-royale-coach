@@ -9,7 +9,7 @@ interface StatCardProps {
   icon: LucideIcon;
   description?: string;
   trend?: 'up' | 'down' | 'neutral';
-  variant?: 'default' | 'gradient' | 'glow';
+  variant?: 'default' | 'gradient' | 'glow' | 'arena' | 'golden';
   className?: string;
   tooltip?: string;
 }
@@ -31,9 +31,27 @@ export function StatCard({
   };
 
   const variantStyles = {
-    default: 'bg-card border-border hover:shadow-md',
+    default: 'bg-gradient-to-br from-card via-card to-card/80 border-border/50 hover:shadow-md hover:border-primary/30',
     gradient: 'bg-gradient-primary text-primary-foreground border-primary/30 hover:shadow-primary-glow',
-    glow: 'bg-card-elevated border-primary/20 hover:shadow-glow hover:border-primary/40'
+    glow: 'bg-card-elevated border-primary/20 hover:shadow-glow hover:border-primary/40',
+    arena: 'bg-gradient-to-br from-card via-card to-background-accent border-gold/20 hover:border-gold/40 hover:shadow-gold/20',
+    golden: 'bg-gradient-to-br from-card via-card to-card/80 border-gold/30 hover:shadow-gold animate-golden-pulse',
+  };
+
+  const iconContainerStyles = {
+    default: 'bg-primary/10',
+    gradient: 'bg-primary-foreground/10',
+    glow: 'bg-primary/10',
+    arena: 'bg-gradient-gold',
+    golden: 'bg-gradient-gold shadow-gold/30 shadow-lg',
+  };
+
+  const iconStyles = {
+    default: 'text-primary',
+    gradient: 'text-primary-foreground',
+    glow: 'text-primary',
+    arena: 'text-gold-foreground',
+    golden: 'text-gold-foreground',
   };
 
   const content = (
@@ -53,7 +71,8 @@ export function StatCard({
             </p>
             <p className={cn(
               "text-3xl font-bold font-rajdhani",
-              variant === 'gradient' ? 'text-primary-foreground' : trend && trendColors[trend]
+              variant === 'gradient' ? 'text-primary-foreground' : trend && trendColors[trend],
+              (variant === 'arena' || variant === 'golden') && !trend && 'text-foreground'
             )}>
               {value}
             </p>
@@ -68,11 +87,11 @@ export function StatCard({
           </div>
           <div className={cn(
             "w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-            variant === 'gradient' ? 'bg-primary-foreground/10' : 'bg-primary/10'
+            iconContainerStyles[variant]
           )}>
             <Icon className={cn(
               "w-6 h-6",
-              variant === 'gradient' ? 'text-primary-foreground' : 'text-primary'
+              iconStyles[variant]
             )} />
           </div>
         </div>

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Crown, ArrowLeft } from "lucide-react";
+import { Loader2, Crown, ArrowLeft, Sparkles, Shield } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -62,46 +62,61 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Animated Background Pattern */}
-      <div className="fixed inset-0 -z-10 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px),
-                           repeating-linear-gradient(90deg, transparent, transparent 50px, hsl(var(--primary)) 50px, hsl(var(--primary)) 51px)`
-        }}></div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
+      {/* Floating Particles */}
+      <div className="floating-particles">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
 
-      <div className="w-full max-w-md space-y-6 animate-slide-up">
+      {/* Decorative Orbs */}
+      <div className="absolute top-20 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+      <div className="absolute bottom-20 right-20 w-80 h-80 bg-royal/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-3xl" />
+
+      <div className="w-full max-w-md space-y-6 animate-arena-entrance relative z-10">
         {/* Back to Home */}
         <Link 
           to="/" 
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-gold transition-colors group"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm">Back to Home</span>
         </Link>
 
-        {/* Logo */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 shadow-glow mb-4">
-            <Crown className="h-8 w-8 text-primary" />
+        {/* Logo with Golden Glow */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-gold shadow-gold relative golden-shine">
+            <Crown className="h-10 w-10 text-gold-foreground" />
+            <div className="absolute -inset-1 bg-gold/20 rounded-2xl blur-lg -z-10" />
           </div>
-          <h1 className="text-3xl font-bold font-rajdhani">AI ROYAL</h1>
+          <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYAL</h1>
+          <p className="text-muted-foreground text-sm">Your path to arena dominance</p>
         </div>
 
-        <Card className="bg-card-elevated shadow-primary-glow border-primary/20">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold font-rajdhani">
-              {isSignUp ? "Create Your Account" : "Welcome Back"}
-            </CardTitle>
+        <Card variant="arena" className="golden-shine">
+          <CardHeader className="space-y-2 text-center">
+            <div className="flex items-center justify-center gap-2">
+              {isSignUp ? (
+                <Sparkles className="h-5 w-5 text-gold" />
+              ) : (
+                <Shield className="h-5 w-5 text-primary" />
+              )}
+              <CardTitle className="text-2xl">
+                {isSignUp ? "Join the Arena" : "Welcome Back"}
+              </CardTitle>
+            </div>
             <CardDescription>
               {isSignUp
-                ? "Join the arena and start dominating"
+                ? "Create your account and start dominating"
                 : "Sign in to continue your journey"}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleAuth} className="space-y-4">
+            <form onSubmit={handleAuth} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                 <Input
@@ -112,7 +127,7 @@ const Auth = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="h-11 bg-input border-border/50 focus:border-primary"
+                  className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                 />
               </div>
               <div className="space-y-2">
@@ -126,7 +141,7 @@ const Auth = () => {
                   required
                   minLength={6}
                   disabled={isLoading}
-                  className="h-11 bg-input border-border/50 focus:border-primary"
+                  className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                 />
                 {isSignUp && (
                   <p className="text-xs text-muted-foreground">
@@ -136,7 +151,9 @@ const Auth = () => {
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-11 bg-gradient-primary hover:shadow-primary-glow font-rajdhani font-semibold" 
+                variant={isSignUp ? "golden" : "default"}
+                size="lg"
+                className="w-full" 
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -145,9 +162,15 @@ const Auth = () => {
                     Please wait...
                   </>
                 ) : isSignUp ? (
-                  "Create Account"
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Create Account
+                  </>
                 ) : (
-                  "Sign In"
+                  <>
+                    <Shield className="mr-2 h-4 w-4" />
+                    Sign In
+                  </>
                 )}
               </Button>
             </form>
@@ -155,7 +178,7 @@ const Auth = () => {
               <button
                 type="button"
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="text-primary hover:underline font-medium"
+                className="text-gold hover:text-gold/80 hover:underline font-medium transition-colors"
                 disabled={isLoading}
               >
                 {isSignUp
@@ -165,6 +188,18 @@ const Auth = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Trust badges */}
+        <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Shield className="h-3 w-3" />
+            Secure
+          </span>
+          <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+          <span>Free to use</span>
+          <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+          <span>No spam</span>
+        </div>
       </div>
     </div>
   );
