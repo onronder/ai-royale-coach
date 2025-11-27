@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Loader2, X, MessageSquare, Plus } from "lucide-react";
+import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
+import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 interface Message {
   id: string;
@@ -22,6 +23,22 @@ interface Conversation {
   title: string;
   last_message_at: string;
   message_count: number;
+}
+
+interface MatchAnalysis {
+  analysis: string;
+  deckMatchup: string;
+  recommendations: string[];
+}
+
+interface MatchContextData {
+  battle: ClashRoyaleBattle;
+  playerTag: string;
+  analysis?: MatchAnalysis;
+  isWin: boolean;
+  playerCrowns: number;
+  opponentCrowns: number;
+  trophyChange: number;
 }
 
 interface CoachChatPanelProps {
@@ -43,6 +60,7 @@ interface CoachChatPanelProps {
   cardMastery?: any[];
   achievements?: any[];
   cardCollection?: any[];
+  matchContext?: MatchContextData | null;
 }
 
 export function CoachChatPanel({ 
@@ -54,7 +72,8 @@ export function CoachChatPanel({
   savedDecks,
   cardMastery,
   achievements,
-  cardCollection 
+  cardCollection,
+  matchContext
 }: CoachChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -64,6 +83,7 @@ export function CoachChatPanel({
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [hasAutoSentMatchContext, setHasAutoSentMatchContext] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -82,6 +102,77 @@ export function CoachChatPanel({
       loadMessages(currentConversationId);
     }
   }, [currentConversationId]);
+
+  // Auto-send match context when it's set and user is loaded
+  useEffect(() => {
+    if (matchContext && userId && !hasAutoSentMatchContext && !isLoading) {
+      setHasAutoSentMatchContext(true);
+      startNewConversation();
+      
+      // Build the match context message
+      const outcome = matchContext.isWin ? 'won' : 'lost';
+      const opponent = matchContext.battle.opponent[0];
+      const playerCards = matchContext.battle.team.find(p => p.tag === matchContext.playerTag)?.cards || [];
+      const opponentCards = opponent?.cards || [];
+      
+      const contextMessage = `I just ${outcome} a match and want to discuss it.
+
+**My Deck:** ${playerCards.map(c => c.name).join(', ')}
+**Opponent's Deck:** ${opponentCards.map(c => c.name).join(', ')}
+**Score:** ${matchContext.playerCrowns} - ${matchContext.opponentCrowns} crowns
+**Trophy Change:** ${matchContext.trophyChange > 0 ? '+' : ''}${matchContext.trophyChange}
+**Game Mode:** ${matchContext.battle.gameMode.name}
+
+${matchContext.analysis ? `**AI Analysis Summary:**
+${matchContext.analysis.deckMatchup}
+
+**Recommendations from Analysis:**
+${matchContext.analysis.recommendations.map(r => `• ${r}`).join('\n')}` : ''}
+
+What could I have done differently to ${matchContext.isWin ? 'perform even better' : 'win this match'}?`;
+
+      // Auto-send the context message
+      handleAutoSend(contextMessage);
+    }
+  }, [matchContext, userId, hasAutoSentMatchContext, isLoading]);
+
+  // Reset auto-send flag when match context clears
+  useEffect(() => {
+    if (!matchContext) {
+      setHasAutoSentMatchContext(false);
+    }
+  }, [matchContext]);
+
+  const handleAutoSend = async (message: string) => {
+    if (!userId) return;
+    setIsLoading(true);
+    
+    try {
+      const { data: userMsg, error: userError } = await supabase
+        .from("chat_messages")
+        .insert({
+          player_tag: playerTag,
+          user_id: userId,
+          role: "user",
+          content: message,
+        })
+        .select()
+        .single();
+
+      if (userError) throw userError;
+      setMessages([userMsg as Message]);
+      
+      const newDate = new Date().toLocaleDateString();
+      setCurrentConversationId(newDate);
+      
+      await streamChat(message);
+    } catch (error) {
+      console.error("Auto-send error:", error);
+      toast.error("Failed to send match context");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const loadConversations = async () => {
     try {
@@ -400,7 +491,30 @@ export function CoachChatPanel({
                 <>
                   <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
                     <div className="space-y-4">
-                      {messages.length === 0 && (
+                      {/* Match Context Card */}
+                      {matchContext && (
+                        <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Swords className="h-4 w-4 text-primary" />
+                            <span className="font-rajdhani font-semibold text-sm">Discussing Match</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span className={cn(
+                              "font-bold",
+                              matchContext.isWin ? "text-green-500" : "text-red-500"
+                            )}>
+                              {matchContext.isWin ? "Victory" : "Defeat"}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Crown className="h-3 w-3" />
+                              {matchContext.playerCrowns} - {matchContext.opponentCrowns}
+                            </span>
+                            <span>{matchContext.battle.gameMode.name}</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {messages.length === 0 && !matchContext && (
                         <div className="text-center py-8 text-muted-foreground">
                           <Bot className="h-12 w-12 mx-auto mb-4 text-primary/50" />
                           <p className="font-rajdhani text-lg">Ask me anything about improving your game!</p>

@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
+  const [coachOpen, setCoachOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   
@@ -526,6 +527,7 @@ const Dashboard = () => {
               playerTag={playerTag!}
               open={matchDetailOpen}
               onOpenChange={setMatchDetailOpen}
+              onOpenCoach={() => setCoachOpen(true)}
             />
           </TabsContent>
 
@@ -665,6 +667,8 @@ const Dashboard = () => {
           cardMastery={cardMastery}
           achievements={achievements}
           cardCollection={cardCollection}
+          forceOpen={coachOpen}
+          onOpenChange={setCoachOpen}
         />
       )}
 
