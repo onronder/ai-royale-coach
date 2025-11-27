@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
+import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -451,9 +452,21 @@ const Dashboard = () => {
             <PageTransition delay={100}>
               <div className="space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Current Deck</CardTitle>
-                  <CardDescription>Your active battle deck with card images</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Current Deck</CardTitle>
+                    <CardDescription>Your active battle deck with card images</CardDescription>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleRefreshData}
+                    disabled={isRefreshing}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+                    Sync Deck
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {playerLoading ? (
@@ -469,6 +482,9 @@ const Dashboard = () => {
                   ) : (
                     <p className="text-muted-foreground">No deck data available</p>
                   )}
+                  <p className="text-xs text-muted-foreground mt-4">
+                    Note: Clash Royale API may take 5-15 minutes to reflect deck changes. Click "Sync Deck" to fetch latest data.
+                  </p>
                 </CardContent>
               </Card>
 
