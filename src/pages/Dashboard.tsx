@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Trophy, Target, MessageSquare, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
+import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -16,7 +16,6 @@ import { MatchDetailView } from "@/components/matches/MatchDetailView";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { StatCard } from "@/components/stats/StatCard";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
-import { CoachChat } from "@/components/coach/CoachChat";
 import { statTooltips } from "@/components/ui/tooltip-helpers";
 import { PageTransition, StatCardSkeleton, MatchCardSkeleton } from "@/components/ui/loading-states";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
@@ -33,6 +32,7 @@ import { AchievementNotification } from "@/components/achievements/AchievementNo
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
+import { DataLoader } from "@/components/ui/data-loader";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -55,11 +55,20 @@ const Dashboard = () => {
 
   const handleRefreshData = async () => {
     setIsRefreshing(true);
+    const loadingToast = toast.loading('Syncing with Clash Royale servers...', {
+      description: 'Fetching your latest player data and battle history'
+    });
     try {
       await Promise.all([forceRefreshPlayer(), forceRefreshBattles()]);
-      toast.success('Data refreshed from API');
+      toast.success('Data refreshed successfully!', {
+        id: loadingToast,
+        description: 'Your profile and battle history are now up to date'
+      });
     } catch (error) {
-      toast.error('Failed to refresh data');
+      toast.error('Failed to refresh data', {
+        id: loadingToast,
+        description: 'Please try again in a few moments'
+      });
     } finally {
       setIsRefreshing(false);
     }
@@ -398,11 +407,7 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     {battlesLoading ? (
-                      <div className="space-y-3">
-                        {[...Array(5)].map((_, i) => (
-                          <MatchCardSkeleton key={i} />
-                        ))}
-                      </div>
+                      <DataLoader context="battles" variant="inline" />
                     ) : battlesError ? (
                       <EmptyState
                         icon={Swords}
@@ -457,11 +462,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {playerLoading ? (
-                    <div className="grid grid-cols-4 gap-2">
-                      {[...Array(8)].map((_, i) => (
-                        <Skeleton key={i} className="h-28 w-full" />
-                      ))}
-                    </div>
+                    <DataLoader context="deck" variant="inline" />
                   ) : playerError ? (
                     <p className="text-muted-foreground">Failed to load deck</p>
                   ) : player?.currentDeck && player.currentDeck.length > 0 ? (

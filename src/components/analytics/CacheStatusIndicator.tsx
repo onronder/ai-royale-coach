@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { RefreshCw, Database, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { RefreshCw, Database, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -87,13 +87,23 @@ export function CacheStatusIndicator({
         <Button 
           variant="ghost" 
           size="sm" 
-          className={`gap-1.5 h-8 px-2 ${getStatusColor()}`}
+          className={`gap-1.5 h-8 px-2 ${isRefreshing ? 'text-accent animate-pulse' : getStatusColor()}`}
+          disabled={isRefreshing}
         >
-          <Database className="h-3.5 w-3.5" />
-          <span className="text-xs hidden sm:inline">
-            {cacheStatus ? (cacheStatus.isStale ? "Stale" : "Fresh") : "No data"}
-          </span>
-          {getStatusIcon()}
+          {isRefreshing ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <span className="text-xs hidden sm:inline">Syncing...</span>
+            </>
+          ) : (
+            <>
+              <Database className="h-3.5 w-3.5" />
+              <span className="text-xs hidden sm:inline">
+                {cacheStatus ? (cacheStatus.isStale ? "Stale" : "Fresh") : "No data"}
+              </span>
+              {getStatusIcon()}
+            </>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72">
@@ -101,9 +111,21 @@ export function CacheStatusIndicator({
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm">Data Cache Status</h4>
             <Badge variant={cacheStatus?.isStale ? "outline" : "default"} className="text-xs">
-              {cacheStatus ? (cacheStatus.isStale ? "Stale" : "Fresh") : "Empty"}
+              {isRefreshing ? "Syncing" : cacheStatus ? (cacheStatus.isStale ? "Stale" : "Fresh") : "Empty"}
             </Badge>
           </div>
+          
+          {isRefreshing && (
+            <div className="bg-accent/10 border border-accent/20 rounded-md p-3">
+              <div className="flex items-center gap-2 text-accent">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-sm font-medium">Syncing with Clash Royale...</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Fetching latest player data and battle history
+              </p>
+            </div>
+          )}
           
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
@@ -129,7 +151,10 @@ export function CacheStatusIndicator({
 
           <div className="pt-2 border-t">
             <p className="text-xs text-muted-foreground mb-2">
-              Cache reduces API calls and improves load times. Fresh data is under 5 minutes old.
+              {isRefreshing 
+                ? "Please wait while we sync your data..."
+                : "Cache reduces API calls and improves load times. Fresh data is under 5 minutes old."
+              }
             </p>
             <Button 
               onClick={onRefresh} 
@@ -138,7 +163,7 @@ export function CacheStatusIndicator({
               className="w-full gap-2"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              {isRefreshing ? "Refreshing..." : "Refresh Data"}
+              {isRefreshing ? "Syncing..." : "Refresh Data"}
             </Button>
           </div>
         </div>
