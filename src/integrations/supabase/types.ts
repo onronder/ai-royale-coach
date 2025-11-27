@@ -385,8 +385,6 @@ export type Database = {
           name: string
           popularity_score: number | null
           updated_at: string | null
-          usage_rate: number | null
-          win_rate: number | null
         }
         Insert: {
           archetype: string
@@ -399,8 +397,6 @@ export type Database = {
           name: string
           popularity_score?: number | null
           updated_at?: string | null
-          usage_rate?: number | null
-          win_rate?: number | null
         }
         Update: {
           archetype?: string
@@ -413,8 +409,6 @@ export type Database = {
           name?: string
           popularity_score?: number | null
           updated_at?: string | null
-          usage_rate?: number | null
-          win_rate?: number | null
         }
         Relationships: []
       }

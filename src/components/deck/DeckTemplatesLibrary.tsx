@@ -17,8 +17,6 @@ interface DeckTemplate {
   avg_elixir: number;
   difficulty: string;
   description: string;
-  win_rate: number;
-  usage_rate: number;
   popularity_score: number;
 }
 
@@ -84,7 +82,7 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
       {/* Demo Data Disclaimer */}
       <div className="bg-warning/10 border border-warning/20 rounded-lg p-3">
         <p className="text-xs text-muted-foreground">
-          <span className="font-semibold text-warning">Note:</span> Win rates and usage rates shown are estimated based on archetype patterns. Actual performance depends on player skill and card levels.
+          <span className="font-semibold text-warning">Note:</span> Difficulty ratings are estimated based on archetype complexity. Actual performance depends on player skill and card levels.
         </p>
       </div>
 
@@ -129,11 +127,7 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
                     </div>
                     <div className="flex items-center gap-1">
                       <Trophy className="h-4 w-4 text-warning" />
-                      <span>{template.win_rate}% WR</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="h-4 w-4 text-success" />
-                      <span>{template.usage_rate}% usage</span>
+                      <span>Popularity: {template.popularity_score}</span>
                     </div>
                   </div>
 
