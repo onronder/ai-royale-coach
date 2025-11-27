@@ -31,7 +31,9 @@ export function CardImage({
   // Convert API level to in-game display level
   // Formula: displayLevel = level + (14 - maxLevel)
   // This accounts for Champions (maxLevel 4) displaying as levels 11-14 in game
-  const displayLevel = card.level + (14 - (card.maxLevel || 14));
+  // Evolved cards get +2 levels bonus in-game
+  const baseDisplayLevel = card.level + (14 - (card.maxLevel || 14));
+  const displayLevel = card.evolutionLevel ? baseDisplayLevel + 2 : baseDisplayLevel;
 
   const rarityColors = {
     common: 'border-border',
