@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 type LoaderContext = 
   | "player"
+  | "player-profiles"
   | "battles"
   | "deck"
   | "deck-analysis"
@@ -33,6 +34,11 @@ const contextConfig: Record<LoaderContext, { icon: typeof Loader2; message: stri
   player: {
     icon: Crown,
     message: "Loading player profile...",
+    color: "text-primary"
+  },
+  "player-profiles": {
+    icon: Users,
+    message: "Loading your player tags...",
     color: "text-primary"
   },
   battles: {

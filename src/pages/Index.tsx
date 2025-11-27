@@ -86,32 +86,51 @@ const Index = () => {
             {/* CTA Card */}
             <Card className="max-w-xl mx-auto bg-card-elevated shadow-primary-glow border-primary/30 hover:border-primary/50 transition-all">
               <CardHeader>
-                <CardTitle className="text-2xl font-rajdhani">Start Your Analysis</CardTitle>
+                <CardTitle className="text-2xl font-rajdhani">
+                  {user ? "Welcome Back!" : "Start Your Analysis"}
+                </CardTitle>
                 <CardDescription className="text-base">
-                  Enter your player tag to unlock AI insights
+                  {user 
+                    ? "Select an account or add a new player tag" 
+                    : "Enter your player tag to unlock AI insights"
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="flex gap-3">
-                    <div className="flex-1 relative">
-                      <Input
-                        placeholder="#ABC123XYZ"
-                        value={playerTag}
-                        onChange={(e) => setPlayerTag(e.target.value)}
-                        className="h-12 text-lg bg-input border-border/50 focus:border-primary"
-                      />
-                    </div>
+                {user ? (
+                  <div className="space-y-4">
                     <Button 
-                      type="submit" 
+                      onClick={() => navigate("/select-player")}
                       size="lg"
-                      className="h-12 px-8 bg-gradient-primary hover:shadow-primary-glow font-rajdhani font-semibold text-base"
+                      className="w-full h-12 bg-gradient-primary hover:shadow-primary-glow font-rajdhani font-semibold text-base"
                     >
-                      <Zap className="mr-2 h-5 w-5" />
-                      Analyze
+                      <Users className="mr-2 h-5 w-5" />
+                      Select Account
                     </Button>
+                    <p className="text-sm text-muted-foreground text-center">
+                      Manage up to 3 player accounts
+                    </p>
                   </div>
-                  {!user && (
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="flex gap-3">
+                      <div className="flex-1 relative">
+                        <Input
+                          placeholder="#ABC123XYZ"
+                          value={playerTag}
+                          onChange={(e) => setPlayerTag(e.target.value)}
+                          className="h-12 text-lg bg-input border-border/50 focus:border-primary"
+                        />
+                      </div>
+                      <Button 
+                        type="submit" 
+                        size="lg"
+                        className="h-12 px-8 bg-gradient-primary hover:shadow-primary-glow font-rajdhani font-semibold text-base"
+                      >
+                        <Zap className="mr-2 h-5 w-5" />
+                        Analyze
+                      </Button>
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       New here?{" "}
                       <button
@@ -122,8 +141,8 @@ const Index = () => {
                         Create your free account
                       </button>
                     </p>
-                  )}
-                </form>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </div>
