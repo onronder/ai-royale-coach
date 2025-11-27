@@ -49,8 +49,43 @@ function TrophyCelebration({ trophyChange }: { trophyChange: number }) {
   );
 }
 
+// Confetti burst for 3-crown victories
+function ConfettiBurst() {
+  const colors = ['#FFD700', '#00FFFF', '#FF6B6B', '#4ADE80', '#A855F7', '#F97316'];
+  
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {[...Array(30)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute animate-confetti"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: '-10px',
+            animationDelay: `${Math.random() * 0.5}s`,
+            animationDuration: `${1.5 + Math.random() * 1}s`,
+          }}
+        >
+          <div 
+            className="w-2 h-2 rounded-sm"
+            style={{ 
+              backgroundColor: colors[i % colors.length],
+              transform: `rotate(${Math.random() * 360}deg)`,
+            }}
+          />
+        </div>
+      ))}
+      {/* Central crown burst */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 animate-crown-burst">
+        <Crown className="w-12 h-12 text-gold drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
+      </div>
+    </div>
+  );
+}
+
 export function MatchDetailView({ battle, playerTag, open, onOpenChange }: MatchDetailViewProps) {
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   
   // Normalize player tag
   const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
@@ -58,10 +93,23 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
   useEffect(() => {
     if (open && battle) {
       const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
-      if (playerTeam && (playerTeam.trophyChange || 0) > 0) {
-        setShowCelebration(true);
-        const timer = setTimeout(() => setShowCelebration(false), 2500);
-        return () => clearTimeout(timer);
+      if (playerTeam) {
+        const crowns = playerTeam.crowns;
+        const opponentCrowns = battle.opponent[0]?.crowns || 0;
+        const isWin = crowns > opponentCrowns;
+        
+        // 3-crown victory = confetti
+        if (isWin && crowns === 3) {
+          setShowConfetti(true);
+          const timer = setTimeout(() => setShowConfetti(false), 3000);
+          return () => clearTimeout(timer);
+        }
+        // Positive trophy change = trophy celebration
+        else if ((playerTeam.trophyChange || 0) > 0) {
+          setShowCelebration(true);
+          const timer = setTimeout(() => setShowCelebration(false), 2500);
+          return () => clearTimeout(timer);
+        }
       }
     }
   }, [open, battle, normalizedPlayerTag]);
@@ -92,6 +140,8 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto relative">
+        {/* Confetti for 3-crown victory */}
+        {showConfetti && <ConfettiBurst />}
         {/* Trophy celebration overlay */}
         {showCelebration && <TrophyCelebration trophyChange={trophyChange} />}
         
