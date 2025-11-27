@@ -9,12 +9,13 @@ const corsHeaders = {
 
 /**
  * Calculate in-game display level from API card data
- * Formula: displayLevel = apiLevel + (14 - maxLevel) + (evolutionLevel ? 2 : 0)
+ * Universal formula: displayLevel = level + (16 - maxLevel)
+ * This applies to ALL rarities. Evolution does NOT affect display level.
  */
 function getDisplayLevel(card: { level: number; maxLevel?: number; evolutionLevel?: number }): number {
-  const maxLevel = card.maxLevel ?? 14;
-  const baseLevel = card.level + (14 - maxLevel);
-  return card.evolutionLevel ? baseLevel + 2 : baseLevel;
+  // If maxLevel not provided, assume Common (maxLevel = 16, offset = 0)
+  const maxLevel = card.maxLevel ?? 16;
+  return card.level + (16 - maxLevel);
 }
 
 serve(async (req) => {

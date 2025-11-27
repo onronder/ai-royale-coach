@@ -1,38 +1,42 @@
 /**
  * Clash Royale Card Level Calculator
  * 
- * This utility handles the conversion between API levels and in-game display levels.
+ * This utility converts API levels to in-game display levels using the universal formula.
  * 
- * === API MAX LEVELS (actual values from Clash Royale API) ===
- * - Common:    maxLevel = 16
- * - Rare:      maxLevel = 14
- * - Epic:      maxLevel = 11
- * - Legendary: maxLevel = 8
- * - Champion:  maxLevel = 6
+ * === UNIVERSAL FORMULA ===
+ * displayLevel = API_level + (16 - API_maxLevel)
  * 
- * === DISPLAY LEVEL RULES ===
+ * This formula applies to ALL card rarities. The offset (16 - maxLevel) normalizes
+ * all cards to the unified 1-16 display scale.
  * 
- * For NON-CHAMPION cards (maxLevel > 6):
- *   - The API level IS the in-game display level directly
- *   - displayLevel = apiLevel + evolutionBonus
- * 
- * For CHAMPION cards (maxLevel <= 6):
- *   - Champions display on an 11-14 scale in-game
- *   - displayLevel = apiLevel + (14 - maxLevel) + evolutionBonus
- *   - Example: Level 3 champion with maxLevel 6 = 3 + 8 = 11
- * 
- * === EVOLUTION BONUS ===
- * Evolved cards receive a +2 level bonus in-game display.
+ * === API MAX LEVELS BY RARITY ===
+ * | Rarity    | API maxLevel | Offset (16-max) | Display Range |
+ * |-----------|--------------|-----------------|---------------|
+ * | Common    | 16           | 0               | 1-16          |
+ * | Rare      | 14           | +2              | 3-16          |
+ * | Epic      | 11           | +5              | 6-16          |
+ * | Legendary | 8            | +8              | 9-16          |
+ * | Champion  | 6            | +10             | 11-16         |
  * 
  * === EXAMPLES ===
- * | Card Type   | API Level | Max Level | Evolved | Display Level |
- * |-------------|-----------|-----------|---------|---------------|
- * | Common      | 13        | 16        | No      | 13            |
- * | Common      | 13        | 16        | Yes     | 15            |
- * | Rare        | 10        | 14        | No      | 10            |
- * | Legendary   | 4         | 8         | Yes     | 6             |
- * | Champion    | 3         | 6         | No      | 11            |
- * | Champion    | 6         | 6         | No      | 14            |
+ * | Card Type   | API Level | Max Level | Display Level | Calculation      |
+ * |-------------|-----------|-----------|---------------|------------------|
+ * | Common      | 13        | 16        | 13            | 13 + (16-16) = 13|
+ * | Common      | 16        | 16        | 16            | 16 + (16-16) = 16|
+ * | Rare        | 7         | 14        | 9             | 7 + (16-14) = 9  |
+ * | Rare        | 14        | 14        | 16            | 14 + (16-14) = 16|
+ * | Epic        | 6         | 11        | 11            | 6 + (16-11) = 11 |
+ * | Legendary   | 4         | 8         | 12            | 4 + (16-8) = 12  |
+ * | Legendary   | 8         | 8         | 16            | 8 + (16-8) = 16  |
+ * | Champion    | 1         | 6         | 11            | 1 + (16-6) = 11  |
+ * | Champion    | 5         | 6         | 15            | 5 + (16-6) = 15  |
+ * | Champion    | 6         | 6         | 16            | 6 + (16-6) = 16  |
+ * 
+ * === EVOLUTION NOTE ===
+ * Card evolutions do NOT affect the display level number. An evolved card shows
+ * the same level as a non-evolved card. Evolution status should be displayed
+ * as a visual indicator (icon/badge) only, not added to the level number.
+ * The evolutionLevel field indicates if evolution is unlocked (1) or not (0).
  */
 
 export interface CardLevelInput {
@@ -44,64 +48,44 @@ export interface CardLevelInput {
 
 export interface CardLevelResult {
   displayLevel: number;
-  baseDisplayLevel: number;
-  evolutionBonus: number;
   isEvolved: boolean;
   isMaxLevel: boolean;
   isChampion: boolean;
 }
 
 /**
- * Champion cards have maxLevel <= 6 in the API
+ * The universal max display level in Clash Royale (after Level 16 update)
  */
-const CHAMPION_MAX_LEVEL_THRESHOLD = 6;
+export const GAME_MAX_DISPLAY_LEVEL = 16;
 
 /**
- * The universal max display level in Clash Royale
+ * Champion cards have maxLevel = 6 in the API
  */
-export const GAME_MAX_DISPLAY_LEVEL = 14;
-
-/**
- * Evolution level bonus applied in-game
- */
-export const EVOLUTION_BONUS = 2;
+const CHAMPION_MAX_LEVEL = 6;
 
 /**
  * Calculate the in-game display level from API card data
+ * Uses the universal formula: displayLevel = level + (16 - maxLevel)
  */
 export function calculateDisplayLevel(card: CardLevelInput): CardLevelResult {
   const { level, evolutionLevel, maxLevel } = card;
   
-  // Check if this is a champion (maxLevel <= 6 in API)
-  const isChampion = maxLevel !== undefined && maxLevel <= CHAMPION_MAX_LEVEL_THRESHOLD;
+  // Universal formula: level + (16 - maxLevel)
+  // If maxLevel not provided, assume Common (maxLevel = 16, offset = 0)
+  const offset = maxLevel ? (GAME_MAX_DISPLAY_LEVEL - maxLevel) : 0;
+  const displayLevel = level + offset;
   
-  let baseDisplayLevel: number;
+  // Check if this is a champion (maxLevel = 6 in API)
+  const isChampion = maxLevel === CHAMPION_MAX_LEVEL;
   
-  if (isChampion && maxLevel !== undefined) {
-    // Champions: normalize to 11-14 scale
-    // Level 1 champion with maxLevel 6 = 1 + 8 = 9... but champions start at 11
-    // Actually: level + (14 - maxLevel) where maxLevel is 6 gives +8 offset
-    baseDisplayLevel = level + (GAME_MAX_DISPLAY_LEVEL - maxLevel);
-  } else {
-    // Non-champions: API level IS the display level
-    baseDisplayLevel = level;
-  }
-  
-  // Check if card is evolved
+  // Check if card has evolution unlocked (visual indicator only)
   const isEvolved = (evolutionLevel ?? 0) > 0;
   
-  // Apply evolution bonus if evolved
-  const evolutionBonus = isEvolved ? EVOLUTION_BONUS : 0;
-  const displayLevel = baseDisplayLevel + evolutionBonus;
-  
-  // Check if at max level (14 for non-evolved, 16 for evolved)
-  const maxPossibleLevel = GAME_MAX_DISPLAY_LEVEL + (isEvolved ? EVOLUTION_BONUS : 0);
-  const isMaxLevel = displayLevel >= maxPossibleLevel;
+  // Check if at max display level (16)
+  const isMaxLevel = displayLevel >= GAME_MAX_DISPLAY_LEVEL;
   
   return {
     displayLevel,
-    baseDisplayLevel,
-    evolutionBonus,
     isEvolved,
     isMaxLevel,
     isChampion,
@@ -116,7 +100,7 @@ export function getDisplayLevel(card: CardLevelInput): number {
 }
 
 /**
- * Format display level for UI (handles cases above 14)
+ * Format display level for UI
  */
 export function formatDisplayLevel(card: CardLevelInput): string {
   const { displayLevel } = calculateDisplayLevel(card);
@@ -124,10 +108,9 @@ export function formatDisplayLevel(card: CardLevelInput): string {
 }
 
 /**
- * Get level progress percentage toward max (useful for progress bars)
- * Note: Evolution bonus is not counted toward max progress
+ * Get level progress percentage toward max (16)
  */
 export function getLevelProgress(card: CardLevelInput): number {
-  const { baseDisplayLevel } = calculateDisplayLevel(card);
-  return Math.min((baseDisplayLevel / GAME_MAX_DISPLAY_LEVEL) * 100, 100);
+  const { displayLevel } = calculateDisplayLevel(card);
+  return Math.min((displayLevel / GAME_MAX_DISPLAY_LEVEL) * 100, 100);
 }
