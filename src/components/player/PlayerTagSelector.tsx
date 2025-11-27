@@ -47,9 +47,12 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
     if (!newTag.trim()) return;
     
     try {
-      await addProfile({ playerTag: newTag.trim() });
+      const normalizedTag = newTag.trim().replace('#', '').toUpperCase();
+      await addProfile({ playerTag: normalizedTag });
       setNewTag("");
       setIsAddingNew(false);
+      // Navigate to the player page after successful addition
+      handleSelectPlayer(normalizedTag);
     } catch (error) {
       // Error handled in hook
     }
