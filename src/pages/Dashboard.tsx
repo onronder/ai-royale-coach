@@ -1,10 +1,10 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen, UserCog } from "lucide-react";
+import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
@@ -33,6 +33,8 @@ import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { DataLoader } from "@/components/ui/data-loader";
+import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
+import { TrophyProgressChart } from "@/components/analytics/TrophyProgressChart";
 
 const Dashboard = () => {
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -223,19 +225,17 @@ const Dashboard = () => {
             </div>
           )}
 
-          {/* Cache Status & Sign Out */}
+          {/* Quick Switch & Sign Out */}
           <div className="flex items-center gap-2">
             <CacheStatusIndicator 
               playerTag={playerTag} 
               onRefresh={handleRefreshData} 
               isRefreshing={isRefreshing} 
             />
-            <Link to="/select-player">
-              <Button variant="ghost" size="sm">
-                <UserCog className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Switch</span>
-              </Button>
-            </Link>
+            <QuickAccountSwitch 
+              currentPlayerTag={playerTag} 
+              userId={user?.id || null} 
+            />
             <Button variant="outline" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -367,6 +367,14 @@ const Dashboard = () => {
                     </>
                   ) : null}
                 </div>
+
+                {/* Trophy Progress Chart */}
+                <TrophyProgressChart 
+                  battles={battles}
+                  playerTag={playerTag}
+                  currentTrophies={player?.trophies}
+                  bestTrophies={player?.bestTrophies}
+                />
 
               {/* AI Analysis Card */}
               <Card className="bg-gradient-primary shadow-glow">
