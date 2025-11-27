@@ -80,7 +80,7 @@ Recent Performance (last 20 battles):
 - Wins: ${wins}, Losses: ${recentBattles.length - wins}
 
 Current Deck:
-${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${c.level})`).join('\n') || 'No deck data'}
+${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${c.level + (14 - (c.maxLevel || 14))})`).join('\n') || 'No deck data'}
 
 Battle Types Distribution:
 ${Object.entries(
