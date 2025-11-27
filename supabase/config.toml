@@ -36,11 +36,17 @@ verify_jwt = false
 [functions.analyze-meta-trends]
 verify_jwt = false
 
-[functions.predict-deck-performance]
+[functions.calculate-player-stats]
 verify_jwt = false
 
 [functions.suggest-card-replacements]
 verify_jwt = false
 
 [functions.sync-achievements]
+verify_jwt = false
+
+[functions.search-clans]
+verify_jwt = false
+
+[functions.sync-leaderboard]
 verify_jwt = false

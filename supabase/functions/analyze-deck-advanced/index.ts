@@ -56,24 +56,13 @@ Provide comprehensive analysis covering:
 - Calculate offensive elixir cost (sum of offensive cards)
 - Identify 5 common elixir trade scenarios with specific cards and gains/losses
 
-2. SYNERGY MATRIX:
-- Analyze synergies between all 28 card pairs (8 cards = 28 combinations)
-- Rate each synergy 1-5 stars based on:
-  * Tank + Support combinations
-  * Spell synergies with troops
-  * Cycle card efficiency together
-  * Win condition enablers
-- Identify top 3 strongest synergies
-- Identify any anti-synergies (competing win conditions, redundant roles)
-- Calculate overall synergy score (0-100)
+2. CARD ROLES & COMPOSITION:
+- Identify win conditions, defensive cards, cycle cards, spells
+- Note any missing roles (no building, no air defense, etc)
+- Analyze if deck has balanced composition
 
-3. MATCHUP PREDICTIONS:
-- Predict matchups against 6 meta archetypes: Golem Beatdown, Hog 2.6 Cycle, X-Bow Siege, Logbait, Graveyard Control, Lava Hound
-- For each matchup provide:
-  * Prediction: favorable/even/unfavorable
-  * Confidence percentage (0-100) based on card matchups
-  * 2-3 key enemy cards this deck handles well/poorly
-  * 1 sentence strategy tip
+Note: Real synergy analysis and matchup data requires historical battle statistics. 
+Provide tactical insights based on card roles and known interactions only.
 
 Respond with structured data only.`;
 
@@ -118,44 +107,20 @@ Respond with structured data only.`;
                   },
                   required: ['cycleSpeed', 'defensiveCost', 'offensiveCost', 'tradeScenarios']
                 },
-                synergyMatrix: {
+                composition: {
                   type: 'object',
                   properties: {
-                    pairs: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          card1: { type: 'string' },
-                          card2: { type: 'string' },
-                          rating: { type: 'number', minimum: 1, maximum: 5 },
-                          explanation: { type: 'string' }
-                        },
-                        required: ['card1', 'card2', 'rating', 'explanation']
-                      }
-                    },
-                    overallScore: { type: 'number', minimum: 0, maximum: 100 },
-                    topSynergies: { type: 'array', items: { type: 'string' } },
-                    antiSynergies: { type: 'array', items: { type: 'string' } }
+                    winConditions: { type: 'array', items: { type: 'string' } },
+                    defenseCards: { type: 'array', items: { type: 'string' } },
+                    cycleCards: { type: 'array', items: { type: 'string' } },
+                    spells: { type: 'array', items: { type: 'string' } },
+                    missingRoles: { type: 'array', items: { type: 'string' } },
+                    balanceNotes: { type: 'string' }
                   },
-                  required: ['pairs', 'overallScore', 'topSynergies', 'antiSynergies']
-                },
-                matchupPredictions: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      archetype: { type: 'string' },
-                      prediction: { type: 'string', enum: ['favorable', 'even', 'unfavorable'] },
-                      confidence: { type: 'number', minimum: 0, maximum: 100 },
-                      keyCards: { type: 'array', items: { type: 'string' } },
-                      strategy: { type: 'string' }
-                    },
-                    required: ['archetype', 'prediction', 'confidence', 'keyCards', 'strategy']
-                  }
+                  required: ['winConditions', 'defenseCards', 'cycleCards', 'spells', 'missingRoles', 'balanceNotes']
                 }
               },
-              required: ['elixirAnalysis', 'synergyMatrix', 'matchupPredictions'],
+              required: ['elixirAnalysis', 'composition'],
               additionalProperties: false
             }
           }
@@ -194,6 +159,11 @@ Respond with structured data only.`;
     // Add calculated fields
     analysisData.elixirAnalysis.avgElixir = avgElixir;
     analysisData.elixirAnalysis.elixirDistribution = elixirDistribution;
+    
+    // Add placeholder structures for components expecting old format
+    // These would be calculated from real battle history in production
+    analysisData.synergyMatrix = null;
+    analysisData.matchupPredictions = null;
 
     return new Response(JSON.stringify(analysisData), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

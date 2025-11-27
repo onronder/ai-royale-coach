@@ -95,6 +95,10 @@ export function DemoSection() {
           <p className="text-muted-foreground text-lg">
             Experience intelligent deck analysis across different archetypes
           </p>
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-warning/10 border border-warning/30 rounded-lg text-sm text-warning">
+            <Sparkles className="w-4 h-4" />
+            <span className="font-rajdhani font-semibold">Demo Data - Sign up to analyze YOUR real decks and battles</span>
+          </div>
         </div>
 
         <Tabs defaultValue={sampleDecks[0].id} className="w-full" onValueChange={(value) => {

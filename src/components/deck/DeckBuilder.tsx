@@ -21,8 +21,8 @@ interface DeckBuilderProps {
 }
 
 interface DeckAnalysis {
-  synergy_score: number;
-  meta_score: number;
+  synergy_score: number | null; // Removed - requires battle history
+  meta_score: number | null; // Removed - requires battle history
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
@@ -38,13 +38,16 @@ interface AdvancedDeckAnalysis {
     elixirDistribution: { cost: number; count: number }[];
     tradeScenarios: any[];
   };
-  synergyMatrix: {
-    pairs: any[];
-    overallScore: number;
-    topSynergies: string[];
-    antiSynergies: string[];
+  composition: {
+    winConditions: string[];
+    defenseCards: string[];
+    cycleCards: string[];
+    spells: string[];
+    missingRoles: string[];
+    balanceNotes: string;
   };
-  matchupPredictions: any[];
+  synergyMatrix: any | null; // Removed - requires battle history
+  matchupPredictions: any[] | null; // Removed - requires battle history
 }
 
 export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {

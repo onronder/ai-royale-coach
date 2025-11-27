@@ -23,10 +23,20 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const cardNames = cards.map((c: any) => c.name).join(', ');
+    const cardList = cards.map((c: any) => `${c.name} (${c.elixirCost} elixir, ${c.rarity})`).join(', ');
     const avgElixir = cards.reduce((sum: number, c: any) => sum + (c.elixirCost || 0), 0) / 8;
 
-    const prompt = `Analyze this Clash Royale deck: ${cardNames} (Average Elixir: ${avgElixir.toFixed(1)})`;
+    const prompt = `You are an expert Clash Royale deck analyst. Analyze this deck composition:
+
+${cardList}
+Average Elixir: ${avgElixir.toFixed(1)}
+
+Provide tactical analysis:
+1. Strengths: 3-4 key advantages based on card synergies and roles
+2. Weaknesses: 3-4 vulnerabilities or missing elements
+3. Recommendations: 3-4 specific, actionable improvements
+
+Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -52,41 +62,23 @@ serve(async (req) => {
               parameters: {
                 type: "object",
                 properties: {
-                  synergy_score: {
-                    type: "integer",
-                    description: "How well cards work together (0-100)",
-                    minimum: 0,
-                    maximum: 100
-                  },
-                  meta_score: {
-                    type: "integer",
-                    description: "How viable in current meta (0-100)",
-                    minimum: 0,
-                    maximum: 100
-                  },
                   strengths: {
                     type: "array",
                     items: { type: "string" },
-                    description: "3 key strengths of the deck",
-                    minItems: 3,
-                    maxItems: 3
+                    description: "3-4 key strengths of the deck"
                   },
                   weaknesses: {
                     type: "array",
                     items: { type: "string" },
-                    description: "3 key weaknesses of the deck",
-                    minItems: 3,
-                    maxItems: 3
+                    description: "3-4 key weaknesses of the deck"
                   },
                   recommendations: {
                     type: "array",
                     items: { type: "string" },
-                    description: "3 concrete improvement suggestions",
-                    minItems: 3,
-                    maxItems: 3
+                    description: "3-4 concrete improvement suggestions"
                   }
                 },
-                required: ["synergy_score", "meta_score", "strengths", "weaknesses", "recommendations"],
+                required: ["strengths", "weaknesses", "recommendations"],
                 additionalProperties: false
               }
             }
@@ -111,10 +103,12 @@ serve(async (req) => {
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
+    // Return only real, calculable data + AI insights
+    // Synergy and meta scores removed - these would require historical user battle data
     return new Response(
       JSON.stringify({
-        synergy_score: analysis.synergy_score,
-        meta_score: analysis.meta_score,
+        synergy_score: null,
+        meta_score: null,
         strengths: analysis.strengths,
         weaknesses: analysis.weaknesses,
         recommendations: analysis.recommendations,
