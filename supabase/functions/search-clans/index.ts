@@ -20,7 +20,42 @@ serve(async (req) => {
       throw new Error('CLASH_ROYALE_API_KEY not configured');
     }
 
-    const { query } = await req.json();
+    const { query, type } = await req.json();
+    
+    // Handle global rankings request
+    if (type === 'global_rankings') {
+      console.log('Fetching global clan rankings');
+      const response = await fetch(
+        'https://proxy.royaleapi.dev/v1/locations/global/rankings/clans?limit=50',
+        {
+          headers: {
+            'Authorization': `Bearer ${CLASH_API_KEY}`,
+            'Accept': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const clans = (data.items || []).map((clan: any, index: number) => ({
+        rank: index + 1,
+        clan_tag: clan.tag,
+        name: clan.name,
+        badge_id: clan.badgeId,
+        location: clan.location?.name || 'Global',
+        member_count: clan.members || 0,
+        clan_score: clan.clanScore || 0,
+        clan_war_trophies: clan.clanWarTrophies || 0,
+      }));
+
+      return new Response(
+        JSON.stringify({ clans }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     if (!query || query.trim().length === 0) {
       throw new Error('Search query is required');
