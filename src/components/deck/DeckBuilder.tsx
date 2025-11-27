@@ -309,23 +309,29 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
         </TabsContent>
 
         <TabsContent value="compare" className="mt-6">
-          {selectedCards.length === 8 && (
-            <DeckComparison
-              deck1={{
-                name: deckName || "Current Deck",
-                cards: selectedCards.map(c => c.name),
-                avgElixir,
-                synergy: analysis?.synergy_score,
-                metaScore: analysis?.meta_score,
-              }}
-              deck2={{
-                name: "Hog 2.6 Cycle",
-                cards: ["Hog Rider", "Musketeer", "Ice Spirit", "Skeletons", "Ice Golem", "Cannon", "Fireball", "The Log"],
-                avgElixir: 2.6,
-                synergy: 85,
-                metaScore: 78,
-              }}
-            />
+          {selectedCards.length === 8 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deck Comparison</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8 space-y-2">
+                  <GitCompare className="h-12 w-12 text-muted-foreground mx-auto" />
+                  <p className="text-muted-foreground">
+                    Deck comparison requires selecting from your saved decks or meta templates.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Save this deck first, then compare it with others from your collection.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Complete your deck with 8 cards to enable comparison
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
       </Tabs>

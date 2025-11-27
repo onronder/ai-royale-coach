@@ -49,8 +49,11 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
               <Activity className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">Meta Evolution</h4>
-              <p className="text-xs text-muted-foreground">Win rate trends over time</p>
+              <div className="flex items-center gap-2">
+                <h4 className="font-rajdhani font-bold text-lg text-foreground">Meta Evolution</h4>
+                <Badge variant="outline" className="text-xs text-warning border-warning">Demo</Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">Example historical trends</p>
             </div>
           </div>
           <div className="flex items-center gap-2">

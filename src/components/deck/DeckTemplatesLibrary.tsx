@@ -81,6 +81,13 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
         </div>
       </div>
 
+      {/* Demo Data Disclaimer */}
+      <div className="bg-warning/10 border border-warning/20 rounded-lg p-3">
+        <p className="text-xs text-muted-foreground">
+          <span className="font-semibold text-warning">Note:</span> Win rates and usage rates shown are estimated based on archetype patterns. Actual performance depends on player skill and card levels.
+        </p>
+      </div>
+
       <Tabs value={selectedArchetype} onValueChange={setSelectedArchetype}>
         <TabsList className="grid grid-cols-6 w-full">
           {archetypes.map((arch) => (

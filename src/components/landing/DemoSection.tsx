@@ -95,9 +95,18 @@ export function DemoSection() {
           <p className="text-muted-foreground text-lg">
             Experience intelligent deck analysis across different archetypes
           </p>
-          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-warning/10 border border-warning/30 rounded-lg text-sm text-warning">
-            <Sparkles className="w-4 h-4" />
-            <span className="font-rajdhani font-semibold">Demo Data - Sign up to analyze YOUR real decks and battles</span>
+          <div className="mt-4 bg-warning/10 border-2 border-warning/30 rounded-lg p-4 max-w-3xl mx-auto shadow-lg">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-warning/20">
+                <Sparkles className="h-5 w-5 text-warning" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-warning mb-1">Demo Data</p>
+                <p className="text-xs text-muted-foreground">
+                  The analysis below shows example decks with sample statistics. <span className="font-semibold">Real analysis is calculated from your actual battle history after signup</span> - including win rates, trophy changes, deck performance, and personalized AI coaching based on your games.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 

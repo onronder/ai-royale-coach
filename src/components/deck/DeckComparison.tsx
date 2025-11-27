@@ -30,17 +30,8 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
   };
 
   const stats = [
-    { label: "Synergy Score", val1: deck1.synergy || 0, val2: deck2.synergy || 0, max: 100 },
-    { label: "Meta Score", val1: deck1.metaScore || 0, val2: deck2.metaScore || 0, max: 100 },
     { label: "Avg Elixir", val1: deck1.avgElixir, val2: deck2.avgElixir, max: 5 },
   ];
-
-  const headToHeadPrediction = () => {
-    const score1 = (deck1.synergy || 50) + (deck1.metaScore || 50);
-    const score2 = (deck2.synergy || 50) + (deck2.metaScore || 50);
-    const winChance = Math.min(Math.max((score1 / (score1 + score2)) * 100, 20), 80);
-    return winChance.toFixed(0);
-  };
 
   return (
     <div className="space-y-4">
@@ -101,17 +92,11 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
 
           <Separator />
 
-          {/* Head to Head Prediction */}
-          <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 space-y-2">
-            <h4 className="font-heading text-sm text-foreground">Head-to-Head Matchup</h4>
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <Progress value={parseFloat(headToHeadPrediction())} className="h-3" />
-              </div>
-              <span className="font-heading text-lg text-primary">{headToHeadPrediction()}%</span>
-            </div>
+          {/* Matchup Analysis Disclaimer */}
+          <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
+            <h4 className="font-heading text-sm text-foreground">Matchup Analysis</h4>
             <p className="text-xs text-muted-foreground">
-              {deck1.name} has a {headToHeadPrediction()}% predicted win rate against {deck2.name}
+              Win rate predictions require actual battle history with both decks. Compare based on archetype matchups and card counters instead.
             </p>
           </div>
 
