@@ -5,6 +5,16 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Area
 import { Trophy, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { format } from "date-fns";
+import { parseClashRoyaleDate } from "@/lib/utils";
+
+function formatBattleDate(battleTime: string): string {
+  try {
+    const date = parseClashRoyaleDate(battleTime);
+    return format(date, 'MMM d, HH:mm');
+  } catch {
+    return 'Unknown';
+  }
+}
 
 interface TrophyProgressChartProps {
   battles: ClashRoyaleBattle[] | null;
@@ -26,7 +36,7 @@ export function TrophyProgressChart({
     
     // Sort battles by time (oldest first)
     const sortedBattles = [...battles].sort(
-      (a, b) => new Date(a.battleTime).getTime() - new Date(b.battleTime).getTime()
+      (a, b) => parseClashRoyaleDate(a.battleTime).getTime() - parseClashRoyaleDate(b.battleTime).getTime()
     );
 
     // Calculate trophy progression based on battle results
@@ -72,7 +82,7 @@ export function TrophyProgressChart({
       return {
         index: index + 1,
         trophies: Math.max(0, trophies),
-        date: format(new Date(battle.battleTime), 'MMM d, HH:mm'),
+        date: formatBattleDate(battle.battleTime),
         result: isWin ? 'Win' : isDraw ? 'Draw' : 'Loss',
         change: change > 0 ? `+${change}` : change === 0 ? '0' : `${change}`,
         opponent: battle.opponent[0]?.name || 'Unknown',
