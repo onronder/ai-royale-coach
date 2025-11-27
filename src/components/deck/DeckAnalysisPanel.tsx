@@ -1,12 +1,12 @@
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ArchetypeTag } from "./ArchetypeTag";
 import { WinRateChart } from "./WinRateChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, Target } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DataLoader } from "@/components/ui/data-loader";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -45,13 +45,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   });
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-64 w-full" />
-        <Skeleton className="h-48 w-full" />
-      </div>
-    );
+    return <DataLoader context="deck-analysis" variant="card" />;
   }
 
   if (error) {

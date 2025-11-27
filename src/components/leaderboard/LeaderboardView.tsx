@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trophy, Users, TrendingUp, RefreshCw } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
+import { DataLoader } from "@/components/ui/data-loader";
 
 interface LeaderboardEntry {
   id: string;
@@ -105,13 +105,7 @@ export function LeaderboardView({ userClanTag }: LeaderboardViewProps) {
 
   const renderLeaderboard = (entries: LeaderboardEntry[]) => {
     if (isLoading) {
-      return (
-        <div className="space-y-2">
-          {[...Array(10)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      );
+      return <DataLoader context="leaderboard" variant="inline" />;
     }
 
     if (entries.length === 0) {

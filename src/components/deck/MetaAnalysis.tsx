@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { TrendingUp, TrendingDown, Flame, Snowflake } from "lucide-react";
 
 interface MetaTrend {
@@ -26,13 +26,7 @@ export function MetaAnalysis() {
   });
 
   if (isLoading) {
-    return (
-      <AnalysisLoader
-        message="📊 Analyzing tournament meta trends..."
-        icon="crown"
-        showProgress
-      />
-    );
+    return <DataLoader context="analytics" variant="card" customMessage="Analyzing tournament meta trends..." />;
   }
 
   const getTrendIcon = (trend: string) => {

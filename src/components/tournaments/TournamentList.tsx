@@ -3,13 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Trophy, Users, Calendar, DollarSign, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CreateTournamentForm } from "./CreateTournamentForm";
 import { TournamentDetail } from "./TournamentDetail";
+import { DataLoader } from "@/components/ui/data-loader";
 
 interface Tournament {
   id: string;
@@ -98,13 +98,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-48 w-full" />
-        ))}
-      </div>
-    );
+    return <DataLoader context="tournaments" variant="card" />;
   }
 
   return (

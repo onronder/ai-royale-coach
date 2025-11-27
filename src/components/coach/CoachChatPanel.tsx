@@ -3,12 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, Bot, User, Loader2, X, MessageSquare, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { DataLoader } from "@/components/ui/data-loader";
 
 interface Message {
   id: string;
@@ -395,11 +395,7 @@ export function CoachChatPanel({
           <TabsContent value="chat" className="flex-1 flex flex-col m-0 min-h-0">
             <div className="flex-1 flex flex-col min-h-0 p-4">
               {loadingHistory ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-24 w-full" />
-                  <Skeleton className="h-24 w-full" />
-                  <Skeleton className="h-24 w-full" />
-                </div>
+                <DataLoader context="coach" variant="inline" customMessage="Loading chat history..." />
               ) : (
                 <>
                   <ScrollArea className="flex-1 pr-4" ref={scrollRef}>

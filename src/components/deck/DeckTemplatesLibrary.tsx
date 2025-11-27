@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AnalysisLoader } from "@/components/ui/analysis-loader";
+import { DataLoader } from "@/components/ui/data-loader";
 import { Trophy, Zap, TrendingUp, Copy } from "lucide-react";
 import { toast } from "sonner";
 
@@ -61,13 +61,7 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
   };
 
   if (isLoading) {
-    return (
-      <AnalysisLoader
-        message="📦 Loading deck templates..."
-        icon="crown"
-        showProgress
-      />
-    );
+    return <DataLoader context="generic" variant="card" customMessage="Loading deck templates..." />;
   }
 
   return (
