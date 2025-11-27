@@ -3,17 +3,20 @@ import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Crown, Swords, Sparkles } from "lucide-react";
+import { Trophy, Crown, Swords, Sparkles, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { useMatchDiscussion } from "@/contexts/MatchDiscussionContext";
 
 interface MatchDetailViewProps {
   battle: ClashRoyaleBattle | null;
   playerTag: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenCoach?: () => void;
 }
 
 interface MatchAnalysis {
@@ -28,7 +31,6 @@ function TrophyCelebration({ trophyChange }: { trophyChange: number }) {
   
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {/* Floating trophies animation */}
       {[...Array(5)].map((_, i) => (
         <div
           key={i}
@@ -41,7 +43,6 @@ function TrophyCelebration({ trophyChange }: { trophyChange: number }) {
           <Trophy className="w-5 h-5 text-gold drop-shadow-lg" />
         </div>
       ))}
-      {/* Sparkle burst */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <Sparkles className="w-8 h-8 text-gold animate-pulse" />
       </div>
@@ -75,7 +76,6 @@ function ConfettiBurst() {
           />
         </div>
       ))}
-      {/* Central crown burst */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 animate-crown-burst">
         <Crown className="w-12 h-12 text-gold drop-shadow-[0_0_15px_rgba(255,215,0,0.8)]" />
       </div>
@@ -83,66 +83,79 @@ function ConfettiBurst() {
   );
 }
 
-export function MatchDetailView({ battle, playerTag, open, onOpenChange }: MatchDetailViewProps) {
+export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const { setMatchContext } = useMatchDiscussion();
   
   // Normalize player tag
   const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
   
-  useEffect(() => {
-    if (open && battle) {
-      const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
-      if (playerTeam) {
-        const crowns = playerTeam.crowns;
-        const opponentCrowns = battle.opponent[0]?.crowns || 0;
-        const isWin = crowns > opponentCrowns;
-        
-        // 3-crown victory = confetti
-        if (isWin && crowns === 3) {
-          setShowConfetti(true);
-          const timer = setTimeout(() => setShowConfetti(false), 3000);
-          return () => clearTimeout(timer);
-        }
-        // Positive trophy change = trophy celebration
-        else if ((playerTeam.trophyChange || 0) > 0) {
-          setShowCelebration(true);
-          const timer = setTimeout(() => setShowCelebration(false), 2500);
-          return () => clearTimeout(timer);
-        }
-      }
-    }
-  }, [open, battle, normalizedPlayerTag]);
-  
-  if (!battle) return null;
+  // Compute player/opponent data early (before hooks)
+  const playerTeam = battle?.team.find(p => p.tag === normalizedPlayerTag);
+  const opponent = battle?.opponent[0];
+  const isWin = playerTeam && opponent ? playerTeam.crowns > opponent.crowns : false;
+  const trophyChange = playerTeam?.trophyChange || 0;
 
-  const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
-  const opponent = battle.opponent[0];
-  
-  if (!playerTeam || !opponent) return null;
-
-  const isWin = playerTeam.crowns > opponent.crowns;
-  const trophyChange = playerTeam.trophyChange || 0;
-
+  // IMPORTANT: useQuery MUST be called unconditionally (before any returns)
   const { data: analysis, isLoading } = useQuery({
-    queryKey: ['match-analysis', battle.battleTime, playerTag],
+    queryKey: ['match-analysis', battle?.battleTime, playerTag],
     queryFn: async () => {
+      if (!battle) throw new Error('No battle data');
       const { data, error } = await supabase.functions.invoke<MatchAnalysis>('analyze-match', {
         body: { battle, playerTag }
       });
       if (error) throw error;
       return data;
     },
-    enabled: open,
+    enabled: open && !!battle,
     staleTime: 24 * 60 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (open && battle && playerTeam) {
+      const crowns = playerTeam.crowns;
+      const opponentCrowns = opponent?.crowns || 0;
+      const matchIsWin = crowns > opponentCrowns;
+      
+      if (matchIsWin && crowns === 3) {
+        setShowConfetti(true);
+        const timer = setTimeout(() => setShowConfetti(false), 3000);
+        return () => clearTimeout(timer);
+      } else if ((playerTeam.trophyChange || 0) > 0) {
+        setShowCelebration(true);
+        const timer = setTimeout(() => setShowCelebration(false), 2500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [open, battle, playerTeam, opponent]);
+
+  // Handle "Discuss with Coach" click
+  const handleDiscussWithCoach = () => {
+    if (!battle || !playerTeam || !opponent) return;
+    
+    setMatchContext({
+      battle,
+      playerTag: normalizedPlayerTag,
+      analysis: analysis || undefined,
+      isWin,
+      playerCrowns: playerTeam.crowns,
+      opponentCrowns: opponent.crowns,
+      trophyChange,
+    });
+    
+    onOpenChange(false);
+    onOpenCoach?.();
+  };
+
+  // Early returns AFTER all hooks
+  if (!battle) return null;
+  if (!playerTeam || !opponent) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto relative">
-        {/* Confetti for 3-crown victory */}
         {showConfetti && <ConfettiBurst />}
-        {/* Trophy celebration overlay */}
         {showCelebration && <TrophyCelebration trophyChange={trophyChange} />}
         
         <DialogHeader>
@@ -233,6 +246,20 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange }: Match
                 )}
               </div>
             ) : null}
+          </div>
+
+          {/* Discuss with Coach Button */}
+          <div className="pt-4 border-t border-border">
+            <Button 
+              onClick={handleDiscussWithCoach}
+              className="w-full bg-gradient-to-r from-primary to-accent hover:shadow-glow transition-all"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Discuss with AI Coach
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Ask follow-up questions about this match and get personalized tips
+            </p>
           </div>
         </div>
       </DialogContent>
