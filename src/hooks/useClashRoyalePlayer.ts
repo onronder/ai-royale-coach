@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
+import { toast } from "@/hooks/use-toast";
 
 export function useClashRoyalePlayer(playerTag: string | null) {
   return useQuery<ClashRoyalePlayer>({
@@ -8,7 +9,6 @@ export function useClashRoyalePlayer(playerTag: string | null) {
     queryFn: async () => {
       if (!playerTag) throw new Error('Player tag is required');
 
-      // Try to get cached data first for immediate display
       const normalizedTag = playerTag.replace('#', '').toUpperCase();
       const { data: cached } = await supabase
         .from("player_cache")
@@ -25,7 +25,7 @@ export function useClashRoyalePlayer(playerTag: string | null) {
         }
       }
 
-      // Otherwise fetch from API via clashRoyaleApi service
+      // Fetch from API
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/clash-royale-api?endpoint=player&playerTag=${encodeURIComponent(playerTag)}`,
         {
@@ -36,20 +36,35 @@ export function useClashRoyalePlayer(playerTag: string | null) {
       );
 
       if (!response.ok) {
-        // If API fails but we have stale cache, return it
         if (cached?.player_data) {
           console.warn('API failed, using stale cache');
+          toast({
+            title: "Using cached data",
+            description: "API unavailable - showing previously saved player profile",
+            variant: "default",
+          });
           return cached.player_data;
         }
         throw new Error(`Failed to fetch player data: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      
+      // Check if this was a fresh API fetch (not cached on server)
+      const cacheHit = response.headers.get('X-Cache-Hit') === 'true';
+      if (!cacheHit) {
+        toast({
+          title: "Player data updated",
+          description: `Fresh profile data loaded for ${data.name || normalizedTag}`,
+        });
+      }
+
+      return data;
     },
     enabled: !!playerTag,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-    refetchInterval: false, // Don't auto-refetch to avoid rate limits
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchInterval: false,
     retry: 1,
   });
 }
