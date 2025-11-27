@@ -3,6 +3,7 @@ import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GameTooltip, rarityTooltips } from "@/components/ui/tooltip-helpers";
+import { calculateDisplayLevel } from "@/utils/cardLevelCalculator";
 
 interface CardImageProps {
   card: ClashRoyaleCard;
@@ -28,12 +29,14 @@ export function CardImage({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  // Convert API level to in-game display level
-  // Formula: displayLevel = level + (14 - maxLevel)
-  // This accounts for Champions (maxLevel 4) displaying as levels 11-14 in game
-  // Evolved cards get +2 levels bonus in-game
-  const baseDisplayLevel = card.level + (14 - (card.maxLevel || 14));
-  const displayLevel = card.evolutionLevel ? baseDisplayLevel + 2 : baseDisplayLevel;
+  // Use centralized card level calculator for accurate in-game display levels
+  const levelResult = calculateDisplayLevel({
+    level: card.level,
+    maxLevel: card.maxLevel,
+    evolutionLevel: card.evolutionLevel,
+    rarity: card.rarity,
+  });
+  const displayLevel = levelResult.displayLevel;
 
   const rarityColors = {
     common: 'border-border',
