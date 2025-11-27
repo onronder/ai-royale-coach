@@ -249,7 +249,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                     <div className="space-y-1">
                       <Progress value={progress} className="h-1.5" />
                       <p className="text-xs text-center text-muted-foreground">
-                        {nextLevelReq! - card.card_count} to level {card.card_level + 1}
+                        {nextLevelReq! - card.card_count} to level {card.card_level + (14 - card.max_level) + 1}
                       </p>
                     </div>
                   ) : (
