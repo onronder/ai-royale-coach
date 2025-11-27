@@ -11,6 +11,20 @@ interface MatchAnalysisRequest {
   playerTag: string;
 }
 
+interface PivotalInteraction {
+  yourCard: string;
+  opponentCard: string;
+  phase: 'early' | 'mid' | 'late' | 'overtime';
+  description: string;
+  impact: 'high' | 'medium';
+}
+
+interface CounterDeckSuggestion {
+  cards: string[];
+  explanations: Record<string, string>;
+  overallStrategy: string;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -19,23 +33,32 @@ Deno.serve(async (req) => {
   try {
     const { battle, playerTag }: MatchAnalysisRequest = await req.json();
     
+    // Normalize player tag - ensure it has # prefix for matching
+    const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+    console.log('Analyzing match for player:', normalizedTag);
+    console.log('Battle team tags:', battle.team?.map((p: any) => p.tag));
+    
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const playerTeam = battle.team.find((p: any) => p.tag === playerTag);
+    const playerTeam = battle.team.find((p: any) => p.tag === normalizedTag);
     const opponent = battle.opponent[0];
     
     if (!playerTeam || !opponent) {
+      console.error('Player not found. Looking for:', normalizedTag);
+      console.error('Available tags in team:', battle.team?.map((p: any) => p.tag));
       throw new Error('Player or opponent not found in battle data');
     }
 
     const isWin = playerTeam.crowns > opponent.crowns;
     const playerCards = playerTeam.cards.map((c: any) => c.name).join(', ');
     const opponentCards = opponent.cards.map((c: any) => c.name).join(', ');
+    const playerCardsList = playerTeam.cards.map((c: any) => c.name);
+    const opponentCardsList = opponent.cards.map((c: any) => c.name);
 
-    const prompt = `Analyze this Clash Royale match:
+    const prompt = `Analyze this Clash Royale match and provide structured insights:
 
 **Battle Outcome:** ${isWin ? 'Victory' : 'Defeat'}
 **Final Score:** ${playerTeam.crowns} - ${opponent.crowns} crowns
@@ -44,12 +67,31 @@ Deno.serve(async (req) => {
 **Your Deck:** ${playerCards}
 **Opponent's Deck:** ${opponentCards}
 
-Provide a concise analysis with:
-1. **Deck Matchup** (2-3 sentences): How do these decks match up? What are the key interactions?
-2. **What Happened** (2-3 sentences): Based on the outcome, what likely happened in this match?
-3. **Recommendations** (3 bullet points): Specific tips for ${isWin ? 'maintaining this advantage' : 'improving against this matchup'} next time.
+Provide your analysis in the following JSON format:
+{
+  "deckMatchup": "2-3 sentences about how these decks match up and key interactions",
+  "analysis": "2-3 sentences about what likely happened based on outcome",
+  "recommendations": ["tip 1", "tip 2", "tip 3"],
+  "pivotalInteractions": [
+    {
+      "yourCard": "card name from your deck",
+      "opponentCard": "card name from opponent deck",
+      "phase": "early|mid|late|overtime",
+      "description": "Brief description of this key interaction",
+      "impact": "high|medium"
+    }
+  ],
+  "counterDeck": {
+    "cards": ["8 card names that counter opponent's deck well"],
+    "explanations": {"CardName": "Why this card counters their deck"},
+    "overallStrategy": "How to play this counter deck against their strategy"
+  }
+}
 
-Keep it practical and actionable.`;
+For pivotalInteractions: identify 3-4 key card matchups that likely decided or influenced the game.
+For counterDeck: suggest 8 cards that would effectively counter the opponent's deck composition.
+
+Return ONLY valid JSON, no markdown or extra text.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -62,7 +104,7 @@ Keep it practical and actionable.`;
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert Clash Royale coach. Provide clear, actionable advice based on match data.' 
+            content: 'You are an expert Clash Royale coach and analyst. Provide analysis in valid JSON format only. Be practical and actionable.' 
           },
           { role: 'user', content: prompt }
         ],
@@ -78,33 +120,54 @@ Keep it practical and actionable.`;
 
     const aiData = await response.json();
     const analysisText = aiData.choices[0].message.content;
-
-    // Parse the structured response
-    const sections = analysisText.split(/\*\*/).filter((s: string) => s.trim());
     
-    let deckMatchup = '';
-    let analysis = '';
-    const recommendations: string[] = [];
+    console.log('AI Response:', analysisText);
 
-    for (let i = 0; i < sections.length; i++) {
-      const section = sections[i];
-      if (section.includes('Deck Matchup') && sections[i + 1]) {
-        deckMatchup = sections[i + 1].replace(/^[:\s]+/, '').trim();
-      } else if (section.includes('What Happened') && sections[i + 1]) {
-        analysis = sections[i + 1].replace(/^[:\s]+/, '').trim();
-      } else if (section.includes('Recommendations') && sections[i + 1]) {
-        const recText = sections[i + 1].replace(/^[:\s]+/, '').trim();
-        const bullets = recText.split('\n').filter((line: string) => line.trim().match(/^[\*\-•]/));
-        recommendations.push(...bullets.map((b: string) => b.replace(/^[\*\-•]\s*/, '').trim()));
-      }
+    // Parse JSON response
+    let parsedAnalysis;
+    try {
+      // Clean up potential markdown code blocks
+      const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      parsedAnalysis = JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.error('JSON parse error, falling back to text parsing:', parseError);
+      // Fallback to simple text extraction
+      parsedAnalysis = {
+        deckMatchup: analysisText.slice(0, 300),
+        analysis: analysisText,
+        recommendations: [],
+        pivotalInteractions: [],
+        counterDeck: null,
+      };
     }
 
+    // Validate and normalize the response
+    const result = {
+      deckMatchup: parsedAnalysis.deckMatchup || 'Unable to analyze deck matchup.',
+      analysis: parsedAnalysis.analysis || analysisText,
+      recommendations: Array.isArray(parsedAnalysis.recommendations) 
+        ? parsedAnalysis.recommendations.slice(0, 5) 
+        : [],
+      pivotalInteractions: Array.isArray(parsedAnalysis.pivotalInteractions)
+        ? parsedAnalysis.pivotalInteractions.slice(0, 4).map((i: any) => ({
+            yourCard: i.yourCard || 'Unknown',
+            opponentCard: i.opponentCard || 'Unknown',
+            phase: ['early', 'mid', 'late', 'overtime'].includes(i.phase) ? i.phase : 'mid',
+            description: i.description || '',
+            impact: i.impact === 'high' ? 'high' : 'medium',
+          }))
+        : [],
+      counterDeck: parsedAnalysis.counterDeck ? {
+        cards: Array.isArray(parsedAnalysis.counterDeck.cards) 
+          ? parsedAnalysis.counterDeck.cards.slice(0, 8)
+          : [],
+        explanations: parsedAnalysis.counterDeck.explanations || {},
+        overallStrategy: parsedAnalysis.counterDeck.overallStrategy || '',
+      } : null,
+    };
+
     return new Response(
-      JSON.stringify({
-        deckMatchup: deckMatchup || analysisText.slice(0, 200),
-        analysis: analysis || analysisText,
-        recommendations: recommendations.slice(0, 3),
-      }),
+      JSON.stringify(result),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
