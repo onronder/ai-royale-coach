@@ -28,6 +28,11 @@ export function CardImage({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
+  // Convert API level to in-game display level
+  // Formula: displayLevel = level + (14 - maxLevel)
+  // This accounts for Champions (maxLevel 4) displaying as levels 11-14 in game
+  const displayLevel = card.level + (14 - (card.maxLevel || 14));
+
   const rarityColors = {
     common: 'border-border',
     rare: 'border-accent/50',
@@ -78,7 +83,7 @@ export function CardImage({
 
       {showLevel && (
         <div className="absolute bottom-1 right-1 bg-primary text-primary-foreground text-xs font-bold font-rajdhani rounded px-2 py-0.5 shadow-glow">
-          {card.level}
+          {displayLevel}
         </div>
       )}
 
@@ -102,7 +107,7 @@ export function CardImage({
         <div className="space-y-2">
           <p className="font-rajdhani font-bold text-base">{card.name}</p>
           <p className="text-xs text-muted-foreground capitalize">
-            {rarity} • {card.elixirCost} Elixir • Level {card.level}
+            {rarity} • {card.elixirCost} Elixir • Level {displayLevel}
           </p>
           {card.rarity && (
             <p className="text-xs text-primary/80 border-t border-border pt-2">
