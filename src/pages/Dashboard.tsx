@@ -60,83 +60,68 @@ const Dashboard = () => {
     const fetchPlayerContext = async () => {
       if (!user?.id || !playerTag) return;
 
-      try {
-        // Fetch saved decks
-        const { data: decks } = await supabase
-          .from('saved_decks')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('updated_at', { ascending: false })
-          .limit(10);
-        
-        if (decks) setSavedDecks(decks);
+  // Auto-sync card collection, card mastery, and deck stats on first visit
+  useEffect(() => {
+    if (!user?.id || !playerTag) return;
 
-        // Fetch card mastery
-        const { data: mastery } = await supabase
-          .from('card_mastery')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('player_tag', playerTag)
-          .order('mastery_level', { ascending: false })
-          .limit(20);
-        
-        if (mastery) setCardMastery(mastery);
+    const runBackgroundSync = async () => {
+      // Check if card collection is empty
+      const { count: collectionCount } = await supabase
+        .from('card_collection')
+        .select('*', { count: 'exact', head: true })
+        .eq('player_tag', playerTag);
 
-        // Fetch achievements
-        const { data: achievementData } = await supabase
-          .from('user_achievements')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('player_tag', playerTag);
-        
-        if (achievementData) setAchievements(achievementData);
-
-        // Fetch card collection
-        const { data: collection } = await supabase
-          .from('card_collection')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('player_tag', playerTag)
-          .limit(50);
-        
-        if (collection) setCardCollection(collection);
-
-        // Auto-sync on first visit: Trigger syncs if tables are empty
-        if (collection?.length === 0) {
-          console.log('Auto-syncing card collection...');
-          toast.info("Syncing your card collection...", {
-            description: "Loading from cache, then updating in background"
+      if (collectionCount === 0) {
+        console.log('Starting background card collection sync...');
+        supabase.functions
+          .invoke('sync-card-collection', { body: { playerTag } })
+          .then(() => {
+            toast.success('Card collection synced');
+          })
+          .catch((err) => {
+            console.error('Background sync failed:', err);
           });
-          
-          // Run sync in background without awaiting
-          supabase.functions.invoke('sync-card-collection', {
-            body: { playerTag, userId: user.id }
-          }).then(({ error }) => {
-            if (error) {
-              console.error('Auto-sync failed:', error);
-            } else {
-              toast.success('Card collection synced!');
-            }
-          });
-        }
-
-        if (mastery?.length === 0) {
-          console.log('Auto-calculating card mastery...');
-          
-          // Run calculation in background without awaiting
-          supabase.functions.invoke('calculate-card-mastery', {
-            body: { playerTag }
-          }).then(({ error }) => {
-            if (error) {
-              console.error('Mastery calculation failed:', error);
-            } else {
-              toast.success('Card mastery calculated!');
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching player context:', error);
       }
+
+      // Check if card mastery is empty
+      const { count: masteryCount } = await supabase
+        .from('card_mastery')
+        .select('*', { count: 'exact', head: true })
+        .eq('player_tag', playerTag);
+
+      if (masteryCount === 0) {
+        console.log('Starting background card mastery calculation...');
+        supabase.functions
+          .invoke('calculate-card-mastery', { body: { playerTag } })
+          .then(() => {
+            toast.success('Card mastery calculated');
+          })
+          .catch((err) => {
+            console.error('Background card mastery failed:', err);
+          });
+      }
+
+      // Check if deck stats are empty
+      const { count: deckStatsCount } = await supabase
+        .from('deck_usage_stats')
+        .select('*', { count: 'exact', head: true })
+        .eq('player_tag', playerTag);
+
+      if (deckStatsCount === 0) {
+        console.log('Starting background deck stats tracking...');
+        supabase.functions
+          .invoke('track-deck-stats', { body: { playerTag } })
+          .then(() => {
+            toast.success('Deck stats tracked');
+          })
+          .catch((err) => {
+            console.error('Background deck stats failed:', err);
+          });
+      }
+    };
+
+    runBackgroundSync();
+  }, [user?.id, playerTag]);
     };
 
     fetchPlayerContext();

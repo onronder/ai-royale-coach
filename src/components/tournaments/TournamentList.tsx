@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CreateTournamentForm } from "./CreateTournamentForm";
+import { TournamentDetail } from "./TournamentDetail";
 
 interface Tournament {
   id: string;
@@ -27,6 +28,23 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
+  const [playerTag, setPlayerTag] = useState<string>("");
+  const [playerName, setPlayerName] = useState<string>("");
+
+  useEffect(() => {
+    // Get player info from session or localStorage
+    const getPlayerInfo = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (session.session?.user) {
+        const tag = localStorage.getItem('player_tag') || '';
+        const name = localStorage.getItem('player_name') || 'Player';
+        setPlayerTag(tag);
+        setPlayerName(name);
+      }
+    };
+    getPlayerInfo();
+  }, []);
 
   useEffect(() => {
     fetchTournaments();
@@ -122,7 +140,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
 
       {tournaments.map((tournament) => (
         <Card key={tournament.id} className="hover:shadow-lg transition-shadow cursor-pointer"
-          onClick={() => onSelectTournament(tournament.id)}>
+          onClick={() => setSelectedTournamentId(tournament.id)}>
           <CardHeader>
             <div className="flex items-start justify-between">
               <div className="space-y-1">
@@ -169,6 +187,14 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
           </CardContent>
         </Card>
       ))}
+
+      <TournamentDetail
+        tournamentId={selectedTournamentId || ""}
+        isOpen={!!selectedTournamentId}
+        onClose={() => setSelectedTournamentId(null)}
+        playerTag={playerTag}
+        playerName={playerName}
+      />
 
     </div>
   );
