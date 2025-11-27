@@ -30,14 +30,21 @@ serve(async (req) => {
       });
     }
 
-    // Fetch battle log from clash-royale-api function
+    // Fetch battle log from clash-royale-api function using correct endpoint format
+    console.log('Fetching battles for player:', playerTag);
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
-      body: { endpoint: `players/${encodeURIComponent(playerTag)}/battlelog` }
+      body: { 
+        endpoint: 'battles',
+        playerTag: playerTag 
+      }
     });
 
     if (battleError || !battles) {
+      console.error('Failed to fetch battle log:', battleError);
       throw new Error('Failed to fetch battle log');
     }
+
+    console.log(`Processing ${battles.length} battles for deck stats`);
 
     // Process battles and aggregate deck stats
     const deckStats = new Map<string, any>();
@@ -54,8 +61,8 @@ serve(async (req) => {
           battles_played: 0,
           battles_won: 0,
           battles_lost: 0,
-          total_crowns: battle.team[0].crowns || 0,
-          total_trophy_change: battle.team[0].trophyChange || 0,
+          total_crowns: 0,
+          total_trophy_change: 0,
           avg_elixir: cards.reduce((sum: number, cardName: string) => {
             const card = battle.team[0].cards.find((c: any) => c.name === cardName);
             return sum + (card?.elixir || 0);
@@ -91,6 +98,8 @@ serve(async (req) => {
     });
 
     await Promise.all(upsertPromises);
+
+    console.log(`Successfully tracked ${deckStats.size} decks`);
 
     return new Response(JSON.stringify({ 
       success: true, 
