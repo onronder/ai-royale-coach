@@ -7,6 +7,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+/**
+ * Calculate in-game display level from API card data
+ * Formula: displayLevel = apiLevel + (14 - maxLevel) + (evolutionLevel ? 2 : 0)
+ */
+function getDisplayLevel(card: { level: number; maxLevel?: number; evolutionLevel?: number }): number {
+  const maxLevel = card.maxLevel ?? 14;
+  const baseLevel = card.level + (14 - maxLevel);
+  return card.evolutionLevel ? baseLevel + 2 : baseLevel;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -80,7 +90,7 @@ Recent Performance (last 20 battles):
 - Wins: ${wins}, Losses: ${recentBattles.length - wins}
 
 Current Deck:
-${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${c.level + (14 - (c.maxLevel || 14))})`).join('\n') || 'No deck data'}
+${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${getDisplayLevel(c)}${c.evolutionLevel ? ' EVO' : ''})`).join('\n') || 'No deck data'}
 
 Battle Types Distribution:
 ${Object.entries(
