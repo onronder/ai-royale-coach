@@ -713,7 +713,20 @@
   "selectPlayer": {
     "badge": "Select Account",
     "title": "Choose Your Champion",
-    "subtitle": "Select or add a player tag to view your stats"
+    "subtitle": "Select or add a player tag to view your stats",
+    "accountsLinked": "{{count}}/3 accounts linked",
+    "compareAccounts": "Compare Accounts",
+    "hideComparison": "Hide Comparison",
+    "noTagsTitle": "No Player Tags Linked",
+    "noTagsDescription": "Add your Clash Royale player tag to get started with personalized analytics and coaching.",
+    "playerTagLabel": "Player Tag",
+    "tagPlaceholder": "Enter tag (e.g., #ABC123)",
+    "tagHelp": "Find your tag in Clash Royale → Profile → Below your name",
+    "adding": "Adding...",
+    "addTag": "Add Tag",
+    "addAnotherTag": "Add Another Player Tag",
+    "maxTagsReached": "Maximum of 3 player tags reached. Remove one to add a new one.",
+    "lastUsed": "Last used"
   },
   "footer": {
     "tagline": "Elevate your gameplay."
