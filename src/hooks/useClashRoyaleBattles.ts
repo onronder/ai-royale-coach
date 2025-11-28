@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { toast } from "@/hooks/use-toast";
+import i18n from "@/i18n";
 
 async function fetchBattles(playerTag: string, forceRefresh: boolean = false): Promise<ClashRoyaleBattle[]> {
   const normalizedTag = playerTag.replace('#', '').toUpperCase();
@@ -49,8 +50,8 @@ async function fetchBattles(playerTag: string, forceRefresh: boolean = false): P
     if (cached?.battles_data) {
       console.warn('API failed, using stale cache');
       toast({
-        title: "Using cached data",
-        description: "API unavailable - showing previously saved battle history",
+        title: i18n.t('dataSync.usingCachedData'),
+        description: i18n.t('dataSync.battleHistoryUnavailable'),
         variant: "default",
       });
       return cached.battles_data as unknown as ClashRoyaleBattle[];
@@ -64,8 +65,8 @@ async function fetchBattles(playerTag: string, forceRefresh: boolean = false): P
   const cacheHit = response.headers.get('X-Cache-Hit') === 'true';
   if ((!cacheHit || forceRefresh) && Array.isArray(data)) {
     toast({
-      title: "Battle history updated",
-      description: `Loaded ${data.length} recent battles`,
+      title: i18n.t('dataSync.battleHistoryUpdated'),
+      description: i18n.t('dataSync.battlesLoaded', { count: data.length }),
     });
   }
 

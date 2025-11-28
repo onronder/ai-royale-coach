@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 import { toast } from "@/hooks/use-toast";
+import i18n from "@/i18n";
 
 async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Promise<ClashRoyalePlayer> {
   const normalizedTag = playerTag.replace('#', '').toUpperCase();
@@ -49,8 +50,8 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
     if (cached?.player_data) {
       console.warn('API failed, using stale cache');
       toast({
-        title: "Using cached data",
-        description: "API unavailable - showing previously saved player profile",
+        title: i18n.t('dataSync.usingCachedData'),
+        description: i18n.t('dataSync.playerProfileUnavailable'),
         variant: "default",
       });
       return cached.player_data as unknown as ClashRoyalePlayer;
@@ -64,8 +65,8 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
   const cacheHit = response.headers.get('X-Cache-Hit') === 'true';
   if (!cacheHit || forceRefresh) {
     toast({
-      title: "Player data updated",
-      description: `Fresh profile data loaded for ${data.name || normalizedTag}`,
+      title: i18n.t('dataSync.playerDataUpdated'),
+      description: i18n.t('dataSync.profileLoaded', { name: data.name || normalizedTag }),
     });
   }
 

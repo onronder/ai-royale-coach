@@ -859,5 +859,55 @@
   },
   "footer": {
     "tagline": "Domination de l'arène avec l'IA"
+  },
+  "tooltips": {
+    "stats": {
+      "trophies": "Votre nombre actuel de trophées. Gagnez des trophées en remportant des batailles et montez dans le classement !",
+      "bestTrophies": "Le plus grand nombre de trophées que vous avez atteint. Cela montre votre meilleure performance.",
+      "winRate": "Pourcentage de batailles gagnées sur vos 25 derniers matchs. Visez 50% ou plus !",
+      "arena": "Votre arène compétitive actuelle basée sur les trophées. Les arènes supérieures débloquent de meilleures récompenses.",
+      "avgElixir": "Coût moyen en élixir de votre deck. Plus bas est plus rapide, plus haut est plus puissant. Visez 3.0-4.0.",
+      "crowns": "Couronnes de tour détruites dans un match. Obtenez 3 couronnes pour une domination totale !",
+      "trophyChange": "Trophées gagnés ou perdus de ce match. Gagnez plus pour monter plus vite !"
+    },
+    "rarity": {
+      "common": "Les cartes communes sont faciles à améliorer et forment la base de la plupart des decks.",
+      "rare": "Les cartes rares offrent des capacités uniques et sont modérément difficiles à améliorer.",
+      "epic": "Les cartes épiques fournissent des effets puissants mais nécessitent plus de cartes pour améliorer.",
+      "legendary": "Les cartes légendaires sont les plus rares et puissantes, avec des capacités qui changent la donne.",
+      "champion": "Les champions sont des cartes ultra rares avec des capacités spéciales qui peuvent changer le cours de la bataille."
+    },
+    "gameplay": {
+      "elixir": "💡 Astuce : Ne gaspillez jamais d'élixir ! Ayez toujours un plan pour votre prochain coup.",
+      "defense": "🛡️ Astuce : Une défense solide gagne les matchs. Contrez les attaques adverses efficacement.",
+      "cycle": "♻️ Astuce : Faites tourner votre deck rapidement pour accéder aux cartes clés quand vous en avez besoin.",
+      "timing": "⏰ Astuce : Gardez vos grands sorts pour quand ils peuvent toucher plusieurs cibles.",
+      "counter": "⚔️ Astuce : Connaissez vos contres ! Chaque carte a des faiblesses que vous pouvez exploiter."
+    }
+  },
+  "cacheStatus": {
+    "title": "État du Cache de Données",
+    "syncing": "Synchronisation...",
+    "syncingWithCR": "Synchronisation avec Clash Royale...",
+    "fetchingData": "Récupération des dernières données du joueur et de l'historique des batailles",
+    "stale": "Obsolète",
+    "fresh": "À jour",
+    "noData": "Aucune donnée",
+    "empty": "Vide",
+    "playerData": "Données du Joueur",
+    "battleHistory": "Historique des Batailles",
+    "notCached": "Non mis en cache",
+    "waitMessage": "Veuillez patienter pendant la synchronisation de vos données...",
+    "cacheInfo": "Le cache réduit les appels API et améliore les temps de chargement. Les données fraîches ont moins de 5 minutes.",
+    "refreshData": "Actualiser les Données"
+  },
+  "dataSync": {
+    "usingCachedData": "Utilisation des données en cache",
+    "battleHistoryUnavailable": "API indisponible - affichage de l'historique des batailles sauvegardé",
+    "playerProfileUnavailable": "API indisponible - affichage du profil joueur sauvegardé",
+    "battleHistoryUpdated": "Historique des batailles mis à jour",
+    "battlesLoaded": "{{count}} batailles récentes chargées",
+    "playerDataUpdated": "Données du joueur mises à jour",
+    "profileLoaded": "Données de profil fraîches chargées pour {{name}}"
   }
 }

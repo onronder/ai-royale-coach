@@ -859,5 +859,55 @@
   },
   "footer": {
     "tagline": "Dominio de la arena con IA"
+  },
+  "tooltips": {
+    "stats": {
+      "trophies": "Tu conteo actual de trofeos. ¡Gana trofeos ganando batallas y sube en los rankings!",
+      "bestTrophies": "El conteo más alto de trofeos que has alcanzado. Muestra tu máximo rendimiento.",
+      "winRate": "Porcentaje de batallas ganadas de tus últimas 25 partidas. ¡Apunta al 50% o más!",
+      "arena": "Tu arena competitiva actual basada en trofeos. Arenas más altas desbloquean mejores recompensas.",
+      "avgElixir": "Costo promedio de elixir de tu mazo. Menor es más rápido, mayor es más poderoso. Apunta a 3.0-4.0.",
+      "crowns": "Coronas de torre destruidas en una partida. ¡Consigue 3 coronas para dominación total!",
+      "trophyChange": "Trofeos ganados o perdidos en esta partida. ¡Gana más para subir más rápido!"
+    },
+    "rarity": {
+      "common": "Las cartas comunes son fáciles de mejorar y forman la base de la mayoría de mazos.",
+      "rare": "Las cartas raras ofrecen habilidades únicas y son moderadamente difíciles de mejorar.",
+      "epic": "Las cartas épicas proporcionan efectos poderosos pero requieren más cartas para mejorar.",
+      "legendary": "Las cartas legendarias son las más raras y poderosas, con habilidades que cambian el juego.",
+      "champion": "Los campeones son cartas ultra raras con habilidades especiales que pueden cambiar el rumbo de la batalla."
+    },
+    "gameplay": {
+      "elixir": "💡 Consejo: ¡Nunca desperdicies elixir! Siempre ten un plan para tu próxima jugada.",
+      "defense": "🛡️ Consejo: La defensa fuerte gana partidas. Contrarresta los ataques de tu oponente eficientemente.",
+      "cycle": "♻️ Consejo: Cicla tu mazo rápidamente para acceder a las cartas clave cuando las necesites.",
+      "timing": "⏰ Consejo: Guarda tus hechizos grandes para cuando puedan golpear múltiples objetivos.",
+      "counter": "⚔️ Consejo: ¡Conoce tus contras! Cada carta tiene debilidades que puedes explotar."
+    }
+  },
+  "cacheStatus": {
+    "title": "Estado del Caché de Datos",
+    "syncing": "Sincronizando...",
+    "syncingWithCR": "Sincronizando con Clash Royale...",
+    "fetchingData": "Obteniendo últimos datos del jugador e historial de batallas",
+    "stale": "Desactualizado",
+    "fresh": "Actualizado",
+    "noData": "Sin datos",
+    "empty": "Vacío",
+    "playerData": "Datos del Jugador",
+    "battleHistory": "Historial de Batallas",
+    "notCached": "No en caché",
+    "waitMessage": "Por favor espera mientras sincronizamos tus datos...",
+    "cacheInfo": "El caché reduce llamadas API y mejora tiempos de carga. Datos frescos tienen menos de 5 minutos.",
+    "refreshData": "Actualizar Datos"
+  },
+  "dataSync": {
+    "usingCachedData": "Usando datos en caché",
+    "battleHistoryUnavailable": "API no disponible - mostrando historial de batallas guardado",
+    "playerProfileUnavailable": "API no disponible - mostrando perfil de jugador guardado",
+    "battleHistoryUpdated": "Historial de batallas actualizado",
+    "battlesLoaded": "Se cargaron {{count}} batallas recientes",
+    "playerDataUpdated": "Datos del jugador actualizados",
+    "profileLoaded": "Datos de perfil frescos cargados para {{name}}"
   }
 }
