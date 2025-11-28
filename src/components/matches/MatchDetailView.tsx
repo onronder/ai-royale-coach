@@ -6,7 +6,7 @@ import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Target, Clock } from "lucide-react";
+import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -158,7 +158,7 @@ const phasePositions = {
 };
 
 // Match Timeline visualization
-function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] }) {
+function MatchTimeline({ interactions, t }: { interactions: PivotalInteraction[]; t: (key: string) => string }) {
   if (!interactions || interactions.length === 0) return null;
 
   // Group interactions by phase
@@ -168,7 +168,7 @@ function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] })
     <div className="space-y-3">
       <h3 className="font-semibold text-lg flex items-center gap-2">
         <Clock className="w-5 h-5 text-primary" />
-        Match Timeline
+        {t('matchDetail.matchTimeline')}
       </h3>
       <div className="relative bg-card/50 rounded-lg border p-4">
         {/* Timeline bar */}
@@ -183,10 +183,10 @@ function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] })
         
         {/* Phase labels */}
         <div className="flex justify-between mt-1 px-1">
-          <span className="text-[10px] text-blue-400">Early</span>
-          <span className="text-[10px] text-yellow-400">Mid</span>
-          <span className="text-[10px] text-orange-400">Late</span>
-          <span className="text-[10px] text-red-400">OT</span>
+          <span className="text-[10px] text-blue-400">{t('matchDetail.phases.early')}</span>
+          <span className="text-[10px] text-yellow-400">{t('matchDetail.phases.mid')}</span>
+          <span className="text-[10px] text-orange-400">{t('matchDetail.phases.late')}</span>
+          <span className="text-[10px] text-red-400">{t('matchDetail.phases.overtime')}</span>
         </div>
         
         {/* Interaction dots on timeline */}
@@ -236,7 +236,7 @@ function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] })
                           {interaction.phase.charAt(0).toUpperCase() + interaction.phase.slice(1)}
                         </Badge>
                         {interaction.impact === 'high' && (
-                          <Badge className="bg-primary/20 text-primary text-xs">High Impact</Badge>
+                          <Badge className="bg-primary/20 text-primary text-xs">{t('matchDetail.highImpact')}</Badge>
                         )}
                       </div>
                       <p className="text-xs font-medium">
@@ -256,14 +256,14 @@ function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] })
 }
 
 // Key Moments component with card icons
-function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
+function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t: (key: string) => string }) {
   if (!interactions || interactions.length === 0) return null;
 
   return (
     <div className="space-y-3">
       <h3 className="font-semibold text-lg flex items-center gap-2">
         <Zap className="w-5 h-5 text-primary" />
-        Key Moments
+        {t('matchDetail.keyMoments')}
       </h3>
       <div className="grid gap-3">
         {interactions.map((interaction, idx) => (
@@ -277,10 +277,10 @@ function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={cn("text-xs", phaseColors[interaction.phase])}>
-                  {interaction.phase.charAt(0).toUpperCase() + interaction.phase.slice(1)} Game
+                  {t(`matchDetail.phases.${interaction.phase}`)} {t('matchDetail.game')}
                 </Badge>
                 {interaction.impact === 'high' && (
-                  <Badge className="bg-primary/20 text-primary text-xs">High Impact</Badge>
+                  <Badge className="bg-primary/20 text-primary text-xs">{t('matchDetail.highImpact')}</Badge>
                 )}
               </div>
             </div>
@@ -306,7 +306,7 @@ function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
 }
 
 export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [counterDeckOpen, setCounterDeckOpen] = useState(false);
@@ -397,12 +397,12 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <Badge variant={isWin ? "default" : "destructive"} className="text-base">
-                {isWin ? "Victory" : "Defeat"}
+                {isWin ? t('matchDetail.victory') : t('matchDetail.defeat')}
               </Badge>
               <span className="text-muted-foreground">{battle.gameMode.name}</span>
             </DialogTitle>
             <DialogDescription>
-              Detailed analysis of your match against {opponent.name}
+              {t('matchDetail.description', { opponent: opponent.name })}
             </DialogDescription>
           </DialogHeader>
 
@@ -415,7 +415,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               <div className="text-center">
                 <Crown className={cn("w-6 h-6 mx-auto mb-1", isWin ? "text-gold" : "text-primary")} />
                 <p className="text-2xl font-bold font-rajdhani">{playerTeam.crowns} - {opponent.crowns}</p>
-                <p className="text-xs text-muted-foreground">Crowns</p>
+                <p className="text-xs text-muted-foreground">{t('matchDetail.crowns')}</p>
               </div>
               {trophyChange !== 0 && (
                 <div className="text-center">
@@ -429,13 +429,13 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                   )}>
                     {trophyChange > 0 ? '+' : ''}{trophyChange}
                   </p>
-                  <p className="text-xs text-muted-foreground">Trophies</p>
+                  <p className="text-xs text-muted-foreground">{t('matchDetail.trophies')}</p>
                 </div>
               )}
               <div className="text-center">
                 <Swords className="w-6 h-6 mx-auto mb-1 text-primary" />
                 <p className="text-sm font-medium">{battle.arena.name}</p>
-                <p className="text-xs text-muted-foreground">Arena</p>
+                <p className="text-xs text-muted-foreground">{t('matchDetail.arena')}</p>
               </div>
             </div>
 
@@ -443,13 +443,13 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-green-500">●</span> Your Deck
+                  <span className="text-green-500">●</span> {t('matchDetail.yourDeck')}
                 </h3>
                 <DeckGrid cards={playerTeam.cards} size="sm" />
               </div>
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-red-500">●</span> {opponent.name}'s Deck
+                  <span className="text-red-500">●</span> {t('matchDetail.opponentDeck', { name: opponent.name })}
                 </h3>
                 <DeckGrid cards={opponent.cards} size="sm" />
               </div>
@@ -457,39 +457,39 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
             {/* AI Analysis */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Match Analysis</h3>
+              <h3 className="font-semibold text-lg">{t('matchDetail.matchAnalysis')}</h3>
               {isLoading ? (
                 <DataLoader context="match-analysis" variant="inline" />
               ) : analysisError ? (
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                   {analysisError.message === 'AUTH_REQUIRED' ? (
                     <div className="text-center space-y-2">
-                      <p className="text-sm text-muted-foreground">Sign in to view AI analysis</p>
+                      <p className="text-sm text-muted-foreground">{t('matchDetail.signInRequired')}</p>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => window.location.href = '/auth?mode=signin'}
                       >
-                        Sign In
+                        {t('nav.signIn')}
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-destructive">Failed to load analysis. Please try again.</p>
+                    <p className="text-sm text-destructive">{t('matchDetail.analysisFailed')}</p>
                   )}
                 </div>
               ) : analysis ? (
                 <div className="space-y-4">
                   <div className="p-4 bg-card rounded-lg border">
-                    <h4 className="font-medium mb-2 text-primary">Deck Matchup</h4>
+                    <h4 className="font-medium mb-2 text-primary">{t('matchDetail.deckMatchup')}</h4>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.deckMatchup}</p>
                   </div>
                   <div className="p-4 bg-card rounded-lg border">
-                    <h4 className="font-medium mb-2 text-primary">Analysis</h4>
+                    <h4 className="font-medium mb-2 text-primary">{t('matchDetail.analysis')}</h4>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.analysis}</p>
                   </div>
                   {analysis.recommendations && analysis.recommendations.length > 0 && (
                     <div className="p-4 bg-card rounded-lg border">
-                      <h4 className="font-medium mb-2 text-primary">Recommendations</h4>
+                      <h4 className="font-medium mb-2 text-primary">{t('matchDetail.recommendations')}</h4>
                       <ul className="space-y-1">
                         {analysis.recommendations.map((rec, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground flex gap-2">
@@ -506,12 +506,12 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
             {/* Match Timeline */}
             {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
-              <MatchTimeline interactions={analysis.pivotalInteractions} />
+              <MatchTimeline interactions={analysis.pivotalInteractions} t={t} />
             )}
 
             {/* Key Moments */}
             {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
-              <KeyMoments interactions={analysis.pivotalInteractions} />
+              <KeyMoments interactions={analysis.pivotalInteractions} t={t} />
             )}
 
             {/* Action Buttons */}
@@ -522,7 +522,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                   className="bg-gradient-to-r from-primary to-accent hover:shadow-glow transition-all"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Discuss with Coach
+                  {t('matchDetail.discussWithCoach')}
                 </Button>
                 
                 {analysis?.counterDeck && analysis.counterDeck.cards.length > 0 && (
@@ -532,12 +532,12 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                     className="border-primary/50 hover:bg-primary/10"
                   >
                     <Shield className="w-4 h-4 mr-2" />
-                    Build Counter Deck
+                    {t('matchDetail.buildCounterDeck')}
                   </Button>
                 )}
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                Get personalized tips or build a deck to counter this opponent
+                {t('matchDetail.actionHint')}
               </p>
             </div>
           </div>

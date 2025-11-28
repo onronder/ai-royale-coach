@@ -907,18 +907,37 @@
     "victory": "Zafer",
     "defeat": "Yenilgi",
     "description": "{{opponent}} karşısındaki maçınızın detaylı analizi",
-    "crowns": "Kupa",
+    "crowns": "Taç",
     "trophies": "Kupa",
     "arena": "Arena",
     "yourDeck": "Desten",
     "opponentDeck": "{{name}} Destesi",
     "aiAnalysis": "AI Maç Analizi",
+    "matchAnalysis": "Maç Analizi",
+    "analysis": "Analiz",
     "deckMatchup": "Deste Eşleşmesi",
     "whatHappened": "Ne Oldu",
     "recommendations": "Öneriler",
     "discussWithCoach": "AI Koç ile Tartış",
-    "signInRequired": "Maçlarınızın detaylı AI analizini görmek için giriş yapın",
-    "signIn": "Kilidini Açmak için Giriş Yap"
+    "buildCounterDeck": "Karşı Deste Oluştur",
+    "actionHint": "Kişiselleştirilmiş ipuçları alın veya rakibi yenmek için deste oluşturun",
+    "signInRequired": "AI analizini görmek için giriş yapın",
+    "signIn": "Kilidini Açmak için Giriş Yap",
+    "analysisFailed": "Analiz yüklenemedi. Lütfen tekrar deneyin.",
+    "matchTimeline": "Maç Zaman Çizelgesi",
+    "keyMoments": "Kritik Anlar",
+    "game": "Oyun",
+    "phases": {
+      "early": "Erken",
+      "mid": "Orta",
+      "late": "Geç",
+      "overtime": "UZ"
+    },
+    "highImpact": "Yüksek Etki",
+    "counterDeck": "Karşı Deste Oluşturucu",
+    "counterDeckDesc": "Bu rakibi yenmek için AI önerili deste",
+    "viewCounterDeck": "Karşı Desteyi Gör",
+    "overallStrategy": "Genel Strateji"
   },
   "footer": {
     "tagline": "AI ile arena hakimiyeti"
@@ -1126,5 +1145,23 @@
   "common": {
     "aiPowered": "AI Destekli",
     "elixir": "İksir"
+  },
+  "cardCollection": {
+    "title": "Kart Koleksiyonu",
+    "cards": "kart",
+    "syncing": "Senkronize ediliyor...",
+    "syncFailed": "Kart koleksiyonu senkronize edilemedi",
+    "syncSuccess": "Kart koleksiyonu başarıyla senkronize edildi!",
+    "loadFailed": "Kart koleksiyonu yüklenemedi",
+    "syncedTitle": "Kart Koleksiyonu Senkronize Edildi",
+    "syncedMessage": "Kart koleksiyonunuz Clash Royale'den en son verilerle güncellendi",
+    "common": "Yaygın",
+    "rare": "Nadir",
+    "epic": "Destansı",
+    "legendary": "Efsan",
+    "champion": "Şamp",
+    "toLevel": "seviyeye",
+    "max": "MAKS",
+    "noCardsFound": "Bu nadirlik için kart bulunamadı"
   }
 }
