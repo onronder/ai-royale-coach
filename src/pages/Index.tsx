@@ -34,12 +34,12 @@ const Index = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!playerTag.trim()) {
-      toast.error("Please enter a player tag");
+      toast.error(t("landing.hero.errors.enterTag"));
       return;
     }
     
     if (!user) {
-      toast.error("Please sign in to continue");
+      toast.error(t("landing.hero.errors.signIn"));
       navigate("/auth");
       return;
     }
