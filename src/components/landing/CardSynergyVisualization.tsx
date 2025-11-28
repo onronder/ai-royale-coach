@@ -10,6 +10,17 @@ interface CardSynergyVisualizationProps {
   isVisible: boolean;
 }
 
+// Helper to convert deck ID to translation key
+const getDeckKey = (deckId: string): string => {
+  const keyMap: Record<string, string> = {
+    'hog-cycle': 'hogCycle',
+    'golem-beatdown': 'golemBeatdown',
+    'log-bait': 'logBait',
+    'xbow-siege': 'xbowSiege'
+  };
+  return keyMap[deckId] || deckId;
+};
+
 export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisualizationProps) {
   const { t } = useTranslation();
   const [selectedSynergy, setSelectedSynergy] = useState<CardSynergy | null>(null);
@@ -32,6 +43,15 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
     const card = deck.cards.find(c => c.name === cardName);
     return card?.emoji || '🃏';
   };
+
+  // Get translated synergy reasons
+  const getTranslatedSynergyReasons = () => {
+    const key = getDeckKey(deck.id);
+    const synergies = t(`landing.demo.difficulty.deckData.${key}.synergies`, { returnObjects: true });
+    return Array.isArray(synergies) ? synergies : deck.synergies.map(s => s.reason);
+  };
+
+  const translatedReasons = getTranslatedSynergyReasons();
 
   return (
     <Card className={`p-6 bg-card/50 backdrop-blur border-${deck.color}/20 transition-all duration-700 ${
@@ -116,7 +136,7 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
                       {getStrengthLabel(synergy.strength)}
                     </Badge>
                     <p className="text-sm text-muted-foreground flex-1">
-                      {synergy.reason}
+                      {translatedReasons[idx] || synergy.reason}
                     </p>
                   </div>
                 </div>

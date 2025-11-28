@@ -17,6 +17,17 @@ interface SkillMilestone {
   unlocked: boolean;
 }
 
+// Helper to convert deck ID to translation key
+const getDeckKey = (deckId: string): string => {
+  const keyMap: Record<string, string> = {
+    'hog-cycle': 'hogCycle',
+    'golem-beatdown': 'golemBeatdown',
+    'log-bait': 'logBait',
+    'xbow-siege': 'xbowSiege'
+  };
+  return keyMap[deckId] || deckId;
+};
+
 export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
   const { t } = useTranslation();
 
@@ -41,6 +52,10 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
     if (value >= 5) return 'gold';
     if (value >= 3) return 'silver';
     return 'bronze';
+  };
+
+  const getTierLabel = (tier: string) => {
+    return t(`landing.demo.achievements.tiers.${tier}`);
   };
 
   const skillMilestones: SkillMilestone[] = [
@@ -81,8 +96,15 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
     },
   ];
 
+  // Get translated learning path phases
+  const getLearningPathPhase = (phaseIndex: number) => {
+    const key = getDeckKey(deck.id);
+    const phaseKey = `phase${phaseIndex + 1}`;
+    return t(`landing.demo.difficulty.decks.${key}.${phaseKey}.name`, { defaultValue: deck.learningPath[phaseIndex]?.phase });
+  };
+
   const learningMilestones = deck.learningPath.map((phase, idx) => ({
-    phase: phase.phase,
+    phase: getLearningPathPhase(idx),
     completed: idx < 2, // Demo: show first 2 phases as completed
     current: idx === 2,
   }));
@@ -167,7 +189,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
                         className="mt-1 text-[10px] uppercase"
                         style={{ borderColor: tierInfo.color, color: tierInfo.color }}
                       >
-                        {milestone.tier}
+                        {getTierLabel(milestone.tier)}
                       </Badge>
                     </div>
                     <div className="w-full h-1 bg-muted/20 rounded-full overflow-hidden">

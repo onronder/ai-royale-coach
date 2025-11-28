@@ -156,6 +156,72 @@
               ]
             }
           }
+        },
+        "deckData": {
+          "hogCycle": {
+            "playstyle": "Pression rapide avec cycle constant",
+            "strengths": ["Cycle rapide", "Défense polyvalente", "Dégâts chip"],
+            "weaknesses": ["Troupes faibles en PV", "Vulnérable aux sorts", "Nécessite de l'habileté"],
+            "synergies": [
+              "Ice Golem tank et distrait les défenseurs",
+              "Synergie défensive parfaite vs tanks",
+              "Cycle de sorts pour dégâts chip",
+              "Incroyable combo de cycle et distraction"
+            ],
+            "matchups": {
+              "golemBeatdown": ["Ne leur donnez jamais de valeur pour Lightning", "Pressez le couloir opposé agressivement", "Gardez Fireball pour Night Witch"],
+              "logBait": ["Log leur Princess, Fireball leur Goblin Gang", "Maintenez la pression pour empêcher le cycle de Rocket", "Prédisez les placements de Goblin Barrel"],
+              "xbowSiege": ["Pressez le même couloir que X-Bow pour empêcher les locks", "Fireball leurs bâtiments défensifs", "Cyclez plus vite qu'ils ne peuvent défendre"]
+            }
+          },
+          "golemBeatdown": {
+            "playstyle": "Pushes lourds avec force écrasante",
+            "strengths": ["Dégâts élevés", "Destruction de tours", "Synergie de dégâts de mort"],
+            "weaknesses": ["Cher", "Cycle lent", "Vulnérable à la pression"],
+            "synergies": [
+              "La synergie de spawn de mort crée un push imparable",
+              "Active la Tour du Roi et nettoie les défenses",
+              "Les dégâts de zone combinent avec le pull",
+              "Rage à la mort accélère le push"
+            ],
+            "matchups": {
+              "hogCycle": ["Ignorez leurs dégâts chip", "Construisez de grands pushes en double élixir", "Lightning leurs structures défensives"],
+              "logBait": ["Baby Dragon counter leurs swarms", "Lightning Inferno Tower", "Poussez à travers leur chip de Rocket"],
+              "xbowSiege": ["Tankez les dégâts de X-Bow avec Golem", "Lightning leur Tesla + Archers", "Ils ne peuvent pas arrêter les dégâts de mort"]
+            }
+          },
+          "logBait": {
+            "playstyle": "Jeu réactif avec tactiques d'appât de sorts",
+            "strengths": ["Force les mauvais échanges", "Défense forte", "Jeux de prédiction"],
+            "weaknesses": ["Timing des sorts crucial", "Early game passif", "Dépendant de Princess"],
+            "synergies": [
+              "La combinaison ultime de Log bait",
+              "Force l'adversaire à choisir quoi logger",
+              "Knight tank pendant qu'Inferno fait fondre",
+              "Stratégie d'accumulation de dégâts chip"
+            ],
+            "matchups": {
+              "hogCycle": ["Inferno Tower counter Hog parfaitement", "Appâtez leur Log avant Goblin Barrel", "Cycle de Rocket pour victoires en overtime"],
+              "golemBeatdown": ["Inferno Tower est votre seule réponse", "Rocket leurs troupes de soutien", "Barrel couloir opposé pour chip"],
+              "xbowSiege": ["Knight tank les tirs de X-Bow", "Rocket leur setup défensif", "Princess force les réactions"]
+            }
+          },
+          "xbowSiege": {
+            "playstyle": "Locks X-Bow défensifs avec dégâts chip",
+            "strengths": ["Avantage de portée", "Défense forte", "Force les réactions"],
+            "weaknesses": ["Dépendant du matchup", "Skill cap élevé", "Engagement lourd"],
+            "synergies": [
+              "Tesla protège X-Bow des tanks",
+              "Ice Golem tank, Archers DPS",
+              "Contrôle des sorts et dégâts chip",
+              "Cartes de cycle qui distraient efficacement"
+            ],
+            "matchups": {
+              "hogCycle": ["Défendez avec Tesla, n'engagez pas X-Bow", "Fireball + Log pour dégâts chip", "Out-cyclez leur Fireball"],
+              "golemBeatdown": ["Pressez le couloir opposé constamment", "Ne les laissez jamais construire des pushes", "Fireball leurs troupes de soutien"],
+              "logBait": ["Archers pour Princess", "Log leurs swarms", "Fireball + Log Goblin Gang"]
+            }
+          }
         }
       },
       "counters": {
@@ -189,7 +255,14 @@
         "mastered": "Maîtrisé",
         "nextMilestone": "Prochaine Étape",
         "nextMilestoneDesc": "Complétez {{phase}} pour débloquer de nouveaux succès et avancer votre niveau de maîtrise.",
-        "mastery": "Maîtrise"
+        "mastery": "Maîtrise",
+        "tiers": {
+          "master": "Maître",
+          "diamond": "Diamant",
+          "gold": "Or",
+          "silver": "Argent",
+          "bronze": "Bronze"
+        }
       },
       "recommend": {
         "yourSkillLevel": "Votre Niveau de Compétence",

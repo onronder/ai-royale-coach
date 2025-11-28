@@ -156,6 +156,72 @@
               ]
             }
           }
+        },
+        "deckData": {
+          "hogCycle": {
+            "playstyle": "Presión rápida con ciclo constante",
+            "strengths": ["Ciclo rápido", "Defensa versátil", "Daño chip"],
+            "weaknesses": ["Tropas de baja vida", "Vulnerable a hechizos", "Requiere habilidad"],
+            "synergies": [
+              "Ice Golem tanquea y distrae defensores",
+              "Sinergia defensiva perfecta vs tanques",
+              "Ciclo de hechizos para daño chip",
+              "Increíble combo de ciclo y distracción"
+            ],
+            "matchups": {
+              "golemBeatdown": ["Nunca les des valor para Lightning", "Presiona carril opuesto agresivamente", "Guarda Fireball para Night Witch"],
+              "logBait": ["Log a su Princess, Fireball a su Goblin Gang", "Mantén presión para prevenir ciclo de Rocket", "Predice colocaciones de Goblin Barrel"],
+              "xbowSiege": ["Presiona mismo carril que X-Bow para prevenir locks", "Fireball a sus edificios defensivos", "Cicla más rápido de lo que pueden defender"]
+            }
+          },
+          "golemBeatdown": {
+            "playstyle": "Pushes pesados con fuerza abrumadora",
+            "strengths": ["Alto daño", "Destrucción de torres", "Sinergia de daño de muerte"],
+            "weaknesses": ["Caro", "Ciclo lento", "Vulnerable a presión"],
+            "synergies": [
+              "Sinergia de spawn de muerte crea push imparable",
+              "Activa Torre del Rey y limpia defensas",
+              "Daño de área combina con pull",
+              "Rage en muerte acelera el push"
+            ],
+            "matchups": {
+              "hogCycle": ["Ignora su daño chip", "Construye grandes pushes en doble elixir", "Lightning a sus estructuras defensivas"],
+              "logBait": ["Baby Dragon countera sus swarms", "Lightning a Inferno Tower", "Pushea a través de su chip de Rocket"],
+              "xbowSiege": ["Tanquea daño de X-Bow con Golem", "Lightning a su Tesla + Archers", "No pueden parar el daño de muerte"]
+            }
+          },
+          "logBait": {
+            "playstyle": "Juego reactivo con tácticas de bait de hechizos",
+            "strengths": ["Fuerza malos intercambios", "Defensa fuerte", "Jugadas de predicción"],
+            "weaknesses": ["Timing de hechizos crucial", "Early game pasivo", "Dependiente de Princess"],
+            "synergies": [
+              "La combinación definitiva de Log bait",
+              "Fuerza al oponente a elegir qué loguear",
+              "Knight tanquea mientras Inferno derrite",
+              "Estrategia de acumulación de daño chip"
+            ],
+            "matchups": {
+              "hogCycle": ["Inferno Tower countera Hog perfectamente", "Baitea su Log antes de Goblin Barrel", "Ciclo de Rocket para victorias en overtime"],
+              "golemBeatdown": ["Inferno Tower es tu única respuesta", "Rocket a sus tropas de soporte", "Barrel en carril opuesto para chip"],
+              "xbowSiege": ["Knight tanquea disparos de X-Bow", "Rocket a su setup defensivo", "Princess fuerza reacciones"]
+            }
+          },
+          "xbowSiege": {
+            "playstyle": "Locks de X-Bow defensivos con daño chip",
+            "strengths": ["Ventaja de rango", "Defensa fuerte", "Fuerza reacciones"],
+            "weaknesses": ["Dependiente de matchup", "Alto skill cap", "Compromiso pesado"],
+            "synergies": [
+              "Tesla protege X-Bow de tanques",
+              "Ice Golem tanquea, Archers DPS",
+              "Control de hechizos y daño chip",
+              "Cartas de ciclo que distraen efectivamente"
+            ],
+            "matchups": {
+              "hogCycle": ["Defiende con Tesla, no comprometas X-Bow", "Fireball + Log para daño chip", "Out-ciclea su Fireball"],
+              "golemBeatdown": ["Presiona carril opuesto constantemente", "Nunca les dejes construir pushes", "Fireball a sus tropas de soporte"],
+              "logBait": ["Archers para Princess", "Log a sus swarms", "Fireball + Log a Goblin Gang"]
+            }
+          }
         }
       },
       "counters": {
@@ -189,7 +255,14 @@
         "mastered": "Dominado",
         "nextMilestone": "Próximo Hito",
         "nextMilestoneDesc": "Completa {{phase}} para desbloquear nuevos logros y avanzar tu nivel de maestría.",
-        "mastery": "Maestría"
+        "mastery": "Maestría",
+        "tiers": {
+          "master": "Maestro",
+          "diamond": "Diamante",
+          "gold": "Oro",
+          "silver": "Plata",
+          "bronze": "Bronce"
+        }
       },
       "recommend": {
         "yourSkillLevel": "Tu Nivel de Habilidad",

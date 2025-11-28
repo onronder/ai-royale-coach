@@ -13,6 +13,17 @@ interface DeckComparisonViewProps {
   isVisible: boolean;
 }
 
+// Helper to convert deck ID to translation key
+const getDeckKey = (deckId: string): string => {
+  const keyMap: Record<string, string> = {
+    'hog-cycle': 'hogCycle',
+    'golem-beatdown': 'golemBeatdown',
+    'log-bait': 'logBait',
+    'xbow-siege': 'xbowSiege'
+  };
+  return keyMap[deckId] || deckId;
+};
+
 export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
   const { t } = useTranslation();
   const [deck1, setDeck1] = useState<SampleDeck>(sampleDecks[0]);
@@ -23,6 +34,24 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
     if (Math.abs(diff) < 0.1) return { icon: Minus, color: 'text-muted-foreground', text: '0' };
     if (diff > 0) return { icon: ArrowUpRight, color: 'text-success', text: `+${diff.toFixed(1)}` };
     return { icon: ArrowDownRight, color: 'text-destructive', text: diff.toFixed(1) };
+  };
+
+  // Get translated deck data
+  const getTranslatedStrengths = (deck: SampleDeck) => {
+    const key = getDeckKey(deck.id);
+    const strengths = t(`landing.demo.difficulty.deckData.${key}.strengths`, { returnObjects: true });
+    return Array.isArray(strengths) ? strengths : deck.strengths;
+  };
+
+  const getTranslatedWeaknesses = (deck: SampleDeck) => {
+    const key = getDeckKey(deck.id);
+    const weaknesses = t(`landing.demo.difficulty.deckData.${key}.weaknesses`, { returnObjects: true });
+    return Array.isArray(weaknesses) ? weaknesses : deck.weaknesses;
+  };
+
+  const getTranslatedPlaystyle = (deck: SampleDeck) => {
+    const key = getDeckKey(deck.id);
+    return t(`landing.demo.difficulty.deckData.${key}.playstyle`, { defaultValue: deck.playstyle });
   };
 
   const renderCardWithTooltip = (card: typeof deck1.cards[0], deckColor: string) => (
@@ -125,7 +154,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
             <div className="grid grid-cols-4 gap-2 mb-4">
               {deck1.cards.map((card) => renderCardWithTooltip(card, 'primary'))}
             </div>
-            <p className="text-sm text-muted-foreground italic">"{deck1.playstyle}"</p>
+            <p className="text-sm text-muted-foreground italic">"{getTranslatedPlaystyle(deck1)}"</p>
           </Card>
 
           <Card className="p-5 bg-card/50 backdrop-blur border-primary/20">
@@ -163,7 +192,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-4 bg-success/5 border-success/20">
             <h4 className="text-sm font-rajdhani font-bold text-success mb-2">{t('landing.demo.comparison.strengths')}</h4>
             <ul className="space-y-1">
-              {deck1.strengths.map((strength, idx) => (
+              {getTranslatedStrengths(deck1).map((strength, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-success" />
                   {strength}
@@ -175,7 +204,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-4 bg-destructive/5 border-destructive/20">
             <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">{t('landing.demo.comparison.weaknesses')}</h4>
             <ul className="space-y-1">
-              {deck1.weaknesses.map((weakness, idx) => (
+              {getTranslatedWeaknesses(deck1).map((weakness, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-destructive" />
                   {weakness}
@@ -199,7 +228,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
             <div className="grid grid-cols-4 gap-2 mb-4">
               {deck2.cards.map((card) => renderCardWithTooltip(card, 'accent'))}
             </div>
-            <p className="text-sm text-muted-foreground italic">"{deck2.playstyle}"</p>
+            <p className="text-sm text-muted-foreground italic">"{getTranslatedPlaystyle(deck2)}"</p>
           </Card>
 
           <Card className="p-5 bg-card/50 backdrop-blur border-accent/20">
@@ -273,7 +302,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-4 bg-success/5 border-success/20">
             <h4 className="text-sm font-rajdhani font-bold text-success mb-2">{t('landing.demo.comparison.strengths')}</h4>
             <ul className="space-y-1">
-              {deck2.strengths.map((strength, idx) => (
+              {getTranslatedStrengths(deck2).map((strength, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-success" />
                   {strength}
@@ -285,7 +314,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-4 bg-destructive/5 border-destructive/20">
             <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">{t('landing.demo.comparison.weaknesses')}</h4>
             <ul className="space-y-1">
-              {deck2.weaknesses.map((weakness, idx) => (
+              {getTranslatedWeaknesses(deck2).map((weakness, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-destructive" />
                   {weakness}
@@ -300,6 +329,8 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
       <MatchupIndicator
         deck1Name={deck1.name}
         deck2Name={deck2.name}
+        deck1Id={deck1.id}
+        deck2Id={deck2.id}
         deck1Matchup={deck1.matchups.find(m => m.opponent === deck2.id)}
         deck2Matchup={deck2.matchups.find(m => m.opponent === deck1.id)}
         isVisible={isVisible}
@@ -316,13 +347,13 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-primary">{deck1.name}</span> {t('landing.demo.comparison.favors')} {deck1.playstyle.toLowerCase()}
+              <span className="font-semibold text-primary">{deck1.name}</span> {t('landing.demo.comparison.favors')} {getTranslatedPlaystyle(deck1).toLowerCase()}
               {deck1.stats.avgElixir < deck2.stats.avgElixir ? `, ${t('landing.demo.comparison.fasterCycling')}` : `, ${t('landing.demo.comparison.heavierInvestments')}`}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-accent">{deck2.name}</span> {t('landing.demo.comparison.excelsIn')} {deck2.playstyle.toLowerCase()}
+              <span className="font-semibold text-accent">{deck2.name}</span> {t('landing.demo.comparison.excelsIn')} {getTranslatedPlaystyle(deck2).toLowerCase()}
               {deck2.stats.winRate > deck1.stats.winRate ? `, ${t('landing.demo.comparison.higherWinRates')}` : `, ${t('landing.demo.comparison.requiresRefinedExecution')}`}
             </p>
           </div>

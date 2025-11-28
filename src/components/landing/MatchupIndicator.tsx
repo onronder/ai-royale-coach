@@ -7,14 +7,29 @@ import type { MatchupData } from '@/data/sampleDecks';
 interface MatchupIndicatorProps {
   deck1Name: string;
   deck2Name: string;
+  deck1Id: string;
+  deck2Id: string;
   deck1Matchup: MatchupData | undefined;
   deck2Matchup: MatchupData | undefined;
   isVisible: boolean;
 }
 
+// Helper to convert deck ID to translation key
+const getDeckKey = (deckId: string): string => {
+  const keyMap: Record<string, string> = {
+    'hog-cycle': 'hogCycle',
+    'golem-beatdown': 'golemBeatdown',
+    'log-bait': 'logBait',
+    'xbow-siege': 'xbowSiege'
+  };
+  return keyMap[deckId] || deckId;
+};
+
 export function MatchupIndicator({ 
   deck1Name, 
   deck2Name, 
+  deck1Id,
+  deck2Id,
   deck1Matchup, 
   deck2Matchup,
   isVisible 
@@ -46,6 +61,18 @@ export function MatchupIndicator({
   const getAdvantageIcon = () => {
     if (advantage === 'even') return Minus;
     return advantage === 'deck1' ? TrendingUp : TrendingDown;
+  };
+
+  const getDifficultyLabel = (difficulty: string) => {
+    return t(`landing.demo.counters.${difficulty}`);
+  };
+
+  // Get translated tactical tips
+  const getTranslatedTips = (sourceDeckId: string, targetDeckId: string, fallbackTips: string[]) => {
+    const sourceKey = getDeckKey(sourceDeckId);
+    const targetKey = getDeckKey(targetDeckId);
+    const tips = t(`landing.demo.difficulty.deckData.${sourceKey}.matchups.${targetKey}`, { returnObjects: true });
+    return Array.isArray(tips) ? tips : fallbackTips;
   };
 
   const AdvantageIcon = getAdvantageIcon();
@@ -94,7 +121,7 @@ export function MatchupIndicator({
               </div>
             </div>
             <Badge className={getDifficultyColor(deck1Matchup.difficulty)} variant="outline">
-              {deck1Matchup.difficulty}
+              {getDifficultyLabel(deck1Matchup.difficulty)}
             </Badge>
           </div>
 
@@ -111,7 +138,7 @@ export function MatchupIndicator({
               </div>
             </div>
             <Badge className={getDifficultyColor(deck2Matchup.difficulty)} variant="outline">
-              {deck2Matchup.difficulty}
+              {getDifficultyLabel(deck2Matchup.difficulty)}
             </Badge>
           </div>
         </div>
@@ -124,7 +151,7 @@ export function MatchupIndicator({
               <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck1Name} {t('landing.demo.matchup.tips')}</h5>
             </div>
             <ul className="space-y-2">
-              {deck1Matchup.tacticalTips.map((tip, idx) => (
+              {getTranslatedTips(deck1Id, deck2Id, deck1Matchup.tacticalTips).map((tip, idx) => (
                 <li key={idx} className="text-xs text-muted-foreground flex items-start gap-2">
                   <span className="text-primary mt-0.5">•</span>
                   <span>{tip}</span>
@@ -145,7 +172,7 @@ export function MatchupIndicator({
               <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck2Name} {t('landing.demo.matchup.tips')}</h5>
             </div>
             <ul className="space-y-2">
-              {deck2Matchup.tacticalTips.map((tip, idx) => (
+              {getTranslatedTips(deck2Id, deck1Id, deck2Matchup.tacticalTips).map((tip, idx) => (
                 <li key={idx} className="text-xs text-muted-foreground flex items-start gap-2">
                   <span className="text-accent mt-0.5">•</span>
                   <span>{tip}</span>

@@ -156,6 +156,72 @@
               ]
             }
           }
+        },
+        "deckData": {
+          "hogCycle": {
+            "playstyle": "Sürekli döngü ile hızlı tempolu baskı",
+            "strengths": ["Hızlı döngü", "Çok yönlü savunma", "Chip hasarı"],
+            "weaknesses": ["Düşük can birlikler", "Büyüye karşı savunmasız", "Beceri gerektirir"],
+            "synergies": [
+              "Ice Golem tank yapar ve savunucuları oyalar",
+              "Tanklara karşı mükemmel savunma sinerjisi",
+              "Chip hasarı için büyü döngüsü",
+              "İnanılmaz döngü ve dikkat dağıtma kombosu"
+            ],
+            "matchups": {
+              "golemBeatdown": ["Onlara Lightning için değer verme", "Karşı şerite agresif baskı yap", "Fireball'ı Night Witch için sakla"],
+              "logBait": ["Princess'a Log, Goblin Gang'e Fireball at", "Rocket döngüsünü önlemek için baskı yap", "Goblin Barrel yerleşimlerini tahmin et"],
+              "xbowSiege": ["Kilitleri önlemek için X-Bow ile aynı şeride baskı yap", "Savunma binalarına Fireball at", "Savunabileceklerinden daha hızlı döngü yap"]
+            }
+          },
+          "golemBeatdown": {
+            "playstyle": "Ezici güçle ağır saldırılar",
+            "strengths": ["Yüksek hasar", "Kule yıkımı", "Ölüm hasarı sinerjisi"],
+            "weaknesses": ["Pahalı", "Yavaş döngü", "Baskıya karşı savunmasız"],
+            "synergies": [
+              "Ölüm spawn sinerjisi durdurulamaz saldırı oluşturur",
+              "Kral Kulesi'ni aktive eder ve savunmaları temizler",
+              "Alan hasarı çekme ile birleşir",
+              "Ölümde öfke saldırıyı hızlandırır"
+            ],
+            "matchups": {
+              "hogCycle": ["Chip hasarlarını görmezden gel", "Çift eliksirde büyük saldırılar oluştur", "Savunma yapılarına Lightning at"],
+              "logBait": ["Baby Dragon sürülerini counter'lar", "Inferno Tower'a Lightning at", "Rocket chip'lerine rağmen saldır"],
+              "xbowSiege": ["Golem ile X-Bow hasarını tankla", "Tesla + Archers'a Lightning at", "Ölüm hasarını durduramıyorlar"]
+            }
+          },
+          "logBait": {
+            "playstyle": "Büyü tuzağı taktikleriyle reaktif oyun",
+            "strengths": ["Kötü takasları zorlar", "Güçlü savunma", "Tahmin hamleleri"],
+            "weaknesses": ["Büyü zamanlaması kritik", "Pasif erken oyun", "Princess'a bağımlı"],
+            "synergies": [
+              "En iyi Log tuzağı kombinasyonu",
+              "Rakibi neye Log atacağını seçmeye zorlar",
+              "Knight tanklar, Inferno eritir",
+              "Chip hasarı biriktirme stratejisi"
+            ],
+            "matchups": {
+              "hogCycle": ["Inferno Tower Hog'u mükemmel counter'lar", "Goblin Barrel'dan önce Log'larını tuzağa düşür", "Uzatma galibiyetleri için Rocket döngüsü"],
+              "golemBeatdown": ["Inferno Tower tek cevabınız", "Destek birliklerine Rocket at", "Chip için karşı şerite Barrel at"],
+              "xbowSiege": ["Knight X-Bow atışlarını tanklar", "Savunma düzenlerine Rocket at", "Princess tepkileri zorlar"]
+            }
+          },
+          "xbowSiege": {
+            "playstyle": "Chip hasarı ile savunma X-Bow kilitleri",
+            "strengths": ["Menzil avantajı", "Güçlü savunma", "Tepkileri zorlar"],
+            "weaknesses": ["Eşleşmeye bağlı", "Yüksek beceri tavanı", "Ağır taahhüt"],
+            "synergies": [
+              "Tesla X-Bow'u tanklardan korur",
+              "Ice Golem tanklar, Archers DPS verir",
+              "Büyü kontrolü ve chip hasarı",
+              "Etkili şekilde dikkat dağıtan döngü kartları"
+            ],
+            "matchups": {
+              "hogCycle": ["Tesla ile savun, X-Bow taahhüt etme", "Chip hasarı için Fireball + Log", "Fireball'larını döngüyle geç"],
+              "golemBeatdown": ["Sürekli karşı şeride baskı yap", "Saldırı oluşturmalarına izin verme", "Destek birliklerine Fireball at"],
+              "logBait": ["Princess için Archers", "Sürülerine Log at", "Goblin Gang'e Fireball + Log"]
+            }
+          }
         }
       },
       "counters": {
@@ -189,7 +255,14 @@
         "mastered": "Ustalaşıldı",
         "nextMilestone": "Sonraki Kilometre Taşı",
         "nextMilestoneDesc": "Yeni başarıların kilidini açmak ve ustalık seviyenizi ilerletmek için {{phase}} tamamlayın.",
-        "mastery": "Ustalık"
+        "mastery": "Ustalık",
+        "tiers": {
+          "master": "Usta",
+          "diamond": "Elmas",
+          "gold": "Altın",
+          "silver": "Gümüş",
+          "bronze": "Bronz"
+        }
       },
       "recommend": {
         "yourSkillLevel": "Beceri Seviyeniz",
