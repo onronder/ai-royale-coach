@@ -278,7 +278,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           messages: messages.map(m => ({ role: m.role, content: m.content })).concat([
