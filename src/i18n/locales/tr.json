@@ -325,6 +325,41 @@
         "metaInsight": "Meta İçgörüsü",
         "dominates": "{{deck}} şu anda %{{rate}} kazanma oranıyla metaya hakim.",
         "historicalHelps": "Tarihsel veriler gelecekteki denge değişikliklerini ve meta kaymalarını tahmin etmeye yardımcı olur."
+      },
+      "cards": {
+        "rarities": {
+          "common": "Yaygın",
+          "rare": "Nadir",
+          "epic": "Epik",
+          "legendary": "Efsanevi",
+          "champion": "Şampiyon"
+        },
+        "roles": {
+          "Win Condition": "Zafer Koşulu",
+          "Air Defense": "Hava Savunması",
+          "Tank/Kite": "Tank/Oyalama",
+          "Defense": "Savunma",
+          "Big Spell": "Büyük Büyü",
+          "Small Spell": "Küçük Büyü",
+          "Cycle/Distract": "Döngü/Dikkat Dağıtma",
+          "Cycle/Stun": "Döngü/Sersemletme",
+          "Tank": "Tank",
+          "Support": "Destek",
+          "Splash/Air": "Alan/Hava",
+          "Control": "Kontrol",
+          "Mini Tank": "Mini Tank",
+          "Swarm": "Sürü",
+          "Bait Card": "Tuzak Kartı",
+          "Spell Bait": "Büyü Tuzağı",
+          "Building": "Bina",
+          "Tower Targeting": "Kule Hedefleme"
+        },
+        "archetypes": {
+          "Cycle": "Döngü",
+          "Beatdown": "Beatdown",
+          "Control": "Kontrol",
+          "Siege": "Kuşatma"
+        }
       }
     },
     "hero": {

@@ -128,6 +128,30 @@ export function DeckRecommendationEngine() {
     }
   };
 
+  const getTranslatedDifficulty = (difficulty: string) => {
+    return t(`landing.demo.difficulty.difficultyLevels.${difficulty}`, difficulty);
+  };
+
+  const getTranslatedPlaystyleTag = (style: string) => {
+    return t(`landing.demo.recommend.playstyles.${style}`, style);
+  };
+
+  // Map deck ID to translation key for playstyle descriptions
+  const getDeckKey = (deckId: string): string => {
+    const keyMap: Record<string, string> = {
+      'hog-cycle': 'hogCycle',
+      'golem-beatdown': 'golemBeatdown',
+      'log-bait': 'logBait',
+      'xbow-siege': 'xbowSiege'
+    };
+    return keyMap[deckId] || deckId;
+  };
+
+  const getTranslatedDeckPlaystyle = (deck: SampleDeck) => {
+    const key = getDeckKey(deck.id);
+    return t(`landing.demo.difficulty.deckData.${key}.playstyle`, deck.playstyle);
+  };
+
   return (
     <div className="space-y-6">
       {!showResults ? (
@@ -273,7 +297,7 @@ export function DeckRecommendationEngine() {
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">{result.deck.playstyle}</p>
+                        <p className="text-xs text-muted-foreground">{getTranslatedDeckPlaystyle(result.deck)}</p>
                       </div>
                     </div>
                     <Badge className={`bg-${result.deck.color}/20 text-${result.deck.color} border-${result.deck.color}/30 text-lg px-3 py-1`}>
@@ -284,7 +308,7 @@ export function DeckRecommendationEngine() {
                   {/* Stats row */}
                   <div className="flex items-center gap-4 text-xs">
                     <Badge variant="outline" className={getDifficultyColor(result.deck.difficulty)}>
-                      {result.deck.difficulty}
+                      {getTranslatedDifficulty(result.deck.difficulty)}
                     </Badge>
                     <span className="text-muted-foreground">{t('landing.demo.winRate')}: {result.deck.stats.winRate}%</span>
                     <span className="text-muted-foreground">{t('landing.demo.recommend.usage')}: {result.deck.history[result.deck.history.length - 1]?.usageRate || 0}%</span>
@@ -325,7 +349,7 @@ export function DeckRecommendationEngine() {
                         variant="outline"
                         className={`text-xs ${selectedPlaystyles.includes(style) ? `bg-${result.deck.color}/10 border-${result.deck.color}/30 text-${result.deck.color}` : ''}`}
                       >
-                        {style}
+                        {getTranslatedPlaystyleTag(style)}
                       </Badge>
                     ))}
                   </div>
