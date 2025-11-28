@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Zap, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ElixirTradeScenario {
   yourCard: string;
@@ -26,15 +27,26 @@ interface ElixirAnalysisCardProps {
 }
 
 export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
+  const { t } = useTranslation();
+
   const cycleSpeedColors = {
     fast: 'hsl(var(--success))',
     medium: 'hsl(var(--warning))',
     slow: 'hsl(var(--destructive))'
   };
 
+  const getCycleSpeedLabel = (speed: string) => {
+    switch (speed) {
+      case 'fast': return t('deckAnalysis.fast');
+      case 'medium': return t('deckAnalysis.medium');
+      case 'slow': return t('deckAnalysis.slow');
+      default: return speed;
+    }
+  };
+
   const splitData = [
-    { name: 'Defensive', value: analysis.defensiveCost, color: 'hsl(var(--chart-4))' },
-    { name: 'Offensive', value: analysis.offensiveCost, color: 'hsl(var(--accent))' }
+    { name: t('deckAnalysis.defensive'), value: analysis.defensiveCost, color: 'hsl(var(--chart-4))' },
+    { name: t('deckAnalysis.offensive'), value: analysis.offensiveCost, color: 'hsl(var(--accent))' }
   ];
 
   const getTradeIcon = (value: number) => {
@@ -57,7 +69,7 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
           <CardContent className="p-4 text-center">
             <Zap className="w-6 h-6 mx-auto mb-2 text-primary" />
             <p className="text-3xl font-bold text-primary">{analysis.avgElixir.toFixed(1)}</p>
-            <p className="text-xs text-muted-foreground">Avg Elixir</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.avgElixir')}</p>
           </CardContent>
         </Card>
         
@@ -67,18 +79,18 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                  style={{ backgroundColor: cycleSpeedColors[analysis.cycleSpeed], color: 'hsl(var(--background))' }}>
               {analysis.cycleSpeed[0]}
             </div>
-            <p className="text-xl font-bold capitalize">{analysis.cycleSpeed}</p>
-            <p className="text-xs text-muted-foreground">Cycle Speed</p>
+            <p className="text-xl font-bold capitalize">{getCycleSpeedLabel(analysis.cycleSpeed)}</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.cycleSpeed')}</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-card to-card-elevated border-chart-4/20">
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-muted-foreground mb-1">Def/Off Split</div>
+            <div className="text-xs text-muted-foreground mb-1">{t('deckAnalysis.defOffSplit')}</div>
             <p className="text-xl font-bold">
               {analysis.defensiveCost} / {analysis.offensiveCost}
             </p>
-            <p className="text-xs text-muted-foreground">Elixir</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.elixir')}</p>
           </CardContent>
         </Card>
       </div>
@@ -86,8 +98,8 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
       {/* Elixir Distribution Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Elixir Distribution Curve</CardTitle>
-          <CardDescription>Card cost distribution across your deck</CardDescription>
+          <CardTitle className="text-base">{t('deckAnalysis.elixirDistribution')}</CardTitle>
+          <CardDescription>{t('deckAnalysis.elixirDistributionDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={180}>
@@ -103,12 +115,12 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                 dataKey="cost" 
                 stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 12 }}
-                label={{ value: 'Elixir Cost', position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(var(--muted-foreground))' } }}
+                label={{ value: t('deckAnalysis.elixirCost'), position: 'insideBottom', offset: -5, style: { fontSize: 11, fill: 'hsl(var(--muted-foreground))' } }}
               />
               <YAxis 
                 stroke="hsl(var(--muted-foreground))"
                 tick={{ fontSize: 12 }}
-                label={{ value: 'Cards', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'hsl(var(--muted-foreground))' } }}
+                label={{ value: t('deckAnalysis.cards'), angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: 'hsl(var(--muted-foreground))' } }}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -117,7 +129,7 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                   borderRadius: '8px',
                   fontSize: '12px'
                 }}
-                labelFormatter={(value) => `${value} elixir`}
+                labelFormatter={(value) => `${value} ${t('deckAnalysis.elixir').toLowerCase()}`}
               />
               <Area 
                 type="monotone" 
@@ -134,8 +146,8 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
       {/* Def/Off Split Pie */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Defensive vs Offensive Balance</CardTitle>
-          <CardDescription>Total elixir allocation by role</CardDescription>
+          <CardTitle className="text-base">{t('deckAnalysis.defVsOff')}</CardTitle>
+          <CardDescription>{t('deckAnalysis.defVsOffDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={200}>
@@ -161,7 +173,7 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px'
                 }}
-                formatter={(value) => `${value} elixir`}
+                formatter={(value) => `${value} ${t('deckAnalysis.elixir').toLowerCase()}`}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -171,8 +183,8 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
       {/* Trade Scenarios */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Common Elixir Trade Scenarios</CardTitle>
-          <CardDescription>Predicted exchanges against popular enemy cards</CardDescription>
+          <CardTitle className="text-base">{t('deckAnalysis.tradeScenarios')}</CardTitle>
+          <CardDescription>{t('deckAnalysis.tradeScenariosDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

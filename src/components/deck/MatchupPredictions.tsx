@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, Sword } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useTranslation } from "react-i18next";
 
 interface MatchupPrediction {
   archetype: string;
@@ -18,6 +19,7 @@ interface MatchupPredictionsProps {
 }
 
 export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
+  const { t } = useTranslation();
   const [expandedMatchups, setExpandedMatchups] = useState<Set<string>>(new Set());
 
   const toggleMatchup = (archetype: string) => {
@@ -54,6 +56,17 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
     }
   };
 
+  const getPredictionLabel = (prediction: string) => {
+    switch (prediction) {
+      case 'favorable':
+        return t('deckAnalysis.favorable');
+      case 'unfavorable':
+        return t('deckAnalysis.unfavorable');
+      default:
+        return t('deckAnalysis.even');
+    }
+  };
+
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 80) return 'bg-success';
     if (confidence >= 60) return 'bg-warning';
@@ -72,7 +85,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
           <CardContent className="p-4 text-center">
             <TrendingUp className="w-6 h-6 mx-auto mb-2 text-success" />
             <p className="text-3xl font-bold text-success">{favorableCount}</p>
-            <p className="text-xs text-muted-foreground">Favorable</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.favorable')}</p>
           </CardContent>
         </Card>
         
@@ -80,7 +93,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
           <CardContent className="p-4 text-center">
             <Minus className="w-6 h-6 mx-auto mb-2 text-warning" />
             <p className="text-3xl font-bold text-warning">{evenCount}</p>
-            <p className="text-xs text-muted-foreground">Even</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.even')}</p>
           </CardContent>
         </Card>
 
@@ -88,7 +101,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
           <CardContent className="p-4 text-center">
             <TrendingDown className="w-6 h-6 mx-auto mb-2 text-destructive" />
             <p className="text-3xl font-bold text-destructive">{unfavorableCount}</p>
-            <p className="text-xs text-muted-foreground">Unfavorable</p>
+            <p className="text-xs text-muted-foreground">{t('deckAnalysis.unfavorable')}</p>
           </CardContent>
         </Card>
       </div>
@@ -98,10 +111,10 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Sword className="w-4 h-4 text-primary" />
-            Meta Archetype Matchups
+            {t('deckAnalysis.metaArchetypeMatchups')}
           </CardTitle>
           <CardDescription>
-            AI-powered predictions with confidence scores
+            {t('deckAnalysis.aiPredictions')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -119,13 +132,13 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
                           <div className="text-left">
                             <h4 className="font-semibold text-sm">{matchup.archetype}</h4>
                             <p className="text-xs text-muted-foreground capitalize">
-                              {matchup.prediction} matchup
+                              {getPredictionLabel(matchup.prediction)} {t('deckAnalysis.matchup')}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="text-right">
-                            <p className="text-xs text-muted-foreground">Confidence</p>
+                            <p className="text-xs text-muted-foreground">{t('deckAnalysis.confidence')}</p>
                             <p className="text-sm font-bold">{matchup.confidence}%</p>
                           </div>
                           {isExpanded ? (
@@ -148,7 +161,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
                   <CollapsibleContent>
                     <CardContent className="pt-0 pb-4 px-4 space-y-3 border-t border-border/50">
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground mb-2 mt-3">Key Cards:</p>
+                        <p className="text-xs font-semibold text-muted-foreground mb-2 mt-3">{t('deckAnalysis.keyCards')}:</p>
                         <div className="flex flex-wrap gap-2">
                           {matchup.keyCards.map((card, i) => (
                             <Badge key={i} variant="outline" className="text-xs">
@@ -159,7 +172,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
                       </div>
                       
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground mb-2">Strategy:</p>
+                        <p className="text-xs font-semibold text-muted-foreground mb-2">{t('deckAnalysis.strategy')}:</p>
                         <p className="text-sm text-foreground/90 leading-relaxed">
                           {matchup.strategy}
                         </p>
@@ -177,8 +190,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
       <Card className="bg-muted/50 border-muted">
         <CardContent className="p-4">
           <p className="text-xs text-muted-foreground text-center">
-            💡 Matchup predictions are based on typical card interactions and meta trends. 
-            Actual results depend on skill, timing, and adaptation.
+            💡 {t('deckAnalysis.matchupDisclaimer')}
           </p>
         </CardContent>
       </Card>

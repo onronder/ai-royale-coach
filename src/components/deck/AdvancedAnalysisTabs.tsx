@@ -3,6 +3,7 @@ import { ElixirAnalysisCard } from "./ElixirAnalysisCard";
 import { SynergyMatrix } from "./SynergyMatrix";
 import { MatchupPredictions } from "./MatchupPredictions";
 import { Zap, GitMerge, Swords, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AdvancedAnalysis {
   elixirAnalysis: {
@@ -21,13 +22,13 @@ interface AdvancedAnalysis {
     missingRoles: string[];
     balanceNotes: string;
   };
-  synergyMatrix: any | null; // Null - requires battle history
-  matchupPredictions: any[] | null; // Null - requires battle history
+  synergyMatrix: any | null;
+  matchupPredictions: any[] | null;
 }
 
 interface BasicAnalysis {
-  synergy_score: number | null; // Null - requires battle history
-  meta_score: number | null; // Null - requires battle history
+  synergy_score: number | null;
+  meta_score: number | null;
   strengths: string[];
   weaknesses: string[];
   recommendations: string[];
@@ -41,6 +42,8 @@ interface AdvancedAnalysisTabsProps {
 }
 
 export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardNames }: AdvancedAnalysisTabsProps) {
+  const { t } = useTranslation();
+
   if (!advancedAnalysis && !basicAnalysis) return null;
 
   return (
@@ -48,19 +51,19 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
       <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="overview" className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4" />
-          <span className="hidden sm:inline">Overview</span>
+          <span className="hidden sm:inline">{t('deckAnalysis.overview')}</span>
         </TabsTrigger>
         <TabsTrigger value="elixir" className="flex items-center gap-2" disabled={!advancedAnalysis}>
           <Zap className="w-4 h-4" />
-          <span className="hidden sm:inline">Elixir</span>
+          <span className="hidden sm:inline">{t('deckAnalysis.elixir')}</span>
         </TabsTrigger>
         <TabsTrigger value="synergies" className="flex items-center gap-2" disabled={!advancedAnalysis?.synergyMatrix}>
           <GitMerge className="w-4 h-4" />
-          <span className="hidden sm:inline">Synergies</span>
+          <span className="hidden sm:inline">{t('deckAnalysis.synergies')}</span>
         </TabsTrigger>
         <TabsTrigger value="matchups" className="flex items-center gap-2" disabled={!advancedAnalysis?.matchupPredictions}>
           <Swords className="w-4 h-4" />
-          <span className="hidden sm:inline">Matchups</span>
+          <span className="hidden sm:inline">{t('deckAnalysis.matchups')}</span>
         </TabsTrigger>
       </TabsList>
 
@@ -68,10 +71,10 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
         {/* Data Source Legend */}
         <div className="flex flex-wrap gap-2 text-xs pb-2 border-b border-border">
           <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
-            Calculated = From your battles
+            {t('deckAnalysis.calculatedLabel')}
           </span>
           <span className="px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30">
-            AI = Generated analysis
+            {t('deckAnalysis.aiLabel')}
           </span>
         </div>
 
@@ -81,18 +84,17 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-muted rounded-lg">
                   <p className="text-3xl font-bold text-primary">{basicAnalysis.synergy_score}/100</p>
-                  <p className="text-sm text-muted-foreground">Synergy Score</p>
+                  <p className="text-sm text-muted-foreground">{t('deckAnalysis.synergyScore')}</p>
                 </div>
                 <div className="text-center p-4 bg-muted rounded-lg">
                   <p className="text-3xl font-bold text-primary">{basicAnalysis.meta_score}/100</p>
-                  <p className="text-sm text-muted-foreground">Meta Score</p>
+                  <p className="text-sm text-muted-foreground">{t('deckAnalysis.metaScore')}</p>
                 </div>
               </div>
             ) : (
               <div className="p-4 bg-muted/50 rounded-lg border border-border">
                 <p className="text-sm text-muted-foreground text-center">
-                  📊 <span className="font-semibold">Synergy and Meta scores</span> require your actual battle history to calculate accurately. 
-                  Play some games with this deck to see real performance metrics!
+                  📊 <span className="font-semibold">{t('deckAnalysis.synergyScore')}</span> {t('deckAnalysis.scoresRequireBattles')}
                 </p>
               </div>
             )}
@@ -100,7 +102,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
             <div className="space-y-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-success">Strengths</h4>
+                  <h4 className="font-semibold text-success">{t('deckAnalysis.strengths')}</h4>
                   <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
                 </div>
                 <ul className="space-y-1">
@@ -115,7 +117,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
 
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-destructive">Weaknesses</h4>
+                  <h4 className="font-semibold text-destructive">{t('deckAnalysis.weaknesses')}</h4>
                   <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
                 </div>
                 <ul className="space-y-1">
@@ -130,7 +132,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
 
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold text-primary">Recommendations</h4>
+                  <h4 className="font-semibold text-primary">{t('deckAnalysis.recommendations')}</h4>
                   <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
                 </div>
                 <ul className="space-y-1">
