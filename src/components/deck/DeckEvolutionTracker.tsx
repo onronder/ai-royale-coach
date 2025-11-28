@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,13 +31,14 @@ export function DeckEvolutionTracker({
   onSwap,
   onUndo,
 }: DeckEvolutionTrackerProps) {
+  const { t } = useTranslation();
   const [swapHistory, setSwapHistory] = useState<SwapHistory[]>([]);
   const [trySwapMode, setTrySwapMode] = useState(false);
 
   const getDiff = (before: number, after: number) => {
     const diff = after - before;
     if (Math.abs(diff) < 0.5) {
-      return { icon: Minus, color: "text-muted-foreground", text: "No change" };
+      return { icon: Minus, color: "text-muted-foreground", text: t('deckEvolution.noChange') };
     }
     if (diff > 0) {
       return { icon: TrendingUp, color: "text-success", text: `+${diff.toFixed(1)}` };
@@ -68,16 +70,16 @@ export function DeckEvolutionTracker({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Deck Evolution Tracker</span>
+            <span>{t('deckEvolution.title')}</span>
             <div className="flex gap-2">
               {swapHistory.length > 0 && (
                 <Button variant="outline" size="sm" onClick={handleUndo} className="gap-2">
                   <Undo2 className="h-4 w-4" />
-                  Undo Last Change
+                  {t('deckEvolution.undoLast')}
                 </Button>
               )}
               <Badge variant={trySwapMode ? "default" : "secondary"}>
-                {trySwapMode ? "Try Mode Active" : "Live Mode"}
+                {trySwapMode ? t('deckEvolution.tryModeActive') : t('deckEvolution.liveMode')}
               </Badge>
             </div>
           </CardTitle>
@@ -85,8 +87,8 @@ export function DeckEvolutionTracker({
         <CardContent className="space-y-4">
           {swapHistory.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p>Make card swaps to see how your deck evolves</p>
-              <p className="text-sm mt-2">Before/after stats will appear here</p>
+              <p>{t('deckEvolution.makeSwaps')}</p>
+              <p className="text-sm mt-2">{t('deckEvolution.statsAppear')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -126,21 +128,21 @@ export function DeckEvolutionTracker({
 
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div className="space-y-1">
-                          <p className="text-muted-foreground text-xs">Synergy</p>
+                          <p className="text-muted-foreground text-xs">{t('deckEvolution.synergy')}</p>
                           <div className="flex items-center gap-2">
                             <SynergyIcon className={`h-4 w-4 ${synergyDiff.color}`} />
                             <span className={synergyDiff.color}>{synergyDiff.text}</span>
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-muted-foreground text-xs">Meta Score</p>
+                          <p className="text-muted-foreground text-xs">{t('deckEvolution.metaScore')}</p>
                           <div className="flex items-center gap-2">
                             <MetaIcon className={`h-4 w-4 ${metaDiff.color}`} />
                             <span className={metaDiff.color}>{metaDiff.text}</span>
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-muted-foreground text-xs">Avg Elixir</p>
+                          <p className="text-muted-foreground text-xs">{t('deckEvolution.avgElixir')}</p>
                           <div className="flex items-center gap-2">
                             <ElixirIcon className={`h-4 w-4 ${elixirDiff.color}`} />
                             <span className={elixirDiff.color}>{elixirDiff.text}</span>

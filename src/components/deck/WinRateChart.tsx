@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -14,6 +15,7 @@ interface WinRateChartProps {
 }
 
 export function WinRateChart({ data }: WinRateChartProps) {
+  const { t } = useTranslation();
   const chartData = data.map(d => ({
     name: d.archetype,
     winRate: Math.round(d.winRate),
@@ -44,9 +46,9 @@ export function WinRateChart({ data }: WinRateChartProps) {
     <Card className="bg-card/50 backdrop-blur border-border/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <span className="bg-gradient-primary bg-clip-text text-transparent">Win Rate vs Archetypes</span>
+          <span className="bg-gradient-primary bg-clip-text text-transparent">{t('winRateChart.title')}</span>
         </CardTitle>
-        <CardDescription>Your performance against different deck types</CardDescription>
+        <CardDescription>{t('winRateChart.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Chart */}
@@ -100,10 +102,10 @@ export function WinRateChart({ data }: WinRateChartProps) {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-semibold">
-                        Win Rate: <span style={{ color: getColor(data.winRate) }}>{data.winRate}%</span>
+                        {t('winRateChart.winRate')}: <span style={{ color: getColor(data.winRate) }}>{data.winRate}%</span>
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {data.wins}W - {data.losses}L ({data.total} matches)
+                        {data.wins}W - {data.losses}L ({data.total} {t('winRateChart.matches')})
                       </p>
                     </div>
                   </div>
@@ -141,15 +143,15 @@ export function WinRateChart({ data }: WinRateChartProps) {
         <div className="flex flex-wrap justify-center gap-6 pt-4 border-t border-border/50">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-sm bg-chart-1 shadow-victory" />
-            <span className="text-xs text-muted-foreground">Strong (&gt;60%)</span>
+            <span className="text-xs text-muted-foreground">{t('winRateChart.strong')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-sm bg-chart-2" />
-            <span className="text-xs text-muted-foreground">Even (50-60%)</span>
+            <span className="text-xs text-muted-foreground">{t('winRateChart.even')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-sm bg-chart-3 shadow-defeat" />
-            <span className="text-xs text-muted-foreground">Weak (&lt;50%)</span>
+            <span className="text-xs text-muted-foreground">{t('winRateChart.weak')}</span>
           </div>
         </div>
       </CardContent>

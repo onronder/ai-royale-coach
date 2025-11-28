@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { CardImage } from "./CardImage";
 import { Zap, PackageOpen } from "lucide-react";
@@ -11,14 +12,15 @@ interface DeckGridProps {
 }
 
 export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProps) {
+  const { t } = useTranslation();
   const avgElixir = cards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / cards.length;
 
   if (cards.length === 0) {
     return (
       <EmptyState
         icon={PackageOpen}
-        title="No Cards in Deck"
-        description="This deck appears to be empty. Add cards to see them here."
+        title={t('deck.noCards')}
+        description={t('deck.noCardsDescription')}
         variant="compact"
       />
     );
@@ -48,7 +50,7 @@ export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProp
           <div className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/10 border border-primary/20 cursor-help">
             <Zap className="w-5 h-5 text-primary" />
             <span className="font-rajdhani font-semibold text-foreground">
-              Average Elixir: <span className="text-primary text-lg">{avgElixir.toFixed(1)}</span>
+              {t('deck.avgElixir')}: <span className="text-primary text-lg">{avgElixir.toFixed(1)}</span>
             </span>
           </div>
         </GameTooltip>

@@ -1144,7 +1144,109 @@
   },
   "common": {
     "aiPowered": "AI Destekli",
-    "elixir": "İksir"
+    "elixir": "İksir",
+    "loading": "Yükleniyor...",
+    "description": "Açıklama",
+    "all": "Tümü"
+  },
+  "notFound": {
+    "title": "Hay aksi! Sayfa bulunamadı",
+    "returnHome": "Ana Sayfaya Dön"
+  },
+  "deck": {
+    "noCards": "Destede Kart Yok",
+    "noCardsDescription": "Bu deste boş görünüyor. Görmek için kart ekleyin.",
+    "avgElixir": "Ortalama İksir"
+  },
+  "tournaments": {
+    "details": "Turnuva Detayları",
+    "prizePool": "Ödül Havuzu",
+    "participants": "Katılımcılar",
+    "entryFee": "Giriş Ücreti",
+    "gems": "elmas",
+    "starts": "Başlangıç",
+    "type": "Tür",
+    "alreadyRegistered": "Kayıtlısınız!",
+    "register": "Turnuvaya Kayıt Ol",
+    "registering": "Kaydediliyor...",
+    "notFound": "Turnuva bulunamadı",
+    "registerFailed": "Turnuvaya kayıt başarısız",
+    "registerSuccess": "Başarıyla kaydoldunuz!",
+    "createNew": "Yeni Turnuva Oluştur",
+    "createDescription": "Oyuncuların yarışması için yeni bir Clash Royale turnuvası kurun",
+    "tournamentName": "Turnuva Adı",
+    "namePlaceholder": "örn., Hafta Sonu Savaşçıları Şampiyonası",
+    "descriptionPlaceholder": "Turnuvanızı tanımlayın...",
+    "maxParticipants": "Maks Katılımcı",
+    "startDate": "Başlangıç Tarihi",
+    "creating": "Oluşturuluyor...",
+    "createButton": "Turnuva Oluştur",
+    "createSuccess": "Turnuva başarıyla oluşturuldu!",
+    "createFailed": "Turnuva oluşturulamadı",
+    "loadFailed": "Turnuvalar yüklenemedi",
+    "noTournaments": "Henüz Turnuva Yok",
+    "createFirst": "İlk turnuvayı oluşturan siz olun!",
+    "create": "Turnuva Oluştur",
+    "registration": "Kayıt",
+    "inProgress": "Devam Ediyor",
+    "completed": "Tamamlandı",
+    "cancelled": "İptal Edildi"
+  },
+  "comparison": {
+    "title": "Hesap Karşılaştırması",
+    "addTwoPlayers": "Hesapları karşılaştırmak için en az 2 oyuncu etiketi ekleyin",
+    "emptySlot": "Boş slot",
+    "clanMembership": "Klan Üyeliği",
+    "noClan": "Klan Yok"
+  },
+  "stats": {
+    "trophies": "Kupalar",
+    "bestTrophies": "En İyi Kupalar",
+    "winRate": "Kazanma Oranı",
+    "totalWins": "Toplam Galibiyetler",
+    "totalLosses": "Toplam Mağlubiyetler",
+    "threeCrownWins": "3 Taç Galibiyetler",
+    "challengeMaxWins": "Meydan Okuma Maks Galibiyetler",
+    "challengeCardsWon": "Kazanılan Meydan Okuma Kartları",
+    "warDayWins": "Savaş Günü Galibiyetleri",
+    "donations": "Bağışlar",
+    "kingLevel": "Kral Seviyesi"
+  },
+  "auth": {
+    "signInRequired": "Devam etmek için lütfen giriş yapın"
+  },
+  "counterDeck": {
+    "title": "Karşı Deste Önerisi",
+    "description": "{{opponent}} destesini yenmek için AI önerili deste",
+    "opponentDeck": "Rakip Destesi",
+    "suggestedDeck": "Önerilen Karşı Deste",
+    "howToPlay": "Nasıl Oynanır",
+    "whyTheseCards": "Neden Bu Kartlar?",
+    "copyButton": "Desteyi Panoya Kopyala",
+    "copiedButton": "Kopyalandı!",
+    "copiedToClipboard": "Deste panoya kopyalandı!",
+    "copyHint": "Kartları aramak için oyunda deste isimlerini yapıştırın"
+  },
+  "deckEvolution": {
+    "title": "Deste Gelişim Takibi",
+    "undoLast": "Son Değişikliği Geri Al",
+    "tryModeActive": "Deneme Modu Aktif",
+    "liveMode": "Canlı Mod",
+    "makeSwaps": "Destenizin nasıl geliştiğini görmek için kart değişimi yapın",
+    "statsAppear": "Önce/sonra istatistikleri burada görünecek",
+    "noChange": "Değişiklik yok",
+    "synergy": "Sinerji",
+    "metaScore": "Meta Skoru",
+    "avgElixir": "Ort İksir"
+  },
+  "winRateChart": {
+    "title": "Arketiplere Karşı Kazanma Oranı",
+    "description": "Farklı deste türlerine karşı performansınız",
+    "winRate": "Kazanma Oranı",
+    "matches": "maç",
+    "strong": "Güçlü (>%60)",
+    "even": "Dengeli (%50-60)",
+    "weak": "Zayıf (<%50)"
   },
   "cardCollection": {
     "title": "Kart Koleksiyonu",
