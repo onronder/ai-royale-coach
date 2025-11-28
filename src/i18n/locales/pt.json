@@ -1354,6 +1354,27 @@
     "signInRequired": "Faça login para usar recursos de IA",
     "predictionFailed": "Falha ao prever confronto"
   },
+  "predictionHistory": {
+    "title": "Histórico de Precisão de Previsões",
+    "description": "Acompanhe quão precisas são as previsões de IA comparadas com seus resultados reais",
+    "viewHistory": "Ver Histórico de Previsões",
+    "hideHistory": "Ocultar Histórico",
+    "predictedWinRate": "Previsto",
+    "actualWinRate": "Real",
+    "battlesTracked": "Batalhas",
+    "accuracy": "Precisão",
+    "accuracyScore": "Pontuação de Precisão",
+    "highAccuracy": "Alta Precisão",
+    "mediumAccuracy": "Precisão Moderada",
+    "lowAccuracy": "Baixa Precisão",
+    "noPredictions": "Sem previsões ainda. Experimente a Previsão de Confronto IA para começar!",
+    "noBattlesYet": "Jogue algumas batalhas para ver o rastreamento de precisão",
+    "recentPredictions": "Previsões Recentes",
+    "cachedResult": "Em Cache",
+    "freshPrediction": "Nova Previsão",
+    "fromCache": "Do cache",
+    "lastUpdated": "Última atualização"
+  },
   "progress": {
     "activeTasks": "Tarefas Ativas",
     "noActiveOperations": "Sem operações ativas",

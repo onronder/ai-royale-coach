@@ -1331,6 +1331,27 @@
     "signInRequired": "Sign in to use AI features",
     "predictionFailed": "Failed to predict matchup"
   },
+  "predictionHistory": {
+    "title": "Prediction Accuracy History",
+    "description": "Track how accurate AI predictions are compared to your actual battle results",
+    "viewHistory": "View Prediction History",
+    "hideHistory": "Hide History",
+    "predictedWinRate": "Predicted",
+    "actualWinRate": "Actual",
+    "battlesTracked": "Battles",
+    "accuracy": "Accuracy",
+    "accuracyScore": "Accuracy Score",
+    "highAccuracy": "High Accuracy",
+    "mediumAccuracy": "Moderate Accuracy",
+    "lowAccuracy": "Low Accuracy",
+    "noPredictions": "No predictions yet. Try the AI Matchup Prediction to get started!",
+    "noBattlesYet": "Play some battles to see accuracy tracking",
+    "recentPredictions": "Recent Predictions",
+    "cachedResult": "Cached",
+    "freshPrediction": "New Prediction",
+    "fromCache": "From cache",
+    "lastUpdated": "Last updated"
+  },
   "progress": {
     "activeTasks": "Active Tasks",
     "noActiveOperations": "No active operations",
