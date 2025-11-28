@@ -33,7 +33,130 @@
         "masteryTimeline": "Chronologie de Maîtrise",
         "beginnerTimeline": "Attendez-vous à 2-3 semaines pour devenir compétent avec une pratique régulière.",
         "intermediateTimeline": "Attendez-vous à 4-6 semaines pour atteindre un niveau compétitif avec une pratique quotidienne.",
-        "expertTimeline": "Attendez-vous à 8-12 semaines de pratique dédiée pour maîtriser tous les matchups et micro techniques."
+        "expertTimeline": "Attendez-vous à 8-12 semaines de pratique dédiée pour maîtriser tous les matchups et micro techniques.",
+        "difficultyLevels": {
+          "beginner": "Débutant",
+          "intermediate": "Intermédiaire",
+          "expert": "Expert"
+        },
+        "decks": {
+          "hogCycle": {
+            "phase1": {
+              "name": "Fondamentaux (Semaine 1-2)",
+              "focus": "Maîtriser les mécaniques de cycle de base",
+              "tips": [
+                "Apprenez le placement optimal du Cannon contre différentes conditions de victoire",
+                "Pratiquez le positionnement du Musketeer pour la défense",
+                "Habituez-vous à cycler rapidement avec les cartes à 1-élixir"
+              ]
+            },
+            "phase2": {
+              "name": "Intermédiaire (Semaine 3-4)",
+              "focus": "Timing et valeur des sorts",
+              "tips": [
+                "Apprenez quand engager le Hog Rider vs défendre",
+                "Pratiquez la prédiction des placements de sorts",
+                "Maîtrisez les techniques de kiting avec Ice Golem"
+              ]
+            },
+            "phase3": {
+              "name": "Avancé (Semaine 5+)",
+              "focus": "Exécution parfaite sous pression",
+              "tips": [
+                "Développez la mémoire musculaire pour des défenses frame-parfaites",
+                "Apprenez toutes les stratégies spécifiques aux matchups",
+                "Maîtrisez le comptage et le suivi d'élixir"
+              ]
+            }
+          },
+          "golemBeatdown": {
+            "phase1": {
+              "name": "Fondamentaux (Semaine 1-2)",
+              "focus": "Comprendre les fondamentaux du beatdown",
+              "tips": [
+                "Apprenez quand démarrer un push Golem en sécurité",
+                "Pratiquez la construction de troupes de soutien derrière le Golem",
+                "Comprenez les synergies de dégâts de mort"
+              ]
+            },
+            "phase2": {
+              "name": "Intermédiaire (Semaine 3-4)",
+              "focus": "Optimisation du push",
+              "tips": [
+                "Maîtrisez le timing du Lightning sur les bâtiments défensifs",
+                "Apprenez à utiliser Tornado pour l'activation de la Tour du Roi",
+                "Pratiquez la gestion du désavantage d'élixir"
+              ]
+            },
+            "phase3": {
+              "name": "Avancé (Semaine 5+)",
+              "focus": "Adaptation à la pression",
+              "tips": [
+                "Apprenez à défendre la pression sur la voie opposée",
+                "Maîtrisez l'extraction des cartes défensives clés",
+                "Perfectionnez votre timing de push en double élixir"
+              ]
+            }
+          },
+          "logBait": {
+            "phase1": {
+              "name": "Fondamentaux (Semaine 1-2)",
+              "focus": "Bases du bait de sorts",
+              "tips": [
+                "Apprenez le placement de Princess derrière la Tour du Roi",
+                "Pratiquez les variations de placement du Goblin Barrel",
+                "Comprenez quelles cartes appâtent quels sorts"
+              ]
+            },
+            "phase2": {
+              "name": "Intermédiaire (Semaine 3-4)",
+              "focus": "Maîtrise de la prédiction",
+              "tips": [
+                "Apprenez à prédire l'utilisation des sorts de l'adversaire",
+                "Maîtrisez le cycle de Rocket pour les dégâts chip",
+                "Pratiquez l'appât du Log avant le Barrel"
+              ]
+            },
+            "phase3": {
+              "name": "Avancé (Semaine 5+)",
+              "focus": "Jeux psychologiques et adaptation",
+              "tips": [
+                "Développez des lectures sur les schémas de l'adversaire",
+                "Apprenez tous les spots de prédiction du Goblin Barrel",
+                "Maîtrisez le placement défensif de l'Inferno Tower"
+              ]
+            }
+          },
+          "xbowSiege": {
+            "phase1": {
+              "name": "Fondamentaux (Semaine 1-2)",
+              "focus": "Placement et protection du X-Bow",
+              "tips": [
+                "Apprenez les positions de placement sécurisées du X-Bow",
+                "Pratiquez le placement de Tesla pour attirer les tanks",
+                "Comprenez quand aller offensif vs défensif"
+              ]
+            },
+            "phase2": {
+              "name": "Intermédiaire (Semaine 3-4)",
+              "focus": "Connaissance des matchups",
+              "tips": [
+                "Apprenez quels matchups favorisent le X-Bow offensif",
+                "Maîtrisez le X-Bow défensif dans les mauvais matchups",
+                "Pratiquez les stratégies de dégâts chip avec les sorts"
+              ]
+            },
+            "phase3": {
+              "name": "Avancé (Semaine 5+)",
+              "focus": "Exécution parfaite",
+              "tips": [
+                "Développez une compréhension profonde des matchups",
+                "Maîtrisez les placements défensifs frame-parfaits",
+                "Apprenez à adapter votre style de jeu en cours de match"
+              ]
+            }
+          }
+        }
       },
       "counters": {
         "subtitle": "Analyse des counters et vulnérabilités",
