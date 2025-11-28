@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { RealtimeChannel } from "@supabase/supabase-js";
 
 export interface OperationProgress {
   id: string;
@@ -23,30 +22,20 @@ interface UseOperationProgressOptions {
   enabled?: boolean;
 }
 
+/**
+ * Hook for operation progress - realtime handled by useUnifiedRealtime
+ */
 export function useOperationProgress({
   playerTag,
   operationType,
   enabled = true,
 }: UseOperationProgressOptions) {
-  const [progress, setProgress] = useState<OperationProgress | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (!enabled) {
-      setIsLoading(false);
-      return;
-    }
-
-    let channel: RealtimeChannel;
-
-    const setupSubscription = async () => {
+  const { data: progress, isLoading } = useQuery({
+    queryKey: ['operation-progress', playerTag, operationType],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
+      if (!user) return null;
 
-      // Fetch current progress
       const { data, error } = await supabase
         .from("operation_progress")
         .select("*")
@@ -58,52 +47,17 @@ export function useOperationProgress({
         .limit(1)
         .maybeSingle();
 
-      if (!error && data) {
-        setProgress(data as OperationProgress);
-      }
-      setIsLoading(false);
-
-      // Subscribe to real-time updates
-      channel = supabase
-        .channel(`operation_progress:${user.id}:${playerTag}:${operationType}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "operation_progress",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            const newData = payload.new as OperationProgress;
-            
-            // Only update if it matches our criteria
-            if (
-              newData.player_tag === playerTag &&
-              newData.operation_type === operationType
-            ) {
-              setProgress(newData);
-
-              // Clear progress after completion/failure
-              if (newData.status === "completed" || newData.status === "failed") {
-                setTimeout(() => {
-                  setProgress(null);
-                }, 3000);
-              }
-            }
-          }
-        )
-        .subscribe();
-    };
-
-    setupSubscription();
-
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, [playerTag, operationType, enabled]);
+      if (error) return null;
+      return data as OperationProgress | null;
+    },
+    enabled: enabled,
+    refetchInterval: (query) => {
+      // Poll more frequently when operation is running
+      const data = query.state.data;
+      return data?.status === 'running' ? 2000 : false;
+    },
+    staleTime: 1000,
+  });
 
   return {
     progress,

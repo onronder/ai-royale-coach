@@ -713,7 +713,10 @@
     "failedToSend": "Mesaj gönderilemedi",
     "failedToSendMatchContext": "Maç bağlamı gönderilemedi",
     "signInRequired": "AI Koçu kullanmak için lütfen giriş yapın",
-    "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın."
+    "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın.",
+    "aiQuota": "Bugünkü AI İstekleri",
+    "quotaExhausted": "Günlük AI limiti doldu. Gece yarısı sıfırlanır.",
+    "quotaLow": "Bugün için AI istekleri azalıyor."
   },
   "counterDeck": {
     "title": "Karşı Deste Oluşturucu",

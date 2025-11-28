@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,8 @@ interface MatchCardProps {
   onClick?: () => void;
 }
 
-export function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
+// Memoized to prevent re-renders when parent updates unrelated state
+export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
   // Normalize player tags - API returns with '#', URL param might not have it
   const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
   const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
@@ -85,4 +87,10 @@ export function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
       </div>
     </Card>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison - only re-render if battle or playerTag changes
+  return (
+    prevProps.battle.battleTime === nextProps.battle.battleTime &&
+    prevProps.playerTag === nextProps.playerTag
+  );
+});

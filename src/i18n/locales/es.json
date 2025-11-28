@@ -713,7 +713,10 @@
     "failedToSend": "Error al enviar mensaje",
     "failedToSendMatchContext": "Error al enviar contexto del partido",
     "signInRequired": "Inicia sesión para usar el Coach IA",
-    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo."
+    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo.",
+    "aiQuota": "Solicitudes IA Hoy",
+    "quotaExhausted": "Límite diario de IA alcanzado. Se reinicia a medianoche.",
+    "quotaLow": "Pocas solicitudes de IA restantes hoy."
   },
   "counterDeck": {
     "title": "Constructor de Mazo Contador",

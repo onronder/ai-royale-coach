@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,10 +26,11 @@ interface Tournament {
   _count?: { registrations: number };
 }
 
+/**
+ * TournamentList - realtime handled by useUnifiedRealtime
+ */
 export function TournamentList({ onSelectTournament }: { onSelectTournament: (id: string) => void }) {
   const { t } = useTranslation();
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
   const [playerTag, setPlayerTag] = useState<string>("");
@@ -48,46 +50,30 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
     getPlayerInfo();
   }, []);
 
-  useEffect(() => {
-    fetchTournaments();
+  // Use React Query - realtime invalidation handled by useUnifiedRealtime
+  const { data: tournaments = [], isLoading, refetch } = useQuery({
+    queryKey: ['tournaments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tournaments')
+        .select(`
+          *,
+          tournament_registrations(count)
+        `)
+        .order('start_date', { ascending: false })
+        .limit(20);
 
-    const channel = supabase
-      .channel('tournament-updates')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'tournaments'
-      }, () => {
-        fetchTournaments();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const fetchTournaments = async () => {
-    const { data, error } = await supabase
-      .from('tournaments')
-      .select(`
-        *,
-        tournament_registrations(count)
-      `)
-      .order('start_date', { ascending: false })
-      .limit(20);
-
-    if (error) {
-      console.error('Error fetching tournaments:', error);
-      toast.error(t('tournaments.loadFailed'));
-    } else if (data) {
-      setTournaments(data.map(t => ({
+      if (error) {
+        toast.error(t('tournaments.loadFailed'));
+        throw error;
+      }
+      
+      return (data || []).map(t => ({
         ...t,
         _count: { registrations: t.tournament_registrations?.length || 0 }
-      })));
-    }
-    setIsLoading(false);
-  };
+      })) as Tournament[];
+    },
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -109,7 +95,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
         <CreateTournamentForm 
           onSuccess={() => {
             setShowCreateForm(false);
-            fetchTournaments();
+            refetch();
           }} 
         />
       )}

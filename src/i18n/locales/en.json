@@ -706,7 +706,10 @@
     "failedToSend": "Failed to send message",
     "failedToSendMatchContext": "Failed to send match context",
     "signInRequired": "Please sign in to use AI Coach",
-    "sessionExpired": "Session expired. Please sign in again."
+    "sessionExpired": "Session expired. Please sign in again.",
+    "aiQuota": "AI Requests Today",
+    "quotaExhausted": "Daily AI limit reached. Resets at midnight.",
+    "quotaLow": "Running low on AI requests today."
   },
   "counterDeck": {
     "title": "Counter Deck Builder",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +19,8 @@ const sizeClasses = {
   lg: 'w-28 h-36'
 };
 
-export function CardImage({ 
+// Memoized to prevent re-renders in large card grids
+export const CardImage = memo(function CardImage({ 
   card, 
   size = 'md', 
   showLevel = true,
@@ -156,4 +157,14 @@ export function CardImage({
       {cardContent}
     </GameTooltip>
   );
-}
+}, (prevProps, nextProps) => {
+  // Only re-render if card data actually changes
+  return (
+    prevProps.card.id === nextProps.card.id &&
+    prevProps.card.level === nextProps.card.level &&
+    prevProps.card.evolutionLevel === nextProps.card.evolutionLevel &&
+    prevProps.size === nextProps.size &&
+    prevProps.showLevel === nextProps.showLevel &&
+    prevProps.showElixir === nextProps.showElixir
+  );
+});

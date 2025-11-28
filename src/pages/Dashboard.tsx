@@ -11,6 +11,7 @@ import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useBackgroundSync } from "@/hooks/useBackgroundSync";
+import { useUnifiedRealtime } from "@/hooks/useUnifiedRealtime";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DashboardLoader } from "@/components/ui/page-loader";
 import { PageTransition } from "@/components/ui/loading-states";
@@ -57,6 +58,9 @@ const Dashboard = () => {
   
   // Background sync for first-time visitors
   useBackgroundSync(user?.id || null, playerTag);
+  
+  // Unified realtime subscriptions (consolidated from 6 to 2 channels)
+  useUnifiedRealtime(user?.id || null, playerTag);
   
   // Memoized win rate calculation
   const { winRate, formattedWinRate, wins, losses } = useWinRate(battles, playerTag);
