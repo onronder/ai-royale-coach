@@ -20,6 +20,7 @@ import { DeckRecommendationEngine } from './DeckRecommendationEngine';
 export function DemoSection() {
   const { ref, isVisible } = useScrollAnimation(0.2);
   const navigate = useNavigate();
+  const sectionId = "demo-section";
   const [selectedDeck, setSelectedDeck] = useState<SampleDeck>(sampleDecks[0]);
   const [typedText, setTypedText] = useState('');
   const fullText = selectedDeck.aiInsight;
@@ -86,7 +87,7 @@ export function DemoSection() {
   );
 
   return (
-    <section ref={ref} className="py-20 px-4 relative overflow-hidden">
+    <section ref={ref} id="demo-section" className="py-20 px-4 relative overflow-hidden">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
