@@ -53,3 +53,6 @@ verify_jwt = false
 
 [functions.predict-deck-performance]
 verify_jwt = false
+
+[functions.predict-deck-matchup]
+verify_jwt = false

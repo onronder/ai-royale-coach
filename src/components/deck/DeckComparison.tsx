@@ -4,10 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import { CardImage } from "@/components/cards/CardImage";
 import { DeckSelector } from "./DeckSelector";
+import { AIQuotaIndicator } from "@/components/coach/AIQuotaIndicator";
+import { useAIQuota } from "@/hooks/useAIQuota";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
-import { ArrowRight, TrendingUp, TrendingDown, Minus, Zap, ChevronDown, ChevronUp, Gauge, Flame, Crown } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { 
+  ArrowRight, TrendingUp, TrendingDown, Minus, Zap, ChevronDown, ChevronUp, 
+  Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info
+} from "lucide-react";
 
 interface SavedDeck {
   id: string;
@@ -23,15 +31,42 @@ interface DeckComparisonProps {
   currentDeck: ClashRoyaleCard[] | null;
 }
 
+interface KeyMatchup {
+  deckACard: string;
+  deckBCard: string;
+  advantage: 'deckA' | 'deckB' | 'even';
+  reason: string;
+}
+
+interface MatchupPrediction {
+  deckAWinRate: number;
+  deckBWinRate: number;
+  confidence: 'high' | 'medium' | 'low';
+  explanation: string;
+  keyMatchups: KeyMatchup[];
+  tips: {
+    forDeckA: string[];
+    forDeckB: string[];
+  };
+}
+
 export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckComparisonProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { hasQuotaRemaining, incrementUsage } = useAIQuota();
+  
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [comparisonCards, setComparisonCards] = useState<ClashRoyaleCard[]>([]);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  
+  // AI Matchup prediction state
+  const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
+  const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
+  const [showMatchupAnalysis, setShowMatchupAnalysis] = useState(true);
 
   const handleSelectDeck = (deckId: string, cards: ClashRoyaleCard[]) => {
     setSelectedDeckId(deckId);
     setComparisonCards(cards);
+    setMatchupPrediction(null); // Reset prediction when deck changes
   };
 
   const calculateAvgElixir = (cards: ClashRoyaleCard[]) => {
@@ -39,7 +74,6 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
     return cards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / cards.length;
   };
 
-  // Count cards by elixir cost ranges for comparison
   const getElixirBreakdown = (cards: ClashRoyaleCard[]) => {
     return {
       lowCost: cards.filter(c => (c.elixirCost || 0) <= 2).length,
@@ -63,11 +97,63 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
     return { icon: TrendingDown, color: "text-destructive", text: `-${Math.abs(diff).toFixed(1)}` };
   };
 
+  const predictMatchup = async () => {
+    if (!hasQuotaRemaining) {
+      toast({
+        title: t('deckComparison.noQuotaRemaining'),
+        description: t('deckComparison.quotaRequired'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoadingPrediction(true);
+    setMatchupPrediction(null);
+
+    try {
+      const deckANames = builderDeck.map(c => c.name);
+      const deckBNames = comparisonCards.map(c => c.name);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: t('deckComparison.signInRequired'),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke<MatchupPrediction>('predict-deck-matchup', {
+        body: { 
+          deckA: deckANames, 
+          deckB: deckBNames,
+          language: i18n.language 
+        }
+      });
+
+      if (error) throw error;
+      if (!data) throw new Error('No prediction returned');
+
+      setMatchupPrediction(data);
+      await incrementUsage();
+      setShowMatchupAnalysis(true);
+
+    } catch (err) {
+      console.error('Matchup prediction error:', err);
+      toast({
+        title: t('deckComparison.predictionFailed'),
+        description: err instanceof Error ? err.message : 'Unknown error',
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingPrediction(false);
+    }
+  };
+
   const deck1Elixir = calculateAvgElixir(builderDeck);
   const deck2Elixir = calculateAvgElixir(comparisonCards);
   const deck1Breakdown = getElixirBreakdown(builderDeck);
   const deck2Breakdown = getElixirBreakdown(comparisonCards);
-  
   const elixirComparison = getComparison(deck1Elixir, deck2Elixir, true);
 
   const getSelectedDeckName = () => {
@@ -75,6 +161,24 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
     const deck = savedDecks.find(d => d.id === selectedDeckId);
     return deck?.name || t('deckComparison.selectDeckB');
   };
+
+  const getConfidenceBadgeVariant = (confidence: string) => {
+    switch (confidence) {
+      case 'high': return 'default';
+      case 'medium': return 'secondary';
+      default: return 'outline';
+    }
+  };
+
+  const getAdvantageIcon = (advantage: string) => {
+    switch (advantage) {
+      case 'deckA': return <Shield className="h-4 w-4 text-success" />;
+      case 'deckB': return <Swords className="h-4 w-4 text-destructive" />;
+      default: return <Minus className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const canPredict = builderDeck.length === 8 && comparisonCards.length === 8;
 
   return (
     <div className="space-y-4">
@@ -194,6 +298,142 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                 </div>
               </div>
             </div>
+
+            <Separator />
+
+            {/* AI Matchup Prediction Button */}
+            {canPredict && (
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <Button
+                    onClick={predictMatchup}
+                    disabled={isLoadingPrediction || !hasQuotaRemaining}
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  >
+                    {isLoadingPrediction ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('deckComparison.analyzing')}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {t('deckComparison.aiMatchupPrediction')}
+                        <Badge variant="secondary" className="ml-2 text-xs">AI</Badge>
+                      </>
+                    )}
+                  </Button>
+                  <AIQuotaIndicator compact />
+                </div>
+
+                {/* AI Matchup Results */}
+                {matchupPrediction && (
+                  <div className="space-y-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowMatchupAnalysis(!showMatchupAnalysis)}
+                      className="w-full justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-purple-500" />
+                        {t('deckComparison.aiMatchupPrediction')}
+                      </span>
+                      {showMatchupAnalysis ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+
+                    {showMatchupAnalysis && (
+                      <div className="bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg p-4 space-y-4">
+                        {/* Win Rate Comparison */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium">{t('deckComparison.deckA')}</span>
+                            <span className="font-bold text-lg">{matchupPrediction.deckAWinRate}%</span>
+                          </div>
+                          <Progress 
+                            value={matchupPrediction.deckAWinRate} 
+                            className="h-3 bg-muted"
+                          />
+                          
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium">{t('deckComparison.deckB')}</span>
+                            <span className="font-bold text-lg">{matchupPrediction.deckBWinRate}%</span>
+                          </div>
+                          <Progress 
+                            value={matchupPrediction.deckBWinRate} 
+                            className="h-3 bg-muted"
+                          />
+                        </div>
+
+                        {/* Confidence Badge */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">{t('deckComparison.confidence')}:</span>
+                          <Badge variant={getConfidenceBadgeVariant(matchupPrediction.confidence)}>
+                            {t(`deckComparison.confidence${matchupPrediction.confidence.charAt(0).toUpperCase() + matchupPrediction.confidence.slice(1)}`)}
+                          </Badge>
+                        </div>
+
+                        {/* Explanation */}
+                        <div className="bg-background/50 rounded-lg p-3">
+                          <div className="flex items-start gap-2">
+                            <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                            <p className="text-sm">{matchupPrediction.explanation}</p>
+                          </div>
+                        </div>
+
+                        {/* Key Matchups */}
+                        {matchupPrediction.keyMatchups.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm">{t('deckComparison.keyMatchups')}</h4>
+                            <div className="grid gap-2">
+                              {matchupPrediction.keyMatchups.map((matchup, idx) => (
+                                <div key={idx} className="flex items-center gap-3 bg-background/50 rounded-lg p-2 text-sm">
+                                  {getAdvantageIcon(matchup.advantage)}
+                                  <span className="font-medium">{matchup.deckACard}</span>
+                                  <span className="text-muted-foreground">vs</span>
+                                  <span className="font-medium">{matchup.deckBCard}</span>
+                                  <span className="text-muted-foreground text-xs ml-auto hidden sm:block">{matchup.reason}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tips */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                          {matchupPrediction.tips.forDeckA.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="font-medium text-sm text-success">{t('deckComparison.tipsForDeckA')}</h5>
+                              <ul className="space-y-1">
+                                {matchupPrediction.tips.forDeckA.map((tip, idx) => (
+                                  <li key={idx} className="text-xs text-muted-foreground flex items-start gap-1">
+                                    <span className="text-success">•</span>
+                                    {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {matchupPrediction.tips.forDeckB.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="font-medium text-sm text-destructive">{t('deckComparison.tipsForDeckB')}</h5>
+                              <ul className="space-y-1">
+                                {matchupPrediction.tips.forDeckB.map((tip, idx) => (
+                                  <li key={idx} className="text-xs text-muted-foreground flex items-start gap-1">
+                                    <span className="text-destructive">•</span>
+                                    {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             <Separator />
 
