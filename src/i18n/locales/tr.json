@@ -172,6 +172,33 @@
               "golemBeatdown": ["Onlara Lightning için değer verme", "Karşı şerite agresif baskı yap", "Fireball'ı Night Witch için sakla"],
               "logBait": ["Princess'a Log, Goblin Gang'e Fireball at", "Rocket döngüsünü önlemek için baskı yap", "Goblin Barrel yerleşimlerini tahmin et"],
               "xbowSiege": ["Kilitleri önlemek için X-Bow ile aynı şeride baskı yap", "Savunma binalarına Fireball at", "Savunabileceklerinden daha hızlı döngü yap"]
+            },
+            "phase1": {
+              "name": "Temel (Hafta 1-2)",
+              "focus": "Temel döngü mekaniklerini öğren",
+              "tips": [
+                "Farklı zafer koşullarına karşı optimal Cannon yerleşimini öğren",
+                "Savunma için Musketeer konumlandırmasını pratik yap",
+                "1 eliksirlik kartlarla hızlı döngüye alış"
+              ]
+            },
+            "phase2": {
+              "name": "Orta Seviye (Hafta 3-4)",
+              "focus": "Zamanlama ve büyü değeri",
+              "tips": [
+                "Hog Rider'ı ne zaman saldırıya göndereceğini öğren",
+                "Büyü yerleşimlerini tahmin etmeyi pratik yap",
+                "Ice Golem oyalama tekniklerini ustalaş"
+              ]
+            },
+            "phase3": {
+              "name": "İleri Seviye (Hafta 5+)",
+              "focus": "Baskı altında mükemmel uygulama",
+              "tips": [
+                "Mükemmel savunmalar için kas hafızası geliştir",
+                "Tüm eşleşmeye özel stratejileri öğren",
+                "Eliksir sayma ve takip etmeyi ustalaş"
+              ]
             }
           },
           "golemBeatdown": {
@@ -188,6 +215,33 @@
               "hogCycle": ["Chip hasarlarını görmezden gel", "Çift eliksirde büyük saldırılar oluştur", "Savunma yapılarına Lightning at"],
               "logBait": ["Baby Dragon sürülerini counter'lar", "Inferno Tower'a Lightning at", "Rocket chip'lerine rağmen saldır"],
               "xbowSiege": ["Golem ile X-Bow hasarını tankla", "Tesla + Archers'a Lightning at", "Ölüm hasarını durduramıyorlar"]
+            },
+            "phase1": {
+              "name": "Temel (Hafta 1-2)",
+              "focus": "Beatdown temellerini anlama",
+              "tips": [
+                "Golem saldırısını güvenle ne zaman başlatacağını öğren",
+                "Golem arkasında destek birlikleri oluşturmayı pratik yap",
+                "Ölüm hasarı sinerjilerini anla"
+              ]
+            },
+            "phase2": {
+              "name": "Orta Seviye (Hafta 3-4)",
+              "focus": "Saldırı optimizasyonu",
+              "tips": [
+                "Savunma binalarına Lightning zamanlamasını ustalaş",
+                "Kral Kulesi aktivasyonu için Tornado kullanmayı öğren",
+                "Eliksir dezavantajını yönetmeyi pratik yap"
+              ]
+            },
+            "phase3": {
+              "name": "İleri Seviye (Hafta 5+)",
+              "focus": "Baskı adaptasyonu",
+              "tips": [
+                "Karşı şerit baskısını savunmayı öğren",
+                "Anahtar savunma kartlarını çekmeyi ustalaş",
+                "Çift eliksir saldırı zamanlamasını mükemmelleştir"
+              ]
             }
           },
           "logBait": {
@@ -204,6 +258,33 @@
               "hogCycle": ["Inferno Tower Hog'u mükemmel counter'lar", "Goblin Barrel'dan önce Log'larını tuzağa düşür", "Uzatma galibiyetleri için Rocket döngüsü"],
               "golemBeatdown": ["Inferno Tower tek cevabınız", "Destek birliklerine Rocket at", "Chip için karşı şerite Barrel at"],
               "xbowSiege": ["Knight X-Bow atışlarını tanklar", "Savunma düzenlerine Rocket at", "Princess tepkileri zorlar"]
+            },
+            "phase1": {
+              "name": "Temel (Hafta 1-2)",
+              "focus": "Büyü tuzağı temelleri",
+              "tips": [
+                "Kral Kulesi arkasına Princess yerleşimini öğren",
+                "Goblin Barrel yerleşim varyasyonlarını pratik yap",
+                "Hangi kartların hangi büyüleri çektiğini anla"
+              ]
+            },
+            "phase2": {
+              "name": "Orta Seviye (Hafta 3-4)",
+              "focus": "Tahmin ustalığı",
+              "tips": [
+                "Rakibin büyü kullanımını tahmin etmeyi öğren",
+                "Chip hasarı için Rocket döngüsünü ustalaş",
+                "Barrel'dan önce Log çekmeyi pratik yap"
+              ]
+            },
+            "phase3": {
+              "name": "İleri Seviye (Hafta 5+)",
+              "focus": "Zihin oyunları ve adaptasyon",
+              "tips": [
+                "Rakibin kalıpları hakkında okumalar geliştir",
+                "Tüm Goblin Barrel tahmin noktalarını öğren",
+                "Savunma Inferno Tower yerleşimini ustalaş"
+              ]
             }
           },
           "xbowSiege": {
@@ -220,6 +301,33 @@
               "hogCycle": ["Tesla ile savun, X-Bow taahhüt etme", "Chip hasarı için Fireball + Log", "Fireball'larını döngüyle geç"],
               "golemBeatdown": ["Sürekli karşı şeride baskı yap", "Saldırı oluşturmalarına izin verme", "Destek birliklerine Fireball at"],
               "logBait": ["Princess için Archers", "Sürülerine Log at", "Goblin Gang'e Fireball + Log"]
+            },
+            "phase1": {
+              "name": "Temel (Hafta 1-2)",
+              "focus": "X-Bow yerleşimi ve koruması",
+              "tips": [
+                "Güvenli X-Bow yerleşim pozisyonlarını öğren",
+                "Tank çekme için Tesla yerleşimini pratik yap",
+                "Ne zaman saldırgan vs savunmacı olacağını anla"
+              ]
+            },
+            "phase2": {
+              "name": "Orta Seviye (Hafta 3-4)",
+              "focus": "Eşleşme bilgisi",
+              "tips": [
+                "Hangi eşleşmelerin saldırgan X-Bow'u desteklediğini öğren",
+                "Kötü eşleşmelerde savunma X-Bow'unu ustalaş",
+                "Büyü chip hasarı stratejilerini pratik yap"
+              ]
+            },
+            "phase3": {
+              "name": "İleri Seviye (Hafta 5+)",
+              "focus": "Mükemmel uygulama",
+              "tips": [
+                "Derin eşleşme anlayışı geliştir",
+                "Mükemmel savunma yerleşimlerini ustalaş",
+                "Oyun ortasında oyun tarzını uyarlamayı öğren"
+              ]
             }
           }
         }
