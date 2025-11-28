@@ -552,7 +552,8 @@
     "errors": {
       "invalidCredentials": "Invalid email or password",
       "emailInUse": "Email already in use"
-    }
+    },
+    "signInRequired": "Please sign in to continue"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1206,9 +1207,6 @@
     "warDayWins": "War Day Wins",
     "donations": "Donations",
     "kingLevel": "King Level"
-  },
-  "auth": {
-    "signInRequired": "Please sign in to continue"
   },
   "counterDeck": {
     "title": "Counter Deck Suggestion",

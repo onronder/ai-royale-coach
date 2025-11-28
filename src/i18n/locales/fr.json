@@ -554,7 +554,8 @@
       "weakPassword": "Mot de passe trop faible",
       "networkError": "Erreur réseau. Veuillez réessayer.",
       "generic": "Une erreur s'est produite. Veuillez réessayer."
-    }
+    },
+    "signInRequired": "Veuillez vous connecter pour continuer"
   },
   "dashboard": {
     "title": "Tableau de Bord",
@@ -1208,9 +1209,6 @@
     "warDayWins": "Victoires Jour de Guerre",
     "donations": "Dons",
     "kingLevel": "Niveau du Roi"
-  },
-  "auth": {
-    "signInRequired": "Veuillez vous connecter pour continuer"
   },
   "counterDeck": {
     "title": "Suggestion de Contre-Deck",
