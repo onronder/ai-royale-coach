@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Loader2, Sparkles, Crown, Zap, Shield } from "lucide-react";
 
@@ -17,19 +18,21 @@ const iconMap = {
 };
 
 export function AnalysisLoader({ 
-  message = "Loading...",
+  message,
   variant = "card",
   icon = "sparkles",
   showProgress = false,
   className 
 }: AnalysisLoaderProps) {
+  const { t } = useTranslation();
   const Icon = iconMap[icon];
+  const displayMessage = message || t('common.loading');
   
   if (variant === "compact") {
     return (
       <div className={cn("flex items-center gap-2", className)}>
         <Loader2 className="h-4 w-4 animate-spin text-primary" />
-        <span className="text-sm text-muted-foreground">{message}</span>
+        <span className="text-sm text-muted-foreground">{displayMessage}</span>
       </div>
     );
   }
@@ -43,13 +46,13 @@ export function AnalysisLoader({
               <Icon className="h-12 w-12 text-primary animate-pulse" />
               <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
             </div>
-            <p className="text-lg font-heading text-foreground">{message}</p>
+            <p className="text-lg font-heading text-foreground">{displayMessage}</p>
             {showProgress && (
               <div className="w-64 h-1 bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-shimmer" />
               </div>
             )}
-            <p className="text-sm text-muted-foreground">This may take a moment</p>
+            <p className="text-sm text-muted-foreground">{t('common.mayTakeMoment')}</p>
           </div>
         </div>
       </div>
@@ -65,13 +68,13 @@ export function AnalysisLoader({
             <div className="absolute inset-0 bg-primary/30 rounded-full blur-2xl animate-pulse-glow" />
           </div>
           <div className="text-center space-y-2">
-            <h3 className="text-2xl font-heading text-foreground">{message}</h3>
+            <h3 className="text-2xl font-heading text-foreground">{displayMessage}</h3>
             {showProgress && (
               <div className="w-80 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-shimmer" />
               </div>
             )}
-            <p className="text-muted-foreground">Please wait while we process your request</p>
+            <p className="text-muted-foreground">{t('common.pleaseWait')}</p>
           </div>
         </div>
       </div>
@@ -87,7 +90,7 @@ export function AnalysisLoader({
           <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg animate-pulse" />
         </div>
         <div className="text-center space-y-1">
-          <p className="font-heading text-foreground">{message}</p>
+          <p className="font-heading text-foreground">{displayMessage}</p>
           {showProgress && (
             <div className="w-48 h-1 bg-muted rounded-full overflow-hidden mx-auto">
               <div className="h-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-shimmer" />

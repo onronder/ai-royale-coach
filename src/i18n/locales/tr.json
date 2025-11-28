@@ -1105,27 +1105,6 @@
     "fetchFailed": "Kazanma oranı tahminleri alınamadı",
     "languageChanged": "Dil değişti. Yeni dilinizde analiz almak için tahmin düğmesine tıklayın."
   },
-  "achievements": {
-    "title": "Başarı Merkezi",
-    "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
-    "syncProgress": "İlerleme Senkronize Et",
-    "unlocked": "Açılan Başarılar",
-    "masteryPoints": "Ustalık Puanları",
-    "learningPhase": "Öğrenme Aşaması",
-    "beginner": "Başlangıç",
-    "completion": "Tamamlanma",
-    "skillBreakdown": "Yetenek Dağılımı",
-    "skillBreakdownDescription": "Kategoriler genelinde mevcut yetenek puanlarınız",
-    "skills": "Yetenekler",
-    "mastery": "Ustalık",
-    "learning": "Öğrenme",
-    "milestones": "Kilometre Taşları",
-    "unlockedCount": "Açılan ({{count}})",
-    "inProgress": "Devam Eden ({{count}})",
-    "progress": "İlerleme",
-    "pts": "puan",
-    "unlockedOn": "{{date}} tarihinde açıldı"
-  },
   "deckStats": {
     "title": "Deste İstatistikleri",
     "description": "Deste performansınızı zaman içinde takip edin",
@@ -1147,7 +1126,12 @@
     "elixir": "İksir",
     "loading": "Yükleniyor...",
     "description": "Açıklama",
-    "all": "Tümü"
+    "all": "Tümü",
+    "mayTakeMoment": "Bu biraz zaman alabilir",
+    "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
+    "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
+    "loadingDashboard": "Panelonuz yükleniyor",
+    "verifyingAuth": "Kimlik doğrulanıyor"
   },
   "notFound": {
     "title": "Hay aksi! Sayfa bulunamadı",
@@ -1275,7 +1259,61 @@
     "mostUsed": "En Çok Kullanılan",
     "bestWinRate": "En İyi Kazanma Oranı",
     "noData": "Henüz kart ustalığı verisi yok",
-    "calculateMastery": "Ustalığı Hesapla"
+    "calculateMastery": "Ustalığı Hesapla",
+    "level": "Seviye",
+    "tiers": {
+      "master": "Usta",
+      "diamond": "Elmas",
+      "gold": "Altın",
+      "silver": "Gümüş",
+      "bronze": "Bronz"
+    }
+  },
+  "cardMastery": {
+    "used": "{{count}} kez kullanıldı",
+    "winRate": "Kazanma Oranı",
+    "avgCrowns": "Ort Taçlar",
+    "hideDetails": "Detayları Gizle",
+    "showDetails": "Detayları Göster",
+    "bestPartners": "En İyi Ortaklar",
+    "strugglesAgainst": "Zorluk Çektiği",
+    "personalizedTips": "Kişiselleştirilmiş İpuçları",
+    "generate": "Oluştur",
+    "generatingTips": "İpuçları oluşturuluyor...",
+    "clickGenerate": "Bu kart için AI ipuçları almak için oluştur'a tıklayın"
+  },
+  "achievements": {
+    "title": "Başarı Merkezi",
+    "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
+    "syncProgress": "İlerleme Senkronize Et",
+    "unlocked": "Başarı Açıldı!",
+    "points": "puan",
+    "masteryPoints": "Ustalık Puanları",
+    "learningPhase": "Öğrenme Aşaması",
+    "beginner": "Başlangıç",
+    "completion": "Tamamlanma",
+    "skillBreakdown": "Yetenek Dağılımı",
+    "skillBreakdownDescription": "Kategoriler genelinde mevcut yetenek puanlarınız",
+    "skills": "Yetenekler",
+    "mastery": "Ustalık",
+    "learning": "Öğrenme",
+    "milestones": "Kilometre Taşları",
+    "unlockedCount": "Açılan ({{count}})",
+    "inProgress": "Devam Eden ({{count}})",
+    "progress": "İlerleme",
+    "pts": "puan",
+    "unlockedOn": "{{date}} tarihinde açıldı"
+  },
+  "analytics": {
+    "winRateTrends": "Kazanma Oranı Trendleri",
+    "winRatePercent": "Kazanma Oranı (%)",
+    "trophyChange": "Kupa Değişimi",
+    "deckUsageDistribution": "Deste Kullanım Dağılımı",
+    "deckNumber": "Deste {{number}}",
+    "wr": "KO",
+    "battlesCount": "{{count}} savaş",
+    "mostUsedCards": "En Çok Kullanılan Kartlar",
+    "usedTimes": "{{count}} kez kullanıldı"
   },
   "templates": {
     "title": "Meta Deste Şablonları",

@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next";
+
 interface MasteryProgressRingProps {
   level: number;
   progress: number;
 }
 
 export function MasteryProgressRing({ level, progress }: MasteryProgressRingProps) {
+  const { t } = useTranslation();
+  
   const getTierColor = (level: number) => {
     if (level >= 9) return 'hsl(var(--primary))'; // Master - Purple
     if (level >= 7) return '#00ced1'; // Diamond - Cyan
@@ -50,7 +54,7 @@ export function MasteryProgressRing({ level, progress }: MasteryProgressRingProp
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
           <div className="text-2xl font-bold text-foreground">{level}</div>
-          <div className="text-xs text-muted-foreground">Level</div>
+          <div className="text-xs text-muted-foreground">{t('mastery.level')}</div>
         </div>
       </div>
     </div>

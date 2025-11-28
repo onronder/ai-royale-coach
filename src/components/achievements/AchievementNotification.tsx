@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Trophy, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface AchievementNotificationProps {
 }
 
 export function AchievementNotification({ achievement, onDismiss }: AchievementNotificationProps) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export function AchievementNotification({ achievement, onDismiss }: AchievementN
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-warning animate-pulse" />
-            <span className="font-rajdhani font-bold text-sm text-foreground">Achievement Unlocked!</span>
+            <span className="font-rajdhani font-bold text-sm text-foreground">{t('achievements.unlocked')}</span>
           </div>
           <Button
             variant="ghost"
@@ -82,7 +84,7 @@ export function AchievementNotification({ achievement, onDismiss }: AchievementN
                 {achievement.tier.toUpperCase()}
               </Badge>
               <Badge variant="outline" className="text-primary border-primary/30">
-                +{achievement.points} pts
+                +{achievement.points} {t('achievements.points')}
               </Badge>
             </div>
           </div>

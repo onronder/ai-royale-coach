@@ -1105,27 +1105,6 @@
     "fetchFailed": "Échec de la récupération des prédictions de taux de victoire",
     "languageChanged": "Langue modifiée. Cliquez sur prédire pour obtenir l'analyse dans votre nouvelle langue."
   },
-  "achievements": {
-    "title": "Centre de Succès",
-    "description": "Suivez votre parcours de maîtrise et débloquez des récompenses",
-    "syncProgress": "Synchroniser Progrès",
-    "unlocked": "Succès Débloqués",
-    "masteryPoints": "Points de Maîtrise",
-    "learningPhase": "Phase d'Apprentissage",
-    "beginner": "Débutant",
-    "completion": "Achèvement",
-    "skillBreakdown": "Répartition des Compétences",
-    "skillBreakdownDescription": "Vos évaluations de compétences actuelles par catégorie",
-    "skills": "Compétences",
-    "mastery": "Maîtrise",
-    "learning": "Apprentissage",
-    "milestones": "Jalons",
-    "unlockedCount": "Débloqués ({{count}})",
-    "inProgress": "En Cours ({{count}})",
-    "progress": "Progrès",
-    "pts": "pts",
-    "unlockedOn": "Débloqué le {{date}}"
-  },
   "deckStats": {
     "title": "Statistiques de Decks",
     "description": "Suivez les performances de votre deck au fil du temps",
@@ -1147,7 +1126,12 @@
     "elixir": "Élixir",
     "loading": "Chargement...",
     "description": "Description",
-    "all": "Tous"
+    "all": "Tous",
+    "mayTakeMoment": "Cela peut prendre un moment",
+    "pleaseWait": "Veuillez patienter pendant le traitement de votre demande",
+    "pleaseWaitMoment": "Veuillez patienter un moment...",
+    "loadingDashboard": "Chargement de votre tableau de bord",
+    "verifyingAuth": "Vérification de l'authentification"
   },
   "notFound": {
     "title": "Oups! Page non trouvée",
@@ -1275,7 +1259,61 @@
     "mostUsed": "Plus Utilisée",
     "bestWinRate": "Meilleur Taux de Victoire",
     "noData": "Pas encore de données de maîtrise",
-    "calculateMastery": "Calculer la Maîtrise"
+    "calculateMastery": "Calculer la Maîtrise",
+    "level": "Niveau",
+    "tiers": {
+      "master": "Maître",
+      "diamond": "Diamant",
+      "gold": "Or",
+      "silver": "Argent",
+      "bronze": "Bronze"
+    }
+  },
+  "cardMastery": {
+    "used": "Utilisé {{count}} fois",
+    "winRate": "Taux de Victoire",
+    "avgCrowns": "Couronnes Moy",
+    "hideDetails": "Masquer les Détails",
+    "showDetails": "Afficher les Détails",
+    "bestPartners": "Meilleurs Partenaires",
+    "strugglesAgainst": "Difficultés Contre",
+    "personalizedTips": "Conseils Personnalisés",
+    "generate": "Générer",
+    "generatingTips": "Génération des conseils...",
+    "clickGenerate": "Cliquez sur générer pour obtenir des conseils IA pour cette carte"
+  },
+  "achievements": {
+    "title": "Centre de Succès",
+    "description": "Suivez votre parcours de maîtrise et débloquez des récompenses",
+    "syncProgress": "Synchroniser le Progrès",
+    "unlocked": "Succès Débloqué!",
+    "points": "pts",
+    "masteryPoints": "Points de Maîtrise",
+    "learningPhase": "Phase d'Apprentissage",
+    "beginner": "Débutant",
+    "completion": "Achèvement",
+    "skillBreakdown": "Répartition des Compétences",
+    "skillBreakdownDescription": "Vos évaluations de compétences actuelles par catégorie",
+    "skills": "Compétences",
+    "mastery": "Maîtrise",
+    "learning": "Apprentissage",
+    "milestones": "Jalons",
+    "unlockedCount": "Débloqués ({{count}})",
+    "inProgress": "En Cours ({{count}})",
+    "progress": "Progrès",
+    "pts": "pts",
+    "unlockedOn": "Débloqué {{date}}"
+  },
+  "analytics": {
+    "winRateTrends": "Tendances de Victoire",
+    "winRatePercent": "Taux de Victoire (%)",
+    "trophyChange": "Changement de Trophées",
+    "deckUsageDistribution": "Répartition d'Utilisation des Decks",
+    "deckNumber": "Deck {{number}}",
+    "wr": "TV",
+    "battlesCount": "{{count}} batailles",
+    "mostUsedCards": "Cartes les Plus Utilisées",
+    "usedTimes": "Utilisée {{count}} fois"
   },
   "templates": {
     "title": "Modèles de Decks Méta",

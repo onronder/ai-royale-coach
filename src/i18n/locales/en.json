@@ -1124,7 +1124,12 @@
     "elixir": "Elixir",
     "loading": "Loading...",
     "description": "Description",
-    "all": "All"
+    "all": "All",
+    "mayTakeMoment": "This may take a moment",
+    "pleaseWait": "Please wait while we process your request",
+    "pleaseWaitMoment": "Please wait a moment...",
+    "loadingDashboard": "Loading your dashboard",
+    "verifyingAuth": "Verifying authentication"
   },
   "notFound": {
     "title": "Oops! Page not found",
@@ -1252,7 +1257,43 @@
     "mostUsed": "Most Used",
     "bestWinRate": "Best Win Rate",
     "noData": "No card mastery data yet",
-    "calculateMastery": "Calculate Mastery"
+    "calculateMastery": "Calculate Mastery",
+    "level": "Level",
+    "tiers": {
+      "master": "Master",
+      "diamond": "Diamond",
+      "gold": "Gold",
+      "silver": "Silver",
+      "bronze": "Bronze"
+    }
+  },
+  "cardMastery": {
+    "used": "Used {{count}} times",
+    "winRate": "Win Rate",
+    "avgCrowns": "Avg Crowns",
+    "hideDetails": "Hide Details",
+    "showDetails": "Show Details",
+    "bestPartners": "Best Partners",
+    "strugglesAgainst": "Struggles Against",
+    "personalizedTips": "Personalized Tips",
+    "generate": "Generate",
+    "generatingTips": "Generating tips...",
+    "clickGenerate": "Click generate to get AI tips for this card"
+  },
+  "achievements": {
+    "unlocked": "Achievement Unlocked!",
+    "points": "pts"
+  },
+  "analytics": {
+    "winRateTrends": "Win Rate Trends",
+    "winRatePercent": "Win Rate (%)",
+    "trophyChange": "Trophy Change",
+    "deckUsageDistribution": "Deck Usage Distribution",
+    "deckNumber": "Deck {{number}}",
+    "wr": "WR",
+    "battlesCount": "{{count}} battles",
+    "mostUsedCards": "Most Used Cards",
+    "usedTimes": "Used {{count}} times"
   },
   "templates": {
     "title": "Meta Deck Templates",

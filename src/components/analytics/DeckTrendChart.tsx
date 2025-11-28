@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -6,6 +7,8 @@ interface DeckTrendChartProps {
 }
 
 export function DeckTrendChart({ stats }: DeckTrendChartProps) {
+  const { t } = useTranslation();
+  
   // Group stats by date and calculate daily win rates
   const dailyStats = stats.reduce((acc, stat) => {
     const date = new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -30,7 +33,7 @@ export function DeckTrendChart({ stats }: DeckTrendChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-foreground">Win Rate Trends</CardTitle>
+        <CardTitle className="text-foreground">{t('analytics.winRateTrends')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -59,7 +62,7 @@ export function DeckTrendChart({ stats }: DeckTrendChartProps) {
               dataKey="winRate" 
               stroke="hsl(var(--primary))" 
               strokeWidth={2}
-              name="Win Rate (%)"
+              name={t('analytics.winRatePercent')}
               dot={{ fill: 'hsl(var(--primary))' }}
             />
             <Line 
@@ -67,7 +70,7 @@ export function DeckTrendChart({ stats }: DeckTrendChartProps) {
               dataKey="trophyChange" 
               stroke="hsl(var(--accent))" 
               strokeWidth={2}
-              name="Trophy Change"
+              name={t('analytics.trophyChange')}
               dot={{ fill: 'hsl(var(--accent))' }}
             />
           </LineChart>
