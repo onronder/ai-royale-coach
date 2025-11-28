@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sparkles, User, Swords, Shield, Zap, Target, Trophy } from 'lucide-react';
 import { sampleDecks, type SampleDeck } from '@/data/sampleDecks';
+import { useTranslation } from 'react-i18next';
 
 interface RecommendationResult {
   deck: SampleDeck;
@@ -12,26 +13,27 @@ interface RecommendationResult {
 }
 
 export function DeckRecommendationEngine() {
+  const { t } = useTranslation();
   const [selectedSkillLevel, setSelectedSkillLevel] = useState<'beginner' | 'intermediate' | 'expert' | null>(null);
   const [selectedPlaystyles, setSelectedPlaystyles] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
   const [showResults, setShowResults] = useState(false);
 
   const skillLevels = [
-    { value: 'beginner' as const, label: 'Beginner', icon: User, description: 'New to the game or deck archetype' },
-    { value: 'intermediate' as const, label: 'Intermediate', icon: Target, description: 'Comfortable with basics, learning advanced tactics' },
-    { value: 'expert' as const, label: 'Expert', icon: Trophy, description: 'Mastered mechanics, ready for competitive play' },
+    { value: 'beginner' as const, label: t('landing.demo.recommend.skillLevels.beginner'), icon: User, description: t('landing.demo.recommend.skillLevels.beginnerDesc') },
+    { value: 'intermediate' as const, label: t('landing.demo.recommend.skillLevels.intermediate'), icon: Target, description: t('landing.demo.recommend.skillLevels.intermediateDesc') },
+    { value: 'expert' as const, label: t('landing.demo.recommend.skillLevels.expert'), icon: Trophy, description: t('landing.demo.recommend.skillLevels.expertDesc') },
   ];
 
   const playstyles = [
-    { value: 'cycle', label: 'Fast Cycle', icon: Zap, description: 'Quick cards, constant pressure' },
-    { value: 'aggressive', label: 'Aggressive', icon: Swords, description: 'Offensive pushes, high pressure' },
-    { value: 'defensive', label: 'Defensive', icon: Shield, description: 'Strong defense, counter-attacks' },
-    { value: 'beatdown', label: 'Beatdown', icon: Trophy, description: 'Heavy pushes, massive damage' },
-    { value: 'control', label: 'Control', icon: Target, description: 'Board control, strategic plays' },
-    { value: 'bait', label: 'Bait', icon: Sparkles, description: 'Trick opponents, spell cycling' },
-    { value: 'siege', label: 'Siege', icon: Target, description: 'Long-range damage, building focus' },
-    { value: 'chip', label: 'Chip Damage', icon: Zap, description: 'Small consistent damage' },
+    { value: 'cycle', label: t('landing.demo.recommend.playstyles.cycle'), icon: Zap, description: t('landing.demo.recommend.playstyles.cycleDesc') },
+    { value: 'aggressive', label: t('landing.demo.recommend.playstyles.aggressive'), icon: Swords, description: t('landing.demo.recommend.playstyles.aggressiveDesc') },
+    { value: 'defensive', label: t('landing.demo.recommend.playstyles.defensive'), icon: Shield, description: t('landing.demo.recommend.playstyles.defensiveDesc') },
+    { value: 'beatdown', label: t('landing.demo.recommend.playstyles.beatdown'), icon: Trophy, description: t('landing.demo.recommend.playstyles.beatdownDesc') },
+    { value: 'control', label: t('landing.demo.recommend.playstyles.control'), icon: Target, description: t('landing.demo.recommend.playstyles.controlDesc') },
+    { value: 'bait', label: t('landing.demo.recommend.playstyles.bait'), icon: Sparkles, description: t('landing.demo.recommend.playstyles.baitDesc') },
+    { value: 'siege', label: t('landing.demo.recommend.playstyles.siege'), icon: Target, description: t('landing.demo.recommend.playstyles.siegeDesc') },
+    { value: 'chip', label: t('landing.demo.recommend.playstyles.chip'), icon: Zap, description: t('landing.demo.recommend.playstyles.chipDesc') },
   ];
 
   const togglePlaystyle = (playstyle: string) => {
@@ -52,7 +54,7 @@ export function DeckRecommendationEngine() {
       // Skill level match (60 points max)
       if (deck.difficulty === selectedSkillLevel) {
         score += 60;
-        reasons.push(`Perfect for ${selectedSkillLevel} players`);
+        reasons.push(t('landing.demo.recommend.reasons.perfectFor', { level: selectedSkillLevel }));
       } else if (
         (selectedSkillLevel === 'beginner' && deck.difficulty === 'intermediate') ||
         (selectedSkillLevel === 'intermediate' && deck.difficulty === 'beginner') ||
@@ -60,7 +62,9 @@ export function DeckRecommendationEngine() {
         (selectedSkillLevel === 'expert' && deck.difficulty === 'intermediate')
       ) {
         score += 30;
-        reasons.push(`${deck.difficulty === 'beginner' ? 'Slightly easier' : 'Good challenge'} for your skill level`);
+        reasons.push(deck.difficulty === 'beginner' 
+          ? t('landing.demo.recommend.reasons.slightlyEasier') 
+          : t('landing.demo.recommend.reasons.goodChallenge'));
       }
 
       // Playstyle match (40 points max)
@@ -70,7 +74,7 @@ export function DeckRecommendationEngine() {
         score += playstyleScore;
         
         if (matchingStyles.length > 0) {
-          reasons.push(`Matches your ${matchingStyles.join(', ')} playstyle`);
+          reasons.push(t('landing.demo.recommend.reasons.matchesPlaystyle', { styles: matchingStyles.join(', ') }));
         }
       } else {
         // If no playstyle selected, give partial score
@@ -79,11 +83,11 @@ export function DeckRecommendationEngine() {
 
       // Add specific deck strengths
       if (deck.stats.winRate >= 55) {
-        reasons.push(`High win rate (${deck.stats.winRate}%) in current meta`);
+        reasons.push(t('landing.demo.recommend.reasons.highWinRate', { rate: deck.stats.winRate }));
       }
       const usageRate = (deck.history[deck.history.length - 1]?.usageRate || 0);
       if (usageRate >= 20) {
-        reasons.push(`Popular choice (${usageRate}% usage rate)`);
+        reasons.push(t('landing.demo.recommend.reasons.popularChoice', { rate: usageRate }));
       }
 
       // Add skill highlights
@@ -93,7 +97,7 @@ export function DeckRecommendationEngine() {
         .map(([skill]) => skill.replace(/([A-Z])/g, ' $1').toLowerCase());
       
       if (topSkills.length > 0) {
-        reasons.push(`Focuses on ${topSkills.join(' and ')} skills`);
+        reasons.push(t('landing.demo.recommend.reasons.focusesOn', { skills: topSkills.join(' and ') }));
       }
 
       return { deck, matchScore: Math.round(score), reasons };
@@ -135,8 +139,8 @@ export function DeckRecommendationEngine() {
                 <User className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-rajdhani font-bold text-lg text-foreground">Your Skill Level</h4>
-                <p className="text-xs text-muted-foreground">Select your current experience level</p>
+                <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.recommend.yourSkillLevel')}</h4>
+                <p className="text-xs text-muted-foreground">{t('landing.demo.recommend.selectLevel')}</p>
               </div>
             </div>
 
@@ -176,8 +180,8 @@ export function DeckRecommendationEngine() {
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-rajdhani font-bold text-lg text-foreground">Your Playstyle</h4>
-                <p className="text-xs text-muted-foreground">Select one or more playstyles you enjoy (optional)</p>
+                <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.recommend.yourPlaystyle')}</h4>
+                <p className="text-xs text-muted-foreground">{t('landing.demo.recommend.selectPlaystyles')}</p>
               </div>
             </div>
 
@@ -218,7 +222,7 @@ export function DeckRecommendationEngine() {
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-rajdhani font-bold text-lg px-8 py-6"
             >
               <Sparkles className="h-5 w-5 mr-2" />
-              Get Deck Recommendations
+              {t('landing.demo.recommend.getRecommendations')}
             </Button>
           </div>
         </>
@@ -232,15 +236,15 @@ export function DeckRecommendationEngine() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-rajdhani font-bold text-lg text-foreground">Your Perfect Decks</h4>
+                  <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.recommend.yourPerfectDecks')}</h4>
                   <p className="text-xs text-muted-foreground">
-                    Based on {selectedSkillLevel} skill level
-                    {selectedPlaystyles.length > 0 && ` and ${selectedPlaystyles.join(', ')} playstyle`}
+                    {t('landing.demo.recommend.basedOn', { level: selectedSkillLevel })}
+                    {selectedPlaystyles.length > 0 && ` ${t('landing.demo.recommend.andPlaystyle', { styles: selectedPlaystyles.join(', ') })}`}
                   </p>
                 </div>
               </div>
               <Button onClick={reset} variant="outline" size="sm">
-                Try Again
+                {t('landing.demo.recommend.tryAgain')}
               </Button>
             </div>
           </Card>
@@ -265,7 +269,7 @@ export function DeckRecommendationEngine() {
                           <h5 className="font-rajdhani font-bold text-lg text-foreground">{result.deck.name}</h5>
                           {idx === 0 && (
                             <Badge className="bg-primary/20 text-primary border-primary/30">
-                              Top Pick
+                              {t('landing.demo.recommend.topPick')}
                             </Badge>
                           )}
                         </div>
@@ -273,7 +277,7 @@ export function DeckRecommendationEngine() {
                       </div>
                     </div>
                     <Badge className={`bg-${result.deck.color}/20 text-${result.deck.color} border-${result.deck.color}/30 text-lg px-3 py-1`}>
-                      {result.matchScore}% Match
+                      {result.matchScore}% {t('landing.demo.recommend.match')}
                     </Badge>
                   </div>
 
@@ -282,9 +286,9 @@ export function DeckRecommendationEngine() {
                     <Badge variant="outline" className={getDifficultyColor(result.deck.difficulty)}>
                       {result.deck.difficulty}
                     </Badge>
-                    <span className="text-muted-foreground">Win Rate: {result.deck.stats.winRate}%</span>
-                    <span className="text-muted-foreground">Usage: {result.deck.history[result.deck.history.length - 1]?.usageRate || 0}%</span>
-                    <span className="text-muted-foreground">Avg Elixir: {result.deck.stats.avgElixir}</span>
+                    <span className="text-muted-foreground">{t('landing.demo.winRate')}: {result.deck.stats.winRate}%</span>
+                    <span className="text-muted-foreground">{t('landing.demo.recommend.usage')}: {result.deck.history[result.deck.history.length - 1]?.usageRate || 0}%</span>
+                    <span className="text-muted-foreground">{t('landing.demo.avgElixir')}: {result.deck.stats.avgElixir}</span>
                   </div>
 
                   {/* Cards preview */}
@@ -302,7 +306,7 @@ export function DeckRecommendationEngine() {
 
                   {/* Reasons why recommended */}
                   <Card className={`p-4 bg-${result.deck.color}/5 border-${result.deck.color}/20`}>
-                    <p className="text-xs font-rajdhani font-semibold text-foreground mb-2">Why This Deck?</p>
+                    <p className="text-xs font-rajdhani font-semibold text-foreground mb-2">{t('landing.demo.recommend.whyThisDeck')}</p>
                     <ul className="space-y-1">
                       {result.reasons.map((reason, reasonIdx) => (
                         <li key={reasonIdx} className="text-xs text-muted-foreground flex items-start gap-2">

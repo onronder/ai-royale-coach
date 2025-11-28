@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, AlertTriangle, Sword, Target } from 'lucide-react';
 import { sampleDecks } from '@/data/sampleDecks';
 import type { SampleDeck } from '@/data/sampleDecks';
+import { useTranslation } from 'react-i18next';
 
 interface CounterDeckRecommendationsProps {
   deck: SampleDeck;
@@ -10,6 +11,8 @@ interface CounterDeckRecommendationsProps {
 }
 
 export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecommendationsProps) {
+  const { t } = useTranslation();
+  
   // Find decks that counter this deck
   const counterDecks = sampleDecks.filter(d => deck.counters.includes(d.id));
   
@@ -23,11 +26,11 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
   const getDifficultyBadge = (difficulty: string) => {
     switch (difficulty) {
       case 'favored':
-        return <Badge className="bg-success/20 text-success border-success/30">Favored</Badge>;
+        return <Badge className="bg-success/20 text-success border-success/30">{t('landing.demo.counters.favored')}</Badge>;
       case 'unfavored':
-        return <Badge className="bg-destructive/20 text-destructive border-destructive/30">Unfavored</Badge>;
+        return <Badge className="bg-destructive/20 text-destructive border-destructive/30">{t('landing.demo.counters.unfavored')}</Badge>;
       default:
-        return <Badge className="bg-warning/20 text-warning border-warning/30">Even</Badge>;
+        return <Badge className="bg-warning/20 text-warning border-warning/30">{t('landing.demo.counters.even')}</Badge>;
     }
   };
 
@@ -41,10 +44,10 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
           <div className={`p-2 rounded-lg bg-${deck.color}/10 border border-${deck.color}/30`}>
             <Shield className={`h-5 w-5 text-${deck.color}`} />
           </div>
-          <div>
-            <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name}</h4>
-            <p className="text-xs text-muted-foreground">Counter analysis and vulnerabilities</p>
-          </div>
+            <div>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name}</h4>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.counters.subtitle')}</p>
+            </div>
         </div>
 
         {/* Threats Section */}
@@ -52,7 +55,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive" />
-              <h5 className="text-sm font-rajdhani font-bold text-foreground">Major Threats</h5>
+              <h5 className="text-sm font-rajdhani font-bold text-foreground">{t('landing.demo.counters.majorThreats')}</h5>
               <Badge variant="outline" className="text-xs">{counterDecks.length}</Badge>
             </div>
             
@@ -85,18 +88,18 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
                         <>
                           <div className="pt-3 border-t border-border/30">
                             <p className="text-xs text-muted-foreground mb-2">
-                              <span className="font-semibold text-destructive">Win Rate:</span>{' '}
-                              {matchupData.winRate}% (You're at a disadvantage)
+                              <span className="font-semibold text-destructive">{t('landing.demo.counters.winRateLabel')}:</span>{' '}
+                              {matchupData.winRate}% ({t('landing.demo.counters.atDisadvantage')})
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              <span className="font-semibold text-foreground">Key Cards to Watch:</span>{' '}
+                              <span className="font-semibold text-foreground">{t('landing.demo.counters.keyCardsLabel')}:</span>{' '}
                               {matchupData.keyCards.join(', ')}
                             </p>
                           </div>
 
                           <div className="pt-3 border-t border-border/30">
                             <p className="text-xs font-rajdhani font-semibold text-foreground mb-2">
-                              Survival Tips:
+                              {t('landing.demo.counters.survivalTips')}:
                             </p>
                             <ul className="space-y-1">
                               {matchupData.tacticalTips.slice(0, 2).map((tip, tipIdx) => (
@@ -122,7 +125,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-success" />
-              <h5 className="text-sm font-rajdhani font-bold text-foreground">Favorable Matchups</h5>
+              <h5 className="text-sm font-rajdhani font-bold text-foreground">{t('landing.demo.counters.favorableMatchups')}</h5>
               <Badge variant="outline" className="text-xs">{counteredBy.length}</Badge>
             </div>
             
@@ -151,8 +154,8 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
                       </div>
                       {matchupData && (
                         <p className="text-xs text-muted-foreground">
-                          <span className="font-semibold text-success">Win Rate:</span>{' '}
-                          {matchupData.winRate}% advantage
+                          <span className="font-semibold text-success">{t('landing.demo.counters.winRateLabel')}:</span>{' '}
+                          {matchupData.winRate}% {t('landing.demo.counters.advantage')}
                         </p>
                       )}
                     </div>
@@ -166,11 +169,11 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
         {/* Meta Position Summary */}
         <Card className={`p-4 bg-${deck.color}/5 border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
-            <span className={`font-semibold text-${deck.color}`}>Meta Position:</span>{' '}
-            {counterDecks.length === 0 && counteredBy.length === 0 && 'This deck has balanced matchups across the meta.'}
-            {counterDecks.length > counteredBy.length && `Be cautious - this deck has ${counterDecks.length} major counters in the current meta.`}
-            {counteredBy.length > counterDecks.length && `Strong meta pick! This deck counters ${counteredBy.length} popular archetypes.`}
-            {counterDecks.length === counteredBy.length && counterDecks.length > 0 && 'This deck has both strong counters and vulnerabilities - matchup knowledge is crucial.'}
+            <span className={`font-semibold text-${deck.color}`}>{t('landing.demo.counters.metaPosition')}:</span>{' '}
+            {counterDecks.length === 0 && counteredBy.length === 0 && t('landing.demo.counters.balanced')}
+            {counterDecks.length > counteredBy.length && t('landing.demo.counters.cautious', { count: counterDecks.length })}
+            {counteredBy.length > counterDecks.length && t('landing.demo.counters.strongPick', { count: counteredBy.length })}
+            {counterDecks.length === counteredBy.length && counterDecks.length > 0 && t('landing.demo.counters.matchupKnowledge')}
           </p>
         </Card>
       </div>

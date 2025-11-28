@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Network, Sparkles } from 'lucide-react';
 import type { SampleDeck, CardSynergy } from '@/data/sampleDecks';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface CardSynergyVisualizationProps {
   deck: SampleDeck;
@@ -10,6 +11,7 @@ interface CardSynergyVisualizationProps {
 }
 
 export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisualizationProps) {
+  const { t } = useTranslation();
   const [selectedSynergy, setSelectedSynergy] = useState<CardSynergy | null>(null);
 
   const getStrengthColor = (strength: number) => {
@@ -20,10 +22,10 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
   };
 
   const getStrengthLabel = (strength: number) => {
-    if (strength >= 90) return 'Exceptional';
-    if (strength >= 75) return 'Strong';
-    if (strength >= 60) return 'Good';
-    return 'Moderate';
+    if (strength >= 90) return t('landing.demo.synergy.exceptional');
+    if (strength >= 75) return t('landing.demo.synergy.strong');
+    if (strength >= 60) return t('landing.demo.synergy.good');
+    return t('landing.demo.synergy.moderate');
   };
 
   const getCardEmoji = (cardName: string) => {
@@ -43,12 +45,12 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
               <Network className={`h-5 w-5 text-${deck.color}`} />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">Card Synergies</h4>
-              <p className="text-xs text-muted-foreground">Interactive combinations</p>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.synergy.title')}</h4>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.synergy.subtitle')}</p>
             </div>
           </div>
           <Badge className={`bg-${deck.color}/20 text-${deck.color} border-${deck.color}/30`}>
-            {deck.synergies.length} Combos
+            {deck.synergies.length} {t('landing.demo.synergy.combos')}
           </Badge>
         </div>
 
@@ -127,7 +129,7 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
         <Card className={`p-4 bg-${deck.color}/5 border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
             <span className={`font-semibold text-${deck.color}`}>Pro Tip:</span>{' '}
-            Click on any synergy to learn why these cards work well together. Master these combinations to maximize your deck's potential!
+            {t('landing.demo.synergy.proTip')}
           </p>
         </Card>
       </div>
