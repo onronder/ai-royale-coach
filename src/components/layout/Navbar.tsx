@@ -29,7 +29,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
             <Crown className="h-7 w-7 text-gold transition-all group-hover:scale-110 relative z-10" />
           </div>
           <span className="text-xl font-bold font-rajdhani text-foreground">
-            AI ROYAL
+            AI ROYALE
           </span>
         </Link>
 

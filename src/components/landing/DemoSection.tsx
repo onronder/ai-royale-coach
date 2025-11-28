@@ -90,7 +90,7 @@ export function DemoSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            See AI Royal in Action
+            See AI Royale in Action
           </h2>
           <p className="text-muted-foreground text-lg">
             Experience intelligent deck analysis across different archetypes

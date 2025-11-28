@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Shield, Target, TrendingUp, Sparkles, Zap, Users, Crown, Trophy } from "lucide-react";
+import { Sparkles, Zap, Users, Crown, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { DemoSection } from "@/components/landing/DemoSection";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -168,81 +168,12 @@ const Index = () => {
       {/* Demo Section */}
       <DemoSection />
 
-      {/* Features Section */}
-      <FeaturesSection />
+      {/* Feature Showcase Section */}
+      <FeatureShowcase />
 
       <Footer />
     </div>
   );
 };
-
-function FeaturesSection() {
-  const { ref: ref1, isVisible: isVisible1 } = useScrollAnimation(0.2);
-  const { ref: ref2, isVisible: isVisible2 } = useScrollAnimation(0.2);
-  const { ref: ref3, isVisible: isVisible3 } = useScrollAnimation(0.2);
-
-  return (
-    <section className="py-20 bg-gradient-to-b from-card/30 to-background border-t border-border/50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-royal/20 border border-royal/30 mb-6">
-            <Sparkles className="h-4 w-4 text-royal" />
-            <span className="text-sm font-rajdhani font-semibold text-royal uppercase">Features</span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 text-embossed">
-            POWERED BY AI
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Advanced machine learning algorithms analyze every aspect of your gameplay
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div ref={ref1} className={`opacity-0 ${isVisible1 ? 'animate-fade-in-up' : ''}`}>
-            <Card variant="arena" className="group h-full hover:-translate-y-2 transition-all duration-300">
-              <CardHeader className="space-y-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-glow">
-                  <Shield className="h-8 w-8 text-primary-foreground" />
-                </div>
-                <CardTitle className="text-2xl">Smart Analysis</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Deep AI insights from your battle history, deck synergies, and win patterns
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-
-          <div ref={ref2} className={`opacity-0 ${isVisible2 ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '150ms' }}>
-            <Card variant="arena" className="group h-full hover:-translate-y-2 transition-all duration-300">
-              <CardHeader className="space-y-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-accent flex items-center justify-center group-hover:scale-110 transition-transform shadow-accent-glow">
-                  <Target className="h-8 w-8 text-accent-foreground" />
-                </div>
-                <CardTitle className="text-2xl">Deck Optimization</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Meta-aware recommendations tailored to your playstyle and trophy range
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-
-          <div ref={ref3} className={`opacity-0 ${isVisible3 ? 'animate-fade-in-up' : ''}`} style={{ animationDelay: '300ms' }}>
-            <Card variant="arena" className="group h-full hover:-translate-y-2 transition-all duration-300">
-              <CardHeader className="space-y-4">
-                <div className="w-16 h-16 rounded-xl bg-gradient-victory flex items-center justify-center group-hover:scale-110 transition-transform shadow-victory">
-                  <TrendingUp className="h-8 w-8 text-success-foreground" />
-                </div>
-                <CardTitle className="text-2xl">Performance Tracking</CardTitle>
-                <CardDescription className="text-base leading-relaxed">
-                  Real-time stats, win rate analytics, and progression insights over time
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default Index;
