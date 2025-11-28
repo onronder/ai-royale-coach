@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench, PackageOpen } from "lucide-react";
+import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench } from "lucide-react";
+import { useWinRate } from "@/hooks/useWinRate";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
@@ -52,6 +53,9 @@ const Dashboard = () => {
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
   
+  // Memoized win rate calculation to prevent recalculation on every render
+  const { winRate, formattedWinRate, wins, losses } = useWinRate(battles, playerTag);
+  
   // Player profiles hook for saving/updating last seen
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
 
@@ -87,38 +91,23 @@ const Dashboard = () => {
     setMatchDetailOpen(true);
   };
 
-  // Fetch player context data for AI coach
+  // Fetch player context data for AI coach - batched for performance
   useEffect(() => {
     const fetchPlayerContext = async () => {
       if (!user?.id || !playerTag) return;
       
-      // Fetch saved decks
-      const { data: decks } = await supabase
-        .from('saved_decks')
-        .select('*')
-        .eq('user_id', user.id);
-      if (decks) setSavedDecks(decks);
+      // Batch all context queries with Promise.all for better performance
+      const [decksResult, masteryResult, achievementsResult, collectionResult] = await Promise.all([
+        supabase.from('saved_decks').select('*').eq('user_id', user.id),
+        supabase.from('card_mastery').select('*').eq('player_tag', playerTag),
+        supabase.from('user_achievements').select('*, achievement:achievements(*)').eq('player_tag', playerTag),
+        supabase.from('card_collection').select('*').eq('player_tag', playerTag),
+      ]);
 
-      // Fetch card mastery
-      const { data: mastery } = await supabase
-        .from('card_mastery')
-        .select('*')
-        .eq('player_tag', playerTag);
-      if (mastery) setCardMastery(mastery);
-
-      // Fetch achievements
-      const { data: achievementsData } = await supabase
-        .from('user_achievements')
-        .select('*, achievement:achievements(*)')
-        .eq('player_tag', playerTag);
-      if (achievementsData) setAchievements(achievementsData);
-
-      // Fetch card collection
-      const { data: collection } = await supabase
-        .from('card_collection')
-        .select('*')
-        .eq('player_tag', playerTag);
-      if (collection) setCardCollection(collection);
+      if (decksResult.data) setSavedDecks(decksResult.data);
+      if (masteryResult.data) setCardMastery(masteryResult.data);
+      if (achievementsResult.data) setAchievements(achievementsResult.data);
+      if (collectionResult.data) setCardCollection(collectionResult.data);
     };
 
     fetchPlayerContext();
@@ -256,11 +245,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-success/10 border border-success/20">
                   <Swords className="h-4 w-4 text-success" />
                   <span className="font-rajdhani font-bold text-success">
-                    {((battles.filter(b => {
-                      const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
-                      const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
-                      return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                    }).length / battles.length) * 100).toFixed(0)}% WR
+                    {winRate.toFixed(0)}% WR
                   </span>
                 </div>
               )}
@@ -386,18 +371,10 @@ const Dashboard = () => {
                       />
                       <StatCard
                         title="Win Rate"
-                        value={battles ? `${((battles.filter(b => {
-                          const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
-                          const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
-                          return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                        }).length / battles.length) * 100).toFixed(1)}%` : 'N/A'}
+                        value={formattedWinRate}
                         icon={Swords}
                         description="Last 25 battles"
-                        trend={battles && (battles.filter(b => {
-                          const normalizedPlayerTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
-                          const playerTeam = b.team.find(p => p.tag === normalizedPlayerTag);
-                          return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                        }).length / battles.length) >= 0.5 ? 'up' : 'down'}
+                        trend={winRate >= 50 ? 'up' : 'down'}
                         tooltip={statTooltips.winRate}
                       />
                       <StatCard

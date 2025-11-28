@@ -10,10 +10,9 @@ const CLASH_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-// Rate limiting: Track API calls per identifier
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_MINUTE = 30; // Clash Royale API limit is ~60/min, we use 30 for safety
+// Rate limit settings
+const MAX_REQUESTS_PER_MINUTE = 30;
+const RATE_LIMIT_WINDOW_SECONDS = 60;
 
 // Cache TTLs (in seconds)
 const CACHE_TTL = {
@@ -26,25 +25,37 @@ interface ClashApiError {
   message: string;
 }
 
-function checkRateLimit(identifier: string): { allowed: boolean; resetIn?: number } {
-  const now = Date.now();
-  const limit = rateLimitMap.get(identifier);
-  
-  if (!limit || now > limit.resetTime) {
-    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+/**
+ * Check rate limit using database-backed storage (persists across edge function instances)
+ */
+async function checkRateLimitDb(supabase: any, identifier: string): Promise<{ allowed: boolean; resetIn?: number }> {
+  try {
+    // Use database function for atomic rate limit check
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_max_requests: MAX_REQUESTS_PER_MINUTE,
+      p_window_seconds: RATE_LIMIT_WINDOW_SECONDS
+    });
+
+    if (error) {
+      console.error('Rate limit check error:', error);
+      // On error, allow the request but log the issue
+      return { allowed: true };
+    }
+
+    if (!data) {
+      return { allowed: false, resetIn: RATE_LIMIT_WINDOW_SECONDS };
+    }
+
+    return { allowed: true };
+  } catch (error) {
+    console.error('Rate limit exception:', error);
+    // On exception, allow the request
     return { allowed: true };
   }
-  
-  if (limit.count >= MAX_REQUESTS_PER_MINUTE) {
-    return { allowed: false, resetIn: Math.ceil((limit.resetTime - now) / 1000) };
-  }
-  
-  limit.count++;
-  return { allowed: true };
 }
 
 function normalizePlayerTag(tag: string): string {
-  // Remove # if present and ensure uppercase
   return tag.replace(/^#/, '').toUpperCase();
 }
 
@@ -108,7 +119,6 @@ async function getCachedOrFetch(
     staleCache = cacheAge >= cacheTTL && cachedData;
   } else if (forceRefresh) {
     console.log(`Force refresh requested for ${type}, bypassing cache`);
-    // Still get cached data for fallback
     if (cached && !cacheError) {
       cachedData = type === 'player' ? cached.player_data : cached.battles_data;
       staleCache = !!cachedData;
@@ -139,7 +149,6 @@ async function getCachedOrFetch(
 
     console.log(`Attempting to cache ${type} data for tag: ${normalizedTag}`);
     
-    // Upsert to cache with await and detailed logging
     const { data: cacheResult, error: upsertError } = await supabase
       .from('player_cache')
       .upsert(cacheUpdate, { onConflict: 'player_tag' })
@@ -163,7 +172,6 @@ async function getCachedOrFetch(
 
     return { data: freshData, cacheHit: false, stale: false };
   } catch (error) {
-    // If API fails but we have stale cache, return it
     if (staleCache && cachedData) {
       console.warn(`API failed, returning stale cache for ${type}`);
       return { data: cachedData, cacheHit: true, stale: true };
@@ -173,35 +181,36 @@ async function getCachedOrFetch(
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Initialize Supabase client early for rate limiting
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
   try {
-    // Validate API key exists
     if (!CLASH_API_KEY) {
       throw new Error('CLASH_ROYALE_API_KEY not configured');
     }
 
-    // Rate limiting check
+    // Database-backed rate limiting (persists across instances)
     const identifier = req.headers.get('x-forwarded-for') || req.headers.get('authorization') || 'anonymous';
-    const rateCheck = checkRateLimit(identifier);
+    const rateCheck = await checkRateLimitDb(supabase, identifier);
     
     if (!rateCheck.allowed) {
-      console.warn(`Rate limit exceeded for ${identifier}, retry in ${rateCheck.resetIn}s`);
+      console.warn(`Rate limit exceeded for ${identifier}`);
       return new Response(
         JSON.stringify({ 
           error: 'Rate limit exceeded', 
-          message: `Too many requests. Please retry in ${rateCheck.resetIn} seconds.`,
-          retryAfter: rateCheck.resetIn 
+          message: `Too many requests. Please retry in ${rateCheck.resetIn || 60} seconds.`,
+          retryAfter: rateCheck.resetIn || 60
         }),
         { 
           status: 429, 
           headers: { 
             ...corsHeaders, 
             'Content-Type': 'application/json',
-            'Retry-After': rateCheck.resetIn?.toString() || '60'
+            'Retry-After': (rateCheck.resetIn || 60).toString()
           } 
         }
       );
@@ -214,12 +223,10 @@ serve(async (req) => {
 
     const url = new URL(req.url);
     
-    // First try query params
     endpoint = url.searchParams.get('endpoint');
     playerTag = url.searchParams.get('playerTag');
     forceRefresh = url.searchParams.get('forceRefresh') === 'true';
 
-    // If not in query params, try POST body
     if (!endpoint && req.method === 'POST') {
       try {
         const body = await req.json();
@@ -235,9 +242,6 @@ serve(async (req) => {
     if (!endpoint) {
       throw new Error('Missing endpoint parameter');
     }
-
-    // Initialize Supabase client
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     let result;
 
