@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Swords, Crown, Users, Star, Target, Gift, Shield, TrendingUp, TrendingDown, Minus } from "lucide-react";
@@ -60,12 +61,14 @@ function StatRow({ label, icon, values, format = (v) => v.toLocaleString(), high
 }
 
 export function AccountComparison({ profiles }: AccountComparisonProps) {
+  const { t } = useTranslation();
+  
   if (profiles.length < 2) {
     return (
       <Card className="border-dashed border-2 border-muted">
         <CardContent className="py-12 text-center">
           <p className="text-muted-foreground">
-            Add at least 2 player tags to compare accounts
+            {t('comparison.addTwoPlayers')}
           </p>
         </CardContent>
       </Card>
@@ -90,7 +93,7 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
       <CardHeader className="pb-4">
         <CardTitle className="text-xl flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
-          Account Comparison
+          {t('comparison.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -106,7 +109,7 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
                     {profile.clan_badge_id ? (
                       <img 
                         src={getClanBadgeUrl(profile.clan_badge_id)} 
-                        alt="Clan badge"
+                        alt={t('leaderboard.clanBadge')}
                         className="w-12 h-12 object-contain"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -126,7 +129,7 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
                 </div>
               ) : (
                 <div className="h-28 flex items-center justify-center text-muted-foreground text-sm">
-                  Empty slot
+                  {t('comparison.emptySlot')}
                 </div>
               )}
             </div>
@@ -136,59 +139,59 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
         {/* Stats Comparison */}
         <div className="space-y-1">
           <StatRow 
-            label="Trophies" 
+            label={t('stats.trophies')} 
             icon={<Trophy className="h-4 w-4 text-primary" />}
             values={paddedProfiles.map(p => p?.trophies)}
           />
           <StatRow 
-            label="Best Trophies" 
+            label={t('stats.bestTrophies')} 
             icon={<Star className="h-4 w-4 text-accent" />}
             values={paddedProfiles.map(p => p?.bestTrophies)}
           />
           <StatRow 
-            label="Win Rate" 
+            label={t('stats.winRate')} 
             icon={<Target className="h-4 w-4 text-success" />}
             values={paddedProfiles.map(p => getWinRate(p))}
             format={(v) => `${v.toFixed(1)}%`}
           />
           <StatRow 
-            label="Total Wins" 
+            label={t('stats.totalWins')} 
             icon={<Swords className="h-4 w-4 text-chart-1" />}
             values={paddedProfiles.map(p => p?.wins)}
           />
           <StatRow 
-            label="Total Losses" 
+            label={t('stats.totalLosses')} 
             icon={<Swords className="h-4 w-4 text-destructive" />}
             values={paddedProfiles.map(p => p?.losses)}
             higherIsBetter={false}
           />
           <StatRow 
-            label="3-Crown Wins" 
+            label={t('stats.threeCrownWins')} 
             icon={<Crown className="h-4 w-4 text-gold" />}
             values={paddedProfiles.map(p => p?.threeCrownWins)}
           />
           <StatRow 
-            label="Challenge Max Wins" 
+            label={t('stats.challengeMaxWins')} 
             icon={<Shield className="h-4 w-4 text-chart-3" />}
             values={paddedProfiles.map(p => p?.challengeMaxWins)}
           />
           <StatRow 
-            label="Challenge Cards Won" 
+            label={t('stats.challengeCardsWon')} 
             icon={<Gift className="h-4 w-4 text-chart-4" />}
             values={paddedProfiles.map(p => p?.challengeCardsWon)}
           />
           <StatRow 
-            label="War Day Wins" 
+            label={t('stats.warDayWins')} 
             icon={<Shield className="h-4 w-4 text-chart-5" />}
             values={paddedProfiles.map(p => p?.warDayWins)}
           />
           <StatRow 
-            label="Donations" 
+            label={t('stats.donations')} 
             icon={<Gift className="h-4 w-4 text-primary" />}
             values={paddedProfiles.map(p => p?.donations)}
           />
           <StatRow 
-            label="King Level" 
+            label={t('stats.kingLevel')} 
             icon={<Crown className="h-4 w-4 text-accent" />}
             values={paddedProfiles.map(p => p?.expLevel)}
           />
@@ -198,7 +201,7 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
         <div className="mt-6 pt-4 border-t border-border">
           <p className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
             <Users className="h-4 w-4" />
-            Clan Membership
+            {t('comparison.clanMembership')}
           </p>
           <div className="grid grid-cols-[1fr_repeat(3,minmax(0,1fr))] gap-2">
             <div></div>
@@ -209,7 +212,7 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
                     {profile.clan_name}
                   </Badge>
                 ) : profile ? (
-                  <span className="text-xs text-muted-foreground">No Clan</span>
+                  <span className="text-xs text-muted-foreground">{t('comparison.noClan')}</span>
                 ) : null}
               </div>
             ))}

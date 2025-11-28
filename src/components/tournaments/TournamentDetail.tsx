@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ interface TournamentDetailProps {
 }
 
 export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, playerName }: TournamentDetailProps) {
+  const { t } = useTranslation();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -56,7 +58,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
 
     if (error) {
       console.error('Error fetching tournament:', error);
-      toast.error('Failed to load tournament details');
+      toast.error(t('tournaments.loadFailed'));
     } else if (data) {
       setTournament({
         ...data,
@@ -83,7 +85,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
   const handleRegister = async () => {
     const { data: session } = await supabase.auth.getSession();
     if (!session.session?.user) {
-      toast.error('Please sign in to register');
+      toast.error(t('auth.signInRequired'));
       return;
     }
 
@@ -99,9 +101,9 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
 
     if (error) {
       console.error('Registration error:', error);
-      toast.error('Failed to register for tournament');
+      toast.error(t('tournaments.registerFailed'));
     } else {
-      toast.success('Successfully registered!');
+      toast.success(t('tournaments.registerSuccess'));
       setIsRegistered(true);
       fetchTournamentDetails();
     }
@@ -124,7 +126,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Trophy className="w-6 h-6 text-primary" />
-            Tournament Details
+            {t('tournaments.details')}
           </DialogTitle>
         </DialogHeader>
 
@@ -144,13 +146,13 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                   <DollarSign className="w-6 h-6" />
                   <span>{tournament.prize_pool.toLocaleString()}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">Prize Pool</p>
+                <p className="text-sm text-muted-foreground">{t('tournaments.prizePool')}</p>
               </div>
             </div>
 
             {tournament.description && (
               <div>
-                <h3 className="font-semibold mb-2">Description</h3>
+                <h3 className="font-semibold mb-2">{t('common.description')}</h3>
                 <p className="text-muted-foreground">{tournament.description}</p>
               </div>
             )}
@@ -159,7 +161,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <Users className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Participants</p>
+                  <p className="text-sm text-muted-foreground">{t('tournaments.participants')}</p>
                   <p className="font-semibold">
                     {tournament._count?.registrations || 0} / {tournament.max_participants}
                   </p>
@@ -169,15 +171,15 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <DollarSign className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Entry Fee</p>
-                  <p className="font-semibold">{tournament.entry_fee} gems</p>
+                  <p className="text-sm text-muted-foreground">{t('tournaments.entryFee')}</p>
+                  <p className="font-semibold">{tournament.entry_fee} {t('tournaments.gems')}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <Calendar className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Starts</p>
+                  <p className="text-sm text-muted-foreground">{t('tournaments.starts')}</p>
                   <p className="font-semibold">
                     {formatDistanceToNow(new Date(tournament.start_date), { addSuffix: true })}
                   </p>
@@ -187,7 +189,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <Trophy className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Type</p>
+                  <p className="text-sm text-muted-foreground">{t('tournaments.type')}</p>
                   <p className="font-semibold">{tournament.tournament_type.replace('_', ' ')}</p>
                 </div>
               </div>
@@ -198,7 +200,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                 {isRegistered ? (
                   <div className="flex items-center justify-center gap-2 p-4 bg-green-500/10 rounded-lg">
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
-                    <span className="text-green-500 font-semibold">You're registered!</span>
+                    <span className="text-green-500 font-semibold">{t('tournaments.alreadyRegistered')}</span>
                   </div>
                 ) : (
                   <Button 
@@ -207,14 +209,14 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                     onClick={handleRegister}
                     disabled={isRegistering || (tournament._count?.registrations || 0) >= tournament.max_participants}
                   >
-                    {isRegistering ? 'Registering...' : 'Register for Tournament'}
+                    {isRegistering ? t('tournaments.registering') : t('tournaments.register')}
                   </Button>
                 )}
               </div>
             )}
           </div>
         ) : (
-          <p className="text-center text-muted-foreground py-8">Tournament not found</p>
+          <p className="text-center text-muted-foreground py-8">{t('tournaments.notFound')}</p>
         )}
       </DialogContent>
     </Dialog>

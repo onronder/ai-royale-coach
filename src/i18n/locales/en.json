@@ -1121,7 +1121,109 @@
   },
   "common": {
     "aiPowered": "AI Powered",
-    "elixir": "Elixir"
+    "elixir": "Elixir",
+    "loading": "Loading...",
+    "description": "Description",
+    "all": "All"
+  },
+  "notFound": {
+    "title": "Oops! Page not found",
+    "returnHome": "Return to Home"
+  },
+  "deck": {
+    "noCards": "No Cards in Deck",
+    "noCardsDescription": "This deck appears to be empty. Add cards to see them here.",
+    "avgElixir": "Average Elixir"
+  },
+  "tournaments": {
+    "details": "Tournament Details",
+    "prizePool": "Prize Pool",
+    "participants": "Participants",
+    "entryFee": "Entry Fee",
+    "gems": "gems",
+    "starts": "Starts",
+    "type": "Type",
+    "alreadyRegistered": "You're registered!",
+    "register": "Register for Tournament",
+    "registering": "Registering...",
+    "notFound": "Tournament not found",
+    "registerFailed": "Failed to register for tournament",
+    "registerSuccess": "Successfully registered!",
+    "createNew": "Create New Tournament",
+    "createDescription": "Set up a new Clash Royale tournament for players to compete",
+    "tournamentName": "Tournament Name",
+    "namePlaceholder": "e.g., Weekend Warriors Championship",
+    "descriptionPlaceholder": "Describe your tournament...",
+    "maxParticipants": "Max Participants",
+    "startDate": "Start Date",
+    "creating": "Creating...",
+    "createButton": "Create Tournament",
+    "createSuccess": "Tournament created successfully!",
+    "createFailed": "Failed to create tournament",
+    "loadFailed": "Failed to load tournaments",
+    "noTournaments": "No Tournaments Yet",
+    "createFirst": "Be the first to create a tournament!",
+    "create": "Create Tournament",
+    "registration": "Registration",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "comparison": {
+    "title": "Account Comparison",
+    "addTwoPlayers": "Add at least 2 player tags to compare accounts",
+    "emptySlot": "Empty slot",
+    "clanMembership": "Clan Membership",
+    "noClan": "No Clan"
+  },
+  "stats": {
+    "trophies": "Trophies",
+    "bestTrophies": "Best Trophies",
+    "winRate": "Win Rate",
+    "totalWins": "Total Wins",
+    "totalLosses": "Total Losses",
+    "threeCrownWins": "3-Crown Wins",
+    "challengeMaxWins": "Challenge Max Wins",
+    "challengeCardsWon": "Challenge Cards Won",
+    "warDayWins": "War Day Wins",
+    "donations": "Donations",
+    "kingLevel": "King Level"
+  },
+  "auth": {
+    "signInRequired": "Please sign in to continue"
+  },
+  "counterDeck": {
+    "title": "Counter Deck Suggestion",
+    "description": "AI-suggested deck to counter {{opponent}}'s deck",
+    "opponentDeck": "Opponent's Deck",
+    "suggestedDeck": "Suggested Counter Deck",
+    "howToPlay": "How to Play",
+    "whyTheseCards": "Why These Cards?",
+    "copyButton": "Copy Deck to Clipboard",
+    "copiedButton": "Copied!",
+    "copiedToClipboard": "Deck copied to clipboard!",
+    "copyHint": "Paste the deck names in game to search for cards"
+  },
+  "deckEvolution": {
+    "title": "Deck Evolution Tracker",
+    "undoLast": "Undo Last Change",
+    "tryModeActive": "Try Mode Active",
+    "liveMode": "Live Mode",
+    "makeSwaps": "Make card swaps to see how your deck evolves",
+    "statsAppear": "Before/after stats will appear here",
+    "noChange": "No change",
+    "synergy": "Synergy",
+    "metaScore": "Meta Score",
+    "avgElixir": "Avg Elixir"
+  },
+  "winRateChart": {
+    "title": "Win Rate vs Archetypes",
+    "description": "Your performance against different deck types",
+    "winRate": "Win Rate",
+    "matches": "matches",
+    "strong": "Strong (>60%)",
+    "even": "Even (50-60%)",
+    "weak": "Weak (<50%)"
   },
   "cardCollection": {
     "title": "Card Collection",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ interface CreateTournamentFormProps {
 }
 
 export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [prizePool, setPrizePool] = useState("0");
@@ -28,7 +30,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("You must be signed in to create a tournament");
+        toast.error(t('auth.signInRequired'));
         return;
       }
 
@@ -46,7 +48,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
 
       if (error) throw error;
 
-      toast.success("Tournament created successfully!");
+      toast.success(t('tournaments.createSuccess'));
       onSuccess();
       
       // Reset form
@@ -58,7 +60,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
       setStartDate("");
     } catch (error) {
       console.error('Error creating tournament:', error);
-      toast.error("Failed to create tournament");
+      toast.error(t('tournaments.createFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -69,39 +71,39 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-primary" />
-          Create New Tournament
+          {t('tournaments.createNew')}
         </CardTitle>
         <CardDescription>
-          Set up a new Clash Royale tournament for players to compete
+          {t('tournaments.createDescription')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Tournament Name *</Label>
+            <Label htmlFor="name">{t('tournaments.tournamentName')} *</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Weekend Warriors Championship"
+              placeholder={t('tournaments.namePlaceholder')}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('common.description')}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your tournament..."
+              placeholder={t('tournaments.descriptionPlaceholder')}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="prizePool">Prize Pool</Label>
+              <Label htmlFor="prizePool">{t('tournaments.prizePool')}</Label>
               <Input
                 id="prizePool"
                 type="number"
@@ -113,7 +115,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="entryFee">Entry Fee</Label>
+              <Label htmlFor="entryFee">{t('tournaments.entryFee')}</Label>
               <Input
                 id="entryFee"
                 type="number"
@@ -127,7 +129,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="maxParticipants">Max Participants *</Label>
+              <Label htmlFor="maxParticipants">{t('tournaments.maxParticipants')} *</Label>
               <Input
                 id="maxParticipants"
                 type="number"
@@ -140,7 +142,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date *</Label>
+              <Label htmlFor="startDate">{t('tournaments.startDate')} *</Label>
               <Input
                 id="startDate"
                 type="datetime-local"
@@ -152,7 +154,7 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
           </div>
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Tournament"}
+            {isSubmitting ? t('tournaments.creating') : t('tournaments.createButton')}
           </Button>
         </form>
       </CardContent>

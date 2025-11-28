@@ -1144,7 +1144,109 @@
   },
   "common": {
     "aiPowered": "Avec IA",
-    "elixir": "Élixir"
+    "elixir": "Élixir",
+    "loading": "Chargement...",
+    "description": "Description",
+    "all": "Tous"
+  },
+  "notFound": {
+    "title": "Oups! Page non trouvée",
+    "returnHome": "Retour à l'Accueil"
+  },
+  "deck": {
+    "noCards": "Pas de Cartes dans le Deck",
+    "noCardsDescription": "Ce deck semble être vide. Ajoutez des cartes pour les voir ici.",
+    "avgElixir": "Élixir Moyen"
+  },
+  "tournaments": {
+    "details": "Détails du Tournoi",
+    "prizePool": "Prix",
+    "participants": "Participants",
+    "entryFee": "Frais d'Entrée",
+    "gems": "gemmes",
+    "starts": "Commence",
+    "type": "Type",
+    "alreadyRegistered": "Vous êtes inscrit!",
+    "register": "S'inscrire au Tournoi",
+    "registering": "Inscription...",
+    "notFound": "Tournoi non trouvé",
+    "registerFailed": "Échec de l'inscription au tournoi",
+    "registerSuccess": "Inscrit avec succès!",
+    "createNew": "Créer Nouveau Tournoi",
+    "createDescription": "Organisez un nouveau tournoi Clash Royale pour que les joueurs s'affrontent",
+    "tournamentName": "Nom du Tournoi",
+    "namePlaceholder": "ex., Championnat Guerriers du Weekend",
+    "descriptionPlaceholder": "Décrivez votre tournoi...",
+    "maxParticipants": "Max Participants",
+    "startDate": "Date de Début",
+    "creating": "Création...",
+    "createButton": "Créer Tournoi",
+    "createSuccess": "Tournoi créé avec succès!",
+    "createFailed": "Échec de la création du tournoi",
+    "loadFailed": "Échec du chargement des tournois",
+    "noTournaments": "Pas Encore de Tournois",
+    "createFirst": "Soyez le premier à créer un tournoi!",
+    "create": "Créer Tournoi",
+    "registration": "Inscription",
+    "inProgress": "En Cours",
+    "completed": "Terminé",
+    "cancelled": "Annulé"
+  },
+  "comparison": {
+    "title": "Comparaison de Comptes",
+    "addTwoPlayers": "Ajoutez au moins 2 tags de joueur pour comparer les comptes",
+    "emptySlot": "Emplacement vide",
+    "clanMembership": "Appartenance au Clan",
+    "noClan": "Pas de Clan"
+  },
+  "stats": {
+    "trophies": "Trophées",
+    "bestTrophies": "Meilleurs Trophées",
+    "winRate": "Taux de Victoire",
+    "totalWins": "Victoires Totales",
+    "totalLosses": "Défaites Totales",
+    "threeCrownWins": "Victoires 3 Couronnes",
+    "challengeMaxWins": "Max Victoires Défi",
+    "challengeCardsWon": "Cartes Défi Gagnées",
+    "warDayWins": "Victoires Jour de Guerre",
+    "donations": "Dons",
+    "kingLevel": "Niveau du Roi"
+  },
+  "auth": {
+    "signInRequired": "Veuillez vous connecter pour continuer"
+  },
+  "counterDeck": {
+    "title": "Suggestion de Contre-Deck",
+    "description": "Deck suggéré par l'IA pour contrer le deck de {{opponent}}",
+    "opponentDeck": "Deck de l'Adversaire",
+    "suggestedDeck": "Contre-Deck Suggéré",
+    "howToPlay": "Comment Jouer",
+    "whyTheseCards": "Pourquoi Ces Cartes?",
+    "copyButton": "Copier le Deck dans le Presse-papiers",
+    "copiedButton": "Copié!",
+    "copiedToClipboard": "Deck copié dans le presse-papiers!",
+    "copyHint": "Collez les noms du deck dans le jeu pour chercher les cartes"
+  },
+  "deckEvolution": {
+    "title": "Suivi d'Évolution du Deck",
+    "undoLast": "Annuler Dernier Changement",
+    "tryModeActive": "Mode Test Actif",
+    "liveMode": "Mode En Direct",
+    "makeSwaps": "Faites des échanges de cartes pour voir l'évolution de votre deck",
+    "statsAppear": "Les statistiques avant/après apparaîtront ici",
+    "noChange": "Pas de changement",
+    "synergy": "Synergie",
+    "metaScore": "Score Méta",
+    "avgElixir": "Élixir Moy"
+  },
+  "winRateChart": {
+    "title": "Taux de Victoire vs Archétypes",
+    "description": "Votre performance contre différents types de decks",
+    "winRate": "Taux de Victoire",
+    "matches": "matchs",
+    "strong": "Fort (>60%)",
+    "even": "Équilibré (50-60%)",
+    "weak": "Faible (<50%)"
   },
   "cardCollection": {
     "title": "Collection de Cartes",

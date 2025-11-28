@@ -1144,7 +1144,109 @@
   },
   "common": {
     "aiPowered": "Con IA",
-    "elixir": "Elixir"
+    "elixir": "Elixir",
+    "loading": "Cargando...",
+    "description": "Descripción",
+    "all": "Todo"
+  },
+  "notFound": {
+    "title": "¡Ups! Página no encontrada",
+    "returnHome": "Volver al Inicio"
+  },
+  "deck": {
+    "noCards": "Sin Cartas en el Mazo",
+    "noCardsDescription": "Este mazo parece estar vacío. Añade cartas para verlas aquí.",
+    "avgElixir": "Elixir Promedio"
+  },
+  "tournaments": {
+    "details": "Detalles del Torneo",
+    "prizePool": "Premio",
+    "participants": "Participantes",
+    "entryFee": "Cuota de Entrada",
+    "gems": "gemas",
+    "starts": "Comienza",
+    "type": "Tipo",
+    "alreadyRegistered": "¡Estás registrado!",
+    "register": "Registrarse en el Torneo",
+    "registering": "Registrando...",
+    "notFound": "Torneo no encontrado",
+    "registerFailed": "Error al registrarse en el torneo",
+    "registerSuccess": "¡Registrado exitosamente!",
+    "createNew": "Crear Nuevo Torneo",
+    "createDescription": "Configura un nuevo torneo de Clash Royale para que los jugadores compitan",
+    "tournamentName": "Nombre del Torneo",
+    "namePlaceholder": "ej., Campeonato Guerreros del Fin de Semana",
+    "descriptionPlaceholder": "Describe tu torneo...",
+    "maxParticipants": "Máx Participantes",
+    "startDate": "Fecha de Inicio",
+    "creating": "Creando...",
+    "createButton": "Crear Torneo",
+    "createSuccess": "¡Torneo creado exitosamente!",
+    "createFailed": "Error al crear torneo",
+    "loadFailed": "Error al cargar torneos",
+    "noTournaments": "Aún Sin Torneos",
+    "createFirst": "¡Sé el primero en crear un torneo!",
+    "create": "Crear Torneo",
+    "registration": "Registro",
+    "inProgress": "En Progreso",
+    "completed": "Completado",
+    "cancelled": "Cancelado"
+  },
+  "comparison": {
+    "title": "Comparación de Cuentas",
+    "addTwoPlayers": "Añade al menos 2 etiquetas de jugador para comparar cuentas",
+    "emptySlot": "Espacio vacío",
+    "clanMembership": "Membresía de Clan",
+    "noClan": "Sin Clan"
+  },
+  "stats": {
+    "trophies": "Trofeos",
+    "bestTrophies": "Mejores Trofeos",
+    "winRate": "Tasa de Victoria",
+    "totalWins": "Victorias Totales",
+    "totalLosses": "Derrotas Totales",
+    "threeCrownWins": "Victorias 3 Coronas",
+    "challengeMaxWins": "Máx Victorias Desafío",
+    "challengeCardsWon": "Cartas Desafío Ganadas",
+    "warDayWins": "Victorias Día de Guerra",
+    "donations": "Donaciones",
+    "kingLevel": "Nivel de Rey"
+  },
+  "auth": {
+    "signInRequired": "Por favor inicia sesión para continuar"
+  },
+  "counterDeck": {
+    "title": "Sugerencia de Contramazo",
+    "description": "Mazo sugerido por IA para contrarrestar el mazo de {{opponent}}",
+    "opponentDeck": "Mazo del Oponente",
+    "suggestedDeck": "Contramazo Sugerido",
+    "howToPlay": "Cómo Jugar",
+    "whyTheseCards": "¿Por Qué Estas Cartas?",
+    "copyButton": "Copiar Mazo al Portapapeles",
+    "copiedButton": "¡Copiado!",
+    "copiedToClipboard": "¡Mazo copiado al portapapeles!",
+    "copyHint": "Pega los nombres del mazo en el juego para buscar cartas"
+  },
+  "deckEvolution": {
+    "title": "Rastreador de Evolución del Mazo",
+    "undoLast": "Deshacer Último Cambio",
+    "tryModeActive": "Modo Prueba Activo",
+    "liveMode": "Modo En Vivo",
+    "makeSwaps": "Haz intercambios de cartas para ver cómo evoluciona tu mazo",
+    "statsAppear": "Las estadísticas antes/después aparecerán aquí",
+    "noChange": "Sin cambios",
+    "synergy": "Sinergia",
+    "metaScore": "Puntuación Meta",
+    "avgElixir": "Elixir Prom"
+  },
+  "winRateChart": {
+    "title": "Tasa de Victoria vs Arquetipos",
+    "description": "Tu rendimiento contra diferentes tipos de mazos",
+    "winRate": "Tasa de Victoria",
+    "matches": "partidas",
+    "strong": "Fuerte (>60%)",
+    "even": "Parejo (50-60%)",
+    "weak": "Débil (<50%)"
   },
   "cardCollection": {
     "title": "Colección de Cartas",
