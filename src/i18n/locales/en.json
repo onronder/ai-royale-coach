@@ -619,6 +619,25 @@
       "collectionSynced": "Card collection synced",
       "masteryCalculated": "Card mastery calculated",
       "deckStatsTracked": "Deck stats tracked"
+    },
+    "trophyProgress": {
+      "title": "Trophy Progress",
+      "noBattleData": "No battle data available",
+      "lastBattles": "Last {{count}} battles",
+      "noChange": "No change",
+      "current": "Current",
+      "best": "Best",
+      "trophies": "trophies",
+      "win": "Win",
+      "loss": "Loss",
+      "draw": "Draw",
+      "crowns": "Crowns"
+    },
+    "achievementWidget": {
+      "loading": "Loading achievements...",
+      "achievement": "{{count}} Achievement",
+      "achievements": "{{count}} Achievements",
+      "phase": "{{phase}} Phase"
     }
   },
   "deck": {
