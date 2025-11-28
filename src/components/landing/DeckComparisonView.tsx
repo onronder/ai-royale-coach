@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Minus, Target, Shield, Zap } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MatchupIndicator } from './MatchupIndicator';
 
 interface DeckComparisonViewProps {
@@ -13,6 +14,7 @@ interface DeckComparisonViewProps {
 }
 
 export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
+  const { t } = useTranslation();
   const [deck1, setDeck1] = useState<SampleDeck>(sampleDecks[0]);
   const [deck2, setDeck2] = useState<SampleDeck>(sampleDecks[1]);
 
@@ -64,7 +66,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
       }`}>
         <div>
           <label className="text-sm text-muted-foreground mb-2 block font-rajdhani font-semibold">
-            First Deck
+            {t('landing.demo.comparison.firstDeck')}
           </label>
           <Select value={deck1.id} onValueChange={(val) => {
             const selected = sampleDecks.find(d => d.id === val);
@@ -85,7 +87,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
 
         <div>
           <label className="text-sm text-muted-foreground mb-2 block font-rajdhani font-semibold">
-            Second Deck
+            {t('landing.demo.comparison.secondDeck')}
           </label>
           <Select value={deck2.id} onValueChange={(val) => {
             const selected = sampleDecks.find(d => d.id === val);
@@ -131,7 +133,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2">
                   <Target className="h-4 w-4" />
-                  Win Rate
+                  {t('landing.demo.winRate')}
                 </span>
                 <span className="text-xl font-bold text-primary">
                   {isVisible && <AnimatedCounter end={deck1.stats.winRate} decimals={1} suffix="%" delay={300} />}
@@ -140,7 +142,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2">
                   <Zap className="h-4 w-4" />
-                  Avg Elixir
+                  {t('landing.demo.avgElixir')}
                 </span>
                 <span className="text-xl font-bold text-accent">
                   {isVisible && <AnimatedCounter end={deck1.stats.avgElixir} decimals={1} delay={500} />}
@@ -149,7 +151,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground flex items-center gap-2">
                   <Shield className="h-4 w-4" />
-                  Synergy
+                  {t('landing.demo.comparison.synergy')}
                 </span>
                 <span className="text-xl font-bold text-primary">
                   {isVisible && <AnimatedCounter end={deck1.stats.synergyScore} decimals={1} suffix="/10" delay={700} />}
@@ -159,7 +161,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           </Card>
 
           <Card className="p-4 bg-success/5 border-success/20">
-            <h4 className="text-sm font-rajdhani font-bold text-success mb-2">Strengths</h4>
+            <h4 className="text-sm font-rajdhani font-bold text-success mb-2">{t('landing.demo.comparison.strengths')}</h4>
             <ul className="space-y-1">
               {deck1.strengths.map((strength, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
@@ -171,7 +173,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           </Card>
 
           <Card className="p-4 bg-destructive/5 border-destructive/20">
-            <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">Weaknesses</h4>
+            <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">{t('landing.demo.comparison.weaknesses')}</h4>
             <ul className="space-y-1">
               {deck1.weaknesses.map((weakness, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
@@ -206,7 +208,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Target className="h-4 w-4" />
-                    Win Rate
+                    {t('landing.demo.winRate')}
                   </span>
                   {(() => {
                     const diff = getStatDiff(deck2.stats.winRate, deck1.stats.winRate);
@@ -227,7 +229,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Zap className="h-4 w-4" />
-                    Avg Elixir
+                    {t('landing.demo.avgElixir')}
                   </span>
                   {(() => {
                     const diff = getStatDiff(deck2.stats.avgElixir, deck1.stats.avgElixir);
@@ -248,7 +250,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground flex items-center gap-2">
                     <Shield className="h-4 w-4" />
-                    Synergy
+                    {t('landing.demo.comparison.synergy')}
                   </span>
                   {(() => {
                     const diff = getStatDiff(deck2.stats.synergyScore, deck1.stats.synergyScore);
@@ -269,7 +271,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           </Card>
 
           <Card className="p-4 bg-success/5 border-success/20">
-            <h4 className="text-sm font-rajdhani font-bold text-success mb-2">Strengths</h4>
+            <h4 className="text-sm font-rajdhani font-bold text-success mb-2">{t('landing.demo.comparison.strengths')}</h4>
             <ul className="space-y-1">
               {deck2.strengths.map((strength, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
@@ -281,7 +283,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           </Card>
 
           <Card className="p-4 bg-destructive/5 border-destructive/20">
-            <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">Weaknesses</h4>
+            <h4 className="text-sm font-rajdhani font-bold text-destructive mb-2">{t('landing.demo.comparison.weaknesses')}</h4>
             <ul className="space-y-1">
               {deck2.weaknesses.map((weakness, idx) => (
                 <li key={idx} className="text-sm text-muted-foreground flex items-center gap-2">
@@ -309,19 +311,19 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
       }`} style={{ transitionDelay: '600ms' }}>
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="h-5 w-5 text-primary" />
-          <h4 className="font-rajdhani font-bold text-lg text-foreground">Key Differences</h4>
+          <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.comparison.keyDifferences')}</h4>
         </div>
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-primary">{deck1.name}</span> favors {deck1.playstyle.toLowerCase()} 
-              {deck1.stats.avgElixir < deck2.stats.avgElixir ? ', with faster cycling' : ', with heavier investments'}
+              <span className="font-semibold text-primary">{deck1.name}</span> {t('landing.demo.comparison.favors')} {deck1.playstyle.toLowerCase()}
+              {deck1.stats.avgElixir < deck2.stats.avgElixir ? `, ${t('landing.demo.comparison.fasterCycling')}` : `, ${t('landing.demo.comparison.heavierInvestments')}`}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-accent">{deck2.name}</span> excels in {deck2.playstyle.toLowerCase()}
-              {deck2.stats.winRate > deck1.stats.winRate ? ', showing higher win rates' : ', requiring refined execution'}
+              <span className="font-semibold text-accent">{deck2.name}</span> {t('landing.demo.comparison.excelsIn')} {deck2.playstyle.toLowerCase()}
+              {deck2.stats.winRate > deck1.stats.winRate ? `, ${t('landing.demo.comparison.higherWinRates')}` : `, ${t('landing.demo.comparison.requiresRefinedExecution')}`}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Swords, TrendingUp, TrendingDown, Minus, Lightbulb } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MatchupData } from '@/data/sampleDecks';
 
 interface MatchupIndicatorProps {
@@ -18,6 +19,8 @@ export function MatchupIndicator({
   deck2Matchup,
   isVisible 
 }: MatchupIndicatorProps) {
+  const { t } = useTranslation();
+  
   if (!deck1Matchup || !deck2Matchup) return null;
 
   const deck1WinRate = deck1Matchup.winRate;
@@ -59,8 +62,8 @@ export function MatchupIndicator({
               <Swords className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">Matchup Analysis</h4>
-              <p className="text-xs text-muted-foreground">Head-to-head performance</p>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.matchup.title')}</h4>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.matchup.subtitle')}</p>
             </div>
           </div>
           
@@ -72,7 +75,7 @@ export function MatchupIndicator({
               : 'bg-accent/20 text-accent border-accent/30'
           } flex items-center gap-1`}>
             <AdvantageIcon className="h-3 w-3" />
-            {advantage === 'even' ? 'Even Matchup' : advantage === 'deck1' ? `${deck1Name} Favored` : `${deck2Name} Favored`}
+            {advantage === 'even' ? t('landing.demo.matchup.evenMatchup') : t('landing.demo.matchup.favored', { deck: advantage === 'deck1' ? deck1Name : deck2Name })}
           </Badge>
         </div>
 
@@ -118,7 +121,7 @@ export function MatchupIndicator({
           <Card className="p-4 bg-primary/5 border-primary/20">
             <div className="flex items-center gap-2 mb-3">
               <Lightbulb className="h-4 w-4 text-primary" />
-              <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck1Name} Tips</h5>
+              <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck1Name} {t('landing.demo.matchup.tips')}</h5>
             </div>
             <ul className="space-y-2">
               {deck1Matchup.tacticalTips.map((tip, idx) => (
@@ -130,7 +133,7 @@ export function MatchupIndicator({
             </ul>
             <div className="mt-3 pt-3 border-t border-primary/10">
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-primary">Key Cards:</span>{' '}
+                <span className="font-semibold text-primary">{t('landing.demo.matchup.keyCards')}:</span>{' '}
                 {deck1Matchup.keyCards.join(', ')}
               </p>
             </div>
@@ -139,7 +142,7 @@ export function MatchupIndicator({
           <Card className="p-4 bg-accent/5 border-accent/20">
             <div className="flex items-center gap-2 mb-3">
               <Lightbulb className="h-4 w-4 text-accent" />
-              <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck2Name} Tips</h5>
+              <h5 className="text-sm font-rajdhani font-bold text-foreground">{deck2Name} {t('landing.demo.matchup.tips')}</h5>
             </div>
             <ul className="space-y-2">
               {deck2Matchup.tacticalTips.map((tip, idx) => (
@@ -151,7 +154,7 @@ export function MatchupIndicator({
             </ul>
             <div className="mt-3 pt-3 border-t border-accent/10">
               <p className="text-xs text-muted-foreground">
-                <span className="font-semibold text-accent">Key Cards:</span>{' '}
+                <span className="font-semibold text-accent">{t('landing.demo.matchup.keyCards')}:</span>{' '}
                 {deck2Matchup.keyCards.join(', ')}
               </p>
             </div>
