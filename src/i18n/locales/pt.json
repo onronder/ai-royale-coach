@@ -740,17 +740,6 @@
     "deck1Cards": "Cartas do Deck 1",
     "deck2Cards": "Cartas do Deck 2"
   },
-  "cardReplacements": {
-    "title": "Sugestor de Substituição de Cartas",
-    "getSuggestions": "Obtenha sugestões com IA para substituir {{card}}",
-    "findReplacements": "Encontrar Substituições",
-    "optionsFor": "Opções de Substituição para {{card}}",
-    "useThis": "Usar Esta",
-    "synergy": "Sinergia",
-    "meta": "Meta",
-    "fetchFailed": "Erro ao obter sugestões de cartas",
-    "replaced": "Substituído {{oldCard}} por {{newCard}}"
-  },
   "match": {
     "victory": "Vitória",
     "defeat": "Derrota",
@@ -872,7 +861,15 @@
     "sending": "Enviando...",
     "viewMore": "Ver Mais",
     "showLess": "Ver Menos",
-    "success": "Sucesso"
+    "success": "Sucesso",
+    "aiPowered": "Com IA",
+    "elixir": "Elixir",
+    "description": "Descrição",
+    "mayTakeMoment": "Isso pode levar um momento",
+    "pleaseWait": "Por favor aguarde enquanto processamos sua solicitação",
+    "pleaseWaitMoment": "Por favor aguarde um momento...",
+    "loadingDashboard": "Carregando seu painel",
+    "verifyingAuth": "Verificando autenticação"
   },
   "loadingMessages": {
     "playerData": "Carregando dados do jogador...",
@@ -1134,18 +1131,6 @@
     "winRateTrends": "Tendências de Vitória",
     "deckUsage": "Uso de Decks",
     "topCards": "Melhores Cartas"
-  },
-  "common": {
-    "aiPowered": "Com IA",
-    "elixir": "Elixir",
-    "loading": "Carregando...",
-    "description": "Descrição",
-    "all": "Todos",
-    "mayTakeMoment": "Isso pode levar um momento",
-    "pleaseWait": "Por favor, aguarde enquanto processamos sua solicitação",
-    "pleaseWaitMoment": "Por favor, aguarde um momento...",
-    "loadingDashboard": "Carregando seu painel",
-    "verifyingAuth": "Verificando autenticação"
   },
   "notFound": {
     "title": "Ops! Página não encontrada",

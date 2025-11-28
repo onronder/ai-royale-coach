@@ -733,17 +733,6 @@
     "deck1Cards": "Deck 1 Cards",
     "deck2Cards": "Deck 2 Cards"
   },
-  "cardReplacements": {
-    "title": "Card Replacement Suggester",
-    "getSuggestions": "Get AI-powered suggestions to replace {{card}}",
-    "findReplacements": "Find Replacements",
-    "optionsFor": "Replacement Options for {{card}}",
-    "useThis": "Use This",
-    "synergy": "Synergy",
-    "meta": "Meta",
-    "fetchFailed": "Failed to fetch card suggestions",
-    "replaced": "Replaced {{oldCard}} with {{newCard}}"
-  },
   "matches": {
     "details": "Match Details",
     "battleTime": "Battle Time",
@@ -856,7 +845,15 @@
     "sending": "Sending...",
     "noData": "No data available",
     "comingSoon": "Coming Soon",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "aiPowered": "AI Powered",
+    "elixir": "Elixir",
+    "description": "Description",
+    "mayTakeMoment": "This may take a moment",
+    "pleaseWait": "Please wait while we process your request",
+    "pleaseWaitMoment": "Please wait a moment...",
+    "loadingDashboard": "Loading your dashboard",
+    "verifyingAuth": "Verifying authentication"
   },
   "loading": {
     "playerData": "Fetching player data...",
@@ -1100,7 +1097,8 @@
     "title": "Achievement Center",
     "description": "Track your mastery journey and unlock rewards",
     "syncProgress": "Sync Progress",
-    "unlocked": "Achievements Unlocked",
+    "unlocked": "Achievement Unlocked!",
+    "points": "pts",
     "masteryPoints": "Mastery Points",
     "learningPhase": "Learning Phase",
     "beginner": "Beginner",
@@ -1132,18 +1130,6 @@
     "winRateTrends": "Win Rate Trends",
     "deckUsage": "Deck Usage",
     "topCards": "Top Cards"
-  },
-  "common": {
-    "aiPowered": "AI Powered",
-    "elixir": "Elixir",
-    "loading": "Loading...",
-    "description": "Description",
-    "all": "All",
-    "mayTakeMoment": "This may take a moment",
-    "pleaseWait": "Please wait while we process your request",
-    "pleaseWaitMoment": "Please wait a moment...",
-    "loadingDashboard": "Loading your dashboard",
-    "verifyingAuth": "Verifying authentication"
   },
   "notFound": {
     "title": "Oops! Page not found",
@@ -1290,10 +1276,6 @@
     "generate": "Generate",
     "generatingTips": "Generating tips...",
     "clickGenerate": "Click generate to get AI tips for this card"
-  },
-  "achievements": {
-    "unlocked": "Achievement Unlocked!",
-    "points": "pts"
   },
   "analytics": {
     "winRateTrends": "Win Rate Trends",

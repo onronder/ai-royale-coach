@@ -740,17 +740,6 @@
     "deck1Cards": "Deste 1 Kartları",
     "deck2Cards": "Deste 2 Kartları"
   },
-  "cardReplacements": {
-    "title": "Kart Değiştirme Önerici",
-    "getSuggestions": "{{card}} kartını değiştirmek için AI destekli öneriler alın",
-    "findReplacements": "Alternatif Bul",
-    "optionsFor": "{{card}} için Değiştirme Seçenekleri",
-    "useThis": "Bunu Kullan",
-    "synergy": "Sinerji",
-    "meta": "Meta",
-    "fetchFailed": "Kart önerileri alınamadı",
-    "replaced": "{{oldCard}} kartı {{newCard}} ile değiştirildi"
-  },
   "match": {
     "victory": "Zafer",
     "defeat": "Yenilgi",
@@ -872,7 +861,15 @@
     "sending": "Gönderiliyor...",
     "viewMore": "Daha Fazla",
     "showLess": "Daha Az",
-    "success": "Başarılı"
+    "success": "Başarılı",
+    "aiPowered": "AI Destekli",
+    "elixir": "İksir",
+    "description": "Açıklama",
+    "mayTakeMoment": "Bu biraz zaman alabilir",
+    "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
+    "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
+    "loadingDashboard": "Panelonuz yükleniyor",
+    "verifyingAuth": "Kimlik doğrulanıyor"
   },
   "loadingMessages": {
     "playerData": "Oyuncu verileri yükleniyor...",
@@ -1134,18 +1131,6 @@
     "winRateTrends": "Kazanma Oranı Trendleri",
     "deckUsage": "Deste Kullanımı",
     "topCards": "En İyi Kartlar"
-  },
-  "common": {
-    "aiPowered": "AI Destekli",
-    "elixir": "İksir",
-    "loading": "Yükleniyor...",
-    "description": "Açıklama",
-    "all": "Tümü",
-    "mayTakeMoment": "Bu biraz zaman alabilir",
-    "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
-    "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
-    "loadingDashboard": "Panelonuz yükleniyor",
-    "verifyingAuth": "Kimlik doğrulanıyor"
   },
   "notFound": {
     "title": "Hay aksi! Sayfa bulunamadı",

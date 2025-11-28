@@ -740,17 +740,6 @@
     "deck1Cards": "Cartes du Deck 1",
     "deck2Cards": "Cartes du Deck 2"
   },
-  "cardReplacements": {
-    "title": "Suggéreur de Remplacement de Cartes",
-    "getSuggestions": "Obtenez des suggestions IA pour remplacer {{card}}",
-    "findReplacements": "Trouver des Remplacements",
-    "optionsFor": "Options de Remplacement pour {{card}}",
-    "useThis": "Utiliser Celle-ci",
-    "synergy": "Synergie",
-    "meta": "Meta",
-    "fetchFailed": "Échec de l'obtention des suggestions de cartes",
-    "replaced": "Remplacé {{oldCard}} par {{newCard}}"
-  },
   "match": {
     "victory": "Victoire",
     "defeat": "Défaite",
@@ -872,7 +861,15 @@
     "sending": "Envoi en cours...",
     "viewMore": "Voir Plus",
     "showLess": "Voir Moins",
-    "success": "Succès"
+    "success": "Succès",
+    "aiPowered": "Avec IA",
+    "elixir": "Élixir",
+    "description": "Description",
+    "mayTakeMoment": "Cela peut prendre un moment",
+    "pleaseWait": "Veuillez patienter pendant que nous traitons votre demande",
+    "pleaseWaitMoment": "Veuillez patienter un moment...",
+    "loadingDashboard": "Chargement de votre tableau de bord",
+    "verifyingAuth": "Vérification de l'authentification"
   },
   "loadingMessages": {
     "playerData": "Chargement des données du joueur...",
@@ -1134,18 +1131,6 @@
     "winRateTrends": "Tendances de Victoire",
     "deckUsage": "Utilisation des Decks",
     "topCards": "Meilleures Cartes"
-  },
-  "common": {
-    "aiPowered": "Avec IA",
-    "elixir": "Élixir",
-    "loading": "Chargement...",
-    "description": "Description",
-    "all": "Tous",
-    "mayTakeMoment": "Cela peut prendre un moment",
-    "pleaseWait": "Veuillez patienter pendant le traitement de votre demande",
-    "pleaseWaitMoment": "Veuillez patienter un moment...",
-    "loadingDashboard": "Chargement de votre tableau de bord",
-    "verifyingAuth": "Vérification de l'authentification"
   },
   "notFound": {
     "title": "Oups! Page non trouvée",
