@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 import { Loader2, Crown, ArrowLeft, Sparkles, Shield } from "lucide-react";
 
 const Auth = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
@@ -48,17 +50,17 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast.success("Check your email to confirm your account");
+        toast.success(t("auth.checkEmail"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        toast.success("Welcome back!");
+        toast.success(t("auth.welcomeBack"));
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("common.error"));
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +89,7 @@ const Auth = () => {
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-gold transition-colors group"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm">Back to Home</span>
+          <span className="text-sm">{t("auth.backToHome")}</span>
         </Link>
 
         {/* Logo with Golden Glow */}
@@ -97,7 +99,7 @@ const Auth = () => {
             <div className="absolute -inset-1 bg-gold/20 rounded-2xl blur-lg -z-10" />
           </div>
           <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYALE</h1>
-          <p className="text-muted-foreground text-sm">Your path to arena dominance</p>
+          <p className="text-muted-foreground text-sm">{t("auth.tagline")}</p>
         </div>
 
         <Card variant="arena" className="golden-shine">
@@ -109,23 +111,23 @@ const Auth = () => {
                 <Shield className="h-5 w-5 text-primary" />
               )}
               <CardTitle className="text-2xl">
-                {isSignUp ? "Join the Arena" : "Welcome Back"}
+                {isSignUp ? t("auth.joinArena") : t("auth.welcomeBackTitle")}
               </CardTitle>
             </div>
             <CardDescription>
               {isSignUp
-                ? "Create your account and start dominating"
-                : "Sign in to continue your journey"}
+                ? t("auth.createAccountDesc")
+                : t("auth.signInDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAuth} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                <Label htmlFor="email" className="text-sm font-medium">{t("auth.email")}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -134,7 +136,7 @@ const Auth = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium">{t("auth.password")}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -148,7 +150,7 @@ const Auth = () => {
                 />
                 {isSignUp && (
                   <p className="text-xs text-muted-foreground">
-                    Minimum 6 characters
+                    {t("auth.minCharacters")}
                   </p>
                 )}
               </div>
@@ -162,17 +164,17 @@ const Auth = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Please wait...
+                    {t("auth.pleaseWait")}
                   </>
                 ) : isSignUp ? (
                   <>
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Create Account
+                    {t("auth.signUpButton")}
                   </>
                 ) : (
                   <>
                     <Shield className="mr-2 h-4 w-4" />
-                    Sign In
+                    {t("auth.signInButton")}
                   </>
                 )}
               </Button>
@@ -185,8 +187,8 @@ const Auth = () => {
                 disabled={isLoading}
               >
                 {isSignUp
-                  ? "Already have an account? Sign in"
-                  : "Don't have an account? Create one"}
+                  ? t("auth.hasAccountLink")
+                  : t("auth.noAccountLink")}
               </button>
             </div>
           </CardContent>
@@ -196,12 +198,12 @@ const Auth = () => {
         <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Shield className="h-3 w-3" />
-            Secure
+            {t("auth.secure")}
           </span>
           <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-          <span>Free to use</span>
+          <span>{t("auth.freeToUse")}</span>
           <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-          <span>No spam</span>
+          <span>{t("auth.noSpam")}</span>
         </div>
       </div>
     </div>
