@@ -1,5 +1,6 @@
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { ArchetypeTag } from "./ArchetypeTag";
 import { WinRateChart } from "./WinRateChart";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,11 +38,19 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
       const { data, error } = await supabase.functions.invoke<DeckAnalysisResult>('analyze-deck', {
         body: { playerData: player, battles }
       });
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+          throw new Error('AUTH_REQUIRED');
+        }
+        throw error;
+      }
       return data;
     },
     staleTime: 24 * 60 * 60 * 1000,
-    retry: 1,
+    retry: (failureCount, err) => {
+      if (err instanceof Error && err.message === 'AUTH_REQUIRED') return false;
+      return failureCount < 1;
+    },
   });
 
   if (isLoading) {
@@ -49,12 +58,26 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   }
 
   if (error) {
+    const isAuthError = error instanceof Error && error.message === 'AUTH_REQUIRED';
     return (
-      <Card className="border-destructive">
+      <Card className="border-destructive/50">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 text-destructive">
-            <AlertCircle className="w-5 h-5" />
-            <p>Failed to analyze deck. Please try again.</p>
+          <div className="flex flex-col items-center gap-3 text-center">
+            <AlertCircle className="w-8 h-8 text-destructive" />
+            {isAuthError ? (
+              <>
+                <p className="text-muted-foreground">Sign in to view AI deck analysis</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.location.href = '/auth?mode=signin'}
+                >
+                  Sign In
+                </Button>
+              </>
+            ) : (
+              <p className="text-destructive">Failed to analyze deck. Please try again.</p>
+            )}
           </div>
         </CardContent>
       </Card>

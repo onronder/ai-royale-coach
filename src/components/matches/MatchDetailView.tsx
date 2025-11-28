@@ -320,18 +320,29 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
   const trophyChange = playerTeam?.trophyChange || 0;
 
   // IMPORTANT: useQuery MUST be called unconditionally (before any returns)
-  const { data: analysis, isLoading } = useQuery({
+  const { data: analysis, isLoading, error: analysisError } = useQuery({
     queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag],
     queryFn: async () => {
       if (!battle) throw new Error('No battle data');
       const { data, error } = await supabase.functions.invoke<MatchAnalysis>('analyze-match', {
         body: { battle, playerTag: normalizedPlayerTag }
       });
-      if (error) throw error;
+      if (error) {
+        // Check if it's an auth error
+        if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+          throw new Error('AUTH_REQUIRED');
+        }
+        throw error;
+      }
       return data;
     },
     enabled: open && !!battle,
     staleTime: 24 * 60 * 60 * 1000,
+    retry: (failureCount, error) => {
+      // Don't retry auth errors
+      if (error instanceof Error && error.message === 'AUTH_REQUIRED') return false;
+      return failureCount < 2;
+    },
   });
 
   useEffect(() => {
@@ -447,6 +458,23 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               <h3 className="font-semibold text-lg">Match Analysis</h3>
               {isLoading ? (
                 <DataLoader context="match-analysis" variant="inline" />
+              ) : analysisError ? (
+                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  {analysisError.message === 'AUTH_REQUIRED' ? (
+                    <div className="text-center space-y-2">
+                      <p className="text-sm text-muted-foreground">Sign in to view AI analysis</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.location.href = '/auth?mode=signin'}
+                      >
+                        Sign In
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-destructive">Failed to load analysis. Please try again.</p>
+                  )}
+                </div>
               ) : analysis ? (
                 <div className="space-y-4">
                   <div className="p-4 bg-card rounded-lg border">

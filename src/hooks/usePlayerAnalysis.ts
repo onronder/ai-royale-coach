@@ -27,13 +27,21 @@ export function usePlayerAnalysis(
         body: { playerData: player, battles }
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+          throw new Error('AUTH_REQUIRED');
+        }
+        throw error;
+      }
       if (!data) throw new Error('No analysis data returned');
 
       return data;
     },
     enabled: !!player && !!battles && battles.length > 0,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
-    retry: 1,
+    retry: (failureCount, err) => {
+      if (err instanceof Error && err.message === 'AUTH_REQUIRED') return false;
+      return failureCount < 1;
+    },
   });
 }

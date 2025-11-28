@@ -274,11 +274,18 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/coach-chat`;
     
     try {
+      // Get the current user's session token for auth
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Please sign in to use AI Coach");
+        return;
+      }
+      
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           messages: messages.map(m => ({ role: m.role, content: m.content })).concat([
@@ -295,6 +302,10 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       });
 
       if (!resp.ok) {
+        if (resp.status === 401) {
+          toast.error("Session expired. Please sign in again.");
+          return;
+        }
         if (resp.status === 429) {
           toast.error("Rate limit exceeded. Please wait a moment.");
           return;
