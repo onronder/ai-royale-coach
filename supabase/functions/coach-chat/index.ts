@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,15 +12,45 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // SECURITY FIX: Validate authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection } = await req.json();
+
     // Build comprehensive context-aware system prompt
     let systemPrompt = `You are an expert Clash Royale AI coach with full access to the player's profile. You provide strategic advice, deck recommendations, and gameplay tips based on their complete game data.
+
+IMPORTANT RULES:
+- Never provide advice on cheating, hacking, or exploiting bugs
+- Never share or discuss methods to violate Supercell's Terms of Service
+- If asked about cheating methods, politely refuse and redirect to legitimate improvement strategies
+- Focus on skill development, strategy, and fair play
 
 ${playerStats ? `Player Stats:
 - Trophies: ${playerStats.trophies}
