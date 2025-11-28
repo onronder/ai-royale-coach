@@ -13,10 +13,11 @@ serve(async (req) => {
   }
 
   try {
-    const { playerTag, userId } = await req.json();
+    // Parse request body first
+    const { playerTag } = await req.json();
     
-    if (!playerTag || !userId) {
-      throw new Error('playerTag and userId are required');
+    if (!playerTag) {
+      throw new Error('playerTag is required');
     }
 
     const CLASH_ROYALE_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
@@ -28,6 +29,28 @@ serve(async (req) => {
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // SECURITY FIX: Get user from auth token instead of trusting client-supplied userId
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Use server-verified userId, not client-supplied
+    const userId = user.id;
 
     // Helper function to check for cancellation
     const checkCancellation = async () => {
@@ -191,28 +214,6 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in sync-card-collection:', error);
-    
-    // Try to update progress to failed state
-    try {
-      const { playerTag, userId } = await req.json();
-      if (playerTag && userId) {
-        const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-        const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-        
-        await supabase.from('operation_progress').upsert({
-          user_id: userId,
-          player_tag: playerTag,
-          operation_type: 'card_collection_sync',
-          status: 'failed',
-          progress: 0,
-          total: 100,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
-      }
-    } catch (progressError) {
-      console.error('Failed to update progress:', progressError);
-    }
     
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
