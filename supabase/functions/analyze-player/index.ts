@@ -74,7 +74,7 @@ serve(async (req) => {
 
     // Create fingerprint for caching
     const recentBattleIds = battles.slice(0, 5).map((b: any) => b.battleTime).join(',');
-    const fingerprint = `profile_${playerData.tag}_${playerData.trophies}_${recentBattleIds}`;
+    const fingerprint = `profile_${playerData.tag}_${playerData.trophies}_${recentBattleIds}_${language}`;
 
     // Check cache
     const { data: cached } = await supabase
