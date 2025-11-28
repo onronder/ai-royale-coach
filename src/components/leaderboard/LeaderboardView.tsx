@@ -112,12 +112,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
 
   // Calculate user's estimated global rank based on trophies
   const estimateGlobalRank = (trophies: number): string => {
-    // Based on trophy count, estimate ranking
-    // Top 200 players are around 8500+ trophies
-    // Top 1000 around 7500+
-    // Top 10000 around 6500+
-    // etc.
-    if (trophies >= 8500) return "Top 200";
+    if (trophies >= 8500) return t('leaderboard.rankTop200');
     if (trophies >= 8000) return "~500";
     if (trophies >= 7500) return "~1,000";
     if (trophies >= 7000) return "~5,000";
@@ -146,7 +141,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
             <Star className="h-5 w-5 text-primary" />
-            Your Rankings
+            {t('leaderboard.yourRankings')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -171,7 +166,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                       {badgeUrl ? (
                         <img 
                           src={badgeUrl} 
-                          alt="Clan badge"
+                          alt={t('leaderboard.clanBadge')}
                           className="w-7 h-7 object-contain"
                           onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -187,7 +182,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                       </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Trophy className="h-3 w-3 text-primary" />
-                        <span>{trophies.toLocaleString()} trophies</span>
+                        <span>{trophies.toLocaleString()} {t('leaderboard.trophies')}</span>
                       </div>
                     </div>
                   </div>
@@ -195,18 +190,18 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                   <div className="text-right">
                     {top100Rank ? (
                       <Badge className="bg-gradient-legendary text-primary-foreground animate-pulse-glow">
-                        #{top100Rank} Global
+                        {t('leaderboard.globalRank', { rank: top100Rank })}
                       </Badge>
                     ) : (
                       <div>
                         <p className="text-sm font-semibold text-muted-foreground">
-                          Est. Rank: {estimatedRank}
+                          {t('leaderboard.estRank', { rank: estimatedRank })}
                         </p>
                         {trophies > 0 && globalLeaderboard.length > 0 && (
                           <p className="text-xs text-muted-foreground">
                             {(globalLeaderboard[99]?.trophies || 0) - trophies > 0 
-                              ? `${((globalLeaderboard[99]?.trophies || 0) - trophies).toLocaleString()} to Top 100`
-                              : 'Close to Top 100!'
+                              ? `${((globalLeaderboard[99]?.trophies || 0) - trophies).toLocaleString()} ${t('leaderboard.toTop100')}`
+                              : t('leaderboard.closeToTop100')
                             }
                           </p>
                         )}
@@ -231,8 +226,8 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       return (
         <EmptyState
           icon={Trophy}
-          title="No Leaderboard Data"
-          description="Click 'Sync Global' to fetch the top 200 players worldwide"
+          title={t('leaderboard.noData')}
+          description={t('leaderboard.noDataDescription')}
           variant="compact"
         />
       );
@@ -282,7 +277,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                     <p className="font-semibold truncate">{entry.player_name}</p>
                     {isUserAccount && (
                       <Badge variant="secondary" className="text-xs">
-                        You
+                        {t('leaderboard.you')}
                       </Badge>
                     )}
                   </div>
@@ -332,7 +327,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
-              Global Leaderboard
+              {t('leaderboard.globalLeaderboard')}
             </CardTitle>
             <Button
               onClick={syncGlobalLeaderboard}
@@ -341,7 +336,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
               size="sm"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Syncing...' : 'Sync Global'}
+              {isSyncing ? t('leaderboard.syncing') : t('leaderboard.syncGlobal')}
             </Button>
           </div>
         </CardHeader>
@@ -350,11 +345,11 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="global">
                 <Trophy className="mr-2 h-4 w-4" />
-                Top 100
+                {t('leaderboard.top100')}
               </TabsTrigger>
               <TabsTrigger value="clan" disabled={!userClanTag}>
                 <Users className="mr-2 h-4 w-4" />
-                {userClanTag ? 'My Clan' : 'No Clan'}
+                {userClanTag ? t('leaderboard.myClan') : t('leaderboard.noClan')}
               </TabsTrigger>
             </TabsList>
 

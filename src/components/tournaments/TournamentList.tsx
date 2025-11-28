@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ interface Tournament {
 }
 
 export function TournamentList({ onSelectTournament }: { onSelectTournament: (id: string) => void }) {
+  const { t } = useTranslation();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -77,7 +79,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
 
     if (error) {
       console.error('Error fetching tournaments:', error);
-      toast.error('Failed to load tournaments');
+      toast.error(t('tournaments.loadFailed'));
     } else if (data) {
       setTournaments(data.map(t => ({
         ...t,
@@ -115,8 +117,8 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
       {tournaments.length === 0 && !isLoading && !showCreateForm && (
         <EmptyState
           icon={Trophy}
-          title="No Tournaments Yet"
-          description="Create your first tournament to get players competing!"
+          title={t('tournaments.noTournaments')}
+          description={t('tournaments.createFirst')}
           variant="compact"
         />
       )}
@@ -128,7 +130,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
           variant="outline"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Create Tournament
+          {t('tournaments.create')}
         </Button>
       )}
 
@@ -151,7 +153,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
                   <DollarSign className="w-5 h-5" />
                   <span className="text-xl">{tournament.prize_pool.toLocaleString()}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Prize Pool</p>
+                <p className="text-xs text-muted-foreground">{t('tournaments.prizePool')}</p>
               </div>
             </div>
           </CardHeader>
@@ -176,7 +178,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
             </div>
 
             <Button className="w-full mt-2" variant="outline">
-              View Details
+              {t('common.viewDetails')}
             </Button>
           </CardContent>
         </Card>
