@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { UserPlus, Hash, Brain, Trophy, Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Step {
   id: number;
   icon: React.ReactNode;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
   color: string;
   glowColor: string;
 }
@@ -15,38 +16,39 @@ const steps: Step[] = [
   {
     id: 1,
     icon: <UserPlus className="h-8 w-8" />,
-    title: "Create Account",
-    description: "Sign up in seconds - completely free to start",
+    titleKey: "landing.howItWorks.step1Title",
+    descKey: "landing.howItWorks.step1Desc",
     color: "from-primary to-primary-glow",
     glowColor: "hsl(190 100% 50% / 0.4)",
   },
   {
     id: 2,
     icon: <Hash className="h-8 w-8" />,
-    title: "Enter Player Tag",
-    description: "Link your Clash Royale account with your player tag",
+    titleKey: "landing.howItWorks.step2Title",
+    descKey: "landing.howItWorks.step2Desc",
     color: "from-gold to-warning",
     glowColor: "hsl(45 100% 55% / 0.4)",
   },
   {
     id: 3,
     icon: <Brain className="h-8 w-8" />,
-    title: "AI Analysis",
-    description: "Our AI analyzes your battles, decks, and playstyle",
+    titleKey: "landing.howItWorks.step3Title",
+    descKey: "landing.howItWorks.step3Desc",
     color: "from-royal to-legendary",
     glowColor: "hsl(270 100% 60% / 0.4)",
   },
   {
     id: 4,
     icon: <Trophy className="h-8 w-8" />,
-    title: "Dominate the Arena",
-    description: "Get personalized coaching to climb the ladder",
+    titleKey: "landing.howItWorks.step4Title",
+    descKey: "landing.howItWorks.step4Desc",
     color: "from-emerald to-success",
     glowColor: "hsl(155 100% 40% / 0.4)",
   },
 ];
 
 export function HowItWorks() {
+  const { t } = useTranslation();
   const [visibleSteps, setVisibleSteps] = useState<Set<number>>(new Set());
   const [activeStep, setActiveStep] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -87,13 +89,13 @@ export function HowItWorks() {
         <div className="text-center mb-20">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 mb-6">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-rajdhani font-semibold text-primary uppercase tracking-wider">Getting Started</span>
+            <span className="text-sm font-rajdhani font-semibold text-primary uppercase tracking-wider">{t("landing.howItWorks.badge")}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 text-embossed">
-            HOW IT WORKS
+            {t("landing.howItWorks.title").toUpperCase()}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get started in minutes and unlock your full potential
+            {t("landing.howItWorks.subtitle")}
           </p>
         </div>
 
@@ -181,10 +183,10 @@ export function HowItWorks() {
 
                     {/* Content */}
                     <h3 className="text-xl font-rajdhani font-bold text-foreground mb-2">
-                      {step.title}
+                      {t(step.titleKey)}
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      {step.description}
+                      {t(step.descKey)}
                     </p>
 
                     {/* Animated particles when active */}
