@@ -16,9 +16,21 @@ import { AdvancedAnalysisTabs } from "./AdvancedAnalysisTabs";
 import { DeckTemplatesLibrary } from "./DeckTemplatesLibrary";
 import { DeckComparison } from "./DeckComparison";
 
+interface SavedDeck {
+  id: string;
+  name: string;
+  cards: ClashRoyaleCard[];
+  avg_elixir?: number;
+  archetype?: string;
+}
+
 interface DeckBuilderProps {
   availableCards: ClashRoyaleCard[];
   userId: string;
+  savedDecks?: SavedDeck[];
+  currentDeck?: ClashRoyaleCard[] | null;
+  userCollection?: string[];
+  playerTrophies?: number;
 }
 
 interface DeckAnalysis {
@@ -51,7 +63,14 @@ interface AdvancedDeckAnalysis {
   matchupPredictions: any[] | null; // Removed - requires battle history
 }
 
-export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
+export function DeckBuilder({ 
+  availableCards, 
+  userId, 
+  savedDecks = [], 
+  currentDeck = null,
+  userCollection = [],
+  playerTrophies = 0
+}: DeckBuilderProps) {
   const { t, i18n } = useTranslation();
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
   const [deckName, setDeckName] = useState("");
@@ -318,27 +337,20 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
         </TabsContent>
 
         <TabsContent value="templates" className="mt-6">
-          <DeckTemplatesLibrary onImportDeck={importDeck} />
+          <DeckTemplatesLibrary 
+            onImportDeck={importDeck} 
+            userCollection={userCollection}
+            playerTrophies={playerTrophies}
+          />
         </TabsContent>
 
         <TabsContent value="compare" className="mt-6">
           {selectedCards.length === 8 ? (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('deck.compare')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8 space-y-2">
-                  <GitCompare className="h-12 w-12 text-muted-foreground mx-auto" />
-                  <p className="text-muted-foreground">
-                    {t('deck.comparisonNote')}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('deck.comparisonSaveFirst')}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <DeckComparison
+              builderDeck={selectedCards}
+              savedDecks={savedDecks}
+              currentDeck={currentDeck}
+            />
           ) : (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
