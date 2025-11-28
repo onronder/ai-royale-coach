@@ -87,13 +87,62 @@
     "losses": "Défaites",
     "winRate": "Taux de Victoire",
     "currentDeck": "Deck Actuel",
+    "currentDeckDesc": "Votre deck de combat actif avec images des cartes",
     "matchHistory": "Historique des Matchs",
+    "matchHistoryDesc": "Cliquez sur un match pour voir l'analyse détaillée",
     "recentMatches": "Matchs Récents",
     "viewAll": "Voir Tout",
     "noMatches": "Aucun match trouvé",
     "victory": "Victoire",
     "defeat": "Défaite",
-    "draw": "Match Nul"
+    "draw": "Match Nul",
+    "signedOut": "Déconnexion réussie",
+    "currentTrophies": "Trophées Actuels",
+    "best": "Meilleur",
+    "arena": "Arène",
+    "last25Battles": "25 derniers combats",
+    "clan": "Clan",
+    "noClan": "Pas de Clan",
+    "joinClan": "Rejoindre un clan",
+    "avgTrophyChange": "Δ Trophées Moy.",
+    "failedLoadBattles": "Échec du Chargement des Combats",
+    "failedLoadBattlesDesc": "Impossible de récupérer votre historique de combats. Réessayez plus tard.",
+    "noBattles": "Pas Encore de Combats",
+    "noBattlesDesc": "Jouez quelques matchs dans Clash Royale et revenez pour suivre vos performances!",
+    "failedLoadDeck": "Échec du chargement du deck",
+    "tabs": {
+      "stats": "Stats",
+      "matches": "Matchs",
+      "deck": "Deck",
+      "builder": "Créateur",
+      "analytics": "Analyses",
+      "cards": "Cartes",
+      "ranks": "Classements",
+      "tourneys": "Tournois",
+      "clans": "Clans"
+    },
+    "aiCoach": {
+      "title": "Résumé du Coach IA",
+      "subtitle": "Votre analyse de performance personnalisée",
+      "generating": "L'IA génère votre analyse...",
+      "error": "Impossible de générer l'analyse. Réessayez plus tard."
+    },
+    "analytics": {
+      "deckStats": "Stats de Decks",
+      "cardMastery": "Maîtrise des Cartes",
+      "achievements": "Succès"
+    },
+    "sync": {
+      "syncing": "Synchronisation avec les serveurs Clash Royale...",
+      "fetchingData": "Récupération de vos dernières données et historique de combats",
+      "success": "Données actualisées avec succès!",
+      "successDesc": "Votre profil et historique de combats sont à jour",
+      "failed": "Échec de l'actualisation",
+      "failedDesc": "Veuillez réessayer dans quelques instants",
+      "collectionSynced": "Collection de cartes synchronisée",
+      "masteryCalculated": "Maîtrise des cartes calculée",
+      "deckStatsTracked": "Stats de decks enregistrées"
+    }
   },
   "deck": {
     "builder": "Constructeur de Decks",
@@ -163,7 +212,8 @@
     "sort": "Trier",
     "refresh": "Actualiser",
     "noData": "Aucune donnée disponible",
-    "comingSoon": "Bientôt Disponible"
+    "comingSoon": "Bientôt Disponible",
+    "unknown": "Inconnu"
   },
   "loading": {
     "playerData": "Récupération des données du joueur...",
