@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
 
 export interface Notification {
   id: string;
@@ -15,9 +14,10 @@ export interface Notification {
   metadata?: any;
 }
 
+/**
+ * Hook for notifications - realtime handled by useUnifiedRealtime
+ */
 export const useNotifications = (playerTag?: string) => {
-  const queryClient = useQueryClient();
-
   // Fetch notifications
   const { data: notifications, isLoading } = useQuery({
     queryKey: ['notifications', playerTag],
@@ -43,27 +43,7 @@ export const useNotifications = (playerTag?: string) => {
     enabled: true,
   });
 
-  // Subscribe to realtime updates
-  useEffect(() => {
-    const channel = supabase
-      .channel('notifications-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications'
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
+  // NOTE: Realtime subscription moved to useUnifiedRealtime for scalability
 
   const unreadCount = notifications?.filter(n => !n.read).length || 0;
 

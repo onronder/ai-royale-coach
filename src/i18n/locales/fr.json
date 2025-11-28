@@ -713,7 +713,10 @@
     "failedToSend": "Échec de l'envoi du message",
     "failedToSendMatchContext": "Échec de l'envoi du contexte du match",
     "signInRequired": "Connectez-vous pour utiliser le Coach IA",
-    "sessionExpired": "Session expirée. Reconnectez-vous."
+    "sessionExpired": "Session expirée. Reconnectez-vous.",
+    "aiQuota": "Requêtes IA Aujourd'hui",
+    "quotaExhausted": "Limite quotidienne IA atteinte. Réinitialisation à minuit.",
+    "quotaLow": "Peu de requêtes IA restantes aujourd'hui."
   },
   "counterDeck": {
     "title": "Constructeur de Deck Contre",

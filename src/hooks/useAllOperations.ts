@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { RealtimeChannel } from "@supabase/supabase-js";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export interface OperationProgress {
@@ -27,23 +26,20 @@ export const operationLabels: Record<string, { label: string; icon: string }> = 
   'achievement_sync': { label: 'Achievement Sync', icon: 'Trophy' },
 };
 
+/**
+ * Hook for all operations - realtime handled by useUnifiedRealtime
+ */
 export function useAllOperations() {
   const { t } = useTranslation();
-  const [operations, setOperations] = useState<OperationProgress[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    let channel: RealtimeChannel;
-
-    const setupSubscription = async () => {
+  // Use React Query for data fetching - realtime invalidation handled by useUnifiedRealtime
+  const { data: operations = [], isLoading } = useQuery({
+    queryKey: ['operations'],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
+      if (!user) return [];
 
-      // Fetch all current operations (running and recent completed/failed)
       const { data, error } = await supabase
         .from("operation_progress")
         .select("*")
@@ -51,52 +47,11 @@ export function useAllOperations() {
         .order("started_at", { ascending: false })
         .limit(20);
 
-      if (!error && data) {
-        setOperations(data as OperationProgress[]);
-      }
-      setIsLoading(false);
-
-      // Subscribe to real-time updates
-      channel = supabase
-        .channel(`all_operations:${user.id}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "operation_progress",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            const newData = payload.new as OperationProgress;
-            
-            setOperations((prev) => {
-              // Remove old entry if exists
-              const filtered = prev.filter((op) => op.id !== newData.id);
-              
-              // Add new entry at the beginning
-              return [newData, ...filtered].slice(0, 20);
-            });
-
-            // Auto-remove completed/failed/cancelled after 30 seconds
-            if (["completed", "failed", "cancelled"].includes(newData.status)) {
-              setTimeout(() => {
-                setOperations((prev) => prev.filter((op) => op.id !== newData.id));
-              }, 30000);
-            }
-          }
-        )
-        .subscribe();
-    };
-
-    setupSubscription();
-
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
-  }, []);
+      if (error) throw error;
+      return (data || []) as OperationProgress[];
+    },
+    refetchInterval: 5000, // Fallback polling for operations
+  });
 
   const cancelMutation = useMutation({
     mutationFn: async (operationId: string) => {

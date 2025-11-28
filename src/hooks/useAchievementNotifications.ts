@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface NewAchievement {
@@ -9,69 +10,65 @@ interface NewAchievement {
   points: number;
 }
 
+/**
+ * Hook for achievement notifications - realtime handled by useUnifiedRealtime
+ */
 export function useAchievementNotifications(playerTag: string) {
   const [newAchievement, setNewAchievement] = useState<NewAchievement | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!playerTag) return;
+  // Watch for new achievement query key invalidation from unified realtime
+  const { data: latestUnlockedAchievement } = useQuery({
+    queryKey: ['new-achievement', playerTag],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
 
-    const checkForNewAchievements = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+      // Get most recently unlocked achievement
+      const { data, error } = await supabase
+        .from('user_achievements')
+        .select('*, achievements(*)')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerTag)
+        .not('unlocked_at', 'is', null)
+        .order('unlocked_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-        // Subscribe to new achievements
-        const channel = supabase
-          .channel(`achievements:${user.id}:${playerTag}`)
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'user_achievements',
-              filter: `user_id=eq.${user.id}`,
-            },
-            async (payload) => {
-              const newRecord = payload.new as any;
-              
-              // Only show notification if achievement was just unlocked
-              if (newRecord.unlocked_at && newRecord.player_tag === playerTag) {
-                // Fetch the achievement details
-                const { data: achievement } = await supabase
-                  .from('achievements')
-                  .select('*')
-                  .eq('id', newRecord.achievement_id)
-                  .single();
+      if (error || !data) return null;
 
-                if (achievement) {
-                  setNewAchievement({
-                    name: achievement.name,
-                    description: achievement.description,
-                    tier: achievement.tier,
-                    icon_name: achievement.icon_name,
-                    points: achievement.points,
-                  });
+      // Check if this achievement was unlocked recently (within last 10 seconds)
+      const unlockedAt = new Date(data.unlocked_at!);
+      const now = new Date();
+      const isRecent = (now.getTime() - unlockedAt.getTime()) < 10000;
 
-                  // Auto-dismiss after 8 seconds
-                  setTimeout(() => {
-                    setNewAchievement(null);
-                  }, 8000);
-                }
-              }
-            }
-          )
-          .subscribe();
-
-        return () => {
-          supabase.removeChannel(channel);
+      if (isRecent && data.achievements) {
+        return {
+          name: data.achievements.name,
+          description: data.achievements.description,
+          tier: data.achievements.tier,
+          icon_name: data.achievements.icon_name,
+          points: data.achievements.points,
         };
-      } catch (error) {
-        console.error('Error setting up achievement notifications:', error);
       }
-    };
 
-    checkForNewAchievements();
-  }, [playerTag]);
+      return null;
+    },
+    enabled: !!playerTag,
+    staleTime: 5000,
+  });
+
+  // Show notification when new achievement is detected
+  useEffect(() => {
+    if (latestUnlockedAchievement && !newAchievement) {
+      setNewAchievement(latestUnlockedAchievement);
+
+      // Auto-dismiss after 8 seconds
+      setTimeout(() => {
+        setNewAchievement(null);
+      }, 8000);
+    }
+  }, [latestUnlockedAchievement]);
 
   return {
     newAchievement,

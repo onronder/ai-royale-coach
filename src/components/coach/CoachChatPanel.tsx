@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
+import { AIQuotaIndicator } from "./AIQuotaIndicator";
+import { useAIQuota } from "@/hooks/useAIQuota";
 
 interface Message {
   id: string;
@@ -86,6 +88,9 @@ export function CoachChatPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [hasAutoSentMatchContext, setHasAutoSentMatchContext] = useState(false);
+  
+  // AI quota tracking
+  const { hasQuotaRemaining, incrementUsage } = useAIQuota();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -272,6 +277,18 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
   const streamChat = async (userMessage: string) => {
     if (!userId) return;
+    
+    // Check and increment AI quota
+    if (!hasQuotaRemaining) {
+      toast.error(t('coach.quotaExhausted'));
+      return;
+    }
+    
+    try {
+      await incrementUsage();
+    } catch (error) {
+      console.error('Failed to increment AI usage:', error);
+    }
 
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/coach-chat`;
     

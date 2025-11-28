@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { CardImage } from "./CardImage";
@@ -11,9 +12,15 @@ interface DeckGridProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProps) {
+// Memoized to prevent re-renders when deck hasn't changed
+export const DeckGrid = memo(function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProps) {
   const { t } = useTranslation();
-  const avgElixir = cards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / cards.length;
+  
+  // Memoize expensive calculation
+  const avgElixir = useMemo(() => 
+    cards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / cards.length,
+    [cards]
+  );
 
   if (cards.length === 0) {
     return (
@@ -57,4 +64,15 @@ export function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProp
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Only re-render if cards array actually changes
+  if (prevProps.cards.length !== nextProps.cards.length) return false;
+  if (prevProps.showElixir !== nextProps.showElixir) return false;
+  if (prevProps.size !== nextProps.size) return false;
+  
+  // Check if card IDs are the same
+  for (let i = 0; i < prevProps.cards.length; i++) {
+    if (prevProps.cards[i].id !== nextProps.cards[i].id) return false;
+  }
+  return true;
+});

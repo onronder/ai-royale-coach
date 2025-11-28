@@ -713,7 +713,10 @@
     "failedToSend": "Erro ao enviar mensagem",
     "failedToSendMatchContext": "Erro ao enviar contexto da partida",
     "signInRequired": "Faça login para usar o Coach IA",
-    "sessionExpired": "Sessão expirada. Faça login novamente."
+    "sessionExpired": "Sessão expirada. Faça login novamente.",
+    "aiQuota": "Solicitações IA Hoje",
+    "quotaExhausted": "Limite diário de IA atingido. Reinicia à meia-noite.",
+    "quotaLow": "Poucas solicitações de IA restantes hoje."
   },
   "counterDeck": {
     "title": "Construtor de Deck Contador",

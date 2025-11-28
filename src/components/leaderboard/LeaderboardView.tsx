@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,70 +30,49 @@ interface LeaderboardViewProps {
   currentPlayerTag?: string;
 }
 
+/**
+ * LeaderboardView - realtime handled by useUnifiedRealtime
+ */
 export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: LeaderboardViewProps) {
   const { t } = useTranslation();
-  const [globalLeaderboard, setGlobalLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [clanLeaderboard, setClanLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   
   const { profiles } = usePlayerProfiles(userId || null);
 
-  useEffect(() => {
-    fetchLeaderboards();
-    
-    // Subscribe to realtime updates
-    const channel = supabase
-      .channel('leaderboard-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'leaderboard_entries'
-        },
-        (payload) => {
-          console.log('Leaderboard update:', payload);
-          fetchLeaderboards();
-        }
-      )
-      .subscribe();
+  // Use React Query - realtime invalidation handled by useUnifiedRealtime
+  const { data: globalLeaderboard = [], isLoading: isLoadingGlobal, refetch: refetchGlobal } = useQuery({
+    queryKey: ['leaderboard', 'global'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leaderboard_entries')
+        .select('*')
+        .order('trophies', { ascending: false })
+        .limit(100);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userClanTag]);
+      if (error) throw error;
+      return (data || []) as LeaderboardEntry[];
+    },
+  });
 
-  const fetchLeaderboards = async () => {
-    setIsLoading(true);
-    
-    // Fetch global top 100
-    const { data: globalData, error: globalError } = await supabase
-      .from('leaderboard_entries')
-      .select('*')
-      .order('trophies', { ascending: false })
-      .limit(100);
-
-    if (!globalError && globalData) {
-      setGlobalLeaderboard(globalData);
-    }
-
-    // Fetch clan leaderboard if user has a clan
-    if (userClanTag) {
-      const { data: clanData, error: clanError } = await supabase
+  const { data: clanLeaderboard = [], isLoading: isLoadingClan } = useQuery({
+    queryKey: ['leaderboard', 'clan', userClanTag],
+    queryFn: async () => {
+      if (!userClanTag) return [];
+      
+      const { data, error } = await supabase
         .from('leaderboard_entries')
         .select('*')
         .eq('clan_tag', userClanTag)
         .order('trophies', { ascending: false })
         .limit(50);
 
-      if (!clanError && clanData) {
-        setClanLeaderboard(clanData);
-      }
-    }
+      if (error) throw error;
+      return (data || []) as LeaderboardEntry[];
+    },
+    enabled: !!userClanTag,
+  });
 
-    setIsLoading(false);
-  };
+  const isLoading = isLoadingGlobal || isLoadingClan;
 
   const syncGlobalLeaderboard = async () => {
     setIsSyncing(true);
@@ -101,7 +81,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       if (error) throw error;
       
       toast.success(t('leaderboard.syncSuccess'));
-      await fetchLeaderboards();
+      await refetchGlobal();
     } catch (error) {
       console.error('Error syncing leaderboard:', error);
       toast.error(t('leaderboard.syncFailed'));
