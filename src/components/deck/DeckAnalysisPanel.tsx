@@ -33,7 +33,7 @@ interface DeckAnalysisPanelProps {
 }
 
 export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: analysis, isLoading, error } = useQuery({
     queryKey: ['deck-analysis', player.tag, i18n.language],
     queryFn: async () => {
@@ -68,17 +68,17 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
             <AlertCircle className="w-8 h-8 text-destructive" />
             {isAuthError ? (
               <>
-                <p className="text-muted-foreground">Sign in to view AI deck analysis</p>
+                <p className="text-muted-foreground">{t('deckAnalysis.signInRequired')}</p>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => window.location.href = '/auth?mode=signin'}
                 >
-                  Sign In
+                  {t('deckAnalysis.signIn')}
                 </Button>
               </>
             ) : (
-              <p className="text-destructive">Failed to analyze deck. Please try again.</p>
+              <p className="text-destructive">{t('deckAnalysis.failedToAnalyze')}</p>
             )}
           </div>
         </CardContent>
@@ -90,8 +90,8 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
     return (
       <EmptyState
         icon={Target}
-        title="No Deck Analysis Available"
-        description="Unable to generate deck analysis at this time. Make sure you have recent battle data and try refreshing."
+        title={t('deckAnalysis.noAnalysisTitle')}
+        description={t('deckAnalysis.noAnalysisDesc')}
         variant="card"
       />
     );
@@ -102,7 +102,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
       {/* Archetype Detection */}
       <Card className="bg-gradient-to-br from-card/80 to-card/40 backdrop-blur border-primary/20 shadow-glow">
         <CardHeader>
-          <CardTitle className="font-rajdhani text-xl">Deck Archetype</CardTitle>
+          <CardTitle className="font-rajdhani text-xl">{t('deckAnalysis.deckArchetype')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <ArchetypeTag 
@@ -119,7 +119,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
         <div className="animate-slide-up" style={{ animationDelay: '100ms' }}>
           <div className="mb-2 flex items-center gap-2">
             <span className="text-xs px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
-              Calculated from your battles
+              {t('deckAnalysis.calculatedFromBattles')}
             </span>
           </div>
           <WinRateChart data={analysis.archetypeWinRates} />
@@ -133,7 +133,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
             <CardTitle className="flex items-center gap-2 font-rajdhani">
               <span className="text-chart-1">✓</span>
               <span className="bg-gradient-to-r from-chart-1 to-chart-1/70 bg-clip-text text-transparent">
-                Strengths
+                {t('deckAnalysis.strengths')}
               </span>
             </CardTitle>
           </CardHeader>
@@ -154,7 +154,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
             <CardTitle className="flex items-center gap-2 font-rajdhani">
               <span className="text-chart-3">✗</span>
               <span className="bg-gradient-to-r from-chart-3 to-chart-3/70 bg-clip-text text-transparent">
-                Weaknesses
+                {t('deckAnalysis.weaknesses')}
               </span>
             </CardTitle>
           </CardHeader>
@@ -179,11 +179,11 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
               <div className="flex items-center gap-2">
                 <span className="text-accent text-xl">💡</span>
                 <span className="bg-gradient-accent bg-clip-text text-transparent">
-                  AI Recommendations
+                  {t('deckAnalysis.aiRecommendations')}
                 </span>
               </div>
               <span className="text-xs px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30 font-normal">
-                AI Generated
+                {t('deckAnalysis.aiGenerated')}
               </span>
             </CardTitle>
           </CardHeader>

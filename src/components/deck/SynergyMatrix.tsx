@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Star, AlertTriangle, Sparkles } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 
 interface CardSynergyPair {
   card1: string;
@@ -24,6 +25,7 @@ interface SynergyMatrixProps {
 }
 
 export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
+  const { t } = useTranslation();
   const [hoveredCell, setHoveredCell] = useState<CardSynergyPair | null>(null);
 
   const getSynergyPair = (card1: string, card2: string): CardSynergyPair | undefined => {
@@ -63,7 +65,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
           <p className={`text-5xl font-bold mb-2 ${getScoreColor(analysis.overallScore)}`}>
             {analysis.overallScore}
           </p>
-          <p className="text-sm text-muted-foreground">Overall Synergy Score</p>
+          <p className="text-sm text-muted-foreground">{t('deckAnalysis.overallSynergyScore')}</p>
           <div className="mt-4 flex justify-center gap-1">
             {renderStars(Math.round(analysis.overallScore / 20))}
           </div>
@@ -76,7 +78,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <Star className="w-4 h-4 text-success" />
-              Top Synergies
+              {t('deckAnalysis.topSynergies')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -93,7 +95,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-warning" />
-              Anti-Synergies
+              {t('deckAnalysis.antiSynergies')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -106,7 +108,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
               ))
             ) : (
               <p className="text-sm text-muted-foreground text-center py-4">
-                No significant anti-synergies detected! 🎉
+                {t('deckAnalysis.noAntiSynergies')}
               </p>
             )}
           </CardContent>
@@ -116,9 +118,9 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
       {/* Synergy Matrix Heatmap */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Card Synergy Matrix</CardTitle>
+          <CardTitle className="text-base">{t('deckAnalysis.cardSynergyMatrix')}</CardTitle>
           <CardDescription>
-            Interactive heatmap showing synergy ratings between all card pairs
+            {t('deckAnalysis.synergyMatrixDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -198,19 +200,19 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
             <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-success"></div>
-                <span>Strong (4.5-5)</span>
+                <span>{t('deckAnalysis.strong')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-chart-2/60"></div>
-                <span>Good (3.5-4.4)</span>
+                <span>{t('deckAnalysis.good')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-muted"></div>
-                <span>Neutral (2.5-3.4)</span>
+                <span>{t('deckAnalysis.neutral')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-destructive/60"></div>
-                <span>Weak (1-2.4)</span>
+                <span>{t('deckAnalysis.weak')}</span>
               </div>
             </div>
           </TooltipProvider>
