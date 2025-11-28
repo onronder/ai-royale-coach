@@ -46,12 +46,12 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
   const getLearningPathPhase = (phaseIndex: number) => {
     const phaseKey = `phase${phaseIndex + 1}`;
     return {
-      name: t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.name`),
-      focus: t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.focus`),
+      name: t(`landing.demo.difficulty.deckData.${deck.learningPathKey}.${phaseKey}.name`),
+      focus: t(`landing.demo.difficulty.deckData.${deck.learningPathKey}.${phaseKey}.focus`),
       tips: [
-        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.0`),
-        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.1`),
-        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.2`),
+        t(`landing.demo.difficulty.deckData.${deck.learningPathKey}.${phaseKey}.tips.0`),
+        t(`landing.demo.difficulty.deckData.${deck.learningPathKey}.${phaseKey}.tips.1`),
+        t(`landing.demo.difficulty.deckData.${deck.learningPathKey}.${phaseKey}.tips.2`),
       ]
     };
   };
