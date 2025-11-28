@@ -10,6 +10,7 @@ const corsHeaders = {
 interface MatchupPredictionRequest {
   deckA: string[];
   deckB: string[];
+  playerTag?: string;
   language?: string;
 }
 
@@ -30,7 +31,18 @@ interface MatchupPredictionResult {
     forDeckA: string[];
     forDeckB: string[];
   };
+  fromCache?: boolean;
 }
+
+// Generate consistent deck hash for caching
+function generateDeckHash(deckA: string[], deckB: string[]): string {
+  const sortedDeckA = [...deckA].sort().join('|');
+  const sortedDeckB = [...deckB].sort().join('|');
+  const [first, second] = [sortedDeckA, sortedDeckB].sort();
+  return `${first}::${second}`;
+}
+
+const CACHE_DURATION_DAYS = 7;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -67,7 +79,7 @@ serve(async (req) => {
       );
     }
 
-    const { deckA, deckB, language = 'en' }: MatchupPredictionRequest = await req.json();
+    const { deckA, deckB, playerTag, language = 'en' }: MatchupPredictionRequest = await req.json();
 
     // Validate decks
     if (!deckA || !deckB || deckA.length !== 8 || deckB.length !== 8) {
@@ -77,7 +89,41 @@ serve(async (req) => {
       );
     }
 
-    console.log('Predicting matchup between decks:', { deckA, deckB, language });
+    // Generate deck hash for caching
+    const deckHash = generateDeckHash(deckA, deckB);
+    console.log('Deck hash for caching:', deckHash);
+
+    // Check cache for existing prediction
+    const cacheExpiry = new Date();
+    cacheExpiry.setDate(cacheExpiry.getDate() - CACHE_DURATION_DAYS);
+
+    const { data: cachedPrediction } = await supabase
+      .from('matchup_predictions')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('deck_hash', deckHash)
+      .eq('language', language)
+      .gte('created_at', cacheExpiry.toISOString())
+      .single();
+
+    if (cachedPrediction) {
+      console.log('Returning cached prediction');
+      const result: MatchupPredictionResult = {
+        deckAWinRate: cachedPrediction.predicted_win_rate_a,
+        deckBWinRate: cachedPrediction.predicted_win_rate_b,
+        confidence: cachedPrediction.confidence,
+        explanation: cachedPrediction.explanation || '',
+        keyMatchups: cachedPrediction.key_matchups || [],
+        tips: cachedPrediction.tips || { forDeckA: [], forDeckB: [] },
+        fromCache: true,
+      };
+      return new Response(
+        JSON.stringify(result),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('No cache found, generating new prediction');
 
     // Language instruction based on user preference
     const languageInstructions: Record<string, string> = {
@@ -177,7 +223,6 @@ Return ONLY valid JSON, no markdown or extra text.`;
       parsedAnalysis = JSON.parse(cleanedText);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);
-      // Fallback response
       parsedAnalysis = {
         deckAWinRate: 50,
         deckBWinRate: 50,
@@ -212,6 +257,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
           ? parsedAnalysis.tips.forDeckB.slice(0, 3) 
           : [],
       },
+      fromCache: false,
     };
 
     // Ensure win rates sum to 100
@@ -220,6 +266,31 @@ Return ONLY valid JSON, no markdown or extra text.`;
       result.deckAWinRate = Math.round((result.deckAWinRate / total) * 100);
       result.deckBWinRate = 100 - result.deckAWinRate;
     }
+
+    // Store prediction in cache
+    const normalizedPlayerTag = playerTag ? (playerTag.startsWith('#') ? playerTag : `#${playerTag}`) : '';
+    
+    await supabase
+      .from('matchup_predictions')
+      .upsert({
+        user_id: user.id,
+        player_tag: normalizedPlayerTag,
+        deck_a_cards: deckA,
+        deck_b_cards: deckB,
+        deck_hash: deckHash,
+        predicted_win_rate_a: result.deckAWinRate,
+        predicted_win_rate_b: result.deckBWinRate,
+        confidence: result.confidence,
+        explanation: result.explanation,
+        key_matchups: result.keyMatchups,
+        tips: result.tips,
+        language: language,
+        created_at: new Date().toISOString(),
+      }, {
+        onConflict: 'user_id,deck_hash,language',
+      });
+
+    console.log('Prediction cached successfully');
 
     return new Response(
       JSON.stringify(result),

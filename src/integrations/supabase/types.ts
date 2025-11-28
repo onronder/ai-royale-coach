@@ -529,6 +529,72 @@ export type Database = {
         }
         Relationships: []
       }
+      matchup_predictions: {
+        Row: {
+          actual_battles_total: number | null
+          actual_losses_deck_a: number | null
+          actual_wins_deck_a: number | null
+          confidence: string
+          created_at: string | null
+          deck_a_cards: Json
+          deck_b_cards: Json
+          deck_hash: string
+          explanation: string | null
+          id: string
+          key_matchups: Json | null
+          language: string | null
+          last_battle_at: string | null
+          player_tag: string
+          predicted_win_rate_a: number
+          predicted_win_rate_b: number
+          prediction_error: number | null
+          tips: Json | null
+          user_id: string
+        }
+        Insert: {
+          actual_battles_total?: number | null
+          actual_losses_deck_a?: number | null
+          actual_wins_deck_a?: number | null
+          confidence: string
+          created_at?: string | null
+          deck_a_cards: Json
+          deck_b_cards: Json
+          deck_hash: string
+          explanation?: string | null
+          id?: string
+          key_matchups?: Json | null
+          language?: string | null
+          last_battle_at?: string | null
+          player_tag: string
+          predicted_win_rate_a: number
+          predicted_win_rate_b: number
+          prediction_error?: number | null
+          tips?: Json | null
+          user_id: string
+        }
+        Update: {
+          actual_battles_total?: number | null
+          actual_losses_deck_a?: number | null
+          actual_wins_deck_a?: number | null
+          confidence?: string
+          created_at?: string | null
+          deck_a_cards?: Json
+          deck_b_cards?: Json
+          deck_hash?: string
+          explanation?: string | null
+          id?: string
+          key_matchups?: Json | null
+          language?: string | null
+          last_battle_at?: string | null
+          player_tag?: string
+          predicted_win_rate_a?: number
+          predicted_win_rate_b?: number
+          prediction_error?: number | null
+          tips?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,14 +8,16 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { CardImage } from "@/components/cards/CardImage";
 import { DeckSelector } from "./DeckSelector";
+import { PredictionAccuracyChart } from "./PredictionAccuracyChart";
 import { AIQuotaIndicator } from "@/components/coach/AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
+import { usePredictionHistory } from "@/hooks/usePredictionHistory";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { 
   ArrowRight, TrendingUp, TrendingDown, Minus, Zap, ChevronDown, ChevronUp, 
-  Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info
+  Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info, History, Database
 } from "lucide-react";
 
 interface SavedDeck {
@@ -48,15 +51,19 @@ interface MatchupPrediction {
     forDeckA: string[];
     forDeckB: string[];
   };
+  fromCache?: boolean;
 }
 
 export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckComparisonProps) {
   const { t, i18n } = useTranslation();
+  const { playerTag } = useParams<{ playerTag: string }>();
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
+  const { data: predictionHistory, isLoading: isLoadingHistory } = usePredictionHistory(playerTag || null);
   
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [comparisonCards, setComparisonCards] = useState<ClashRoyaleCard[]>([]);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [showPredictionHistory, setShowPredictionHistory] = useState(false);
   
   // AI Matchup prediction state
   const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
@@ -127,6 +134,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
         body: { 
           deckA: deckANames, 
           deckB: deckBNames,
+          playerTag: playerTag,
           language: i18n.language 
         }
       });
@@ -135,7 +143,10 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       if (!data) throw new Error('No prediction returned');
 
       setMatchupPrediction(data);
-      await incrementUsage();
+      // Only increment usage if it was a fresh prediction (not cached)
+      if (!data.fromCache) {
+        await incrementUsage();
+      }
       setShowMatchupAnalysis(true);
 
     } catch (err) {
@@ -365,12 +376,18 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                           />
                         </div>
 
-                        {/* Confidence Badge */}
-                        <div className="flex items-center gap-2">
+                        {/* Confidence & Cache Badge */}
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm text-muted-foreground">{t('deckComparison.confidence')}:</span>
                           <Badge variant={getConfidenceBadgeVariant(matchupPrediction.confidence)}>
                             {t(`deckComparison.confidence${matchupPrediction.confidence.charAt(0).toUpperCase() + matchupPrediction.confidence.slice(1)}`)}
                           </Badge>
+                          {matchupPrediction.fromCache && (
+                            <Badge variant="outline" className="text-xs flex items-center gap-1">
+                              <Database className="h-3 w-3" />
+                              {t('predictionHistory.cachedResult')}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Explanation */}
@@ -432,6 +449,33 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                     )}
                   </div>
                 )}
+
+                {/* Prediction History Toggle */}
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPredictionHistory(!showPredictionHistory)}
+                    className="w-full justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <History className="h-4 w-4" />
+                      {showPredictionHistory 
+                        ? t('predictionHistory.hideHistory') 
+                        : t('predictionHistory.viewHistory')}
+                    </span>
+                    {showPredictionHistory ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                  
+                  {showPredictionHistory && (
+                    <div className="mt-4">
+                      <PredictionAccuracyChart 
+                        predictions={predictionHistory || []} 
+                        isLoading={isLoadingHistory}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 

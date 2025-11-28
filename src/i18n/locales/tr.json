@@ -1354,6 +1354,27 @@
     "signInRequired": "AI özelliklerini kullanmak için giriş yapın",
     "predictionFailed": "Eşleşme tahmini başarısız"
   },
+  "predictionHistory": {
+    "title": "Tahmin Doğruluk Geçmişi",
+    "description": "AI tahminlerinin gerçek savaş sonuçlarınızla ne kadar doğru olduğunu takip edin",
+    "viewHistory": "Tahmin Geçmişini Görüntüle",
+    "hideHistory": "Geçmişi Gizle",
+    "predictedWinRate": "Tahmin",
+    "actualWinRate": "Gerçek",
+    "battlesTracked": "Savaşlar",
+    "accuracy": "Doğruluk",
+    "accuracyScore": "Doğruluk Puanı",
+    "highAccuracy": "Yüksek Doğruluk",
+    "mediumAccuracy": "Orta Doğruluk",
+    "lowAccuracy": "Düşük Doğruluk",
+    "noPredictions": "Henüz tahmin yok. Başlamak için AI Eşleşme Tahminini deneyin!",
+    "noBattlesYet": "Doğruluk takibini görmek için bazı savaşlar yapın",
+    "recentPredictions": "Son Tahminler",
+    "cachedResult": "Önbellekten",
+    "freshPrediction": "Yeni Tahmin",
+    "fromCache": "Önbellekten",
+    "lastUpdated": "Son güncelleme"
+  },
   "progress": {
     "activeTasks": "Aktif Görevler",
     "noActiveOperations": "Aktif işlem yok",
