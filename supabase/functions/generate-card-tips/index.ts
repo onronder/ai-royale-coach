@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,14 +11,24 @@ serve(async (req) => {
   }
 
   try {
-    const { cardName, winRate, timesUsed, bestPartners, worstMatchups } = await req.json();
+    const { cardName, winRate, timesUsed, bestPartners, worstMatchups, language = 'en' } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    const prompt = `You are a Clash Royale coach providing personalized card mastery tips.
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
+
+    const prompt = `You are a Clash Royale coach providing personalized card mastery tips. ${languageInstruction}
 
 Card: ${cardName}
 Times Used: ${timesUsed}
@@ -44,7 +53,7 @@ Keep tips practical and specific to this card's performance data.`;
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a helpful Clash Royale coach providing concise, actionable advice.' },
+          { role: 'system', content: `You are a helpful Clash Royale coach providing concise, actionable advice. ${languageInstruction}` },
           { role: 'user', content: prompt }
         ],
       }),

@@ -968,5 +968,39 @@
     "keyCards": "Cartes Clés",
     "strategy": "Stratégie",
     "matchupDisclaimer": "Les prédictions de confrontation sont basées sur les interactions typiques des cartes et les tendances meta. Les résultats réels dépendent de la compétence, du timing et de l'adaptation."
+  },
+  "cardMastery": {
+    "used": "Utilisé {{count}} fois",
+    "winRate": "Taux de Victoire",
+    "avgCrowns": "Couronnes Moy.",
+    "hideDetails": "Masquer les Détails",
+    "showDetails": "Afficher les Détails",
+    "bestPartners": "Meilleurs Partenaires",
+    "strugglesAgainst": "Difficile Contre",
+    "personalizedTips": "Conseils Personnalisés",
+    "generate": "Générer",
+    "generatingTips": "Génération des conseils...",
+    "clickGenerate": "Cliquez sur Générer pour des conseils IA",
+    "calculated": "Maîtrise des Cartes Calculée",
+    "calculatedDesc": "Vos niveaux de maîtrise des cartes ont été mis à jour",
+    "generatingFor": "Génération des conseils IA pour {{card}}...",
+    "tipsGenerated": "Conseils IA générés pour {{card}}!",
+    "tipsFailed": "Échec de la génération des conseils pour {{card}}",
+    "calculationFailed": "Échec du calcul de la maîtrise des cartes"
+  },
+  "cardReplacements": {
+    "title": "Suggestions de Remplacement",
+    "getSuggestions": "Obtenez des suggestions de remplacement IA pour {{card}}",
+    "findReplacements": "Trouver des Remplacements",
+    "optionsFor": "Options de Remplacement pour {{card}}",
+    "useThis": "Utiliser Celui-ci",
+    "synergy": "Synergie",
+    "meta": "Meta",
+    "replaced": "Remplacé {{oldCard}} par {{newCard}}",
+    "fetchFailed": "Échec de la récupération des suggestions de remplacement"
+  },
+  "common": {
+    "aiPowered": "Avec IA",
+    "elixir": "Élixir"
   }
 }

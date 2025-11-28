@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ interface CardMasteryCardProps {
 }
 
 export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const generateTips = useGenerateCardTips();
 
@@ -40,7 +42,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <h3 className="font-heading text-foreground mb-1">{card.card_name}</h3>
-            <p className="text-xs text-muted-foreground">Used {card.times_used} times</p>
+            <p className="text-xs text-muted-foreground">{t('cardMastery.used', { count: card.times_used })}</p>
           </div>
           <MasteryLevelBadge level={card.mastery_level} />
         </div>
@@ -56,13 +58,13 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="bg-card-secondary rounded p-2 text-center">
-            <div className="text-muted-foreground text-xs">Win Rate</div>
+            <div className="text-muted-foreground text-xs">{t('cardMastery.winRate')}</div>
             <div className={`font-semibold ${card.win_rate >= 0.5 ? 'text-accent' : 'text-destructive'}`}>
               {(card.win_rate * 100).toFixed(1)}%
             </div>
           </div>
           <div className="bg-card-secondary rounded p-2 text-center">
-            <div className="text-muted-foreground text-xs">Avg Crowns</div>
+            <div className="text-muted-foreground text-xs">{t('cardMastery.avgCrowns')}</div>
             <div className="font-semibold text-foreground">
               {card.crown_avg.toFixed(1)}
             </div>
@@ -76,12 +78,12 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
               {isOpen ? (
                 <>
                   <ChevronUp className="h-4 w-4 mr-2" />
-                  Hide Details
+                  {t('cardMastery.hideDetails')}
                 </>
               ) : (
                 <>
                   <ChevronDown className="h-4 w-4 mr-2" />
-                  Show Details
+                  {t('cardMastery.showDetails')}
                 </>
               )}
             </Button>
@@ -91,7 +93,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
             {/* Best Partners */}
             {card.best_partner_cards.length > 0 && (
               <div>
-                <div className="text-xs text-muted-foreground mb-2">Best Partners</div>
+                <div className="text-xs text-muted-foreground mb-2">{t('cardMastery.bestPartners')}</div>
                 <div className="flex flex-wrap gap-1">
                   {card.best_partner_cards.map(partner => (
                     <Badge key={partner} variant="secondary" className="text-xs">
@@ -105,7 +107,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
             {/* Tough Matchups */}
             {card.worst_matchup_cards.length > 0 && (
               <div>
-                <div className="text-xs text-muted-foreground mb-2">Struggles Against</div>
+                <div className="text-xs text-muted-foreground mb-2">{t('cardMastery.strugglesAgainst')}</div>
                 <div className="flex flex-wrap gap-1">
                   {card.worst_matchup_cards.map(matchup => (
                     <Badge key={matchup} variant="destructive" className="text-xs">
@@ -119,7 +121,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
             {/* AI Tips */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <div className="text-xs text-muted-foreground">Personalized Tips</div>
+                <div className="text-xs text-muted-foreground">{t('cardMastery.personalizedTips')}</div>
                 {!card.ai_tips && (
                   <Button 
                     variant="ghost" 
@@ -129,7 +131,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
                     className="h-6 text-xs"
                   >
                     <Sparkles className="h-3 w-3 mr-1" />
-                    Generate
+                    {t('cardMastery.generate')}
                   </Button>
                 )}
               </div>
@@ -138,9 +140,9 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
                   {card.ai_tips}
                 </div>
               ) : generateTips.isPending ? (
-                <div className="text-xs text-muted-foreground italic">Generating tips...</div>
+                <div className="text-xs text-muted-foreground italic">{t('cardMastery.generatingTips')}</div>
               ) : (
-                <div className="text-xs text-muted-foreground italic">Click Generate for AI tips</div>
+                <div className="text-xs text-muted-foreground italic">{t('cardMastery.clickGenerate')}</div>
               )}
             </div>
           </CollapsibleContent>

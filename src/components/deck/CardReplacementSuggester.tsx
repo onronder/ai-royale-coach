@@ -29,7 +29,7 @@ export function CardReplacementSuggester({
   userCollection,
   onReplace,
 }: CardReplacementSuggesterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,6 +41,7 @@ export function CardReplacementSuggester({
           currentDeck,
           targetCard,
           availableCards: userCollection,
+          language: i18n.language,
         },
       });
 
