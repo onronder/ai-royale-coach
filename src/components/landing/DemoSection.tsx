@@ -1,4 +1,5 @@
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
+import { useTranslation } from 'react-i18next';
 import { AnimatedCounter } from './AnimatedCounter';
 import { Card } from '@/components/ui/card';
 import { Sparkles, TrendingUp, Zap, GitCompare, Network, Activity, GraduationCap, Shield } from 'lucide-react';
@@ -18,6 +19,7 @@ import { AchievementBadges } from './AchievementBadges';
 import { DeckRecommendationEngine } from './DeckRecommendationEngine';
 
 export function DemoSection() {
+  const { t } = useTranslation();
   const { ref, isVisible } = useScrollAnimation(0.2);
   const navigate = useNavigate();
   const sectionId = "demo-section";
@@ -91,10 +93,10 @@ export function DemoSection() {
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            See AI Royale in Action
+            {t("landing.demo.title")}
           </h2>
           <p className="text-muted-foreground text-lg">
-            Experience intelligent deck analysis across different archetypes
+            {t("landing.demo.subtitle")}
           </p>
           <div className="mt-4 bg-warning/10 border-2 border-warning/30 rounded-lg p-4 max-w-3xl mx-auto shadow-lg">
             <div className="flex items-start gap-3">
@@ -102,9 +104,9 @@ export function DemoSection() {
                 <Sparkles className="h-5 w-5 text-warning" />
               </div>
               <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-warning mb-1">Demo Data</p>
+                <p className="text-sm font-semibold text-warning mb-1">{t("landing.demo.demoDataTitle")}</p>
                 <p className="text-xs text-muted-foreground">
-                  The analysis below shows example decks with sample statistics. <span className="font-semibold">Real analysis is calculated from your actual battle history after signup</span> - including win rates, trophy changes, deck performance, and personalized AI coaching based on your games.
+                  {t("landing.demo.demoDataDesc")}
                 </p>
               </div>
             </div>
@@ -112,7 +114,7 @@ export function DemoSection() {
         </div>
 
         <Tabs defaultValue={sampleDecks[0].id} className="w-full" onValueChange={(value) => {
-          if (['compare', 'synergy', 'meta', 'difficulty', 'counters'].includes(value)) return; // Handle special tabs separately
+          if (['compare', 'synergy', 'meta', 'difficulty', 'counters'].includes(value)) return;
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
@@ -127,13 +129,13 @@ export function DemoSection() {
               {deck.stats.archetype}
             </TabsTrigger>
           ))}
-          <TabsTrigger value="compare" className="text-[10px] md:text-xs px-2">Compare</TabsTrigger>
-          <TabsTrigger value="synergy" className="text-[10px] md:text-xs px-2">Synergy</TabsTrigger>
-          <TabsTrigger value="meta" className="text-[10px] md:text-xs px-2">Meta</TabsTrigger>
-          <TabsTrigger value="difficulty" className="text-[10px] md:text-xs px-2">Skills</TabsTrigger>
-          <TabsTrigger value="counters" className="text-[10px] md:text-xs px-2">Counters</TabsTrigger>
-          <TabsTrigger value="achievements" className="text-[10px] md:text-xs px-2">Badges</TabsTrigger>
-          <TabsTrigger value="recommend" className="text-[10px] md:text-xs px-2">Find Deck</TabsTrigger>
+          <TabsTrigger value="compare" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.compare")}</TabsTrigger>
+          <TabsTrigger value="synergy" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.synergy")}</TabsTrigger>
+          <TabsTrigger value="meta" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.meta")}</TabsTrigger>
+          <TabsTrigger value="difficulty" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.skills")}</TabsTrigger>
+          <TabsTrigger value="counters" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.counters")}</TabsTrigger>
+          <TabsTrigger value="achievements" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.badges")}</TabsTrigger>
+          <TabsTrigger value="recommend" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.findDeck")}</TabsTrigger>
         </TabsList>
 
           {/* Deck Content */}
@@ -176,11 +178,11 @@ export function DemoSection() {
                   }`} style={{ transitionDelay: '200ms' }}>
                     <div className="flex items-center gap-2 mb-4">
                       <TrendingUp className={`h-5 w-5 text-${deck.color}`} />
-                      <h4 className="font-rajdhani font-bold text-lg text-foreground">Performance Stats</h4>
+                      <h4 className="font-rajdhani font-bold text-lg text-foreground">{t("landing.demo.performanceStats")}</h4>
                     </div>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Win Rate</span>
+                        <span className="text-muted-foreground">{t("landing.demo.winRate")}</span>
                         <span className={`text-2xl text-${deck.color}`}>
                           {isVisible && selectedDeck.id === deck.id && (
                             <AnimatedCounter end={deck.stats.winRate} decimals={1} suffix="%" delay={200} />
@@ -188,7 +190,7 @@ export function DemoSection() {
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Avg Elixir</span>
+                        <span className="text-muted-foreground">{t("landing.demo.avgElixir")}</span>
                         <span className="text-2xl text-accent">
                           {isVisible && selectedDeck.id === deck.id && (
                             <AnimatedCounter end={deck.stats.avgElixir} decimals={1} delay={400} />
@@ -196,7 +198,7 @@ export function DemoSection() {
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">Deck Complexity</span>
+                        <span className="text-muted-foreground">{t("landing.demo.deckComplexity")}</span>
                         <span className={`text-2xl text-${deck.color}`}>
                           {isVisible && selectedDeck.id === deck.id && (
                             <AnimatedCounter end={deck.stats.synergyScore} decimals={1} suffix="/10" delay={600} />
@@ -204,7 +206,7 @@ export function DemoSection() {
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground/70 italic mt-2">
-                        * Demo metrics for illustration
+                        {t("landing.demo.demoMetrics")}
                       </p>
                     </div>
                   </Card>
@@ -215,7 +217,7 @@ export function DemoSection() {
                   }`} style={{ transitionDelay: '400ms' }}>
                     <div className="flex items-center gap-2 mb-3">
                       <Sparkles className={`h-5 w-5 text-${deck.color} animate-pulse-glow`} />
-                      <h4 className="font-rajdhani font-bold text-foreground">AI Coach Insight</h4>
+                      <h4 className="font-rajdhani font-bold text-foreground">{t("landing.demo.aiCoachInsight")}</h4>
                     </div>
                     <p className="text-muted-foreground leading-relaxed min-h-[100px]">
                       {selectedDeck.id === deck.id && typedText}
@@ -231,7 +233,7 @@ export function DemoSection() {
                     size="lg"
                   >
                     <Zap className="mr-2 h-5 w-5" />
-                    Try with YOUR Deck
+                    {t("landing.demo.tryWithYourDeck")}
                   </Button>
                 </div>
               </div>
@@ -243,10 +245,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Skill Requirements & Learning Paths
+                  {t("landing.demo.skillsTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Understand what it takes to master each archetype
+                  {t("landing.demo.skillsSubtitle")}
                 </p>
               </div>
               <div className="grid lg:grid-cols-2 gap-6">
@@ -262,10 +264,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Counter-Deck Analysis
+                  {t("landing.demo.countersTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Identify threats and leverage favorable matchups
+                  {t("landing.demo.countersSubtitle")}
                 </p>
               </div>
               <div className="grid lg:grid-cols-2 gap-6">
@@ -281,10 +283,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Achievement Badges & Milestones
+                  {t("landing.demo.badgesTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Track your progress and mastery achievements
+                  {t("landing.demo.badgesSubtitle")}
                 </p>
               </div>
               <div className="grid lg:grid-cols-2 gap-6">
@@ -300,10 +302,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Personalized Deck Finder
+                  {t("landing.demo.findDeckTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Find the perfect deck based on your skill level and playstyle preferences
+                  {t("landing.demo.findDeckSubtitle")}
                 </p>
               </div>
               <DeckRecommendationEngine />
@@ -315,10 +317,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Card Synergy Analysis
+                  {t("landing.demo.synergyTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Discover powerful card combinations within each archetype
+                  {t("landing.demo.synergySubtitle")}
                 </p>
               </div>
               <div className="grid lg:grid-cols-2 gap-6">
@@ -334,10 +336,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Meta Evolution Timeline
+                  {t("landing.demo.metaTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Track how deck performance has changed across patches
+                  {t("landing.demo.metaSubtitle")}
                 </p>
               </div>
               <MetaTimeline decks={sampleDecks} isVisible={isVisible} />
@@ -349,10 +351,10 @@ export function DemoSection() {
             <div className="space-y-6">
               <div className="text-center mb-8">
                 <h3 className="text-2xl md:text-3xl font-bold font-rajdhani mb-2 text-foreground">
-                  Deck-vs-Deck Comparison
+                  {t("landing.demo.compareTitle")}
                 </h3>
                 <p className="text-muted-foreground">
-                  Analyze head-to-head matchups and tactical advantages
+                  {t("landing.demo.compareSubtitle")}
                 </p>
               </div>
               <DeckComparisonView isVisible={isVisible} />
