@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface PlayerTagSelectorProps {
 }
 
 export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [newTag, setNewTag] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -73,7 +75,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
       <div className="flex justify-center">
         <Badge variant="outline" className="border-gold/40 text-gold bg-gold/10 px-4 py-1.5">
           <Crown className="h-3.5 w-3.5 mr-1.5" />
-          {profiles.length}/3 accounts linked
+          {t('selectPlayer.accountsLinked', { count: profiles.length })}
         </Badge>
       </div>
 
@@ -86,7 +88,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
             className="gap-2"
           >
             <GitCompare className="h-4 w-4" />
-            {showComparison ? "Hide Comparison" : "Compare Accounts"}
+            {showComparison ? t('selectPlayer.hideComparison') : t('selectPlayer.compareAccounts')}
           </Button>
         </div>
       )}
@@ -114,8 +116,8 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
         <Card variant="arena" className="p-8">
           <EmptyState
             icon={Users}
-            title="No Player Tags Linked"
-            description="Add your Clash Royale player tag to get started with personalized analytics and coaching."
+            title={t('selectPlayer.noTagsTitle')}
+            description={t('selectPlayer.noTagsDescription')}
             variant="compact"
           />
         </Card>
@@ -128,17 +130,17 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
             {isAddingNew ? (
               <form onSubmit={handleAddTag} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="newTag" className="text-sm font-semibold">Player Tag</Label>
+                  <Label htmlFor="newTag" className="text-sm font-semibold">{t('selectPlayer.playerTagLabel')}</Label>
                   <Input
                     id="newTag"
-                    placeholder="Enter tag (e.g., #ABC123)"
+                    placeholder={t('selectPlayer.tagPlaceholder')}
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
                     className="font-mono h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                     disabled={isAdding}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Find your tag in Clash Royale → Profile → Below your name
+                    {t('selectPlayer.tagHelp')}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -146,12 +148,12 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
                     {isAdding ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Adding...
+                        {t('selectPlayer.adding')}
                       </>
                     ) : (
                       <>
                         <Plus className="mr-2 h-4 w-4" />
-                        Add Tag
+                        {t('selectPlayer.addTag')}
                       </>
                     )}
                   </Button>
@@ -161,7 +163,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
                     onClick={() => setIsAddingNew(false)}
                     disabled={isAdding}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </form>
@@ -172,7 +174,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
                 onClick={() => setIsAddingNew(true)}
               >
                 <Plus className="mr-2 h-5 w-5 text-gold" />
-                <span className="text-gold font-rajdhani font-semibold">Add Another Player Tag</span>
+                <span className="text-gold font-rajdhani font-semibold">{t('selectPlayer.addAnotherTag')}</span>
               </Button>
             )}
           </CardContent>
@@ -181,7 +183,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
 
       {!canAddMore && (
         <p className="text-center text-sm text-muted-foreground">
-          Maximum of 3 player tags reached. Remove one to add a new one.
+          {t('selectPlayer.maxTagsReached')}
         </p>
       )}
     </div>
@@ -197,6 +199,7 @@ interface PlayerTagCardProps {
 }
 
 function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index }: PlayerTagCardProps) {
+  const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
   
@@ -264,7 +267,7 @@ function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index }: Playe
               {profile.last_seen_at && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
                   <Clock className="h-3 w-3" />
-                  <span>Last used {formatDistanceToNow(new Date(profile.last_seen_at), { addSuffix: true })}</span>
+                  <span>{t('selectPlayer.lastUsed')} {formatDistanceToNow(new Date(profile.last_seen_at), { addSuffix: true })}</span>
                 </div>
               )}
             </div>
