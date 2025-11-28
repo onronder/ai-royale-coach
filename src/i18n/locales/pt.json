@@ -172,6 +172,33 @@
               "golemBeatdown": ["Nunca dê valor para Lightning", "Pressione faixa oposta agressivamente", "Guarde Fireball para Night Witch"],
               "logBait": ["Log na Princess, Fireball no Goblin Gang", "Mantenha pressão para prevenir ciclo de Rocket", "Preveja posicionamentos de Goblin Barrel"],
               "xbowSiege": ["Pressione mesma faixa do X-Bow para prevenir locks", "Fireball nas construções defensivas", "Cicle mais rápido do que podem defender"]
+            },
+            "phase1": {
+              "name": "Fundamentos (Semana 1-2)",
+              "focus": "Domine as mecânicas básicas de ciclo",
+              "tips": [
+                "Aprenda o posicionamento ideal de Cannon vs diferentes condições de vitória",
+                "Pratique o posicionamento de Musketeer para defesa",
+                "Acostume-se a ciclar rapidamente com cartas de 1 elixir"
+              ]
+            },
+            "phase2": {
+              "name": "Intermediário (Semana 3-4)",
+              "focus": "Timing e valor de feitiços",
+              "tips": [
+                "Aprenda quando comprometer Hog Rider vs defender",
+                "Pratique prever posicionamentos de feitiços",
+                "Domine as técnicas de kite com Ice Golem"
+              ]
+            },
+            "phase3": {
+              "name": "Avançado (Semana 5+)",
+              "focus": "Execução perfeita sob pressão",
+              "tips": [
+                "Desenvolva memória muscular para defesas perfeitas",
+                "Aprenda todas as estratégias específicas de cada matchup",
+                "Domine a contagem e rastreamento de elixir"
+              ]
             }
           },
           "golemBeatdown": {
@@ -188,6 +215,33 @@
               "hogCycle": ["Ignore o dano chip deles", "Construa grandes pushes no elixir duplo", "Lightning nas estruturas defensivas"],
               "logBait": ["Baby Dragon countera os swarms deles", "Lightning na Inferno Tower", "Pushe através do chip de Rocket deles"],
               "xbowSiege": ["Tanqueie dano do X-Bow com Golem", "Lightning no Tesla + Archers", "Eles não podem parar o dano de morte"]
+            },
+            "phase1": {
+              "name": "Fundamentos (Semana 1-2)",
+              "focus": "Entendendo os fundamentos do beatdown",
+              "tips": [
+                "Aprenda quando iniciar um push de Golem com segurança",
+                "Pratique construir tropas de suporte atrás do Golem",
+                "Entenda as sinergias de dano de morte"
+              ]
+            },
+            "phase2": {
+              "name": "Intermediário (Semana 3-4)",
+              "focus": "Otimização de push",
+              "tips": [
+                "Domine o timing de Lightning em construções defensivas",
+                "Aprenda a usar Tornado para ativação da Torre do Rei",
+                "Pratique gerenciar desvantagem de elixir"
+              ]
+            },
+            "phase3": {
+              "name": "Avançado (Semana 5+)",
+              "focus": "Adaptação à pressão",
+              "tips": [
+                "Aprenda a defender pressão na faixa oposta",
+                "Domine o baiting de cartas defensivas chave",
+                "Aperfeiçoe seu timing de push no elixir duplo"
+              ]
             }
           },
           "logBait": {
@@ -204,6 +258,33 @@
               "hogCycle": ["Inferno Tower countera Hog perfeitamente", "Baite o Log deles antes do Goblin Barrel", "Ciclo de Rocket para vitórias no overtime"],
               "golemBeatdown": ["Inferno Tower é sua única resposta", "Rocket nas tropas de suporte", "Barrel na faixa oposta para chip"],
               "xbowSiege": ["Knight tanqueia tiros do X-Bow", "Rocket no setup defensivo deles", "Princess força reações"]
+            },
+            "phase1": {
+              "name": "Fundamentos (Semana 1-2)",
+              "focus": "Básicos do bait de feitiços",
+              "tips": [
+                "Aprenda o posicionamento de Princess atrás da Torre do Rei",
+                "Pratique variações de posicionamento de Goblin Barrel",
+                "Entenda quais cartas baitam quais feitiços"
+              ]
+            },
+            "phase2": {
+              "name": "Intermediário (Semana 3-4)",
+              "focus": "Maestria em previsão",
+              "tips": [
+                "Aprenda a prever o uso de feitiços do oponente",
+                "Domine o ciclo de Rocket para dano chip",
+                "Pratique baitar Log antes do Barrel"
+              ]
+            },
+            "phase3": {
+              "name": "Avançado (Semana 5+)",
+              "focus": "Jogos mentais e adaptação",
+              "tips": [
+                "Desenvolva leituras dos padrões do oponente",
+                "Aprenda todos os pontos de previsão de Goblin Barrel",
+                "Domine o posicionamento defensivo de Inferno Tower"
+              ]
             }
           },
           "xbowSiege": {
@@ -220,6 +301,33 @@
               "hogCycle": ["Defenda com Tesla, não comprometa X-Bow", "Fireball + Log para dano chip", "Out-cicle o Fireball deles"],
               "golemBeatdown": ["Pressione faixa oposta constantemente", "Nunca deixe construir pushes", "Fireball nas tropas de suporte"],
               "logBait": ["Archers para Princess", "Log nos swarms deles", "Fireball + Log no Goblin Gang"]
+            },
+            "phase1": {
+              "name": "Fundamentos (Semana 1-2)",
+              "focus": "Posicionamento e proteção de X-Bow",
+              "tips": [
+                "Aprenda posições seguras de posicionamento de X-Bow",
+                "Pratique posicionamento de Tesla para atrair tanques",
+                "Entenda quando ir ofensivo vs defensivo"
+              ]
+            },
+            "phase2": {
+              "name": "Intermediário (Semana 3-4)",
+              "focus": "Conhecimento de matchups",
+              "tips": [
+                "Aprenda quais matchups favorecem X-Bow ofensivo",
+                "Domine X-Bow defensivo em matchups ruins",
+                "Pratique estratégias de dano chip com feitiços"
+              ]
+            },
+            "phase3": {
+              "name": "Avançado (Semana 5+)",
+              "focus": "Execução perfeita",
+              "tips": [
+                "Desenvolva compreensão profunda de matchups",
+                "Domine posicionamentos defensivos perfeitos",
+                "Aprenda a adaptar o estilo de jogo no meio da partida"
+              ]
             }
           }
         }
