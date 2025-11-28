@@ -96,7 +96,7 @@ const Index = () => {
             {/* Player Count Badge */}
             <div className="flex items-center justify-center gap-3 text-gold">
               <Trophy className="h-5 w-5 trophy-shimmer" />
-              <span className="font-rajdhani font-bold text-lg">Join 10,000+ competitive players</span>
+              <span className="font-rajdhani font-bold text-lg">{t("landing.hero.playerCount")}</span>
               <Trophy className="h-5 w-5 trophy-shimmer" />
             </div>
 
@@ -108,8 +108,8 @@ const Index = () => {
                 </CardTitle>
                 <CardDescription className="text-base">
                   {user 
-                    ? "Select an account or add a new player tag" 
-                    : "Enter your player tag to unlock AI insights"
+                    ? t("landing.hero.manageAccounts")
+                    : t("landing.hero.enterTag")
                   }
                 </CardDescription>
               </CardHeader>
@@ -123,10 +123,10 @@ const Index = () => {
                       className="w-full"
                     >
                       <Users className="mr-2 h-5 w-5" />
-                      Select Account
+                      {t("landing.hero.selectAccount")}
                     </Button>
                     <p className="text-sm text-muted-foreground text-center">
-                      Manage up to 3 player accounts
+                      {t("landing.hero.manageAccounts")}
                     </p>
                   </div>
                 ) : (
@@ -147,7 +147,7 @@ const Index = () => {
                         className="px-8"
                       >
                         <Zap className="mr-2 h-5 w-5" />
-                        Analyze
+                        {t("landing.hero.analyze")}
                       </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">
