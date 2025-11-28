@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +76,7 @@ export function CoachChatPanel({
   cardCollection,
   matchContext
 }: CoachChatPanelProps) {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -298,6 +300,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           cardMastery,
           achievements,
           cardCollection,
+          language: i18n.language,
         }),
       });
 

@@ -1,0 +1,173 @@
+{
+  "nav": {
+    "signIn": "Entrar",
+    "getStarted": "Começar",
+    "signOut": "Sair"
+  },
+  "landing": {
+    "hero": {
+      "title": "Domine a Arena com",
+      "titleHighlight": "Estratégia com IA",
+      "subtitle": "Seu treinador pessoal de Clash Royale com IA avançada. Obtenha análise de decks em tempo real, insights de batalhas e suba de ranking mais rápido.",
+      "cta": "Comece a Vencer",
+      "secondaryCta": "Veja Como Funciona"
+    },
+    "features": {
+      "title": "Tudo que Você Precisa para",
+      "titleHighlight": "Dominar",
+      "smartAnalysis": "Análise Inteligente",
+      "smartAnalysisDesc": "Análise de batalhas e previsões de confrontos com IA",
+      "deckOptimization": "Otimização de Decks",
+      "deckOptimizationDesc": "Monte decks vencedores com sugestões de troca de cartas",
+      "performanceTracking": "Acompanhamento de Desempenho",
+      "performanceTrackingDesc": "Acompanhe seu progresso com estatísticas detalhadas",
+      "aiPowered": "Powered by IA",
+      "aiPoweredDesc": "Chat com treinador pessoal para conselhos estratégicos"
+    },
+    "howItWorks": {
+      "title": "Como Funciona",
+      "step1Title": "Criar Conta",
+      "step1Desc": "Cadastre-se em segundos",
+      "step2Title": "Digite sua Tag",
+      "step2Desc": "Vincule sua conta do Clash Royale",
+      "step3Title": "Análise IA",
+      "step3Desc": "Receba insights personalizados",
+      "step4Title": "Domine a Arena",
+      "step4Desc": "Suba no ranking"
+    },
+    "demo": {
+      "title": "Veja o AI Royale em Ação",
+      "subtitle": "Explore nossa demo interativa mostrando análise real de decks"
+    },
+    "cta": {
+      "title": "Pronto para Subir?",
+      "subtitle": "Junte-se a milhares de jogadores melhorando com AI Royale",
+      "button": "Começar Grátis"
+    }
+  },
+  "auth": {
+    "signIn": "Entrar",
+    "signUp": "Cadastrar",
+    "email": "Email",
+    "password": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem conta?",
+    "hasAccount": "Já tem conta?",
+    "signInButton": "Entrar",
+    "signUpButton": "Criar Conta",
+    "orContinueWith": "Ou continue com",
+    "errors": {
+      "invalidCredentials": "Email ou senha inválidos",
+      "emailInUse": "Email já está em uso"
+    }
+  },
+  "dashboard": {
+    "title": "Painel",
+    "welcome": "Bem-vindo de volta",
+    "playerStats": "Estatísticas do Jogador",
+    "trophies": "Troféus",
+    "bestTrophies": "Melhores Troféus",
+    "wins": "Vitórias",
+    "losses": "Derrotas",
+    "winRate": "Taxa de Vitória",
+    "currentDeck": "Deck Atual",
+    "matchHistory": "Histórico de Partidas",
+    "recentMatches": "Partidas Recentes",
+    "viewAll": "Ver Tudo",
+    "noMatches": "Nenhuma partida encontrada",
+    "victory": "Vitória",
+    "defeat": "Derrota",
+    "draw": "Empate"
+  },
+  "deck": {
+    "builder": "Construtor de Decks",
+    "analysis": "Análise de Deck",
+    "avgElixir": "Elixir Médio",
+    "cards": "Cartas",
+    "synergy": "Sinergia",
+    "matchups": "Confrontos",
+    "templates": "Modelos",
+    "save": "Salvar Deck",
+    "clear": "Limpar",
+    "noCards": "Nenhuma carta selecionada"
+  },
+  "coach": {
+    "title": "Treinador IA",
+    "placeholder": "Pergunte qualquer coisa ao seu treinador...",
+    "thinking": "Pensando...",
+    "recentChats": "Chats Recentes",
+    "newChat": "Novo Chat",
+    "suggestions": {
+      "improve": "Como posso melhorar meu deck?",
+      "counter": "O que countera meu oponente?",
+      "tips": "Me dê dicas para esse confronto"
+    }
+  },
+  "matches": {
+    "details": "Detalhes da Partida",
+    "battleTime": "Tempo de Batalha",
+    "trophyChange": "Mudança de Troféus",
+    "crowns": "Coroas",
+    "yourDeck": "Seu Deck",
+    "opponentDeck": "Deck do Oponente",
+    "analysis": "Análise da Partida",
+    "keyMoments": "Momentos Chave",
+    "counterDeck": "Deck Contra",
+    "discussWithCoach": "Discutir com Treinador IA"
+  },
+  "cards": {
+    "collection": "Coleção de Cartas",
+    "mastery": "Maestria de Cartas",
+    "level": "Nível",
+    "count": "Quantidade",
+    "progress": "Progresso"
+  },
+  "leaderboard": {
+    "title": "Classificação",
+    "global": "Rankings Globais",
+    "yourRankings": "Seus Rankings",
+    "rank": "Posição",
+    "player": "Jogador",
+    "clan": "Clã",
+    "sync": "Sincronizar Rankings"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "retry": "Tentar Novamente",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "refresh": "Atualizar",
+    "noData": "Nenhum dado disponível",
+    "comingSoon": "Em Breve"
+  },
+  "loading": {
+    "playerData": "Buscando dados do jogador...",
+    "battles": "Carregando histórico de batalhas...",
+    "deckAnalysis": "Analisando sinergias do deck...",
+    "matchAnalysis": "Analisando detalhes da partida...",
+    "cardCollection": "Carregando coleção de cartas...",
+    "leaderboard": "Buscando rankings...",
+    "aiThinking": "A IA está pensando...",
+    "calculating": "Calculando estatísticas..."
+  },
+  "empty": {
+    "matches": "Nenhuma partida encontrada",
+    "matchesDesc": "Jogue algumas batalhas para ver seu histórico aqui",
+    "decks": "Nenhum deck salvo",
+    "decksDesc": "Crie e salve seu primeiro deck",
+    "cards": "Nenhuma carta rastreada",
+    "cardsDesc": "Sincronize sua coleção para ver suas cartas"
+  },
+  "footer": {
+    "tagline": "Eleve seu jogo."
+  }
+}

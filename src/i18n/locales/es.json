@@ -1,0 +1,173 @@
+{
+  "nav": {
+    "signIn": "Iniciar Sesión",
+    "getStarted": "Comenzar",
+    "signOut": "Cerrar Sesión"
+  },
+  "landing": {
+    "hero": {
+      "title": "Domina la Arena con",
+      "titleHighlight": "Estrategia Impulsada por IA",
+      "subtitle": "Tu entrenador personal de Clash Royale impulsado por IA avanzada. Obtén análisis de mazos en tiempo real, información de batallas y sube de rango más rápido.",
+      "cta": "Empieza a Ganar",
+      "secondaryCta": "Ver Cómo Funciona"
+    },
+    "features": {
+      "title": "Todo lo que Necesitas para",
+      "titleHighlight": "Dominar",
+      "smartAnalysis": "Análisis Inteligente",
+      "smartAnalysisDesc": "Análisis de batallas y predicciones de enfrentamientos con IA",
+      "deckOptimization": "Optimización de Mazos",
+      "deckOptimizationDesc": "Construye mazos ganadores con sugerencias de cambio de cartas",
+      "performanceTracking": "Seguimiento de Rendimiento",
+      "performanceTrackingDesc": "Sigue tu progreso con estadísticas detalladas",
+      "aiPowered": "Impulsado por IA",
+      "aiPoweredDesc": "Chat con entrenador personal para consejos estratégicos"
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona",
+      "step1Title": "Crear Cuenta",
+      "step1Desc": "Regístrate en segundos",
+      "step2Title": "Ingresa tu Tag",
+      "step2Desc": "Vincula tu cuenta de Clash Royale",
+      "step3Title": "Análisis IA",
+      "step3Desc": "Obtén información personalizada",
+      "step4Title": "Domina la Arena",
+      "step4Desc": "Sube en el ranking"
+    },
+    "demo": {
+      "title": "Mira AI Royale en Acción",
+      "subtitle": "Explora nuestra demo interactiva mostrando análisis de mazos reales"
+    },
+    "cta": {
+      "title": "¿Listo para Subir?",
+      "subtitle": "Únete a miles de jugadores mejorando con AI Royale",
+      "button": "Comenzar Gratis"
+    }
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signUp": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "signInButton": "Iniciar Sesión",
+    "signUpButton": "Crear Cuenta",
+    "orContinueWith": "O continuar con",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "emailInUse": "El correo ya está en uso"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Bienvenido de nuevo",
+    "playerStats": "Estadísticas del Jugador",
+    "trophies": "Trofeos",
+    "bestTrophies": "Mejores Trofeos",
+    "wins": "Victorias",
+    "losses": "Derrotas",
+    "winRate": "Tasa de Victoria",
+    "currentDeck": "Mazo Actual",
+    "matchHistory": "Historial de Partidas",
+    "recentMatches": "Partidas Recientes",
+    "viewAll": "Ver Todo",
+    "noMatches": "No se encontraron partidas",
+    "victory": "Victoria",
+    "defeat": "Derrota",
+    "draw": "Empate"
+  },
+  "deck": {
+    "builder": "Constructor de Mazos",
+    "analysis": "Análisis de Mazo",
+    "avgElixir": "Elixir Promedio",
+    "cards": "Cartas",
+    "synergy": "Sinergia",
+    "matchups": "Enfrentamientos",
+    "templates": "Plantillas",
+    "save": "Guardar Mazo",
+    "clear": "Limpiar",
+    "noCards": "No hay cartas seleccionadas"
+  },
+  "coach": {
+    "title": "Entrenador IA",
+    "placeholder": "Pregunta lo que quieras a tu entrenador...",
+    "thinking": "Pensando...",
+    "recentChats": "Chats Recientes",
+    "newChat": "Nuevo Chat",
+    "suggestions": {
+      "improve": "¿Cómo puedo mejorar mi mazo?",
+      "counter": "¿Qué contrarresta a mi oponente?",
+      "tips": "Dame consejos para este enfrentamiento"
+    }
+  },
+  "matches": {
+    "details": "Detalles de la Partida",
+    "battleTime": "Tiempo de Batalla",
+    "trophyChange": "Cambio de Trofeos",
+    "crowns": "Coronas",
+    "yourDeck": "Tu Mazo",
+    "opponentDeck": "Mazo del Oponente",
+    "analysis": "Análisis de la Partida",
+    "keyMoments": "Momentos Clave",
+    "counterDeck": "Mazo Contra",
+    "discussWithCoach": "Discutir con Entrenador IA"
+  },
+  "cards": {
+    "collection": "Colección de Cartas",
+    "mastery": "Maestría de Cartas",
+    "level": "Nivel",
+    "count": "Cantidad",
+    "progress": "Progreso"
+  },
+  "leaderboard": {
+    "title": "Clasificación",
+    "global": "Rankings Globales",
+    "yourRankings": "Tus Rankings",
+    "rank": "Posición",
+    "player": "Jugador",
+    "clan": "Clan",
+    "sync": "Sincronizar Rankings"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "refresh": "Actualizar",
+    "noData": "No hay datos disponibles",
+    "comingSoon": "Próximamente"
+  },
+  "loading": {
+    "playerData": "Obteniendo datos del jugador...",
+    "battles": "Cargando historial de batallas...",
+    "deckAnalysis": "Analizando sinergias del mazo...",
+    "matchAnalysis": "Analizando detalles de la partida...",
+    "cardCollection": "Cargando colección de cartas...",
+    "leaderboard": "Obteniendo rankings...",
+    "aiThinking": "La IA está pensando...",
+    "calculating": "Calculando estadísticas..."
+  },
+  "empty": {
+    "matches": "No se encontraron partidas",
+    "matchesDesc": "Juega algunas batallas para ver tu historial aquí",
+    "decks": "No hay mazos guardados",
+    "decksDesc": "Crea y guarda tu primer mazo",
+    "cards": "No hay cartas registradas",
+    "cardsDesc": "Sincroniza tu colección para ver tus cartas"
+  },
+  "footer": {
+    "tagline": "Eleva tu juego."
+  }
+}

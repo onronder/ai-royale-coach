@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [playerTag, setPlayerTag] = useState("");
   const [user, setUser] = useState<any>(null);
 
@@ -72,7 +74,7 @@ const Index = () => {
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-gold/20 via-gold/10 to-gold/20 border border-gold/40 shadow-gold/30 shadow-lg animate-golden-pulse">
               <Crown className="h-5 w-5 text-gold animate-trophy-shine" />
               <span className="text-sm font-rajdhani font-bold text-gold uppercase tracking-wider">
-                AI-Powered Coaching Platform
+                {t("landing.hero.titleHighlight")}
               </span>
               <Sparkles className="h-4 w-4 text-gold" />
             </div>
@@ -80,15 +82,15 @@ const Index = () => {
             {/* Main Heading with Gold Outline Effect */}
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold font-rajdhani tracking-tight">
               <span className="bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent inline-block animate-float drop-shadow-[0_0_30px_hsl(190,100%,50%,0.5)]">
-                DOMINATE
+                {t("landing.hero.title").split(' ')[0]}
               </span>
               <br />
-              <span className="text-foreground text-embossed">THE ARENA</span>
+              <span className="text-foreground text-embossed">{t("landing.hero.title").split(' ').slice(1).join(' ')}</span>
             </h1>
             
             {/* Subheading */}
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              AI-powered analysis, strategic insights, and personalized coaching to take your Clash Royale game to the next level
+              {t("landing.hero.subtitle")}
             </p>
 
             {/* Player Count Badge */}
@@ -102,7 +104,7 @@ const Index = () => {
             <Card variant="golden" className="max-w-xl mx-auto golden-shine">
               <CardHeader>
                 <CardTitle className="text-2xl">
-                  {user ? "Welcome Back, Champion!" : "Enter the Arena"}
+                  {user ? t("dashboard.welcome") + "!" : t("landing.hero.cta")}
                 </CardTitle>
                 <CardDescription className="text-base">
                   {user 
@@ -149,13 +151,13 @@ const Index = () => {
                       </Button>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      New here?{" "}
+                      {t("auth.noAccount")}{" "}
                       <button
                         type="button"
                         onClick={() => navigate("/auth")}
                         className="text-gold hover:text-gold/80 hover:underline font-semibold transition-colors"
                       >
-                        Create your free account
+                        {t("auth.signUpButton")}
                       </button>
                     </p>
                   </form>

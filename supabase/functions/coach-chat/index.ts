@@ -41,10 +41,23 @@ serve(async (req) => {
       );
     }
 
-    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection } = await req.json();
+    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language = 'en' } = await req.json();
+
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     // Build comprehensive context-aware system prompt
     let systemPrompt = `You are an expert Clash Royale AI coach with full access to the player's profile. You provide strategic advice, deck recommendations, and gameplay tips based on their complete game data.
+
+LANGUAGE INSTRUCTION: ${languageInstruction}
 
 IMPORTANT RULES:
 - Never provide advice on cheating, hacking, or exploiting bugs

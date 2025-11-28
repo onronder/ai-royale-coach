@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Crown, LogOut, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
 import { GlobalProgressCenter } from "./GlobalProgressCenter";
+import { LanguageSelector } from "./LanguageSelector";
 
 interface NavbarProps {
   user?: any;
@@ -13,11 +15,12 @@ interface NavbarProps {
 
 export function Navbar({ user, showAuth = true }: NavbarProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
-    toast.success("Signed out successfully");
+    toast.success(t("nav.signOut"));
   };
 
   return (
@@ -34,6 +37,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
         </Link>
 
         <div className="flex items-center gap-2">
+          <LanguageSelector />
           {user && (
             <>
               <GlobalProgressCenter />
@@ -44,7 +48,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
             user ? (
               <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
+                {t("nav.signOut")}
               </Button>
             ) : (
               <div className="flex items-center gap-2">
@@ -54,7 +58,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
                   onClick={() => navigate("/auth?mode=signin")}
                   className="border-border/50"
                 >
-                  Sign In
+                  {t("nav.signIn")}
                 </Button>
                 <Button 
                   variant="golden" 
@@ -62,7 +66,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
                   onClick={() => navigate("/auth?mode=signup")}
                 >
                   <Sparkles className="mr-2 h-4 w-4" />
-                  Get Started
+                  {t("nav.getStarted")}
                 </Button>
               </div>
             )
