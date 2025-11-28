@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { 
   Search, Swords, BarChart3, Bot, 
   ChevronDown, Zap, Target, TrendingUp, 
@@ -11,14 +12,14 @@ import { cn } from "@/lib/utils";
 
 interface Feature {
   icon: React.ReactNode;
-  title: string;
-  description: string;
+  titleKey: string;
+  descKey: string;
 }
 
 interface FeatureCategory {
   id: string;
-  title: string;
-  subtitle: string;
+  titleKey: string;
+  subtitleKey: string;
   icon: React.ReactNode;
   gradient: string;
   borderColor: string;
@@ -30,79 +31,80 @@ interface FeatureCategory {
 const featureCategories: FeatureCategory[] = [
   {
     id: "analysis",
-    title: "Smart Analysis",
-    subtitle: "Deep AI insights from every battle",
+    titleKey: "landing.features.smartAnalysis",
+    subtitleKey: "landing.features.smartAnalysisDesc",
     icon: <Search className="h-7 w-7" />,
     gradient: "from-primary via-primary-glow to-primary",
     borderColor: "border-primary/30",
     glowColor: "hsl(190 100% 50%)",
     particleColor: "hsl(190 100% 50% / 0.4)",
     features: [
-      { icon: <Activity className="h-5 w-5" />, title: "Battle History Analysis", description: "Deep dive into your recent matches with AI-powered insights" },
-      { icon: <Crosshair className="h-5 w-5" />, title: "Match Replay Insights", description: "AI identifies key moments and turning points" },
-      { icon: <Shield className="h-5 w-5" />, title: "Counter-Deck Analysis", description: "Know exactly what beats your opponent's deck" },
-      { icon: <Target className="h-5 w-5" />, title: "Matchup Predictions", description: "Win probability against common archetypes" },
-      { icon: <GitCompare className="h-5 w-5" />, title: "Deck Comparison Tool", description: "Side-by-side analysis of any two decks" },
-      { icon: <Users className="h-5 w-5" />, title: "Clan & Tournament Stats", description: "Track performance in clan wars and tournaments" },
+      { icon: <Activity className="h-5 w-5" />, titleKey: "landing.features.analysis.battleHistory", descKey: "landing.features.analysis.battleHistoryDesc" },
+      { icon: <Crosshair className="h-5 w-5" />, titleKey: "landing.features.analysis.matchReplay", descKey: "landing.features.analysis.matchReplayDesc" },
+      { icon: <Shield className="h-5 w-5" />, titleKey: "landing.features.analysis.counterDeck", descKey: "landing.features.analysis.counterDeckDesc" },
+      { icon: <Target className="h-5 w-5" />, titleKey: "landing.features.analysis.matchupPredictions", descKey: "landing.features.analysis.matchupPredictionsDesc" },
+      { icon: <GitCompare className="h-5 w-5" />, titleKey: "landing.features.analysis.deckComparison", descKey: "landing.features.analysis.deckComparisonDesc" },
+      { icon: <Users className="h-5 w-5" />, titleKey: "landing.features.analysis.clanStats", descKey: "landing.features.analysis.clanStatsDesc" },
     ]
   },
   {
     id: "deck",
-    title: "Deck Optimisation",
-    subtitle: "Build the perfect deck for your playstyle",
+    titleKey: "landing.features.deckOptimization",
+    subtitleKey: "landing.features.deckOptimizationDesc",
     icon: <Swords className="h-7 w-7" />,
     gradient: "from-gold via-warning to-gold",
     borderColor: "border-gold/30",
     glowColor: "hsl(45 100% 55%)",
     particleColor: "hsl(45 100% 55% / 0.4)",
     features: [
-      { icon: <Layers className="h-5 w-5" />, title: "Visual Deck Builder", description: "Drag-and-drop deck creation interface" },
-      { icon: <Zap className="h-5 w-5" />, title: "Card Replacement Suggester", description: "Find optimal card swaps to improve your deck" },
-      { icon: <Crown className="h-5 w-5" />, title: "Pre-built Meta Templates", description: "Top ladder decks ready to use instantly" },
-      { icon: <Network className="h-5 w-5" />, title: "Synergy Matrix", description: "Discover powerful card combinations" },
-      { icon: <Star className="h-5 w-5" />, title: "Elixir Trade Analysis", description: "Master elixir efficiency and value" },
-      { icon: <TrendingUp className="h-5 w-5" />, title: "Meta Trend Analysis", description: "Stay ahead of meta shifts and balance changes" },
+      { icon: <Layers className="h-5 w-5" />, titleKey: "landing.features.deck.visualBuilder", descKey: "landing.features.deck.visualBuilderDesc" },
+      { icon: <Zap className="h-5 w-5" />, titleKey: "landing.features.deck.cardReplacement", descKey: "landing.features.deck.cardReplacementDesc" },
+      { icon: <Crown className="h-5 w-5" />, titleKey: "landing.features.deck.metaTemplates", descKey: "landing.features.deck.metaTemplatesDesc" },
+      { icon: <Network className="h-5 w-5" />, titleKey: "landing.features.deck.synergyMatrix", descKey: "landing.features.deck.synergyMatrixDesc" },
+      { icon: <Star className="h-5 w-5" />, titleKey: "landing.features.deck.elixirTrade", descKey: "landing.features.deck.elixirTradeDesc" },
+      { icon: <TrendingUp className="h-5 w-5" />, titleKey: "landing.features.deck.metaTrend", descKey: "landing.features.deck.metaTrendDesc" },
     ]
   },
   {
     id: "tracking",
-    title: "Performance Tracking",
-    subtitle: "Monitor your progress over time",
+    titleKey: "landing.features.performanceTracking",
+    subtitleKey: "landing.features.performanceTrackingDesc",
     icon: <BarChart3 className="h-7 w-7" />,
     gradient: "from-emerald via-success to-emerald",
     borderColor: "border-emerald/30",
     glowColor: "hsl(155 100% 40%)",
     particleColor: "hsl(155 100% 40% / 0.4)",
     features: [
-      { icon: <Trophy className="h-5 w-5" />, title: "Trophy Progress Charts", description: "Visualize your climb through the arenas" },
-      { icon: <BarChart3 className="h-5 w-5" />, title: "Win Rate Analytics", description: "Track performance trends over days and weeks" },
-      { icon: <Activity className="h-5 w-5" />, title: "Deck Usage Statistics", description: "See which decks work best for you" },
-      { icon: <Layers className="h-5 w-5" />, title: "Card Collection Tracker", description: "Manage your inventory and upgrades" },
-      { icon: <Star className="h-5 w-5" />, title: "Card Mastery System", description: "Track individual card performance and mastery" },
-      { icon: <Medal className="h-5 w-5" />, title: "Achievement Badges", description: "Unlock skill milestones and show off progress" },
+      { icon: <Trophy className="h-5 w-5" />, titleKey: "landing.features.tracking.trophyProgress", descKey: "landing.features.tracking.trophyProgressDesc" },
+      { icon: <BarChart3 className="h-5 w-5" />, titleKey: "landing.features.tracking.winRateAnalytics", descKey: "landing.features.tracking.winRateAnalyticsDesc" },
+      { icon: <Activity className="h-5 w-5" />, titleKey: "landing.features.tracking.deckUsage", descKey: "landing.features.tracking.deckUsageDesc" },
+      { icon: <Layers className="h-5 w-5" />, titleKey: "landing.features.tracking.cardCollection", descKey: "landing.features.tracking.cardCollectionDesc" },
+      { icon: <Star className="h-5 w-5" />, titleKey: "landing.features.tracking.cardMastery", descKey: "landing.features.tracking.cardMasteryDesc" },
+      { icon: <Medal className="h-5 w-5" />, titleKey: "landing.features.tracking.achievementBadges", descKey: "landing.features.tracking.achievementBadgesDesc" },
     ]
   },
   {
     id: "ai",
-    title: "AI Powered",
-    subtitle: "Your personal Clash Royale coach",
+    titleKey: "landing.features.aiPowered",
+    subtitleKey: "landing.features.aiPoweredDesc",
     icon: <Bot className="h-7 w-7" />,
     gradient: "from-royal via-legendary to-royal",
     borderColor: "border-royal/30",
     glowColor: "hsl(270 100% 60%)",
     particleColor: "hsl(270 100% 60% / 0.4)",
     features: [
-      { icon: <MessageSquare className="h-5 w-5" />, title: "AI Coach Chat", description: "Ask anything about strategy and get expert advice" },
-      { icon: <Brain className="h-5 w-5" />, title: "Personalized Analysis", description: "Insights tailored to your specific playstyle" },
-      { icon: <GraduationCap className="h-5 w-5" />, title: "Match-by-Match Coaching", description: "Learn from every game with detailed breakdowns" },
-      { icon: <Target className="h-5 w-5" />, title: "Strategic Recommendations", description: "AI suggests improvements based on your data" },
-      { icon: <Shield className="h-5 w-5" />, title: "Counter-Strategy Generation", description: "Build decks designed to beat specific opponents" },
-      { icon: <Clock className="h-5 w-5" />, title: "Real-time Tips", description: "Context-aware suggestions during gameplay" },
+      { icon: <MessageSquare className="h-5 w-5" />, titleKey: "landing.features.ai.coachChat", descKey: "landing.features.ai.coachChatDesc" },
+      { icon: <Brain className="h-5 w-5" />, titleKey: "landing.features.ai.personalizedAnalysis", descKey: "landing.features.ai.personalizedAnalysisDesc" },
+      { icon: <GraduationCap className="h-5 w-5" />, titleKey: "landing.features.ai.matchCoaching", descKey: "landing.features.ai.matchCoachingDesc" },
+      { icon: <Target className="h-5 w-5" />, titleKey: "landing.features.ai.strategicRecommendations", descKey: "landing.features.ai.strategicRecommendationsDesc" },
+      { icon: <Shield className="h-5 w-5" />, titleKey: "landing.features.ai.counterStrategy", descKey: "landing.features.ai.counterStrategyDesc" },
+      { icon: <Clock className="h-5 w-5" />, titleKey: "landing.features.ai.realtimeTips", descKey: "landing.features.ai.realtimeTipsDesc" },
     ]
   }
 ];
 
 export function FeatureShowcase() {
+  const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [visibleCards, setVisibleCards] = useState<Set<string>>(new Set());
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -155,13 +157,13 @@ export function FeatureShowcase() {
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/20 border border-gold/30 mb-6">
             <Sparkles className="h-4 w-4 text-gold" />
-            <span className="text-sm font-rajdhani font-semibold text-gold uppercase tracking-wider">Features</span>
+            <span className="text-sm font-rajdhani font-semibold text-gold uppercase tracking-wider">{t("landing.features.badge")}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold font-rajdhani mb-4 text-embossed">
-            EVERYTHING YOU NEED
+            {t("landing.features.title").toUpperCase()}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Click on any category to explore our powerful features
+            {t("landing.features.subtitle")}
           </p>
         </div>
 
@@ -242,10 +244,10 @@ export function FeatureShowcase() {
                     </div>
                     <div>
                       <h3 className="text-xl font-rajdhani font-bold text-foreground group-hover:text-foreground/90 transition-colors">
-                        {category.title}
+                        {t(category.titleKey)}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {category.subtitle}
+                        {t(category.subtitleKey)}
                       </p>
                     </div>
                   </div>
@@ -273,7 +275,7 @@ export function FeatureShowcase() {
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {category.features.map((feature, featureIndex) => (
                           <div
-                            key={feature.title}
+                            key={feature.titleKey}
                             className={cn(
                               "p-4 rounded-xl bg-background/50 border border-border/50 transition-all duration-300",
                               "hover:border-border hover:-translate-y-1 hover:shadow-lg",
@@ -293,10 +295,10 @@ export function FeatureShowcase() {
                               </div>
                             </div>
                             <h4 className="font-rajdhani font-bold text-foreground mb-1">
-                              {feature.title}
+                              {t(feature.titleKey)}
                             </h4>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                              {feature.description}
+                              {t(feature.descKey)}
                             </p>
                           </div>
                         ))}
