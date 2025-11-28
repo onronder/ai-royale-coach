@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,22 +23,33 @@ interface TrophyWinRatePredictorProps {
 }
 
 export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyWinRatePredictorProps) {
+  const { t, i18n } = useTranslation();
   const [targetTrophies, setTargetTrophies] = useState(currentTrophies);
   const [predictions, setPredictions] = useState<WinRatePrediction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastPredictedLanguage, setLastPredictedLanguage] = useState<string | null>(null);
+
+  // Clear predictions when language changes
+  useEffect(() => {
+    if (lastPredictedLanguage && lastPredictedLanguage !== i18n.language && predictions.length > 0) {
+      setPredictions([]);
+      toast.info(t('trophyPredictor.languageChanged'));
+    }
+  }, [i18n.language, lastPredictedLanguage, predictions.length, t]);
 
   const fetchPredictions = async () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("predict-deck-performance", {
-        body: { deck, targetTrophies },
+        body: { deck, targetTrophies, language: i18n.language },
       });
 
       if (error) throw error;
       setPredictions(data.predictions);
+      setLastPredictedLanguage(i18n.language);
     } catch (error) {
       console.error("Error fetching predictions:", error);
-      toast.error("Failed to fetch win rate predictions");
+      toast.error(t('trophyPredictor.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +68,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   };
 
   if (isLoading) {
-    return <DataLoader context="analytics" variant="card" customMessage="Predicting win rates across trophy ranges..." />;
+    return <DataLoader context="analytics" variant="card" customMessage={t('trophyPredictor.predicting')} />;
   }
 
   return (
@@ -65,13 +77,13 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-warning" />
-            Trophy Win Rate Predictor
+            {t('trophyPredictor.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Target Trophy Range</span>
+              <span className="text-sm font-medium">{t('trophyPredictor.targetRange')}</span>
               <Badge variant="secondary">{targetTrophies} 🏆</Badge>
             </div>
             <Slider
@@ -90,7 +102,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
 
           <Button onClick={fetchPredictions} className="w-full gap-2">
             <Target className="h-4 w-4" />
-            Predict Performance
+            {t('trophyPredictor.predict')}
           </Button>
 
           {predictions.length > 0 && (
@@ -105,7 +117,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
                         {pred.is_sweet_spot && (
                           <Badge variant="default" className="gap-1">
                             <TrendingUp className="h-3 w-3" />
-                            Sweet Spot
+                            {t('trophyPredictor.sweetSpot')}
                           </Badge>
                         )}
                       </div>
@@ -115,7 +127,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
                     </div>
 
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Confidence</span>
+                      <span className="text-muted-foreground">{t('trophyPredictor.confidence')}</span>
                       <span className={getConfidenceColor(pred.confidence)}>
                         {pred.confidence}%
                       </span>
@@ -123,7 +135,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
 
                     {pred.tips.length > 0 && (
                       <div className="space-y-1 pt-2 border-t">
-                        <p className="text-xs font-medium text-muted-foreground">Arena Tips:</p>
+                        <p className="text-xs font-medium text-muted-foreground">{t('trophyPredictor.arenaTips')}:</p>
                         <ul className="space-y-1">
                           {pred.tips.map((tip, tipIdx) => (
                             <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">

@@ -858,6 +858,23 @@
     "invalidTag": "Geçersiz oyuncu etiketi",
     "playerNotFound": "Oyuncu bulunamadı"
   },
+  "matchDetail": {
+    "victory": "Zafer",
+    "defeat": "Yenilgi",
+    "description": "{{opponent}} karşısındaki maçınızın detaylı analizi",
+    "crowns": "Kupa",
+    "trophies": "Kupa",
+    "arena": "Arena",
+    "yourDeck": "Desten",
+    "opponentDeck": "{{name}} Destesi",
+    "aiAnalysis": "AI Maç Analizi",
+    "deckMatchup": "Deste Eşleşmesi",
+    "whatHappened": "Ne Oldu",
+    "recommendations": "Öneriler",
+    "discussWithCoach": "AI Koç ile Tartış",
+    "signInRequired": "Maçlarınızın detaylı AI analizini görmek için giriş yapın",
+    "signIn": "Kilidini Açmak için Giriş Yap"
+  },
   "footer": {
     "tagline": "AI ile arena hakimiyeti"
   },
@@ -998,7 +1015,31 @@
     "synergy": "Sinerji",
     "meta": "Meta",
     "replaced": "{{oldCard}} yerine {{newCard}} konuldu",
-    "fetchFailed": "Değiştirme önerileri alınamadı"
+    "fetchFailed": "Değiştirme önerileri alınamadı",
+    "languageChanged": "Dil değişti. Yeni dilinizde öneri almak için tıklayın.",
+    "finding": "Kart değiştirme önerileri bulunuyor..."
+  },
+  "metaAnalysis": {
+    "title": "Turnuva Meta Analizi",
+    "subtitle": "Güncel arketip trendleri ve kazanma oranları",
+    "analyzing": "Turnuva meta trendleri analiz ediliyor...",
+    "winRate": "Kazanma Oranı",
+    "usage": "Kullanım",
+    "change7d": "7 Günlük Değişim",
+    "hotTrend": "Popüler Trend",
+    "coldTrend": "Soğuk Trend",
+    "stableTrend": "Sabit Trend"
+  },
+  "trophyPredictor": {
+    "title": "Kupa Kazanma Oranı Tahmincisi",
+    "targetRange": "Hedef Kupa Aralığı",
+    "predict": "Performans Tahmin Et",
+    "predicting": "Kupa aralıkları için kazanma oranları tahmin ediliyor...",
+    "sweetSpot": "İdeal Nokta",
+    "confidence": "Güven",
+    "arenaTips": "Arena İpuçları",
+    "fetchFailed": "Kazanma oranı tahminleri alınamadı",
+    "languageChanged": "Dil değişti. Yeni dilinizde analiz almak için tahmin düğmesine tıklayın."
   },
   "common": {
     "aiPowered": "AI Destekli",

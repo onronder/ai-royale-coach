@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,10 +16,14 @@ interface MetaTrend {
 }
 
 export function MetaAnalysis() {
+  const { t, i18n } = useTranslation();
+  
   const { data: metaData, isLoading } = useQuery({
-    queryKey: ["meta-trends"],
+    queryKey: ["meta-trends", i18n.language],
     queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("analyze-meta-trends");
+      const { data, error } = await supabase.functions.invoke("analyze-meta-trends", {
+        body: { language: i18n.language }
+      });
       if (error) throw error;
       return data.trends as MetaTrend[];
     },
@@ -26,7 +31,7 @@ export function MetaAnalysis() {
   });
 
   if (isLoading) {
-    return <DataLoader context="analytics" variant="card" customMessage="Analyzing tournament meta trends..." />;
+    return <DataLoader context="analytics" variant="card" customMessage={t('metaAnalysis.analyzing')} />;
   }
 
   const getTrendIcon = (trend: string) => {
@@ -45,11 +50,19 @@ export function MetaAnalysis() {
     }
   };
 
+  const getTrendLabel = (trend: string) => {
+    switch (trend) {
+      case "hot": return t('metaAnalysis.hotTrend');
+      case "cold": return t('metaAnalysis.coldTrend');
+      default: return t('metaAnalysis.stableTrend');
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-heading text-foreground">Tournament Meta Analysis</h2>
-        <p className="text-sm text-muted-foreground">Current archetype trends and win rates</p>
+        <h2 className="text-2xl font-heading text-foreground">{t('metaAnalysis.title')}</h2>
+        <p className="text-sm text-muted-foreground">{t('metaAnalysis.subtitle')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -67,15 +80,15 @@ export function MetaAnalysis() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Win Rate</span>
+                  <span className="text-sm text-muted-foreground">{t('metaAnalysis.winRate')}</span>
                   <Badge variant="default">{trend.win_rate.toFixed(1)}%</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Usage</span>
+                  <span className="text-sm text-muted-foreground">{t('metaAnalysis.usage')}</span>
                   <Badge variant="secondary">{trend.usage_rate.toFixed(1)}%</Badge>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">7-Day Change</span>
+                  <span className="text-sm text-muted-foreground">{t('metaAnalysis.change7d')}</span>
                   <div className="flex items-center gap-1">
                     {trend.change_7d > 0 ? (
                       <TrendingUp className="h-4 w-4 text-success" />
@@ -89,7 +102,7 @@ export function MetaAnalysis() {
                 </div>
                 <div className="pt-2 border-t">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground capitalize">{trend.trend} Trend</span>
+                    <span className="text-xs text-muted-foreground">{getTrendLabel(trend.trend)}</span>
                     <div className="flex gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <div

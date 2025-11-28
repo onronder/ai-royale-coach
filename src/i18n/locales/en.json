@@ -834,6 +834,35 @@
     "maxTagsReached": "Maximum of 3 player tags reached. Remove one to add a new one.",
     "lastUsed": "Last used"
   },
+  "matchDetail": {
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "description": "Detailed analysis of your match against {{opponent}}",
+    "crowns": "Crowns",
+    "trophies": "Trophies",
+    "arena": "Arena",
+    "yourDeck": "Your Deck",
+    "opponentDeck": "{{name}}'s Deck",
+    "aiAnalysis": "AI Match Analysis",
+    "deckMatchup": "Deck Matchup",
+    "whatHappened": "What Happened",
+    "recommendations": "Recommendations",
+    "discussWithCoach": "Discuss with AI Coach",
+    "signInRequired": "Sign in to see detailed AI analysis of your matches",
+    "signIn": "Sign In to Unlock",
+    "analysisError": "Failed to analyze match",
+    "matchTimeline": "Match Timeline",
+    "keyMoments": "Key Moments",
+    "earlyGame": "Early Game",
+    "midGame": "Mid Game",
+    "lateGame": "Late Game",
+    "overtime": "Overtime",
+    "highImpact": "High Impact",
+    "counterDeck": "Counter Deck Builder",
+    "counterDeckDesc": "AI-suggested deck to counter this opponent",
+    "viewCounterDeck": "View Counter Deck",
+    "overallStrategy": "Overall Strategy"
+  },
   "footer": {
     "tagline": "Elevate your gameplay."
   },
@@ -974,7 +1003,31 @@
     "synergy": "Synergy",
     "meta": "Meta",
     "replaced": "Replaced {{oldCard}} with {{newCard}}",
-    "fetchFailed": "Failed to fetch replacement suggestions"
+    "fetchFailed": "Failed to fetch replacement suggestions",
+    "languageChanged": "Language changed. Click to get suggestions in your new language.",
+    "finding": "Finding card replacement suggestions..."
+  },
+  "metaAnalysis": {
+    "title": "Tournament Meta Analysis",
+    "subtitle": "Current archetype trends and win rates",
+    "analyzing": "Analyzing tournament meta trends...",
+    "winRate": "Win Rate",
+    "usage": "Usage",
+    "change7d": "7-Day Change",
+    "hotTrend": "Hot Trend",
+    "coldTrend": "Cold Trend",
+    "stableTrend": "Stable Trend"
+  },
+  "trophyPredictor": {
+    "title": "Trophy Win Rate Predictor",
+    "targetRange": "Target Trophy Range",
+    "predict": "Predict Performance",
+    "predicting": "Predicting win rates across trophy ranges...",
+    "sweetSpot": "Sweet Spot",
+    "confidence": "Confidence",
+    "arenaTips": "Arena Tips",
+    "fetchFailed": "Failed to fetch win rate predictions",
+    "languageChanged": "Language changed. Click predict to get analysis in your new language."
   },
   "common": {
     "aiPowered": "AI Powered",

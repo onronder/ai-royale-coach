@@ -858,6 +858,23 @@
     "invalidTag": "Tag de jogador inválida",
     "playerNotFound": "Jogador não encontrado"
   },
+  "matchDetail": {
+    "victory": "Vitória",
+    "defeat": "Derrota",
+    "description": "Análise detalhada da sua partida contra {{opponent}}",
+    "crowns": "Coroas",
+    "trophies": "Troféus",
+    "arena": "Arena",
+    "yourDeck": "Seu Deck",
+    "opponentDeck": "Deck de {{name}}",
+    "aiAnalysis": "Análise IA da Partida",
+    "deckMatchup": "Confronto de Decks",
+    "whatHappened": "O Que Aconteceu",
+    "recommendations": "Recomendações",
+    "discussWithCoach": "Discutir com Coach IA",
+    "signInRequired": "Entre para ver a análise IA detalhada das suas partidas",
+    "signIn": "Entrar para Desbloquear"
+  },
   "footer": {
     "tagline": "Domínio da arena com IA"
   },
@@ -998,7 +1015,31 @@
     "synergy": "Sinergia",
     "meta": "Meta",
     "replaced": "Substituído {{oldCard}} por {{newCard}}",
-    "fetchFailed": "Falha ao buscar sugestões de substituição"
+    "fetchFailed": "Falha ao buscar sugestões de substituição",
+    "languageChanged": "Idioma alterado. Clique para obter sugestões no seu novo idioma.",
+    "finding": "Encontrando sugestões de substituição de cartas..."
+  },
+  "metaAnalysis": {
+    "title": "Análise Meta de Torneios",
+    "subtitle": "Tendências atuais de arquétipos e taxas de vitória",
+    "analyzing": "Analisando tendências meta de torneios...",
+    "winRate": "Taxa de Vitória",
+    "usage": "Uso",
+    "change7d": "Mudança 7 Dias",
+    "hotTrend": "Tendência Popular",
+    "coldTrend": "Tendência Fria",
+    "stableTrend": "Tendência Estável"
+  },
+  "trophyPredictor": {
+    "title": "Preditor de Taxa de Vitória por Troféus",
+    "targetRange": "Faixa de Troféus Alvo",
+    "predict": "Prever Desempenho",
+    "predicting": "Prevendo taxas de vitória em faixas de troféus...",
+    "sweetSpot": "Ponto Ideal",
+    "confidence": "Confiança",
+    "arenaTips": "Dicas de Arena",
+    "fetchFailed": "Falha ao obter previsões de taxa de vitória",
+    "languageChanged": "Idioma alterado. Clique em prever para obter análise no seu novo idioma."
   },
   "common": {
     "aiPowered": "Com IA",

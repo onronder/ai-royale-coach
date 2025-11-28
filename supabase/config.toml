@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.sync-leaderboard]
 verify_jwt = false
+
+[functions.predict-deck-performance]
+verify_jwt = false

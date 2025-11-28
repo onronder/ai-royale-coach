@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,15 @@ export function CardReplacementSuggester({
   const { t, i18n } = useTranslation();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastFetchedLanguage, setLastFetchedLanguage] = useState<string | null>(null);
+
+  // Clear suggestions when language changes
+  useEffect(() => {
+    if (lastFetchedLanguage && lastFetchedLanguage !== i18n.language && suggestions.length > 0) {
+      setSuggestions([]);
+      toast.info(t('cardReplacements.languageChanged'));
+    }
+  }, [i18n.language, lastFetchedLanguage, suggestions.length, t]);
 
   const fetchSuggestions = async () => {
     setIsLoading(true);
@@ -47,6 +56,7 @@ export function CardReplacementSuggester({
 
       if (error) throw error;
       setSuggestions(data.suggestions);
+      setLastFetchedLanguage(i18n.language);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       toast.error(t('cardReplacements.fetchFailed'));
@@ -97,7 +107,7 @@ export function CardReplacementSuggester({
   }
 
   if (isLoading) {
-    return <DataLoader context="replacements" variant="card" />;
+    return <DataLoader context="replacements" variant="card" customMessage={t('cardReplacements.finding')} />;
   }
 
   return (
