@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ interface ClanSearchProps {
 }
 
 export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [clans, setClans] = useState<Clan[]>([]);
   const [globalClans, setGlobalClans] = useState<Clan[]>([]);
@@ -75,7 +77,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
       setGlobalClans(data?.clans || []);
     } catch (error) {
       console.error('Error fetching global rankings:', error);
-      toast.error('Failed to load global clan rankings');
+      toast.error(t('clan.globalRankingsFailed'));
     } finally {
       setIsLoadingGlobal(false);
     }
@@ -83,7 +85,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
 
   const searchClans = async () => {
     if (!searchQuery.trim()) {
-      toast.error('Please enter a search query');
+      toast.error(t('clan.enterSearchQuery'));
       return;
     }
 
@@ -98,11 +100,11 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
       setClans(data?.clans || []);
       
       if (data?.clans?.length === 0) {
-        toast.info('No clans found');
+        toast.info(t('clan.noClansFound'));
       }
     } catch (error) {
       console.error('Error searching clans:', error);
-      toast.error('Failed to search clans');
+      toast.error(t('clan.searchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +132,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Search className="w-5 h-5" />
-          Clan Explorer
+          {t('clan.explorer')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -138,25 +140,25 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="search" className="flex items-center gap-2">
               <Search className="w-4 h-4" />
-              Search Clans
+              {t('clan.searchClans')}
             </TabsTrigger>
             <TabsTrigger value="global" className="flex items-center gap-2">
               <Globe className="w-4 h-4" />
-              Global Rankings
+              {t('clan.globalRankings')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="search" className="space-y-4 mt-4">
             <div className="flex gap-2">
               <Input
-                placeholder="Search by name or #TAG..."
+                placeholder={t('clan.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && searchClans()}
               />
               <Button onClick={searchClans} disabled={isLoading}>
                 <Search className="w-4 h-4 mr-2" />
-                Search
+                {t('common.search')}
               </Button>
             </div>
 
@@ -166,15 +168,15 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
               ) : clans.length === 0 && searchQuery.trim() === "" ? (
                 <EmptyState
                   icon={Search}
-                  title="Find Your Perfect Clan"
-                  description="Search for clans by name or tag to find the perfect match for your playstyle."
+                  title={t('clan.findPerfectClan')}
+                  description={t('clan.findPerfectClanDescription')}
                   variant="compact"
                 />
               ) : clans.length === 0 ? (
                 <EmptyState
                   icon={Users}
-                  title="No Clans Found"
-                  description="Try adjusting your search criteria or explore different clan names."
+                  title={t('clan.noClansFound')}
+                  description={t('clan.tryDifferentSearch')}
                   variant="compact"
                 />
               ) : (
@@ -212,7 +214,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
                       </div>
 
                       <Button variant="outline" size="sm" className="w-full">
-                        View Details
+                        {t('common.viewDetails')}
                       </Button>
                     </CardContent>
                   </Card>
@@ -224,7 +226,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
           <TabsContent value="global" className="space-y-4 mt-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Top 50 clans worldwide by trophy count
+                {t('clan.top50Description')}
               </p>
               <Button 
                 variant="outline" 
@@ -233,7 +235,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
                 disabled={isLoadingGlobal}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isLoadingGlobal ? 'animate-spin' : ''}`} />
-                Refresh
+                {t('common.refresh')}
               </Button>
             </div>
 
@@ -243,8 +245,8 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
               ) : globalClans.length === 0 ? (
                 <EmptyState
                   icon={Globe}
-                  title="No Rankings Available"
-                  description="Unable to load global clan rankings. Try refreshing."
+                  title={t('clan.noRankingsAvailable')}
+                  description={t('clan.noRankingsDescription')}
                   variant="compact"
                 />
               ) : (
@@ -266,7 +268,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold truncate">{clan.name}</h3>
                             <Badge variant="outline" className="text-xs shrink-0">
-                              {clan.location || 'Global'}
+                              {clan.location || t('common.global')}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground">{clan.clan_tag}</p>
