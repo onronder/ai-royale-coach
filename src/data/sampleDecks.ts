@@ -49,6 +49,7 @@ export interface SampleDeck {
   matchups: MatchupData[];
   history: HistoricalData[];
   difficulty: 'beginner' | 'intermediate' | 'expert';
+  learningPathKey: string; // i18n key prefix for learning path translations
   skillRequirements: {
     cardPlacement: number; // 1-10
     timing: number; // 1-10
@@ -108,6 +109,7 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Aug 2024", winRate: 55.2, usageRate: 9.8 },
     ],
     difficulty: "expert",
+    learningPathKey: "hogCycle",
     skillRequirements: {
       cardPlacement: 9,
       timing: 10,
@@ -190,6 +192,7 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Aug 2024", winRate: 62.7, usageRate: 8.8 },
     ],
     difficulty: "intermediate",
+    learningPathKey: "golemBeatdown",
     skillRequirements: {
       cardPlacement: 6,
       timing: 7,
@@ -272,6 +275,7 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Aug 2024", winRate: 55.5, usageRate: 14.8 },
     ],
     difficulty: "intermediate",
+    learningPathKey: "logBait",
     skillRequirements: {
       cardPlacement: 7,
       timing: 9,
@@ -354,6 +358,7 @@ export const sampleDecks: SampleDeck[] = [
       { patch: "Aug 2024", winRate: 51.9, usageRate: 7.4 },
     ],
     difficulty: "expert",
+    learningPathKey: "xbowSiege",
     skillRequirements: {
       cardPlacement: 10,
       timing: 9,

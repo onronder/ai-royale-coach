@@ -1,6 +1,5 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { GraduationCap, Target, Clock, Zap, Brain, TrendingUp } from 'lucide-react';
 import type { SampleDeck } from '@/data/sampleDecks';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +37,25 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
     return 'from-destructive to-destructive/70';
   };
 
+  // Get translated difficulty label
+  const getDifficultyLabel = (difficulty: string) => {
+    return t(`landing.demo.difficulty.difficultyLevels.${difficulty}`);
+  };
+
+  // Get translated learning path content
+  const getLearningPathPhase = (phaseIndex: number) => {
+    const phaseKey = `phase${phaseIndex + 1}`;
+    return {
+      name: t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.name`),
+      focus: t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.focus`),
+      tips: [
+        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.0`),
+        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.1`),
+        t(`landing.demo.difficulty.decks.${deck.learningPathKey}.${phaseKey}.tips.2`),
+      ]
+    };
+  };
+
   return (
     <Card className={`p-6 bg-card/50 backdrop-blur border-${deck.color}/20 transition-all duration-700 ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -55,7 +73,7 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
             </div>
           </div>
           <Badge className={`${difficultyColors.bg} ${difficultyColors.text} ${difficultyColors.border} uppercase font-bold`}>
-            {deck.difficulty}
+            {getDifficultyLabel(deck.difficulty)}
           </Badge>
         </div>
 
@@ -104,33 +122,36 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
             <TrendingUp className="h-4 w-4" />
             {t('landing.demo.difficulty.learningPath')}
           </h5>
-          {deck.learningPath.map((phase, idx) => (
-            <Card 
-              key={phase.phase}
-              className={`p-4 bg-gradient-to-br from-${deck.color}/5 to-card border-${deck.color}/20 transition-all duration-500 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}
-              style={{ transitionDelay: `${(idx + 5) * 100}ms` }}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`flex-shrink-0 w-8 h-8 rounded-full bg-${deck.color}/20 border border-${deck.color}/30 flex items-center justify-center`}>
-                  <span className={`text-sm font-bold text-${deck.color}`}>{idx + 1}</span>
+          {deck.learningPath.map((_, idx) => {
+            const phase = getLearningPathPhase(idx);
+            return (
+              <Card 
+                key={idx}
+                className={`p-4 bg-gradient-to-br from-${deck.color}/5 to-card border-${deck.color}/20 transition-all duration-500 ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                }`}
+                style={{ transitionDelay: `${(idx + 5) * 100}ms` }}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-full bg-${deck.color}/20 border border-${deck.color}/30 flex items-center justify-center`}>
+                    <span className={`text-sm font-bold text-${deck.color}`}>{idx + 1}</span>
+                  </div>
+                  <div className="flex-1">
+                    <h6 className="font-rajdhani font-bold text-foreground mb-1">{phase.name}</h6>
+                    <p className={`text-sm text-${deck.color} mb-2`}>{phase.focus}</p>
+                    <ul className="space-y-1">
+                      {phase.tips.map((tip, tipIdx) => (
+                        <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">
+                          <span className={`text-${deck.color} mt-0.5`}>•</span>
+                          <span>{tip}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h6 className="font-rajdhani font-bold text-foreground mb-1">{phase.phase}</h6>
-                  <p className={`text-sm text-${deck.color} mb-2`}>{phase.focus}</p>
-                  <ul className="space-y-1">
-                    {phase.tips.map((tip, tipIdx) => (
-                      <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">
-                        <span className={`text-${deck.color} mt-0.5`}>•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
 
         {/* Bottom Tip */}
