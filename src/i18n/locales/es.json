@@ -233,6 +233,11 @@
     "cards": "No hay cartas registradas",
     "cardsDesc": "Sincroniza tu colección para ver tus cartas"
   },
+  "selectPlayer": {
+    "badge": "Seleccionar Cuenta",
+    "title": "Elige Tu Campeón",
+    "subtitle": "Selecciona o añade una etiqueta de jugador para ver tus estadísticas"
+  },
   "footer": {
     "tagline": "Eleva tu juego."
   }
