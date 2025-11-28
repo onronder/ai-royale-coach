@@ -859,5 +859,55 @@
   },
   "footer": {
     "tagline": "AI ile arena hakimiyeti"
+  },
+  "tooltips": {
+    "stats": {
+      "trophies": "Mevcut kupa sayınız. Maç kazanarak kupalar kazanın ve sıralamalarda yükselin!",
+      "bestTrophies": "Şimdiye kadar ulaştığınız en yüksek kupa sayısı. En iyi performansınızı gösterir.",
+      "winRate": "Son 25 maçtan kazandıklarınızın yüzdesi. %50 veya üzerini hedefleyin!",
+      "arena": "Kupa sayınıza göre mevcut rekabet arenanız. Daha yüksek arenalar daha iyi ödüller açar.",
+      "avgElixir": "Destenizin ortalama iksir maliyeti. Düşük daha hızlı, yüksek daha güçlüdür. 3.0-4.0 hedefleyin.",
+      "crowns": "Bir maçta yıkılan kule kuleleri. 3 taç alarak tam hakimiyet sağlayın!",
+      "trophyChange": "Bu maçtan kazanılan veya kaybedilen kupalar. Daha hızlı yükselmek için daha çok kazanın!"
+    },
+    "rarity": {
+      "common": "Yaygın kartlar yükseltmesi kolaydır ve çoğu destenin temelini oluşturur.",
+      "rare": "Nadir kartlar benzersiz yetenekler sunar ve yükseltmesi orta derecede zordur.",
+      "epic": "Destansı kartlar güçlü etkiler sağlar ancak yükseltmek için daha fazla kart gerektirir.",
+      "legendary": "Efsanevi kartlar en nadir ve en güçlü kartlardır, oyun değiştiren yeteneklere sahiptir.",
+      "champion": "Şampiyonlar savaşın gidişatını değiştirebilecek özel yeteneklere sahip ultra nadir kartlardır."
+    },
+    "gameplay": {
+      "elixir": "💡 İpucu: İksir boşa harcamayın! Bir sonraki kart hamlesi için her zaman bir planınız olsun.",
+      "defense": "🛡️ İpucu: Güçlü savunma maç kazandırır. Rakibinizin ataklarını verimli bir şekilde savuşturun.",
+      "cycle": "♻️ İpucu: İhtiyacınız olan kartlara ulaşmak için destenizi hızlıca döndürün.",
+      "timing": "⏰ İpucu: Büyük büyülerinizi birden fazla hedefi vurabileceğiniz anlar için saklayın.",
+      "counter": "⚔️ İpucu: Sayaçlarınızı bilin! Her kartın istismar edebileceğiniz zayıflıkları vardır."
+    }
+  },
+  "cacheStatus": {
+    "title": "Veri Önbellek Durumu",
+    "syncing": "Senkronize ediliyor...",
+    "syncingWithCR": "Clash Royale ile senkronize ediliyor...",
+    "fetchingData": "En son oyuncu verileri ve savaş geçmişi alınıyor",
+    "stale": "Eski",
+    "fresh": "Taze",
+    "noData": "Veri yok",
+    "empty": "Boş",
+    "playerData": "Oyuncu Verileri",
+    "battleHistory": "Savaş Geçmişi",
+    "notCached": "Önbellekte değil",
+    "waitMessage": "Verilerinizi senkronize ederken lütfen bekleyin...",
+    "cacheInfo": "Önbellek API çağrılarını azaltır ve yükleme sürelerini iyileştirir. Taze veriler 5 dakikadan daha yenidir.",
+    "refreshData": "Verileri Yenile"
+  },
+  "dataSync": {
+    "usingCachedData": "Önbellek verisi kullanılıyor",
+    "battleHistoryUnavailable": "API kullanılamıyor - önceden kaydedilen savaş geçmişi gösteriliyor",
+    "playerProfileUnavailable": "API kullanılamıyor - önceden kaydedilen oyuncu profili gösteriliyor",
+    "battleHistoryUpdated": "Savaş geçmişi güncellendi",
+    "battlesLoaded": "{{count}} son savaş yüklendi",
+    "playerDataUpdated": "Oyuncu verileri güncellendi",
+    "profileLoaded": "{{name}} için taze profil verileri yüklendi"
   }
 }

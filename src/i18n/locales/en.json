@@ -835,5 +835,55 @@
   },
   "footer": {
     "tagline": "Elevate your gameplay."
+  },
+  "tooltips": {
+    "stats": {
+      "trophies": "Your current trophy count. Gain trophies by winning battles and climb the ranks!",
+      "bestTrophies": "The highest trophy count you've ever achieved. This shows your peak performance.",
+      "winRate": "Percentage of battles won out of your last 25 matches. Aim for 50% or higher!",
+      "arena": "Your current competitive arena based on trophy count. Higher arenas unlock better rewards.",
+      "avgElixir": "Average elixir cost of your deck. Lower is faster, higher is more powerful. Aim for 3.0-4.0.",
+      "crowns": "Tower crowns destroyed in a match. Get 3 crowns for complete domination!",
+      "trophyChange": "Trophies gained or lost from this match. Win more to climb faster!"
+    },
+    "rarity": {
+      "common": "Common cards are easy to upgrade and form the foundation of most decks.",
+      "rare": "Rare cards offer unique abilities and are moderately difficult to upgrade.",
+      "epic": "Epic cards provide powerful effects but require more cards to upgrade.",
+      "legendary": "Legendary cards are the rarest and most powerful, with game-changing abilities.",
+      "champion": "Champions are ultra-rare cards with special abilities that can turn the tide of battle."
+    },
+    "gameplay": {
+      "elixir": "💡 Tip: Never waste elixir! Always have a plan for your next card play.",
+      "defense": "🛡️ Tip: Strong defense wins games. Counter your opponent's pushes efficiently.",
+      "cycle": "♻️ Tip: Cycle through your deck quickly to access key cards when you need them.",
+      "timing": "⏰ Tip: Save your big spells for when they can hit multiple targets for maximum value.",
+      "counter": "⚔️ Tip: Know your counters! Every card has weaknesses you can exploit."
+    }
+  },
+  "cacheStatus": {
+    "title": "Data Cache Status",
+    "syncing": "Syncing...",
+    "syncingWithCR": "Syncing with Clash Royale...",
+    "fetchingData": "Fetching latest player data and battle history",
+    "stale": "Stale",
+    "fresh": "Fresh",
+    "noData": "No data",
+    "empty": "Empty",
+    "playerData": "Player Data",
+    "battleHistory": "Battle History",
+    "notCached": "Not cached",
+    "waitMessage": "Please wait while we sync your data...",
+    "cacheInfo": "Cache reduces API calls and improves load times. Fresh data is under 5 minutes old.",
+    "refreshData": "Refresh Data"
+  },
+  "dataSync": {
+    "usingCachedData": "Using cached data",
+    "battleHistoryUnavailable": "API unavailable - showing previously saved battle history",
+    "playerProfileUnavailable": "API unavailable - showing previously saved player profile",
+    "battleHistoryUpdated": "Battle history updated",
+    "battlesLoaded": "Loaded {{count}} recent battles",
+    "playerDataUpdated": "Player data updated",
+    "profileLoaded": "Fresh profile data loaded for {{name}}"
   }
 }

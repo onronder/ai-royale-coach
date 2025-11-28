@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface GameTooltipProps {
@@ -23,7 +24,43 @@ export function GameTooltip({ children, content, side = "top" }: GameTooltipProp
   );
 }
 
-// Card rarity tooltips
+// Hooks for translated tooltips
+export function useStatTooltips() {
+  const { t } = useTranslation();
+  return {
+    trophies: t('tooltips.stats.trophies'),
+    bestTrophies: t('tooltips.stats.bestTrophies'),
+    winRate: t('tooltips.stats.winRate'),
+    arena: t('tooltips.stats.arena'),
+    avgElixir: t('tooltips.stats.avgElixir'),
+    crowns: t('tooltips.stats.crowns'),
+    trophyChange: t('tooltips.stats.trophyChange')
+  };
+}
+
+export function useRarityTooltips() {
+  const { t } = useTranslation();
+  return {
+    common: t('tooltips.rarity.common'),
+    rare: t('tooltips.rarity.rare'),
+    epic: t('tooltips.rarity.epic'),
+    legendary: t('tooltips.rarity.legendary'),
+    champion: t('tooltips.rarity.champion')
+  };
+}
+
+export function useGameplayTips() {
+  const { t } = useTranslation();
+  return {
+    elixir: t('tooltips.gameplay.elixir'),
+    defense: t('tooltips.gameplay.defense'),
+    cycle: t('tooltips.gameplay.cycle'),
+    timing: t('tooltips.gameplay.timing'),
+    counter: t('tooltips.gameplay.counter')
+  };
+}
+
+// Legacy static exports for backward compatibility (English only)
 export const rarityTooltips = {
   common: "Common cards are easy to upgrade and form the foundation of most decks.",
   rare: "Rare cards offer unique abilities and are moderately difficult to upgrade.",
@@ -32,7 +69,6 @@ export const rarityTooltips = {
   champion: "Champions are ultra-rare cards with special abilities that can turn the tide of battle."
 };
 
-// Stat tooltips
 export const statTooltips = {
   trophies: "Your current trophy count. Gain trophies by winning battles and climb the ranks!",
   bestTrophies: "The highest trophy count you've ever achieved. This shows your peak performance.",
@@ -43,7 +79,6 @@ export const statTooltips = {
   trophyChange: "Trophies gained or lost from this match. Win more to climb faster!"
 };
 
-// Gameplay tips
 export const gameplayTips = {
   elixir: "💡 Tip: Never waste elixir! Always have a plan for your next card play.",
   defense: "🛡️ Tip: Strong defense wins games. Counter your opponent's pushes efficiently.",
