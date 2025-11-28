@@ -554,7 +554,8 @@
       "weakPassword": "Şifre çok zayıf",
       "networkError": "Ağ hatası. Lütfen tekrar deneyin.",
       "generic": "Bir hata oluştu. Lütfen tekrar deneyin."
-    }
+    },
+    "signInRequired": "Devam etmek için lütfen giriş yapın"
   },
   "dashboard": {
     "title": "Gösterge Paneli",
@@ -1208,9 +1209,6 @@
     "warDayWins": "Savaş Günü Galibiyetleri",
     "donations": "Bağışlar",
     "kingLevel": "Kral Seviyesi"
-  },
-  "auth": {
-    "signInRequired": "Devam etmek için lütfen giriş yapın"
   },
   "counterDeck": {
     "title": "Karşı Deste Önerisi",

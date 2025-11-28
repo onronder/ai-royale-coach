@@ -554,7 +554,8 @@
       "weakPassword": "La contraseña es muy débil",
       "networkError": "Error de red. Por favor intenta de nuevo.",
       "generic": "Ocurrió un error. Por favor intenta de nuevo."
-    }
+    },
+    "signInRequired": "Por favor inicia sesión para continuar"
   },
   "dashboard": {
     "title": "Panel de Control",
@@ -1208,9 +1209,6 @@
     "warDayWins": "Victorias Día de Guerra",
     "donations": "Donaciones",
     "kingLevel": "Nivel de Rey"
-  },
-  "auth": {
-    "signInRequired": "Por favor inicia sesión para continuar"
   },
   "counterDeck": {
     "title": "Sugerencia de Contramazo",

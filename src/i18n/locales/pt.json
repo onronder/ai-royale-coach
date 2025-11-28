@@ -554,7 +554,8 @@
       "weakPassword": "Senha muito fraca",
       "networkError": "Erro de rede. Por favor tente novamente.",
       "generic": "Ocorreu um erro. Por favor tente novamente."
-    }
+    },
+    "signInRequired": "Por favor, faça login para continuar"
   },
   "dashboard": {
     "title": "Painel",
@@ -1208,9 +1209,6 @@
     "warDayWins": "Vitórias Dia de Guerra",
     "donations": "Doações",
     "kingLevel": "Nível do Rei"
-  },
-  "auth": {
-    "signInRequired": "Por favor, faça login para continuar"
   },
   "counterDeck": {
     "title": "Sugestão de Contra-Deck",
