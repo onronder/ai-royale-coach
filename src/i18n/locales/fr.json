@@ -325,6 +325,41 @@
         "metaInsight": "Aperçu du Méta",
         "dominates": "{{deck}} domine actuellement le méta avec un taux de victoire de {{rate}}%.",
         "historicalHelps": "Les données historiques aident à prédire les futurs changements d'équilibrage et les évolutions du méta."
+      },
+      "cards": {
+        "rarities": {
+          "common": "Commune",
+          "rare": "Rare",
+          "epic": "Épique",
+          "legendary": "Légendaire",
+          "champion": "Champion"
+        },
+        "roles": {
+          "Win Condition": "Condition de Victoire",
+          "Air Defense": "Défense Aérienne",
+          "Tank/Kite": "Tank/Leurre",
+          "Defense": "Défense",
+          "Big Spell": "Grand Sort",
+          "Small Spell": "Petit Sort",
+          "Cycle/Distract": "Cycle/Distraction",
+          "Cycle/Stun": "Cycle/Étourdissement",
+          "Tank": "Tank",
+          "Support": "Support",
+          "Splash/Air": "Zone/Aérien",
+          "Control": "Contrôle",
+          "Mini Tank": "Mini Tank",
+          "Swarm": "Essaim",
+          "Bait Card": "Carte Appât",
+          "Spell Bait": "Appât de Sort",
+          "Building": "Bâtiment",
+          "Tower Targeting": "Cible Tour"
+        },
+        "archetypes": {
+          "Cycle": "Cycle",
+          "Beatdown": "Beatdown",
+          "Control": "Contrôle",
+          "Siege": "Siège"
+        }
       }
     },
     "hero": {

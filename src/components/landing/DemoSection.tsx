@@ -73,6 +73,19 @@ export function DemoSection() {
     warning: 'border-warning/20 hover:border-warning/50',
   };
 
+  const getTranslatedRarity = (rarity: string) => {
+    const key = rarity.toLowerCase();
+    return t(`landing.demo.cards.rarities.${key}`, rarity);
+  };
+
+  const getTranslatedRole = (role: string) => {
+    return t(`landing.demo.cards.roles.${role}`, role);
+  };
+
+  const getTranslatedArchetype = (archetype: string) => {
+    return t(`landing.demo.cards.archetypes.${archetype}`, archetype);
+  };
+
   const renderCardWithTooltip = (card: typeof selectedDeck.cards[0], deckColor: string) => (
     <TooltipProvider key={card.name}>
       <Tooltip delayDuration={200}>
@@ -96,10 +109,10 @@ export function DemoSection() {
                 card.rarity === 'Epic' ? 'text-accent' :
                 card.rarity === 'Rare' ? 'text-primary' : 'text-muted-foreground'
               }`}>
-                {card.rarity}
+                {getTranslatedRarity(card.rarity)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">{card.role}</p>
+            <p className="text-xs text-muted-foreground">{getTranslatedRole(card.role)}</p>
           </div>
         </TooltipContent>
       </Tooltip>
@@ -144,7 +157,7 @@ export function DemoSection() {
               className="font-rajdhani font-semibold data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary/20 data-[state=active]:to-accent/20 text-[10px] md:text-xs px-2"
               style={{ transitionDelay: isVisible ? `${idx * 100}ms` : '0ms' }}
             >
-              {deck.stats.archetype}
+              {getTranslatedArchetype(deck.stats.archetype)}
             </TabsTrigger>
           ))}
           <TabsTrigger value="compare" className="text-[10px] md:text-xs px-2">{t("landing.demo.tabs.compare")}</TabsTrigger>
@@ -169,7 +182,7 @@ export function DemoSection() {
                       {deck.name}
                     </h3>
                     <span className={`text-sm px-3 py-1 rounded-full bg-${deck.color}/10 text-${deck.color} font-rajdhani font-semibold border border-${deck.color}/30`}>
-                      {deck.stats.archetype}
+                      {getTranslatedArchetype(deck.stats.archetype)}
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-3">

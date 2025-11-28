@@ -54,6 +54,19 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
     return t(`landing.demo.difficulty.deckData.${key}.playstyle`, { defaultValue: deck.playstyle });
   };
 
+  const getTranslatedRarity = (rarity: string) => {
+    const key = rarity.toLowerCase();
+    return t(`landing.demo.cards.rarities.${key}`, rarity);
+  };
+
+  const getTranslatedRole = (role: string) => {
+    return t(`landing.demo.cards.roles.${role}`, role);
+  };
+
+  const getTranslatedArchetype = (archetype: string) => {
+    return t(`landing.demo.cards.archetypes.${archetype}`, archetype);
+  };
+
   const renderCardWithTooltip = (card: typeof deck1.cards[0], deckColor: string) => (
     <TooltipProvider key={card.name}>
       <Tooltip delayDuration={200}>
@@ -77,10 +90,10 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 card.rarity === 'Epic' ? 'text-accent' :
                 card.rarity === 'Rare' ? 'text-primary' : 'text-muted-foreground'
               }`}>
-                {card.rarity}
+                {getTranslatedRarity(card.rarity)}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">{card.role}</p>
+            <p className="text-xs text-muted-foreground">{getTranslatedRole(card.role)}</p>
           </div>
         </TooltipContent>
       </Tooltip>
@@ -148,7 +161,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 {deck1.name}
               </h3>
               <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-rajdhani font-semibold border border-primary/30">
-                {deck1.stats.archetype}
+                {getTranslatedArchetype(deck1.stats.archetype)}
               </span>
             </div>
             <div className="grid grid-cols-4 gap-2 mb-4">
@@ -222,7 +235,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
                 {deck2.name}
               </h3>
               <span className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent font-rajdhani font-semibold border border-accent/30">
-                {deck2.stats.archetype}
+                {getTranslatedArchetype(deck2.stats.archetype)}
               </span>
             </div>
             <div className="grid grid-cols-4 gap-2 mb-4">
