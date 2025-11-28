@@ -1,61 +1,64 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Trophy, Target, Swords, Crown, Users, TrendingUp, Sparkles, Award, UserPlus, Wrench } from "lucide-react";
-import { useWinRate } from "@/hooks/useWinRate";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { useWinRate } from "@/hooks/useWinRate";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
 import { usePlayerAnalysis } from "@/hooks/usePlayerAnalysis";
-import { DeckGrid } from "@/components/cards/DeckGrid";
-import { MatchCard } from "@/components/matches/MatchCard";
-import { MatchDetailView } from "@/components/matches/MatchDetailView";
-import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
-import { StatCard } from "@/components/stats/StatCard";
-import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
-import { statTooltips } from "@/components/ui/tooltip-helpers";
-import { PageTransition, StatCardSkeleton, MatchCardSkeleton } from "@/components/ui/loading-states";
+import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
+import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useBackgroundSync } from "@/hooks/useBackgroundSync";
+import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DashboardLoader } from "@/components/ui/page-loader";
+import { PageTransition } from "@/components/ui/loading-states";
+
+// Dashboard sub-components
+import { 
+  DashboardHeader, 
+  DashboardTabs, 
+  OverviewTab, 
+  MatchesTab, 
+  DeckTab, 
+  AnalyticsTab 
+} from "@/components/dashboard";
+
+// Feature components
+import { MatchDetailView } from "@/components/matches/MatchDetailView";
+import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
 import { TournamentList } from "@/components/tournaments/TournamentList";
 import { ClanSearch } from "@/components/clans/ClanSearch";
 import { DeckBuilder } from "@/components/deck/DeckBuilder";
-import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
-import { DeckStatsDashboard } from "@/components/analytics/DeckStatsDashboard";
-import { CardMasteryTracker } from "@/components/mastery/CardMasteryTracker";
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
-import { AchievementDashboard } from "@/components/achievements/AchievementDashboard";
-import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
-import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
-import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
-import { EmptyState } from "@/components/ui/empty-state";
-import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
-import { DataLoader } from "@/components/ui/data-loader";
-import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
-import { TrophyProgressChart } from "@/components/analytics/TrophyProgressChart";
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
+  
+  // State for dialogs and interactions
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   
+  // Custom hooks for data management
+  const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
+  const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
+  const { updateLastSeen } = usePlayerProfiles(user?.id || null);
+  
+  // Data fetching hooks
   const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
   
-  // Memoized win rate calculation to prevent recalculation on every render
+  // Background sync for first-time visitors
+  useBackgroundSync(user?.id || null, playerTag);
+  
+  // Memoized win rate calculation
   const { winRate, formattedWinRate, wins, losses } = useWinRate(battles, playerTag);
   
   // Memoized average trophy change calculation
@@ -68,17 +71,16 @@ const Dashboard = () => {
     }, 0);
     return (totalChange / battles.length).toFixed(1);
   }, [battles, playerTag]);
-  
-  // Player profiles hook for saving/updating last seen
-  const { updateLastSeen } = usePlayerProfiles(user?.id || null);
 
-  // Fetch additional data for AI coach context
-  const [savedDecks, setSavedDecks] = useState<any[]>([]);
-  const [cardMastery, setCardMastery] = useState<any[]>([]);
-  const [achievements, setAchievements] = useState<any[]>([]);
-  const [cardCollection, setCardCollection] = useState<any[]>([]);
+  // Save/update player tag in player_profiles when visiting
+  useEffect(() => {
+    if (user?.id && playerTag) {
+      updateLastSeen(playerTag);
+    }
+  }, [user?.id, playerTag, updateLastSeen]);
 
-  const handleRefreshData = async () => {
+  // Event handlers
+  const handleRefreshData = useCallback(async () => {
     setIsRefreshing(true);
     const loadingToast = toast.loading(t('dashboard.sync.syncing'), {
       description: t('dashboard.sync.fetchingData')
@@ -97,458 +99,78 @@ const Dashboard = () => {
     } finally {
       setIsRefreshing(false);
     }
-  };
+  }, [forceRefreshPlayer, forceRefreshBattles, t]);
 
-  const handleMatchClick = (battle: ClashRoyaleBattle) => {
+  const handleMatchClick = useCallback((battle: ClashRoyaleBattle) => {
     setSelectedBattle(battle);
     setMatchDetailOpen(true);
-  };
+  }, []);
 
-  // Fetch player context data for AI coach - batched for performance
-  useEffect(() => {
-    const fetchPlayerContext = async () => {
-      if (!user?.id || !playerTag) return;
-      
-      // Batch all context queries with Promise.all for better performance
-      const [decksResult, masteryResult, achievementsResult, collectionResult] = await Promise.all([
-        supabase.from('saved_decks').select('*').eq('user_id', user.id),
-        supabase.from('card_mastery').select('*').eq('player_tag', playerTag),
-        supabase.from('user_achievements').select('*, achievement:achievements(*)').eq('player_tag', playerTag),
-        supabase.from('card_collection').select('*').eq('player_tag', playerTag),
-      ]);
-
-      if (decksResult.data) setSavedDecks(decksResult.data);
-      if (masteryResult.data) setCardMastery(masteryResult.data);
-      if (achievementsResult.data) setAchievements(achievementsResult.data);
-      if (collectionResult.data) setCardCollection(collectionResult.data);
-    };
-
-    fetchPlayerContext();
-  }, [user, playerTag]);
-
-  // Auto-sync card collection, card mastery, and deck stats on first visit
-  useEffect(() => {
-    if (!user?.id || !playerTag) return;
-
-    const runBackgroundSync = async () => {
-      // Check if card collection is empty
-      const { count: collectionCount } = await supabase
-        .from('card_collection')
-        .select('*', { count: 'exact', head: true })
-        .eq('player_tag', playerTag);
-
-      if (collectionCount === 0) {
-        console.log('Starting background card collection sync...');
-        supabase.functions
-          .invoke('sync-card-collection', { body: { playerTag } })
-          .then(() => {
-            toast.success(t('dashboard.sync.collectionSynced'));
-          })
-          .catch((err) => {
-            console.error('Background sync failed:', err);
-          });
-      }
-
-      // Check if card mastery is empty
-      const { count: masteryCount } = await supabase
-        .from('card_mastery')
-        .select('*', { count: 'exact', head: true })
-        .eq('player_tag', playerTag);
-
-      if (masteryCount === 0) {
-        console.log('Starting background card mastery calculation...');
-        supabase.functions
-          .invoke('calculate-card-mastery', { body: { playerTag } })
-          .then(() => {
-            toast.success(t('dashboard.sync.masteryCalculated'));
-          })
-          .catch((err) => {
-            console.error('Background card mastery failed:', err);
-          });
-      }
-
-      // Check if deck stats are empty
-      const { count: deckStatsCount } = await supabase
-        .from('deck_usage_stats')
-        .select('*', { count: 'exact', head: true })
-        .eq('player_tag', playerTag);
-
-      if (deckStatsCount === 0) {
-        console.log('Starting background deck stats tracking...');
-        supabase.functions
-          .invoke('track-deck-stats', { body: { playerTag } })
-          .then(() => {
-            toast.success(t('dashboard.sync.deckStatsTracked'));
-          })
-          .catch((err) => {
-            console.error('Background deck stats failed:', err);
-          });
-      }
-    };
-
-    runBackgroundSync();
-  }, [user?.id, playerTag]);
-
-  // Save/update player tag in player_profiles when visiting
-  useEffect(() => {
-    if (user?.id && playerTag) {
-      updateLastSeen(playerTag);
-    }
-  }, [user?.id, playerTag, updateLastSeen]);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+  const handleSignOutWithToast = useCallback(async () => {
+    await handleSignOut();
     toast.success(t('dashboard.signedOut'));
-  };
+  }, [handleSignOut, t]);
 
-  // Show loading state while checking authentication
-  if (!user) {
-    return <DashboardLoader />;
-  }
-
-  if (!playerTag) {
+  // Loading states
+  if (!user || !playerTag) {
     return <DashboardLoader />;
   }
 
   return (
     <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in">
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md shadow-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Crown className="h-7 w-7 text-gold" />
-              <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYALE</h1>
-              <p className="text-xs text-muted-foreground font-mono">#{playerTag}</p>
-            </div>
-          </div>
-          
-          {/* Quick Stats */}
-          {player && (
-            <div className="hidden md:flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/20">
-                <Trophy className="h-4 w-4 text-gold trophy-shimmer" />
-                <span className="font-rajdhani font-bold text-gold">{player.trophies.toLocaleString()}</span>
-              </div>
-              {battles && (
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-success/10 border border-success/20">
-                  <Swords className="h-4 w-4 text-success" />
-                  <span className="font-rajdhani font-bold text-success">
-                    {winRate.toFixed(0)}% WR
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Quick Switch & Sign Out */}
-          <div className="flex items-center gap-2">
-            <CacheStatusIndicator 
-              playerTag={playerTag} 
-              onRefresh={handleRefreshData} 
-              isRefreshing={isRefreshing} 
-            />
-            <QuickAccountSwitch 
-              currentPlayerTag={playerTag} 
-              userId={user?.id || null} 
-            />
-            <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">{t('nav.signOut')}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader
+        playerTag={playerTag}
+        player={player || null}
+        winRate={winRate}
+        userId={user?.id || null}
+        isRefreshing={isRefreshing}
+        onRefresh={handleRefreshData}
+        onSignOut={handleSignOutWithToast}
+      />
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="overview" className="w-full">
-          {/* Enhanced Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-2 h-auto p-2 bg-card/80 border border-gold/20 rounded-xl backdrop-blur-sm">
-            <TabsTrigger 
-              value="overview" 
-              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <Trophy className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.stats')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="matches"
-              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <Swords className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.matches')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="deck"
-              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <Target className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.deck')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="builder"
-              className="data-[state=active]:bg-gradient-accent data-[state=active]:text-accent-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <Wrench className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.builder')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="analytics"
-              className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <TrendingUp className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.analytics')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="collection"
-              className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <Sparkles className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.cards')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="leaderboard"
-              className="data-[state=active]:bg-gradient-gold data-[state=active]:text-gold-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
-            >
-              <TrendingUp className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.ranks')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="tournaments"
-              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
-            >
-              <Award className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.tourneys')}</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="clans"
-              className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
-            >
-              <UserPlus className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">{t('dashboard.tabs.clans')}</span>
-            </TabsTrigger>
-          </TabsList>
+          <DashboardTabs />
 
           <TabsContent value="overview" className="mt-6">
-            <PageTransition>
-              <div className="space-y-6">
-                {/* Stats Grid */}
-                <div className="grid gap-4 md:grid-cols-4">
-                  {playerLoading ? (
-                    <>
-                      <StatCardSkeleton />
-                      <StatCardSkeleton />
-                      <StatCardSkeleton />
-                      <StatCardSkeleton />
-                    </>
-                  ) : player ? (
-                    <>
-                      <StatCard
-                        title={t('dashboard.currentTrophies')}
-                        value={player.trophies.toLocaleString()}
-                        icon={Trophy}
-                        description={`${t('dashboard.best')}: ${player.bestTrophies.toLocaleString()}`}
-                        trend="neutral"
-                        tooltip={statTooltips.trophies}
-                      />
-                      <StatCard
-                        title={t('dashboard.arena')}
-                        value={player.arena?.name.split(' ')[0] || t('common.unknown')}
-                        icon={Crown}
-                        description={player.arena?.name || ''}
-                        tooltip={statTooltips.arena}
-                      />
-                      <StatCard
-                        title={t('dashboard.winRate')}
-                        value={formattedWinRate}
-                        icon={Swords}
-                        description={t('dashboard.last25Battles')}
-                        trend={winRate >= 50 ? 'up' : 'down'}
-                        tooltip={statTooltips.winRate}
-                      />
-                      <StatCard
-                        title={t('dashboard.clan')}
-                        value={player.clan?.name.split(' ')[0] || t('dashboard.noClan')}
-                        icon={Users}
-                        description={player.clan?.name || t('dashboard.joinClan')}
-                      />
-                    </>
-                  ) : null}
-                </div>
-
-                {/* Trophy Progress Chart */}
-                <TrophyProgressChart 
-                  battles={battles}
-                  playerTag={playerTag}
-                  currentTrophies={player?.trophies}
-                  bestTrophies={player?.bestTrophies}
-                />
-
-              {/* AI Analysis Card */}
-              <Card className="bg-card border-2 border-royal/40 shadow-lg relative overflow-hidden">
-                {/* Subtle corner accent */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-royal/10 to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/10 to-transparent pointer-events-none" />
-                <CardHeader className="relative">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-royal/20 border border-royal/30">
-                      <Sparkles className="h-5 w-5 text-royal" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-foreground">{t('dashboard.aiCoach.title')}</CardTitle>
-                      <CardDescription>
-                        {t('dashboard.aiCoach.subtitle')}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="relative">
-                  {analysisLoading ? (
-                    <div className="flex items-center gap-3 py-4">
-                      <Sparkles className="h-5 w-5 animate-pulse text-royal" />
-                      <span className="text-sm text-muted-foreground">{t('dashboard.aiCoach.generating')}</span>
-                    </div>
-                  ) : analysisError ? (
-                    <p className="text-sm text-muted-foreground">{t('dashboard.aiCoach.error')}</p>
-                  ) : analysis ? (
-                    <div className="space-y-4">
-                      <div className="prose prose-sm max-w-none">
-                        <p className="text-sm whitespace-pre-wrap text-foreground/90 leading-relaxed">{analysis.analysis}</p>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
-                        <div className="text-center p-3 rounded-lg bg-success/10 border border-success/20">
-                          <p className="text-2xl font-bold text-success">{analysis.stats.winRate}%</p>
-                          <p className="text-xs text-muted-foreground">{t('dashboard.winRate')}</p>
-                        </div>
-                        <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
-                          <p className={cn(
-                            "text-2xl font-bold",
-                            parseFloat(analysis.stats.avgTrophyChange) >= 0 ? "text-gold" : "text-destructive"
-                          )}>
-                            {parseFloat(analysis.stats.avgTrophyChange) >= 0 ? '+' : ''}{analysis.stats.avgTrophyChange}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{t('dashboard.avgTrophyChange')}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                </CardContent>
-              </Card>
-
-                {/* Achievement Badge Widget */}
-                <AchievementBadgeWidget playerTag={playerTag!} />
-              </div>
-            </PageTransition>
+            <OverviewTab
+              playerTag={playerTag}
+              player={player || null}
+              battles={battles || null}
+              playerLoading={playerLoading}
+              formattedWinRate={formattedWinRate}
+              winRate={winRate}
+              analysis={analysis}
+              analysisLoading={analysisLoading}
+              analysisError={analysisError}
+            />
           </TabsContent>
 
           <TabsContent value="matches" className="mt-6">
-            <PageTransition delay={100}>
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('dashboard.matchHistory')}</CardTitle>
-                    <CardDescription>{t('dashboard.matchHistoryDesc')}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {battlesLoading ? (
-                      <DataLoader context="battles" variant="inline" />
-                    ) : battlesError ? (
-                      <EmptyState
-                        icon={Swords}
-                        title={t('dashboard.failedLoadBattles')}
-                        description={t('dashboard.failedLoadBattlesDesc')}
-                        variant="compact"
-                      />
-                    ) : battles && battles.length > 0 ? (
-                      <div className="space-y-3">
-                        {battles.slice(0, 15).map((battle, idx) => (
-                          <div
-                            key={idx}
-                            className="animate-slide-up"
-                            style={{ animationDelay: `${idx * 30}ms` }}
-                          >
-                            <MatchCard
-                              battle={battle}
-                              playerTag={playerTag!}
-                              onClick={() => handleMatchClick(battle)}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <EmptyState
-                        icon={Swords}
-                        title={t('dashboard.noBattles')}
-                        description={t('dashboard.noBattlesDesc')}
-                        variant="compact"
-                      />
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </PageTransition>
+            <MatchesTab
+              playerTag={playerTag}
+              battles={battles || null}
+              battlesLoading={battlesLoading}
+              battlesError={battlesError}
+              onMatchClick={handleMatchClick}
+            />
           </TabsContent>
 
           <TabsContent value="deck" className="mt-6">
-            <PageTransition delay={100}>
-              <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('dashboard.currentDeck')}</CardTitle>
-                  <CardDescription>{t('dashboard.currentDeckDesc')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {playerLoading ? (
-                    <DataLoader context="deck" variant="inline" />
-                  ) : playerError ? (
-                    <p className="text-muted-foreground">{t('dashboard.failedLoadDeck')}</p>
-                  ) : player?.currentDeck && player.currentDeck.length > 0 ? (
-                    <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
-                  ) : (
-                    <p className="text-muted-foreground">{t('common.noData')}</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              {player && battles && battles.length > 0 && (
-                  <DeckAnalysisPanel player={player} battles={battles} />
-                )}
-              </div>
-            </PageTransition>
+            <DeckTab
+              player={player || null}
+              battles={battles || null}
+              playerLoading={playerLoading}
+              playerError={playerError}
+            />
           </TabsContent>
 
           <TabsContent value="collection" className="mt-6">
             <PageTransition delay={100}>
-              {user && playerTag && (
-                <CardCollectionTracker 
-                  playerTag={playerTag} 
-                  userId={user.id}
-                />
-              )}
+              <CardCollectionTracker 
+                playerTag={playerTag} 
+                userId={user.id}
+              />
             </PageTransition>
           </TabsContent>
 
@@ -589,41 +211,21 @@ const Dashboard = () => {
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
-            <PageTransition delay={100}>
-              <Tabs defaultValue="deckstats" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="deckstats">{t('dashboard.analytics.deckStats')}</TabsTrigger>
-                  <TabsTrigger value="mastery">{t('dashboard.analytics.cardMastery')}</TabsTrigger>
-                  <TabsTrigger value="achievements">{t('dashboard.analytics.achievements')}</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="deckstats" className="mt-6">
-                  <DeckStatsDashboard playerTag={playerTag!} />
-                </TabsContent>
-                
-                <TabsContent value="mastery" className="mt-6">
-                  <CardMasteryTracker playerTag={playerTag!} />
-                </TabsContent>
-
-                <TabsContent value="achievements" className="mt-6">
-                  <AchievementDashboard playerTag={playerTag!} />
-                </TabsContent>
-              </Tabs>
-            </PageTransition>
+            <AnalyticsTab playerTag={playerTag} />
           </TabsContent>
         </Tabs>
       </main>
 
-      {/* Match Detail Dialog - Outside tabs so it always renders */}
+      {/* Match Detail Dialog */}
       <MatchDetailView
         battle={selectedBattle}
-        playerTag={playerTag!}
+        playerTag={playerTag}
         open={matchDetailOpen}
         onOpenChange={setMatchDetailOpen}
         onOpenCoach={() => setCoachOpen(true)}
       />
 
-      {/* Floating AI Coach Widget - uses memoized win rate */}
+      {/* Floating AI Coach Widget */}
       {player && battles && (
         <FloatingCoachButton
           playerTag={playerTag?.startsWith('#') ? playerTag : `#${playerTag}`}
@@ -631,17 +233,17 @@ const Dashboard = () => {
             trophies: player.trophies,
             bestTrophies: player.bestTrophies,
             arena: player.arena?.name || 'Unknown',
-            winRate: winRate // Use memoized value from useWinRate hook
+            winRate: winRate
           }}
           recentMatches={{
-            wins, // Use memoized value from useWinRate hook
-            losses, // Use memoized value from useWinRate hook
-            avgTrophyChange // Use memoized value
+            wins,
+            losses,
+            avgTrophyChange
           }}
-          savedDecks={savedDecks}
-          cardMastery={cardMastery}
-          achievements={achievements}
-          cardCollection={cardCollection}
+          savedDecks={playerContext.savedDecks}
+          cardMastery={playerContext.cardMastery}
+          achievements={playerContext.achievements}
+          cardCollection={playerContext.cardCollection}
           forceOpen={coachOpen}
           onOpenChange={setCoachOpen}
         />
