@@ -93,7 +93,7 @@ const Auth = () => {
             <Crown className="h-10 w-10 text-gold-foreground" />
             <div className="absolute -inset-1 bg-gold/20 rounded-2xl blur-lg -z-10" />
           </div>
-          <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYAL</h1>
+          <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYALE</h1>
           <p className="text-muted-foreground text-sm">Your path to arena dominance</p>
         </div>
 

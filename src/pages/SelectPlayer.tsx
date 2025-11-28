@@ -82,7 +82,7 @@ const SelectPlayer = () => {
               <div className="absolute inset-0 bg-gold/20 blur-lg -z-10 group-hover:bg-gold/30 transition-colors" />
             </div>
             <span className="text-xl font-bold font-rajdhani text-foreground">
-              AI ROYAL
+              AI ROYALE
             </span>
           </Link>
           

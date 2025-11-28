@@ -229,7 +229,7 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
             </div>
             <div>
-              <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYAL</h1>
+              <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYALE</h1>
               <p className="text-xs text-muted-foreground font-mono">#{playerTag}</p>
             </div>
           </div>
