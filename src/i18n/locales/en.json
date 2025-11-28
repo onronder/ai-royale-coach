@@ -192,124 +192,6 @@
           "intermediate": "Intermediate",
           "expert": "Expert"
         },
-        "decks": {
-          "hogCycle": {
-            "phase1": {
-              "name": "Foundation (Week 1-2)",
-              "focus": "Master basic cycling mechanics",
-              "tips": [
-                "Learn optimal Cannon placement vs different win conditions",
-                "Practice Musketeer positioning for defense",
-                "Get comfortable cycling quickly with 1-elixir cards"
-              ]
-            },
-            "phase2": {
-              "name": "Intermediate (Week 3-4)",
-              "focus": "Timing and spell value",
-              "tips": [
-                "Learn when to commit Hog Rider vs defend",
-                "Practice predicting spell placements",
-                "Master Ice Golem kiting techniques"
-              ]
-            },
-            "phase3": {
-              "name": "Advanced (Week 5+)",
-              "focus": "Perfect execution under pressure",
-              "tips": [
-                "Develop muscle memory for frame-perfect defenses",
-                "Learn all matchup-specific strategies",
-                "Master elixir counting and tracking"
-              ]
-            }
-          },
-          "golemBeatdown": {
-            "phase1": {
-              "name": "Foundation (Week 1-2)",
-              "focus": "Understanding beatdown fundamentals",
-              "tips": [
-                "Learn when to start a Golem push safely",
-                "Practice building support troops behind Golem",
-                "Understand death damage synergies"
-              ]
-            },
-            "phase2": {
-              "name": "Intermediate (Week 3-4)",
-              "focus": "Push optimization",
-              "tips": [
-                "Master Lightning timing on defensive buildings",
-                "Learn to use Tornado for King Tower activation",
-                "Practice managing elixir disadvantage"
-              ]
-            },
-            "phase3": {
-              "name": "Advanced (Week 5+)",
-              "focus": "Pressure adaptation",
-              "tips": [
-                "Learn to defend opposite lane pressure",
-                "Master baiting out key defensive cards",
-                "Perfect your double elixir push timing"
-              ]
-            }
-          },
-          "logBait": {
-            "phase1": {
-              "name": "Foundation (Week 1-2)",
-              "focus": "Spell baiting basics",
-              "tips": [
-                "Learn Princess placement behind King Tower",
-                "Practice Goblin Barrel placement variations",
-                "Understand which cards bait which spells"
-              ]
-            },
-            "phase2": {
-              "name": "Intermediate (Week 3-4)",
-              "focus": "Prediction mastery",
-              "tips": [
-                "Learn to predict opponent's spell usage",
-                "Master Rocket cycling for chip damage",
-                "Practice baiting Log before Barrel"
-              ]
-            },
-            "phase3": {
-              "name": "Advanced (Week 5+)",
-              "focus": "Mind games and adaptation",
-              "tips": [
-                "Develop reads on opponent's patterns",
-                "Learn all Goblin Barrel prediction spots",
-                "Master defensive Inferno Tower placement"
-              ]
-            }
-          },
-          "xbowSiege": {
-            "phase1": {
-              "name": "Foundation (Week 1-2)",
-              "focus": "X-Bow placement and protection",
-              "tips": [
-                "Learn safe X-Bow placement positions",
-                "Practice Tesla placement for tank pulling",
-                "Understand when to go offensive vs defensive"
-              ]
-            },
-            "phase2": {
-              "name": "Intermediate (Week 3-4)",
-              "focus": "Matchup knowledge",
-              "tips": [
-                "Learn which matchups favor offensive X-Bow",
-                "Master defensive X-Bow in bad matchups",
-                "Practice spell chip damage strategies"
-              ]
-            },
-            "phase3": {
-              "name": "Advanced (Week 5+)",
-              "focus": "Perfect execution",
-              "tips": [
-                "Develop deep matchup understanding",
-                "Master frame-perfect defensive placements",
-                "Learn to adapt playstyle mid-match"
-              ]
-            }
-          }
-        },
         "deckData": {
           "hogCycle": {
             "playstyle": "Fast-paced pressure with constant cycling",
@@ -613,7 +495,10 @@
           "Bait Card": "Bait Card",
           "Spell Bait": "Spell Bait",
           "Building": "Building",
-          "Tower Targeting": "Tower Targeting"
+          "Tower Targeting": "Tower Targeting",
+          "Bait/Chip": "Bait/Chip",
+          "Bait/Swarm": "Bait/Swarm",
+          "Support/Air": "Support/Air"
         },
         "archetypes": {
           "Cycle": "Cycle",
