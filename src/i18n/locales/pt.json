@@ -136,11 +136,22 @@
       "titleHighlight": "Estratégia com IA",
       "subtitle": "Seu treinador pessoal de Clash Royale com IA avançada. Obtenha análise de decks em tempo real, insights de batalhas e suba de ranking mais rápido.",
       "cta": "Comece a Vencer",
-      "secondaryCta": "Veja Como Funciona"
+      "secondaryCta": "Veja Como Funciona",
+      "playerCount": "Junte-se a mais de 10.000 jogadores competitivos",
+      "selectAccount": "Selecionar Conta",
+      "manageAccounts": "Gerencie até 3 contas de jogador",
+      "enterTag": "Digite sua tag de jogador para desbloquear insights de IA",
+      "analyze": "Analisar",
+      "errors": {
+        "enterTag": "Por favor, digite uma tag de jogador",
+        "signIn": "Por favor, faça login para continuar"
+      }
     },
     "features": {
       "title": "Tudo que Você Precisa para",
       "titleHighlight": "Dominar",
+      "badge": "Recursos",
+      "subtitle": "Clique em qualquer categoria para explorar nossos recursos poderosos",
       "smartAnalysis": "Análise Inteligente",
       "smartAnalysisDesc": "Análise de batalhas e previsões de confrontos com IA",
       "deckOptimization": "Otimização de Decks",
@@ -148,7 +159,63 @@
       "performanceTracking": "Acompanhamento de Desempenho",
       "performanceTrackingDesc": "Acompanhe seu progresso com estatísticas detalhadas",
       "aiPowered": "Powered by IA",
-      "aiPoweredDesc": "Chat com treinador pessoal para conselhos estratégicos"
+      "aiPoweredDesc": "Chat com treinador pessoal para conselhos estratégicos",
+      "analysis": {
+        "battleHistory": "Análise de Histórico de Batalhas",
+        "battleHistoryDesc": "Mergulhe em suas partidas recentes com insights de IA",
+        "matchReplay": "Insights de Replay",
+        "matchReplayDesc": "A IA identifica momentos-chave e pontos de virada",
+        "counterDeck": "Análise de Counter-Decks",
+        "counterDeckDesc": "Saiba exatamente o que vence o deck do seu oponente",
+        "matchupPredictions": "Previsões de Confrontos",
+        "matchupPredictionsDesc": "Probabilidade de vitória contra arquétipos comuns",
+        "deckComparison": "Ferramenta de Comparação de Decks",
+        "deckComparisonDesc": "Análise lado a lado de quaisquer dois decks",
+        "clanStats": "Estatísticas de Clã e Torneios",
+        "clanStatsDesc": "Acompanhe o desempenho em guerras de clã e torneios"
+      },
+      "deck": {
+        "visualBuilder": "Construtor Visual de Decks",
+        "visualBuilderDesc": "Interface de criação de decks com arrastar e soltar",
+        "cardReplacement": "Sugestor de Substituição de Cartas",
+        "cardReplacementDesc": "Encontre trocas ideais para melhorar seu deck",
+        "metaTemplates": "Templates Meta Prontos",
+        "metaTemplatesDesc": "Os melhores decks de ladder prontos para usar",
+        "synergyMatrix": "Matriz de Sinergias",
+        "synergyMatrixDesc": "Descubra combinações de cartas poderosas",
+        "elixirTrade": "Análise de Troca de Elixir",
+        "elixirTradeDesc": "Domine a eficiência e valor do elixir",
+        "metaTrend": "Análise de Tendências do Meta",
+        "metaTrendDesc": "Fique à frente das mudanças de meta e balanceamento"
+      },
+      "tracking": {
+        "trophyProgress": "Gráficos de Progresso de Troféus",
+        "trophyProgressDesc": "Visualize sua escalada através das arenas",
+        "winRateAnalytics": "Análise de Taxa de Vitória",
+        "winRateAnalyticsDesc": "Acompanhe tendências de desempenho ao longo de dias e semanas",
+        "deckUsage": "Estatísticas de Uso de Decks",
+        "deckUsageDesc": "Veja quais decks funcionam melhor para você",
+        "cardCollection": "Rastreador de Coleção de Cartas",
+        "cardCollectionDesc": "Gerencie seu inventário e upgrades",
+        "cardMastery": "Sistema de Maestria de Cartas",
+        "cardMasteryDesc": "Acompanhe o desempenho e maestria de cartas individuais",
+        "achievementBadges": "Insígnias de Conquistas",
+        "achievementBadgesDesc": "Desbloqueie marcos de habilidade e mostre seu progresso"
+      },
+      "ai": {
+        "coachChat": "Chat com Coach IA",
+        "coachChatDesc": "Pergunte qualquer coisa sobre estratégia e receba conselhos de especialistas",
+        "personalizedAnalysis": "Análise Personalizada",
+        "personalizedAnalysisDesc": "Insights adaptados ao seu estilo de jogo específico",
+        "matchCoaching": "Coaching Partida a Partida",
+        "matchCoachingDesc": "Aprenda com cada jogo com análises detalhadas",
+        "strategicRecommendations": "Recomendações Estratégicas",
+        "strategicRecommendationsDesc": "A IA sugere melhorias baseadas nos seus dados",
+        "counterStrategy": "Geração de Counter-Estratégia",
+        "counterStrategyDesc": "Construa decks projetados para vencer oponentes específicos",
+        "realtimeTips": "Dicas em Tempo Real",
+        "realtimeTipsDesc": "Sugestões contextuais durante o jogo"
+      }
     },
     "howItWorks": {
       "title": "Como Funciona",
