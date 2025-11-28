@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ const UPGRADE_REQUIREMENTS: Record<string, number[]> = {
 };
 
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
+  const { t } = useTranslation();
   const [collection, setCollection] = useState<CardCollectionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRarity, setSelectedRarity] = useState<string>("all");
@@ -74,7 +76,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
     if (error) {
       console.error('Error fetching collection:', error);
-      toast.error('Failed to load card collection');
+      toast.error(t('cardCollection.loadFailed'));
     } else if (data) {
       setCollection(data);
     }
@@ -82,7 +84,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   };
 
   const syncCollection = async () => {
-    toast.loading('Syncing card collection...', { id: 'card-collection-sync' });
+    toast.loading(t('cardCollection.syncing'), { id: 'card-collection-sync' });
     
     try {
       const { error } = await supabase.functions.invoke('sync-card-collection', {
@@ -91,15 +93,15 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
       if (error) {
         console.error('Error syncing collection:', error);
-        toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
+        toast.error(t('cardCollection.syncFailed'), { id: 'card-collection-sync' });
       } else {
-        toast.success('Card collection synced successfully!', { id: 'card-collection-sync' });
+        toast.success(t('cardCollection.syncSuccess'), { id: 'card-collection-sync' });
         
         createNotification({
           player_tag: playerTag,
           type: 'sync',
-          title: 'Card Collection Synced',
-          message: 'Your card collection has been updated with the latest data from Clash Royale',
+          title: t('cardCollection.syncedTitle'),
+          message: t('cardCollection.syncedMessage'),
           icon_name: 'sparkles'
         });
         
@@ -107,7 +109,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       }
     } catch (error) {
       console.error('Sync error:', error);
-      toast.error('Failed to sync card collection', { id: 'card-collection-sync' });
+      toast.error(t('cardCollection.syncFailed'), { id: 'card-collection-sync' });
     }
   };
 
@@ -147,7 +149,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Card Collection</CardTitle>
+          <CardTitle>{t('cardCollection.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <DataLoader context="collection" variant="inline" />
@@ -162,11 +164,11 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
-            Card Collection ({collection.length} cards)
+            {t('cardCollection.title')} ({collection.length} {t('cardCollection.cards')})
           </CardTitle>
           {syncProgress?.status === 'running' && (
             <Badge variant="secondary" className="animate-pulse">
-              Syncing {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
+              {t('cardCollection.syncing')} {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
             </Badge>
           )}
         </div>
@@ -187,21 +189,21 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         {/* Rarity Filter Tabs */}
         <Tabs value={selectedRarity} onValueChange={setSelectedRarity}>
           <TabsList className="w-full grid grid-cols-6">
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
             <TabsTrigger value="common">
-              Common ({rarityStats.common})
+              {t('cardCollection.common')} ({rarityStats.common})
             </TabsTrigger>
             <TabsTrigger value="rare">
-              Rare ({rarityStats.rare})
+              {t('cardCollection.rare')} ({rarityStats.rare})
             </TabsTrigger>
             <TabsTrigger value="epic">
-              Epic ({rarityStats.epic})
+              {t('cardCollection.epic')} ({rarityStats.epic})
             </TabsTrigger>
             <TabsTrigger value="legendary">
-              Leg ({rarityStats.legendary})
+              {t('cardCollection.legendary')} ({rarityStats.legendary})
             </TabsTrigger>
             <TabsTrigger value="champion">
-              Champ ({rarityStats.champion})
+              {t('cardCollection.champion')} ({rarityStats.champion})
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -253,12 +255,12 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                     <div className="space-y-1">
                       <Progress value={progress} className="h-1.5" />
                       <p className="text-xs text-center text-muted-foreground">
-                        {nextLevelReq! - card.card_count} to level {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
+                        {nextLevelReq! - card.card_count} {t('cardCollection.toLevel')} {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
                       </p>
                     </div>
                   ) : (
                     <Badge variant="default" className="w-full justify-center bg-green-500 hover:bg-green-600">
-                      MAX
+                      {t('cardCollection.max')}
                     </Badge>
                   )}
                 </div>
@@ -269,7 +271,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
         {filteredCards.length === 0 && (
           <p className="text-center text-muted-foreground py-8">
-            No cards found for this rarity
+            {t('cardCollection.noCardsFound')}
           </p>
         )}
       </CardContent>

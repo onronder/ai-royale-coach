@@ -913,12 +913,31 @@
     "yourDeck": "Tu Mazo",
     "opponentDeck": "Mazo de {{name}}",
     "aiAnalysis": "Análisis IA de la Partida",
+    "matchAnalysis": "Análisis de Partida",
+    "analysis": "Análisis",
     "deckMatchup": "Enfrentamiento de Mazos",
     "whatHappened": "Qué Pasó",
     "recommendations": "Recomendaciones",
     "discussWithCoach": "Discutir con Coach IA",
-    "signInRequired": "Inicia sesión para ver el análisis IA detallado de tus partidas",
-    "signIn": "Iniciar Sesión para Desbloquear"
+    "buildCounterDeck": "Construir Mazo Contra",
+    "actionHint": "Obtén consejos personalizados o construye un mazo para contrarrestar a este oponente",
+    "signInRequired": "Inicia sesión para ver el análisis IA",
+    "signIn": "Iniciar Sesión para Desbloquear",
+    "analysisFailed": "Error al cargar el análisis. Por favor, inténtalo de nuevo.",
+    "matchTimeline": "Línea de Tiempo del Partido",
+    "keyMoments": "Momentos Clave",
+    "game": "Juego",
+    "phases": {
+      "early": "Temprano",
+      "mid": "Medio",
+      "late": "Tarde",
+      "overtime": "PR"
+    },
+    "highImpact": "Alto Impacto",
+    "counterDeck": "Constructor de Mazo Contra",
+    "counterDeckDesc": "Mazo sugerido por IA para contrarrestar a este oponente",
+    "viewCounterDeck": "Ver Mazo Contra",
+    "overallStrategy": "Estrategia General"
   },
   "footer": {
     "tagline": "Dominio de la arena con IA"
@@ -1126,5 +1145,23 @@
   "common": {
     "aiPowered": "Con IA",
     "elixir": "Elixir"
+  },
+  "cardCollection": {
+    "title": "Colección de Cartas",
+    "cards": "cartas",
+    "syncing": "Sincronizando...",
+    "syncFailed": "Error al sincronizar colección de cartas",
+    "syncSuccess": "¡Colección de cartas sincronizada exitosamente!",
+    "loadFailed": "Error al cargar colección de cartas",
+    "syncedTitle": "Colección de Cartas Sincronizada",
+    "syncedMessage": "Tu colección de cartas ha sido actualizada con los datos más recientes de Clash Royale",
+    "common": "Común",
+    "rare": "Rara",
+    "epic": "Épica",
+    "legendary": "Leg",
+    "champion": "Camp",
+    "toLevel": "al nivel",
+    "max": "MÁX",
+    "noCardsFound": "No se encontraron cartas para esta rareza"
   }
 }

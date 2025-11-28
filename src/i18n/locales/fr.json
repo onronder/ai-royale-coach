@@ -913,12 +913,31 @@
     "yourDeck": "Votre Deck",
     "opponentDeck": "Deck de {{name}}",
     "aiAnalysis": "Analyse IA du Match",
+    "matchAnalysis": "Analyse du Match",
+    "analysis": "Analyse",
     "deckMatchup": "Confrontation de Decks",
     "whatHappened": "Ce Qui S'est Passé",
     "recommendations": "Recommandations",
     "discussWithCoach": "Discuter avec le Coach IA",
-    "signInRequired": "Connectez-vous pour voir l'analyse IA détaillée de vos matchs",
-    "signIn": "Se Connecter pour Débloquer"
+    "buildCounterDeck": "Construire Deck Contre",
+    "actionHint": "Obtenez des conseils personnalisés ou construisez un deck pour contrer cet adversaire",
+    "signInRequired": "Connectez-vous pour voir l'analyse IA",
+    "signIn": "Se Connecter pour Débloquer",
+    "analysisFailed": "Échec du chargement de l'analyse. Veuillez réessayer.",
+    "matchTimeline": "Chronologie du Match",
+    "keyMoments": "Moments Clés",
+    "game": "Jeu",
+    "phases": {
+      "early": "Début",
+      "mid": "Milieu",
+      "late": "Fin",
+      "overtime": "PR"
+    },
+    "highImpact": "Impact Élevé",
+    "counterDeck": "Constructeur de Deck Contre",
+    "counterDeckDesc": "Deck suggéré par l'IA pour contrer cet adversaire",
+    "viewCounterDeck": "Voir Deck Contre",
+    "overallStrategy": "Stratégie Globale"
   },
   "footer": {
     "tagline": "Domination de l'arène avec l'IA"
@@ -1126,5 +1145,23 @@
   "common": {
     "aiPowered": "Avec IA",
     "elixir": "Élixir"
+  },
+  "cardCollection": {
+    "title": "Collection de Cartes",
+    "cards": "cartes",
+    "syncing": "Synchronisation...",
+    "syncFailed": "Échec de la synchronisation de la collection",
+    "syncSuccess": "Collection de cartes synchronisée avec succès!",
+    "loadFailed": "Échec du chargement de la collection de cartes",
+    "syncedTitle": "Collection de Cartes Synchronisée",
+    "syncedMessage": "Votre collection de cartes a été mise à jour avec les dernières données de Clash Royale",
+    "common": "Commune",
+    "rare": "Rare",
+    "epic": "Épique",
+    "legendary": "Lég",
+    "champion": "Champ",
+    "toLevel": "au niveau",
+    "max": "MAX",
+    "noCardsFound": "Aucune carte trouvée pour cette rareté"
   }
 }

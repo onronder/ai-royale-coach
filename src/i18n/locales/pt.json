@@ -913,12 +913,31 @@
     "yourDeck": "Seu Deck",
     "opponentDeck": "Deck de {{name}}",
     "aiAnalysis": "Análise IA da Partida",
+    "matchAnalysis": "Análise da Partida",
+    "analysis": "Análise",
     "deckMatchup": "Confronto de Decks",
     "whatHappened": "O Que Aconteceu",
     "recommendations": "Recomendações",
     "discussWithCoach": "Discutir com Coach IA",
-    "signInRequired": "Entre para ver a análise IA detalhada das suas partidas",
-    "signIn": "Entrar para Desbloquear"
+    "buildCounterDeck": "Construir Deck Contra",
+    "actionHint": "Obtenha dicas personalizadas ou construa um deck para contrariar este oponente",
+    "signInRequired": "Entre para ver a análise IA",
+    "signIn": "Entrar para Desbloquear",
+    "analysisFailed": "Falha ao carregar análise. Por favor, tente novamente.",
+    "matchTimeline": "Linha do Tempo da Partida",
+    "keyMoments": "Momentos-Chave",
+    "game": "Jogo",
+    "phases": {
+      "early": "Início",
+      "mid": "Meio",
+      "late": "Final",
+      "overtime": "PR"
+    },
+    "highImpact": "Alto Impacto",
+    "counterDeck": "Construtor de Deck Contra",
+    "counterDeckDesc": "Deck sugerido pela IA para contrariar este oponente",
+    "viewCounterDeck": "Ver Deck Contra",
+    "overallStrategy": "Estratégia Geral"
   },
   "footer": {
     "tagline": "Domínio da arena com IA"
@@ -1126,5 +1145,23 @@
   "common": {
     "aiPowered": "Com IA",
     "elixir": "Elixir"
+  },
+  "cardCollection": {
+    "title": "Coleção de Cartas",
+    "cards": "cartas",
+    "syncing": "Sincronizando...",
+    "syncFailed": "Falha ao sincronizar coleção de cartas",
+    "syncSuccess": "Coleção de cartas sincronizada com sucesso!",
+    "loadFailed": "Falha ao carregar coleção de cartas",
+    "syncedTitle": "Coleção de Cartas Sincronizada",
+    "syncedMessage": "Sua coleção de cartas foi atualizada com os dados mais recentes do Clash Royale",
+    "common": "Comum",
+    "rare": "Rara",
+    "epic": "Épica",
+    "legendary": "Lend",
+    "champion": "Camp",
+    "toLevel": "para nível",
+    "max": "MÁX",
+    "noCardsFound": "Nenhuma carta encontrada para esta raridade"
   }
 }
