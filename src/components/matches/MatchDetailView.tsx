@@ -306,7 +306,7 @@ function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
 }
 
 export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [counterDeckOpen, setCounterDeckOpen] = useState(false);
@@ -397,12 +397,12 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <Badge variant={isWin ? "default" : "destructive"} className="text-base">
-                {isWin ? "Victory" : "Defeat"}
+                {isWin ? t('matchDetail.victory') : t('matchDetail.defeat')}
               </Badge>
               <span className="text-muted-foreground">{battle.gameMode.name}</span>
             </DialogTitle>
             <DialogDescription>
-              Detailed analysis of your match against {opponent.name}
+              {t('matchDetail.analysisOf', { opponent: opponent.name })}
             </DialogDescription>
           </DialogHeader>
 
@@ -415,7 +415,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               <div className="text-center">
                 <Crown className={cn("w-6 h-6 mx-auto mb-1", isWin ? "text-gold" : "text-primary")} />
                 <p className="text-2xl font-bold font-rajdhani">{playerTeam.crowns} - {opponent.crowns}</p>
-                <p className="text-xs text-muted-foreground">Crowns</p>
+                <p className="text-xs text-muted-foreground">{t('matchDetail.crowns')}</p>
               </div>
               {trophyChange !== 0 && (
                 <div className="text-center">
@@ -429,13 +429,13 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                   )}>
                     {trophyChange > 0 ? '+' : ''}{trophyChange}
                   </p>
-                  <p className="text-xs text-muted-foreground">Trophies</p>
+                  <p className="text-xs text-muted-foreground">{t('matchDetail.trophies')}</p>
                 </div>
               )}
               <div className="text-center">
                 <Swords className="w-6 h-6 mx-auto mb-1 text-primary" />
                 <p className="text-sm font-medium">{battle.arena.name}</p>
-                <p className="text-xs text-muted-foreground">Arena</p>
+                <p className="text-xs text-muted-foreground">{t('matchDetail.arena')}</p>
               </div>
             </div>
 
@@ -443,13 +443,13 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-green-500">●</span> Your Deck
+                  <span className="text-green-500">●</span> {t('matchDetail.yourDeck')}
                 </h3>
                 <DeckGrid cards={playerTeam.cards} size="sm" />
               </div>
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-red-500">●</span> {opponent.name}'s Deck
+                  <span className="text-red-500">●</span> {t('matchDetail.opponentDeck', { name: opponent.name })}
                 </h3>
                 <DeckGrid cards={opponent.cards} size="sm" />
               </div>
@@ -457,39 +457,39 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
             {/* AI Analysis */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Match Analysis</h3>
+              <h3 className="font-semibold text-lg">{t('matchDetail.aiAnalysis')}</h3>
               {isLoading ? (
                 <DataLoader context="match-analysis" variant="inline" />
               ) : analysisError ? (
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                   {analysisError.message === 'AUTH_REQUIRED' ? (
                     <div className="text-center space-y-2">
-                      <p className="text-sm text-muted-foreground">Sign in to view AI analysis</p>
+                      <p className="text-sm text-muted-foreground">{t('deckAnalysis.signInRequired')}</p>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => window.location.href = '/auth?mode=signin'}
                       >
-                        Sign In
+                        {t('deckAnalysis.signIn')}
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-destructive">Failed to load analysis. Please try again.</p>
+                    <p className="text-sm text-destructive">{t('deckAnalysis.failedToAnalyze')}</p>
                   )}
                 </div>
               ) : analysis ? (
                 <div className="space-y-4">
                   <div className="p-4 bg-card rounded-lg border">
-                    <h4 className="font-medium mb-2 text-primary">Deck Matchup</h4>
+                    <h4 className="font-medium mb-2 text-primary">{t('matchDetail.deckMatchup')}</h4>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.deckMatchup}</p>
                   </div>
                   <div className="p-4 bg-card rounded-lg border">
-                    <h4 className="font-medium mb-2 text-primary">Analysis</h4>
+                    <h4 className="font-medium mb-2 text-primary">{t('matchDetail.whatHappened')}</h4>
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.analysis}</p>
                   </div>
                   {analysis.recommendations && analysis.recommendations.length > 0 && (
                     <div className="p-4 bg-card rounded-lg border">
-                      <h4 className="font-medium mb-2 text-primary">Recommendations</h4>
+                      <h4 className="font-medium mb-2 text-primary">{t('matchDetail.recommendations')}</h4>
                       <ul className="space-y-1">
                         {analysis.recommendations.map((rec, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground flex gap-2">
@@ -522,7 +522,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                   className="bg-gradient-to-r from-primary to-accent hover:shadow-glow transition-all"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Discuss with Coach
+                  {t('matchDetail.discussWithCoach')}
                 </Button>
                 
                 {analysis?.counterDeck && analysis.counterDeck.cards.length > 0 && (
@@ -532,13 +532,10 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                     className="border-primary/50 hover:bg-primary/10"
                   >
                     <Shield className="w-4 h-4 mr-2" />
-                    Build Counter Deck
+                    {t('matchDetail.buildCounterDeck')}
                   </Button>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground text-center">
-                Get personalized tips or build a deck to counter this opponent
-              </p>
             </div>
           </div>
         </DialogContent>
