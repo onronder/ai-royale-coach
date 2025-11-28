@@ -719,18 +719,6 @@
     "quotaExhausted": "Limite quotidienne IA atteinte. Réinitialisation à minuit.",
     "quotaLow": "Peu de requêtes IA restantes aujourd'hui."
   },
-  "counterDeck": {
-    "title": "Constructeur de Deck Contre",
-    "description": "Deck suggéré par l'IA conçu pour contrer la stratégie de {{opponent}}",
-    "opponentDeck": "Deck de l'Adversaire",
-    "suggestedDeck": "Deck Contre Suggéré",
-    "howToPlay": "Comment Jouer Ce Deck Contre",
-    "whyTheseCards": "Pourquoi Ces Cartes?",
-    "copyButton": "Copier les Cartes du Deck",
-    "copiedButton": "Copié dans le Presse-papiers!",
-    "copiedToClipboard": "Deck contre copié dans le presse-papiers!",
-    "copyHint": "Copiez les noms des cartes pour utiliser dans votre constructeur de deck"
-  },
   "deckComparison": {
     "title": "Comparaison de Decks",
     "headToHead": "Face à Face",
@@ -823,18 +811,6 @@
     "globalRankingsFailed": "Échec du chargement des classements mondiaux des clans",
     "enterSearchQuery": "Veuillez entrer une recherche",
     "searchFailed": "Échec de la recherche de clans"
-  },
-  "tournaments": {
-    "title": "Tournois",
-    "noTournaments": "Pas Encore de Tournois",
-    "createFirst": "Créez votre premier tournoi pour faire concourir les joueurs!",
-    "create": "Créer un Tournoi",
-    "prizePool": "Cagnotte",
-    "loadFailed": "Échec du chargement des tournois",
-    "registration": "Inscriptions",
-    "inProgress": "En Cours",
-    "completed": "Terminé",
-    "cancelled": "Annulé"
   },
   "common": {
     "loading": "Chargement...",

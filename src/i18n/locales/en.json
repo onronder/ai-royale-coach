@@ -712,18 +712,6 @@
     "quotaExhausted": "Daily AI limit reached. Resets at midnight.",
     "quotaLow": "Running low on AI requests today."
   },
-  "counterDeck": {
-    "title": "Counter Deck Builder",
-    "description": "AI-suggested deck designed to counter {{opponent}}'s strategy",
-    "opponentDeck": "Opponent's Deck",
-    "suggestedDeck": "Suggested Counter Deck",
-    "howToPlay": "How to Play This Counter Deck",
-    "whyTheseCards": "Why These Cards?",
-    "copyButton": "Copy Deck Cards",
-    "copiedButton": "Copied to Clipboard!",
-    "copiedToClipboard": "Counter deck copied to clipboard!",
-    "copyHint": "Copy the card names to use in your deck builder"
-  },
   "deckComparison": {
     "title": "Deck Comparison",
     "headToHead": "Head to Head",
@@ -815,18 +803,6 @@
     "globalRankingsFailed": "Failed to load global clan rankings",
     "enterSearchQuery": "Please enter a search query",
     "searchFailed": "Failed to search clans"
-  },
-  "tournaments": {
-    "title": "Tournaments",
-    "noTournaments": "No Tournaments Yet",
-    "createFirst": "Create your first tournament to get players competing!",
-    "create": "Create Tournament",
-    "prizePool": "Prize Pool",
-    "loadFailed": "Failed to load tournaments",
-    "registration": "Registration",
-    "inProgress": "In Progress",
-    "completed": "Completed",
-    "cancelled": "Cancelled"
   },
   "common": {
     "loading": "Loading...",
