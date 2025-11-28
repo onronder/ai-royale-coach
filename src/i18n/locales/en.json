@@ -719,6 +719,19 @@
     "copiedToClipboard": "Counter deck copied to clipboard!",
     "copyHint": "Copy the card names to use in your deck builder"
   },
+  "deckComparison": {
+    "title": "Deck Comparison",
+    "headToHead": "Head to Head",
+    "cards": "cards",
+    "avgElixir": "Avg Elixir",
+    "similar": "Similar",
+    "matchupAnalysis": "Matchup Analysis",
+    "matchupDisclaimer": "Win rate predictions require actual battle history with both decks. Compare based on archetype matchups and card counters instead.",
+    "hideBreakdown": "Hide Card-by-Card Breakdown",
+    "showBreakdown": "Show Card-by-Card Breakdown",
+    "deck1Cards": "Deck 1 Cards",
+    "deck2Cards": "Deck 2 Cards"
+  },
   "cardReplacements": {
     "title": "Card Replacement Suggester",
     "getSuggestions": "Get AI-powered suggestions to replace {{card}}",

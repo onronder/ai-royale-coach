@@ -726,6 +726,19 @@
     "copiedToClipboard": "Deck contador copiado para a área de transferência!",
     "copyHint": "Copie os nomes das cartas para usar no seu construtor de decks"
   },
+  "deckComparison": {
+    "title": "Comparação de Decks",
+    "headToHead": "Frente a Frente",
+    "cards": "cartas",
+    "avgElixir": "Elixir Médio",
+    "similar": "Similar",
+    "matchupAnalysis": "Análise de Confronto",
+    "matchupDisclaimer": "Previsões de taxa de vitória requerem histórico de batalha real com ambos os decks. Compare com base em confrontos de arquétipos e contadores de cartas.",
+    "hideBreakdown": "Ocultar Detalhes das Cartas",
+    "showBreakdown": "Mostrar Detalhes das Cartas",
+    "deck1Cards": "Cartas do Deck 1",
+    "deck2Cards": "Cartas do Deck 2"
+  },
   "cardReplacements": {
     "title": "Sugestor de Substituição de Cartas",
     "getSuggestions": "Obtenha sugestões com IA para substituir {{card}}",
