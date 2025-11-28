@@ -631,7 +631,30 @@
     "templates": "Templates",
     "save": "Save Deck",
     "clear": "Clear",
-    "noCards": "No cards selected"
+    "noCards": "No cards selected",
+    "yourDeck": "Your Deck",
+    "deckFull": "Deck is full (8 cards maximum)",
+    "cardAlreadyInDeck": "Card already in deck",
+    "completeDeckFirst": "Complete your deck with 8 cards first",
+    "analyzing": "Analyzing...",
+    "aiAnalyze": "AI Analyze",
+    "saving": "Saving...",
+    "deckDetails": "Deck Details",
+    "deckNamePlaceholder": "Deck name (e.g., Fast Cycle Hog)",
+    "deckDescPlaceholder": "Deck description (optional)",
+    "availableCards": "Available Cards",
+    "compare": "Compare",
+    "comparisonNote": "Deck comparison requires selecting from your saved decks or meta templates.",
+    "comparisonSaveFirst": "Save this deck first, then compare it with others from your collection.",
+    "completeDeckForComparison": "Complete your deck with 8 cards to enable comparison",
+    "imported": "Imported {{count}} cards!",
+    "analysisReady": "Complete deck analysis ready!",
+    "savedSuccess": "Deck saved successfully!",
+    "analyzeFailed": "Failed to analyze deck",
+    "saveFailed": "Failed to save deck",
+    "enterDeckName": "Please enter a deck name",
+    "aiDeckAnalysis": "AI Deck Analysis",
+    "analyzingStrategy": "AI is analyzing your deck strategy..."
   },
   "coach": {
     "title": "AI Coach",
@@ -643,7 +666,14 @@
       "improve": "How can I improve my deck?",
       "counter": "What counters my opponent?",
       "tips": "Give me tips for this matchup"
-    }
+    },
+    "rateLimitExceeded": "Rate limit exceeded. Please wait a moment.",
+    "creditsExhausted": "AI credits exhausted. Please add credits.",
+    "failedToGetResponse": "Failed to get response from coach",
+    "failedToSend": "Failed to send message",
+    "signInRequired": "Please sign in to use AI Coach",
+    "sessionExpired": "Session expired. Please sign in again.",
+    "failedToSendContext": "Failed to send match context"
   },
   "matches": {
     "details": "Match Details",
@@ -662,7 +692,10 @@
     "mastery": "Card Mastery",
     "level": "Level",
     "count": "Count",
-    "progress": "Progress"
+    "progress": "Progress",
+    "updateSuccess": "Card mastery updated successfully",
+    "updateFailed": "Failed to update card mastery",
+    "suggestionsFailed": "Failed to fetch card suggestions"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -671,7 +704,17 @@
     "rank": "Rank",
     "player": "Player",
     "clan": "Clan",
-    "sync": "Sync Rankings"
+    "sync": "Sync Rankings",
+    "syncSuccess": "Global rankings synced successfully!",
+    "syncFailed": "Failed to sync global rankings"
+  },
+  "clan": {
+    "signInRequired": "Please sign in to send a join request",
+    "pendingRequest": "You already have a pending request to this clan",
+    "requestFailed": "Failed to send join request",
+    "requestSuccess": "Join request sent successfully!",
+    "copiedToClipboard": "Counter deck copied to clipboard!",
+    "predictionsFailed": "Failed to fetch win rate predictions"
   },
   "common": {
     "loading": "Loading...",

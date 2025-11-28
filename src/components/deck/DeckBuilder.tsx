@@ -52,7 +52,7 @@ interface AdvancedDeckAnalysis {
 }
 
 export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
@@ -64,11 +64,11 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
   const addCard = (card: ClashRoyaleCard) => {
     if (selectedCards.length >= 8) {
-      toast.error('Deck is full (8 cards maximum)');
+      toast.error(t('deck.deckFull'));
       return;
     }
     if (selectedCards.find(c => c.id === card.id)) {
-      toast.error('Card already in deck');
+      toast.error(t('deck.cardAlreadyInDeck'));
       return;
     }
     setSelectedCards([...selectedCards, card]);
@@ -89,12 +89,12 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
     setAnalysis(null);
     setAdvancedAnalysis(null);
     setActiveTab("builder");
-    toast.success(`Imported ${importedCards.length} cards!`);
+    toast.success(t('deck.imported', { count: importedCards.length }));
   };
 
   const analyzeDeck = async () => {
     if (selectedCards.length !== 8) {
-      toast.error('Complete your deck with 8 cards first');
+      toast.error(t('deck.completeDeckFirst'));
       return;
     }
 
@@ -114,10 +114,10 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
       
       setAnalysis(basicResult.data);
       setAdvancedAnalysis(advancedResult.data);
-      toast.success('Complete deck analysis ready!');
+      toast.success(t('deck.analysisReady'));
     } catch (error) {
       console.error('Error analyzing deck:', error);
-      toast.error('Failed to analyze deck');
+      toast.error(t('deck.analyzeFailed'));
     } finally {
       setIsAnalyzing(false);
     }
@@ -125,11 +125,11 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
 
   const saveDeck = async () => {
     if (selectedCards.length !== 8) {
-      toast.error('Complete your deck with 8 cards first');
+      toast.error(t('deck.completeDeckFirst'));
       return;
     }
     if (!deckName.trim()) {
-      toast.error('Please enter a deck name');
+      toast.error(t('deck.enterDeckName'));
       return;
     }
 
@@ -146,12 +146,12 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
       }]);
 
       if (error) throw error;
-      toast.success('Deck saved successfully!');
+      toast.success(t('deck.savedSuccess'));
       setDeckName("");
       setDeckDescription("");
     } catch (error) {
       console.error('Error saving deck:', error);
-      toast.error('Failed to save deck');
+      toast.error(t('deck.saveFailed'));
     } finally {
       setIsSaving(false);
     }
@@ -163,14 +163,14 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="builder">Deck Builder</TabsTrigger>
+          <TabsTrigger value="builder">{t('deck.builder')}</TabsTrigger>
           <TabsTrigger value="templates">
             <Library className="w-4 h-4 mr-2" />
-            Templates
+            {t('deck.templates')}
           </TabsTrigger>
           <TabsTrigger value="compare" disabled={selectedCards.length < 8}>
             <GitCompare className="w-4 h-4 mr-2" />
-            Compare
+            {t('deck.compare')}
           </TabsTrigger>
         </TabsList>
 
@@ -179,10 +179,10 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Your Deck ({selectedCards.length}/8)</span>
+                <span>{t('deck.yourDeck')} ({selectedCards.length}/8)</span>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Zap className="w-4 h-4" />
-                  Avg: {avgElixir.toFixed(1)} elixir
+                  {t('deck.avgElixir')}: {avgElixir.toFixed(1)}
                 </div>
               </CardTitle>
             </CardHeader>
@@ -221,7 +221,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
                   className="flex-1"
                 >
                   <Sparkles className="w-4 h-4 mr-2" />
-                  {isAnalyzing ? 'Analyzing...' : 'AI Analyze'}
+                  {isAnalyzing ? t('deck.analyzing') : t('deck.aiAnalyze')}
                 </Button>
                 <Button 
                   onClick={saveDeck} 
@@ -230,7 +230,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
                   className="flex-1"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  {isSaving ? 'Saving...' : 'Save Deck'}
+                  {isSaving ? t('deck.saving') : t('deck.save')}
                 </Button>
               </div>
             </CardContent>
@@ -240,16 +240,16 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           {selectedCards.length === 8 && (
             <Card>
               <CardHeader>
-                <CardTitle>Deck Details</CardTitle>
+                <CardTitle>{t('deck.deckDetails')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Input
-                  placeholder="Deck name (e.g., Fast Cycle Hog)"
+                  placeholder={t('deck.deckNamePlaceholder')}
                   value={deckName}
                   onChange={(e) => setDeckName(e.target.value)}
                 />
                 <Textarea
-                  placeholder="Deck description (optional)"
+                  placeholder={t('deck.deckDescPlaceholder')}
                   value={deckDescription}
                   onChange={(e) => setDeckDescription(e.target.value)}
                   rows={3}
@@ -263,7 +263,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
             <DataLoader 
               context="deck-analysis" 
               variant="card"
-              customMessage="AI is analyzing your deck strategy..."
+              customMessage={t('deck.analyzingStrategy')}
             />
           )}
 
@@ -272,7 +272,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  AI Deck Analysis
+                  {t('deck.aiDeckAnalysis')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -288,7 +288,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           {/* Available Cards */}
           <Card>
             <CardHeader>
-              <CardTitle>Available Cards</CardTitle>
+              <CardTitle>{t('deck.availableCards')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-96 overflow-y-auto">
@@ -314,16 +314,16 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           {selectedCards.length === 8 ? (
             <Card>
               <CardHeader>
-                <CardTitle>Deck Comparison</CardTitle>
+                <CardTitle>{t('deck.compare')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8 space-y-2">
                   <GitCompare className="h-12 w-12 text-muted-foreground mx-auto" />
                   <p className="text-muted-foreground">
-                    Deck comparison requires selecting from your saved decks or meta templates.
+                    {t('deck.comparisonNote')}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Save this deck first, then compare it with others from your collection.
+                    {t('deck.comparisonSaveFirst')}
                   </p>
                 </div>
               </CardContent>
@@ -331,7 +331,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
           ) : (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
-                Complete your deck with 8 cards to enable comparison
+                {t('deck.completeDeckForComparison')}
               </CardContent>
             </Card>
           )}

@@ -637,14 +637,45 @@
     "cardCount": "{{count}}/8 Cartes",
     "synergies": "Synergies",
     "weaknesses": "Faiblesses",
-    "suggestions": "Suggestions"
+    "suggestions": "Suggestions",
+    "yourDeck": "Votre Deck",
+    "deckFull": "Deck complet (maximum 8 cartes)",
+    "cardAlreadyInDeck": "Carte déjà dans le deck",
+    "completeDeckFirst": "Complétez d'abord votre deck avec 8 cartes",
+    "analyzing": "Analyse...",
+    "aiAnalyze": "Analyse IA",
+    "saving": "Sauvegarde...",
+    "deckDetails": "Détails du Deck",
+    "deckNamePlaceholder": "Nom du deck (ex. Cycle Rapide Hog)",
+    "deckDescPlaceholder": "Description du deck (optionnel)",
+    "availableCards": "Cartes Disponibles",
+    "compare": "Comparer",
+    "comparisonNote": "La comparaison nécessite de sélectionner parmi vos decks sauvegardés ou modèles méta.",
+    "comparisonSaveFirst": "Sauvegardez ce deck d'abord, puis comparez-le avec d'autres de votre collection.",
+    "completeDeckForComparison": "Complétez votre deck avec 8 cartes pour activer la comparaison",
+    "imported": "{{count}} cartes importées!",
+    "analysisReady": "Analyse complète du deck prête!",
+    "savedSuccess": "Deck sauvegardé avec succès!",
+    "analyzeFailed": "Échec de l'analyse du deck",
+    "saveFailed": "Échec de la sauvegarde du deck",
+    "enterDeckName": "Veuillez entrer un nom pour le deck",
+    "aiDeckAnalysis": "Analyse de Deck IA",
+    "analyzingStrategy": "L'IA analyse la stratégie de votre deck...",
+    "templates": "Modèles"
   },
   "coach": {
     "title": "Coach IA",
     "placeholder": "Posez une question à votre coach...",
     "send": "Envoyer",
     "thinking": "Réflexion...",
-    "greeting": "Bonjour! Je suis votre coach Clash Royale IA. Demandez-moi n'importe quoi sur la stratégie, les decks ou comment améliorer votre jeu."
+    "greeting": "Bonjour! Je suis votre coach Clash Royale IA. Demandez-moi n'importe quoi sur la stratégie, les decks ou comment améliorer votre jeu.",
+    "rateLimitExceeded": "Limite de taux dépassée. Veuillez patienter.",
+    "creditsExhausted": "Crédits IA épuisés. Veuillez ajouter des crédits.",
+    "failedToGetResponse": "Échec de la réponse du coach",
+    "failedToSend": "Échec de l'envoi du message",
+    "signInRequired": "Connectez-vous pour utiliser le Coach IA",
+    "sessionExpired": "Session expirée. Reconnectez-vous.",
+    "failedToSendContext": "Échec de l'envoi du contexte du match"
   },
   "match": {
     "victory": "Victoire",
@@ -664,7 +695,10 @@
     "level": "Niveau",
     "count": "Quantité",
     "maxLevel": "Niveau Max",
-    "upgradeable": "Améliorable"
+    "upgradeable": "Améliorable",
+    "updateSuccess": "Maîtrise des cartes mise à jour avec succès",
+    "updateFailed": "Échec de la mise à jour de la maîtrise des cartes",
+    "suggestionsFailed": "Échec de l'obtention des suggestions de cartes"
   },
   "leaderboard": {
     "title": "Classement",
@@ -673,7 +707,17 @@
     "trophies": "Trophées",
     "clan": "Clan",
     "global": "Global",
-    "local": "Local"
+    "local": "Local",
+    "syncSuccess": "Classements mondiaux synchronisés avec succès!",
+    "syncFailed": "Échec de la synchronisation des classements mondiaux"
+  },
+  "clan": {
+    "signInRequired": "Connectez-vous pour envoyer une demande d'adhésion",
+    "pendingRequest": "Vous avez déjà une demande en attente pour ce clan",
+    "requestFailed": "Échec de l'envoi de la demande d'adhésion",
+    "requestSuccess": "Demande d'adhésion envoyée avec succès!",
+    "copiedToClipboard": "Deck contre copié dans le presse-papiers!",
+    "predictionsFailed": "Échec de l'obtention des prédictions de taux de victoire"
   },
   "common": {
     "loading": "Chargement...",
