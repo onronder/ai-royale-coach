@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,17 @@ const Dashboard = () => {
   
   // Memoized win rate calculation to prevent recalculation on every render
   const { winRate, formattedWinRate, wins, losses } = useWinRate(battles, playerTag);
+  
+  // Memoized average trophy change calculation
+  const avgTrophyChange = useMemo(() => {
+    if (!battles || battles.length === 0) return '0';
+    const normalizedTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
+    const totalChange = battles.reduce((sum, b) => {
+      const playerTeam = b.team.find(p => p.tag === normalizedTag);
+      return sum + (playerTeam?.trophyChange || 0);
+    }, 0);
+    return (totalChange / battles.length).toFixed(1);
+  }, [battles, playerTag]);
   
   // Player profiles hook for saving/updating last seen
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
@@ -612,50 +623,29 @@ const Dashboard = () => {
         onOpenCoach={() => setCoachOpen(true)}
       />
 
-      {/* Floating AI Coach Widget */}
-      {player && battles && (() => {
-        // Normalize playerTag for comparisons (API data includes #, URL param may not)
-        const normalizedTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
-        
-        return (
-          <FloatingCoachButton
-            playerTag={normalizedTag}
-            playerStats={{
-              trophies: player.trophies,
-              bestTrophies: player.bestTrophies,
-              arena: player.arena?.name || 'Unknown',
-              winRate: parseFloat((
-                (battles.filter(b => {
-                  const playerTeam = b.team.find(p => p.tag === normalizedTag);
-                  return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-                }).length / battles.length) * 100
-              ).toFixed(1))
-            }}
-            recentMatches={{
-              wins: battles.filter(b => {
-                const playerTeam = b.team.find(p => p.tag === normalizedTag);
-                return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-              }).length,
-              losses: battles.filter(b => {
-                const playerTeam = b.team.find(p => p.tag === normalizedTag);
-                return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
-              }).length,
-              avgTrophyChange: (
-                battles.reduce((sum, b) => {
-                  const playerTeam = b.team.find(p => p.tag === normalizedTag);
-                  return sum + (playerTeam?.trophyChange || 0);
-                }, 0) / battles.length
-              ).toFixed(1)
-            }}
+      {/* Floating AI Coach Widget - uses memoized win rate */}
+      {player && battles && (
+        <FloatingCoachButton
+          playerTag={playerTag?.startsWith('#') ? playerTag : `#${playerTag}`}
+          playerStats={{
+            trophies: player.trophies,
+            bestTrophies: player.bestTrophies,
+            arena: player.arena?.name || 'Unknown',
+            winRate: winRate // Use memoized value from useWinRate hook
+          }}
+          recentMatches={{
+            wins, // Use memoized value from useWinRate hook
+            losses, // Use memoized value from useWinRate hook
+            avgTrophyChange // Use memoized value
+          }}
           savedDecks={savedDecks}
           cardMastery={cardMastery}
           achievements={achievements}
           cardCollection={cardCollection}
-            forceOpen={coachOpen}
-            onOpenChange={setCoachOpen}
-          />
-        );
-      })()}
+          forceOpen={coachOpen}
+          onOpenChange={setCoachOpen}
+        />
+      )}
 
       {/* Achievement Notification */}
       {newAchievement && (
