@@ -242,6 +242,12 @@
       "demoMetrics": "* Gösterim için demo metrikleri",
       "aiCoachInsight": "AI Koç İçgörüsü",
       "tryWithYourDeck": "Kendi Desten ile Dene!",
+      "aiInsights": {
+        "hogCycle": "Savunma için Musketeer konumlandırman mükemmel. Hog'un bağlanması için Ice Golem'i düşman birliklerini çekmek için kullanmayı düşün. Fireball değerini orta boy itişleri bekleyerek artırabilirsin.",
+        "golemBeatdown": "Güçlü beatdown uygulaması! Çift iksirde devasa itişler oluşturmaya odaklan. Inferno Tower'a karşı Lightning zamanlaması çok önemli. Tek iksirde Golem'i koymadan önce savunma binalarını baitlemeyi düşün.",
+        "logBait": "Mükemmel büyü baitleme! Princess konumlandırmaların Log kullanımını etkili şekilde zorluyor. Öndeyken uzatmada Rocket döngüsüne odaklan. Büyü kullanım kalıplarını ele veren rakiplere karşı Goblin Barrel tahminlerini daha iyi zamanla.",
+        "xbowSiege": "Sabırlı X-Bow yerleştirmeleri disiplin gösteriyor. Savunma Tesla zamanlaması iyileştirme istiyor—tankları çekmek için nehirden 1 karo uzağa koy. Kötü eşleşmelerde bağlantı zorlamak yerine savunma X-Bow ve Fireball chip hasarına odaklan."
+      },
       "tabs": {
         "compare": "Karşılaştır",
         "synergy": "Sinerji",

@@ -12,11 +12,21 @@ serve(async (req) => {
   }
 
   try {
-    const { cards } = await req.json();
+    const { cards, language = 'en' } = await req.json();
     
     if (!cards || cards.length !== 8) {
       throw new Error('Deck must contain exactly 8 cards');
     }
+
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -26,7 +36,7 @@ serve(async (req) => {
     const cardList = cards.map((c: any) => `${c.name} (${c.elixirCost} elixir, ${c.rarity})`).join(', ');
     const avgElixir = cards.reduce((sum: number, c: any) => sum + (c.elixirCost || 0), 0) / 8;
 
-    const prompt = `You are an expert Clash Royale deck analyst. Analyze this deck composition:
+    const prompt = `You are an expert Clash Royale deck analyst. ${languageInstruction} Analyze this deck composition:
 
 ${cardList}
 Average Elixir: ${avgElixir.toFixed(1)}

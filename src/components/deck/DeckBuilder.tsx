@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,7 @@ interface AdvancedDeckAnalysis {
 }
 
 export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
+  const { i18n } = useTranslation();
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
@@ -100,10 +102,10 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
     try {
       const [basicResult, advancedResult] = await Promise.all([
         supabase.functions.invoke('analyze-deck-builder', {
-          body: { cards: selectedCards }
+          body: { cards: selectedCards, language: i18n.language }
         }),
         supabase.functions.invoke('analyze-deck-advanced', {
-          body: { cards: selectedCards }
+          body: { cards: selectedCards, language: i18n.language }
         })
       ]);
 

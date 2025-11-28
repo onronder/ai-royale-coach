@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DeckGrid } from "@/components/cards/DeckGrid";
@@ -305,6 +306,7 @@ function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
 }
 
 export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
+  const { i18n } = useTranslation();
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [counterDeckOpen, setCounterDeckOpen] = useState(false);
@@ -321,11 +323,11 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
   // IMPORTANT: useQuery MUST be called unconditionally (before any returns)
   const { data: analysis, isLoading, error: analysisError } = useQuery({
-    queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag],
+    queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag, i18n.language],
     queryFn: async () => {
       if (!battle) throw new Error('No battle data');
       const { data, error } = await supabase.functions.invoke<MatchAnalysis>('analyze-match', {
-        body: { battle, playerTag: normalizedPlayerTag }
+        body: { battle, playerTag: normalizedPlayerTag, language: i18n.language }
       });
       if (error) {
         // Check if it's an auth error

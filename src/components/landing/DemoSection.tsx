@@ -18,6 +18,14 @@ import { CounterDeckRecommendations } from './CounterDeckRecommendations';
 import { AchievementBadges } from './AchievementBadges';
 import { DeckRecommendationEngine } from './DeckRecommendationEngine';
 
+// Map deck IDs to i18n keys for AI insights
+const deckInsightKeys: Record<string, string> = {
+  'hog-cycle': 'hogCycle',
+  'golem-beatdown': 'golemBeatdown',
+  'log-bait': 'logBait',
+  'xbow-siege': 'xbowSiege',
+};
+
 export function DemoSection() {
   const { t } = useTranslation();
   const { ref, isVisible } = useScrollAnimation(0.2);
@@ -25,7 +33,17 @@ export function DemoSection() {
   const sectionId = "demo-section";
   const [selectedDeck, setSelectedDeck] = useState<SampleDeck>(sampleDecks[0]);
   const [typedText, setTypedText] = useState('');
-  const fullText = selectedDeck.aiInsight;
+  
+  // Get translated AI insight based on deck ID
+  const getAiInsight = (deckId: string) => {
+    const key = deckInsightKeys[deckId];
+    if (key) {
+      return t(`landing.demo.aiInsights.${key}`);
+    }
+    return selectedDeck.aiInsight; // Fallback to original
+  };
+  
+  const fullText = getAiInsight(selectedDeck.id);
 
   // Reset typewriter when deck changes
   useEffect(() => {

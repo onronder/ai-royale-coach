@@ -18,7 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { cards } = await req.json();
+    const { cards, language = 'en' } = await req.json();
 
     if (!cards || cards.length !== 8) {
       return new Response(
@@ -26,6 +26,16 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -43,7 +53,7 @@ serve(async (req) => {
 
     const cardList = cards.map((c: Card) => `${c.name} (${c.elixirCost} elixir, ${c.rarity})`).join(', ');
 
-    const prompt = `You are an expert Clash Royale deck analyst. Analyze this deck for advanced statistics:
+    const prompt = `You are an expert Clash Royale deck analyst. ${languageInstruction} Analyze this deck for advanced statistics:
 
 Deck: ${cardList}
 Average Elixir: ${avgElixir.toFixed(1)}
