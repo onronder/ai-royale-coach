@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,16 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
+  const [lastAnalyzedLanguage, setLastAnalyzedLanguage] = useState<string | null>(null);
+
+  // Clear analysis when language changes to force re-analysis in new language
+  useEffect(() => {
+    if (lastAnalyzedLanguage && lastAnalyzedLanguage !== i18n.language && (analysis || advancedAnalysis)) {
+      setAnalysis(null);
+      setAdvancedAnalysis(null);
+      toast.info(t('deck.languageChangedReanalyze'));
+    }
+  }, [i18n.language, lastAnalyzedLanguage, analysis, advancedAnalysis, t]);
 
   const addCard = (card: ClashRoyaleCard) => {
     if (selectedCards.length >= 8) {
@@ -114,6 +124,7 @@ export function DeckBuilder({ availableCards, userId }: DeckBuilderProps) {
       
       setAnalysis(basicResult.data);
       setAdvancedAnalysis(advancedResult.data);
+      setLastAnalyzedLanguage(i18n.language);
       toast.success(t('deck.analysisReady'));
     } catch (error) {
       console.error('Error analyzing deck:', error);

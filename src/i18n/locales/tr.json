@@ -680,6 +680,7 @@
     "enterDeckName": "Lütfen bir deste adı girin",
     "aiDeckAnalysis": "AI Deste Analizi",
     "analyzingStrategy": "AI deste stratejini analiz ediyor...",
+    "languageChangedReanalyze": "Dil değişti. Yeni dilinizde analiz almak için 'AI Analiz' düğmesine tıklayın.",
     "templates": "Şablonlar"
   },
   "coach": {

@@ -673,7 +673,8 @@
     "saveFailed": "Failed to save deck",
     "enterDeckName": "Please enter a deck name",
     "aiDeckAnalysis": "AI Deck Analysis",
-    "analyzingStrategy": "AI is analyzing your deck strategy..."
+    "analyzingStrategy": "AI is analyzing your deck strategy...",
+    "languageChangedReanalyze": "Language changed. Click 'AI Analyze' to get analysis in your new language."
   },
   "coach": {
     "title": "AI COACH",
