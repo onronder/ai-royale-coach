@@ -47,14 +47,24 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
                 Sign Out
               </Button>
             ) : (
-              <Button 
-                variant="golden" 
-                size="sm" 
-                onClick={() => navigate("/auth")}
-              >
-                <Sparkles className="mr-2 h-4 w-4" />
-                Sign In
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate("/auth?mode=signin")}
+                  className="border-border/50"
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="golden" 
+                  size="sm" 
+                  onClick={() => navigate("/auth?mode=signup")}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Get Started
+                </Button>
+              </div>
             )
           )}
         </div>

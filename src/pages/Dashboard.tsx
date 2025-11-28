@@ -611,44 +611,49 @@ const Dashboard = () => {
       />
 
       {/* Floating AI Coach Widget */}
-      {player && battles && (
-        <FloatingCoachButton
-          playerTag={playerTag!}
-          playerStats={{
-            trophies: player.trophies,
-            bestTrophies: player.bestTrophies,
-            arena: player.arena?.name || 'Unknown',
-            winRate: parseFloat((
-              (battles.filter(b => {
-                const playerTeam = b.team.find(p => p.tag === playerTag);
+      {player && battles && (() => {
+        // Normalize playerTag for comparisons (API data includes #, URL param may not)
+        const normalizedTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
+        
+        return (
+          <FloatingCoachButton
+            playerTag={normalizedTag}
+            playerStats={{
+              trophies: player.trophies,
+              bestTrophies: player.bestTrophies,
+              arena: player.arena?.name || 'Unknown',
+              winRate: parseFloat((
+                (battles.filter(b => {
+                  const playerTeam = b.team.find(p => p.tag === normalizedTag);
+                  return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
+                }).length / battles.length) * 100
+              ).toFixed(1))
+            }}
+            recentMatches={{
+              wins: battles.filter(b => {
+                const playerTeam = b.team.find(p => p.tag === normalizedTag);
                 return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-              }).length / battles.length) * 100
-            ).toFixed(1))
-          }}
-          recentMatches={{
-            wins: battles.filter(b => {
-              const playerTeam = b.team.find(p => p.tag === playerTag);
-              return playerTeam && playerTeam.crowns > (b.opponent[0]?.crowns || 0);
-            }).length,
-            losses: battles.filter(b => {
-              const playerTeam = b.team.find(p => p.tag === playerTag);
-              return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
-            }).length,
-            avgTrophyChange: (
-              battles.reduce((sum, b) => {
-                const playerTeam = b.team.find(p => p.tag === playerTag);
-                return sum + (playerTeam?.trophyChange || 0);
-              }, 0) / battles.length
-            ).toFixed(1)
-          }}
+              }).length,
+              losses: battles.filter(b => {
+                const playerTeam = b.team.find(p => p.tag === normalizedTag);
+                return playerTeam && playerTeam.crowns <= (b.opponent[0]?.crowns || 0);
+              }).length,
+              avgTrophyChange: (
+                battles.reduce((sum, b) => {
+                  const playerTeam = b.team.find(p => p.tag === normalizedTag);
+                  return sum + (playerTeam?.trophyChange || 0);
+                }, 0) / battles.length
+              ).toFixed(1)
+            }}
           savedDecks={savedDecks}
           cardMastery={cardMastery}
           achievements={achievements}
           cardCollection={cardCollection}
-          forceOpen={coachOpen}
-          onOpenChange={setCoachOpen}
-        />
-      )}
+            forceOpen={coachOpen}
+            onOpenChange={setCoachOpen}
+          />
+        );
+      })()}
 
       {/* Achievement Notification */}
       {newAchievement && (
