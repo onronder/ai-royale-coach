@@ -637,14 +637,45 @@
     "cardCount": "{{count}}/8 Kart",
     "synergies": "Sinerjiler",
     "weaknesses": "Zayıflıklar",
-    "suggestions": "Öneriler"
+    "suggestions": "Öneriler",
+    "yourDeck": "Desten",
+    "deckFull": "Deste dolu (maksimum 8 kart)",
+    "cardAlreadyInDeck": "Kart zaten destede",
+    "completeDeckFirst": "Önce 8 kartla desteni tamamla",
+    "analyzing": "Analiz ediliyor...",
+    "aiAnalyze": "AI Analizi",
+    "saving": "Kaydediliyor...",
+    "deckDetails": "Deste Detayları",
+    "deckNamePlaceholder": "Deste adı (örn. Hızlı Hog Döngüsü)",
+    "deckDescPlaceholder": "Deste açıklaması (isteğe bağlı)",
+    "availableCards": "Mevcut Kartlar",
+    "compare": "Karşılaştır",
+    "comparisonNote": "Karşılaştırma için kayıtlı destelerinizden veya meta şablonlarından seçim yapmanız gerekiyor.",
+    "comparisonSaveFirst": "Bu desteyi önce kaydet, sonra koleksiyonundaki diğerleriyle karşılaştır.",
+    "completeDeckForComparison": "Karşılaştırmayı etkinleştirmek için 8 kartla desteni tamamla",
+    "imported": "{{count}} kart içe aktarıldı!",
+    "analysisReady": "Deste analizi hazır!",
+    "savedSuccess": "Deste başarıyla kaydedildi!",
+    "analyzeFailed": "Deste analizi başarısız",
+    "saveFailed": "Deste kaydedilemedi",
+    "enterDeckName": "Lütfen bir deste adı girin",
+    "aiDeckAnalysis": "AI Deste Analizi",
+    "analyzingStrategy": "AI deste stratejini analiz ediyor...",
+    "templates": "Şablonlar"
   },
   "coach": {
     "title": "AI Koç",
     "placeholder": "Koçunuza bir soru sorun...",
     "send": "Gönder",
     "thinking": "Düşünüyor...",
-    "greeting": "Merhaba! Clash Royale AI koçunuzum. Strateji, desteler veya oyununuzu geliştirme hakkında bana her şeyi sorabilirsiniz."
+    "greeting": "Merhaba! Clash Royale AI koçunuzum. Strateji, desteler veya oyununuzu geliştirme hakkında bana her şeyi sorabilirsiniz.",
+    "rateLimitExceeded": "Hız limiti aşıldı. Lütfen biraz bekleyin.",
+    "creditsExhausted": "AI kredileri tükendi. Lütfen kredi ekleyin.",
+    "failedToGetResponse": "Koçtan yanıt alınamadı",
+    "failedToSend": "Mesaj gönderilemedi",
+    "signInRequired": "AI Koçu kullanmak için lütfen giriş yapın",
+    "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın.",
+    "failedToSendContext": "Maç bağlamı gönderilemedi"
   },
   "match": {
     "victory": "Zafer",
@@ -664,7 +695,10 @@
     "level": "Seviye",
     "count": "Adet",
     "maxLevel": "Maksimum Seviye",
-    "upgradeable": "Yükseltilebilir"
+    "upgradeable": "Yükseltilebilir",
+    "updateSuccess": "Kart ustalığı başarıyla güncellendi",
+    "updateFailed": "Kart ustalığı güncellenemedi",
+    "suggestionsFailed": "Kart önerileri alınamadı"
   },
   "leaderboard": {
     "title": "Liderlik Tablosu",
@@ -673,7 +707,17 @@
     "trophies": "Kupalar",
     "clan": "Klan",
     "global": "Global",
-    "local": "Yerel"
+    "local": "Yerel",
+    "syncSuccess": "Global sıralama başarıyla senkronize edildi!",
+    "syncFailed": "Global sıralama senkronize edilemedi"
+  },
+  "clan": {
+    "signInRequired": "Katılma isteği göndermek için lütfen giriş yapın",
+    "pendingRequest": "Bu klana zaten bekleyen bir isteğiniz var",
+    "requestFailed": "Katılma isteği gönderilemedi",
+    "requestSuccess": "Katılma isteği başarıyla gönderildi!",
+    "copiedToClipboard": "Karşı deste panoya kopyalandı!",
+    "predictionsFailed": "Kazanma oranı tahminleri alınamadı"
   },
   "common": {
     "loading": "Yükleniyor...",

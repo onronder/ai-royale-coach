@@ -637,14 +637,45 @@
     "cardCount": "{{count}}/8 Cartas",
     "synergies": "Sinergias",
     "weaknesses": "Debilidades",
-    "suggestions": "Sugerencias"
+    "suggestions": "Sugerencias",
+    "yourDeck": "Tu Mazo",
+    "deckFull": "Mazo lleno (máximo 8 cartas)",
+    "cardAlreadyInDeck": "Carta ya está en el mazo",
+    "completeDeckFirst": "Completa tu mazo con 8 cartas primero",
+    "analyzing": "Analizando...",
+    "aiAnalyze": "Análisis IA",
+    "saving": "Guardando...",
+    "deckDetails": "Detalles del Mazo",
+    "deckNamePlaceholder": "Nombre del mazo (ej. Ciclo Rápido de Hog)",
+    "deckDescPlaceholder": "Descripción del mazo (opcional)",
+    "availableCards": "Cartas Disponibles",
+    "compare": "Comparar",
+    "comparisonNote": "La comparación requiere seleccionar de tus mazos guardados o plantillas meta.",
+    "comparisonSaveFirst": "Guarda este mazo primero, luego compáralo con otros de tu colección.",
+    "completeDeckForComparison": "Completa tu mazo con 8 cartas para habilitar la comparación",
+    "imported": "¡{{count}} cartas importadas!",
+    "analysisReady": "¡Análisis de mazo completo listo!",
+    "savedSuccess": "¡Mazo guardado exitosamente!",
+    "analyzeFailed": "Error al analizar el mazo",
+    "saveFailed": "Error al guardar el mazo",
+    "enterDeckName": "Por favor ingresa un nombre para el mazo",
+    "aiDeckAnalysis": "Análisis de Mazo IA",
+    "analyzingStrategy": "IA está analizando la estrategia de tu mazo...",
+    "templates": "Plantillas"
   },
   "coach": {
     "title": "Coach IA",
     "placeholder": "Pregunta algo a tu coach...",
     "send": "Enviar",
     "thinking": "Pensando...",
-    "greeting": "¡Hola! Soy tu coach de Clash Royale con IA. Pregúntame cualquier cosa sobre estrategia, mazos o cómo mejorar tu juego."
+    "greeting": "¡Hola! Soy tu coach de Clash Royale con IA. Pregúntame cualquier cosa sobre estrategia, mazos o cómo mejorar tu juego.",
+    "rateLimitExceeded": "Límite de velocidad excedido. Espera un momento.",
+    "creditsExhausted": "Créditos de IA agotados. Por favor agrega créditos.",
+    "failedToGetResponse": "Error al obtener respuesta del coach",
+    "failedToSend": "Error al enviar mensaje",
+    "signInRequired": "Inicia sesión para usar el Coach IA",
+    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo.",
+    "failedToSendContext": "Error al enviar contexto del partido"
   },
   "match": {
     "victory": "Victoria",
@@ -664,7 +695,10 @@
     "level": "Nivel",
     "count": "Cantidad",
     "maxLevel": "Nivel Máximo",
-    "upgradeable": "Mejorable"
+    "upgradeable": "Mejorable",
+    "updateSuccess": "Maestría de cartas actualizada exitosamente",
+    "updateFailed": "Error al actualizar maestría de cartas",
+    "suggestionsFailed": "Error al obtener sugerencias de cartas"
   },
   "leaderboard": {
     "title": "Tabla de Líderes",
@@ -673,7 +707,17 @@
     "trophies": "Trofeos",
     "clan": "Clan",
     "global": "Global",
-    "local": "Local"
+    "local": "Local",
+    "syncSuccess": "¡Rankings globales sincronizados exitosamente!",
+    "syncFailed": "Error al sincronizar rankings globales"
+  },
+  "clan": {
+    "signInRequired": "Inicia sesión para enviar una solicitud de unión",
+    "pendingRequest": "Ya tienes una solicitud pendiente a este clan",
+    "requestFailed": "Error al enviar solicitud de unión",
+    "requestSuccess": "¡Solicitud de unión enviada exitosamente!",
+    "copiedToClipboard": "¡Mazo contador copiado al portapapeles!",
+    "predictionsFailed": "Error al obtener predicciones de tasa de victoria"
   },
   "common": {
     "loading": "Cargando...",

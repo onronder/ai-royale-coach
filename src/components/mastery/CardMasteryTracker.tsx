@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ interface CardMasteryTrackerProps {
 }
 
 export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
+  const { t } = useTranslation();
   const [sortBy, setSortBy] = useState<'level' | 'usage' | 'winrate'>('level');
   const { data: cards, isLoading, refetch } = useCardMastery(playerTag);
   const calculateMastery = useCalculateCardMastery(playerTag);
@@ -22,10 +24,10 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
   const handleSync = async () => {
     try {
       await calculateMastery.mutateAsync(playerTag);
-      toast.success("Card mastery updated successfully");
+      toast.success(t('cards.updateSuccess'));
       refetch();
     } catch (error) {
-      toast.error("Failed to update card mastery");
+      toast.error(t('cards.updateFailed'));
       console.error(error);
     }
   };
