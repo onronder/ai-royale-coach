@@ -10,6 +10,17 @@ interface CounterDeckRecommendationsProps {
   isVisible: boolean;
 }
 
+// Helper to convert deck ID to translation key
+const getDeckKey = (deckId: string): string => {
+  const keyMap: Record<string, string> = {
+    'hog-cycle': 'hogCycle',
+    'golem-beatdown': 'golemBeatdown',
+    'log-bait': 'logBait',
+    'xbow-siege': 'xbowSiege'
+  };
+  return keyMap[deckId] || deckId;
+};
+
 export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecommendationsProps) {
   const { t } = useTranslation();
   
@@ -32,6 +43,14 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
       default:
         return <Badge className="bg-warning/20 text-warning border-warning/30">{t('landing.demo.counters.even')}</Badge>;
     }
+  };
+
+  // Get translated tactical tips
+  const getTranslatedTips = (targetDeckId: string, fallbackTips: string[]) => {
+    const sourceKey = getDeckKey(deck.id);
+    const targetKey = getDeckKey(targetDeckId);
+    const tips = t(`landing.demo.difficulty.deckData.${sourceKey}.matchups.${targetKey}`, { returnObjects: true });
+    return Array.isArray(tips) ? tips : fallbackTips;
   };
 
   return (
@@ -102,7 +121,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
                               {t('landing.demo.counters.survivalTips')}:
                             </p>
                             <ul className="space-y-1">
-                              {matchupData.tacticalTips.slice(0, 2).map((tip, tipIdx) => (
+                              {getTranslatedTips(counterDeck.id, matchupData.tacticalTips).slice(0, 2).map((tip, tipIdx) => (
                                 <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">
                                   <span className="text-destructive mt-0.5">•</span>
                                   <span>{tip}</span>
