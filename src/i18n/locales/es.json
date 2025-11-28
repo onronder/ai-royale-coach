@@ -680,6 +680,7 @@
     "enterDeckName": "Por favor ingresa un nombre para el mazo",
     "aiDeckAnalysis": "Análisis de Mazo IA",
     "analyzingStrategy": "IA está analizando la estrategia de tu mazo...",
+    "languageChangedReanalyze": "Idioma cambiado. Haz clic en 'Analizar IA' para obtener el análisis en tu nuevo idioma.",
     "templates": "Plantillas"
   },
   "coach": {

@@ -680,6 +680,7 @@
     "enterDeckName": "Veuillez entrer un nom pour le deck",
     "aiDeckAnalysis": "Analyse de Deck IA",
     "analyzingStrategy": "L'IA analyse la stratégie de votre deck...",
+    "languageChangedReanalyze": "Langue modifiée. Cliquez sur 'Analyser IA' pour obtenir l'analyse dans votre nouvelle langue.",
     "templates": "Modèles"
   },
   "coach": {
