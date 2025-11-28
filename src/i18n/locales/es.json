@@ -87,13 +87,62 @@
     "losses": "Derrotas",
     "winRate": "Tasa de Victoria",
     "currentDeck": "Mazo Actual",
+    "currentDeckDesc": "Tu mazo de batalla activo con imágenes de cartas",
     "matchHistory": "Historial de Partidas",
+    "matchHistoryDesc": "Haz clic en una partida para ver el análisis detallado",
     "recentMatches": "Partidas Recientes",
     "viewAll": "Ver Todo",
     "noMatches": "No se encontraron partidas",
     "victory": "Victoria",
     "defeat": "Derrota",
-    "draw": "Empate"
+    "draw": "Empate",
+    "signedOut": "Sesión cerrada exitosamente",
+    "currentTrophies": "Trofeos Actuales",
+    "best": "Mejor",
+    "arena": "Arena",
+    "last25Battles": "Últimas 25 batallas",
+    "clan": "Clan",
+    "noClan": "Sin Clan",
+    "joinClan": "Únete a un clan",
+    "avgTrophyChange": "Cambio Prom. Trofeos",
+    "failedLoadBattles": "Error al Cargar Batallas",
+    "failedLoadBattlesDesc": "No se pudo obtener tu historial de batallas. Inténtalo más tarde.",
+    "noBattles": "Sin Batallas Aún",
+    "noBattlesDesc": "¡Juega algunas partidas en Clash Royale y vuelve para seguir tu rendimiento!",
+    "failedLoadDeck": "Error al cargar el mazo",
+    "tabs": {
+      "stats": "Estadísticas",
+      "matches": "Partidas",
+      "deck": "Mazo",
+      "builder": "Constructor",
+      "analytics": "Análisis",
+      "cards": "Cartas",
+      "ranks": "Rankings",
+      "tourneys": "Torneos",
+      "clans": "Clanes"
+    },
+    "aiCoach": {
+      "title": "Resumen del Coach IA",
+      "subtitle": "Tu análisis de rendimiento personalizado",
+      "generating": "La IA está generando tu análisis...",
+      "error": "No se pudo generar el análisis. Inténtalo más tarde."
+    },
+    "analytics": {
+      "deckStats": "Estadísticas de Mazos",
+      "cardMastery": "Maestría de Cartas",
+      "achievements": "Logros"
+    },
+    "sync": {
+      "syncing": "Sincronizando con servidores de Clash Royale...",
+      "fetchingData": "Obteniendo tus últimos datos de jugador e historial de batallas",
+      "success": "¡Datos actualizados exitosamente!",
+      "successDesc": "Tu perfil e historial de batallas están actualizados",
+      "failed": "Error al actualizar datos",
+      "failedDesc": "Por favor, inténtalo de nuevo en unos momentos",
+      "collectionSynced": "Colección de cartas sincronizada",
+      "masteryCalculated": "Maestría de cartas calculada",
+      "deckStatsTracked": "Estadísticas de mazos registradas"
+    }
   },
   "deck": {
     "builder": "Constructor de Mazos",
@@ -163,7 +212,8 @@
     "sort": "Ordenar",
     "refresh": "Actualizar",
     "noData": "No hay datos disponibles",
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "unknown": "Desconocido"
   },
   "loading": {
     "playerData": "Obteniendo datos del jugador...",

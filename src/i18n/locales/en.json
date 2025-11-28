@@ -184,13 +184,62 @@
     "losses": "Losses",
     "winRate": "Win Rate",
     "currentDeck": "Current Deck",
+    "currentDeckDesc": "Your active battle deck with card images",
     "matchHistory": "Match History",
+    "matchHistoryDesc": "Click on a match to view detailed analysis",
     "recentMatches": "Recent Matches",
     "viewAll": "View All",
     "noMatches": "No matches found",
     "victory": "Victory",
     "defeat": "Defeat",
-    "draw": "Draw"
+    "draw": "Draw",
+    "signedOut": "Signed out successfully",
+    "currentTrophies": "Current Trophies",
+    "best": "Best",
+    "arena": "Arena",
+    "last25Battles": "Last 25 battles",
+    "clan": "Clan",
+    "noClan": "No Clan",
+    "joinClan": "Join a clan",
+    "avgTrophyChange": "Avg Trophy Δ",
+    "failedLoadBattles": "Failed to Load Battles",
+    "failedLoadBattlesDesc": "Unable to fetch your battle history. Please try again later.",
+    "noBattles": "No Battles Yet",
+    "noBattlesDesc": "Play some matches in Clash Royale and come back to track your performance!",
+    "failedLoadDeck": "Failed to load deck",
+    "tabs": {
+      "stats": "Stats",
+      "matches": "Matches",
+      "deck": "Deck",
+      "builder": "Builder",
+      "analytics": "Analytics",
+      "cards": "Cards",
+      "ranks": "Ranks",
+      "tourneys": "Tourneys",
+      "clans": "Clans"
+    },
+    "aiCoach": {
+      "title": "AI Coach Summary",
+      "subtitle": "Your personalized performance analysis",
+      "generating": "AI generating your analysis...",
+      "error": "Unable to generate analysis. Please try again later."
+    },
+    "analytics": {
+      "deckStats": "Deck Stats",
+      "cardMastery": "Card Mastery",
+      "achievements": "Achievements"
+    },
+    "sync": {
+      "syncing": "Syncing with Clash Royale servers...",
+      "fetchingData": "Fetching your latest player data and battle history",
+      "success": "Data refreshed successfully!",
+      "successDesc": "Your profile and battle history are now up to date",
+      "failed": "Failed to refresh data",
+      "failedDesc": "Please try again in a few moments",
+      "collectionSynced": "Card collection synced",
+      "masteryCalculated": "Card mastery calculated",
+      "deckStatsTracked": "Deck stats tracked"
+    }
   },
   "deck": {
     "builder": "Deck Builder",
@@ -260,7 +309,8 @@
     "sort": "Sort",
     "refresh": "Refresh",
     "noData": "No data available",
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "unknown": "Unknown"
   },
   "loading": {
     "playerData": "Fetching player data...",

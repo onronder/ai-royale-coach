@@ -87,13 +87,62 @@
     "losses": "Derrotas",
     "winRate": "Taxa de Vitória",
     "currentDeck": "Deck Atual",
+    "currentDeckDesc": "Seu deck de batalha ativo com imagens das cartas",
     "matchHistory": "Histórico de Partidas",
+    "matchHistoryDesc": "Clique em uma partida para ver análise detalhada",
     "recentMatches": "Partidas Recentes",
     "viewAll": "Ver Tudo",
     "noMatches": "Nenhuma partida encontrada",
     "victory": "Vitória",
     "defeat": "Derrota",
-    "draw": "Empate"
+    "draw": "Empate",
+    "signedOut": "Sessão encerrada com sucesso",
+    "currentTrophies": "Troféus Atuais",
+    "best": "Melhor",
+    "arena": "Arena",
+    "last25Battles": "Últimas 25 batalhas",
+    "clan": "Clã",
+    "noClan": "Sem Clã",
+    "joinClan": "Entre em um clã",
+    "avgTrophyChange": "Média de Troféus Δ",
+    "failedLoadBattles": "Erro ao Carregar Batalhas",
+    "failedLoadBattlesDesc": "Não foi possível buscar seu histórico de batalhas. Tente novamente mais tarde.",
+    "noBattles": "Sem Batalhas Ainda",
+    "noBattlesDesc": "Jogue algumas partidas no Clash Royale e volte para acompanhar seu desempenho!",
+    "failedLoadDeck": "Erro ao carregar deck",
+    "tabs": {
+      "stats": "Estatísticas",
+      "matches": "Partidas",
+      "deck": "Deck",
+      "builder": "Construtor",
+      "analytics": "Análises",
+      "cards": "Cartas",
+      "ranks": "Rankings",
+      "tourneys": "Torneios",
+      "clans": "Clãs"
+    },
+    "aiCoach": {
+      "title": "Resumo do Coach IA",
+      "subtitle": "Sua análise de desempenho personalizada",
+      "generating": "A IA está gerando sua análise...",
+      "error": "Não foi possível gerar a análise. Tente novamente mais tarde."
+    },
+    "analytics": {
+      "deckStats": "Estatísticas de Decks",
+      "cardMastery": "Maestria de Cartas",
+      "achievements": "Conquistas"
+    },
+    "sync": {
+      "syncing": "Sincronizando com servidores do Clash Royale...",
+      "fetchingData": "Buscando seus dados mais recentes e histórico de batalhas",
+      "success": "Dados atualizados com sucesso!",
+      "successDesc": "Seu perfil e histórico de batalhas estão atualizados",
+      "failed": "Erro ao atualizar dados",
+      "failedDesc": "Por favor, tente novamente em alguns momentos",
+      "collectionSynced": "Coleção de cartas sincronizada",
+      "masteryCalculated": "Maestria de cartas calculada",
+      "deckStatsTracked": "Estatísticas de decks registradas"
+    }
   },
   "deck": {
     "builder": "Construtor de Decks",
@@ -163,7 +212,8 @@
     "sort": "Ordenar",
     "refresh": "Atualizar",
     "noData": "Nenhum dado disponível",
-    "comingSoon": "Em Breve"
+    "comingSoon": "Em Breve",
+    "unknown": "Desconhecido"
   },
   "loading": {
     "playerData": "Buscando dados do jogador...",

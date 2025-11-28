@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,7 @@ import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
 import { TrophyProgressChart } from "@/components/analytics/TrophyProgressChart";
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
@@ -67,19 +69,19 @@ const Dashboard = () => {
 
   const handleRefreshData = async () => {
     setIsRefreshing(true);
-    const loadingToast = toast.loading('Syncing with Clash Royale servers...', {
-      description: 'Fetching your latest player data and battle history'
+    const loadingToast = toast.loading(t('dashboard.sync.syncing'), {
+      description: t('dashboard.sync.fetchingData')
     });
     try {
       await Promise.all([forceRefreshPlayer(), forceRefreshBattles()]);
-      toast.success('Data refreshed successfully!', {
+      toast.success(t('dashboard.sync.success'), {
         id: loadingToast,
-        description: 'Your profile and battle history are now up to date'
+        description: t('dashboard.sync.successDesc')
       });
     } catch (error) {
-      toast.error('Failed to refresh data', {
+      toast.error(t('dashboard.sync.failed'), {
         id: loadingToast,
-        description: 'Please try again in a few moments'
+        description: t('dashboard.sync.failedDesc')
       });
     } finally {
       setIsRefreshing(false);
@@ -129,7 +131,7 @@ const Dashboard = () => {
         supabase.functions
           .invoke('sync-card-collection', { body: { playerTag } })
           .then(() => {
-            toast.success('Card collection synced');
+            toast.success(t('dashboard.sync.collectionSynced'));
           })
           .catch((err) => {
             console.error('Background sync failed:', err);
@@ -147,7 +149,7 @@ const Dashboard = () => {
         supabase.functions
           .invoke('calculate-card-mastery', { body: { playerTag } })
           .then(() => {
-            toast.success('Card mastery calculated');
+            toast.success(t('dashboard.sync.masteryCalculated'));
           })
           .catch((err) => {
             console.error('Background card mastery failed:', err);
@@ -165,7 +167,7 @@ const Dashboard = () => {
         supabase.functions
           .invoke('track-deck-stats', { body: { playerTag } })
           .then(() => {
-            toast.success('Deck stats tracked');
+            toast.success(t('dashboard.sync.deckStatsTracked'));
           })
           .catch((err) => {
             console.error('Background deck stats failed:', err);
@@ -206,7 +208,7 @@ const Dashboard = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
-    toast.success("Signed out successfully");
+    toast.success(t('dashboard.signedOut'));
   };
 
   // Show loading state while checking authentication
@@ -265,7 +267,7 @@ const Dashboard = () => {
             />
             <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <span className="hidden sm:inline">{t('nav.signOut')}</span>
             </Button>
           </div>
         </div>
@@ -280,63 +282,63 @@ const Dashboard = () => {
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <Trophy className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Stats</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.stats')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="matches"
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <Swords className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Matches</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.matches')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="deck"
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <Target className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Deck</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.deck')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="builder"
               className="data-[state=active]:bg-gradient-accent data-[state=active]:text-accent-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <Wrench className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Builder</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.builder')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="analytics"
               className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <TrendingUp className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.analytics')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="collection"
               className="data-[state=active]:bg-gradient-legendary data-[state=active]:text-primary-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <Sparkles className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Cards</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.cards')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="leaderboard"
               className="data-[state=active]:bg-gradient-gold data-[state=active]:text-gold-foreground data-[state=active]:tab-glow-active font-rajdhani font-semibold transition-all"
             >
               <TrendingUp className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Ranks</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.ranks')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="tournaments"
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
             >
               <Award className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Tourneys</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.tourneys')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="clans"
               className="data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-glow font-rajdhani font-semibold"
             >
               <UserPlus className="mr-1 h-4 w-4" />
-              <span className="hidden sm:inline">Clans</span>
+              <span className="hidden sm:inline">{t('dashboard.tabs.clans')}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -355,33 +357,33 @@ const Dashboard = () => {
                   ) : player ? (
                     <>
                       <StatCard
-                        title="Current Trophies"
+                        title={t('dashboard.currentTrophies')}
                         value={player.trophies.toLocaleString()}
                         icon={Trophy}
-                        description={`Best: ${player.bestTrophies.toLocaleString()}`}
+                        description={`${t('dashboard.best')}: ${player.bestTrophies.toLocaleString()}`}
                         trend="neutral"
                         tooltip={statTooltips.trophies}
                       />
                       <StatCard
-                        title="Arena"
-                        value={player.arena?.name.split(' ')[0] || 'Unknown'}
+                        title={t('dashboard.arena')}
+                        value={player.arena?.name.split(' ')[0] || t('common.unknown')}
                         icon={Crown}
                         description={player.arena?.name || ''}
                         tooltip={statTooltips.arena}
                       />
                       <StatCard
-                        title="Win Rate"
+                        title={t('dashboard.winRate')}
                         value={formattedWinRate}
                         icon={Swords}
-                        description="Last 25 battles"
+                        description={t('dashboard.last25Battles')}
                         trend={winRate >= 50 ? 'up' : 'down'}
                         tooltip={statTooltips.winRate}
                       />
                       <StatCard
-                        title="Clan"
-                        value={player.clan?.name.split(' ')[0] || 'No Clan'}
+                        title={t('dashboard.clan')}
+                        value={player.clan?.name.split(' ')[0] || t('dashboard.noClan')}
                         icon={Users}
-                        description={player.clan?.name || 'Join a clan'}
+                        description={player.clan?.name || t('dashboard.joinClan')}
                       />
                     </>
                   ) : null}
@@ -406,9 +408,9 @@ const Dashboard = () => {
                       <Sparkles className="h-5 w-5 text-royal" />
                     </div>
                     <div>
-                      <CardTitle className="text-foreground">AI Coach Summary</CardTitle>
+                      <CardTitle className="text-foreground">{t('dashboard.aiCoach.title')}</CardTitle>
                       <CardDescription>
-                        Your personalized performance analysis
+                        {t('dashboard.aiCoach.subtitle')}
                       </CardDescription>
                     </div>
                   </div>
@@ -417,10 +419,10 @@ const Dashboard = () => {
                   {analysisLoading ? (
                     <div className="flex items-center gap-3 py-4">
                       <Sparkles className="h-5 w-5 animate-pulse text-royal" />
-                      <span className="text-sm text-muted-foreground">AI generating your analysis...</span>
+                      <span className="text-sm text-muted-foreground">{t('dashboard.aiCoach.generating')}</span>
                     </div>
                   ) : analysisError ? (
-                    <p className="text-sm text-muted-foreground">Unable to generate analysis. Please try again later.</p>
+                    <p className="text-sm text-muted-foreground">{t('dashboard.aiCoach.error')}</p>
                   ) : analysis ? (
                     <div className="space-y-4">
                       <div className="prose prose-sm max-w-none">
@@ -429,7 +431,7 @@ const Dashboard = () => {
                       <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
                         <div className="text-center p-3 rounded-lg bg-success/10 border border-success/20">
                           <p className="text-2xl font-bold text-success">{analysis.stats.winRate}%</p>
-                          <p className="text-xs text-muted-foreground">Win Rate</p>
+                          <p className="text-xs text-muted-foreground">{t('dashboard.winRate')}</p>
                         </div>
                         <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
                           <p className={cn(
@@ -438,7 +440,7 @@ const Dashboard = () => {
                           )}>
                             {parseFloat(analysis.stats.avgTrophyChange) >= 0 ? '+' : ''}{analysis.stats.avgTrophyChange}
                           </p>
-                          <p className="text-xs text-muted-foreground">Avg Trophy Δ</p>
+                          <p className="text-xs text-muted-foreground">{t('dashboard.avgTrophyChange')}</p>
                         </div>
                       </div>
                     </div>
@@ -457,8 +459,8 @@ const Dashboard = () => {
               <div className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Match History</CardTitle>
-                    <CardDescription>Click on a match to view detailed analysis</CardDescription>
+                    <CardTitle>{t('dashboard.matchHistory')}</CardTitle>
+                    <CardDescription>{t('dashboard.matchHistoryDesc')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {battlesLoading ? (
@@ -466,8 +468,8 @@ const Dashboard = () => {
                     ) : battlesError ? (
                       <EmptyState
                         icon={Swords}
-                        title="Failed to Load Battles"
-                        description="Unable to fetch your battle history. Please try again later."
+                        title={t('dashboard.failedLoadBattles')}
+                        description={t('dashboard.failedLoadBattlesDesc')}
                         variant="compact"
                       />
                     ) : battles && battles.length > 0 ? (
@@ -489,8 +491,8 @@ const Dashboard = () => {
                     ) : (
                       <EmptyState
                         icon={Swords}
-                        title="No Battles Yet"
-                        description="Play some matches in Clash Royale and come back to track your performance!"
+                        title={t('dashboard.noBattles')}
+                        description={t('dashboard.noBattlesDesc')}
                         variant="compact"
                       />
                     )}
@@ -505,18 +507,18 @@ const Dashboard = () => {
               <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Current Deck</CardTitle>
-                  <CardDescription>Your active battle deck with card images</CardDescription>
+                  <CardTitle>{t('dashboard.currentDeck')}</CardTitle>
+                  <CardDescription>{t('dashboard.currentDeckDesc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {playerLoading ? (
                     <DataLoader context="deck" variant="inline" />
                   ) : playerError ? (
-                    <p className="text-muted-foreground">Failed to load deck</p>
+                    <p className="text-muted-foreground">{t('dashboard.failedLoadDeck')}</p>
                   ) : player?.currentDeck && player.currentDeck.length > 0 ? (
                     <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
                   ) : (
-                    <p className="text-muted-foreground">No deck data available</p>
+                    <p className="text-muted-foreground">{t('common.noData')}</p>
                   )}
                 </CardContent>
               </Card>
@@ -579,9 +581,9 @@ const Dashboard = () => {
             <PageTransition delay={100}>
               <Tabs defaultValue="deckstats" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="deckstats">Deck Stats</TabsTrigger>
-                  <TabsTrigger value="mastery">Card Mastery</TabsTrigger>
-                  <TabsTrigger value="achievements">Achievements</TabsTrigger>
+                  <TabsTrigger value="deckstats">{t('dashboard.analytics.deckStats')}</TabsTrigger>
+                  <TabsTrigger value="mastery">{t('dashboard.analytics.cardMastery')}</TabsTrigger>
+                  <TabsTrigger value="achievements">{t('dashboard.analytics.achievements')}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="deckstats" className="mt-6">

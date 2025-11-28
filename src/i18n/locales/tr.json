@@ -87,13 +87,62 @@
     "losses": "Mağlubiyetler",
     "winRate": "Kazanma Oranı",
     "currentDeck": "Mevcut Deste",
+    "currentDeckDesc": "Kart görsellerini içeren aktif savaş desten",
     "matchHistory": "Maç Geçmişi",
+    "matchHistoryDesc": "Detaylı analiz için bir maça tıkla",
     "recentMatches": "Son Maçlar",
     "viewAll": "Tümünü Gör",
     "noMatches": "Maç bulunamadı",
     "victory": "Zafer",
     "defeat": "Yenilgi",
-    "draw": "Beraberlik"
+    "draw": "Beraberlik",
+    "signedOut": "Başarıyla çıkış yapıldı",
+    "currentTrophies": "Mevcut Kupalar",
+    "best": "En İyi",
+    "arena": "Arena",
+    "last25Battles": "Son 25 savaş",
+    "clan": "Klan",
+    "noClan": "Klan Yok",
+    "joinClan": "Bir klana katıl",
+    "avgTrophyChange": "Ort. Kupa Değişimi",
+    "failedLoadBattles": "Savaşlar Yüklenemedi",
+    "failedLoadBattlesDesc": "Savaş geçmişin alınamadı. Lütfen daha sonra tekrar dene.",
+    "noBattles": "Henüz Savaş Yok",
+    "noBattlesDesc": "Clash Royale'de birkaç maç oyna ve performansını takip etmek için geri dön!",
+    "failedLoadDeck": "Deste yüklenemedi",
+    "tabs": {
+      "stats": "İstatistikler",
+      "matches": "Maçlar",
+      "deck": "Deste",
+      "builder": "Oluşturucu",
+      "analytics": "Analizler",
+      "cards": "Kartlar",
+      "ranks": "Sıralamalar",
+      "tourneys": "Turnuvalar",
+      "clans": "Klanlar"
+    },
+    "aiCoach": {
+      "title": "Yapay Zeka Koç Özeti",
+      "subtitle": "Kişiselleştirilmiş performans analizin",
+      "generating": "Yapay zeka analizini oluşturuyor...",
+      "error": "Analiz oluşturulamadı. Lütfen daha sonra tekrar dene."
+    },
+    "analytics": {
+      "deckStats": "Deste İstatistikleri",
+      "cardMastery": "Kart Ustalığı",
+      "achievements": "Başarılar"
+    },
+    "sync": {
+      "syncing": "Clash Royale sunucularıyla senkronize ediliyor...",
+      "fetchingData": "En son oyuncu verilerin ve savaş geçmişin alınıyor",
+      "success": "Veriler başarıyla güncellendi!",
+      "successDesc": "Profil ve savaş geçmişin güncel",
+      "failed": "Veriler güncellenemedi",
+      "failedDesc": "Lütfen biraz sonra tekrar dene",
+      "collectionSynced": "Kart koleksiyonu senkronize edildi",
+      "masteryCalculated": "Kart ustalığı hesaplandı",
+      "deckStatsTracked": "Deste istatistikleri kaydedildi"
+    }
   },
   "deck": {
     "builder": "Deste Oluşturucu",
@@ -163,7 +212,8 @@
     "sort": "Sırala",
     "refresh": "Yenile",
     "noData": "Veri bulunamadı",
-    "comingSoon": "Yakında"
+    "comingSoon": "Yakında",
+    "unknown": "Bilinmiyor"
   },
   "loading": {
     "playerData": "Oyuncu verileri alınıyor...",
