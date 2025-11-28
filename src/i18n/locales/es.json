@@ -858,6 +858,23 @@
     "invalidTag": "Tag de jugador inválido",
     "playerNotFound": "Jugador no encontrado"
   },
+  "matchDetail": {
+    "victory": "Victoria",
+    "defeat": "Derrota",
+    "description": "Análisis detallado de tu partida contra {{opponent}}",
+    "crowns": "Coronas",
+    "trophies": "Trofeos",
+    "arena": "Arena",
+    "yourDeck": "Tu Mazo",
+    "opponentDeck": "Mazo de {{name}}",
+    "aiAnalysis": "Análisis IA de la Partida",
+    "deckMatchup": "Enfrentamiento de Mazos",
+    "whatHappened": "Qué Pasó",
+    "recommendations": "Recomendaciones",
+    "discussWithCoach": "Discutir con Coach IA",
+    "signInRequired": "Inicia sesión para ver el análisis IA detallado de tus partidas",
+    "signIn": "Iniciar Sesión para Desbloquear"
+  },
   "footer": {
     "tagline": "Dominio de la arena con IA"
   },
@@ -998,7 +1015,31 @@
     "synergy": "Sinergia",
     "meta": "Meta",
     "replaced": "Reemplazado {{oldCard}} por {{newCard}}",
-    "fetchFailed": "Error al obtener sugerencias de reemplazo"
+    "fetchFailed": "Error al obtener sugerencias de reemplazo",
+    "languageChanged": "Idioma cambiado. Haz clic para obtener sugerencias en tu nuevo idioma.",
+    "finding": "Buscando sugerencias de reemplazo de cartas..."
+  },
+  "metaAnalysis": {
+    "title": "Análisis Meta de Torneos",
+    "subtitle": "Tendencias actuales de arquetipos y tasas de victoria",
+    "analyzing": "Analizando tendencias meta de torneos...",
+    "winRate": "Tasa de Victoria",
+    "usage": "Uso",
+    "change7d": "Cambio 7 Días",
+    "hotTrend": "Tendencia Popular",
+    "coldTrend": "Tendencia Fría",
+    "stableTrend": "Tendencia Estable"
+  },
+  "trophyPredictor": {
+    "title": "Predictor de Tasa de Victoria por Trofeos",
+    "targetRange": "Rango de Trofeos Objetivo",
+    "predict": "Predecir Rendimiento",
+    "predicting": "Prediciendo tasas de victoria en rangos de trofeos...",
+    "sweetSpot": "Punto Ideal",
+    "confidence": "Confianza",
+    "arenaTips": "Consejos de Arena",
+    "fetchFailed": "Error al obtener predicciones de tasa de victoria",
+    "languageChanged": "Idioma cambiado. Haz clic en predecir para obtener análisis en tu nuevo idioma."
   },
   "common": {
     "aiPowered": "Con IA",

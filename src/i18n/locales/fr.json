@@ -858,6 +858,23 @@
     "invalidTag": "Tag de joueur invalide",
     "playerNotFound": "Joueur non trouvé"
   },
+  "matchDetail": {
+    "victory": "Victoire",
+    "defeat": "Défaite",
+    "description": "Analyse détaillée de votre match contre {{opponent}}",
+    "crowns": "Couronnes",
+    "trophies": "Trophées",
+    "arena": "Arène",
+    "yourDeck": "Votre Deck",
+    "opponentDeck": "Deck de {{name}}",
+    "aiAnalysis": "Analyse IA du Match",
+    "deckMatchup": "Confrontation de Decks",
+    "whatHappened": "Ce Qui S'est Passé",
+    "recommendations": "Recommandations",
+    "discussWithCoach": "Discuter avec le Coach IA",
+    "signInRequired": "Connectez-vous pour voir l'analyse IA détaillée de vos matchs",
+    "signIn": "Se Connecter pour Débloquer"
+  },
   "footer": {
     "tagline": "Domination de l'arène avec l'IA"
   },
@@ -998,7 +1015,31 @@
     "synergy": "Synergie",
     "meta": "Meta",
     "replaced": "Remplacé {{oldCard}} par {{newCard}}",
-    "fetchFailed": "Échec de la récupération des suggestions de remplacement"
+    "fetchFailed": "Échec de la récupération des suggestions de remplacement",
+    "languageChanged": "Langue modifiée. Cliquez pour obtenir des suggestions dans votre nouvelle langue.",
+    "finding": "Recherche de suggestions de remplacement de cartes..."
+  },
+  "metaAnalysis": {
+    "title": "Analyse Méta des Tournois",
+    "subtitle": "Tendances actuelles des archétypes et taux de victoire",
+    "analyzing": "Analyse des tendances méta des tournois...",
+    "winRate": "Taux de Victoire",
+    "usage": "Utilisation",
+    "change7d": "Changement 7 Jours",
+    "hotTrend": "Tendance Populaire",
+    "coldTrend": "Tendance Froide",
+    "stableTrend": "Tendance Stable"
+  },
+  "trophyPredictor": {
+    "title": "Prédicteur de Taux de Victoire par Trophées",
+    "targetRange": "Plage de Trophées Cible",
+    "predict": "Prédire la Performance",
+    "predicting": "Prédiction des taux de victoire dans les plages de trophées...",
+    "sweetSpot": "Point Idéal",
+    "confidence": "Confiance",
+    "arenaTips": "Conseils d'Arène",
+    "fetchFailed": "Échec de la récupération des prédictions de taux de victoire",
+    "languageChanged": "Langue modifiée. Cliquez sur prédire pour obtenir l'analyse dans votre nouvelle langue."
   },
   "common": {
     "aiPowered": "Avec IA",
