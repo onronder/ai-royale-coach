@@ -1086,6 +1086,43 @@
     "fetchFailed": "Error al obtener predicciones de tasa de victoria",
     "languageChanged": "Idioma cambiado. Haz clic en predecir para obtener análisis en tu nuevo idioma."
   },
+  "achievements": {
+    "title": "Centro de Logros",
+    "description": "Rastrea tu viaje de maestría y desbloquea recompensas",
+    "syncProgress": "Sincronizar Progreso",
+    "unlocked": "Logros Desbloqueados",
+    "masteryPoints": "Puntos de Maestría",
+    "learningPhase": "Fase de Aprendizaje",
+    "beginner": "Principiante",
+    "completion": "Completado",
+    "skillBreakdown": "Desglose de Habilidades",
+    "skillBreakdownDescription": "Tus calificaciones de habilidades actuales por categoría",
+    "skills": "Habilidades",
+    "mastery": "Maestría",
+    "learning": "Aprendizaje",
+    "milestones": "Hitos",
+    "unlockedCount": "Desbloqueados ({{count}})",
+    "inProgress": "En Progreso ({{count}})",
+    "progress": "Progreso",
+    "pts": "pts",
+    "unlockedOn": "Desbloqueado {{date}}"
+  },
+  "deckStats": {
+    "title": "Estadísticas de Mazos",
+    "description": "Rastrea el rendimiento de tu mazo a lo largo del tiempo",
+    "syncStats": "Sincronizar Stats",
+    "noStats": "Sin Estadísticas de Mazos",
+    "noStatsDescription": "Sincroniza tu historial de batallas para comenzar a rastrear rendimiento, tasas de victoria y tendencias.",
+    "syncNow": "Sincronizar Ahora",
+    "realDataBadge": "Todas las estadísticas calculadas de tu historial de batallas real",
+    "totalBattles": "Batallas Totales",
+    "winRate": "Tasa de Victoria",
+    "trophyChange": "Cambio de Trofeos",
+    "activeDecks": "Mazos Activos",
+    "winRateTrends": "Tendencias de Victoria",
+    "deckUsage": "Uso de Mazos",
+    "topCards": "Mejores Cartas"
+  },
   "common": {
     "aiPowered": "Con IA",
     "elixir": "Elixir"

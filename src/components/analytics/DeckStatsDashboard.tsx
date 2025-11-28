@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDeckStats, useTrackDeckStats } from "@/hooks/useDeckStats";
@@ -14,6 +15,7 @@ interface DeckStatsDashboardProps {
 }
 
 export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
+  const { t } = useTranslation();
   const { data, isLoading, refetch } = useDeckStats(playerTag, 30);
   const { mutate: trackStats } = useTrackDeckStats();
 
@@ -40,20 +42,20 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-heading text-foreground">Deck Statistics</h2>
-            <p className="text-muted-foreground">Track your deck performance over time</p>
+            <h2 className="text-3xl font-heading text-foreground">{t('deckStats.title')}</h2>
+            <p className="text-muted-foreground">{t('deckStats.description')}</p>
           </div>
           <Button onClick={handleSync} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
-            Sync Stats
+            {t('deckStats.syncStats')}
           </Button>
         </div>
         <EmptyState
           icon={TrendingUp}
-          title="No Deck Stats Yet"
-          description="Sync your battle history to start tracking deck performance, win rates, and trends over time."
+          title={t('deckStats.noStats')}
+          description={t('deckStats.noStatsDescription')}
           action={{
-            label: "Sync Stats Now",
+            label: t('deckStats.syncNow'),
             onClick: handleSync,
           }}
         />
@@ -65,19 +67,19 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-heading text-foreground">Deck Statistics</h2>
-          <p className="text-muted-foreground">Track your deck performance over time</p>
+          <h2 className="text-3xl font-heading text-foreground">{t('deckStats.title')}</h2>
+          <p className="text-muted-foreground">{t('deckStats.description')}</p>
         </div>
         <Button onClick={handleSync} variant="outline" size="sm">
           <RefreshCw className="h-4 w-4 mr-2" />
-          Sync Stats
+          {t('deckStats.syncStats')}
         </Button>
       </div>
 
       {/* Data Source Info */}
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
-          All stats calculated from your real battle history
+          {t('deckStats.realDataBadge')}
         </span>
       </div>
 
@@ -87,7 +89,7 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Swords className="h-4 w-4" />
-              Total Battles
+              {t('deckStats.totalBattles')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -99,7 +101,7 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Win Rate
+              {t('deckStats.winRate')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -113,7 +115,7 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Trophy className="h-4 w-4" />
-              Trophy Change
+              {t('deckStats.trophyChange')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -126,7 +128,7 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Decks
+              {t('deckStats.activeDecks')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -138,9 +140,9 @@ export function DeckStatsDashboard({ playerTag }: DeckStatsDashboardProps) {
       {/* Charts and Analysis */}
       <Tabs defaultValue="trends" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="trends">Win Rate Trends</TabsTrigger>
-          <TabsTrigger value="usage">Deck Usage</TabsTrigger>
-          <TabsTrigger value="cards">Top Cards</TabsTrigger>
+          <TabsTrigger value="trends">{t('deckStats.winRateTrends')}</TabsTrigger>
+          <TabsTrigger value="usage">{t('deckStats.deckUsage')}</TabsTrigger>
+          <TabsTrigger value="cards">{t('deckStats.topCards')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="trends" className="space-y-4">

@@ -1086,6 +1086,43 @@
     "fetchFailed": "Falha ao obter previsões de taxa de vitória",
     "languageChanged": "Idioma alterado. Clique em prever para obter análise no seu novo idioma."
   },
+  "achievements": {
+    "title": "Central de Conquistas",
+    "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
+    "syncProgress": "Sincronizar Progresso",
+    "unlocked": "Conquistas Desbloqueadas",
+    "masteryPoints": "Pontos de Maestria",
+    "learningPhase": "Fase de Aprendizado",
+    "beginner": "Iniciante",
+    "completion": "Conclusão",
+    "skillBreakdown": "Detalhamento de Habilidades",
+    "skillBreakdownDescription": "Suas classificações de habilidades atuais por categoria",
+    "skills": "Habilidades",
+    "mastery": "Maestria",
+    "learning": "Aprendizado",
+    "milestones": "Marcos",
+    "unlockedCount": "Desbloqueadas ({{count}})",
+    "inProgress": "Em Progresso ({{count}})",
+    "progress": "Progresso",
+    "pts": "pts",
+    "unlockedOn": "Desbloqueada em {{date}}"
+  },
+  "deckStats": {
+    "title": "Estatísticas de Decks",
+    "description": "Acompanhe o desempenho do seu deck ao longo do tempo",
+    "syncStats": "Sincronizar Stats",
+    "noStats": "Sem Estatísticas de Decks",
+    "noStatsDescription": "Sincronize seu histórico de batalhas para começar a rastrear desempenho, taxas de vitória e tendências.",
+    "syncNow": "Sincronizar Agora",
+    "realDataBadge": "Todas as estatísticas calculadas do seu histórico de batalhas real",
+    "totalBattles": "Batalhas Totais",
+    "winRate": "Taxa de Vitória",
+    "trophyChange": "Mudança de Troféus",
+    "activeDecks": "Decks Ativos",
+    "winRateTrends": "Tendências de Vitória",
+    "deckUsage": "Uso de Decks",
+    "topCards": "Melhores Cartas"
+  },
   "common": {
     "aiPowered": "Com IA",
     "elixir": "Elixir"

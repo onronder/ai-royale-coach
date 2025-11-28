@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ interface AchievementDashboardProps {
 }
 
 export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
+  const { t } = useTranslation();
   const { data: achievements, isLoading: achievementsLoading } = useAchievements(playerTag);
   const { data: progress, isLoading: progressLoading } = useAchievementProgress(playerTag);
   const { mutate: syncAchievements, isPending: isSyncing } = useSyncAchievements(playerTag);
@@ -70,8 +72,8 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                 <Trophy className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="font-rajdhani text-2xl">Achievement Center</CardTitle>
-                <CardDescription>Track your mastery journey and unlock rewards</CardDescription>
+                <CardTitle className="font-rajdhani text-2xl">{t('achievements.title')}</CardTitle>
+                <CardDescription>{t('achievements.description')}</CardDescription>
               </div>
             </div>
             <Button
@@ -84,7 +86,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
               ) : (
                 <RefreshCw className="h-4 w-4 mr-2" />
               )}
-              Sync Progress
+              {t('achievements.syncProgress')}
             </Button>
           </div>
         </CardHeader>
@@ -98,7 +100,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
               <Trophy className="h-8 w-8 text-primary" />
               <span className="text-3xl font-bold font-rajdhani text-primary">{unlockedAchievements.length}</span>
             </div>
-            <p className="text-sm text-muted-foreground">Achievements Unlocked</p>
+            <p className="text-sm text-muted-foreground">{t('achievements.unlocked')}</p>
           </CardContent>
         </Card>
 
@@ -110,7 +112,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                 {progress?.total_mastery_points || 0}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Mastery Points</p>
+            <p className="text-sm text-muted-foreground">{t('achievements.masteryPoints')}</p>
           </CardContent>
         </Card>
 
@@ -119,10 +121,10 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
             <div className="flex items-center justify-between mb-2">
               <GraduationCap className="h-8 w-8 text-success" />
               <span className="text-2xl font-bold font-rajdhani text-success capitalize">
-                {progress?.learning_phase || 'Beginner'}
+                {progress?.learning_phase || t('achievements.beginner')}
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Learning Phase</p>
+            <p className="text-sm text-muted-foreground">{t('achievements.learningPhase')}</p>
           </CardContent>
         </Card>
 
@@ -134,7 +136,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                 {Math.round((unlockedAchievements.length / (achievements?.length || 1)) * 100)}%
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">Completion</p>
+            <p className="text-sm text-muted-foreground">{t('achievements.completion')}</p>
           </CardContent>
         </Card>
       </div>
@@ -143,8 +145,8 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
       {progress?.skill_levels && (
         <Card className="bg-card/50 backdrop-blur border-primary/20">
           <CardHeader>
-            <CardTitle className="font-rajdhani">Skill Breakdown</CardTitle>
-            <CardDescription>Your current skill ratings across categories</CardDescription>
+            <CardTitle className="font-rajdhani">{t('achievements.skillBreakdown')}</CardTitle>
+            <CardDescription>{t('achievements.skillBreakdownDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -179,11 +181,11 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
       {/* Achievement Categories */}
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-5 bg-card/50">
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="skill">Skills</TabsTrigger>
-          <TabsTrigger value="mastery">Mastery</TabsTrigger>
-          <TabsTrigger value="learning_path">Learning</TabsTrigger>
-          <TabsTrigger value="milestone">Milestones</TabsTrigger>
+          <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
+          <TabsTrigger value="skill">{t('achievements.skills')}</TabsTrigger>
+          <TabsTrigger value="mastery">{t('achievements.mastery')}</TabsTrigger>
+          <TabsTrigger value="learning_path">{t('achievements.learning')}</TabsTrigger>
+          <TabsTrigger value="milestone">{t('achievements.milestones')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="mt-6">
@@ -193,7 +195,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
               <div>
                 <h3 className="text-lg font-rajdhani font-bold text-foreground mb-4 flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-primary" />
-                  Unlocked ({unlockedAchievements.length})
+                  {t('achievements.unlockedCount', { count: unlockedAchievements.length })}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {unlockedAchievements.map((userAch) => {
@@ -216,11 +218,11 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                                   {ach.tier.toUpperCase()}
                                 </Badge>
                                 <Badge variant="outline" className="text-primary border-primary/30">
-                                  +{ach.points} pts
+                                  +{ach.points} {t('achievements.pts')}
                                 </Badge>
                               </div>
                               <p className="text-xs text-success mt-2">
-                                Unlocked {new Date(userAch.unlocked_at!).toLocaleDateString()}
+                                {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString() })}
                               </p>
                             </div>
                           </div>
@@ -236,7 +238,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
             {lockedAchievements.length > 0 && (
               <div>
                 <h3 className="text-lg font-rajdhani font-bold text-muted-foreground mb-4">
-                  In Progress ({lockedAchievements.length})
+                  {t('achievements.inProgress', { count: lockedAchievements.length })}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {lockedAchievements.map((userAch) => {
@@ -256,7 +258,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               <p className="text-xs text-muted-foreground mt-1">{ach.description}</p>
                               <div className="mt-3">
                                 <div className="flex items-center justify-between mb-1">
-                                  <span className="text-xs text-muted-foreground">Progress</span>
+                                  <span className="text-xs text-muted-foreground">{t('achievements.progress')}</span>
                                   <span className="text-xs font-semibold text-foreground">{userAch.progress}%</span>
                                 </div>
                                 <Progress value={userAch.progress} className="h-2" />
@@ -266,7 +268,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                                   {ach.tier.toUpperCase()}
                                 </Badge>
                                 <Badge variant="outline" className="text-muted-foreground border-muted/30">
-                                  {ach.points} pts
+                                  {ach.points} {t('achievements.pts')}
                                 </Badge>
                               </div>
                             </div>
@@ -314,7 +316,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                           {!isUnlocked && (
                             <div className="mt-3">
                               <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs text-muted-foreground">Progress</span>
+                                <span className="text-xs text-muted-foreground">{t('achievements.progress')}</span>
                                 <span className="text-xs font-semibold text-foreground">{userAch.progress}%</span>
                               </div>
                               <Progress value={userAch.progress} className="h-2" />
@@ -333,13 +335,13 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               variant="outline" 
                               className={isUnlocked ? 'text-primary border-primary/30' : 'text-muted-foreground border-muted/30'}
                             >
-                              +{ach.points} pts
+                              +{ach.points} {t('achievements.pts')}
                             </Badge>
                           </div>
                           
                           {isUnlocked && (
                             <p className="text-xs text-success mt-2">
-                              ✓ Unlocked {new Date(userAch.unlocked_at!).toLocaleDateString()}
+                              ✓ {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString() })}
                             </p>
                           )}
                         </div>
