@@ -5,12 +5,13 @@ import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Target } from "lucide-react";
+import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Target, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useMatchDiscussion } from "@/contexts/MatchDiscussionContext";
 import { CounterDeckModal } from "@/components/deck/CounterDeckModal";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface MatchDetailViewProps {
   battle: ClashRoyaleBattle | null;
@@ -40,6 +41,39 @@ interface MatchAnalysis {
   recommendations: string[];
   pivotalInteractions?: PivotalInteraction[];
   counterDeck?: CounterDeckSuggestion | null;
+}
+
+// Card name to image URL helper
+function getCardImageUrl(cardName: string): string {
+  const slug = cardName
+    .toLowerCase()
+    .replace(/\./g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `https://api-assets.clashroyale.com/cards/300/${slug}.png`;
+}
+
+// Card icon component with fallback
+function CardIcon({ cardName, className }: { cardName: string; className?: string }) {
+  const [hasError, setHasError] = useState(false);
+  
+  if (hasError) {
+    return (
+      <div className={cn("bg-muted rounded flex items-center justify-center text-xs font-medium", className)}>
+        {cardName.charAt(0)}
+      </div>
+    );
+  }
+  
+  return (
+    <img
+      src={getCardImageUrl(cardName)}
+      alt={cardName}
+      className={cn("rounded object-cover", className)}
+      onError={() => setHasError(true)}
+    />
+  );
 }
 
 // Trophy celebration component
@@ -100,7 +134,7 @@ function ConfettiBurst() {
   );
 }
 
-// Phase badge colors
+// Phase badge colors and timeline positions
 const phaseColors = {
   early: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
   mid: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
@@ -108,7 +142,119 @@ const phaseColors = {
   overtime: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
-// Key Moments component
+const phaseDotColors = {
+  early: 'bg-blue-500',
+  mid: 'bg-yellow-500',
+  late: 'bg-orange-500',
+  overtime: 'bg-red-500',
+};
+
+const phasePositions = {
+  early: '12.5%',
+  mid: '37.5%',
+  late: '62.5%',
+  overtime: '87.5%',
+};
+
+// Match Timeline visualization
+function MatchTimeline({ interactions }: { interactions: PivotalInteraction[] }) {
+  if (!interactions || interactions.length === 0) return null;
+
+  // Group interactions by phase
+  const phases = ['early', 'mid', 'late', 'overtime'] as const;
+  
+  return (
+    <div className="space-y-3">
+      <h3 className="font-semibold text-lg flex items-center gap-2">
+        <Clock className="w-5 h-5 text-primary" />
+        Match Timeline
+      </h3>
+      <div className="relative bg-card/50 rounded-lg border p-4">
+        {/* Timeline bar */}
+        <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+          <div className="absolute inset-0 flex">
+            <div className="flex-1 bg-blue-500/30" />
+            <div className="flex-1 bg-yellow-500/30" />
+            <div className="flex-1 bg-orange-500/30" />
+            <div className="flex-1 bg-red-500/30" />
+          </div>
+        </div>
+        
+        {/* Phase labels */}
+        <div className="flex justify-between mt-1 px-1">
+          <span className="text-[10px] text-blue-400">Early</span>
+          <span className="text-[10px] text-yellow-400">Mid</span>
+          <span className="text-[10px] text-orange-400">Late</span>
+          <span className="text-[10px] text-red-400">OT</span>
+        </div>
+        
+        {/* Interaction dots on timeline */}
+        <div className="relative h-16 mt-4">
+          <TooltipProvider>
+            {interactions.map((interaction, idx) => {
+              // Offset within phase for multiple interactions in same phase
+              const samePhaseCount = interactions.filter((i, j) => j < idx && i.phase === interaction.phase).length;
+              const offsetY = samePhaseCount * 20;
+              
+              return (
+                <Tooltip key={idx}>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className={cn(
+                        "absolute flex items-center gap-1 cursor-pointer transition-all hover:scale-110",
+                        "animate-fade-in"
+                      )}
+                      style={{ 
+                        left: phasePositions[interaction.phase],
+                        top: `${offsetY}px`,
+                        transform: 'translateX(-50%)',
+                        animationDelay: `${idx * 100}ms`
+                      }}
+                    >
+                      <div className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center border-2 overflow-hidden",
+                        interaction.impact === 'high' 
+                          ? "border-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]" 
+                          : "border-muted-foreground/50"
+                      )}>
+                        <CardIcon cardName={interaction.yourCard} className="w-full h-full" />
+                      </div>
+                      <Swords className="w-3 h-3 text-muted-foreground" />
+                      <div className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center border-2 overflow-hidden",
+                        "border-destructive/50"
+                      )}>
+                        <CardIcon cardName={interaction.opponentCard} className="w-full h-full" />
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={cn("text-xs", phaseColors[interaction.phase])}>
+                          {interaction.phase.charAt(0).toUpperCase() + interaction.phase.slice(1)}
+                        </Badge>
+                        {interaction.impact === 'high' && (
+                          <Badge className="bg-primary/20 text-primary text-xs">High Impact</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium">
+                        {interaction.yourCard} vs {interaction.opponentCard}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{interaction.description}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </TooltipProvider>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Key Moments component with card icons
 function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
   if (!interactions || interactions.length === 0) return null;
 
@@ -137,14 +283,18 @@ function KeyMoments({ interactions }: { interactions: PivotalInteraction[] }) {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-1 bg-success/20 text-success rounded text-sm font-medium">
-                {interaction.yourCard}
-              </span>
-              <Swords className="w-4 h-4 text-muted-foreground" />
-              <span className="px-2 py-1 bg-destructive/20 text-destructive rounded text-sm font-medium">
-                {interaction.opponentCard}
-              </span>
+            <div className="flex items-center gap-3 mb-2">
+              {/* Your Card with Icon */}
+              <div className="flex items-center gap-2 px-2 py-1 bg-success/20 rounded">
+                <CardIcon cardName={interaction.yourCard} className="w-8 h-8" />
+                <span className="text-success text-sm font-medium">{interaction.yourCard}</span>
+              </div>
+              <Swords className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              {/* Opponent Card with Icon */}
+              <div className="flex items-center gap-2 px-2 py-1 bg-destructive/20 rounded">
+                <CardIcon cardName={interaction.opponentCard} className="w-8 h-8" />
+                <span className="text-destructive text-sm font-medium">{interaction.opponentCard}</span>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">{interaction.description}</p>
           </div>
@@ -323,6 +473,11 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                 </div>
               ) : null}
             </div>
+
+            {/* Match Timeline */}
+            {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
+              <MatchTimeline interactions={analysis.pivotalInteractions} />
+            )}
 
             {/* Key Moments */}
             {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
