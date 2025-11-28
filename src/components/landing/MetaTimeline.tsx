@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TrendingUp, Calendar, Activity } from 'lucide-react';
 import type { SampleDeck } from '@/data/sampleDecks';
+import { useTranslation } from 'react-i18next';
 
 interface MetaTimelineProps {
   decks: SampleDeck[];
@@ -9,6 +10,7 @@ interface MetaTimelineProps {
 }
 
 export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
+  const { t } = useTranslation();
   const patches = decks[0].history.map(h => h.patch);
 
   const getWinRateAtPatch = (deck: SampleDeck, patch: string) => {
@@ -32,9 +34,9 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
     const newestWinRate = deck.history[0].winRate;
     const diff = newestWinRate - oldestWinRate;
 
-    if (Math.abs(diff) < 1) return { icon: '→', color: 'text-muted-foreground', label: 'Stable' };
-    if (diff > 0) return { icon: '↗', color: 'text-success', label: 'Rising' };
-    return { icon: '↘', color: 'text-destructive', label: 'Declining' };
+    if (Math.abs(diff) < 1) return { icon: '→', color: 'text-muted-foreground', label: t('landing.demo.meta.stable') };
+    if (diff > 0) return { icon: '↗', color: 'text-success', label: t('landing.demo.meta.rising') };
+    return { icon: '↘', color: 'text-destructive', label: t('landing.demo.meta.declining') };
   };
 
   return (
@@ -50,10 +52,10 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="font-rajdhani font-bold text-lg text-foreground">Meta Evolution</h4>
+                <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.meta.title')}</h4>
                 <Badge variant="outline" className="text-xs text-warning border-warning">Demo</Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Example historical trends</p>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.meta.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -156,7 +158,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
           <Card className="p-4 bg-card/30 border-border/30">
             <h5 className="text-sm font-rajdhani font-bold text-foreground mb-3 flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Deck Legend
+              {t('landing.demo.meta.deckLegend')}
             </h5>
             <div className="space-y-2">
               {decks.map((deck) => (
@@ -175,7 +177,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
 
           {/* Trends */}
           <Card className="p-4 bg-card/30 border-border/30">
-            <h5 className="text-sm font-rajdhani font-bold text-foreground mb-3">Recent Trends</h5>
+            <h5 className="text-sm font-rajdhani font-bold text-foreground mb-3">{t('landing.demo.meta.recentTrends')}</h5>
             <div className="space-y-2">
               {decks.map((deck) => {
                 const trend = getTrendIcon(deck);
@@ -187,8 +189,8 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
                       <Badge 
                         variant="outline" 
                         className={`text-xs ${
-                          trend.label === 'Rising' ? 'border-success text-success' :
-                          trend.label === 'Declining' ? 'border-destructive text-destructive' :
+                          trend.label === t('landing.demo.meta.rising') ? 'border-success text-success' :
+                          trend.label === t('landing.demo.meta.declining') ? 'border-destructive text-destructive' :
                           'border-muted-foreground text-muted-foreground'
                         }`}
                       >
@@ -205,14 +207,14 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
         {/* Insights */}
         <Card className="p-4 bg-primary/5 border-primary/20">
           <p className="text-xs text-muted-foreground">
-            <span className="font-semibold text-primary">Meta Insight:</span>{' '}
+            <span className="font-semibold text-primary">{t('landing.demo.meta.metaInsight')}:</span>{' '}
             {(() => {
               const highestWinRate = decks.reduce((prev, curr) => 
                 curr.history[0].winRate > prev.history[0].winRate ? curr : prev
               );
-              return `${highestWinRate.name} currently dominates the meta with a ${highestWinRate.history[0].winRate}% win rate. `;
+              return `${t('landing.demo.meta.dominates', { deck: highestWinRate.name, rate: highestWinRate.history[0].winRate })} `;
             })()}
-            Historical data helps predict future balance changes and meta shifts.
+            {t('landing.demo.meta.historicalHelps')}
           </p>
         </Card>
       </div>

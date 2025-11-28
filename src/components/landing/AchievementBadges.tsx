@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Target, Clock, Zap, Brain, TrendingUp, Award, CheckCircle2 } from 'lucide-react';
 import type { SampleDeck } from '@/data/sampleDecks';
+import { useTranslation } from 'react-i18next';
 
 interface AchievementBadgesProps {
   deck: SampleDeck;
@@ -17,6 +18,8 @@ interface SkillMilestone {
 }
 
 export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
+  const { t } = useTranslation();
+
   const getTierInfo = (tier: string) => {
     switch (tier) {
       case 'master':
@@ -42,35 +45,35 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
 
   const skillMilestones: SkillMilestone[] = [
     {
-      name: 'Card Placement',
+      name: t('landing.demo.difficulty.cardPlacement'),
       icon: Target,
       tier: getSkillTier(deck.skillRequirements.cardPlacement),
       progress: deck.skillRequirements.cardPlacement * 10,
       unlocked: deck.skillRequirements.cardPlacement >= 5,
     },
     {
-      name: 'Timing',
+      name: t('landing.demo.difficulty.timing'),
       icon: Clock,
       tier: getSkillTier(deck.skillRequirements.timing),
       progress: deck.skillRequirements.timing * 10,
       unlocked: deck.skillRequirements.timing >= 5,
     },
     {
-      name: 'Elixir Management',
+      name: t('landing.demo.difficulty.elixirManagement'),
       icon: Zap,
       tier: getSkillTier(deck.skillRequirements.elixirManagement),
       progress: deck.skillRequirements.elixirManagement * 10,
       unlocked: deck.skillRequirements.elixirManagement >= 5,
     },
     {
-      name: 'Prediction',
+      name: t('landing.demo.difficulty.prediction'),
       icon: Brain,
       tier: getSkillTier(deck.skillRequirements.prediction),
       progress: deck.skillRequirements.prediction * 10,
       unlocked: deck.skillRequirements.prediction >= 5,
     },
     {
-      name: 'Adaptation',
+      name: t('landing.demo.difficulty.adaptation'),
       icon: TrendingUp,
       tier: getSkillTier(deck.skillRequirements.adaptation),
       progress: deck.skillRequirements.adaptation * 10,
@@ -100,19 +103,19 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
               <Trophy className={`h-5 w-5 text-${deck.color}`} />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name} Achievements</h4>
-              <p className="text-xs text-muted-foreground">Track your mastery progress</p>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name} {t('landing.demo.achievements.title')}</h4>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.achievements.trackProgress')}</p>
             </div>
           </div>
           <Badge className={`bg-${deck.color}/20 text-${deck.color} border-${deck.color}/30 text-sm`}>
-            {Math.round(overallProgress)}% Mastery
+            {Math.round(overallProgress)}% {t('landing.demo.achievements.mastery')}
           </Badge>
         </div>
 
         {/* Overall Progress */}
         <Card className="p-4 bg-gradient-to-br from-primary/10 to-card border-primary/20">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-rajdhani font-semibold text-foreground">Overall Deck Mastery</span>
+            <span className="text-sm font-rajdhani font-semibold text-foreground">{t('landing.demo.achievements.overallMastery')}</span>
             <Award className="h-5 w-5 text-primary" />
           </div>
           <div className="relative h-3 bg-muted/20 rounded-full overflow-hidden">
@@ -122,7 +125,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
             />
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Complete all skill challenges and learning phases to master this deck
+            {t('landing.demo.achievements.completeAll')}
           </p>
         </Card>
 
@@ -130,7 +133,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
         <div>
           <h5 className="text-sm font-rajdhani font-bold text-foreground mb-4 flex items-center gap-2">
             <Award className="h-4 w-4" />
-            Skill Badges
+            {t('landing.demo.achievements.skillBadges')}
           </h5>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {skillMilestones.map((milestone, idx) => {
@@ -188,7 +191,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
         <div>
           <h5 className="text-sm font-rajdhani font-bold text-foreground mb-4 flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            Learning Path Progress
+            {t('landing.demo.achievements.learningPathProgress')}
           </h5>
           <div className="space-y-3">
             {learningMilestones.map((milestone, idx) => (
@@ -227,16 +230,16 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {milestone.completed 
-                        ? '✓ Completed' 
+                        ? `✓ ${t('landing.demo.achievements.completed')}` 
                         : milestone.current 
-                        ? 'In Progress' 
-                        : 'Locked'}
+                        ? t('landing.demo.achievements.inProgress') 
+                        : t('landing.demo.achievements.locked')}
                     </p>
                   </div>
                   {milestone.completed && (
                     <Badge className={`bg-${deck.color}/20 text-${deck.color} border-${deck.color}/30`}>
                       <Trophy className="h-3 w-3 mr-1" />
-                      Mastered
+                      {t('landing.demo.achievements.mastered')}
                     </Badge>
                   )}
                 </div>
@@ -248,8 +251,8 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
         {/* Next Milestone */}
         <Card className={`p-4 bg-gradient-to-br from-${deck.color}/5 to-card border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
-            <span className={`font-semibold text-${deck.color}`}>Next Milestone:</span>{' '}
-            Complete {learningMilestones.find(m => m.current)?.phase || 'Foundation Phase'} to unlock new achievements and advance your mastery level.
+            <span className={`font-semibold text-${deck.color}`}>{t('landing.demo.achievements.nextMilestone')}:</span>{' '}
+            {t('landing.demo.achievements.nextMilestoneDesc', { phase: learningMilestones.find(m => m.current)?.phase || 'Foundation Phase' })}
           </p>
         </Card>
       </div>

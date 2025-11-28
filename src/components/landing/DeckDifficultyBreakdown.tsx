@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { GraduationCap, Target, Clock, Zap, Brain, TrendingUp } from 'lucide-react';
 import type { SampleDeck } from '@/data/sampleDecks';
+import { useTranslation } from 'react-i18next';
 
 interface DeckDifficultyBreakdownProps {
   deck: SampleDeck;
@@ -10,6 +11,8 @@ interface DeckDifficultyBreakdownProps {
 }
 
 export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreakdownProps) {
+  const { t } = useTranslation();
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'beginner': return { bg: 'bg-success/20', text: 'text-success', border: 'border-success/30' };
@@ -22,11 +25,11 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
   const difficultyColors = getDifficultyColor(deck.difficulty);
 
   const skillCategories = [
-    { key: 'cardPlacement', label: 'Card Placement', icon: Target, description: 'Positioning accuracy and tile placement' },
-    { key: 'timing', label: 'Timing', icon: Clock, description: 'Perfect moment execution and reactions' },
-    { key: 'elixirManagement', label: 'Elixir Management', icon: Zap, description: 'Resource optimization and tracking' },
-    { key: 'prediction', label: 'Prediction', icon: Brain, description: 'Anticipating opponent moves' },
-    { key: 'adaptation', label: 'Adaptation', icon: TrendingUp, description: 'Adjusting strategy mid-match' },
+    { key: 'cardPlacement', label: t('landing.demo.difficulty.cardPlacement'), icon: Target, description: t('landing.demo.difficulty.cardPlacementDesc') },
+    { key: 'timing', label: t('landing.demo.difficulty.timing'), icon: Clock, description: t('landing.demo.difficulty.timingDesc') },
+    { key: 'elixirManagement', label: t('landing.demo.difficulty.elixirManagement'), icon: Zap, description: t('landing.demo.difficulty.elixirManagementDesc') },
+    { key: 'prediction', label: t('landing.demo.difficulty.prediction'), icon: Brain, description: t('landing.demo.difficulty.predictionDesc') },
+    { key: 'adaptation', label: t('landing.demo.difficulty.adaptation'), icon: TrendingUp, description: t('landing.demo.difficulty.adaptationDesc') },
   ];
 
   const getSkillColor = (value: number) => {
@@ -48,7 +51,7 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
             </div>
             <div>
               <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name}</h4>
-              <p className="text-xs text-muted-foreground">Skill analysis and learning roadmap</p>
+              <p className="text-xs text-muted-foreground">{t('landing.demo.difficulty.subtitle')}</p>
             </div>
           </div>
           <Badge className={`${difficultyColors.bg} ${difficultyColors.text} ${difficultyColors.border} uppercase font-bold`}>
@@ -58,7 +61,7 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
 
         {/* Skill Requirements Radar */}
         <Card className="p-5 bg-card/30 border-border/30">
-          <h5 className="text-sm font-rajdhani font-bold text-foreground mb-4">Skill Requirements</h5>
+          <h5 className="text-sm font-rajdhani font-bold text-foreground mb-4">{t('landing.demo.difficulty.skillRequirements')}</h5>
           <div className="space-y-4">
             {skillCategories.map((category, idx) => {
               const Icon = category.icon;
@@ -99,7 +102,7 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
         <div className="space-y-4">
           <h5 className="text-sm font-rajdhani font-bold text-foreground flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            Learning Path
+            {t('landing.demo.difficulty.learningPath')}
           </h5>
           {deck.learningPath.map((phase, idx) => (
             <Card 
@@ -133,10 +136,10 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
         {/* Bottom Tip */}
         <Card className={`p-4 bg-${deck.color}/5 border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
-            <span className={`font-semibold text-${deck.color}`}>Mastery Timeline:</span>{' '}
-            {deck.difficulty === 'beginner' && 'Expect 2-3 weeks to become proficient with consistent practice.'}
-            {deck.difficulty === 'intermediate' && 'Expect 4-6 weeks to reach competitive level with daily practice.'}
-            {deck.difficulty === 'expert' && 'Expect 8-12 weeks of dedicated practice to master all matchups and micro techniques.'}
+            <span className={`font-semibold text-${deck.color}`}>{t('landing.demo.difficulty.masteryTimeline')}:</span>{' '}
+            {deck.difficulty === 'beginner' && t('landing.demo.difficulty.beginnerTimeline')}
+            {deck.difficulty === 'intermediate' && t('landing.demo.difficulty.intermediateTimeline')}
+            {deck.difficulty === 'expert' && t('landing.demo.difficulty.expertTimeline')}
           </p>
         </Card>
       </div>
