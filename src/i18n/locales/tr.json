@@ -726,6 +726,19 @@
     "copiedToClipboard": "Karşı deste panoya kopyalandı!",
     "copyHint": "Deste oluşturucunuzda kullanmak için kart isimlerini kopyalayın"
   },
+  "deckComparison": {
+    "title": "Deste Karşılaştırma",
+    "headToHead": "Karşı Karşıya",
+    "cards": "kart",
+    "avgElixir": "Ort. İksir",
+    "similar": "Benzer",
+    "matchupAnalysis": "Eşleşme Analizi",
+    "matchupDisclaimer": "Kazanma oranı tahminleri her iki desteyle gerçek savaş geçmişi gerektirir. Bunun yerine arketip eşleşmeleri ve kart karşılaştırmalarına göre değerlendirin.",
+    "hideBreakdown": "Kart Detaylarını Gizle",
+    "showBreakdown": "Kart Detaylarını Göster",
+    "deck1Cards": "Deste 1 Kartları",
+    "deck2Cards": "Deste 2 Kartları"
+  },
   "cardReplacements": {
     "title": "Kart Değiştirme Önerici",
     "getSuggestions": "{{card}} kartını değiştirmek için AI destekli öneriler alın",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,17 +21,18 @@ interface DeckComparisonProps {
 }
 
 export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
+  const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
 
   const getComparison = (val1: number, val2: number) => {
     const diff = val1 - val2;
-    if (Math.abs(diff) < 2) return { icon: Minus, color: "text-muted-foreground", text: "Similar" };
+    if (Math.abs(diff) < 2) return { icon: Minus, color: "text-muted-foreground", text: t('deckComparison.similar') };
     if (diff > 0) return { icon: TrendingUp, color: "text-success", text: `+${diff.toFixed(1)}` };
     return { icon: TrendingDown, color: "text-destructive", text: diff.toFixed(1) };
   };
 
   const stats = [
-    { label: "Avg Elixir", val1: deck1.avgElixir, val2: deck2.avgElixir, max: 5 },
+    { label: t('deckComparison.avgElixir'), val1: deck1.avgElixir, val2: deck2.avgElixir, max: 5 },
   ];
 
   return (
@@ -38,8 +40,8 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Deck Comparison
-            <Badge variant="secondary">Head to Head</Badge>
+            {t('deckComparison.title')}
+            <Badge variant="secondary">{t('deckComparison.headToHead')}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -47,14 +49,14 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
           <div className="grid grid-cols-3 gap-4 items-center">
             <div className="text-center">
               <h3 className="font-heading text-lg text-foreground">{deck1.name}</h3>
-              <p className="text-sm text-muted-foreground">{deck1.cards.length} cards</p>
+              <p className="text-sm text-muted-foreground">{deck1.cards.length} {t('deckComparison.cards')}</p>
             </div>
             <div className="flex justify-center">
               <ArrowRight className="h-6 w-6 text-primary" />
             </div>
             <div className="text-center">
               <h3 className="font-heading text-lg text-foreground">{deck2.name}</h3>
-              <p className="text-sm text-muted-foreground">{deck2.cards.length} cards</p>
+              <p className="text-sm text-muted-foreground">{deck2.cards.length} {t('deckComparison.cards')}</p>
             </div>
           </div>
 
@@ -94,9 +96,9 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
 
           {/* Matchup Analysis Disclaimer */}
           <div className="bg-muted/50 border border-border rounded-lg p-4 space-y-2">
-            <h4 className="font-heading text-sm text-foreground">Matchup Analysis</h4>
+            <h4 className="font-heading text-sm text-foreground">{t('deckComparison.matchupAnalysis')}</h4>
             <p className="text-xs text-muted-foreground">
-              Win rate predictions require actual battle history with both decks. Compare based on archetype matchups and card counters instead.
+              {t('deckComparison.matchupDisclaimer')}
             </p>
           </div>
 
@@ -106,13 +108,13 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
             className="w-full"
             onClick={() => setShowDetails(!showDetails)}
           >
-            {showDetails ? "Hide" : "Show"} Card-by-Card Breakdown
+            {showDetails ? t('deckComparison.hideBreakdown') : t('deckComparison.showBreakdown')}
           </Button>
 
           {showDetails && (
             <div className="grid grid-cols-2 gap-4 pt-4 border-t">
               <div className="space-y-2">
-                <h5 className="font-heading text-sm text-muted-foreground">Deck 1 Cards</h5>
+                <h5 className="font-heading text-sm text-muted-foreground">{t('deckComparison.deck1Cards')}</h5>
                 <div className="grid grid-cols-2 gap-2">
                   {deck1.cards.map((card, idx) => (
                     <div key={idx} className="bg-muted rounded p-2 text-xs text-center">
@@ -122,7 +124,7 @@ export function DeckComparison({ deck1, deck2 }: DeckComparisonProps) {
                 </div>
               </div>
               <div className="space-y-2">
-                <h5 className="font-heading text-sm text-muted-foreground">Deck 2 Cards</h5>
+                <h5 className="font-heading text-sm text-muted-foreground">{t('deckComparison.deck2Cards')}</h5>
                 <div className="grid grid-cols-2 gap-2">
                   {deck2.cards.map((card, idx) => (
                     <div key={idx} className="bg-muted rounded p-2 text-xs text-center">
