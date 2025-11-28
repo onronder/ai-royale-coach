@@ -136,11 +136,22 @@
       "titleHighlight": "Estrategia Impulsada por IA",
       "subtitle": "Tu entrenador personal de Clash Royale impulsado por IA avanzada. Obtén análisis de mazos en tiempo real, información de batallas y sube de rango más rápido.",
       "cta": "Empieza a Ganar",
-      "secondaryCta": "Ver Cómo Funciona"
+      "secondaryCta": "Ver Cómo Funciona",
+      "playerCount": "Únete a más de 10,000 jugadores competitivos",
+      "selectAccount": "Seleccionar Cuenta",
+      "manageAccounts": "Administra hasta 3 cuentas de jugador",
+      "enterTag": "Ingresa tu tag de jugador para desbloquear insights de IA",
+      "analyze": "Analizar",
+      "errors": {
+        "enterTag": "Por favor ingresa un tag de jugador",
+        "signIn": "Por favor inicia sesión para continuar"
+      }
     },
     "features": {
       "title": "Todo lo que Necesitas para",
       "titleHighlight": "Dominar",
+      "badge": "Características",
+      "subtitle": "Haz clic en cualquier categoría para explorar nuestras potentes características",
       "smartAnalysis": "Análisis Inteligente",
       "smartAnalysisDesc": "Análisis de batallas y predicciones de enfrentamientos con IA",
       "deckOptimization": "Optimización de Mazos",
@@ -148,7 +159,63 @@
       "performanceTracking": "Seguimiento de Rendimiento",
       "performanceTrackingDesc": "Sigue tu progreso con estadísticas detalladas",
       "aiPowered": "Impulsado por IA",
-      "aiPoweredDesc": "Chat con entrenador personal para consejos estratégicos"
+      "aiPoweredDesc": "Chat con entrenador personal para consejos estratégicos",
+      "analysis": {
+        "battleHistory": "Análisis de Historial de Batallas",
+        "battleHistoryDesc": "Sumérgete en tus partidas recientes con análisis de IA",
+        "matchReplay": "Insights de Repetición",
+        "matchReplayDesc": "La IA identifica momentos clave y puntos de inflexión",
+        "counterDeck": "Análisis de Counter-Mazos",
+        "counterDeckDesc": "Conoce exactamente qué vence al mazo de tu oponente",
+        "matchupPredictions": "Predicciones de Enfrentamientos",
+        "matchupPredictionsDesc": "Probabilidad de victoria contra arquetipos comunes",
+        "deckComparison": "Herramienta de Comparación de Mazos",
+        "deckComparisonDesc": "Análisis lado a lado de cualquier dos mazos",
+        "clanStats": "Estadísticas de Clan y Torneos",
+        "clanStatsDesc": "Sigue el rendimiento en guerras de clan y torneos"
+      },
+      "deck": {
+        "visualBuilder": "Constructor Visual de Mazos",
+        "visualBuilderDesc": "Interfaz de creación de mazos con arrastrar y soltar",
+        "cardReplacement": "Sugeridor de Reemplazo de Cartas",
+        "cardReplacementDesc": "Encuentra intercambios óptimos para mejorar tu mazo",
+        "metaTemplates": "Plantillas Meta Predefinidas",
+        "metaTemplatesDesc": "Los mejores mazos de escalera listos para usar",
+        "synergyMatrix": "Matriz de Sinergias",
+        "synergyMatrixDesc": "Descubre combinaciones de cartas poderosas",
+        "elixirTrade": "Análisis de Intercambio de Elixir",
+        "elixirTradeDesc": "Domina la eficiencia y valor del elixir",
+        "metaTrend": "Análisis de Tendencias Meta",
+        "metaTrendDesc": "Mantente adelante de los cambios de meta y balance"
+      },
+      "tracking": {
+        "trophyProgress": "Gráficos de Progreso de Trofeos",
+        "trophyProgressDesc": "Visualiza tu ascenso a través de las arenas",
+        "winRateAnalytics": "Analíticas de Tasa de Victoria",
+        "winRateAnalyticsDesc": "Sigue tendencias de rendimiento a lo largo de días y semanas",
+        "deckUsage": "Estadísticas de Uso de Mazos",
+        "deckUsageDesc": "Ve qué mazos funcionan mejor para ti",
+        "cardCollection": "Rastreador de Colección de Cartas",
+        "cardCollectionDesc": "Gestiona tu inventario y mejoras",
+        "cardMastery": "Sistema de Maestría de Cartas",
+        "cardMasteryDesc": "Sigue el rendimiento y maestría de cartas individuales",
+        "achievementBadges": "Insignias de Logros",
+        "achievementBadgesDesc": "Desbloquea hitos de habilidad y muestra tu progreso"
+      },
+      "ai": {
+        "coachChat": "Chat con Coach IA",
+        "coachChatDesc": "Pregunta cualquier cosa sobre estrategia y obtén consejos expertos",
+        "personalizedAnalysis": "Análisis Personalizado",
+        "personalizedAnalysisDesc": "Insights adaptados a tu estilo de juego específico",
+        "matchCoaching": "Coaching Partido a Partido",
+        "matchCoachingDesc": "Aprende de cada juego con desgloses detallados",
+        "strategicRecommendations": "Recomendaciones Estratégicas",
+        "strategicRecommendationsDesc": "La IA sugiere mejoras basadas en tus datos",
+        "counterStrategy": "Generación de Counter-Estrategia",
+        "counterStrategyDesc": "Construye mazos diseñados para vencer oponentes específicos",
+        "realtimeTips": "Consejos en Tiempo Real",
+        "realtimeTipsDesc": "Sugerencias contextuales durante el juego"
+      }
     },
     "howItWorks": {
       "title": "Cómo Funciona",

@@ -136,11 +136,22 @@
       "titleHighlight": "Yapay Zeka Destekli Strateji",
       "subtitle": "Gelişmiş yapay zeka destekli kişisel Clash Royale koçun. Gerçek zamanlı deste analizi, savaş öngörüleri al ve daha hızlı yüksel.",
       "cta": "Kazanmaya Başla",
-      "secondaryCta": "Nasıl Çalışır"
+      "secondaryCta": "Nasıl Çalışır",
+      "playerCount": "10.000+ rekabetçi oyuncuya katıl",
+      "selectAccount": "Hesap Seç",
+      "manageAccounts": "3 oyuncu hesabına kadar yönet",
+      "enterTag": "Yapay zeka içgörülerinin kilidini açmak için oyuncu etiketini gir",
+      "analyze": "Analiz Et",
+      "errors": {
+        "enterTag": "Lütfen bir oyuncu etiketi girin",
+        "signIn": "Devam etmek için lütfen giriş yapın"
+      }
     },
     "features": {
       "title": "İhtiyacın Olan Her Şey",
       "titleHighlight": "Domine Etmek İçin",
+      "badge": "Özellikler",
+      "subtitle": "Güçlü özelliklerimizi keşfetmek için herhangi bir kategoriye tıklayın",
       "smartAnalysis": "Akıllı Analiz",
       "smartAnalysisDesc": "Yapay zeka destekli savaş analizi ve eşleşme tahminleri",
       "deckOptimization": "Deste Optimizasyonu",
@@ -148,7 +159,63 @@
       "performanceTracking": "Performans Takibi",
       "performanceTrackingDesc": "Detaylı istatistiklerle ilerlemenizi takip edin",
       "aiPowered": "Yapay Zeka Destekli",
-      "aiPoweredDesc": "Stratejik tavsiyeler için kişisel koç sohbeti"
+      "aiPoweredDesc": "Kişisel Clash Royale koçunuz",
+      "analysis": {
+        "battleHistory": "Savaş Geçmişi Analizi",
+        "battleHistoryDesc": "Yapay zeka destekli içgörülerle son maçlarınıza derinlemesine dalın",
+        "matchReplay": "Maç Tekrar Öngörüleri",
+        "matchReplayDesc": "Yapay zeka kritik anları ve dönüm noktalarını belirler",
+        "counterDeck": "Counter-Deste Analizi",
+        "counterDeckDesc": "Rakibinizin destesini tam olarak neyin yendiğini bilin",
+        "matchupPredictions": "Eşleşme Tahminleri",
+        "matchupPredictionsDesc": "Yaygın arketiplere karşı kazanma olasılığı",
+        "deckComparison": "Deste Karşılaştırma Aracı",
+        "deckComparisonDesc": "Herhangi iki destenin yan yana analizi",
+        "clanStats": "Klan ve Turnuva İstatistikleri",
+        "clanStatsDesc": "Klan savaşlarında ve turnuvalarda performansı takip edin"
+      },
+      "deck": {
+        "visualBuilder": "Görsel Deste Oluşturucu",
+        "visualBuilderDesc": "Sürükle-bırak deste oluşturma arayüzü",
+        "cardReplacement": "Kart Değiştirme Önerici",
+        "cardReplacementDesc": "Destenizi geliştirmek için optimal kart takaslarını bulun",
+        "metaTemplates": "Hazır Meta Şablonları",
+        "metaTemplatesDesc": "Anında kullanıma hazır en iyi merdiven desteleri",
+        "synergyMatrix": "Sinerji Matrisi",
+        "synergyMatrixDesc": "Güçlü kart kombinasyonlarını keşfedin",
+        "elixirTrade": "İksir Ticaret Analizi",
+        "elixirTradeDesc": "İksir verimliliğini ve değerini ustalaştırın",
+        "metaTrend": "Meta Trend Analizi",
+        "metaTrendDesc": "Meta kaymaları ve denge değişikliklerinin önünde kalın"
+      },
+      "tracking": {
+        "trophyProgress": "Kupa İlerleme Grafikleri",
+        "trophyProgressDesc": "Arenalardaki tırmanışınızı görselleştirin",
+        "winRateAnalytics": "Kazanma Oranı Analitiği",
+        "winRateAnalyticsDesc": "Günler ve haftalar boyunca performans trendlerini takip edin",
+        "deckUsage": "Deste Kullanım İstatistikleri",
+        "deckUsageDesc": "Hangi destelerin sizin için en iyi çalıştığını görün",
+        "cardCollection": "Kart Koleksiyonu Takipçisi",
+        "cardCollectionDesc": "Envanterinizi ve yükseltmelerinizi yönetin",
+        "cardMastery": "Kart Ustalık Sistemi",
+        "cardMasteryDesc": "Bireysel kart performansını ve ustalığını takip edin",
+        "achievementBadges": "Başarı Rozetleri",
+        "achievementBadgesDesc": "Beceri kilometre taşlarının kilidini açın ve ilerlemeyi sergileyin"
+      },
+      "ai": {
+        "coachChat": "Yapay Zeka Koç Sohbeti",
+        "coachChatDesc": "Strateji hakkında her şeyi sorun ve uzman tavsiyeleri alın",
+        "personalizedAnalysis": "Kişiselleştirilmiş Analiz",
+        "personalizedAnalysisDesc": "Oyun tarzınıza özel içgörüler",
+        "matchCoaching": "Maç Maç Koçluk",
+        "matchCoachingDesc": "Detaylı çözümlemelerle her oyundan öğrenin",
+        "strategicRecommendations": "Stratejik Öneriler",
+        "strategicRecommendationsDesc": "Yapay zeka verilerinize göre iyileştirmeler önerir",
+        "counterStrategy": "Counter-Strateji Üretimi",
+        "counterStrategyDesc": "Belirli rakipleri yenmek için tasarlanmış desteler oluşturun",
+        "realtimeTips": "Gerçek Zamanlı İpuçları",
+        "realtimeTipsDesc": "Oyun sırasında bağlama duyarlı öneriler"
+      }
     },
     "howItWorks": {
       "title": "Nasıl Çalışır",
