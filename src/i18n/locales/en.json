@@ -944,5 +944,39 @@
     "keyCards": "Key Cards",
     "strategy": "Strategy",
     "matchupDisclaimer": "Matchup predictions are based on typical card interactions and meta trends. Actual results depend on skill, timing, and adaptation."
+  },
+  "cardMastery": {
+    "used": "Used {{count}} times",
+    "winRate": "Win Rate",
+    "avgCrowns": "Avg Crowns",
+    "hideDetails": "Hide Details",
+    "showDetails": "Show Details",
+    "bestPartners": "Best Partners",
+    "strugglesAgainst": "Struggles Against",
+    "personalizedTips": "Personalized Tips",
+    "generate": "Generate",
+    "generatingTips": "Generating tips...",
+    "clickGenerate": "Click Generate for AI tips",
+    "calculated": "Card Mastery Calculated",
+    "calculatedDesc": "Your card mastery levels have been updated with the latest data",
+    "generatingFor": "Generating AI tips for {{card}}...",
+    "tipsGenerated": "AI tips generated for {{card}}!",
+    "tipsFailed": "Failed to generate tips for {{card}}",
+    "calculationFailed": "Failed to calculate card mastery"
+  },
+  "cardReplacements": {
+    "title": "Card Replacement Suggestions",
+    "getSuggestions": "Get AI-powered replacement suggestions for {{card}}",
+    "findReplacements": "Find Replacements",
+    "optionsFor": "Replacement Options for {{card}}",
+    "useThis": "Use This",
+    "synergy": "Synergy",
+    "meta": "Meta",
+    "replaced": "Replaced {{oldCard}} with {{newCard}}",
+    "fetchFailed": "Failed to fetch replacement suggestions"
+  },
+  "common": {
+    "aiPowered": "AI Powered",
+    "elixir": "Elixir"
   }
 }

@@ -968,5 +968,39 @@
     "keyCards": "Anahtar Kartlar",
     "strategy": "Strateji",
     "matchupDisclaimer": "Eşleşme tahminleri tipik kart etkileşimlerine ve meta trendlerine dayanmaktadır. Gerçek sonuçlar beceri, zamanlama ve adaptasyona bağlıdır."
+  },
+  "cardMastery": {
+    "used": "{{count}} kez kullanıldı",
+    "winRate": "Kazanma Oranı",
+    "avgCrowns": "Ort. Taç",
+    "hideDetails": "Detayları Gizle",
+    "showDetails": "Detayları Göster",
+    "bestPartners": "En İyi Partnerler",
+    "strugglesAgainst": "Zorlandığı Kartlar",
+    "personalizedTips": "Kişiselleştirilmiş İpuçları",
+    "generate": "Oluştur",
+    "generatingTips": "İpuçları oluşturuluyor...",
+    "clickGenerate": "AI ipuçları için Oluştur'a tıklayın",
+    "calculated": "Kart Ustalığı Hesaplandı",
+    "calculatedDesc": "Kart ustalık seviyeleriniz en son verilerle güncellendi",
+    "generatingFor": "{{card}} için AI ipuçları oluşturuluyor...",
+    "tipsGenerated": "{{card}} için AI ipuçları oluşturuldu!",
+    "tipsFailed": "{{card}} için ipuçları oluşturulamadı",
+    "calculationFailed": "Kart ustalığı hesaplanamadı"
+  },
+  "cardReplacements": {
+    "title": "Kart Değiştirme Önerileri",
+    "getSuggestions": "{{card}} için AI destekli değiştirme önerileri alın",
+    "findReplacements": "Alternatif Bul",
+    "optionsFor": "{{card}} için Alternatifler",
+    "useThis": "Bunu Kullan",
+    "synergy": "Sinerji",
+    "meta": "Meta",
+    "replaced": "{{oldCard}} yerine {{newCard}} konuldu",
+    "fetchFailed": "Değiştirme önerileri alınamadı"
+  },
+  "common": {
+    "aiPowered": "AI Destekli",
+    "elixir": "İksir"
   }
 }

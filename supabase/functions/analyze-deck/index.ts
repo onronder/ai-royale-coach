@@ -51,11 +51,11 @@ serve(async (req) => {
 
     // Language instruction based on user preference
     const languageInstructions: Record<string, string> = {
-      en: 'Respond in English.',
-      es: 'Responde en español.',
-      pt: 'Responda em português.',
-      tr: 'Türkçe yanıt ver.',
-      fr: 'Réponds en français.',
+      en: 'Respond in English. All text content must be in English.',
+      es: 'Responde en español. Todo el contenido de texto debe estar en español.',
+      pt: 'Responda em português. Todo o conteúdo de texto deve estar em português.',
+      tr: 'Türkçe yanıt ver. Tüm metin içeriği Türkçe olmalıdır.',
+      fr: 'Réponds en français. Tout le contenu textuel doit être en français.',
     };
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
@@ -132,19 +132,20 @@ serve(async (req) => {
       .filter(a => a.wins + a.losses >= 2)
       .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
 
-    // Get AI recommendations
+    // Get AI recommendations using structured tool calling
     const prompt = `Analyze this Clash Royale deck:
 
 **Archetype:** ${detectedArchetype.name} (${detectedArchetype.playstyle})
 **Current Deck:** ${deckCards.join(', ')}
 **Win Rate Data:** ${archetypeWinRates.map(a => `${a.archetype}: ${a.winRate.toFixed(0)}% (${a.wins}W-${a.losses}L)`).join(', ')}
 
-Based on the detected archetype and performance:
-1. List 3 **strengths** of this deck (bullet points)
-2. List 3 **weaknesses** or vulnerability areas (bullet points)
-3. Provide 3 **specific recommendations** for improvement (bullet points)
+Based on the detected archetype and performance data, analyze:
+1. 3 key strengths of this deck
+2. 3 weaknesses or vulnerability areas  
+3. 3 specific recommendations for improvement
 
-Keep each point to 1 sentence. Be specific about card interactions and matchups.`;
+Be specific about card interactions and matchups. Each point should be 1-2 sentences.
+${languageInstruction}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -157,11 +158,46 @@ Keep each point to 1 sentence. Be specific about card interactions and matchups.
         messages: [
           { 
             role: 'system', 
-            content: `You are an expert Clash Royale deck builder and strategist. Provide clear, actionable deck analysis. ${languageInstruction}` 
+            content: `You are an expert Clash Royale deck builder and strategist. ${languageInstruction}` 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "analyze_deck_results",
+              description: "Return structured deck analysis with strengths, weaknesses, and recommendations",
+              parameters: {
+                type: "object",
+                properties: {
+                  strengths: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 key strengths of the deck (in user's language)"
+                  },
+                  weaknesses: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 key weaknesses or vulnerabilities (in user's language)"
+                  },
+                  recommendations: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "3 specific improvement recommendations (in user's language)"
+                  },
+                  archetype_tips: {
+                    type: "string",
+                    description: "Brief tips for playing this archetype (in user's language)"
+                  }
+                },
+                required: ["strengths", "weaknesses", "recommendations", "archetype_tips"],
+                additionalProperties: false
+              }
+            }
+          }
+        ],
+        tool_choice: { type: "function", function: { name: "analyze_deck_results" } }
       }),
     });
 
@@ -172,42 +208,25 @@ Keep each point to 1 sentence. Be specific about card interactions and matchups.
     }
 
     const aiData = await response.json();
-    const analysisText = aiData.choices[0].message.content;
-
-    // Parse structured response
-    const lines = analysisText.split('\n').filter((l: string) => l.trim());
-    const strengths: string[] = [];
-    const weaknesses: string[] = [];
-    const recommendations: string[] = [];
-
-    let currentSection = '';
-    for (const line of lines) {
-      const lower = line.toLowerCase();
-      if (lower.includes('strength')) {
-        currentSection = 'strengths';
-      } else if (lower.includes('weakness') || lower.includes('vulnerabilit')) {
-        currentSection = 'weaknesses';
-      } else if (lower.includes('recommendation')) {
-        currentSection = 'recommendations';
-      } else if (line.match(/^[\*\-•]/)) {
-        const text = line.replace(/^[\*\-•]\s*/, '').trim();
-        if (currentSection === 'strengths') strengths.push(text);
-        else if (currentSection === 'weaknesses') weaknesses.push(text);
-        else if (currentSection === 'recommendations') recommendations.push(text);
-      }
+    const toolCall = aiData.choices[0].message.tool_calls?.[0];
+    
+    if (!toolCall || !toolCall.function.arguments) {
+      throw new Error('No tool call returned from AI');
     }
+
+    const analysis = JSON.parse(toolCall.function.arguments);
 
     return new Response(
       JSON.stringify({
         archetype: {
           name: detectedArchetype.name,
           playstyle: detectedArchetype.playstyle,
-          tips: detectedArchetype.tips,
+          tips: analysis.archetype_tips || detectedArchetype.tips,
         },
         archetypeWinRates,
-        strengths: strengths.slice(0, 3),
-        weaknesses: weaknesses.slice(0, 3),
-        recommendations: recommendations.slice(0, 3),
+        strengths: analysis.strengths.slice(0, 3),
+        weaknesses: analysis.weaknesses.slice(0, 3),
+        recommendations: analysis.recommendations.slice(0, 3),
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

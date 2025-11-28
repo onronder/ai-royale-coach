@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCreateNotification } from "./useNotifications";
 import { useOperationProgress } from "./useOperationProgress";
+import i18n from "@/i18n";
 
 export interface CardMastery {
   id: string;
@@ -75,13 +76,13 @@ export const useCalculateCardMastery = (playerTag: string) => {
       createNotification({
         player_tag: tag,
         type: 'calculation',
-        title: 'Card Mastery Calculated',
-        message: 'Your card mastery levels have been updated with the latest data',
+        title: i18n.t('cardMastery.calculated'),
+        message: i18n.t('cardMastery.calculatedDesc'),
         icon_name: 'sparkles'
       });
     },
     onError: (error) => {
-      toast.error('Failed to calculate card mastery');
+      toast.error(i18n.t('cardMastery.calculationFailed'));
       console.error('Card mastery calculation error:', error);
     },
   });
@@ -113,10 +114,10 @@ export const useGenerateCardTips = () => {
       cardId: number;
       playerTag: string;
     }) => {
-      toast.loading(`Generating AI tips for ${cardName}...`, { id: `card-tips-${cardId}` });
+      toast.loading(i18n.t('cardMastery.generatingFor', { card: cardName }), { id: `card-tips-${cardId}` });
       
       const { data, error } = await supabase.functions.invoke('generate-card-tips', {
-        body: { cardName, winRate, timesUsed, bestPartners, worstMatchups }
+        body: { cardName, winRate, timesUsed, bestPartners, worstMatchups, language: i18n.language }
       });
       
       if (error) throw error;
@@ -135,10 +136,10 @@ export const useGenerateCardTips = () => {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', variables.playerTag] });
-      toast.success(`AI tips generated for ${variables.cardName}!`, { id: `card-tips-${variables.cardId}` });
+      toast.success(i18n.t('cardMastery.tipsGenerated', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
     },
     onError: (error, variables) => {
-      toast.error(`Failed to generate tips for ${variables.cardName}`, { id: `card-tips-${variables.cardId}` });
+      toast.error(i18n.t('cardMastery.tipsFailed', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
       console.error('Card tips generation error:', error);
     },
   });

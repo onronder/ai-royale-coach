@@ -968,5 +968,39 @@
     "keyCards": "Cartas Clave",
     "strategy": "Estrategia",
     "matchupDisclaimer": "Las predicciones de enfrentamiento se basan en interacciones típicas de cartas y tendencias meta. Los resultados reales dependen de la habilidad, el momento y la adaptación."
+  },
+  "cardMastery": {
+    "used": "Usado {{count}} veces",
+    "winRate": "Tasa de Victoria",
+    "avgCrowns": "Coronas Prom.",
+    "hideDetails": "Ocultar Detalles",
+    "showDetails": "Mostrar Detalles",
+    "bestPartners": "Mejores Compañeros",
+    "strugglesAgainst": "Difícil Contra",
+    "personalizedTips": "Consejos Personalizados",
+    "generate": "Generar",
+    "generatingTips": "Generando consejos...",
+    "clickGenerate": "Clic en Generar para consejos de IA",
+    "calculated": "Maestría de Cartas Calculada",
+    "calculatedDesc": "Tus niveles de maestría de cartas han sido actualizados",
+    "generatingFor": "Generando consejos de IA para {{card}}...",
+    "tipsGenerated": "¡Consejos de IA generados para {{card}}!",
+    "tipsFailed": "Error al generar consejos para {{card}}",
+    "calculationFailed": "Error al calcular maestría de cartas"
+  },
+  "cardReplacements": {
+    "title": "Sugerencias de Reemplazo",
+    "getSuggestions": "Obtén sugerencias de reemplazo con IA para {{card}}",
+    "findReplacements": "Buscar Reemplazos",
+    "optionsFor": "Opciones de Reemplazo para {{card}}",
+    "useThis": "Usar Este",
+    "synergy": "Sinergia",
+    "meta": "Meta",
+    "replaced": "Reemplazado {{oldCard}} por {{newCard}}",
+    "fetchFailed": "Error al obtener sugerencias de reemplazo"
+  },
+  "common": {
+    "aiPowered": "Con IA",
+    "elixir": "Elixir"
   }
 }
