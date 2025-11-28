@@ -131,18 +131,7 @@ export function FeatureShowcase() {
   }, []);
 
   const toggleExpand = (id: string) => {
-    const newExpanded = expandedId === id ? null : id;
-    setExpandedId(newExpanded);
-    
-    // Scroll to demo section when expanding a card
-    if (newExpanded) {
-      setTimeout(() => {
-        document.getElementById('demo-section')?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
-        });
-      }, 400);
-    }
+    setExpandedId(expandedId === id ? null : id);
   };
 
   return (
