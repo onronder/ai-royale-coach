@@ -209,6 +209,16 @@ const Dashboard = () => {
                 <DeckBuilder 
                   availableCards={player.cards} 
                   userId={user.id}
+                  savedDecks={playerContext.savedDecks?.map(d => ({
+                    id: d.id,
+                    name: d.name,
+                    cards: d.cards as any,
+                    avg_elixir: d.avg_elixir || undefined,
+                    archetype: d.archetype || undefined
+                  })) || []}
+                  currentDeck={player.currentDeck || null}
+                  userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
+                  playerTrophies={player.trophies || 0}
                 />
               )}
             </PageTransition>
