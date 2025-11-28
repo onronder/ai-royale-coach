@@ -241,7 +241,13 @@
       "deckComplexity": "Complexité du Deck",
       "demoMetrics": "* Métriques de démo pour illustration",
       "aiCoachInsight": "Insight du Coach IA",
-      "tryWithYourDeck": "Essayez avec VOTRE Deck",
+      "tryWithYourDeck": "Essaie avec TON Deck",
+      "aiInsights": {
+        "hogCycle": "Ton positionnement de Mousquetaire est excellent pour la défense. Envisage d'utiliser Golem de Glace pour attirer les troupes ennemies pendant que ton Chevaucheur de Cochon connecte pour des dégâts supplémentaires. La valeur de la Boule de Feu peut être améliorée en attendant des pushes moyens.",
+        "golemBeatdown": "Excellente exécution beatdown ! Concentre-toi sur la construction de pushes massifs en double élixir. Ton timing d'Éclair contre Tour Infernale est crucial. Envisage d'attirer les bâtiments défensifs avant de placer ton Golem en simple élixir.",
+        "logBait": "Excellent baiting de sorts ! Tes placements de Princesse forcent l'utilisation de la Bûche efficacement. Concentre-toi sur le cycle de Fusée en prolongation quand tu mènes. Améliore tes prédictions de Baril de Gobelins contre les adversaires qui télégraphient leurs patterns d'utilisation de sorts.",
+        "xbowSiege": "Les placements patients d'Arbalète montrent de la discipline. Ton timing défensif de Tesla a besoin d'amélioration—place-la à 1 case de la rivière pour attirer les tanks. Dans les mauvais matchups, concentre-toi sur l'Arbalète défensive et les dégâts chip avec Boule de Feu plutôt que de forcer les connexions."
+      },
       "tabs": {
         "compare": "Comparer",
         "synergy": "Synergie",

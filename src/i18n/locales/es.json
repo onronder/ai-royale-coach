@@ -242,6 +242,12 @@
       "demoMetrics": "* Métricas de demo para ilustración",
       "aiCoachInsight": "Insight del Coach IA",
       "tryWithYourDeck": "Prueba con TU Mazo",
+      "aiInsights": {
+        "hogCycle": "Tu posicionamiento de Mosquetero es excelente para defender. Considera usar Gólem de Hielo para atraer tropas enemigas mientras tu Montapuercos conecta para daño extra. El valor del Bola de Fuego puede mejorarse esperando empujes medianos.",
+        "golemBeatdown": "¡Excelente ejecución de beatdown! Concéntrate en construir empujes masivos en elixir doble. Tu timing del Rayo contra Torre Inferno es crucial. Considera atraer los edificios defensivos antes de comprometer tu Gólem en elixir simple.",
+        "logBait": "¡Excelente baiting de hechizos! Tus colocaciones de Princesa fuerzan el uso del Tronco efectivamente. Concéntrate en ciclar Cohete en tiempo extra cuando vayas adelante. Mejora tus predicciones de Barril de Duendes contra oponentes que telegrafían sus patrones de uso de hechizos.",
+        "xbowSiege": "Las colocaciones pacientes de Ballesta muestran disciplina. Tu timing defensivo de Tesla necesita refinamiento—colócalo a 1 casilla del río para atraer tanques. En malas coincidencias, concéntrate en Ballesta defensiva y daño chip con Bola de Fuego en lugar de forzar conexiones."
+      },
       "tabs": {
         "compare": "Comparar",
         "synergy": "Sinergia",

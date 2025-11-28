@@ -53,7 +53,7 @@ serve(async (req) => {
       );
     }
 
-    const { playerData, battles } = await req.json();
+    const { playerData, battles, language = 'en' } = await req.json();
     
     if (!playerData || !battles) {
       return new Response(
@@ -61,6 +61,16 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     // Create fingerprint for caching
     const recentBattleIds = battles.slice(0, 5).map((b: any) => b.battleTime).join(',');
@@ -139,7 +149,7 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
         messages: [
           {
             role: 'system',
-            content: 'You are an expert Clash Royale coach. Provide clear, actionable insights that help players improve. Be encouraging but honest about areas for improvement.'
+            content: `You are an expert Clash Royale coach. Provide clear, actionable insights that help players improve. Be encouraging but honest about areas for improvement. ${languageInstruction}`
           },
           {
             role: 'user',

@@ -116,6 +116,12 @@
       "demoMetrics": "* Demo metrics for illustration",
       "aiCoachInsight": "AI Coach Insight",
       "tryWithYourDeck": "Try with YOUR Deck",
+      "aiInsights": {
+        "hogCycle": "Your Musketeer positioning is excellent for defense. Consider using Ice Golem to kite enemy troops while your Hog connects for extra damage. Fireball value can be improved by waiting for medium-sized pushes.",
+        "golemBeatdown": "Strong beatdown execution! Focus on building massive pushes in double elixir. Your Lightning timing against Inferno Tower is crucial. Consider baiting out defensive buildings before committing your Golem in single elixir.",
+        "logBait": "Excellent spell baiting! Your Princess placements force Log usage effectively. Focus on Rocket cycling in overtime when ahead. Time your Goblin Barrel predictions better against opponents who telegraph their spell usage patterns.",
+        "xbowSiege": "Patient X-Bow placements show discipline. Your defensive Tesla timing needs refinement—place it 1 tile away from the river to pull tanks. In bad matchups, focus on defensive X-Bow and Fireball chip damage rather than forcing connections."
+      },
       "tabs": {
         "compare": "Compare",
         "synergy": "Synergy",

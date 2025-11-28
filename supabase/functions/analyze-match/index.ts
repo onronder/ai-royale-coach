@@ -61,8 +61,18 @@ serve(async (req) => {
       );
     }
 
-    const { battle, playerTag }: MatchAnalysisRequest = await req.json();
+    const { battle, playerTag, language = 'en' }: MatchAnalysisRequest & { language?: string } = await req.json();
     
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
+
     // Normalize player tag - ensure it has # prefix for matching
     const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
     console.log('Analyzing match for player:', normalizedTag);
@@ -129,7 +139,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert Clash Royale coach and analyst. Provide analysis in valid JSON format only. Be practical and actionable.' 
+            content: `You are an expert Clash Royale coach and analyst. Provide analysis in valid JSON format only. Be practical and actionable. ${languageInstruction}` 
           },
           { role: 'user', content: prompt }
         ],

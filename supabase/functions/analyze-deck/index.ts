@@ -47,7 +47,17 @@ serve(async (req) => {
       );
     }
 
-    const { playerData, battles }: DeckAnalysisRequest = await req.json();
+    const { playerData, battles, language = 'en' }: DeckAnalysisRequest & { language?: string } = await req.json();
+
+    // Language instruction based on user preference
+    const languageInstructions: Record<string, string> = {
+      en: 'Respond in English.',
+      es: 'Responde en español.',
+      pt: 'Responda em português.',
+      tr: 'Türkçe yanıt ver.',
+      fr: 'Réponds en français.',
+    };
+    const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     // Fetch all archetypes
     const { data: archetypes, error: archetypesError } = await supabase
@@ -147,7 +157,7 @@ Keep each point to 1 sentence. Be specific about card interactions and matchups.
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert Clash Royale deck builder and strategist. Provide clear, actionable deck analysis.' 
+            content: `You are an expert Clash Royale deck builder and strategist. Provide clear, actionable deck analysis. ${languageInstruction}` 
           },
           { role: 'user', content: prompt }
         ],

@@ -5,6 +5,7 @@ import { ArchetypeTag } from "./ArchetypeTag";
 import { WinRateChart } from "./WinRateChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { AlertCircle, Target } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -32,11 +33,12 @@ interface DeckAnalysisPanelProps {
 }
 
 export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
+  const { i18n } = useTranslation();
   const { data: analysis, isLoading, error } = useQuery({
-    queryKey: ['deck-analysis', player.tag],
+    queryKey: ['deck-analysis', player.tag, i18n.language],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke<DeckAnalysisResult>('analyze-deck', {
-        body: { playerData: player, battles }
+        body: { playerData: player, battles, language: i18n.language }
       });
       if (error) {
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {

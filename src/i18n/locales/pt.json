@@ -242,6 +242,12 @@
       "demoMetrics": "* Métricas de demo para ilustração",
       "aiCoachInsight": "Insight do Coach IA",
       "tryWithYourDeck": "Experimente com SEU Deck",
+      "aiInsights": {
+        "hogCycle": "Seu posicionamento da Mosqueteira é excelente para defesa. Considere usar Golem de Gelo para atrair tropas inimigas enquanto seu Corredor conecta para dano extra. O valor da Bola de Fogo pode ser melhorado esperando pushes médios.",
+        "golemBeatdown": "Execução de beatdown forte! Foque em construir pushes massivos no elixir duplo. Seu timing do Relâmpago contra Torre Inferno é crucial. Considere atrair os prédios defensivos antes de comprometer seu Golem no elixir simples.",
+        "logBait": "Excelente baiting de feitiços! Seus posicionamentos de Princesa forçam o uso do Tronco efetivamente. Foque em ciclar Foguete na prorrogação quando estiver na frente. Melhore suas previsões do Barril de Goblins contra oponentes que telegrafam seus padrões de uso de feitiços.",
+        "xbowSiege": "Posicionamentos pacientes de Besta mostram disciplina. Seu timing defensivo da Tesla precisa de refinamento—coloque 1 tile do rio para puxar tanques. Em matchups ruins, foque em Besta defensiva e dano chip com Bola de Fogo ao invés de forçar conexões."
+      },
       "tabs": {
         "compare": "Comparar",
         "synergy": "Sinergia",
