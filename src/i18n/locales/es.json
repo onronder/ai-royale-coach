@@ -654,6 +654,7 @@
     "load": "Cargar Mazo",
     "clear": "Limpiar",
     "avgElixir": "Elixir Promedio",
+    "noCardsDescription": "Este mazo parece estar vacío. Añade cartas para verlas aquí.",
     "cardCount": "{{count}}/8 Cartas",
     "synergies": "Sinergias",
     "weaknesses": "Debilidades",
@@ -1138,11 +1139,6 @@
   "notFound": {
     "title": "¡Ups! Página no encontrada",
     "returnHome": "Volver al Inicio"
-  },
-  "deck": {
-    "noCards": "Sin Cartas en el Mazo",
-    "noCardsDescription": "Este mazo parece estar vacío. Añade cartas para verlas aquí.",
-    "avgElixir": "Elixir Promedio"
   },
   "tournaments": {
     "details": "Detalles del Torneo",

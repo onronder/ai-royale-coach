@@ -654,6 +654,7 @@
     "load": "Deste Yükle",
     "clear": "Temizle",
     "avgElixir": "Ortalama İksir",
+    "noCardsDescription": "Bu deste boş görünüyor. Görmek için kart ekleyin.",
     "cardCount": "{{count}}/8 Kart",
     "synergies": "Sinerjiler",
     "weaknesses": "Zayıflıklar",
@@ -1138,11 +1139,6 @@
   "notFound": {
     "title": "Hay aksi! Sayfa bulunamadı",
     "returnHome": "Ana Sayfaya Dön"
-  },
-  "deck": {
-    "noCards": "Destede Kart Yok",
-    "noCardsDescription": "Bu deste boş görünüyor. Görmek için kart ekleyin.",
-    "avgElixir": "Ortalama İksir"
   },
   "tournaments": {
     "details": "Turnuva Detayları",

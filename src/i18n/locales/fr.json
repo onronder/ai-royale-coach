@@ -654,6 +654,7 @@
     "load": "Charger un Deck",
     "clear": "Effacer",
     "avgElixir": "Élixir Moyen",
+    "noCardsDescription": "Ce deck semble être vide. Ajoutez des cartes pour les voir ici.",
     "cardCount": "{{count}}/8 Cartes",
     "synergies": "Synergies",
     "weaknesses": "Faiblesses",
@@ -1138,11 +1139,6 @@
   "notFound": {
     "title": "Oups! Page non trouvée",
     "returnHome": "Retour à l'Accueil"
-  },
-  "deck": {
-    "noCards": "Pas de Cartes dans le Deck",
-    "noCardsDescription": "Ce deck semble être vide. Ajoutez des cartes pour les voir ici.",
-    "avgElixir": "Élixir Moyen"
   },
   "tournaments": {
     "details": "Détails du Tournoi",

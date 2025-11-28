@@ -652,6 +652,7 @@
     "save": "Save Deck",
     "clear": "Clear",
     "noCards": "No cards selected",
+    "noCardsDescription": "This deck appears to be empty. Add cards to see them here.",
     "yourDeck": "Your Deck",
     "deckFull": "Deck is full (8 cards maximum)",
     "cardAlreadyInDeck": "Card already in deck",
@@ -1137,11 +1138,6 @@
   "notFound": {
     "title": "Oops! Page not found",
     "returnHome": "Return to Home"
-  },
-  "deck": {
-    "noCards": "No Cards in Deck",
-    "noCardsDescription": "This deck appears to be empty. Add cards to see them here.",
-    "avgElixir": "Average Elixir"
   },
   "tournaments": {
     "details": "Tournament Details",
