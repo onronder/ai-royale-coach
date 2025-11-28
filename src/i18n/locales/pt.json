@@ -233,6 +233,11 @@
     "cards": "Nenhuma carta rastreada",
     "cardsDesc": "Sincronize sua coleção para ver suas cartas"
   },
+  "selectPlayer": {
+    "badge": "Selecionar Conta",
+    "title": "Escolha Seu Campeão",
+    "subtitle": "Selecione ou adicione uma tag de jogador para ver suas estatísticas"
+  },
   "footer": {
     "tagline": "Eleve seu jogo."
   }

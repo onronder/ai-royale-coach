@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Crown, LogOut, Trophy, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { PlayerTagSelector } from "@/components/player/PlayerTagSelector";
 import { toast } from "sonner";
 
 const SelectPlayer = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +37,7 @@ const SelectPlayer = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
-    toast.success("Signed out successfully");
+    toast.success(t('dashboard.signedOut'));
   };
 
   const handleSelectPlayer = (playerTag: string) => {
@@ -50,7 +52,7 @@ const SelectPlayer = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-gold/30 border-t-gold"></div>
             <Crown className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5 text-gold" />
           </div>
-          <span className="text-muted-foreground font-rajdhani">Loading...</span>
+          <span className="text-muted-foreground font-rajdhani">{t('common.loading')}</span>
         </div>
       </div>
     );
@@ -92,7 +94,7 @@ const SelectPlayer = () => {
             </span>
             <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              {t('nav.signOut')}
             </Button>
           </div>
         </div>
@@ -105,11 +107,11 @@ const SelectPlayer = () => {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/20 border border-gold/30 mb-4">
               <Trophy className="h-4 w-4 text-gold trophy-shimmer" />
-              <span className="text-sm font-rajdhani font-semibold text-gold uppercase">Select Account</span>
+              <span className="text-sm font-rajdhani font-semibold text-gold uppercase">{t('selectPlayer.badge')}</span>
               <Sparkles className="h-3 w-3 text-gold" />
             </div>
-            <h1 className="text-3xl font-bold font-rajdhani text-embossed mb-2">Choose Your Champion</h1>
-            <p className="text-muted-foreground">Select or add a player tag to view your stats</p>
+            <h1 className="text-3xl font-bold font-rajdhani text-embossed mb-2">{t('selectPlayer.title')}</h1>
+            <p className="text-muted-foreground">{t('selectPlayer.subtitle')}</p>
           </div>
 
           <PlayerTagSelector 

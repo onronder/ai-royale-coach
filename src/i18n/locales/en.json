@@ -330,6 +330,11 @@
     "cards": "No cards tracked",
     "cardsDesc": "Sync your card collection to see your cards"
   },
+  "selectPlayer": {
+    "badge": "Select Account",
+    "title": "Choose Your Champion",
+    "subtitle": "Select or add a player tag to view your stats"
+  },
   "footer": {
     "tagline": "Elevate your gameplay."
   }

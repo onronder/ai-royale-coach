@@ -233,6 +233,11 @@
     "cards": "Aucune carte suivie",
     "cardsDesc": "Synchronisez votre collection pour voir vos cartes"
   },
+  "selectPlayer": {
+    "badge": "Sélectionner Compte",
+    "title": "Choisissez Votre Champion",
+    "subtitle": "Sélectionnez ou ajoutez un tag joueur pour voir vos stats"
+  },
   "footer": {
     "tagline": "Élevez votre jeu."
   }

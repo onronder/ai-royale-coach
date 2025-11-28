@@ -233,6 +233,11 @@
     "cards": "Takip edilen kart yok",
     "cardsDesc": "Kartlarını görmek için koleksiyonunu senkronize et"
   },
+  "selectPlayer": {
+    "badge": "Hesap Seç",
+    "title": "Şampiyonunu Seç",
+    "subtitle": "İstatistiklerini görmek için bir oyuncu etiketi seç veya ekle"
+  },
   "footer": {
     "tagline": "Oyununu yükselt."
   }
