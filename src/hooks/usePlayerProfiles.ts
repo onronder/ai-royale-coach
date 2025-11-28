@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -29,6 +30,7 @@ export interface PlayerProfile {
 }
 
 export function usePlayerProfiles(userId: string | null) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const profilesQuery = useQuery({
@@ -122,7 +124,7 @@ export function usePlayerProfiles(userId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['player-profiles', userId] });
-      toast.success('Player tag added successfully!');
+      toast.success(t('toasts.playerTagAdded'));
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -140,10 +142,10 @@ export function usePlayerProfiles(userId: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['player-profiles', userId] });
-      toast.success('Player tag removed');
+      toast.success(t('toasts.playerTagRemoved'));
     },
     onError: (error: Error) => {
-      toast.error('Failed to remove player tag');
+      toast.error(t('toasts.playerTagRemoveFailed'));
     },
   });
 

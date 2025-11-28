@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Bell, Check, CheckCheck, Trash2, Trophy, RefreshCw, Sparkles, Info, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +16,6 @@ import {
 } from "@/hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface NotificationCenterProps {
   playerTag?: string;
@@ -58,6 +59,7 @@ const getNotificationColor = (type: Notification['type']) => {
 };
 
 export function NotificationCenter({ playerTag }: NotificationCenterProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, unreadCount, isLoading } = useNotifications(playerTag);
   const { mutate: markAsRead } = useMarkAsRead();
@@ -99,9 +101,9 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
       <PopoverContent className="w-96 p-0" align="end">
         <div className="flex items-center justify-between p-4 pb-3">
           <div>
-            <h3 className="font-semibold text-foreground">Notifications</h3>
+            <h3 className="font-semibold text-foreground">{t('notifications.title')}</h3>
             <p className="text-xs text-muted-foreground">
-              {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
+              {unreadCount > 0 ? t('notifications.unread', { count: unreadCount }) : t('notifications.allCaughtUp')}
             </p>
           </div>
           <div className="flex items-center gap-1">
@@ -113,7 +115,7 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
                 className="h-8 text-xs"
               >
                 <CheckCheck className="h-3 w-3 mr-1" />
-                Mark all read
+                {t('notifications.markAllRead')}
               </Button>
             )}
             {notifications.length > 0 && (
@@ -133,14 +135,14 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 p-8">
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="text-sm text-muted-foreground">Loading notifications...</span>
+              <span className="text-sm text-muted-foreground">{t('notifications.loading')}</span>
             </div>
           ) : notifications.length === 0 ? (
             <div className="p-8 text-center">
               <Bell className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-              <p className="text-sm text-muted-foreground">No notifications yet</p>
+              <p className="text-sm text-muted-foreground">{t('notifications.noNotifications')}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                We'll notify you about achievements, syncs, and updates
+                {t('notifications.willNotify')}
               </p>
             </div>
           ) : (

@@ -279,7 +279,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       // Get the current user's session token for auth
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
-        toast.error("Please sign in to use AI Coach");
+        toast.error(t('coach.signInRequired'));
         return;
       }
       

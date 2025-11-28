@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ interface DeckTemplatesLibraryProps {
 }
 
 export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps) {
+  const { t } = useTranslation();
   const [selectedArchetype, setSelectedArchetype] = useState<string>("all");
 
   const { data: templates, isLoading } = useQuery({
@@ -57,19 +59,19 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
 
   const handleImport = (template: DeckTemplate) => {
     onImportDeck(template.cards);
-    toast.success(`Imported ${template.name}!`);
+    toast.success(t('templates.imported', { name: template.name }));
   };
 
   if (isLoading) {
-    return <DataLoader context="generic" variant="card" customMessage="Loading deck templates..." />;
+    return <DataLoader context="generic" variant="card" customMessage={t('templates.loading')} />;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-heading text-foreground">Meta Deck Templates</h2>
-          <p className="text-sm text-muted-foreground">Import proven meta decks instantly</p>
+          <h2 className="text-2xl font-heading text-foreground">{t('templates.title')}</h2>
+          <p className="text-sm text-muted-foreground">{t('templates.subtitle')}</p>
         </div>
       </div>
 
@@ -77,17 +79,17 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
       <div className="bg-muted/50 border border-border rounded-lg p-3 space-y-2">
         <div className="flex flex-wrap gap-2 text-xs">
           <span className="px-2 py-0.5 rounded bg-success/20 text-success border border-success/30">
-            Avg Elixir: Real (calculated)
+            {t('templates.avgElixirReal')}
           </span>
           <span className="px-2 py-0.5 rounded bg-warning/20 text-warning border border-warning/30">
-            Difficulty: Estimated
+            {t('templates.difficultyEstimated')}
           </span>
           <span className="px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
-            Popularity: Admin-set ranking
+            {t('templates.popularityAdmin')}
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          Win rates are calculated from YOUR battle history after you connect your player tag.
+          {t('templates.winRateNote')}
         </p>
       </div>
 
@@ -138,7 +140,7 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
 
                   <div className="flex items-center justify-between pt-2 border-t">
                     <span className={`text-sm font-medium capitalize ${getDifficultyColor(template.difficulty)}`}>
-                      {template.difficulty}
+                      {t(`templates.difficulty.${template.difficulty}`)}
                     </span>
                     <Button
                       onClick={() => handleImport(template)}
@@ -147,7 +149,7 @@ export function DeckTemplatesLibrary({ onImportDeck }: DeckTemplatesLibraryProps
                       className="gap-2"
                     >
                       <Copy className="h-4 w-4" />
-                      Import
+                      {t('templates.import')}
                     </Button>
                   </div>
                 </CardContent>

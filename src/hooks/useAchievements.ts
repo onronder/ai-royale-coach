@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useCreateNotification } from './useNotifications';
@@ -104,6 +105,7 @@ export function useAllAchievements() {
 }
 
 export function useSyncAchievements(playerTag: string) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { mutate: createNotification } = useCreateNotification();
 
@@ -123,7 +125,7 @@ export function useSyncAchievements(playerTag: string) {
 
       if (data.newlyUnlocked && data.newlyUnlocked.length > 0) {
         toast.success(
-          `🏆 Achievement${data.newlyUnlocked.length > 1 ? 's' : ''} Unlocked!`,
+          `🏆 ${data.newlyUnlocked.length > 1 ? t('toasts.achievementsUnlocked') : t('toasts.achievementUnlocked')}`,
           {
             description: data.newlyUnlocked.join(', '),
           }
@@ -134,27 +136,27 @@ export function useSyncAchievements(playerTag: string) {
           createNotification({
             player_tag: playerTag,
             type: 'achievement',
-            title: `Achievement Unlocked: ${achievementName}`,
-            message: `You've unlocked a new achievement!`,
+            title: `${t('toasts.achievementUnlocked')} ${achievementName}`,
+            message: t('achievements.unlockedNew'),
             icon_name: 'trophy'
           });
         });
       } else {
-        toast.success('Achievements synced successfully');
+        toast.success(t('toasts.achievementsSynced'));
         
         // Save sync notification
         createNotification({
           player_tag: playerTag,
           type: 'sync',
-          title: 'Achievements Synced',
-          message: 'Your achievements have been synced successfully',
+          title: t('achievements.synced'),
+          message: t('achievements.syncedMessage'),
           icon_name: 'refresh-cw'
         });
       }
     },
     onError: (error) => {
       console.error('Sync error:', error);
-      toast.error('Failed to sync achievements');
+      toast.error(t('toasts.achievementsSyncFailed'));
     },
   });
 }

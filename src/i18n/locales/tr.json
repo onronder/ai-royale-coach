@@ -1265,5 +1265,70 @@
     "toLevel": "seviyeye",
     "max": "MAKS",
     "noCardsFound": "Bu nadirlik için kart bulunamadı"
+  },
+  "mastery": {
+    "title": "Kart Ustalığı",
+    "description": "Bireysel kart performansınızı ve ilerlemenizi takip edin",
+    "updateMastery": "Ustalığı Güncelle",
+    "sortBy": "Sırala",
+    "masteryLevel": "Ustalık Seviyesi",
+    "mostUsed": "En Çok Kullanılan",
+    "bestWinRate": "En İyi Kazanma Oranı",
+    "noData": "Henüz kart ustalığı verisi yok",
+    "calculateMastery": "Ustalığı Hesapla"
+  },
+  "templates": {
+    "title": "Meta Deste Şablonları",
+    "subtitle": "Kanıtlanmış meta destelerini anında içe aktarın",
+    "loading": "Deste şablonları yükleniyor...",
+    "imported": "{{name}} içe aktarıldı!",
+    "avgElixirReal": "Ort İksir: Gerçek (hesaplanmış)",
+    "difficultyEstimated": "Zorluk: Tahmini",
+    "popularityAdmin": "Popülerlik: Yönetici tarafından belirlenen",
+    "winRateNote": "Kazanma oranları, oyuncu etiketinizi bağladıktan sonra KENDI savaş geçmişinizden hesaplanır.",
+    "import": "İçe Aktar",
+    "difficulty": {
+      "beginner": "Başlangıç",
+      "intermediate": "Orta",
+      "advanced": "İleri"
+    }
+  },
+  "progress": {
+    "activeTasks": "Aktif Görevler",
+    "noActiveOperations": "Aktif işlem yok",
+    "operationsRunning": "{{count}} işlem çalışıyor",
+    "processing": "İşleniyor...",
+    "started": "Başladı",
+    "recent": "Son",
+    "noOperationsYet": "Henüz işlem yok"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "unread": "{{count}} okunmamış",
+    "allCaughtUp": "Hepsi tamam!",
+    "markAllRead": "Tümünü okundu işaretle",
+    "loading": "Bildirimler yükleniyor...",
+    "noNotifications": "Henüz bildirim yok",
+    "willNotify": "Başarılar, senkronizasyonlar ve güncellemeler hakkında sizi bilgilendireceğiz"
+  },
+  "operations": {
+    "cardMasteryCalculation": "Kart Ustalığı Hesaplaması",
+    "cardCollectionSync": "Kart Koleksiyonu Senkronizasyonu",
+    "deckStatsTracking": "Deste İstatistikleri Takibi",
+    "achievementSync": "Başarı Senkronizasyonu",
+    "cancelled": "İşlem iptal edildi",
+    "cancelFailed": "İşlem iptal edilemedi"
+  },
+  "toasts": {
+    "achievementUnlocked": "Başarı Açıldı!",
+    "achievementsUnlocked": "Başarılar Açıldı!",
+    "achievementsSynced": "Başarılar başarıyla senkronize edildi",
+    "achievementsSyncFailed": "Başarılar senkronize edilemedi",
+    "deckStatsUpdated": "Deste istatistikleri başarıyla güncellendi!",
+    "deckStatsUpdateFailed": "Deste istatistikleri güncellenemedi",
+    "playerTagAdded": "Oyuncu etiketi başarıyla eklendi!",
+    "playerTagRemoved": "Oyuncu etiketi kaldırıldı",
+    "playerTagRemoveFailed": "Oyuncu etiketi kaldırılamadı",
+    "trackingDeckStats": "Deste istatistikleri takip ediliyor..."
   }
 }

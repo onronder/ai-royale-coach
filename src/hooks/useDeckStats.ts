@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useCreateNotification } from "./useNotifications";
@@ -70,12 +71,13 @@ export const useDeckStats = (playerTag: string, days = 30) => {
 };
 
 export const useTrackDeckStats = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { mutate: createNotification } = useCreateNotification();
   
   return useMutation({
     mutationFn: async (playerTag: string) => {
-      toast.loading('Tracking deck statistics...', { id: 'deck-stats-track' });
+      toast.loading(t('toasts.trackingDeckStats'), { id: 'deck-stats-track' });
       
       const { data, error } = await supabase.functions.invoke('track-deck-stats', {
         body: { playerTag }
@@ -86,19 +88,19 @@ export const useTrackDeckStats = () => {
     },
     onSuccess: (_, playerTag) => {
       queryClient.invalidateQueries({ queryKey: ['deck-stats', playerTag] });
-      toast.success('Deck statistics updated successfully!', { id: 'deck-stats-track' });
+      toast.success(t('toasts.deckStatsUpdated'), { id: 'deck-stats-track' });
       
       // Save to notification history
       createNotification({
         player_tag: playerTag,
         type: 'sync',
-        title: 'Deck Stats Updated',
-        message: 'Your deck statistics have been synced with the latest battle data',
+        title: t('deckStats.updated'),
+        message: t('deckStats.updatedMessage'),
         icon_name: 'refresh-cw'
       });
     },
     onError: (error) => {
-      toast.error('Failed to update deck statistics', { id: 'deck-stats-track' });
+      toast.error(t('toasts.deckStatsUpdateFailed'), { id: 'deck-stats-track' });
       console.error('Deck stats tracking error:', error);
     },
   });

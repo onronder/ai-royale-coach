@@ -1265,5 +1265,70 @@
     "toLevel": "para nível",
     "max": "MÁX",
     "noCardsFound": "Nenhuma carta encontrada para esta raridade"
+  },
+  "mastery": {
+    "title": "Maestria de Cartas",
+    "description": "Acompanhe o desempenho e progresso de cada carta",
+    "updateMastery": "Atualizar Maestria",
+    "sortBy": "Ordenar por",
+    "masteryLevel": "Nível de Maestria",
+    "mostUsed": "Mais Usada",
+    "bestWinRate": "Melhor Taxa de Vitória",
+    "noData": "Ainda não há dados de maestria",
+    "calculateMastery": "Calcular Maestria"
+  },
+  "templates": {
+    "title": "Modelos de Decks Meta",
+    "subtitle": "Importe decks meta comprovados instantaneamente",
+    "loading": "Carregando modelos de decks...",
+    "imported": "{{name}} importado!",
+    "avgElixirReal": "Elixir Méd: Real (calculado)",
+    "difficultyEstimated": "Dificuldade: Estimada",
+    "popularityAdmin": "Popularidade: Definida pelo admin",
+    "winRateNote": "Taxas de vitória são calculadas do SEU histórico de batalhas após conectar sua tag de jogador.",
+    "import": "Importar",
+    "difficulty": {
+      "beginner": "Iniciante",
+      "intermediate": "Intermediário",
+      "advanced": "Avançado"
+    }
+  },
+  "progress": {
+    "activeTasks": "Tarefas Ativas",
+    "noActiveOperations": "Sem operações ativas",
+    "operationsRunning": "{{count}} operação(ões) em execução",
+    "processing": "Processando...",
+    "started": "Iniciado",
+    "recent": "Recente",
+    "noOperationsYet": "Ainda não há operações"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "unread": "{{count}} não lidas",
+    "allCaughtUp": "Tudo em dia!",
+    "markAllRead": "Marcar tudo lido",
+    "loading": "Carregando notificações...",
+    "noNotifications": "Ainda não há notificações",
+    "willNotify": "Notificaremos sobre conquistas, sincronizações e atualizações"
+  },
+  "operations": {
+    "cardMasteryCalculation": "Cálculo de Maestria de Cartas",
+    "cardCollectionSync": "Sincronização de Coleção de Cartas",
+    "deckStatsTracking": "Rastreamento de Estatísticas do Deck",
+    "achievementSync": "Sincronização de Conquistas",
+    "cancelled": "Operação cancelada",
+    "cancelFailed": "Falha ao cancelar operação"
+  },
+  "toasts": {
+    "achievementUnlocked": "Conquista Desbloqueada!",
+    "achievementsUnlocked": "Conquistas Desbloqueadas!",
+    "achievementsSynced": "Conquistas sincronizadas com sucesso",
+    "achievementsSyncFailed": "Falha ao sincronizar conquistas",
+    "deckStatsUpdated": "Estatísticas do deck atualizadas!",
+    "deckStatsUpdateFailed": "Falha ao atualizar estatísticas do deck",
+    "playerTagAdded": "Tag de jogador adicionada!",
+    "playerTagRemoved": "Tag de jogador removida",
+    "playerTagRemoveFailed": "Falha ao remover tag de jogador",
+    "trackingDeckStats": "Rastreando estatísticas do deck..."
   }
 }

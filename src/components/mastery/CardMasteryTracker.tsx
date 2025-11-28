@@ -65,12 +65,12 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-heading text-foreground">Card Mastery</h2>
-          <p className="text-muted-foreground">Track your individual card performance and progression</p>
+          <h2 className="text-3xl font-heading text-foreground">{t('mastery.title')}</h2>
+          <p className="text-muted-foreground">{t('mastery.description')}</p>
         </div>
         <Button onClick={handleSync} variant="outline" size="sm" disabled={calculateMastery.isPending}>
           <RefreshCw className={`h-4 w-4 mr-2 ${calculateMastery.isPending ? 'animate-spin' : ''}`} />
-          Update Mastery
+          {t('mastery.updateMastery')}
         </Button>
       </div>
 
@@ -107,15 +107,15 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
 
       {/* Sort Controls */}
       <div className="flex items-center gap-4">
-        <span className="text-sm text-muted-foreground">Sort by:</span>
+        <span className="text-sm text-muted-foreground">{t('mastery.sortBy')}:</span>
         <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="level">Mastery Level</SelectItem>
-            <SelectItem value="usage">Most Used</SelectItem>
-            <SelectItem value="winrate">Best Win Rate</SelectItem>
+            <SelectItem value="level">{t('mastery.masteryLevel')}</SelectItem>
+            <SelectItem value="usage">{t('mastery.mostUsed')}</SelectItem>
+            <SelectItem value="winrate">{t('mastery.bestWinRate')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -130,10 +130,10 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
       {(!cards || cards.length === 0) && (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">No card mastery data yet</p>
+            <p className="text-muted-foreground mb-4">{t('mastery.noData')}</p>
             <Button onClick={handleSync} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Calculate Mastery
+              {t('mastery.calculateMastery')}
             </Button>
           </CardContent>
         </Card>
