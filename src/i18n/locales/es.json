@@ -719,18 +719,6 @@
     "quotaExhausted": "Límite diario de IA alcanzado. Se reinicia a medianoche.",
     "quotaLow": "Pocas solicitudes de IA restantes hoy."
   },
-  "counterDeck": {
-    "title": "Constructor de Mazo Contador",
-    "description": "Mazo sugerido por IA diseñado para contrarrestar la estrategia de {{opponent}}",
-    "opponentDeck": "Mazo del Oponente",
-    "suggestedDeck": "Mazo Contador Sugerido",
-    "howToPlay": "Cómo Jugar Este Mazo Contador",
-    "whyTheseCards": "¿Por Qué Estas Cartas?",
-    "copyButton": "Copiar Cartas del Mazo",
-    "copiedButton": "¡Copiado al Portapapeles!",
-    "copiedToClipboard": "¡Mazo contador copiado al portapapeles!",
-    "copyHint": "Copia los nombres de las cartas para usar en tu constructor de mazos"
-  },
   "deckComparison": {
     "title": "Comparación de Mazos",
     "headToHead": "Cara a Cara",
@@ -823,18 +811,6 @@
     "globalRankingsFailed": "Error al cargar rankings globales de clanes",
     "enterSearchQuery": "Por favor ingresa una búsqueda",
     "searchFailed": "Error al buscar clanes"
-  },
-  "tournaments": {
-    "title": "Torneos",
-    "noTournaments": "Aún No Hay Torneos",
-    "createFirst": "¡Crea tu primer torneo para que los jugadores compitan!",
-    "create": "Crear Torneo",
-    "prizePool": "Premio",
-    "loadFailed": "Error al cargar torneos",
-    "registration": "Registro",
-    "inProgress": "En Progreso",
-    "completed": "Completado",
-    "cancelled": "Cancelado"
   },
   "common": {
     "loading": "Cargando...",

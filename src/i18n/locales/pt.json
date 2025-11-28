@@ -719,18 +719,6 @@
     "quotaExhausted": "Limite diário de IA atingido. Reinicia à meia-noite.",
     "quotaLow": "Poucas solicitações de IA restantes hoje."
   },
-  "counterDeck": {
-    "title": "Construtor de Deck Contador",
-    "description": "Deck sugerido por IA projetado para contrariar a estratégia de {{opponent}}",
-    "opponentDeck": "Deck do Oponente",
-    "suggestedDeck": "Deck Contador Sugerido",
-    "howToPlay": "Como Jogar Este Deck Contador",
-    "whyTheseCards": "Por Que Essas Cartas?",
-    "copyButton": "Copiar Cartas do Deck",
-    "copiedButton": "Copiado para a Área de Transferência!",
-    "copiedToClipboard": "Deck contador copiado para a área de transferência!",
-    "copyHint": "Copie os nomes das cartas para usar no seu construtor de decks"
-  },
   "deckComparison": {
     "title": "Comparação de Decks",
     "headToHead": "Frente a Frente",
@@ -823,18 +811,6 @@
     "globalRankingsFailed": "Erro ao carregar rankings globais de clãs",
     "enterSearchQuery": "Por favor insira uma busca",
     "searchFailed": "Erro ao buscar clãs"
-  },
-  "tournaments": {
-    "title": "Torneios",
-    "noTournaments": "Ainda Não Há Torneios",
-    "createFirst": "Crie seu primeiro torneio para os jogadores competirem!",
-    "create": "Criar Torneio",
-    "prizePool": "Premiação",
-    "loadFailed": "Erro ao carregar torneios",
-    "registration": "Inscrições",
-    "inProgress": "Em Andamento",
-    "completed": "Concluído",
-    "cancelled": "Cancelado"
   },
   "common": {
     "loading": "Carregando...",

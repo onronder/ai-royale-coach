@@ -719,18 +719,6 @@
     "quotaExhausted": "Günlük AI limiti doldu. Gece yarısı sıfırlanır.",
     "quotaLow": "Bugün için AI istekleri azalıyor."
   },
-  "counterDeck": {
-    "title": "Karşı Deste Oluşturucu",
-    "description": "{{opponent}} stratejisine karşı AI önerili deste",
-    "opponentDeck": "Rakibin Destesi",
-    "suggestedDeck": "Önerilen Karşı Deste",
-    "howToPlay": "Bu Karşı Desteyi Nasıl Oynarsınız",
-    "whyTheseCards": "Neden Bu Kartlar?",
-    "copyButton": "Deste Kartlarını Kopyala",
-    "copiedButton": "Panoya Kopyalandı!",
-    "copiedToClipboard": "Karşı deste panoya kopyalandı!",
-    "copyHint": "Deste oluşturucunuzda kullanmak için kart isimlerini kopyalayın"
-  },
   "deckComparison": {
     "title": "Deste Karşılaştırma",
     "headToHead": "Karşı Karşıya",
@@ -823,18 +811,6 @@
     "globalRankingsFailed": "Dünya klan sıralaması yüklenemedi",
     "enterSearchQuery": "Lütfen bir arama sorgusu girin",
     "searchFailed": "Klan araması başarısız"
-  },
-  "tournaments": {
-    "title": "Turnuvalar",
-    "noTournaments": "Henüz Turnuva Yok",
-    "createFirst": "İlk turnuvanızı oluşturarak oyuncuları yarıştırın!",
-    "create": "Turnuva Oluştur",
-    "prizePool": "Ödül Havuzu",
-    "loadFailed": "Turnuvalar yüklenemedi",
-    "registration": "Kayıt",
-    "inProgress": "Devam Ediyor",
-    "completed": "Tamamlandı",
-    "cancelled": "İptal Edildi"
   },
   "common": {
     "loading": "Yükleniyor...",
