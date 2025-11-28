@@ -1,0 +1,173 @@
+{
+  "nav": {
+    "signIn": "Sign In",
+    "getStarted": "Get Started",
+    "signOut": "Sign Out"
+  },
+  "landing": {
+    "hero": {
+      "title": "Dominate the Arena with",
+      "titleHighlight": "AI-Powered Strategy",
+      "subtitle": "Your personal Clash Royale coach powered by advanced AI. Get real-time deck analysis, battle insights, and climb the ladder faster.",
+      "cta": "Start Winning Now",
+      "secondaryCta": "See How It Works"
+    },
+    "features": {
+      "title": "Everything You Need to",
+      "titleHighlight": "Dominate",
+      "smartAnalysis": "Smart Analysis",
+      "smartAnalysisDesc": "AI-powered battle analysis and matchup predictions",
+      "deckOptimization": "Deck Optimization",
+      "deckOptimizationDesc": "Build winning decks with card swap suggestions",
+      "performanceTracking": "Performance Tracking",
+      "performanceTrackingDesc": "Track your progress with detailed statistics",
+      "aiPowered": "AI Powered",
+      "aiPoweredDesc": "Personal coach chat for strategic advice"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1Title": "Create Account",
+      "step1Desc": "Sign up in seconds",
+      "step2Title": "Enter Player Tag",
+      "step2Desc": "Link your Clash Royale account",
+      "step3Title": "AI Analysis",
+      "step3Desc": "Get personalized insights",
+      "step4Title": "Dominate Arena",
+      "step4Desc": "Climb the ladder"
+    },
+    "demo": {
+      "title": "See AI Royale in Action",
+      "subtitle": "Explore our interactive demo showcasing real deck analysis"
+    },
+    "cta": {
+      "title": "Ready to Climb?",
+      "subtitle": "Join thousands of players improving with AI Royale",
+      "button": "Start Free Now"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInButton": "Sign In",
+    "signUpButton": "Create Account",
+    "orContinueWith": "Or continue with",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailInUse": "Email already in use"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "playerStats": "Player Stats",
+    "trophies": "Trophies",
+    "bestTrophies": "Best Trophies",
+    "wins": "Wins",
+    "losses": "Losses",
+    "winRate": "Win Rate",
+    "currentDeck": "Current Deck",
+    "matchHistory": "Match History",
+    "recentMatches": "Recent Matches",
+    "viewAll": "View All",
+    "noMatches": "No matches found",
+    "victory": "Victory",
+    "defeat": "Defeat",
+    "draw": "Draw"
+  },
+  "deck": {
+    "builder": "Deck Builder",
+    "analysis": "Deck Analysis",
+    "avgElixir": "Avg Elixir",
+    "cards": "Cards",
+    "synergy": "Synergy",
+    "matchups": "Matchups",
+    "templates": "Templates",
+    "save": "Save Deck",
+    "clear": "Clear",
+    "noCards": "No cards selected"
+  },
+  "coach": {
+    "title": "AI Coach",
+    "placeholder": "Ask your coach anything...",
+    "thinking": "Thinking...",
+    "recentChats": "Recent Chats",
+    "newChat": "New Chat",
+    "suggestions": {
+      "improve": "How can I improve my deck?",
+      "counter": "What counters my opponent?",
+      "tips": "Give me tips for this matchup"
+    }
+  },
+  "matches": {
+    "details": "Match Details",
+    "battleTime": "Battle Time",
+    "trophyChange": "Trophy Change",
+    "crowns": "Crowns",
+    "yourDeck": "Your Deck",
+    "opponentDeck": "Opponent's Deck",
+    "analysis": "Match Analysis",
+    "keyMoments": "Key Moments",
+    "counterDeck": "Counter Deck",
+    "discussWithCoach": "Discuss with AI Coach"
+  },
+  "cards": {
+    "collection": "Card Collection",
+    "mastery": "Card Mastery",
+    "level": "Level",
+    "count": "Count",
+    "progress": "Progress"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global Rankings",
+    "yourRankings": "Your Rankings",
+    "rank": "Rank",
+    "player": "Player",
+    "clan": "Clan",
+    "sync": "Sync Rankings"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "noData": "No data available",
+    "comingSoon": "Coming Soon"
+  },
+  "loading": {
+    "playerData": "Fetching player data...",
+    "battles": "Loading battle history...",
+    "deckAnalysis": "Analyzing deck synergies...",
+    "matchAnalysis": "Analyzing match details...",
+    "cardCollection": "Loading card collection...",
+    "leaderboard": "Fetching rankings...",
+    "aiThinking": "AI is thinking...",
+    "calculating": "Calculating statistics..."
+  },
+  "empty": {
+    "matches": "No matches found",
+    "matchesDesc": "Play some battles to see your match history here",
+    "decks": "No saved decks",
+    "decksDesc": "Create and save your first deck",
+    "cards": "No cards tracked",
+    "cardsDesc": "Sync your card collection to see your cards"
+  },
+  "footer": {
+    "tagline": "Elevate your gameplay."
+  }
+}

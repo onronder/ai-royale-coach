@@ -1,0 +1,173 @@
+{
+  "nav": {
+    "signIn": "Giriş Yap",
+    "getStarted": "Başla",
+    "signOut": "Çıkış Yap"
+  },
+  "landing": {
+    "hero": {
+      "title": "Arenayı Domine Et",
+      "titleHighlight": "Yapay Zeka Destekli Strateji",
+      "subtitle": "Gelişmiş yapay zeka destekli kişisel Clash Royale koçun. Gerçek zamanlı deste analizi, savaş öngörüleri al ve daha hızlı yüksel.",
+      "cta": "Kazanmaya Başla",
+      "secondaryCta": "Nasıl Çalışır"
+    },
+    "features": {
+      "title": "İhtiyacın Olan Her Şey",
+      "titleHighlight": "Domine Etmek İçin",
+      "smartAnalysis": "Akıllı Analiz",
+      "smartAnalysisDesc": "Yapay zeka destekli savaş analizi ve eşleşme tahminleri",
+      "deckOptimization": "Deste Optimizasyonu",
+      "deckOptimizationDesc": "Kart değişiklik önerileriyle kazanan desteler oluştur",
+      "performanceTracking": "Performans Takibi",
+      "performanceTrackingDesc": "Detaylı istatistiklerle ilerlemenizi takip edin",
+      "aiPowered": "Yapay Zeka Destekli",
+      "aiPoweredDesc": "Stratejik tavsiyeler için kişisel koç sohbeti"
+    },
+    "howItWorks": {
+      "title": "Nasıl Çalışır",
+      "step1Title": "Hesap Oluştur",
+      "step1Desc": "Saniyeler içinde kaydol",
+      "step2Title": "Oyuncu Etiketini Gir",
+      "step2Desc": "Clash Royale hesabını bağla",
+      "step3Title": "Yapay Zeka Analizi",
+      "step3Desc": "Kişiselleştirilmiş öngörüler al",
+      "step4Title": "Arenayı Domine Et",
+      "step4Desc": "Sıralamada yüksel"
+    },
+    "demo": {
+      "title": "AI Royale'i İş Başında Gör",
+      "subtitle": "Gerçek deste analizini gösteren interaktif demomuzu keşfet"
+    },
+    "cta": {
+      "title": "Yükselmeye Hazır Mısın?",
+      "subtitle": "AI Royale ile gelişen binlerce oyuncuya katıl",
+      "button": "Ücretsiz Başla"
+    }
+  },
+  "auth": {
+    "signIn": "Giriş Yap",
+    "signUp": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "forgotPassword": "Şifreni mi unuttun?",
+    "noAccount": "Hesabın yok mu?",
+    "hasAccount": "Zaten hesabın var mı?",
+    "signInButton": "Giriş Yap",
+    "signUpButton": "Hesap Oluştur",
+    "orContinueWith": "Veya şununla devam et",
+    "errors": {
+      "invalidCredentials": "Geçersiz e-posta veya şifre",
+      "emailInUse": "E-posta zaten kullanımda"
+    }
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Tekrar hoş geldin",
+    "playerStats": "Oyuncu İstatistikleri",
+    "trophies": "Kupalar",
+    "bestTrophies": "En İyi Kupalar",
+    "wins": "Galibiyetler",
+    "losses": "Mağlubiyetler",
+    "winRate": "Kazanma Oranı",
+    "currentDeck": "Mevcut Deste",
+    "matchHistory": "Maç Geçmişi",
+    "recentMatches": "Son Maçlar",
+    "viewAll": "Tümünü Gör",
+    "noMatches": "Maç bulunamadı",
+    "victory": "Zafer",
+    "defeat": "Yenilgi",
+    "draw": "Beraberlik"
+  },
+  "deck": {
+    "builder": "Deste Oluşturucu",
+    "analysis": "Deste Analizi",
+    "avgElixir": "Ort. İksir",
+    "cards": "Kartlar",
+    "synergy": "Sinerji",
+    "matchups": "Eşleşmeler",
+    "templates": "Şablonlar",
+    "save": "Desteyi Kaydet",
+    "clear": "Temizle",
+    "noCards": "Kart seçilmedi"
+  },
+  "coach": {
+    "title": "Yapay Zeka Koçu",
+    "placeholder": "Koçuna istediğini sor...",
+    "thinking": "Düşünüyor...",
+    "recentChats": "Son Sohbetler",
+    "newChat": "Yeni Sohbet",
+    "suggestions": {
+      "improve": "Destemi nasıl geliştirebilirim?",
+      "counter": "Rakibimi ne karşılar?",
+      "tips": "Bu eşleşme için ipuçları ver"
+    }
+  },
+  "matches": {
+    "details": "Maç Detayları",
+    "battleTime": "Savaş Süresi",
+    "trophyChange": "Kupa Değişimi",
+    "crowns": "Taçlar",
+    "yourDeck": "Senin Desten",
+    "opponentDeck": "Rakibin Destesi",
+    "analysis": "Maç Analizi",
+    "keyMoments": "Önemli Anlar",
+    "counterDeck": "Karşı Deste",
+    "discussWithCoach": "Yapay Zeka Koçuyla Tartış"
+  },
+  "cards": {
+    "collection": "Kart Koleksiyonu",
+    "mastery": "Kart Ustalığı",
+    "level": "Seviye",
+    "count": "Adet",
+    "progress": "İlerleme"
+  },
+  "leaderboard": {
+    "title": "Sıralama",
+    "global": "Global Sıralama",
+    "yourRankings": "Senin Sıralamaların",
+    "rank": "Sıra",
+    "player": "Oyuncu",
+    "clan": "Klan",
+    "sync": "Sıralamayı Güncelle"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Bir şeyler yanlış gitti",
+    "retry": "Tekrar Dene",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "refresh": "Yenile",
+    "noData": "Veri bulunamadı",
+    "comingSoon": "Yakında"
+  },
+  "loading": {
+    "playerData": "Oyuncu verileri alınıyor...",
+    "battles": "Savaş geçmişi yükleniyor...",
+    "deckAnalysis": "Deste sinerjileri analiz ediliyor...",
+    "matchAnalysis": "Maç detayları analiz ediliyor...",
+    "cardCollection": "Kart koleksiyonu yükleniyor...",
+    "leaderboard": "Sıralamalar alınıyor...",
+    "aiThinking": "Yapay zeka düşünüyor...",
+    "calculating": "İstatistikler hesaplanıyor..."
+  },
+  "empty": {
+    "matches": "Maç bulunamadı",
+    "matchesDesc": "Maç geçmişini görmek için biraz savaş yap",
+    "decks": "Kayıtlı deste yok",
+    "decksDesc": "İlk desteni oluştur ve kaydet",
+    "cards": "Takip edilen kart yok",
+    "cardsDesc": "Kartlarını görmek için koleksiyonunu senkronize et"
+  },
+  "footer": {
+    "tagline": "Oyununu yükselt."
+  }
+}

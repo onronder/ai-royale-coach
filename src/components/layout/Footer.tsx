@@ -1,7 +1,10 @@
 import { Crown, Trophy, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-gold/20 bg-gradient-to-b from-card to-background mt-auto">
       <div className="container mx-auto px-4 py-10">
@@ -19,7 +22,7 @@ export function Footer() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <Trophy className="h-4 w-4 text-gold/60" />
             <p className="text-sm">
-              © {new Date().getFullYear()} AI Royale. <span className="text-gold/80">Elevate your gameplay.</span>
+              © {new Date().getFullYear()} AI Royale. <span className="text-gold/80">{t("footer.tagline")}</span>
             </p>
             <Sparkles className="h-4 w-4 text-gold/60" />
           </div>
