@@ -10,6 +10,7 @@ import { Sparkles, Zap, Users, Crown, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { DemoSection } from "@/components/landing/DemoSection";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -165,11 +166,14 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Demo Section */}
-      <DemoSection />
-
       {/* Feature Showcase Section */}
       <FeatureShowcase />
+
+      {/* How It Works Section */}
+      <HowItWorks />
+
+      {/* Demo Section */}
+      <DemoSection />
 
       <Footer />
     </div>
