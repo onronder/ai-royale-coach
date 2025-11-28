@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Award, Loader2 } from 'lucide-react';
@@ -8,6 +9,7 @@ interface AchievementBadgeWidgetProps {
 }
 
 export function AchievementBadgeWidget({ playerTag }: AchievementBadgeWidgetProps) {
+  const { t } = useTranslation();
   const { data: achievements, isLoading: achievementsLoading } = useAchievements(playerTag);
   const { data: progress, isLoading: progressLoading } = useAchievementProgress(playerTag);
 
@@ -19,7 +21,7 @@ export function AchievementBadgeWidget({ playerTag }: AchievementBadgeWidgetProp
             <Loader2 className="h-6 w-6 text-primary animate-spin" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-muted-foreground">Loading achievements...</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('dashboard.achievementWidget.loading')}</p>
           </div>
         </div>
       </Card>
@@ -38,10 +40,10 @@ export function AchievementBadgeWidget({ playerTag }: AchievementBadgeWidgetProp
           </div>
           <div>
             <p className="font-rajdhani font-bold text-foreground">
-              {unlockedCount} Achievement{unlockedCount !== 1 ? 's' : ''}
+              {t(unlockedCount === 1 ? 'dashboard.achievementWidget.achievement' : 'dashboard.achievementWidget.achievements', { count: unlockedCount })}
             </p>
-            <p className="text-xs text-muted-foreground capitalize">
-              {progress?.learning_phase || 'Beginner'} Phase
+            <p className="text-xs text-muted-foreground">
+              {t('dashboard.achievementWidget.phase', { phase: progress?.learning_phase || 'Beginner' })}
             </p>
           </div>
         </div>

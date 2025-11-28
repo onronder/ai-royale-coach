@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Area, AreaChart } from "recharts";
@@ -29,6 +30,8 @@ export function TrophyProgressChart({
   currentTrophies = 0,
   bestTrophies = 0 
 }: TrophyProgressChartProps) {
+  const { t } = useTranslation();
+
   const chartData = useMemo(() => {
     if (!battles || battles.length === 0) return [];
 
@@ -83,7 +86,7 @@ export function TrophyProgressChart({
         index: index + 1,
         trophies: Math.max(0, trophies),
         date: formatBattleDate(battle.battleTime),
-        result: isWin ? 'Win' : isDraw ? 'Draw' : 'Loss',
+        result: isWin ? 'win' : isDraw ? 'draw' : 'loss',
         change: change > 0 ? `+${change}` : change === 0 ? '0' : `${change}`,
         opponent: battle.opponent[0]?.name || 'Unknown',
         crowns: `${playerCrowns} - ${opponentCrowns}`,
@@ -111,9 +114,18 @@ export function TrophyProgressChart({
 
   const chartConfig = {
     trophies: {
-      label: "Trophies",
+      label: t('dashboard.trophyProgress.trophies'),
       color: "hsl(var(--primary))",
     },
+  };
+
+  const getResultLabel = (result: string) => {
+    switch (result) {
+      case 'win': return t('dashboard.trophyProgress.win');
+      case 'loss': return t('dashboard.trophyProgress.loss');
+      case 'draw': return t('dashboard.trophyProgress.draw');
+      default: return result;
+    }
   };
 
   if (!battles || battles.length === 0) {
@@ -122,9 +134,9 @@ export function TrophyProgressChart({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-rajdhani">
             <Trophy className="h-5 w-5 text-primary" />
-            Trophy Progress
+            {t('dashboard.trophyProgress.title')}
           </CardTitle>
-          <CardDescription>No battle data available</CardDescription>
+          <CardDescription>{t('dashboard.trophyProgress.noBattleData')}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -137,9 +149,9 @@ export function TrophyProgressChart({
           <div>
             <CardTitle className="flex items-center gap-2 font-rajdhani">
               <Trophy className="h-5 w-5 text-primary" />
-              Trophy Progress
+              {t('dashboard.trophyProgress.title')}
             </CardTitle>
-            <CardDescription>Last {chartData.length} battles</CardDescription>
+            <CardDescription>{t('dashboard.trophyProgress.lastBattles', { count: chartData.length })}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             {trophyTrend === 'up' && (
@@ -157,7 +169,7 @@ export function TrophyProgressChart({
             {trophyTrend === 'neutral' && (
               <div className="flex items-center gap-1 text-muted-foreground text-sm">
                 <Minus className="h-4 w-4" />
-                <span>No change</span>
+                <span>{t('dashboard.trophyProgress.noChange')}</span>
               </div>
             )}
           </div>
@@ -166,11 +178,11 @@ export function TrophyProgressChart({
         {/* Current & Best Trophies */}
         <div className="flex gap-4 mt-2">
           <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
-            <p className="text-xs text-muted-foreground">Current</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.trophyProgress.current')}</p>
             <p className="font-rajdhani font-bold text-primary">{currentTrophies.toLocaleString()}</p>
           </div>
           <div className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20">
-            <p className="text-xs text-muted-foreground">Best</p>
+            <p className="text-xs text-muted-foreground">{t('dashboard.trophyProgress.best')}</p>
             <p className="font-rajdhani font-bold text-accent">{bestTrophies.toLocaleString()}</p>
           </div>
         </div>
@@ -204,15 +216,15 @@ export function TrophyProgressChart({
                     const data = props.payload;
                     return (
                       <div className="space-y-1">
-                        <p className="font-semibold">{value} trophies</p>
+                        <p className="font-semibold">{value} {t('dashboard.trophyProgress.trophies')}</p>
                         <p className="text-xs text-muted-foreground">{data.date}</p>
                         <p className={`text-xs font-medium ${
-                          data.result === 'Win' ? 'text-success' : 
-                          data.result === 'Loss' ? 'text-destructive' : 'text-muted-foreground'
+                          data.result === 'win' ? 'text-success' : 
+                          data.result === 'loss' ? 'text-destructive' : 'text-muted-foreground'
                         }`}>
-                          {data.result} ({data.change}) vs {data.opponent}
+                          {getResultLabel(data.result)} ({data.change}) vs {data.opponent}
                         </p>
-                        <p className="text-xs">Crowns: {data.crowns}</p>
+                        <p className="text-xs">{t('dashboard.trophyProgress.crowns')}: {data.crowns}</p>
                       </div>
                     );
                   }}
@@ -224,7 +236,7 @@ export function TrophyProgressChart({
                 y={bestTrophies} 
                 stroke="hsl(var(--accent))" 
                 strokeDasharray="3 3"
-                label={{ value: 'Best', position: 'right', fontSize: 10, fill: 'hsl(var(--accent))' }}
+                label={{ value: t('dashboard.trophyProgress.best'), position: 'right', fontSize: 10, fill: 'hsl(var(--accent))' }}
               />
             )}
             <Area
@@ -235,9 +247,9 @@ export function TrophyProgressChart({
               fill="url(#trophyGradient)"
               dot={(props) => {
                 const { cx, cy, payload } = props;
-                const color = payload.result === 'Win' 
+                const color = payload.result === 'win' 
                   ? 'hsl(var(--success))' 
-                  : payload.result === 'Loss' 
+                  : payload.result === 'loss' 
                     ? 'hsl(var(--destructive))' 
                     : 'hsl(var(--muted-foreground))';
                 return (

@@ -625,6 +625,25 @@
       "collectionSynced": "Collection de cartes synchronisée",
       "masteryCalculated": "Maîtrise des cartes calculée",
       "deckStatsTracked": "Statistiques de deck suivies"
+    },
+    "trophyProgress": {
+      "title": "Progression des Trophées",
+      "noBattleData": "Aucune donnée de bataille",
+      "lastBattles": "{{count}} dernières batailles",
+      "noChange": "Aucun changement",
+      "current": "Actuel",
+      "best": "Meilleur",
+      "trophies": "trophées",
+      "win": "Victoire",
+      "loss": "Défaite",
+      "draw": "Match nul",
+      "crowns": "Couronnes"
+    },
+    "achievementWidget": {
+      "loading": "Chargement des succès...",
+      "achievement": "{{count}} Succès",
+      "achievements": "{{count}} Succès",
+      "phase": "Phase {{phase}}"
     }
   },
   "deck": {

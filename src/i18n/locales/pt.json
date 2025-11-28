@@ -625,6 +625,25 @@
       "collectionSynced": "Coleção de cartas sincronizada",
       "masteryCalculated": "Maestria de cartas calculada",
       "deckStatsTracked": "Estatísticas de deck rastreadas"
+    },
+    "trophyProgress": {
+      "title": "Progresso de Troféus",
+      "noBattleData": "Sem dados de batalha",
+      "lastBattles": "Últimas {{count}} batalhas",
+      "noChange": "Sem alterações",
+      "current": "Atual",
+      "best": "Melhor",
+      "trophies": "troféus",
+      "win": "Vitória",
+      "loss": "Derrota",
+      "draw": "Empate",
+      "crowns": "Coroas"
+    },
+    "achievementWidget": {
+      "loading": "Carregando conquistas...",
+      "achievement": "{{count}} Conquista",
+      "achievements": "{{count}} Conquistas",
+      "phase": "Fase {{phase}}"
     }
   },
   "deck": {

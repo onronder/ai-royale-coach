@@ -625,6 +625,25 @@
       "collectionSynced": "Kart koleksiyonu senkronize edildi",
       "masteryCalculated": "Kart ustalığı hesaplandı",
       "deckStatsTracked": "Deste istatistikleri izlendi"
+    },
+    "trophyProgress": {
+      "title": "Kupa İlerlemesi",
+      "noBattleData": "Savaş verisi bulunamadı",
+      "lastBattles": "Son {{count}} savaş",
+      "noChange": "Değişim yok",
+      "current": "Mevcut",
+      "best": "En İyi",
+      "trophies": "kupa",
+      "win": "Galibiyet",
+      "loss": "Yenilgi",
+      "draw": "Beraberlik",
+      "crowns": "Taçlar"
+    },
+    "achievementWidget": {
+      "loading": "Başarımlar yükleniyor...",
+      "achievement": "{{count}} Başarım",
+      "achievements": "{{count}} Başarım",
+      "phase": "{{phase}} Aşaması"
     }
   },
   "deck": {
