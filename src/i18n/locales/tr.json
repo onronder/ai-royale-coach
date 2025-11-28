@@ -39,124 +39,6 @@
           "intermediate": "Orta",
           "expert": "Uzman"
         },
-        "decks": {
-          "hogCycle": {
-            "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Temel döngü mekaniklerini ustalaştır",
-              "tips": [
-                "Farklı zafer koşullarına karşı optimal Cannon yerleşimini öğren",
-                "Savunma için Musketeer konumlandırmasını pratik yap",
-                "1-elixir kartlarla hızlı döngü yapmaya alış"
-              ]
-            },
-            "phase2": {
-              "name": "Orta (Hafta 3-4)",
-              "focus": "Zamanlama ve büyü değeri",
-              "tips": [
-                "Ne zaman Hog Rider oynayacağını ve savunacağını öğren",
-                "Büyü yerleşimlerini tahmin etmeyi pratik yap",
-                "Ice Golem oyalama tekniklerini ustalaştır"
-              ]
-            },
-            "phase3": {
-              "name": "İleri (Hafta 5+)",
-              "focus": "Baskı altında mükemmel uygulama",
-              "tips": [
-                "Kare-mükemmel savunmalar için kas hafızası geliştir",
-                "Tüm eşleşmeye özel stratejileri öğren",
-                "Elixir sayma ve takibini ustalaştır"
-              ]
-            }
-          },
-          "golemBeatdown": {
-            "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Beatdown temellerini anlama",
-              "tips": [
-                "Golem saldırısını güvenli başlatmayı öğren",
-                "Golem arkasında destek birlikleri oluşturmayı pratik yap",
-                "Ölüm hasarı sinerjilerini anla"
-              ]
-            },
-            "phase2": {
-              "name": "Orta (Hafta 3-4)",
-              "focus": "Saldırı optimizasyonu",
-              "tips": [
-                "Savunma binalarına Lightning zamanlamasını ustalaştır",
-                "Kral Kulesi aktivasyonu için Tornado kullanmayı öğren",
-                "Elixir dezavantajını yönetmeyi pratik yap"
-              ]
-            },
-            "phase3": {
-              "name": "İleri (Hafta 5+)",
-              "focus": "Baskı adaptasyonu",
-              "tips": [
-                "Karşı şerit baskısını savunmayı öğren",
-                "Anahtar savunma kartlarını çekmeyi ustalaştır",
-                "Çift elixir saldırı zamanlamanı mükemmelleştir"
-              ]
-            }
-          },
-          "logBait": {
-            "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Büyü tuzağı temelleri",
-              "tips": [
-                "Kral Kulesi arkasına Princess yerleşimini öğren",
-                "Goblin Barrel yerleşim varyasyonlarını pratik yap",
-                "Hangi kartların hangi büyüleri tuzağa düşürdüğünü anla"
-              ]
-            },
-            "phase2": {
-              "name": "Orta (Hafta 3-4)",
-              "focus": "Tahmin ustalığı",
-              "tips": [
-                "Rakibin büyü kullanımını tahmin etmeyi öğren",
-                "Chip hasarı için Rocket döngüsünü ustalaştır",
-                "Barrel'dan önce Log çekmeyi pratik yap"
-              ]
-            },
-            "phase3": {
-              "name": "İleri (Hafta 5+)",
-              "focus": "Zihin oyunları ve adaptasyon",
-              "tips": [
-                "Rakibin kalıpları hakkında okumalar geliştir",
-                "Tüm Goblin Barrel tahmin noktalarını öğren",
-                "Savunma Inferno Tower yerleşimini ustalaştır"
-              ]
-            }
-          },
-          "xbowSiege": {
-            "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "X-Bow yerleşimi ve koruma",
-              "tips": [
-                "Güvenli X-Bow yerleşim pozisyonlarını öğren",
-                "Tank çekme için Tesla yerleşimini pratik yap",
-                "Ne zaman saldırı, ne zaman savunma yapacağını anla"
-              ]
-            },
-            "phase2": {
-              "name": "Orta (Hafta 3-4)",
-              "focus": "Eşleşme bilgisi",
-              "tips": [
-                "Hangi eşleşmelerin saldırgan X-Bow'u desteklediğini öğren",
-                "Kötü eşleşmelerde savunma X-Bow'unu ustalaştır",
-                "Büyü chip hasarı stratejilerini pratik yap"
-              ]
-            },
-            "phase3": {
-              "name": "İleri (Hafta 5+)",
-              "focus": "Mükemmel uygulama",
-              "tips": [
-                "Derin eşleşme anlayışı geliştir",
-                "Kare-mükemmel savunma yerleşimlerini ustalaştır",
-                "Maç ortasında oyun tarzını adapte etmeyi öğren"
-              ]
-            }
-          }
-        },
         "deckData": {
           "hogCycle": {
             "playstyle": "Sürekli döngü ile hızlı tempolu baskı",
@@ -460,7 +342,10 @@
           "Bait Card": "Tuzak Kartı",
           "Spell Bait": "Büyü Tuzağı",
           "Building": "Bina",
-          "Tower Targeting": "Kule Hedefleme"
+          "Tower Targeting": "Kule Hedefleme",
+          "Bait/Chip": "Tuzak/Chip",
+          "Bait/Swarm": "Tuzak/Sürü",
+          "Support/Air": "Destek/Hava"
         },
         "archetypes": {
           "Cycle": "Döngü",

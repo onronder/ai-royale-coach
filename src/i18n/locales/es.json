@@ -39,124 +39,6 @@
           "intermediate": "Intermedio",
           "expert": "Experto"
         },
-        "decks": {
-          "hogCycle": {
-            "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Dominar mecánicas básicas de ciclo",
-              "tips": [
-                "Aprende la colocación óptima del Cannon contra diferentes condiciones de victoria",
-                "Practica el posicionamiento de Musketeer para defensa",
-                "Acostúmbrate a ciclar rápidamente con cartas de 1-elixir"
-              ]
-            },
-            "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Timing y valor de hechizos",
-              "tips": [
-                "Aprende cuándo comprometer Hog Rider vs defender",
-                "Practica predecir colocaciones de hechizos",
-                "Domina técnicas de kiting con Ice Golem"
-              ]
-            },
-            "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Ejecución perfecta bajo presión",
-              "tips": [
-                "Desarrolla memoria muscular para defensas frame-perfectas",
-                "Aprende todas las estrategias específicas de matchup",
-                "Domina el conteo y seguimiento de elixir"
-              ]
-            }
-          },
-          "golemBeatdown": {
-            "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Entender los fundamentos del beatdown",
-              "tips": [
-                "Aprende cuándo iniciar un push de Golem de forma segura",
-                "Practica construir tropas de apoyo detrás del Golem",
-                "Entiende las sinergias de daño por muerte"
-              ]
-            },
-            "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Optimización del push",
-              "tips": [
-                "Domina el timing de Lightning en edificios defensivos",
-                "Aprende a usar Tornado para activación de Torre Rey",
-                "Practica manejar desventaja de elixir"
-              ]
-            },
-            "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Adaptación a la presión",
-              "tips": [
-                "Aprende a defender presión en carril opuesto",
-                "Domina sacar cartas defensivas clave",
-                "Perfecciona tu timing de push en doble elixir"
-              ]
-            }
-          },
-          "logBait": {
-            "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Básicos del bait de hechizos",
-              "tips": [
-                "Aprende la colocación de Princess detrás de Torre Rey",
-                "Practica variaciones de colocación de Goblin Barrel",
-                "Entiende qué cartas baitan qué hechizos"
-              ]
-            },
-            "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Maestría en predicción",
-              "tips": [
-                "Aprende a predecir el uso de hechizos del oponente",
-                "Domina el ciclo de Rocket para daño chip",
-                "Practica baitear Log antes del Barrel"
-              ]
-            },
-            "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Juegos mentales y adaptación",
-              "tips": [
-                "Desarrolla lecturas de los patrones del oponente",
-                "Aprende todos los puntos de predicción de Goblin Barrel",
-                "Domina la colocación defensiva de Inferno Tower"
-              ]
-            }
-          },
-          "xbowSiege": {
-            "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Colocación y protección del X-Bow",
-              "tips": [
-                "Aprende posiciones seguras de colocación de X-Bow",
-                "Practica la colocación de Tesla para atraer tanks",
-                "Entiende cuándo ir ofensivo vs defensivo"
-              ]
-            },
-            "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Conocimiento de matchups",
-              "tips": [
-                "Aprende qué matchups favorecen X-Bow ofensivo",
-                "Domina X-Bow defensivo en matchups difíciles",
-                "Practica estrategias de daño chip con hechizos"
-              ]
-            },
-            "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Ejecución perfecta",
-              "tips": [
-                "Desarrolla comprensión profunda de matchups",
-                "Domina colocaciones defensivas frame-perfectas",
-                "Aprende a adaptar el estilo de juego a mitad de partida"
-              ]
-            }
-          }
-        },
         "deckData": {
           "hogCycle": {
             "playstyle": "Presión rápida con ciclo constante",
@@ -460,7 +342,10 @@
           "Bait Card": "Carta Cebo",
           "Spell Bait": "Cebo de Hechizo",
           "Building": "Edificio",
-          "Tower Targeting": "Objetivo Torre"
+          "Tower Targeting": "Objetivo Torre",
+          "Bait/Chip": "Carnada/Chip",
+          "Bait/Swarm": "Carnada/Enjambre",
+          "Support/Air": "Soporte/Aéreo"
         },
         "archetypes": {
           "Cycle": "Ciclo",
