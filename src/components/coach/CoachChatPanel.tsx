@@ -170,7 +170,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       await streamChat(message);
     } catch (error) {
       console.error("Auto-send error:", error);
-      toast.error("Failed to send match context");
+      toast.error(t('coach.failedToSendMatchContext'));
     } finally {
       setIsLoading(false);
     }
@@ -306,15 +306,15 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
       if (!resp.ok) {
         if (resp.status === 401) {
-          toast.error("Session expired. Please sign in again.");
+          toast.error(t('coach.sessionExpired'));
           return;
         }
         if (resp.status === 429) {
-          toast.error("Rate limit exceeded. Please wait a moment.");
+          toast.error(t('coach.rateLimitExceeded'));
           return;
         }
         if (resp.status === 402) {
-          toast.error("AI credits exhausted. Please add credits.");
+          toast.error(t('coach.creditsExhausted'));
           return;
         }
         throw new Error("Failed to start stream");
@@ -403,7 +403,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       }
     } catch (error) {
       console.error("Stream error:", error);
-      toast.error("Failed to get response from coach");
+      toast.error(t('coach.failedToGetResponse'));
       setMessages(prev => prev.filter(m => !m.id.startsWith("temp-")));
     }
   };
@@ -440,7 +440,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       await streamChat(userMessage);
     } catch (error) {
       console.error("Send error:", error);
-      toast.error("Failed to send message");
+      toast.error(t('coach.failedToSend'));
     } finally {
       setIsLoading(false);
     }
@@ -464,8 +464,8 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
               <Bot className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h2 className="font-rajdhani font-bold text-lg text-foreground">AI COACH</h2>
-              <p className="text-xs text-muted-foreground">Your personal Clash Royale assistant</p>
+              <h2 className="font-rajdhani font-bold text-lg text-foreground">{t('coach.title')}</h2>
+              <p className="text-xs text-muted-foreground">{t('coach.panelDescription')}</p>
             </div>
           </div>
           <Button
@@ -486,13 +486,13 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent font-rajdhani"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
-              Active Chat
+              {t('coach.activeChat')}
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent font-rajdhani"
             >
-              Recent Chats
+              {t('coach.recentChats')}
             </TabsTrigger>
           </TabsList>
 
@@ -500,7 +500,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           <TabsContent value="chat" className="flex-1 flex flex-col m-0 min-h-0">
             <div className="flex-1 flex flex-col min-h-0 p-4">
               {loadingHistory ? (
-                <DataLoader context="coach" variant="inline" customMessage="Loading chat history..." />
+                <DataLoader context="coach" variant="inline" customMessage={t('coach.loadingHistory')} />
               ) : (
                 <>
                   <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
@@ -510,14 +510,14 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                         <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 mb-4">
                           <div className="flex items-center gap-2 mb-2">
                             <Swords className="h-4 w-4 text-primary" />
-                            <span className="font-rajdhani font-semibold text-sm">Discussing Match</span>
+                            <span className="font-rajdhani font-semibold text-sm">{t('coach.discussingMatch')}</span>
                           </div>
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <span className={cn(
                               "font-bold",
                               matchContext.isWin ? "text-green-500" : "text-red-500"
                             )}>
-                              {matchContext.isWin ? "Victory" : "Defeat"}
+                              {matchContext.isWin ? t('coach.victory') : t('coach.defeat')}
                             </span>
                             <span className="flex items-center gap-1">
                               <Crown className="h-3 w-3" />
@@ -531,8 +531,8 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                       {messages.length === 0 && !matchContext && (
                         <div className="text-center py-8 text-muted-foreground">
                           <Bot className="h-12 w-12 mx-auto mb-4 text-primary/50" />
-                          <p className="font-rajdhani text-lg">Ask me anything about improving your game!</p>
-                          <p className="text-sm mt-2">I can help with deck building, strategy, and match analysis.</p>
+                          <p className="font-rajdhani text-lg">{t('coach.emptyStateTitle')}</p>
+                          <p className="text-sm mt-2">{t('coach.emptyStateSubtitle')}</p>
                         </div>
                       )}
                       {messages.map((msg) => (
@@ -573,7 +573,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-                      placeholder="Ask your coach anything..."
+                      placeholder={t('coach.inputPlaceholder')}
                       disabled={isLoading}
                       className="flex-1 bg-input border-border/50 focus:border-primary"
                     />
@@ -603,13 +603,13 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                 variant="outline"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Start New Conversation
+                {t('coach.startNewConversation')}
               </Button>
 
               {conversations.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                  <p className="text-sm">No recent conversations</p>
+                  <p className="text-sm">{t('coach.noRecentConversations')}</p>
                 </div>
               ) : (
                 conversations.map((conv) => (
@@ -626,8 +626,8 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                         <h3 className="font-rajdhani font-semibold text-sm text-foreground truncate">
                           {conv.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {conv.message_count} messages
+                      <p className="text-xs text-muted-foreground mt-1">
+                          {t('coach.messageCount', { count: conv.message_count })}
                         </p>
                       </div>
                       <p className="text-xs text-muted-foreground whitespace-nowrap">

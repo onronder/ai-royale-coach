@@ -664,18 +664,58 @@
     "templates": "Plantillas"
   },
   "coach": {
-    "title": "Coach IA",
-    "placeholder": "Pregunta algo a tu coach...",
-    "send": "Enviar",
+    "title": "COACH IA",
+    "description": "Obtén coaching personalizado basado en tus estadísticas y partidas recientes",
+    "panelDescription": "Tu asistente personal de Clash Royale",
+    "inputPlaceholder": "Pregunta algo a tu coach...",
     "thinking": "Pensando...",
-    "greeting": "¡Hola! Soy tu coach de Clash Royale con IA. Pregúntame cualquier cosa sobre estrategia, mazos o cómo mejorar tu juego.",
+    "recentChats": "Chats Recientes",
+    "activeChat": "Chat Activo",
+    "newChat": "Nuevo Chat",
+    "startNewConversation": "Iniciar Nueva Conversación",
+    "noRecentConversations": "Sin conversaciones recientes",
+    "messageCount": "{{count}} mensajes",
+    "loadingHistory": "Cargando historial de chat...",
+    "emptyStateTitle": "¡Pregúntame cualquier cosa sobre mejorar tu juego!",
+    "emptyStateSubtitle": "Puedo ayudarte con construcción de mazos, estrategia y análisis de partidas.",
+    "discussingMatch": "Discutiendo Partida",
+    "victory": "Victoria",
+    "defeat": "Derrota",
+    "suggestions": {
+      "improve": "¿Cómo puedo mejorar mi mazo?",
+      "counter": "¿Qué contrarresta a mi oponente?",
+      "tips": "Dame consejos para este enfrentamiento"
+    },
     "rateLimitExceeded": "Límite de velocidad excedido. Espera un momento.",
     "creditsExhausted": "Créditos de IA agotados. Por favor agrega créditos.",
     "failedToGetResponse": "Error al obtener respuesta del coach",
     "failedToSend": "Error al enviar mensaje",
+    "failedToSendMatchContext": "Error al enviar contexto del partido",
     "signInRequired": "Inicia sesión para usar el Coach IA",
-    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo.",
-    "failedToSendContext": "Error al enviar contexto del partido"
+    "sessionExpired": "Sesión expirada. Inicia sesión de nuevo."
+  },
+  "counterDeck": {
+    "title": "Constructor de Mazo Contador",
+    "description": "Mazo sugerido por IA diseñado para contrarrestar la estrategia de {{opponent}}",
+    "opponentDeck": "Mazo del Oponente",
+    "suggestedDeck": "Mazo Contador Sugerido",
+    "howToPlay": "Cómo Jugar Este Mazo Contador",
+    "whyTheseCards": "¿Por Qué Estas Cartas?",
+    "copyButton": "Copiar Cartas del Mazo",
+    "copiedButton": "¡Copiado al Portapapeles!",
+    "copiedToClipboard": "¡Mazo contador copiado al portapapeles!",
+    "copyHint": "Copia los nombres de las cartas para usar en tu constructor de mazos"
+  },
+  "cardReplacements": {
+    "title": "Sugeridor de Reemplazo de Cartas",
+    "getSuggestions": "Obtén sugerencias con IA para reemplazar {{card}}",
+    "findReplacements": "Buscar Reemplazos",
+    "optionsFor": "Opciones de Reemplazo para {{card}}",
+    "useThis": "Usar Esta",
+    "synergy": "Sinergia",
+    "meta": "Meta",
+    "fetchFailed": "Error al obtener sugerencias de cartas",
+    "replaced": "Reemplazado {{oldCard}} con {{newCard}}"
   },
   "match": {
     "victory": "Victoria",
@@ -712,12 +752,20 @@
     "syncFailed": "Error al sincronizar rankings globales"
   },
   "clan": {
+    "details": "Detalles del Clan",
+    "description": "Descripción",
+    "members": "Miembros",
+    "requiredTrophies": "Trofeos Requeridos",
+    "clanScore": "Puntuación del Clan",
+    "warTrophies": "Trofeos de Guerra",
+    "location": "Ubicación",
+    "sendJoinRequest": "Enviar Solicitud de Unión",
+    "joinMessagePlaceholder": "Dile a los líderes del clan por qué quieres unirte (opcional)...",
+    "searchToJoin": "Busca este clan por etiqueta para enviar una solicitud de unión",
     "signInRequired": "Inicia sesión para enviar una solicitud de unión",
-    "pendingRequest": "Ya tienes una solicitud pendiente a este clan",
-    "requestFailed": "Error al enviar solicitud de unión",
-    "requestSuccess": "¡Solicitud de unión enviada exitosamente!",
-    "copiedToClipboard": "¡Mazo contador copiado al portapapeles!",
-    "predictionsFailed": "Error al obtener predicciones de tasa de victoria"
+    "alreadyHaveRequest": "Ya tienes una solicitud pendiente a este clan",
+    "joinRequestFailed": "Error al enviar solicitud de unión",
+    "joinRequestSent": "¡Solicitud de unión enviada exitosamente!"
   },
   "common": {
     "loading": "Cargando...",

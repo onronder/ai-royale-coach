@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ interface CoachChatProps {
 }
 
 export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatProps) {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -99,11 +101,11 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
 
       if (!resp.ok) {
         if (resp.status === 429) {
-          toast.error("Rate limit exceeded. Please wait a moment.");
+          toast.error(t('coach.rateLimitExceeded'));
           return;
         }
         if (resp.status === 402) {
-          toast.error("AI credits exhausted. Please add credits.");
+          toast.error(t('coach.creditsExhausted'));
           return;
         }
         throw new Error("Failed to start stream");
@@ -190,7 +192,7 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
       }
     } catch (error) {
       console.error("Stream error:", error);
-      toast.error("Failed to get response from coach");
+      toast.error(t('coach.failedToGetResponse'));
       setMessages(prev => prev.filter(m => !m.id.startsWith("temp-")));
     }
   };
@@ -221,7 +223,7 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
       await streamChat(userMessage);
     } catch (error) {
       console.error("Send error:", error);
-      toast.error("Failed to send message");
+      toast.error(t('coach.failedToSend'));
     } finally {
       setIsLoading(false);
     }
@@ -230,7 +232,7 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
   if (loadingHistory) {
     return (
       <Card className="h-[600px] flex items-center justify-center">
-        <DataLoader context="coach" variant="inline" customMessage="Loading chat history..." />
+        <DataLoader context="coach" variant="inline" customMessage={t('coach.loadingHistory')} />
       </Card>
     );
   }
@@ -240,10 +242,10 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
       <CardHeader>
         <CardTitle className="flex items-center gap-2 font-rajdhani">
           <Bot className="h-6 w-6 text-primary" />
-          AI COACH
+          {t('coach.title')}
         </CardTitle>
         <CardDescription>
-          Get personalized coaching based on your stats and recent matches
+          {t('coach.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col gap-4 min-h-0">
@@ -252,8 +254,8 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
             {messages.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Bot className="h-12 w-12 mx-auto mb-4 text-primary/50" />
-                <p className="font-rajdhani text-lg">Ask me anything about improving your game!</p>
-                <p className="text-sm mt-2">I can help with deck building, strategy, and match analysis.</p>
+                <p className="font-rajdhani text-lg">{t('coach.emptyStateTitle')}</p>
+                <p className="text-sm mt-2">{t('coach.emptyStateSubtitle')}</p>
               </div>
             )}
             {messages.map((msg) => (
@@ -294,7 +296,7 @@ export function CoachChat({ playerTag, playerStats, recentMatches }: CoachChatPr
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-            placeholder="Ask your coach anything..."
+            placeholder={t('coach.inputPlaceholder')}
             disabled={isLoading}
             className="flex-1 bg-input border-border/50 focus:border-primary"
           />
