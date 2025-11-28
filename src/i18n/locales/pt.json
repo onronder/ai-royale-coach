@@ -1105,27 +1105,6 @@
     "fetchFailed": "Falha ao obter previsões de taxa de vitória",
     "languageChanged": "Idioma alterado. Clique em prever para obter análise no seu novo idioma."
   },
-  "achievements": {
-    "title": "Central de Conquistas",
-    "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
-    "syncProgress": "Sincronizar Progresso",
-    "unlocked": "Conquistas Desbloqueadas",
-    "masteryPoints": "Pontos de Maestria",
-    "learningPhase": "Fase de Aprendizado",
-    "beginner": "Iniciante",
-    "completion": "Conclusão",
-    "skillBreakdown": "Detalhamento de Habilidades",
-    "skillBreakdownDescription": "Suas classificações de habilidades atuais por categoria",
-    "skills": "Habilidades",
-    "mastery": "Maestria",
-    "learning": "Aprendizado",
-    "milestones": "Marcos",
-    "unlockedCount": "Desbloqueadas ({{count}})",
-    "inProgress": "Em Progresso ({{count}})",
-    "progress": "Progresso",
-    "pts": "pts",
-    "unlockedOn": "Desbloqueada em {{date}}"
-  },
   "deckStats": {
     "title": "Estatísticas de Decks",
     "description": "Acompanhe o desempenho do seu deck ao longo do tempo",
@@ -1147,7 +1126,12 @@
     "elixir": "Elixir",
     "loading": "Carregando...",
     "description": "Descrição",
-    "all": "Todos"
+    "all": "Todos",
+    "mayTakeMoment": "Isso pode levar um momento",
+    "pleaseWait": "Por favor, aguarde enquanto processamos sua solicitação",
+    "pleaseWaitMoment": "Por favor, aguarde um momento...",
+    "loadingDashboard": "Carregando seu painel",
+    "verifyingAuth": "Verificando autenticação"
   },
   "notFound": {
     "title": "Ops! Página não encontrada",
@@ -1275,7 +1259,61 @@
     "mostUsed": "Mais Usada",
     "bestWinRate": "Melhor Taxa de Vitória",
     "noData": "Ainda não há dados de maestria",
-    "calculateMastery": "Calcular Maestria"
+    "calculateMastery": "Calcular Maestria",
+    "level": "Nível",
+    "tiers": {
+      "master": "Mestre",
+      "diamond": "Diamante",
+      "gold": "Ouro",
+      "silver": "Prata",
+      "bronze": "Bronze"
+    }
+  },
+  "cardMastery": {
+    "used": "Usado {{count}} vezes",
+    "winRate": "Taxa de Vitória",
+    "avgCrowns": "Coroas Méd",
+    "hideDetails": "Ocultar Detalhes",
+    "showDetails": "Mostrar Detalhes",
+    "bestPartners": "Melhores Parceiros",
+    "strugglesAgainst": "Dificuldade Contra",
+    "personalizedTips": "Dicas Personalizadas",
+    "generate": "Gerar",
+    "generatingTips": "Gerando dicas...",
+    "clickGenerate": "Clique em gerar para obter dicas de IA para esta carta"
+  },
+  "achievements": {
+    "title": "Centro de Conquistas",
+    "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
+    "syncProgress": "Sincronizar Progresso",
+    "unlocked": "Conquista Desbloqueada!",
+    "points": "pts",
+    "masteryPoints": "Pontos de Maestria",
+    "learningPhase": "Fase de Aprendizado",
+    "beginner": "Iniciante",
+    "completion": "Conclusão",
+    "skillBreakdown": "Detalhamento de Habilidades",
+    "skillBreakdownDescription": "Suas classificações de habilidades atuais por categoria",
+    "skills": "Habilidades",
+    "mastery": "Maestria",
+    "learning": "Aprendizado",
+    "milestones": "Marcos",
+    "unlockedCount": "Desbloqueadas ({{count}})",
+    "inProgress": "Em Progresso ({{count}})",
+    "progress": "Progresso",
+    "pts": "pts",
+    "unlockedOn": "Desbloqueado {{date}}"
+  },
+  "analytics": {
+    "winRateTrends": "Tendências de Vitória",
+    "winRatePercent": "Taxa de Vitória (%)",
+    "trophyChange": "Mudança de Troféus",
+    "deckUsageDistribution": "Distribuição de Uso de Decks",
+    "deckNumber": "Deck {{number}}",
+    "wr": "TV",
+    "battlesCount": "{{count}} batalhas",
+    "mostUsedCards": "Cartas Mais Usadas",
+    "usedTimes": "Usada {{count}} vezes"
   },
   "templates": {
     "title": "Modelos de Decks Meta",

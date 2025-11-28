@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -6,6 +7,8 @@ interface MostUsedCardsGridProps {
 }
 
 export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
+  const { t } = useTranslation();
+  
   // Count card usage across all decks
   const cardUsage = new Map<string, { count: number; wins: number; battles: number }>();
 
@@ -33,7 +36,7 @@ export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-foreground">Most Used Cards</CardTitle>
+        <CardTitle className="text-foreground">{t('analytics.mostUsedCards')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -45,13 +48,13 @@ export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
               <div className="space-y-2">
                 <div className="font-heading text-foreground">{card.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  Used {card.usage} times
+                  {t('analytics.usedTimes', { count: card.usage })}
                 </div>
                 <Badge 
                   variant={card.winRate >= 50 ? "default" : "destructive"}
                   className="w-full justify-center"
                 >
-                  {card.winRate.toFixed(1)}% WR
+                  {card.winRate.toFixed(1)}% {t('analytics.wr')}
                 </Badge>
               </div>
             </div>

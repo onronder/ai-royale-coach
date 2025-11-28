@@ -1105,27 +1105,6 @@
     "fetchFailed": "Error al obtener predicciones de tasa de victoria",
     "languageChanged": "Idioma cambiado. Haz clic en predecir para obtener análisis en tu nuevo idioma."
   },
-  "achievements": {
-    "title": "Centro de Logros",
-    "description": "Rastrea tu viaje de maestría y desbloquea recompensas",
-    "syncProgress": "Sincronizar Progreso",
-    "unlocked": "Logros Desbloqueados",
-    "masteryPoints": "Puntos de Maestría",
-    "learningPhase": "Fase de Aprendizaje",
-    "beginner": "Principiante",
-    "completion": "Completado",
-    "skillBreakdown": "Desglose de Habilidades",
-    "skillBreakdownDescription": "Tus calificaciones de habilidades actuales por categoría",
-    "skills": "Habilidades",
-    "mastery": "Maestría",
-    "learning": "Aprendizaje",
-    "milestones": "Hitos",
-    "unlockedCount": "Desbloqueados ({{count}})",
-    "inProgress": "En Progreso ({{count}})",
-    "progress": "Progreso",
-    "pts": "pts",
-    "unlockedOn": "Desbloqueado {{date}}"
-  },
   "deckStats": {
     "title": "Estadísticas de Mazos",
     "description": "Rastrea el rendimiento de tu mazo a lo largo del tiempo",
@@ -1147,7 +1126,12 @@
     "elixir": "Elixir",
     "loading": "Cargando...",
     "description": "Descripción",
-    "all": "Todo"
+    "all": "Todo",
+    "mayTakeMoment": "Esto puede tomar un momento",
+    "pleaseWait": "Por favor espere mientras procesamos su solicitud",
+    "pleaseWaitMoment": "Por favor espere un momento...",
+    "loadingDashboard": "Cargando tu panel",
+    "verifyingAuth": "Verificando autenticación"
   },
   "notFound": {
     "title": "¡Ups! Página no encontrada",
@@ -1275,7 +1259,61 @@
     "mostUsed": "Más Usada",
     "bestWinRate": "Mejor Tasa de Victoria",
     "noData": "Aún no hay datos de maestría",
-    "calculateMastery": "Calcular Maestría"
+    "calculateMastery": "Calcular Maestría",
+    "level": "Nivel",
+    "tiers": {
+      "master": "Maestro",
+      "diamond": "Diamante",
+      "gold": "Oro",
+      "silver": "Plata",
+      "bronze": "Bronce"
+    }
+  },
+  "cardMastery": {
+    "used": "Usado {{count}} veces",
+    "winRate": "Tasa de Victoria",
+    "avgCrowns": "Coronas Prom",
+    "hideDetails": "Ocultar Detalles",
+    "showDetails": "Mostrar Detalles",
+    "bestPartners": "Mejores Compañeros",
+    "strugglesAgainst": "Dificultad Contra",
+    "personalizedTips": "Consejos Personalizados",
+    "generate": "Generar",
+    "generatingTips": "Generando consejos...",
+    "clickGenerate": "Haz clic en generar para obtener consejos de IA para esta carta"
+  },
+  "achievements": {
+    "title": "Centro de Logros",
+    "description": "Rastrea tu viaje de maestría y desbloquea recompensas",
+    "syncProgress": "Sincronizar Progreso",
+    "unlocked": "¡Logro Desbloqueado!",
+    "points": "pts",
+    "masteryPoints": "Puntos de Maestría",
+    "learningPhase": "Fase de Aprendizaje",
+    "beginner": "Principiante",
+    "completion": "Completado",
+    "skillBreakdown": "Desglose de Habilidades",
+    "skillBreakdownDescription": "Tus calificaciones de habilidades actuales por categoría",
+    "skills": "Habilidades",
+    "mastery": "Maestría",
+    "learning": "Aprendizaje",
+    "milestones": "Hitos",
+    "unlockedCount": "Desbloqueados ({{count}})",
+    "inProgress": "En Progreso ({{count}})",
+    "progress": "Progreso",
+    "pts": "pts",
+    "unlockedOn": "Desbloqueado {{date}}"
+  },
+  "analytics": {
+    "winRateTrends": "Tendencias de Victoria",
+    "winRatePercent": "Tasa de Victoria (%)",
+    "trophyChange": "Cambio de Trofeos",
+    "deckUsageDistribution": "Distribución de Uso de Mazos",
+    "deckNumber": "Mazo {{number}}",
+    "wr": "TV",
+    "battlesCount": "{{count}} batallas",
+    "mostUsedCards": "Cartas Más Usadas",
+    "usedTimes": "Usada {{count}} veces"
   },
   "templates": {
     "title": "Plantillas de Mazos Meta",

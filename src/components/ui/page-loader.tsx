@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Crown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -6,7 +7,10 @@ interface PageLoaderProps {
   className?: string;
 }
 
-export function PageLoader({ message = "Loading...", className }: PageLoaderProps) {
+export function PageLoader({ message, className }: PageLoaderProps) {
+  const { t } = useTranslation();
+  const displayMessage = message || t('common.loading');
+  
   return (
     <div className={cn("min-h-screen flex items-center justify-center arena-bg", className)}>
       <div className="flex flex-col items-center gap-4">
@@ -18,8 +22,8 @@ export function PageLoader({ message = "Loading...", className }: PageLoaderProp
         
         {/* Loading Text */}
         <div className="text-center">
-          <p className="text-foreground font-rajdhani font-semibold text-lg">{message}</p>
-          <p className="text-muted-foreground text-sm mt-1">Please wait a moment...</p>
+          <p className="text-foreground font-rajdhani font-semibold text-lg">{displayMessage}</p>
+          <p className="text-muted-foreground text-sm mt-1">{t('common.pleaseWaitMoment')}</p>
         </div>
 
         {/* Loading Dots Animation */}
@@ -34,9 +38,11 @@ export function PageLoader({ message = "Loading...", className }: PageLoaderProp
 }
 
 export function DashboardLoader() {
-  return <PageLoader message="Loading your dashboard" />;
+  const { t } = useTranslation();
+  return <PageLoader message={t('common.loadingDashboard')} />;
 }
 
 export function AuthLoader() {
-  return <PageLoader message="Verifying authentication" />;
+  const { t } = useTranslation();
+  return <PageLoader message={t('common.verifyingAuth')} />;
 }

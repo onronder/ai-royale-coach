@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
@@ -15,11 +16,13 @@ const COLORS = [
 ];
 
 export function DeckUsageBreakdown({ decks }: DeckUsageBreakdownProps) {
+  const { t } = useTranslation();
+  
   const chartData = decks
     .sort((a, b) => b.battles_played - a.battles_played)
     .slice(0, 6)
     .map((deck, index) => ({
-      name: `Deck ${index + 1}`,
+      name: t('analytics.deckNumber', { number: index + 1 }),
       value: deck.battles_played,
       winRate: (deck.win_rate * 100).toFixed(1),
       cards: deck.deck_cards.slice(0, 3).join(', ') + '...',
@@ -28,7 +31,7 @@ export function DeckUsageBreakdown({ decks }: DeckUsageBreakdownProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-foreground">Deck Usage Distribution</CardTitle>
+        <CardTitle className="text-foreground">{t('analytics.deckUsageDistribution')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col lg:flex-row gap-8">
@@ -67,12 +70,12 @@ export function DeckUsageBreakdown({ decks }: DeckUsageBreakdownProps) {
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-heading text-foreground">{deck.name}</div>
                   <div className="text-sm text-accent font-semibold">
-                    {deck.winRate}% WR
+                    {deck.winRate}% {t('analytics.wr')}
                   </div>
                 </div>
                 <div className="text-sm text-muted-foreground">{deck.cards}</div>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {deck.value} battles
+                  {t('analytics.battlesCount', { count: deck.value })}
                 </div>
               </div>
             ))}
