@@ -657,11 +657,23 @@
     "analyzingStrategy": "AI is analyzing your deck strategy..."
   },
   "coach": {
-    "title": "AI Coach",
-    "placeholder": "Ask your coach anything...",
+    "title": "AI COACH",
+    "description": "Get personalized coaching based on your stats and recent matches",
+    "panelDescription": "Your personal Clash Royale assistant",
+    "inputPlaceholder": "Ask your coach anything...",
     "thinking": "Thinking...",
     "recentChats": "Recent Chats",
+    "activeChat": "Active Chat",
     "newChat": "New Chat",
+    "startNewConversation": "Start New Conversation",
+    "noRecentConversations": "No recent conversations",
+    "messageCount": "{{count}} messages",
+    "loadingHistory": "Loading chat history...",
+    "emptyStateTitle": "Ask me anything about improving your game!",
+    "emptyStateSubtitle": "I can help with deck building, strategy, and match analysis.",
+    "discussingMatch": "Discussing Match",
+    "victory": "Victory",
+    "defeat": "Defeat",
     "suggestions": {
       "improve": "How can I improve my deck?",
       "counter": "What counters my opponent?",
@@ -671,9 +683,32 @@
     "creditsExhausted": "AI credits exhausted. Please add credits.",
     "failedToGetResponse": "Failed to get response from coach",
     "failedToSend": "Failed to send message",
+    "failedToSendMatchContext": "Failed to send match context",
     "signInRequired": "Please sign in to use AI Coach",
-    "sessionExpired": "Session expired. Please sign in again.",
-    "failedToSendContext": "Failed to send match context"
+    "sessionExpired": "Session expired. Please sign in again."
+  },
+  "counterDeck": {
+    "title": "Counter Deck Builder",
+    "description": "AI-suggested deck designed to counter {{opponent}}'s strategy",
+    "opponentDeck": "Opponent's Deck",
+    "suggestedDeck": "Suggested Counter Deck",
+    "howToPlay": "How to Play This Counter Deck",
+    "whyTheseCards": "Why These Cards?",
+    "copyButton": "Copy Deck Cards",
+    "copiedButton": "Copied to Clipboard!",
+    "copiedToClipboard": "Counter deck copied to clipboard!",
+    "copyHint": "Copy the card names to use in your deck builder"
+  },
+  "cardReplacements": {
+    "title": "Card Replacement Suggester",
+    "getSuggestions": "Get AI-powered suggestions to replace {{card}}",
+    "findReplacements": "Find Replacements",
+    "optionsFor": "Replacement Options for {{card}}",
+    "useThis": "Use This",
+    "synergy": "Synergy",
+    "meta": "Meta",
+    "fetchFailed": "Failed to fetch card suggestions",
+    "replaced": "Replaced {{oldCard}} with {{newCard}}"
   },
   "matches": {
     "details": "Match Details",
@@ -709,12 +744,20 @@
     "syncFailed": "Failed to sync global rankings"
   },
   "clan": {
+    "details": "Clan Details",
+    "description": "Description",
+    "members": "Members",
+    "requiredTrophies": "Required Trophies",
+    "clanScore": "Clan Score",
+    "warTrophies": "War Trophies",
+    "location": "Location",
+    "sendJoinRequest": "Send Join Request",
+    "joinMessagePlaceholder": "Tell the clan leaders why you want to join (optional)...",
+    "searchToJoin": "Search for this clan by tag to send a join request",
     "signInRequired": "Please sign in to send a join request",
-    "pendingRequest": "You already have a pending request to this clan",
-    "requestFailed": "Failed to send join request",
-    "requestSuccess": "Join request sent successfully!",
-    "copiedToClipboard": "Counter deck copied to clipboard!",
-    "predictionsFailed": "Failed to fetch win rate predictions"
+    "alreadyHaveRequest": "You already have a pending request to this clan",
+    "joinRequestFailed": "Failed to send join request",
+    "joinRequestSent": "Join request sent successfully!"
   },
   "common": {
     "loading": "Loading...",

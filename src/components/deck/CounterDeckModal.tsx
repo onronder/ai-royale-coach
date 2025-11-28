@@ -1,10 +1,11 @@
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Swords, Copy, Info, CheckCircle } from "lucide-react";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { DeckGrid } from "@/components/cards/DeckGrid";
-import { useState } from "react";
 import { toast } from "sonner";
 
 interface CounterDeckSuggestion {
@@ -28,6 +29,7 @@ export function CounterDeckModal({
   opponentDeck, 
   opponentName 
 }: CounterDeckModalProps) {
+  const { t } = useTranslation();
   const [copiedDeck, setCopiedDeck] = useState(false);
 
   // Create mock card objects for display (we only have names from AI)
@@ -47,7 +49,7 @@ export function CounterDeckModal({
     const deckString = counterDeck.cards.join(', ');
     navigator.clipboard.writeText(deckString);
     setCopiedDeck(true);
-    toast.success('Counter deck copied to clipboard!');
+    toast.success(t('counterDeck.copiedToClipboard'));
     setTimeout(() => setCopiedDeck(false), 2000);
   };
 
@@ -57,10 +59,10 @@ export function CounterDeckModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
-            Counter Deck Builder
+            {t('counterDeck.title')}
           </DialogTitle>
           <DialogDescription>
-            AI-suggested deck designed to counter {opponentName}'s strategy
+            {t('counterDeck.description', { opponent: opponentName })}
           </DialogDescription>
         </DialogHeader>
 
@@ -69,7 +71,7 @@ export function CounterDeckModal({
           <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
             <h3 className="font-semibold mb-3 flex items-center gap-2 text-destructive">
               <Swords className="w-4 h-4" />
-              Opponent's Deck
+              {t('counterDeck.opponentDeck')}
             </h3>
             <DeckGrid cards={opponentDeck} size="sm" showElixir={false} />
           </div>
@@ -78,7 +80,7 @@ export function CounterDeckModal({
           <div className="p-4 bg-success/10 rounded-lg border border-success/20">
             <h3 className="font-semibold mb-3 flex items-center gap-2 text-success">
               <Shield className="w-4 h-4" />
-              Suggested Counter Deck
+              {t('counterDeck.suggestedDeck')}
             </h3>
             <div className="grid grid-cols-4 gap-3 mb-4">
               {counterDeck.cards.slice(0, 8).map((cardName, idx) => (
@@ -102,7 +104,7 @@ export function CounterDeckModal({
             <div className="p-4 bg-card rounded-lg border">
               <h3 className="font-semibold mb-2 flex items-center gap-2">
                 <Info className="w-4 h-4 text-primary" />
-                How to Play This Counter Deck
+                {t('counterDeck.howToPlay')}
               </h3>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                 {counterDeck.overallStrategy}
@@ -114,7 +116,7 @@ export function CounterDeckModal({
           {Object.keys(counterDeck.explanations).length > 0 && (
             <div className="space-y-2">
               <h3 className="font-semibold flex items-center gap-2">
-                Why These Cards?
+                {t('counterDeck.whyTheseCards')}
               </h3>
               <div className="grid gap-2">
                 {Object.entries(counterDeck.explanations).slice(0, 4).map(([card, explanation]) => (
@@ -137,17 +139,17 @@ export function CounterDeckModal({
               {copiedDeck ? (
                 <>
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Copied to Clipboard!
+                  {t('counterDeck.copiedButton')}
                 </>
               ) : (
                 <>
                   <Copy className="w-4 h-4 mr-2" />
-                  Copy Deck Cards
+                  {t('counterDeck.copyButton')}
                 </>
               )}
             </Button>
             <p className="text-xs text-muted-foreground text-center mt-2">
-              Copy the card names to use in your deck builder
+              {t('counterDeck.copyHint')}
             </p>
           </div>
         </div>

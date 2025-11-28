@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface ClanDetailProps {
 }
 
 export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: ClanDetailProps) {
+  const { t } = useTranslation();
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -49,7 +51,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
 
     const { data: session } = await supabase.auth.getSession();
     if (!session.session?.user) {
-      toast.error('Please sign in to send a join request');
+      toast.error(t('clan.signInRequired'));
       return;
     }
 
@@ -67,12 +69,12 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
     if (error) {
       console.error('Join request error:', error);
       if (error.code === '23505') {
-        toast.error('You already have a pending request to this clan');
+        toast.error(t('clan.alreadyHaveRequest'));
       } else {
-        toast.error('Failed to send join request');
+        toast.error(t('clan.joinRequestFailed'));
       }
     } else {
-      toast.success('Join request sent successfully!');
+      toast.success(t('clan.joinRequestSent'));
       setMessage("");
       onClose();
     }
@@ -87,7 +89,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Shield className="w-6 h-6 text-primary" />
-            Clan Details
+            {t('clan.details')}
           </DialogTitle>
         </DialogHeader>
 
@@ -104,7 +106,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
 
           {clan.description && (
             <div>
-              <h3 className="font-semibold mb-2">Description</h3>
+              <h3 className="font-semibold mb-2">{t('clan.description')}</h3>
               <p className="text-muted-foreground">{clan.description}</p>
             </div>
           )}
@@ -113,7 +115,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               <Users className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Members</p>
+                <p className="text-sm text-muted-foreground">{t('clan.members')}</p>
                 <p className="font-semibold">{clan.member_count} / 50</p>
               </div>
             </div>
@@ -121,7 +123,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               <Trophy className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Required Trophies</p>
+                <p className="text-sm text-muted-foreground">{t('clan.requiredTrophies')}</p>
                 <p className="font-semibold">{(clan.required_trophies || 0).toLocaleString()}</p>
               </div>
             </div>
@@ -129,7 +131,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
             <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
               <Shield className="w-5 h-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">{clan.clan_score ? 'Clan Score' : 'War Trophies'}</p>
+                <p className="text-sm text-muted-foreground">{clan.clan_score ? t('clan.clanScore') : t('clan.warTrophies')}</p>
                 <p className="font-semibold">{(clan.clan_score || clan.war_trophies || 0).toLocaleString()}</p>
               </div>
             </div>
@@ -138,7 +140,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
               <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
                 <MapPin className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Location</p>
+                  <p className="text-sm text-muted-foreground">{t('clan.location')}</p>
                   <p className="font-semibold">{clan.location}</p>
                 </div>
               </div>
@@ -147,9 +149,9 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
 
           {clan.type !== 'closed' && clan.id && (
             <div className="space-y-3 pt-4 border-t">
-              <h3 className="font-semibold">Send Join Request</h3>
+              <h3 className="font-semibold">{t('clan.sendJoinRequest')}</h3>
               <Textarea
-                placeholder="Tell the clan leaders why you want to join (optional)..."
+                placeholder={t('clan.joinMessagePlaceholder')}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}
@@ -161,7 +163,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
                 disabled={isSending}
               >
                 <Send className="w-4 h-4 mr-2" />
-                {isSending ? 'Sending...' : 'Send Join Request'}
+                {isSending ? t('common.sending') : t('clan.sendJoinRequest')}
               </Button>
             </div>
           )}
@@ -169,7 +171,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
           {clan.type !== 'closed' && !clan.id && (
             <div className="pt-4 border-t text-center">
               <p className="text-sm text-muted-foreground">
-                Search for this clan by tag to send a join request
+                {t('clan.searchToJoin')}
               </p>
             </div>
           )}

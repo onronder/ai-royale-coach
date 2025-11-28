@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ export function CardReplacementSuggester({
   userCollection,
   onReplace,
 }: CardReplacementSuggesterProps) {
+  const { t } = useTranslation();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,7 +48,7 @@ export function CardReplacementSuggester({
       setSuggestions(data.suggestions);
     } catch (error) {
       console.error("Error fetching suggestions:", error);
-      toast.error("Failed to fetch card suggestions");
+      toast.error(t('cardReplacements.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +56,7 @@ export function CardReplacementSuggester({
 
   const handleReplace = (newCard: string) => {
     onReplace(targetCard, newCard);
-    toast.success(`Replaced ${targetCard} with ${newCard}`);
+    toast.success(t('cardReplacements.replaced', { oldCard: targetCard, newCard }));
   };
 
   const getImpactColor = (impact: number) => {
@@ -74,18 +76,18 @@ export function CardReplacementSuggester({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Card Replacement Suggester</span>
-            <Badge variant="secondary">AI Powered</Badge>
+            <span>{t('cardReplacements.title')}</span>
+            <Badge variant="secondary">{t('common.aiPowered')}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">
-              Get AI-powered suggestions to replace <strong>{targetCard}</strong>
+              {t('cardReplacements.getSuggestions', { card: targetCard })}
             </p>
             <Button onClick={fetchSuggestions} className="gap-2">
               <RefreshCw className="h-4 w-4" />
-              Find Replacements
+              {t('cardReplacements.findReplacements')}
             </Button>
           </div>
         </CardContent>
@@ -101,7 +103,7 @@ export function CardReplacementSuggester({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Replacement Options for {targetCard}</span>
+          <span>{t('cardReplacements.optionsFor', { card: targetCard })}</span>
           <Button variant="ghost" size="sm" onClick={fetchSuggestions}>
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -119,11 +121,11 @@ export function CardReplacementSuggester({
                     <div>
                       <h4 className="font-heading text-foreground">{suggestion.card}</h4>
                       <p className="text-xs text-muted-foreground">
-                        {suggestion.elixir_cost} elixir
+                        {suggestion.elixir_cost} {t('common.elixir')}
                       </p>
                     </div>
                     <Button size="sm" onClick={() => handleReplace(suggestion.card)}>
-                      Use This
+                      {t('cardReplacements.useThis')}
                     </Button>
                   </div>
 
@@ -133,13 +135,13 @@ export function CardReplacementSuggester({
                     <div className="flex items-center gap-1">
                       <ImpactIcon className={`h-4 w-4 ${getImpactColor(suggestion.synergy_impact)}`} />
                       <span className={getImpactColor(suggestion.synergy_impact)}>
-                        Synergy: {suggestion.synergy_impact > 0 ? "+" : ""}{suggestion.synergy_impact}
+                        {t('cardReplacements.synergy')}: {suggestion.synergy_impact > 0 ? "+" : ""}{suggestion.synergy_impact}
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <ImpactIcon className={`h-4 w-4 ${getImpactColor(suggestion.meta_impact)}`} />
                       <span className={getImpactColor(suggestion.meta_impact)}>
-                        Meta: {suggestion.meta_impact > 0 ? "+" : ""}{suggestion.meta_impact}
+                        {t('cardReplacements.meta')}: {suggestion.meta_impact > 0 ? "+" : ""}{suggestion.meta_impact}
                       </span>
                     </div>
                   </div>

@@ -664,18 +664,58 @@
     "templates": "Şablonlar"
   },
   "coach": {
-    "title": "AI Koç",
-    "placeholder": "Koçunuza bir soru sorun...",
-    "send": "Gönder",
+    "title": "AI KOÇ",
+    "description": "İstatistiklerinize ve son maçlarınıza göre kişiselleştirilmiş koçluk alın",
+    "panelDescription": "Kişisel Clash Royale asistanınız",
+    "inputPlaceholder": "Koçunuza bir şey sorun...",
     "thinking": "Düşünüyor...",
-    "greeting": "Merhaba! Clash Royale AI koçunuzum. Strateji, desteler veya oyununuzu geliştirme hakkında bana her şeyi sorabilirsiniz.",
+    "recentChats": "Son Sohbetler",
+    "activeChat": "Aktif Sohbet",
+    "newChat": "Yeni Sohbet",
+    "startNewConversation": "Yeni Sohbet Başlat",
+    "noRecentConversations": "Son sohbet yok",
+    "messageCount": "{{count}} mesaj",
+    "loadingHistory": "Sohbet geçmişi yükleniyor...",
+    "emptyStateTitle": "Oyununuzu geliştirmek hakkında bana her şeyi sorun!",
+    "emptyStateSubtitle": "Deste oluşturma, strateji ve maç analizi konusunda yardımcı olabilirim.",
+    "discussingMatch": "Maç Tartışılıyor",
+    "victory": "Zafer",
+    "defeat": "Yenilgi",
+    "suggestions": {
+      "improve": "Destemi nasıl geliştirebilirim?",
+      "counter": "Rakibime karşı ne işe yarar?",
+      "tips": "Bu eşleşme için ipuçları ver"
+    },
     "rateLimitExceeded": "Hız limiti aşıldı. Lütfen biraz bekleyin.",
     "creditsExhausted": "AI kredileri tükendi. Lütfen kredi ekleyin.",
     "failedToGetResponse": "Koçtan yanıt alınamadı",
     "failedToSend": "Mesaj gönderilemedi",
+    "failedToSendMatchContext": "Maç bağlamı gönderilemedi",
     "signInRequired": "AI Koçu kullanmak için lütfen giriş yapın",
-    "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın.",
-    "failedToSendContext": "Maç bağlamı gönderilemedi"
+    "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın."
+  },
+  "counterDeck": {
+    "title": "Karşı Deste Oluşturucu",
+    "description": "{{opponent}} stratejisine karşı AI önerili deste",
+    "opponentDeck": "Rakibin Destesi",
+    "suggestedDeck": "Önerilen Karşı Deste",
+    "howToPlay": "Bu Karşı Desteyi Nasıl Oynarsınız",
+    "whyTheseCards": "Neden Bu Kartlar?",
+    "copyButton": "Deste Kartlarını Kopyala",
+    "copiedButton": "Panoya Kopyalandı!",
+    "copiedToClipboard": "Karşı deste panoya kopyalandı!",
+    "copyHint": "Deste oluşturucunuzda kullanmak için kart isimlerini kopyalayın"
+  },
+  "cardReplacements": {
+    "title": "Kart Değiştirme Önerici",
+    "getSuggestions": "{{card}} kartını değiştirmek için AI destekli öneriler alın",
+    "findReplacements": "Alternatif Bul",
+    "optionsFor": "{{card}} için Değiştirme Seçenekleri",
+    "useThis": "Bunu Kullan",
+    "synergy": "Sinerji",
+    "meta": "Meta",
+    "fetchFailed": "Kart önerileri alınamadı",
+    "replaced": "{{oldCard}} kartı {{newCard}} ile değiştirildi"
   },
   "match": {
     "victory": "Zafer",
@@ -712,12 +752,20 @@
     "syncFailed": "Global sıralama senkronize edilemedi"
   },
   "clan": {
+    "details": "Klan Detayları",
+    "description": "Açıklama",
+    "members": "Üyeler",
+    "requiredTrophies": "Gerekli Kupalar",
+    "clanScore": "Klan Puanı",
+    "warTrophies": "Savaş Kupaları",
+    "location": "Konum",
+    "sendJoinRequest": "Katılma İsteği Gönder",
+    "joinMessagePlaceholder": "Klan liderlerine neden katılmak istediğinizi söyleyin (isteğe bağlı)...",
+    "searchToJoin": "Katılma isteği göndermek için bu klanı etiketiyle arayın",
     "signInRequired": "Katılma isteği göndermek için lütfen giriş yapın",
-    "pendingRequest": "Bu klana zaten bekleyen bir isteğiniz var",
-    "requestFailed": "Katılma isteği gönderilemedi",
-    "requestSuccess": "Katılma isteği başarıyla gönderildi!",
-    "copiedToClipboard": "Karşı deste panoya kopyalandı!",
-    "predictionsFailed": "Kazanma oranı tahminleri alınamadı"
+    "alreadyHaveRequest": "Bu klana zaten bekleyen bir isteğiniz var",
+    "joinRequestFailed": "Katılma isteği gönderilemedi",
+    "joinRequestSent": "Katılma isteği başarıyla gönderildi!"
   },
   "common": {
     "loading": "Yükleniyor...",

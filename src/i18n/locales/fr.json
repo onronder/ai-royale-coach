@@ -664,18 +664,58 @@
     "templates": "Modèles"
   },
   "coach": {
-    "title": "Coach IA",
-    "placeholder": "Posez une question à votre coach...",
-    "send": "Envoyer",
+    "title": "COACH IA",
+    "description": "Obtenez un coaching personnalisé basé sur vos statistiques et matchs récents",
+    "panelDescription": "Votre assistant personnel Clash Royale",
+    "inputPlaceholder": "Posez une question à votre coach...",
     "thinking": "Réflexion...",
-    "greeting": "Bonjour! Je suis votre coach Clash Royale IA. Demandez-moi n'importe quoi sur la stratégie, les decks ou comment améliorer votre jeu.",
+    "recentChats": "Conversations Récentes",
+    "activeChat": "Chat Actif",
+    "newChat": "Nouveau Chat",
+    "startNewConversation": "Démarrer une Nouvelle Conversation",
+    "noRecentConversations": "Pas de conversations récentes",
+    "messageCount": "{{count}} messages",
+    "loadingHistory": "Chargement de l'historique de chat...",
+    "emptyStateTitle": "Demandez-moi n'importe quoi sur l'amélioration de votre jeu!",
+    "emptyStateSubtitle": "Je peux aider avec la construction de decks, la stratégie et l'analyse des matchs.",
+    "discussingMatch": "Discussion du Match",
+    "victory": "Victoire",
+    "defeat": "Défaite",
+    "suggestions": {
+      "improve": "Comment améliorer mon deck?",
+      "counter": "Qu'est-ce qui contre mon adversaire?",
+      "tips": "Donne-moi des conseils pour ce match"
+    },
     "rateLimitExceeded": "Limite de taux dépassée. Veuillez patienter.",
     "creditsExhausted": "Crédits IA épuisés. Veuillez ajouter des crédits.",
     "failedToGetResponse": "Échec de la réponse du coach",
     "failedToSend": "Échec de l'envoi du message",
+    "failedToSendMatchContext": "Échec de l'envoi du contexte du match",
     "signInRequired": "Connectez-vous pour utiliser le Coach IA",
-    "sessionExpired": "Session expirée. Reconnectez-vous.",
-    "failedToSendContext": "Échec de l'envoi du contexte du match"
+    "sessionExpired": "Session expirée. Reconnectez-vous."
+  },
+  "counterDeck": {
+    "title": "Constructeur de Deck Contre",
+    "description": "Deck suggéré par l'IA conçu pour contrer la stratégie de {{opponent}}",
+    "opponentDeck": "Deck de l'Adversaire",
+    "suggestedDeck": "Deck Contre Suggéré",
+    "howToPlay": "Comment Jouer Ce Deck Contre",
+    "whyTheseCards": "Pourquoi Ces Cartes?",
+    "copyButton": "Copier les Cartes du Deck",
+    "copiedButton": "Copié dans le Presse-papiers!",
+    "copiedToClipboard": "Deck contre copié dans le presse-papiers!",
+    "copyHint": "Copiez les noms des cartes pour utiliser dans votre constructeur de deck"
+  },
+  "cardReplacements": {
+    "title": "Suggéreur de Remplacement de Cartes",
+    "getSuggestions": "Obtenez des suggestions IA pour remplacer {{card}}",
+    "findReplacements": "Trouver des Remplacements",
+    "optionsFor": "Options de Remplacement pour {{card}}",
+    "useThis": "Utiliser Celle-ci",
+    "synergy": "Synergie",
+    "meta": "Meta",
+    "fetchFailed": "Échec de l'obtention des suggestions de cartes",
+    "replaced": "Remplacé {{oldCard}} par {{newCard}}"
   },
   "match": {
     "victory": "Victoire",
@@ -712,12 +752,20 @@
     "syncFailed": "Échec de la synchronisation des classements mondiaux"
   },
   "clan": {
+    "details": "Détails du Clan",
+    "description": "Description",
+    "members": "Membres",
+    "requiredTrophies": "Trophées Requis",
+    "clanScore": "Score du Clan",
+    "warTrophies": "Trophées de Guerre",
+    "location": "Localisation",
+    "sendJoinRequest": "Envoyer une Demande d'Adhésion",
+    "joinMessagePlaceholder": "Dites aux leaders du clan pourquoi vous voulez rejoindre (facultatif)...",
+    "searchToJoin": "Recherchez ce clan par tag pour envoyer une demande d'adhésion",
     "signInRequired": "Connectez-vous pour envoyer une demande d'adhésion",
-    "pendingRequest": "Vous avez déjà une demande en attente pour ce clan",
-    "requestFailed": "Échec de l'envoi de la demande d'adhésion",
-    "requestSuccess": "Demande d'adhésion envoyée avec succès!",
-    "copiedToClipboard": "Deck contre copié dans le presse-papiers!",
-    "predictionsFailed": "Échec de l'obtention des prédictions de taux de victoire"
+    "alreadyHaveRequest": "Vous avez déjà une demande en attente pour ce clan",
+    "joinRequestFailed": "Échec de l'envoi de la demande d'adhésion",
+    "joinRequestSent": "Demande d'adhésion envoyée avec succès!"
   },
   "common": {
     "loading": "Chargement...",
