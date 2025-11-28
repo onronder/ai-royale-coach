@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,7 @@ export const operationLabels: Record<string, { label: string; icon: string }> = 
 };
 
 export function useAllOperations() {
+  const { t } = useTranslation();
   const [operations, setOperations] = useState<OperationProgress[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const queryClient = useQueryClient();
@@ -106,12 +108,12 @@ export function useAllOperations() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.info("Operation cancelled");
+      toast.info(t('operations.cancelled'));
       queryClient.invalidateQueries({ queryKey: ["operation-progress"] });
     },
     onError: (error) => {
       console.error("Error cancelling operation:", error);
-      toast.error("Failed to cancel operation");
+      toast.error(t('operations.cancelFailed'));
     },
   });
 

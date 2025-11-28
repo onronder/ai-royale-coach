@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useAllOperations, operationLabels } from "@/hooks/useAllOperations";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -27,6 +28,7 @@ const iconMap = {
 };
 
 export function GlobalProgressCenter() {
+  const { t } = useTranslation();
   const { operations, activeCount, isLoading, cancelOperation, isCancelling } = useAllOperations();
 
   if (isLoading) return null;
@@ -80,9 +82,9 @@ export function GlobalProgressCenter() {
       </PopoverTrigger>
       <PopoverContent className="w-96 p-0" align="end">
         <div className="p-4 border-b border-border">
-          <h3 className="font-rajdhani font-bold text-lg">Active Tasks</h3>
+          <h3 className="font-rajdhani font-bold text-lg">{t('progress.activeTasks')}</h3>
           <p className="text-sm text-muted-foreground">
-            {activeCount === 0 ? "No active operations" : `${activeCount} operation${activeCount > 1 ? "s" : ""} running`}
+            {activeCount === 0 ? t('progress.noActiveOperations') : t('progress.operationsRunning', { count: activeCount })}
           </p>
         </div>
         
@@ -108,8 +110,8 @@ export function GlobalProgressCenter() {
                             <p className="text-sm font-medium truncate">
                               {getOperationLabel(op.operation_type)}
                             </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {op.current_step || "Processing..."}
+                          <p className="text-xs text-muted-foreground truncate">
+                              {op.current_step || t('progress.processing')}
                             </p>
                           </div>
                         </div>
@@ -135,7 +137,7 @@ export function GlobalProgressCenter() {
                       </div>
                       
                       <p className="text-xs text-muted-foreground">
-                        Started {elapsed}
+                        {t('progress.started')} {elapsed}
                       </p>
                     </div>
                   );
@@ -147,7 +149,7 @@ export function GlobalProgressCenter() {
             {recentOps.length > 0 && (
               <div className="space-y-2">
                 {runningOps.length > 0 && (
-                  <h4 className="text-sm font-medium text-muted-foreground">Recent</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('progress.recent')}</h4>
                 )}
                 {recentOps.map((op) => {
                   const Icon = getOperationIcon(op.operation_type);
@@ -180,7 +182,7 @@ export function GlobalProgressCenter() {
             {operations.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">No operations yet</p>
+                <p className="text-sm">{t('progress.noOperationsYet')}</p>
               </div>
             )}
           </div>

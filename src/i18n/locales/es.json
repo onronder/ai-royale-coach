@@ -1265,5 +1265,70 @@
     "toLevel": "al nivel",
     "max": "MÁX",
     "noCardsFound": "No se encontraron cartas para esta rareza"
+  },
+  "mastery": {
+    "title": "Maestría de Cartas",
+    "description": "Rastrea el rendimiento y progresión de cada carta",
+    "updateMastery": "Actualizar Maestría",
+    "sortBy": "Ordenar por",
+    "masteryLevel": "Nivel de Maestría",
+    "mostUsed": "Más Usada",
+    "bestWinRate": "Mejor Tasa de Victoria",
+    "noData": "Aún no hay datos de maestría",
+    "calculateMastery": "Calcular Maestría"
+  },
+  "templates": {
+    "title": "Plantillas de Mazos Meta",
+    "subtitle": "Importa mazos meta probados instantáneamente",
+    "loading": "Cargando plantillas de mazos...",
+    "imported": "¡{{name}} importado!",
+    "avgElixirReal": "Elixir Prom: Real (calculado)",
+    "difficultyEstimated": "Dificultad: Estimada",
+    "popularityAdmin": "Popularidad: Establecida por admin",
+    "winRateNote": "Las tasas de victoria se calculan de TU historial de batallas después de conectar tu etiqueta de jugador.",
+    "import": "Importar",
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    }
+  },
+  "progress": {
+    "activeTasks": "Tareas Activas",
+    "noActiveOperations": "Sin operaciones activas",
+    "operationsRunning": "{{count}} operación(es) ejecutándose",
+    "processing": "Procesando...",
+    "started": "Iniciado",
+    "recent": "Reciente",
+    "noOperationsYet": "Aún no hay operaciones"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "unread": "{{count}} sin leer",
+    "allCaughtUp": "¡Todo al día!",
+    "markAllRead": "Marcar todo leído",
+    "loading": "Cargando notificaciones...",
+    "noNotifications": "Aún no hay notificaciones",
+    "willNotify": "Te notificaremos sobre logros, sincronizaciones y actualizaciones"
+  },
+  "operations": {
+    "cardMasteryCalculation": "Cálculo de Maestría de Cartas",
+    "cardCollectionSync": "Sincronización de Colección de Cartas",
+    "deckStatsTracking": "Seguimiento de Estadísticas de Mazo",
+    "achievementSync": "Sincronización de Logros",
+    "cancelled": "Operación cancelada",
+    "cancelFailed": "Error al cancelar operación"
+  },
+  "toasts": {
+    "achievementUnlocked": "¡Logro Desbloqueado!",
+    "achievementsUnlocked": "¡Logros Desbloqueados!",
+    "achievementsSynced": "Logros sincronizados exitosamente",
+    "achievementsSyncFailed": "Error al sincronizar logros",
+    "deckStatsUpdated": "¡Estadísticas del mazo actualizadas!",
+    "deckStatsUpdateFailed": "Error al actualizar estadísticas del mazo",
+    "playerTagAdded": "¡Etiqueta de jugador agregada!",
+    "playerTagRemoved": "Etiqueta de jugador eliminada",
+    "playerTagRemoveFailed": "Error al eliminar etiqueta de jugador",
+    "trackingDeckStats": "Rastreando estadísticas del mazo..."
   }
 }

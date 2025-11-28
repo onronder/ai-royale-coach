@@ -1242,5 +1242,70 @@
     "toLevel": "to level",
     "max": "MAX",
     "noCardsFound": "No cards found for this rarity"
+  },
+  "mastery": {
+    "title": "Card Mastery",
+    "description": "Track your individual card performance and progression",
+    "updateMastery": "Update Mastery",
+    "sortBy": "Sort by",
+    "masteryLevel": "Mastery Level",
+    "mostUsed": "Most Used",
+    "bestWinRate": "Best Win Rate",
+    "noData": "No card mastery data yet",
+    "calculateMastery": "Calculate Mastery"
+  },
+  "templates": {
+    "title": "Meta Deck Templates",
+    "subtitle": "Import proven meta decks instantly",
+    "loading": "Loading deck templates...",
+    "imported": "Imported {{name}}!",
+    "avgElixirReal": "Avg Elixir: Real (calculated)",
+    "difficultyEstimated": "Difficulty: Estimated",
+    "popularityAdmin": "Popularity: Admin-set ranking",
+    "winRateNote": "Win rates are calculated from YOUR battle history after you connect your player tag.",
+    "import": "Import",
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
+  },
+  "progress": {
+    "activeTasks": "Active Tasks",
+    "noActiveOperations": "No active operations",
+    "operationsRunning": "{{count}} operation(s) running",
+    "processing": "Processing...",
+    "started": "Started",
+    "recent": "Recent",
+    "noOperationsYet": "No operations yet"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "{{count}} unread",
+    "allCaughtUp": "All caught up!",
+    "markAllRead": "Mark all read",
+    "loading": "Loading notifications...",
+    "noNotifications": "No notifications yet",
+    "willNotify": "We'll notify you about achievements, syncs, and updates"
+  },
+  "operations": {
+    "cardMasteryCalculation": "Card Mastery Calculation",
+    "cardCollectionSync": "Card Collection Sync",
+    "deckStatsTracking": "Deck Stats Tracking",
+    "achievementSync": "Achievement Sync",
+    "cancelled": "Operation cancelled",
+    "cancelFailed": "Failed to cancel operation"
+  },
+  "toasts": {
+    "achievementUnlocked": "Achievement Unlocked!",
+    "achievementsUnlocked": "Achievements Unlocked!",
+    "achievementsSynced": "Achievements synced successfully",
+    "achievementsSyncFailed": "Failed to sync achievements",
+    "deckStatsUpdated": "Deck statistics updated successfully!",
+    "deckStatsUpdateFailed": "Failed to update deck statistics",
+    "playerTagAdded": "Player tag added successfully!",
+    "playerTagRemoved": "Player tag removed",
+    "playerTagRemoveFailed": "Failed to remove player tag",
+    "trackingDeckStats": "Tracking deck statistics..."
   }
 }
