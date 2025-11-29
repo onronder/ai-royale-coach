@@ -1,0 +1,362 @@
+{
+  "help": {
+    "title": "Yardım Merkezi",
+    "subtitle": "AI Royale'i ustalaşmak için kapsamlı rehber",
+    "searchPlaceholder": "Yardım konularını ara...",
+    "navigation": "Navigasyon",
+    "backToTop": "Başa Dön",
+    "sections": {
+      "gettingStarted": "Başlarken",
+      "dashboard": "Panel",
+      "stats": "İstatistikler",
+      "matches": "Maçlar",
+      "deck": "Deste",
+      "builder": "Oluşturucu",
+      "analytics": "Analitik",
+      "collection": "Koleksiyon",
+      "leaderboard": "Liderlik Tablosu",
+      "tournaments": "Turnuvalar",
+      "clans": "Klanlar",
+      "coach": "AI Koç",
+      "features": "Özellikler",
+      "faq": "SSS"
+    },
+    "gettingStarted": {
+      "title": "Başlarken",
+      "badge": "Buradan Başla",
+      "createAccount": {
+        "title": "Hesap Oluşturma",
+        "step1": "Ana sayfada 'Başla' düğmesine tıklayın",
+        "step2": "Email adresinizi girin ve bir şifre oluşturun",
+        "step3": "Doğrulama için emailinizi kontrol edin (hızlı erişim için otomatik onay)",
+        "step4": "Clash Royale hesabınızı bağlamaya hazırsınız!"
+      },
+      "findTag": {
+        "title": "Oyuncu Etiketinizi Bulma",
+        "intro": "Oyuncu Etiketiniz, Clash Royale hesabınız için benzersiz bir tanımlayıcıdır. İşte nasıl bulacağınız:",
+        "step1": "Cihazınızda Clash Royale'i açın",
+        "step2": "Sol üst köşedeki profil resminize dokunun",
+        "step3": "Oyuncu Etiketiniz adınızın altında görüntülenir (# ile başlar)",
+        "step4": "# sembolü dahil tüm etiketi kopyalayın",
+        "example": "Örnek format:"
+      },
+      "multiAccount": {
+        "title": "Birden Fazla Hesap Yönetimi",
+        "intro": "AI Royale kullanıcı başına 3 Clash Royale hesabını destekler:",
+        "point1": "Oyuncu Seçimi ekranından birden fazla hesap ekleyin",
+        "point2": "Yeniden kimlik doğrulaması yapmadan hesaplar arasında anında geçiş yapın",
+        "point3": "Her hesabın kendi analizleri, önerileri ve koçluk geçmişi vardır"
+      }
+    },
+    "dashboard": {
+      "title": "Panel Genel Bakış",
+      "badge": "Navigasyon",
+      "overview": {
+        "title": "Panel Sekmeleri",
+        "intro": "Paneliniz 9 ana sekmeye ayrılmıştır, her biri özel özellikler sunar:"
+      },
+      "tabs": {
+        "stats": "İstatistikler",
+        "matches": "Maçlar",
+        "deck": "Deste",
+        "builder": "Oluşturucu",
+        "analytics": "Analitik",
+        "collection": "Koleksiyon",
+        "leaderboard": "Liderlik Tablosu",
+        "tournaments": "Turnuvalar",
+        "clans": "Klanlar"
+      },
+      "navigation": {
+        "title": "Panelde Gezinme",
+        "point1": "Görünümü değiştirmek için herhangi bir sekmeye tıklayın - verileriniz hızlı yükleme için önbelleğe alınır",
+        "point2": "Mobilde sekmeler yatay olarak kaydırılabilir",
+        "point3": "AI Koç düğmesi (sağ alt köşe) herhangi bir sekmeden erişilebilir"
+      },
+      "sync": {
+        "title": "Veri Senkronizasyonu ve Yenileme",
+        "intro": "Paneli açtığınızda verileriniz otomatik olarak senkronize olur. Başlıktaki senkronizasyon göstergesini kullanarak manuel olarak yenileyebilirsiniz.",
+        "note": "Not: Clash Royale API'sinin 5-15 dakikalık bir gecikmesi var. Son oyun içi değişiklikler hemen görünmeyebilir."
+      }
+    },
+    "stats": {
+      "title": "İstatistikler Sekmesi",
+      "badge": "Genel Bakış",
+      "overview": {
+        "title": "Oyuncu İstatistikleri",
+        "intro": "İstatistikler sekmesi temel performans metriklerinizi görüntüler:",
+        "trophies": "Mevcut Kupalar",
+        "trophiesDesc": "Mevcut kupa sayınız ve kişisel rekorunuz",
+        "winRate": "Kazanma Oranı",
+        "winRateDesc": "Son 25 maçınızdan hesaplanır",
+        "arena": "Arena",
+        "arenaDesc": "Kupa sayısına göre mevcut arenanız",
+        "clan": "Klan",
+        "clanDesc": "Klan adınız ve rozeti (bir klanın üyesiyseniz)"
+      },
+      "charts": {
+        "title": "Kupa İlerleme Grafiği",
+        "intro": "Kazanç ve kayıpları gösteren interaktif grafiklerle kupa ilerlemenizi zaman içinde görüntüleyin."
+      },
+      "aiSummary": {
+        "title": "AI Koç Özeti",
+        "intro": "Güçlü yönler, gelişim alanları ve stratejik öneriler dahil son performansınızın AI tarafından oluşturulan kişiselleştirilmiş özeti."
+      }
+    },
+    "matches": {
+      "title": "Maçlar Sekmesi",
+      "badge": "Maç Geçmişi",
+      "history": {
+        "title": "Maç Geçmişi",
+        "intro": "Detaylı bilgilerle son maçlarınızı görüntüleyin:",
+        "point1": "Taç sayısıyla Galibiyet/Mağlubiyet göstergesi",
+        "point2": "Kupa değişimi (+/- kupalar)",
+        "point3": "Desteniz ve rakibin destesi",
+        "point4": "Maçtan bu yana geçen süre"
+      },
+      "detail": {
+        "title": "Maç Detay Görünümü",
+        "intro": "Detaylı analiz için herhangi bir maça tıklayın:",
+        "comparison": "Deste Karşılaştırması",
+        "comparisonDesc": "Kart seviyeleriyle her iki destenin yan yana görünümü",
+        "analysis": "AI Analizi",
+        "analysisDesc": "Maçta ne olduğu ve öneriler",
+        "moments": "Kilit Anlar",
+        "momentsDesc": "Kritik aşamalarda önemli kart etkileşimleri",
+        "counter": "Karşı-Deste",
+        "counterDesc": "Rakibinizi yenmek için AI önerisi deste"
+      },
+      "discuss": {
+        "title": "AI Koç ile Tartış",
+        "intro": "Daha derin stratejik konuşma ve kişiselleştirilmiş tavsiye için maç bağlamını AI'ya göndermek üzere 'AI Koç ile Tartış'a tıklayın."
+      }
+    },
+    "deck": {
+      "title": "Deste Sekmesi",
+      "badge": "Desteniz",
+      "current": {
+        "title": "Mevcut Deste Görüntüleme",
+        "intro": "Tüm 8 kart, seviyeleri ve ortalama iksir maliyetiyle mevcut donanmış destenizi görüntüleyin."
+      },
+      "recommendations": {
+        "title": "Kişiselleştirilmiş Öneriler",
+        "intro": "AI Royale size uygun desteleri önermek için profilinizi analiz eder:",
+        "ownership": "Kart Sahipliği",
+        "ownershipDesc": "Sadece 8 kartın tamamına sahip olduğunuz desteleri önerir",
+        "skill": "Beceri Eşleştirme",
+        "skillDesc": "Deste zorluğunu kupa aralığınızla eşleştirir",
+        "adopt": "Öneriyi Benimse",
+        "adoptDesc": "Öneriyi izlemek ve gelişimi ölçmek için tıklayın"
+      },
+      "analysis": {
+        "title": "Deste Analiz Paneli",
+        "intro": "Sinerjiler, zayıflıklar ve geliştirme önerileri dahil destenizin AI destekli analizini alın."
+      }
+    },
+    "builder": {
+      "title": "Oluşturucu Sekmesi",
+      "badge": "Deste Oluşturma",
+      "create": {
+        "title": "Deste Oluşturma",
+        "intro": "Görsel deste oluşturucumuzla özel desteler oluşturun:",
+        "step1": "Destenize eklemek için kart havuzundan kartlara tıklayın",
+        "step2": "Kaldırmak için destenizdeki kartlara tıklayın",
+        "step3": "Ortalama iksirin gerçek zamanlı güncellenmesini izleyin",
+        "step4": "Stratejik içgörüler almak için 'AI Analizi'ne tıklayın",
+        "step5": "Destenizi bir ad ve açıklamayla kaydedin"
+      },
+      "templates": {
+        "title": "Meta Şablon Kütüphanesi",
+        "intro": "Metadan önceden oluşturulmuş rekabetçi destelere göz atın:",
+        "point1": "Arketipe göre filtreleyin (Beatdown, Cycle, Control, vb.)",
+        "point2": "Önerilen desteler (⭐) kartlarınızla oluşturabileceğiniz desteleri gösterir",
+        "point3": "Oluşturucuya aktarmak için herhangi bir şablona tıklayın"
+      },
+      "compare": {
+        "title": "Deste Karşılaştırması",
+        "intro": "İki desteyi yan yana karşılaştırın:",
+        "point1": "İksir dağılımı ve ortalama maliyet farklarını görün",
+        "point2": "Kart kart dökümü görüntüleyin",
+        "point3": "Kazanma olasılığı ve ipuçları görmek için AI Eşleşme Tahmini çalıştırın"
+      }
+    },
+    "analytics": {
+      "title": "Analitik Sekmesi",
+      "badge": "Performans",
+      "deckStats": {
+        "title": "Deste İstatistikleri Paneli",
+        "intro": "Deste performansınızı zaman içinde takip edin:",
+        "point1": "Kazanma oranı trendleri (7, 14, 30 gün)",
+        "point2": "Deste başına kupa değişimleri",
+        "point3": "Kullanım sıklığı ve maç sayısı",
+        "point4": "Tüm destelerinizde en çok kullanılan kartlar"
+      },
+      "mastery": {
+        "title": "Kart Ustalık Sistemi",
+        "intro": "Bireysel kartlarla yetkinliğinizi takip edin:",
+        "levels": "Ustalık Seviyeleri",
+        "levelsDesc": "Bronzdan Ustaya ilerleme (10 seviye)",
+        "partners": "En İyi Partner Kartlar",
+        "partnersDesc": "Elinizde bu kartla iyi çalışan kartlar",
+        "matchups": "Zor Eşleşmeler",
+        "matchupsDesc": "Bu kartı kullanırken zorlandığınız kartlar",
+        "tips": "AI İpuçları",
+        "tipsDesc": "Bu kartla gelişmek için kişiselleştirilmiş tavsiyeler"
+      },
+      "achievements": {
+        "title": "Başarılar Paneli",
+        "intro": "Kilometre taşlarınızı takip edin ve geliştikçe başarı rozetleri açın. Başarılar beceri alanı ve seviyeye göre kategorize edilir."
+      }
+    },
+    "collection": {
+      "title": "Koleksiyon Sekmesi",
+      "badge": "Kart Envanteri",
+      "overview": {
+        "title": "Kart Koleksiyonunuz",
+        "intro": "Tüm Clash Royale kartlarınızı görüntüleyin ve yönetin:",
+        "point1": "Nadirliğe göre filtreleyin (Yaygın, Nadir, Destansı, Efsanevi, Şampiyon)",
+        "point2": "Mevcut seviye ve bir sonraki yükseltmeye ilerlemeyi görün",
+        "point3": "Toplam kart sayısı ve yükseltme gereksinimlerini takip edin"
+      },
+      "levels": {
+        "title": "Kart Seviyelerini Anlama",
+        "intro": "Kart seviyeleri oyun içi seviyelere eşleşecek şekilde görüntülenir. Aralık nadirliğe bağlıdır:"
+      },
+      "sync": {
+        "title": "Koleksiyonunuzu Senkronize Etme",
+        "intro": "Koleksiyonunuz Clash Royale API'siyle otomatik olarak senkronize olur. Eksik kartlar fark ederseniz, manuel senkronizasyon düğmesini kullanın."
+      }
+    },
+    "leaderboard": {
+      "title": "Liderlik Tablosu Sekmesi",
+      "badge": "Sıralamalar",
+      "yourRanking": {
+        "title": "Global Sıralamanız",
+        "intro": "Hesaplarınızın global olarak nerede sıralandığını görün. Tüm bağlı hesaplarınız mevcut kupaları ve tahmini global pozisyonuyla görüntülenir."
+      },
+      "global": {
+        "title": "Global En İyi 100 Oyuncu",
+        "intro": "Dünya çapında en iyi 100 oyuncuyu görüntüleyin. Hesaplarınız ilk 100'de görünürse vurgulanırlar."
+      },
+      "clan": {
+        "title": "Klan Liderlik Tablosu",
+        "intro": "Bir klandaysanız, klan üyeleri arasında nasıl sıralandığınızı ve klanınızın global olarak nasıl sıralandığını görün."
+      }
+    },
+    "tournaments": {
+      "title": "Turnuvalar Sekmesi",
+      "badge": "Yarış",
+      "browse": {
+        "title": "Turnuvalara Göz Atma",
+        "intro": "Aktif ve yaklaşan turnuvaları görüntüleyin:",
+        "registration": "Kayıt Açık",
+        "registrationDesc": "Turnuva başlamadan önce kaydolun",
+        "inProgress": "Devam Ediyor",
+        "inProgressDesc": "Turnuva şu anda oynanıyor",
+        "completed": "Tamamlandı",
+        "completedDesc": "Final sonuçları ve sıralamaları görüntüleyin"
+      },
+      "create": {
+        "title": "Turnuva Oluşturma",
+        "intro": "Kendi turnuvanızı düzenleyin:",
+        "step1": "'Turnuva Oluştur' düğmesine tıklayın",
+        "step2": "Ad, açıklama, maksimum katılımcı ve başlangıç tarihi belirleyin",
+        "step3": "Katılım için klanınız veya arkadaşlarınızla paylaşın"
+      }
+    },
+    "clans": {
+      "title": "Klanlar Sekmesi",
+      "badge": "Topluluk",
+      "search": {
+        "title": "Klan Arama",
+        "intro": "Katılacak klanları bulun:",
+        "point1": "Klan adı veya klan etiketine göre arayın",
+        "point2": "Üye sayısı ve kupa gereksinimleri dahil klan detaylarını görüntüleyin",
+        "point3": "Sadece Davetiye klanlarına katılım isteği gönderin"
+      },
+      "types": {
+        "title": "Klan Türleri",
+        "open": "Açık",
+        "openDesc": "Herkes onay olmadan katılabilir",
+        "invite": "Sadece Davetiye",
+        "inviteDesc": "Klan lideri/kıdemlilerinden onay gerektirir",
+        "closed": "Kapalı",
+        "closedDesc": "Yeni üye kabul etmiyor"
+      }
+    },
+    "coach": {
+      "title": "AI Koç",
+      "badge": "Kişisel Koçluk",
+      "overview": {
+        "title": "AI Koçu Kullanma",
+        "intro": "Kişisel Clash Royale strateji danışmanınız:",
+        "step1": "Sağ alt köşedeki yüzen sohbet düğmesine tıklayın",
+        "step2": "Sorunuzu yazın veya önerilen bir konu seçin",
+        "step3": "Gerçek oyun verilerinize dayalı kişiselleştirilmiş tavsiyeler alın"
+      },
+      "context": {
+        "title": "AI'ın Bildiği",
+        "intro": "AI Koç tam profilinize erişebilir:",
+        "point1": "Kayıtlı desteleriniz ve performansları",
+        "point2": "Kart ustalık seviyeleriniz ve kazanma oranlarınız",
+        "point3": "Başarı ilerlemeniz",
+        "point4": "Kart koleksiyonunuz ve seviyeleri"
+      },
+      "proactive": {
+        "title": "Proaktif Öneriler",
+        "intro": "Kazanma oranınız %55'in altına düştüğünde, AI Koç proaktif olarak deste değişiklikleri önerir. Sohbet düğmesinde titreyen kehribar rozetine bakın."
+      },
+      "quota": {
+        "title": "Günlük AI Kotası",
+        "intro": "AI koçluğu, tüm oyuncular için adil kullanımı sağlamak amacıyla günlük kota sistemi kullanır.",
+        "limit": "Ücretsiz limit: Günde 10 AI isteği. Kota UTC gece yarısında sıfırlanır."
+      },
+      "tips": {
+        "title": "Daha İyi Yanıtlar İçin İpuçları",
+        "tip1": "Ne konuda yardım istediğiniz hakkında spesifik olun",
+        "tip2": "Sorduğunuz deste arketipini belirtin",
+        "tip3": "Zorlandığınız belirli eşleşmelere referans verin",
+        "tip4": "Bağlam bilinçli koçluk için maç detaylarındaki 'Tartış' düğmesini kullanın"
+      }
+    },
+    "features": {
+      "title": "Ek Özellikler",
+      "badge": "Daha Fazla Araç",
+      "language": {
+        "title": "Dil Seçimi",
+        "intro": "AI Royale 5 dili destekler. Navigasyon çubuğundaki seçiciyi kullanarak dilinizi değiştirin. Tüm AI koçluk yanıtları seçtiğiniz dilde oluşturulur."
+      },
+      "notifications": {
+        "title": "Bildirim Merkezi",
+        "intro": "Başarı açmaları, senkronizasyon güncellemeleri ve öneriler dahil tüm geçmiş bildirimleri görüntüleyin. Bildirim geçmişini açmak için başlıktaki zil simgesine tıklayın."
+      },
+      "progress": {
+        "title": "Global İlerleme Merkezi",
+        "intro": "Tüm aktif arka plan işlemlerini (senkronizasyon, hesaplamalar, analizler) gerçek zamanlı olarak görün. Detaylı ilerlemeyi görüntülemek için başlıktaki aktivite göstergesine tıklayın."
+      },
+      "comparison": {
+        "title": "Hesap Karşılaştırması",
+        "intro": "Hangisinin daha iyi performans gösterdiğini görmek ve gelişim alanlarını belirlemek için bağlı hesaplarınız arasındaki istatistikleri karşılaştırın."
+      }
+    },
+    "faq": {
+      "title": "Sıkça Sorulan Sorular",
+      "badge": "SSS",
+      "q1": "Son destem neden görünmüyor?",
+      "a1": "Clash Royale API'sinin 5-15 dakikalık bir gecikmesi var. Son oyun içi değişiklikleriniz bu gecikmeden sonra görünecek. Birkaç dakika içinde yenilemeyi deneyin.",
+      "q2": "Kazanma oranım nasıl hesaplanıyor?",
+      "a2": "Kazanma oranı, API'den alınan son 25 maçınızdan hesaplanır. Sadece merdiven ve meydan okuma maçlarını içerir, arkadaşlık maçları veya 2v2'yi içermez.",
+      "q3": "Bazı özellikler neden giriş gerektiriyor?",
+      "a3": "Deste kaydetme, AI koçluğu ve kişiselleştirilmiş öneriler gibi özellikler tercihlerinizi ve geçmişinizi saklamak için hesap gerektirir.",
+      "q4": "AI Royale'i mobilde kullanabilir miyim?",
+      "a4": "Evet! AI Royale tamamen duyarlıdır ve tüm cihazlarda çalışır. Arayüz ekran boyutunuza uyum sağlar.",
+      "q5": "AI eşleşme tahminleri ne kadar doğru?",
+      "a5": "Tahminler deste kompozisyonu analizi ve geçmiş verilere dayanır. Gerçek sonuçlar beceri seviyesine ve kart seviyelerine göre değişebilir.",
+      "q6": "Neden 3'ten fazla hesap ekleyemiyorum?",
+      "a6": "3 hesap limiti, tüm kullanıcılar için AI hizmetlerimizin ve API kaynaklarımızın adil kullanımını sağlar.",
+      "q7": "Email veya şifremi nasıl değiştiririm?",
+      "a7": "Hesap yönetimi özellikleri kimlik doğrulama sistemi aracılığıyla kullanılabilir. Emailinizi değiştirmeniz gerekiyorsa destekle iletişime geçin.",
+      "q8": "Verilerim güvende mi?",
+      "a8": "Evet! Endüstri standardı şifreleme kullanıyoruz ve Clash Royale giriş bilgilerinizi asla saklamıyoruz. Oyuncu Etiketiniz aracılığıyla yalnızca herkese açık verilere erişiyoruz."
+    }
+  }
+}

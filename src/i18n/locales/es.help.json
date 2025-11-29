@@ -1,0 +1,362 @@
+{
+  "help": {
+    "title": "Centro de Ayuda",
+    "subtitle": "Guía completa para dominar AI Royale",
+    "searchPlaceholder": "Buscar temas de ayuda...",
+    "navigation": "Navegación",
+    "backToTop": "Volver Arriba",
+    "sections": {
+      "gettingStarted": "Primeros Pasos",
+      "dashboard": "Panel",
+      "stats": "Estadísticas",
+      "matches": "Batallas",
+      "deck": "Mazo",
+      "builder": "Constructor",
+      "analytics": "Análisis",
+      "collection": "Colección",
+      "leaderboard": "Clasificación",
+      "tournaments": "Torneos",
+      "clans": "Clanes",
+      "coach": "Coach IA",
+      "features": "Funciones",
+      "faq": "FAQ"
+    },
+    "gettingStarted": {
+      "title": "Primeros Pasos",
+      "badge": "Empieza Aquí",
+      "createAccount": {
+        "title": "Crear Tu Cuenta",
+        "step1": "Haz clic en 'Comenzar' en la página de inicio",
+        "step2": "Ingresa tu correo electrónico y crea una contraseña",
+        "step3": "Revisa tu correo para verificación (confirmación automática para acceso rápido)",
+        "step4": "¡Estás listo para vincular tu cuenta de Clash Royale!"
+      },
+      "findTag": {
+        "title": "Encontrar Tu Etiqueta de Jugador",
+        "intro": "Tu Etiqueta de Jugador es un identificador único para tu cuenta de Clash Royale. Aquí está cómo encontrarla:",
+        "step1": "Abre Clash Royale en tu dispositivo",
+        "step2": "Toca tu foto de perfil en la esquina superior izquierda",
+        "step3": "Tu Etiqueta de Jugador aparece debajo de tu nombre (comienza con #)",
+        "step4": "Copia la etiqueta completa incluyendo el símbolo #",
+        "example": "Formato de ejemplo:"
+      },
+      "multiAccount": {
+        "title": "Gestionar Múltiples Cuentas",
+        "intro": "AI Royale admite hasta 3 cuentas de Clash Royale por usuario:",
+        "point1": "Agrega múltiples cuentas desde la pantalla de Selección de Jugador",
+        "point2": "Cambia entre cuentas instantáneamente sin re-autenticarte",
+        "point3": "Cada cuenta tiene sus propios análisis, recomendaciones e historial de coaching"
+      }
+    },
+    "dashboard": {
+      "title": "Resumen del Panel",
+      "badge": "Navegación",
+      "overview": {
+        "title": "Pestañas del Panel",
+        "intro": "Tu panel está organizado en 9 pestañas principales, cada una ofrece funciones especializadas:"
+      },
+      "tabs": {
+        "stats": "Estadísticas",
+        "matches": "Batallas",
+        "deck": "Mazo",
+        "builder": "Constructor",
+        "analytics": "Análisis",
+        "collection": "Colección",
+        "leaderboard": "Clasificación",
+        "tournaments": "Torneos",
+        "clans": "Clanes"
+      },
+      "navigation": {
+        "title": "Navegar por el Panel",
+        "point1": "Haz clic en cualquier pestaña para cambiar de vista - tus datos se guardan en caché para carga rápida",
+        "point2": "En móvil, las pestañas se desplazan horizontalmente",
+        "point3": "El botón del Coach IA (esquina inferior derecha) está accesible desde cualquier pestaña"
+      },
+      "sync": {
+        "title": "Sincronización y Actualización de Datos",
+        "intro": "Tus datos se sincronizan automáticamente cuando abres el panel. Puedes actualizar manualmente usando el indicador de sincronización en el encabezado.",
+        "note": "Nota: La API de Clash Royale tiene un retraso de 5-15 minutos. Los cambios recientes en el juego pueden no aparecer inmediatamente."
+      }
+    },
+    "stats": {
+      "title": "Pestaña Estadísticas",
+      "badge": "Resumen",
+      "overview": {
+        "title": "Estadísticas del Jugador",
+        "intro": "La pestaña Estadísticas muestra tus métricas clave de rendimiento:",
+        "trophies": "Trofeos Actuales",
+        "trophiesDesc": "Tu conteo actual de trofeos y mejor marca personal",
+        "winRate": "Tasa de Victoria",
+        "winRateDesc": "Calculada de tus últimas 25 batallas",
+        "arena": "Arena",
+        "arenaDesc": "Tu arena actual basada en el conteo de trofeos",
+        "clan": "Clan",
+        "clanDesc": "El nombre de tu clan e insignia (si eres miembro de un clan)"
+      },
+      "charts": {
+        "title": "Gráfico de Progreso de Trofeos",
+        "intro": "Ve tu progresión de trofeos a lo largo del tiempo con gráficos interactivos que muestran ganancias y pérdidas."
+      },
+      "aiSummary": {
+        "title": "Resumen del Coach IA",
+        "intro": "Un resumen personalizado generado por IA de tu rendimiento reciente, incluyendo fortalezas, áreas de mejora y recomendaciones estratégicas."
+      }
+    },
+    "matches": {
+      "title": "Pestaña Batallas",
+      "badge": "Historial de Batallas",
+      "history": {
+        "title": "Historial de Batallas",
+        "intro": "Ve tus batallas recientes con información detallada:",
+        "point1": "Indicador de Victoria/Derrota con conteo de coronas",
+        "point2": "Cambio de trofeos (+/- trofeos)",
+        "point3": "Tu mazo y el mazo del oponente",
+        "point4": "Tiempo desde la batalla"
+      },
+      "detail": {
+        "title": "Vista Detallada de la Batalla",
+        "intro": "Haz clic en cualquier batalla para abrir análisis detallado:",
+        "comparison": "Comparación de Mazos",
+        "comparisonDesc": "Vista lado a lado de ambos mazos con niveles de cartas",
+        "analysis": "Análisis de IA",
+        "analysisDesc": "Qué pasó en la batalla y recomendaciones",
+        "moments": "Momentos Clave",
+        "momentsDesc": "Interacciones de cartas cruciales en fases críticas",
+        "counter": "Contra-Mazo",
+        "counterDesc": "Mazo sugerido por IA para vencer a tu oponente"
+      },
+      "discuss": {
+        "title": "Discutir con el Coach IA",
+        "intro": "Haz clic en 'Discutir con el Coach IA' para enviar el contexto de la batalla a la IA para una conversación estratégica más profunda y consejos personalizados."
+      }
+    },
+    "deck": {
+      "title": "Pestaña Mazo",
+      "badge": "Tu Mazo",
+      "current": {
+        "title": "Visualización del Mazo Actual",
+        "intro": "Ve tu mazo equipado actualmente con las 8 cartas, sus niveles y costo promedio de elixir."
+      },
+      "recommendations": {
+        "title": "Recomendaciones Personalizadas",
+        "intro": "AI Royale analiza tu perfil para sugerir mazos que se adapten a ti:",
+        "ownership": "Propiedad de Cartas",
+        "ownershipDesc": "Solo recomienda mazos donde posees las 8 cartas",
+        "skill": "Coincidencia de Habilidad",
+        "skillDesc": "Coincide la dificultad del mazo con tu rango de trofeos",
+        "adopt": "Adoptar Recomendación",
+        "adoptDesc": "Haz clic para rastrear la recomendación y medir la mejora"
+      },
+      "analysis": {
+        "title": "Panel de Análisis del Mazo",
+        "intro": "Obtén análisis potenciado por IA de tu mazo incluyendo sinergias, debilidades y sugerencias de mejora."
+      }
+    },
+    "builder": {
+      "title": "Pestaña Constructor",
+      "badge": "Construcción de Mazos",
+      "create": {
+        "title": "Construir un Mazo",
+        "intro": "Crea mazos personalizados con nuestro constructor visual:",
+        "step1": "Haz clic en las cartas del grupo de cartas para agregarlas a tu mazo",
+        "step2": "Haz clic en las cartas de tu mazo para eliminarlas",
+        "step3": "Observa el elixir promedio actualizarse en tiempo real",
+        "step4": "Haz clic en 'Análisis de IA' para obtener información estratégica",
+        "step5": "Guarda tu mazo con un nombre y descripción"
+      },
+      "templates": {
+        "title": "Biblioteca de Plantillas Meta",
+        "intro": "Explora mazos competitivos pre-construidos del meta:",
+        "point1": "Filtra por arquetipo (Beatdown, Cycle, Control, etc.)",
+        "point2": "Los mazos recomendados (⭐) muestran mazos que puedes construir con tus cartas",
+        "point3": "Haz clic en cualquier plantilla para importarla al constructor"
+      },
+      "compare": {
+        "title": "Comparación de Mazos",
+        "intro": "Compara dos mazos lado a lado:",
+        "point1": "Ve la distribución de elixir y diferencias de costo promedio",
+        "point2": "Ve el desglose carta por carta",
+        "point3": "Ejecuta Predicción de Emparejamiento de IA para ver probabilidad de victoria y consejos"
+      }
+    },
+    "analytics": {
+      "title": "Pestaña Análisis",
+      "badge": "Rendimiento",
+      "deckStats": {
+        "title": "Panel de Estadísticas del Mazo",
+        "intro": "Rastrea el rendimiento de tu mazo a lo largo del tiempo:",
+        "point1": "Tendencias de tasa de victoria (7, 14, 30 días)",
+        "point2": "Cambios de trofeos por mazo",
+        "point3": "Frecuencia de uso y conteo de batallas",
+        "point4": "Cartas más usadas en todos tus mazos"
+      },
+      "mastery": {
+        "title": "Sistema de Maestría de Cartas",
+        "intro": "Rastrea tu dominio con cartas individuales:",
+        "levels": "Niveles de Maestría",
+        "levelsDesc": "Progresa de Bronce a Maestro (10 niveles)",
+        "partners": "Mejores Cartas Compañeras",
+        "partnersDesc": "Cartas que funcionan bien con esta carta en tus manos",
+        "matchups": "Emparejamientos Difíciles",
+        "matchupsDesc": "Cartas contra las que luchas cuando usas esta carta",
+        "tips": "Consejos de IA",
+        "tipsDesc": "Consejos personalizados para mejorar con esta carta"
+      },
+      "achievements": {
+        "title": "Panel de Logros",
+        "intro": "Rastrea tus hitos y desbloquea insignias de logros a medida que mejoras. Los logros se categorizan por área de habilidad y nivel."
+      }
+    },
+    "collection": {
+      "title": "Pestaña Colección",
+      "badge": "Inventario de Cartas",
+      "overview": {
+        "title": "Tu Colección de Cartas",
+        "intro": "Ve y gestiona todas tus cartas de Clash Royale:",
+        "point1": "Filtra por rareza (Común, Especial, Épica, Legendaria, Campeón)",
+        "point2": "Ve el nivel actual y progreso hacia la siguiente mejora",
+        "point3": "Rastrea el conteo total de cartas y requisitos de mejora"
+      },
+      "levels": {
+        "title": "Entendiendo los Niveles de Cartas",
+        "intro": "Los niveles de cartas se muestran coincidiendo con los niveles del juego. El rango depende de la rareza:"
+      },
+      "sync": {
+        "title": "Sincronizando Tu Colección",
+        "intro": "Tu colección se sincroniza automáticamente con la API de Clash Royale. Si notas cartas faltantes, usa el botón de sincronización manual."
+      }
+    },
+    "leaderboard": {
+      "title": "Pestaña Clasificación",
+      "badge": "Rankings",
+      "yourRanking": {
+        "title": "Tu Ranking Global",
+        "intro": "Ve dónde se clasifican tus cuentas globalmente. Todas tus cuentas vinculadas se muestran con sus trofeos actuales y posición global estimada."
+      },
+      "global": {
+        "title": "Top 100 Jugadores Globales",
+        "intro": "Ve los 100 mejores jugadores del mundo. Si tus cuentas aparecen en el top 100, serán resaltadas."
+      },
+      "clan": {
+        "title": "Clasificación del Clan",
+        "intro": "Si estás en un clan, ve cómo te clasificas entre los miembros del clan y cómo tu clan se clasifica globalmente."
+      }
+    },
+    "tournaments": {
+      "title": "Pestaña Torneos",
+      "badge": "Competir",
+      "browse": {
+        "title": "Explorar Torneos",
+        "intro": "Ve torneos activos y próximos:",
+        "registration": "Inscripción Abierta",
+        "registrationDesc": "Inscríbete antes de que comience el torneo",
+        "inProgress": "En Progreso",
+        "inProgressDesc": "El torneo se está jugando actualmente",
+        "completed": "Completado",
+        "completedDesc": "Ve resultados finales y posiciones"
+      },
+      "create": {
+        "title": "Crear un Torneo",
+        "intro": "Organiza tu propio torneo:",
+        "step1": "Haz clic en el botón 'Crear Torneo'",
+        "step2": "Establece nombre, descripción, máximo de participantes y fecha de inicio",
+        "step3": "Comparte con tu clan o amigos para unirse"
+      }
+    },
+    "clans": {
+      "title": "Pestaña Clanes",
+      "badge": "Comunidad",
+      "search": {
+        "title": "Buscar Clanes",
+        "intro": "Encuentra clanes para unirte:",
+        "point1": "Busca por nombre del clan o etiqueta del clan",
+        "point2": "Ve detalles del clan incluyendo conteo de miembros y requisitos de trofeos",
+        "point3": "Envía solicitudes de unión a clanes Solo por Invitación"
+      },
+      "types": {
+        "title": "Tipos de Clan",
+        "open": "Abierto",
+        "openDesc": "Cualquiera puede unirse sin aprobación",
+        "invite": "Solo Invitación",
+        "inviteDesc": "Requiere aprobación del líder/ancianos del clan",
+        "closed": "Cerrado",
+        "closedDesc": "No acepta nuevos miembros"
+      }
+    },
+    "coach": {
+      "title": "Coach IA",
+      "badge": "Coaching Personal",
+      "overview": {
+        "title": "Usando el Coach IA",
+        "intro": "Tu asesor personal de estrategia de Clash Royale:",
+        "step1": "Haz clic en el botón flotante de chat en la esquina inferior derecha",
+        "step2": "Escribe tu pregunta o selecciona un tema sugerido",
+        "step3": "Recibe consejos personalizados basados en tus datos reales del juego"
+      },
+      "context": {
+        "title": "Lo Que la IA Sabe",
+        "intro": "El Coach IA tiene acceso a tu perfil completo:",
+        "point1": "Tus mazos guardados y su rendimiento",
+        "point2": "Tus niveles de maestría de cartas y tasas de victoria",
+        "point3": "Tu progreso de logros",
+        "point4": "Tu colección de cartas y niveles"
+      },
+      "proactive": {
+        "title": "Sugerencias Proactivas",
+        "intro": "Cuando tu tasa de victoria cae por debajo del 55%, el Coach IA sugerirá proactivamente cambios de mazo. Busca la insignia ámbar pulsante en el botón de chat."
+      },
+      "quota": {
+        "title": "Cuota Diaria de IA",
+        "intro": "El coaching de IA usa un sistema de cuota diaria para asegurar uso justo para todos los jugadores.",
+        "limit": "Límite gratuito: 10 solicitudes de IA por día. La cuota se reinicia a medianoche UTC."
+      },
+      "tips": {
+        "title": "Consejos para Mejores Respuestas",
+        "tip1": "Sé específico sobre lo que quieres ayuda",
+        "tip2": "Menciona el arquetipo del mazo sobre el que preguntas",
+        "tip3": "Referencia emparejamientos específicos con los que tienes dificultades",
+        "tip4": "Usa el botón 'Discutir' desde los detalles de la batalla para coaching consciente del contexto"
+      }
+    },
+    "features": {
+      "title": "Funciones Adicionales",
+      "badge": "Más Herramientas",
+      "language": {
+        "title": "Selección de Idioma",
+        "intro": "AI Royale soporta 5 idiomas. Cambia tu idioma usando el selector en la barra de navegación. Todas las respuestas de coaching de IA se generarán en tu idioma seleccionado."
+      },
+      "notifications": {
+        "title": "Centro de Notificaciones",
+        "intro": "Ve todas las notificaciones pasadas incluyendo desbloqueos de logros, actualizaciones de sincronización y recomendaciones. Haz clic en el icono de campana en el encabezado para abrir el historial de notificaciones."
+      },
+      "progress": {
+        "title": "Centro de Progreso Global",
+        "intro": "Ve todas las operaciones en segundo plano activas (sincronización, cálculos, análisis) en tiempo real. Haz clic en el indicador de actividad en el encabezado para ver el progreso detallado."
+      },
+      "comparison": {
+        "title": "Comparación de Cuentas",
+        "intro": "Compara estadísticas entre tus cuentas vinculadas para ver cuál está rindiendo mejor e identificar áreas de mejora."
+      }
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "badge": "FAQ",
+      "q1": "¿Por qué no aparece mi último mazo?",
+      "a1": "La API de Clash Royale tiene un retraso de 5-15 minutos. Tus cambios recientes en el juego aparecerán después de este retraso. Intenta actualizar en unos minutos.",
+      "q2": "¿Cómo se calcula mi tasa de victoria?",
+      "a2": "La tasa de victoria se calcula de tus últimas 25 batallas disponibles de la API. Solo incluye batallas de escalera y desafío, no batallas amistosas o 2v2.",
+      "q3": "¿Por qué algunas funciones requieren iniciar sesión?",
+      "a3": "Funciones como guardar mazos, coaching de IA y recomendaciones personalizadas requieren una cuenta para almacenar tus preferencias e historial.",
+      "q4": "¿Puedo usar AI Royale en móvil?",
+      "a4": "¡Sí! AI Royale es totalmente responsivo y funciona en todos los dispositivos. La interfaz se adapta al tamaño de tu pantalla.",
+      "q5": "¿Qué tan precisas son las predicciones de emparejamiento de IA?",
+      "a5": "Las predicciones se basan en análisis de composición del mazo y datos históricos. Los resultados reales pueden variar según el nivel de habilidad y niveles de cartas.",
+      "q6": "¿Por qué no puedo agregar más de 3 cuentas?",
+      "a6": "El límite de 3 cuentas asegura uso justo de nuestros servicios de IA y recursos de API para todos los usuarios.",
+      "q7": "¿Cómo cambio mi correo electrónico o contraseña?",
+      "a7": "Las funciones de gestión de cuenta están disponibles a través del sistema de autenticación. Contacta soporte si necesitas cambiar tu correo electrónico.",
+      "q8": "¿Mis datos están seguros?",
+      "a8": "¡Sí! Usamos cifrado estándar de la industria y nunca almacenamos tus credenciales de inicio de sesión de Clash Royale. Solo accedemos a datos públicos a través de tu Etiqueta de Jugador."
+    }
+  }
+}
