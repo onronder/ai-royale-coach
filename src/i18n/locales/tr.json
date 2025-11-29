@@ -609,35 +609,97 @@
       "aiFeatures": {
         "badge": "Gelişmiş Yapay Zeka Teknolojisi",
         "title": "Gelişmiş Yapay Zeka ile Güçlendirilmiş",
-        "subtitle": "Akıllı koçluk sistemimiz oyununuzu analiz eder ve gelişmenize yardımcı olmak için kişiselleştirilmiş içgörüler sağlar.",
-        "flowTitle": "Yapay Zeka Oyununuzu Nasıl Geliştirir",
+        "featureCount": "11 Yapay Zeka Özelliği",
+        "categories": {
+          "smartAnalysis": {
+            "title": "Akıllı Analiz",
+            "description": "Her savaştan derin yapay zeka içgörüleri, kalıpları ve gelişim fırsatlarını tespit eder.",
+            "count": "{{count}} özellik"
+          },
+          "predictions": {
+            "title": "Tahminler ve Eşleşmeler",
+            "description": "Savaşa girmeden önce kazanma olasılığınızı ve karşı stratejileri bilin.",
+            "count": "{{count}} özellik"
+          },
+          "deckIntelligence": {
+            "title": "Deste Zekası",
+            "description": "Koleksiyonunuza ve oyun tarzınıza göre yapay zeka önerileriyle mükemmel desteyi oluşturun.",
+            "count": "{{count}} özellik"
+          },
+          "personalCoaching": {
+            "title": "Kişisel Koçluk",
+            "description": "Yapay zeka koçunuz oyununuz, desteleriniz ve ilerlemeniz hakkında tam bağlama sahiptir.",
+            "count": "{{count}} özellik"
+          }
+        },
         "features": {
           "battleAnalysis": {
-            "title": "Akıllı Savaş Analizi",
-            "description": "Yapay zeka maçlarınızı analiz ederek kazanan kalıpları ve hataları belirler"
+            "title": "Savaş Analizi",
+            "description": "Yapay zeka her maçta kazanan kalıpları ve kritik hataları tespit eder"
+          },
+          "playerProfile": {
+            "title": "Oyuncu Profil Analizi",
+            "description": "Oyun tarzınız ve beceri seviyenizin kapsamlı değerlendirmesi"
+          },
+          "pivotalMoments": {
+            "title": "Kritik Anların Tespiti",
+            "description": "Maçlarınızı belirleyen anahtar kart etkileşimlerini tespit eder"
+          },
+          "advancedStats": {
+            "title": "Gelişmiş Deste İstatistikleri",
+            "description": "İksir takasları, savunma/saldırı maliyet analizi ve verimlilik metrikleri"
           },
           "matchupPredictions": {
             "title": "Eşleşme Tahminleri",
-            "description": "Savaşmadan önce herhangi bir desteye karşı kazanma oranlarını tahmin edin"
+            "description": "Herhangi iki deste arasında güven seviyeleriyle kazanma oranı tahminleri"
+          },
+          "trophyPerformance": {
+            "title": "Kupa Performans Analizi",
+            "description": "Destelerinizin farklı kupa aralıklarında nasıl performans gösterdiği"
+          },
+          "counterDeck": {
+            "title": "Karşı Deste Oluşturucu",
+            "description": "Yapay zeka rakiplerinizi yenmek için özel 8 kartlık desteler tasarlar"
+          },
+          "personalizedRecs": {
+            "title": "Kişiselleştirilmiş Öneriler",
+            "description": "5 adımlı algoritma mükemmel desteleri önermek için oyun tarzınızı analiz eder"
+          },
+          "cardReplacements": {
+            "title": "Kart Değişim Önerileri",
+            "description": "Kart koleksiyonunuza dayalı akıllı takas önerileri"
+          },
+          "compositionAnalysis": {
+            "title": "Kompozisyon Analizi",
+            "description": "Kazanma koşulları, döngü kartları ve büyü dengesi analizi"
           },
           "coachChat": {
             "title": "Yapay Zeka Koç Sohbeti",
-            "description": "Sorular sorun, anında kişiselleştirilmiş strateji tavsiyeleri alın"
-          },
-          "deckOptimization": {
-            "title": "Deste Optimizasyonu",
-            "description": "Yapay zeka destenizin performansını artırmak için kart değişiklikleri önerir"
+            "description": "Oyun verilerinize tam erişimle bağlam bilincine sahip koçluk"
           }
         },
-        "flow": {
-          "yourData": "Verileriniz",
-          "aiAnalysis": "Yapay Zeka Analizi",
-          "insights": "İçgörüler",
-          "betterWins": "Daha Fazla Galibiyet"
+        "coachContext": {
+          "title": "Koç Şunlara Erişebilir:",
+          "savedDecks": "Kayıtlı Desteleriniz",
+          "cardMastery": "Kart Ustalık Seviyeleri",
+          "achievements": "Başarı İlerlemesi",
+          "matchHistory": "Son Maç Geçmişi",
+          "cardCollection": "Kart Koleksiyonu"
+        },
+        "pipeline": {
+          "title": "Yapay Zekamız Nasıl Çalışır",
+          "subtitle": "Savaşlarınızdan kişiselleştirilmiş içgörülere saniyeler içinde",
+          "steps": {
+            "yourBattles": "Savaşlarınız",
+            "apiSync": "API Senkronizasyonu",
+            "aiAnalysis": "Yapay Zeka Analizi",
+            "playerProfile": "Oyuncu Profili",
+            "insights": "Kişisel İçgörüler"
+          }
         },
         "stats": {
+          "aiFeatures": "yapay zeka özelliği",
           "battlesAnalyzed": "analiz edilen savaş",
-          "playersCoached": "koçluk yapılan oyuncu",
           "accuracy": "tahmin doğruluğu"
         }
       },

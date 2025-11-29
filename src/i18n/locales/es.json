@@ -609,35 +609,97 @@
       "aiFeatures": {
         "badge": "Tecnología IA Avanzada",
         "title": "Impulsado por IA Avanzada",
-        "subtitle": "Nuestro sistema de coaching inteligente analiza tu juego y proporciona información personalizada para ayudarte a mejorar.",
-        "flowTitle": "Cómo la IA Mejora Tu Juego",
+        "featureCount": "11 Funciones con IA",
+        "categories": {
+          "smartAnalysis": {
+            "title": "Análisis Inteligente",
+            "description": "Información profunda de IA de cada batalla, identificando patrones y oportunidades de mejora.",
+            "count": "{{count}} funciones"
+          },
+          "predictions": {
+            "title": "Predicciones y Enfrentamientos",
+            "description": "Conoce tu probabilidad de victoria y estrategias counter antes de entrar en batalla.",
+            "count": "{{count}} funciones"
+          },
+          "deckIntelligence": {
+            "title": "Inteligencia de Mazos",
+            "description": "Construye el mazo perfecto con recomendaciones de IA basadas en tu colección y estilo de juego.",
+            "count": "{{count}} funciones"
+          },
+          "personalCoaching": {
+            "title": "Coaching Personal",
+            "description": "Tu coach de IA tiene contexto completo de tu juego, mazos y progreso.",
+            "count": "{{count}} función"
+          }
+        },
         "features": {
           "battleAnalysis": {
-            "title": "Análisis de Batalla Inteligente",
-            "description": "La IA analiza tus partidas para identificar patrones ganadores y errores"
+            "title": "Análisis de Batalla",
+            "description": "La IA identifica patrones ganadores y errores críticos en cada partida"
+          },
+          "playerProfile": {
+            "title": "Análisis de Perfil de Jugador",
+            "description": "Evaluación completa de tu estilo de juego y nivel de habilidad"
+          },
+          "pivotalMoments": {
+            "title": "Detección de Momentos Clave",
+            "description": "Identifica las interacciones de cartas que decidieron tus partidas"
+          },
+          "advancedStats": {
+            "title": "Estadísticas Avanzadas de Mazo",
+            "description": "Intercambios de elixir, análisis de costos defensivos/ofensivos y métricas de eficiencia"
           },
           "matchupPredictions": {
             "title": "Predicciones de Enfrentamiento",
-            "description": "Predice tasas de victoria contra cualquier mazo antes de batallar"
+            "description": "Predicciones de tasa de victoria entre cualquier dos mazos con niveles de confianza"
+          },
+          "trophyPerformance": {
+            "title": "Análisis de Rendimiento por Trofeos",
+            "description": "Cómo rinden tus mazos en diferentes rangos de trofeos"
+          },
+          "counterDeck": {
+            "title": "Constructor de Counter-Deck",
+            "description": "La IA diseña mazos de 8 cartas específicamente para vencer a tus oponentes"
+          },
+          "personalizedRecs": {
+            "title": "Recomendaciones Personalizadas",
+            "description": "Algoritmo de 5 pasos analiza tu estilo de juego para sugerir mazos perfectos"
+          },
+          "cardReplacements": {
+            "title": "Sugerencias de Reemplazo de Cartas",
+            "description": "Recomendaciones inteligentes de intercambio basadas en tu colección de cartas"
+          },
+          "compositionAnalysis": {
+            "title": "Análisis de Composición",
+            "description": "Condiciones de victoria, cartas de ciclo y análisis de equilibrio de hechizos"
           },
           "coachChat": {
             "title": "Chat con Coach IA",
-            "description": "Haz preguntas, obtén consejos de estrategia personalizados al instante"
-          },
-          "deckOptimization": {
-            "title": "Optimización de Mazo",
-            "description": "La IA sugiere cambios de cartas para mejorar el rendimiento de tu mazo"
+            "description": "Coaching consciente del contexto con acceso completo a tus datos de juego"
           }
         },
-        "flow": {
-          "yourData": "Tus Datos",
-          "aiAnalysis": "Análisis IA",
-          "insights": "Información",
-          "betterWins": "Más Victorias"
+        "coachContext": {
+          "title": "El Coach Tiene Acceso A:",
+          "savedDecks": "Tus Mazos Guardados",
+          "cardMastery": "Niveles de Maestría de Cartas",
+          "achievements": "Progreso de Logros",
+          "matchHistory": "Historial de Partidas Recientes",
+          "cardCollection": "Colección de Cartas"
+        },
+        "pipeline": {
+          "title": "Cómo Funciona Nuestra IA",
+          "subtitle": "De tus batallas a información personalizada en segundos",
+          "steps": {
+            "yourBattles": "Tus Batallas",
+            "apiSync": "Sincronización API",
+            "aiAnalysis": "Análisis IA",
+            "playerProfile": "Perfil de Jugador",
+            "insights": "Información Personalizada"
+          }
         },
         "stats": {
+          "aiFeatures": "funciones con IA",
           "battlesAnalyzed": "batallas analizadas",
-          "playersCoached": "jugadores entrenados",
           "accuracy": "precisión de predicción"
         }
       },
