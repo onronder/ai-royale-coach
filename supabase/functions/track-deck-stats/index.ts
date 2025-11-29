@@ -17,7 +17,6 @@ function generateDeckHash(deckA: string[], deckB: string[]): string {
 // Parse Clash Royale API battle time format: "20251129T081521.000Z"
 function parseBattleTime(battleTime: string): Date {
   if (!battleTime) return new Date(0);
-  // Handle format like "20251129T081521.000Z"
   const formatted = battleTime.replace(
     /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/,
     '$1-$2-$3T$4:$5:$6'
@@ -31,6 +30,104 @@ function decksMatch(deck1: string[], deck2: any[]): boolean {
   const sorted1 = [...deck1].sort();
   const sorted2 = [...deck2].sort();
   return sorted1.every((card, i) => card === sorted2[i]);
+}
+
+// Archetype detection based on key cards
+interface ArchetypeDefinition {
+  name: string;
+  keyCards: string[];
+  minMatches: number;
+}
+
+const ARCHETYPE_DEFINITIONS: ArchetypeDefinition[] = [
+  // Cycle archetypes
+  { name: 'Hog Cycle', keyCards: ['Hog Rider', 'Musketeer', 'Ice Spirit', 'Skeletons', 'Cannon'], minMatches: 3 },
+  { name: 'Miner Cycle', keyCards: ['Miner', 'Poison', 'Wall Breakers', 'Valkyrie'], minMatches: 2 },
+  { name: 'X-Bow Cycle', keyCards: ['X-Bow', 'Tesla', 'Archers', 'Ice Spirit'], minMatches: 2 },
+  { name: 'Mortar Cycle', keyCards: ['Mortar', 'Rocket', 'Brawler', 'Miner'], minMatches: 2 },
+  
+  // Beatdown archetypes
+  { name: 'Golem Beatdown', keyCards: ['Golem', 'Night Witch', 'Lumberjack', 'Lightning'], minMatches: 2 },
+  { name: 'Lava Hound', keyCards: ['Lava Hound', 'Balloon', 'Tombstone', 'Miner'], minMatches: 2 },
+  { name: 'Giant Beatdown', keyCards: ['Giant', 'Witch', 'Musketeer', 'Graveyard'], minMatches: 2 },
+  { name: 'E-Giant Beatdown', keyCards: ['Electro Giant', 'Dark Prince', 'Tornado', 'Lightning'], minMatches: 2 },
+  { name: 'Royal Giant', keyCards: ['Royal Giant', 'Fisherman', 'Hunter', 'Lightning'], minMatches: 2 },
+  
+  // Bridge Spam archetypes
+  { name: 'Pekka Bridge Spam', keyCards: ['P.E.K.K.A', 'Battle Ram', 'Bandit', 'Royal Ghost', 'Electro Wizard'], minMatches: 3 },
+  { name: 'Ram Rider Bridge Spam', keyCards: ['Ram Rider', 'Bandit', 'Magic Archer', 'Barbarian Barrel'], minMatches: 2 },
+  
+  // Control archetypes
+  { name: 'Splashyard', keyCards: ['Graveyard', 'Bowler', 'Baby Dragon', 'Tornado', 'Poison'], minMatches: 3 },
+  { name: 'Miner Control', keyCards: ['Miner', 'Poison', 'Inferno Tower', 'Electro Wizard'], minMatches: 2 },
+  { name: 'Ice Bow', keyCards: ['X-Bow', 'Ice Wizard', 'Tornado', 'Rocket'], minMatches: 3 },
+  
+  // Bait archetypes
+  { name: 'Log Bait', keyCards: ['Goblin Barrel', 'Princess', 'Goblin Gang', 'Inferno Tower', 'Rocket'], minMatches: 3 },
+  { name: 'Prince Bait', keyCards: ['Prince', 'Dark Prince', 'Goblin Barrel', 'Rascals'], minMatches: 2 },
+  { name: 'Rocket Bait', keyCards: ['Goblin Barrel', 'Rocket', 'Inferno Tower', 'Princess'], minMatches: 3 },
+  
+  // Siege archetypes
+  { name: 'X-Bow Siege', keyCards: ['X-Bow', 'Tesla', 'Rocket', 'Knight', 'Archers'], minMatches: 3 },
+  { name: 'Mortar Siege', keyCards: ['Mortar', 'Rocket', 'Knight', 'Archers'], minMatches: 2 },
+  
+  // Spell cycle
+  { name: 'Spell Cycle', keyCards: ['Rocket', 'Mirror', 'Tornado', 'Ice Wizard'], minMatches: 3 },
+  
+  // Three Musketeers
+  { name: 'Three Musketeers', keyCards: ['Three Musketeers', 'Elixir Collector', 'Battle Ram'], minMatches: 2 },
+  
+  // Mega Knight
+  { name: 'Mega Knight', keyCards: ['Mega Knight', 'Skeleton Barrel', 'Bats', 'Inferno Dragon'], minMatches: 2 },
+];
+
+function detectArchetype(cards: string[]): string {
+  const cardNames = cards.map(c => c.toLowerCase());
+  let bestMatch = { archetype: 'Unknown', score: 0, minRequired: 0 };
+  
+  for (const arch of ARCHETYPE_DEFINITIONS) {
+    const matches = arch.keyCards.filter(keyCard =>
+      cardNames.some(c => c.includes(keyCard.toLowerCase()))
+    ).length;
+    
+    // Calculate match ratio relative to minimum required
+    const matchRatio = matches / arch.minMatches;
+    
+    if (matches >= arch.minMatches && matchRatio > bestMatch.score / Math.max(bestMatch.minRequired, 1)) {
+      bestMatch = { archetype: arch.name, score: matches, minRequired: arch.minMatches };
+    }
+  }
+  
+  // Fallback detection based on single key cards if no archetype matched
+  if (bestMatch.archetype === 'Unknown') {
+    const keyCardFallbacks: Record<string, string> = {
+      'golem': 'Beatdown',
+      'lava hound': 'Beatdown',
+      'giant': 'Beatdown',
+      'electro giant': 'Beatdown',
+      'royal giant': 'Beatdown',
+      'hog rider': 'Cycle',
+      'miner': 'Control',
+      'x-bow': 'Siege',
+      'mortar': 'Siege',
+      'goblin barrel': 'Bait',
+      'graveyard': 'Control',
+      'three musketeers': 'Split Push',
+      'mega knight': 'Counter Push',
+      'p.e.k.k.a': 'Bridge Spam',
+      'ram rider': 'Bridge Spam',
+    };
+    
+    for (const cardName of cardNames) {
+      for (const [key, archetype] of Object.entries(keyCardFallbacks)) {
+        if (cardName.includes(key)) {
+          return archetype;
+        }
+      }
+    }
+  }
+  
+  return bestMatch.archetype;
 }
 
 serve(async (req) => {
@@ -74,7 +171,7 @@ serve(async (req) => {
     console.log(`Processing ${battles.length} battles for deck stats`);
 
     // ==========================================
-    // PART 1: Deck Usage Stats (existing logic)
+    // PART 1: Deck Usage Stats with Archetype Tracking
     // ==========================================
     const deckStats = new Map<string, any>();
     
@@ -84,9 +181,20 @@ serve(async (req) => {
       const cards = battle.team[0].cards.map((c: any) => c.name).sort();
       const deckHash = cards.join('|');
       
+      // Detect player's deck archetype
+      const playerArchetype = detectArchetype(cards);
+      
+      // Detect opponent's deck archetype
+      let opponentArchetype = 'Unknown';
+      if (battle.opponent?.[0]?.cards) {
+        const opponentCards = battle.opponent[0].cards.map((c: any) => c.name);
+        opponentArchetype = detectArchetype(opponentCards);
+      }
+      
       if (!deckStats.has(deckHash)) {
         deckStats.set(deckHash, {
           deck_cards: cards,
+          archetype: playerArchetype,
           battles_played: 0,
           battles_won: 0,
           battles_lost: 0,
@@ -96,23 +204,43 @@ serve(async (req) => {
             const card = battle.team[0].cards.find((c: any) => c.name === cardName);
             return sum + (card?.elixir || 0);
           }, 0) / cards.length,
+          opponent_archetypes: [] as string[],
+          wins_by_opponent_archetype: {} as Record<string, number>,
+          losses_by_opponent_archetype: {} as Record<string, number>,
         });
       }
       
       const stats = deckStats.get(deckHash);
       stats.battles_played++;
       
-      if (battle.team[0].crowns > (battle.opponent?.[0]?.crowns || 0)) {
+      // Track opponent archetype
+      if (opponentArchetype !== 'Unknown' && !stats.opponent_archetypes.includes(opponentArchetype)) {
+        stats.opponent_archetypes.push(opponentArchetype);
+      }
+      
+      const playerWon = battle.team[0].crowns > (battle.opponent?.[0]?.crowns || 0);
+      
+      if (playerWon) {
         stats.battles_won++;
+        // Track wins by opponent archetype
+        if (opponentArchetype !== 'Unknown') {
+          stats.wins_by_opponent_archetype[opponentArchetype] = 
+            (stats.wins_by_opponent_archetype[opponentArchetype] || 0) + 1;
+        }
       } else {
         stats.battles_lost++;
+        // Track losses by opponent archetype
+        if (opponentArchetype !== 'Unknown') {
+          stats.losses_by_opponent_archetype[opponentArchetype] = 
+            (stats.losses_by_opponent_archetype[opponentArchetype] || 0) + 1;
+        }
       }
       
       stats.total_crowns += battle.team[0].crowns || 0;
       stats.total_trophy_change += battle.team[0].trophyChange || 0;
     }
 
-    // Upsert deck stats for today
+    // Upsert deck stats for today with archetype data
     const today = new Date().toISOString().split('T')[0];
     const upsertPromises = Array.from(deckStats.entries()).map(([deckHash, stats]) => {
       return supabase.from('deck_usage_stats').upsert({
@@ -120,14 +248,24 @@ serve(async (req) => {
         player_tag: playerTag,
         deck_hash: deckHash,
         date: today,
-        ...stats,
+        deck_cards: stats.deck_cards,
+        archetype: stats.archetype,
+        battles_played: stats.battles_played,
+        battles_won: stats.battles_won,
+        battles_lost: stats.battles_lost,
+        total_crowns: stats.total_crowns,
+        total_trophy_change: stats.total_trophy_change,
+        avg_elixir: stats.avg_elixir,
+        opponent_archetypes: stats.opponent_archetypes,
+        wins_by_opponent_archetype: stats.wins_by_opponent_archetype,
+        losses_by_opponent_archetype: stats.losses_by_opponent_archetype,
       }, {
         onConflict: 'user_id,deck_hash,date'
       });
     });
 
     await Promise.all(upsertPromises);
-    console.log(`Successfully tracked ${deckStats.size} decks`);
+    console.log(`Successfully tracked ${deckStats.size} decks with archetype data`);
 
     // ==========================================
     // PART 2: Battle Outcome Tracking for Predictions
@@ -145,16 +283,16 @@ serve(async (req) => {
       console.error('Failed to fetch predictions:', predError);
     }
 
+    let predictionsUpdated = 0;
+
     if (predictions && predictions.length > 0) {
       console.log(`Found ${predictions.length} predictions to check for outcome tracking`);
       
-      // Create a map of deck_hash -> prediction for quick lookup
       const predictionMap = new Map<string, any>();
       for (const pred of predictions) {
         predictionMap.set(pred.deck_hash, pred);
       }
 
-      // Track updates to batch at the end
       const predictionUpdates = new Map<string, {
         wins: number;
         losses: number;
@@ -165,38 +303,26 @@ serve(async (req) => {
         isDeckA: boolean;
       }>();
 
-      // Process each battle for prediction outcome tracking
       for (const battle of battles) {
         if (!battle.team?.[0]?.cards || !battle.opponent?.[0]?.cards) continue;
         
-        // Extract and sort deck cards
         const playerDeck = battle.team[0].cards.map((c: any) => c.name).sort();
         const opponentDeck = battle.opponent[0].cards.map((c: any) => c.name).sort();
         
-        // Generate matchup hash
         const matchupHash = generateDeckHash(playerDeck, opponentDeck);
         
-        // Check if we have a prediction for this matchup
         const prediction = predictionMap.get(matchupHash);
         if (!prediction) continue;
         
-        // Parse battle time
         const battleTime = parseBattleTime(battle.battleTime);
         const lastBattleAt = prediction.last_battle_at ? new Date(prediction.last_battle_at) : new Date(0);
         
-        // Skip if battle is not newer than last recorded
-        if (battleTime <= lastBattleAt) {
-          continue;
-        }
+        if (battleTime <= lastBattleAt) continue;
         
-        // Determine if player is Deck A or Deck B
         const deckACards = Array.isArray(prediction.deck_a_cards) ? prediction.deck_a_cards : [];
         const playerIsDeckA = decksMatch(playerDeck, deckACards);
-        
-        // Determine battle outcome
         const playerWon = battle.team[0].crowns > (battle.opponent[0]?.crowns || 0);
         
-        // Get or create update entry
         if (!predictionUpdates.has(matchupHash)) {
           predictionUpdates.set(matchupHash, {
             wins: prediction.actual_wins_deck_a || 0,
@@ -212,37 +338,20 @@ serve(async (req) => {
         const update = predictionUpdates.get(matchupHash)!;
         update.total++;
         
-        // Update wins/losses based on who won
         if (playerIsDeckA) {
-          // Player used Deck A
-          if (playerWon) {
-            update.wins++;
-          } else {
-            update.losses++;
-          }
+          if (playerWon) update.wins++;
+          else update.losses++;
         } else {
-          // Player used Deck B, so Deck A is the opponent
-          if (playerWon) {
-            // Player (Deck B) won, so Deck A lost
-            update.losses++;
-          } else {
-            // Player (Deck B) lost, so Deck A won
-            update.wins++;
-          }
+          if (playerWon) update.losses++;
+          else update.wins++;
         }
         
-        // Track newest battle time
         if (battleTime > update.newestBattleTime) {
           update.newestBattleTime = battleTime;
         }
-        
-        console.log(`Battle tracked: ${playerIsDeckA ? 'Player as Deck A' : 'Player as Deck B'}, Won: ${playerWon}`);
       }
 
-      // Apply batched updates to predictions
-      let predictionsUpdated = 0;
       for (const [hash, update] of predictionUpdates) {
-        // Calculate prediction error
         const actualWinRateA = update.total > 0 ? (update.wins / update.total) * 100 : 0;
         const predictionError = update.predictedWinRateA - actualWinRateA;
         
@@ -257,23 +366,80 @@ serve(async (req) => {
           })
           .eq('id', update.predictionId);
 
-        if (updateError) {
-          console.error(`Failed to update prediction ${update.predictionId}:`, updateError);
-        } else {
-          predictionsUpdated++;
-          console.log(`Updated prediction ${hash}: wins=${update.wins}, losses=${update.losses}, error=${predictionError.toFixed(1)}%`);
+        if (!updateError) predictionsUpdated++;
+      }
+    }
+
+    // ==========================================
+    // PART 3: Track Recommendation Adoption
+    // ==========================================
+    console.log('Checking for recommendation adoptions...');
+    
+    const { data: pendingRecs } = await supabase
+      .from('recommendation_history')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('player_tag', playerTag)
+      .eq('adopted', false)
+      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
+    let recommendationsAdopted = 0;
+
+    if (pendingRecs && pendingRecs.length > 0) {
+      console.log(`Found ${pendingRecs.length} pending recommendations to check`);
+      
+      for (const rec of pendingRecs) {
+        const recCards = rec.recommended_cards as string[] || [];
+        if (recCards.length === 0) continue;
+        
+        // Check if any battle used this recommended deck
+        for (const battle of battles) {
+          if (!battle.team?.[0]?.cards) continue;
+          
+          const battleDeck = battle.team[0].cards.map((c: any) => c.name).sort();
+          
+          if (decksMatch(battleDeck, recCards)) {
+            // Calculate win rate before adoption from recent stats
+            const { data: recentStats } = await supabase
+              .from('deck_usage_stats')
+              .select('battles_won, battles_lost')
+              .eq('user_id', user.id)
+              .eq('player_tag', playerTag)
+              .gte('date', new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+            
+            let winRateBefore = 0;
+            if (recentStats && recentStats.length > 0) {
+              const totalWins = recentStats.reduce((sum, s) => sum + (s.battles_won || 0), 0);
+              const totalLosses = recentStats.reduce((sum, s) => sum + (s.battles_lost || 0), 0);
+              winRateBefore = totalWins + totalLosses > 0 
+                ? (totalWins / (totalWins + totalLosses)) * 100 
+                : 0;
+            }
+            
+            const { error: adoptError } = await supabase
+              .from('recommendation_history')
+              .update({
+                adopted: true,
+                adopted_at: new Date().toISOString(),
+                win_rate_before: winRateBefore
+              })
+              .eq('id', rec.id);
+            
+            if (!adoptError) {
+              recommendationsAdopted++;
+              console.log(`Recommendation ${rec.id} marked as adopted`);
+            }
+            break;
+          }
         }
       }
-      
-      console.log(`Successfully updated ${predictionsUpdated} predictions with battle outcomes`);
-    } else {
-      console.log('No predictions found for outcome tracking');
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
       decks_tracked: deckStats.size,
-      predictions_checked: predictions?.length || 0
+      predictions_updated: predictionsUpdated,
+      recommendations_adopted: recommendationsAdopted
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
