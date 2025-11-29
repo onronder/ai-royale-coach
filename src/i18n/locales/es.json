@@ -689,12 +689,33 @@
         "pipeline": {
           "title": "Cómo Funciona Nuestra IA",
           "subtitle": "De tus batallas a información personalizada en segundos",
+          "clickHint": "Haz clic en cualquier paso para saber más",
           "steps": {
-            "yourBattles": "Tus Batallas",
-            "apiSync": "Sincronización API",
-            "aiAnalysis": "Análisis IA",
-            "playerProfile": "Perfil de Jugador",
-            "insights": "Información Personalizada"
+            "yourBattles": {
+              "title": "Tus Batallas",
+              "description": "Cada partida que juegas es una fuente de datos. Analizamos tus batallas recientes para entender tu estilo de juego, fortalezas y áreas de mejora.",
+              "details": ["Seguimiento de victorias/derrotas", "Patrones de uso de mazos", "Progresión de trofeos", "Rendimiento de coronas"]
+            },
+            "apiSync": {
+              "title": "Sincronización API",
+              "description": "Sincronizamos de forma segura con la API oficial de Clash Royale para obtener tus últimos datos de batalla, colección de cartas y perfil de jugador en tiempo real.",
+              "details": ["Actualizaciones en tiempo real", "Conexión segura", "Sincronización de inventario", "Recuperación del historial"]
+            },
+            "aiAnalysis": {
+              "title": "Análisis IA",
+              "description": "Nuestros modelos avanzados de IA analizan tus datos, identificando patrones, calculando predicciones de enfrentamientos y generando insights estratégicos.",
+              "details": ["Reconocimiento de patrones", "Cálculos de enfrentamientos", "Comparaciones de meta", "Modelado estratégico"]
+            },
+            "playerProfile": {
+              "title": "Perfil de Jugador",
+              "description": "Construimos un perfil completo de tu juego, rastreando tus arquetipos preferidos, niveles de maestría de cartas y progresión de habilidades.",
+              "details": ["Preferencias de arquetipos", "Evaluación de habilidades", "Seguimiento de maestría", "Historial de progreso"]
+            },
+            "insights": {
+              "title": "Información Personalizada",
+              "description": "Recibe recomendaciones personalizadas, sugerencias de mazos y consejos de coaching diseñados específicamente para tu estilo de juego y rango de trofeos.",
+              "details": ["Recomendaciones de mazos", "Coaching dirigido", "Áreas de mejora", "Consejos de adaptación al meta"]
+            }
           }
         },
         "stats": {

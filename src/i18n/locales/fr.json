@@ -689,12 +689,33 @@
         "pipeline": {
           "title": "Comment Notre IA Fonctionne",
           "subtitle": "De vos batailles à des insights personnalisés en secondes",
+          "clickHint": "Cliquez sur une étape pour en savoir plus",
           "steps": {
-            "yourBattles": "Vos Batailles",
-            "apiSync": "Synchronisation API",
-            "aiAnalysis": "Analyse IA",
-            "playerProfile": "Profil Joueur",
-            "insights": "Insights Personnalisés"
+            "yourBattles": {
+              "title": "Vos Batailles",
+              "description": "Chaque match que vous jouez est une source de données. Nous analysons vos batailles récentes pour comprendre votre style de jeu, vos forces et vos axes d'amélioration.",
+              "details": ["Suivi victoires/défaites", "Patterns d'utilisation de decks", "Progression des trophées", "Performance en couronnes"]
+            },
+            "apiSync": {
+              "title": "Synchronisation API",
+              "description": "Nous synchronisons de manière sécurisée avec l'API officielle de Clash Royale pour récupérer vos dernières données de bataille, collection de cartes et profil joueur en temps réel.",
+              "details": ["Mises à jour en temps réel", "Connexion sécurisée", "Sync de l'inventaire", "Récupération de l'historique"]
+            },
+            "aiAnalysis": {
+              "title": "Analyse IA",
+              "description": "Nos modèles IA avancés analysent vos données, identifient les patterns, calculent les prédictions de matchups et génèrent des insights stratégiques.",
+              "details": ["Reconnaissance de patterns", "Calculs de matchups", "Comparaisons méta", "Modélisation stratégique"]
+            },
+            "playerProfile": {
+              "title": "Profil Joueur",
+              "description": "Nous construisons un profil complet de votre gameplay, suivant vos archétypes préférés, niveaux de maîtrise des cartes et progression de compétences.",
+              "details": ["Préférences d'archétypes", "Évaluation des compétences", "Suivi de maîtrise", "Historique de progression"]
+            },
+            "insights": {
+              "title": "Insights Personnalisés",
+              "description": "Recevez des recommandations sur mesure, des suggestions de decks et des conseils de coaching spécialement conçus pour votre style de jeu et votre niveau de trophées.",
+              "details": ["Recommandations de decks", "Coaching ciblé", "Axes d'amélioration", "Conseils d'adaptation méta"]
+            }
           }
         },
         "stats": {

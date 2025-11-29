@@ -8,6 +8,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { AnimatePresence, motion } from "framer-motion";
 
 const aiCategories = [
   {
@@ -53,17 +54,18 @@ const aiCategories = [
 ];
 
 const pipelineSteps = [
-  { key: "yourBattles", icon: "⚔️" },
-  { key: "apiSync", icon: "🔄" },
-  { key: "aiAnalysis", icon: "🧠" },
-  { key: "playerProfile", icon: "👤" },
-  { key: "insights", icon: "💡" },
+  { key: "yourBattles", icon: "⚔️", color: "from-crimson to-crimson/70" },
+  { key: "apiSync", icon: "🔄", color: "from-royal to-royal/70" },
+  { key: "aiAnalysis", icon: "🧠", color: "from-primary to-primary/70" },
+  { key: "playerProfile", icon: "👤", color: "from-emerald to-emerald/70" },
+  { key: "insights", icon: "💡", color: "from-gold to-gold/70" },
 ];
 
 export const AIFeaturesShowcase = () => {
   const { t } = useTranslation();
   const { ref, hasAnimated } = useScrollAnimation({ threshold: 0.1 });
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedPipelineStep, setSelectedPipelineStep] = useState<string | null>(null);
 
   return (
     <section ref={ref} className="py-16 md:py-24 bg-gradient-to-b from-background to-card/30 relative overflow-hidden">
@@ -192,34 +194,100 @@ export const AIFeaturesShowcase = () => {
           })}
         </div>
 
-        {/* AI Pipeline Flow */}
+        {/* AI Pipeline Flow - Interactive */}
         <div className={`bg-card/30 border border-border/50 rounded-2xl p-8 backdrop-blur-sm transition-all duration-700 ${
           hasAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`} style={{ transitionDelay: '600ms' }}>
           <h3 className="text-xl font-rajdhani font-bold text-center mb-2 text-foreground">
             {t("landing.demoPage.aiFeatures.pipeline.title")}
           </h3>
-          <p className="text-sm text-muted-foreground text-center mb-8">
+          <p className="text-sm text-muted-foreground text-center mb-2">
             {t("landing.demoPage.aiFeatures.pipeline.subtitle")}
+          </p>
+          <p className="text-xs text-primary text-center mb-8">
+            {t("landing.demoPage.aiFeatures.pipeline.clickHint")}
           </p>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-2">
-            {pipelineSteps.map((step, index) => (
-              <div key={step.key} className="flex items-center">
-                <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-royal/20 border border-primary/30 flex items-center justify-center text-2xl mb-2 hover:scale-110 transition-transform">
-                    {step.icon}
-                  </div>
-                  <span className="text-sm font-medium text-foreground text-center max-w-[100px]">
-                    {t(`landing.demoPage.aiFeatures.pipeline.steps.${step.key}`)}
-                  </span>
+            {pipelineSteps.map((step, index) => {
+              const isSelected = selectedPipelineStep === step.key;
+              return (
+                <div key={step.key} className="flex items-center">
+                  <button
+                    onClick={() => setSelectedPipelineStep(isSelected ? null : step.key)}
+                    className="flex flex-col items-center group"
+                  >
+                    <div className={cn(
+                      "w-16 h-16 rounded-full border-2 flex items-center justify-center text-2xl mb-2 transition-all duration-300 cursor-pointer",
+                      isSelected 
+                        ? `bg-gradient-to-br ${step.color} border-transparent scale-110 shadow-lg shadow-primary/30` 
+                        : "bg-gradient-to-br from-primary/20 to-royal/20 border-primary/30 hover:scale-110 hover:border-primary/50"
+                    )}>
+                      {step.icon}
+                    </div>
+                    <span className={cn(
+                      "text-sm font-medium text-center max-w-[100px] transition-colors",
+                      isSelected ? "text-primary" : "text-foreground"
+                    )}>
+                      {t(`landing.demoPage.aiFeatures.pipeline.steps.${step.key}.title`)}
+                    </span>
+                  </button>
+                  {index < pipelineSteps.length - 1 && (
+                    <ArrowRight className={cn(
+                      "h-5 w-5 mx-4 hidden md:block transition-colors",
+                      isSelected || selectedPipelineStep === pipelineSteps[index + 1]?.key 
+                        ? "text-primary" 
+                        : "text-muted-foreground"
+                    )} />
+                  )}
                 </div>
-                {index < pipelineSteps.length - 1 && (
-                  <ArrowRight className="h-5 w-5 text-primary mx-4 hidden md:block" />
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
+
+          {/* Expanded Pipeline Step Details */}
+          <AnimatePresence mode="wait">
+            {selectedPipelineStep && (
+              <motion.div
+                key={selectedPipelineStep}
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: "auto" }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-8 overflow-hidden"
+              >
+                <div className={cn(
+                  "p-6 rounded-xl border bg-gradient-to-br",
+                  pipelineSteps.find(s => s.key === selectedPipelineStep)?.color,
+                  "bg-opacity-10 border-primary/30"
+                )}>
+                  <div className="bg-background/90 rounded-lg p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-3xl">
+                        {pipelineSteps.find(s => s.key === selectedPipelineStep)?.icon}
+                      </span>
+                      <h4 className="text-lg font-rajdhani font-bold text-foreground">
+                        {t(`landing.demoPage.aiFeatures.pipeline.steps.${selectedPipelineStep}.title`)}
+                      </h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {t(`landing.demoPage.aiFeatures.pipeline.steps.${selectedPipelineStep}.description`)}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {(t(`landing.demoPage.aiFeatures.pipeline.steps.${selectedPipelineStep}.details`, { returnObjects: true }) as string[]).map((detail, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 text-xs rounded-full bg-primary/20 text-primary border border-primary/30"
+                        >
+                          {detail}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Trust Indicators */}
