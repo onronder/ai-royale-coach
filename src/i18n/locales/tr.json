@@ -605,7 +605,60 @@
       "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zeka koçluğunu açmak için ücretsiz hesap oluştur.",
       "startFree": "Ücretsiz Başla",
       "backToHome": "Ana Sayfaya Dön",
-      "noCreditCard": "✓ Kredi kartı gerekmez ✓ Ücretsiz kullanım"
+      "noCreditCard": "✓ Kredi kartı gerekmez ✓ Ücretsiz kullanım",
+      "aiFeatures": {
+        "badge": "Gelişmiş Yapay Zeka Teknolojisi",
+        "title": "Gelişmiş Yapay Zeka ile Güçlendirilmiş",
+        "subtitle": "Akıllı koçluk sistemimiz oyununuzu analiz eder ve gelişmenize yardımcı olmak için kişiselleştirilmiş içgörüler sağlar.",
+        "flowTitle": "Yapay Zeka Oyununuzu Nasıl Geliştirir",
+        "features": {
+          "battleAnalysis": {
+            "title": "Akıllı Savaş Analizi",
+            "description": "Yapay zeka maçlarınızı analiz ederek kazanan kalıpları ve hataları belirler"
+          },
+          "matchupPredictions": {
+            "title": "Eşleşme Tahminleri",
+            "description": "Savaşmadan önce herhangi bir desteye karşı kazanma oranlarını tahmin edin"
+          },
+          "coachChat": {
+            "title": "Yapay Zeka Koç Sohbeti",
+            "description": "Sorular sorun, anında kişiselleştirilmiş strateji tavsiyeleri alın"
+          },
+          "deckOptimization": {
+            "title": "Deste Optimizasyonu",
+            "description": "Yapay zeka destenizin performansını artırmak için kart değişiklikleri önerir"
+          }
+        },
+        "flow": {
+          "yourData": "Verileriniz",
+          "aiAnalysis": "Yapay Zeka Analizi",
+          "insights": "İçgörüler",
+          "betterWins": "Daha Fazla Galibiyet"
+        },
+        "stats": {
+          "battlesAnalyzed": "analiz edilen savaş",
+          "playersCoached": "koçluk yapılan oyuncu",
+          "accuracy": "tahmin doğruluğu"
+        }
+      },
+      "explainer": {
+        "badge": "Az Önce Deneyimlediğiniz",
+        "title": "Oyununuzu Nasıl Güçlendirir",
+        "items": {
+          "deckAnalysis": {
+            "title": "Deste Analizi",
+            "description": "Kart sinerjilerini ve meta eşleşmelerini analiz eden yapay zeka motorumuz tarafından desteklenmektedir"
+          },
+          "winRates": {
+            "title": "Kazanma Oranı Tahminleri",
+            "description": "Yapay zeka benzer deste eşleşmelerinden ve oyuncu geçmişinden olasılıkları hesaplar"
+          },
+          "coachTips": {
+            "title": "Koç İpuçları",
+            "description": "Tam uygulamada kişiselleştirilmiş rehberlik sağlayan aynı yapay zeka"
+          }
+        }
+      }
     },
     "finalCTA": {
       "badge": "Bugün Kazanmaya Başla",

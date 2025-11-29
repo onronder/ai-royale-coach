@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { DemoSection } from "@/components/landing/DemoSection";
+import { AIFeaturesShowcase } from "@/components/landing/AIFeaturesShowcase";
+import { DemoExplainer } from "@/components/landing/DemoExplainer";
 import { Button } from "@/components/ui/button";
 import { Crown, Sparkles, ArrowRight, Zap, Play } from "lucide-react";
 
@@ -79,8 +81,14 @@ const Demo = () => {
         </div>
       </section>
 
-      {/* Full Demo Section */}
+      {/* AI Features Showcase - NEW */}
+      <AIFeaturesShowcase />
+
+      {/* Interactive Demo Section */}
       <DemoSection />
+
+      {/* What You Just Saw Explainer - NEW */}
+      <DemoExplainer />
 
       {/* Final CTA Section */}
       <section className="py-20 bg-gradient-to-b from-background to-card/50 border-t border-border/50">

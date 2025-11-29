@@ -606,7 +606,60 @@
       "ctaSubtitle": "Create a free account to plug in your player tag and unlock personalized AI coaching based on your actual battles.",
       "startFree": "Start Free Now",
       "backToHome": "Back to Home",
-      "noCreditCard": "✓ No credit card required ✓ Free to use"
+      "noCreditCard": "✓ No credit card required ✓ Free to use",
+      "aiFeatures": {
+        "badge": "Advanced AI Technology",
+        "title": "Powered by Advanced AI",
+        "subtitle": "Our intelligent coaching system analyzes your gameplay and provides personalized insights to help you improve.",
+        "flowTitle": "How AI Enhances Your Gameplay",
+        "features": {
+          "battleAnalysis": {
+            "title": "Smart Battle Analysis",
+            "description": "AI analyzes your matches to identify winning patterns and mistakes"
+          },
+          "matchupPredictions": {
+            "title": "Matchup Predictions",
+            "description": "Predict win rates against any deck before you battle"
+          },
+          "coachChat": {
+            "title": "AI Coach Chat",
+            "description": "Ask questions, get personalized strategy advice instantly"
+          },
+          "deckOptimization": {
+            "title": "Deck Optimization",
+            "description": "AI suggests card swaps to improve your deck's performance"
+          }
+        },
+        "flow": {
+          "yourData": "Your Data",
+          "aiAnalysis": "AI Analysis",
+          "insights": "Insights",
+          "betterWins": "Better Wins"
+        },
+        "stats": {
+          "battlesAnalyzed": "battles analyzed",
+          "playersCoached": "players coached",
+          "accuracy": "prediction accuracy"
+        }
+      },
+      "explainer": {
+        "badge": "What You Just Experienced",
+        "title": "How It Powers Your Gameplay",
+        "items": {
+          "deckAnalysis": {
+            "title": "Deck Analysis",
+            "description": "Powered by our AI engine analyzing card synergies and meta matchups"
+          },
+          "winRates": {
+            "title": "Win Rate Predictions",
+            "description": "AI calculates probabilities from similar deck matchups and player history"
+          },
+          "coachTips": {
+            "title": "Coach Tips",
+            "description": "Same AI that provides personalized guidance in the full app"
+          }
+        }
+      }
     },
     "finalCTA": {
       "badge": "Start Winning Today",
