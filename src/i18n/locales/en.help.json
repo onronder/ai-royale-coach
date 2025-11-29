@@ -5,6 +5,11 @@
     "searchPlaceholder": "Search help topics...",
     "navigation": "Navigation",
     "backToTop": "Back to Top",
+    "results": "results",
+    "noResults": "No topics found",
+    "clearSearch": "Clear search",
+    "noResultsTitle": "No matching topics",
+    "noResultsDescription": "No help topics match \"{{query}}\". Try different keywords or browse all sections.",
     "sections": {
       "gettingStarted": "Getting Started",
       "dashboard": "Dashboard",

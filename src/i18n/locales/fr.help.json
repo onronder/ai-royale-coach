@@ -5,6 +5,11 @@
     "searchPlaceholder": "Rechercher des sujets d'aide...",
     "navigation": "Navigation",
     "backToTop": "Retour en Haut",
+    "results": "résultats",
+    "noResults": "Aucun sujet trouvé",
+    "clearSearch": "Effacer la recherche",
+    "noResultsTitle": "Aucun sujet correspondant",
+    "noResultsDescription": "Aucun sujet d'aide ne correspond à \"{{query}}\". Essayez différents mots-clés ou parcourez toutes les sections.",
     "sections": {
       "gettingStarted": "Premiers Pas",
       "dashboard": "Tableau de Bord",

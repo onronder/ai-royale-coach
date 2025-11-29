@@ -5,6 +5,11 @@
     "searchPlaceholder": "Buscar temas de ayuda...",
     "navigation": "Navegación",
     "backToTop": "Volver Arriba",
+    "results": "resultados",
+    "noResults": "No se encontraron temas",
+    "clearSearch": "Limpiar búsqueda",
+    "noResultsTitle": "Sin temas coincidentes",
+    "noResultsDescription": "No hay temas de ayuda que coincidan con \"{{query}}\". Intenta con diferentes palabras clave o explora todas las secciones.",
     "sections": {
       "gettingStarted": "Primeros Pasos",
       "dashboard": "Panel",

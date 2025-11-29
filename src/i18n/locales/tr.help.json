@@ -5,6 +5,11 @@
     "searchPlaceholder": "Yardım konularını ara...",
     "navigation": "Navigasyon",
     "backToTop": "Başa Dön",
+    "results": "sonuç",
+    "noResults": "Konu bulunamadı",
+    "clearSearch": "Aramayı temizle",
+    "noResultsTitle": "Eşleşen konu yok",
+    "noResultsDescription": "\"{{query}}\" ile eşleşen yardım konusu bulunamadı. Farklı anahtar kelimeler deneyin veya tüm bölümlere göz atın.",
     "sections": {
       "gettingStarted": "Başlarken",
       "dashboard": "Panel",

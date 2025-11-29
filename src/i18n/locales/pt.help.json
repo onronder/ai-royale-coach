@@ -5,6 +5,11 @@
     "searchPlaceholder": "Pesquisar tópicos de ajuda...",
     "navigation": "Navegação",
     "backToTop": "Voltar ao Topo",
+    "results": "resultados",
+    "noResults": "Nenhum tópico encontrado",
+    "clearSearch": "Limpar pesquisa",
+    "noResultsTitle": "Nenhum tópico correspondente",
+    "noResultsDescription": "Nenhum tópico de ajuda corresponde a \"{{query}}\". Tente palavras-chave diferentes ou navegue por todas as seções.",
     "sections": {
       "gettingStarted": "Começando",
       "dashboard": "Painel",
