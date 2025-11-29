@@ -7,6 +7,7 @@ import {
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const aiCategories = [
   {
@@ -102,51 +103,49 @@ export const AIFeaturesShowcase = () => {
             const isExpanded = expandedCategory === category.key;
             
             return (
-              <div
+              <Collapsible
                 key={category.key}
+                open={isExpanded}
+                onOpenChange={(open) => setExpandedCategory(open ? category.key : null)}
                 className={`group relative rounded-xl bg-card/50 border border-border/50 backdrop-blur-sm hover:border-primary/50 transition-all duration-500 hover:shadow-lg hover:shadow-primary/10 ${
                   hasAnimated ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                 }`}
                 style={{ transitionDelay: `${index * 100 + 200}ms` }}
               >
                 {/* Gradient background on hover */}
-                <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+                <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300 pointer-events-none`} />
                 
                 {/* Category Header */}
-                <button
-                  onClick={() => setExpandedCategory(isExpanded ? null : category.key)}
-                  className="w-full p-6 text-left"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${category.gradient}`}>
-                        <CategoryIcon className="h-6 w-6 text-white" />
+                <CollapsibleTrigger asChild>
+                  <button className="w-full p-6 text-left relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${category.gradient}`}>
+                          <CategoryIcon className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-rajdhani font-bold text-foreground">
+                            {t(`landing.demoPage.aiFeatures.categories.${category.key}.title`)}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {t(`landing.demoPage.aiFeatures.categories.${category.key}.count`, { count: category.features.length })}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-xl font-rajdhani font-bold text-foreground">
-                          {t(`landing.demoPage.aiFeatures.categories.${category.key}.title`)}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {t(`landing.demoPage.aiFeatures.categories.${category.key}.count`, { count: category.features.length })}
-                        </p>
-                      </div>
+                      <ChevronDown className={cn(
+                        "h-5 w-5 text-muted-foreground transition-transform duration-300",
+                        isExpanded && "rotate-180"
+                      )} />
                     </div>
-                    <ChevronDown className={cn(
-                      "h-5 w-5 text-muted-foreground transition-transform duration-300",
-                      isExpanded && "rotate-180"
-                    )} />
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground">
-                    {t(`landing.demoPage.aiFeatures.categories.${category.key}.description`)}
-                  </p>
-                </button>
+                    
+                    <p className="text-sm text-muted-foreground">
+                      {t(`landing.demoPage.aiFeatures.categories.${category.key}.description`)}
+                    </p>
+                  </button>
+                </CollapsibleTrigger>
 
                 {/* Expandable Features List */}
-                <div className={cn(
-                  "overflow-hidden transition-all duration-300",
-                  isExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                )}>
+                <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                   <div className="px-6 pb-6 space-y-3">
                     {category.features.map((feature) => {
                       const FeatureIcon = feature.icon;
@@ -187,8 +186,8 @@ export const AIFeaturesShowcase = () => {
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
+                </CollapsibleContent>
+              </Collapsible>
             );
           })}
         </div>
