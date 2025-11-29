@@ -1443,10 +1443,16 @@
     "bestArchetypes": "Mejores Arquetipos",
     "recentWinRate": "Tasa de Victoria Reciente",
     "battlesAnalyzed": "Batallas Analizadas",
+    "history": "Historial de Recomendaciones",
+    "successRate": "Tasa de Éxito",
     "types": {
       "standard": "Recomendado",
       "counter": "Counter Pick",
       "strength": "Juega a tus Fortalezas"
+    },
+    "proactive": {
+      "struggling": "Tu tasa de victoria es {{winRate}}%. ¡Prueba {{deckName}} para mejorar tus resultados!",
+      "improvement": "¿Quieres subir más? ¡{{deckName}} podría ayudarte a escalar!"
     }
   }
 }

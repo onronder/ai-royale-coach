@@ -1443,10 +1443,16 @@
     "bestArchetypes": "En İyi Arketipler",
     "recentWinRate": "Son Kazanma Oranı",
     "battlesAnalyzed": "Analiz Edilen Savaşlar",
+    "history": "Öneri Geçmişi",
+    "successRate": "Başarı Oranı",
     "types": {
       "standard": "Önerilen",
       "counter": "Counter Seçimi",
       "strength": "Güçlü Yanlarınıza Oynar"
+    },
+    "proactive": {
+      "struggling": "Kazanma oranınız {{winRate}}%. Sonuçlarınızı iyileştirmek için {{deckName}} deneyin!",
+      "improvement": "Daha yükseğe çıkmak mı istiyorsunuz? {{deckName}} tırmanmanıza yardımcı olabilir!"
     }
   }
 }

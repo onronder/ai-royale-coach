@@ -77,6 +77,44 @@ const SKILL_LEVELS = {
 const MIN_BATTLES_FOR_AI = 20;
 const CACHE_TTL_HOURS = 24;
 const MAX_RECOMMENDATIONS = 3;
+const DAILY_AI_LIMIT = 5; // Max AI-enhanced recommendations per day
+
+// ============= AI Usage Check =============
+async function checkAIUsageLimit(supabase: any, userId: string): Promise<boolean> {
+  const today = new Date().toISOString().split('T')[0];
+  
+  const { data: usage } = await supabase
+    .from('user_ai_usage')
+    .select('request_count')
+    .eq('user_id', userId)
+    .eq('date', today)
+    .single();
+  
+  if (!usage) return true; // No usage today, allow
+  return usage.request_count < DAILY_AI_LIMIT;
+}
+
+async function incrementAIUsage(supabase: any, userId: string): Promise<void> {
+  const today = new Date().toISOString().split('T')[0];
+  
+  const { data: existing } = await supabase
+    .from('user_ai_usage')
+    .select('id, request_count')
+    .eq('user_id', userId)
+    .eq('date', today)
+    .single();
+  
+  if (existing) {
+    await supabase
+      .from('user_ai_usage')
+      .update({ request_count: existing.request_count + 1 })
+      .eq('id', existing.id);
+  } else {
+    await supabase
+      .from('user_ai_usage')
+      .insert({ user_id: userId, date: today, request_count: 1 });
+  }
+}
 
 // ============= Helper Functions =============
 
@@ -438,10 +476,15 @@ serve(async (req) => {
     let topCandidates = candidates.slice(0, 5);
     let aiEnhanced = false;
 
-    if (profile.totalBattles >= MIN_BATTLES_FOR_AI && topCandidates.length > 0) {
+    // Check AI usage limit before making AI call
+    const canUseAI = await checkAIUsageLimit(supabase, user.id);
+    
+    if (profile.totalBattles >= MIN_BATTLES_FOR_AI && topCandidates.length > 0 && canUseAI) {
       const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
       
       if (LOVABLE_API_KEY) {
+        // Increment AI usage counter
+        await incrementAIUsage(supabase, user.id);
         console.log('[recommend-deck] Enhancing with AI...');
         
         const languageInstructions: Record<string, string> = {

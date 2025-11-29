@@ -1420,10 +1420,16 @@
     "bestArchetypes": "Best Archetypes",
     "recentWinRate": "Recent Win Rate",
     "battlesAnalyzed": "Battles Analyzed",
+    "history": "Recommendation History",
+    "successRate": "Success Rate",
     "types": {
       "standard": "Recommended",
       "counter": "Counter Pick",
       "strength": "Plays to Strengths"
+    },
+    "proactive": {
+      "struggling": "Your win rate is {{winRate}}%. Try {{deckName}} to improve your results!",
+      "improvement": "Want to push higher? {{deckName}} could help you climb!"
     }
   }
 }
