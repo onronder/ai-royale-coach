@@ -59,6 +59,9 @@ verify_jwt = true
 [functions.predict-deck-matchup]
 verify_jwt = true
 
+[functions.recommend-deck]
+verify_jwt = true
+
 # Cron job - no JWT (called by pg_cron)
 [functions.cleanup-old-messages]
 verify_jwt = false
