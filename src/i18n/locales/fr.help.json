@@ -10,6 +10,12 @@
     "clearSearch": "Effacer la recherche",
     "noResultsTitle": "Aucun sujet correspondant",
     "noResultsDescription": "Aucun sujet d'aide ne correspond à \"{{query}}\". Essayez différents mots-clés ou parcourez toutes les sections.",
+    "coachIntegration": {
+      "foundInHelp": "J'ai trouvé des informations pertinentes dans notre Centre d'Aide !",
+      "readMore": "Lire le guide complet dans le Centre d'Aide",
+      "needMoreHelp": "Si vous avez besoin de conseils stratégiques ou de coaching personnalisé sur le gameplay, n'hésitez pas à demander !",
+      "answeredFromHelp": "Répondu depuis le Centre d'Aide (quota IA non utilisé)"
+    },
     "sections": {
       "gettingStarted": "Premiers Pas",
       "dashboard": "Tableau de Bord",

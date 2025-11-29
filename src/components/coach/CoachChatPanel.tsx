@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown, ChevronUp } from "lucide-react";
+import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown, ChevronUp, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { AIQuotaIndicator } from "./AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
+import { matchHelpTopic, generateHelpResponse } from "@/utils/helpTopicMatcher";
 
 const MESSAGES_PER_PAGE = 50;
 
@@ -511,6 +512,60 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
     setIsLoading(true);
 
     try {
+      // Check if this is an app-related question that can be answered from Help
+      const helpMatch = matchHelpTopic(userMessage, i18n.language);
+      
+      if (helpMatch && helpMatch.confidence > 0.5) {
+        // Generate help response without using AI quota
+        const helpResponse = generateHelpResponse(helpMatch, t);
+        
+        // Save user message
+        const { data: userMsg, error: userError } = await supabase
+          .from("chat_messages")
+          .insert({
+            player_tag: playerTag,
+            user_id: userId,
+            role: "user",
+            content: userMessage,
+          })
+          .select()
+          .single();
+
+        if (userError) throw userError;
+        
+        // Save help response as assistant message
+        const { data: assistantMsg, error: assistantError } = await supabase
+          .from("chat_messages")
+          .insert({
+            player_tag: playerTag,
+            user_id: userId,
+            role: "assistant",
+            content: helpResponse,
+          })
+          .select()
+          .single();
+
+        if (assistantError) throw assistantError;
+
+        setMessages(prev => [...prev, userMsg as Message, assistantMsg as Message]);
+        
+        // Update conversation ID if new
+        if (currentConversationId === "new") {
+          const newDate = new Date().toLocaleDateString();
+          setCurrentConversationId(newDate);
+        }
+        
+        // Show toast that this was answered from Help (no AI quota used)
+        toast.success(t('help.coachIntegration.answeredFromHelp'), {
+          icon: <BookOpen className="h-4 w-4" />,
+        });
+        
+        loadConversations();
+        setIsLoading(false);
+        return;
+      }
+
+      // Regular AI flow for gameplay questions
       const { data: userMsg, error: userError } = await supabase
         .from("chat_messages")
         .insert({

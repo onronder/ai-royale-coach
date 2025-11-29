@@ -10,6 +10,12 @@
     "clearSearch": "Limpar pesquisa",
     "noResultsTitle": "Nenhum tópico correspondente",
     "noResultsDescription": "Nenhum tópico de ajuda corresponde a \"{{query}}\". Tente palavras-chave diferentes ou navegue por todas as seções.",
+    "coachIntegration": {
+      "foundInHelp": "Encontrei informações relevantes em nossa Central de Ajuda!",
+      "readMore": "Ler guia completo na Central de Ajuda",
+      "needMoreHelp": "Se você precisar de dicas de estratégia ou coaching personalizado sobre o jogo, fique à vontade para perguntar!",
+      "answeredFromHelp": "Respondido pela Central de Ajuda (sem usar cota de IA)"
+    },
     "sections": {
       "gettingStarted": "Começando",
       "dashboard": "Painel",

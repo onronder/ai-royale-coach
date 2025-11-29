@@ -10,6 +10,12 @@
     "clearSearch": "Clear search",
     "noResultsTitle": "No matching topics",
     "noResultsDescription": "No help topics match \"{{query}}\". Try different keywords or browse all sections.",
+    "coachIntegration": {
+      "foundInHelp": "I found relevant information in our Help Center!",
+      "readMore": "Read full guide in Help Center",
+      "needMoreHelp": "If you need strategy advice or personalized coaching about gameplay, feel free to ask!",
+      "answeredFromHelp": "Answered from Help Center (no AI quota used)"
+    },
     "sections": {
       "gettingStarted": "Getting Started",
       "dashboard": "Dashboard",

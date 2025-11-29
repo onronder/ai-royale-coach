@@ -10,6 +10,12 @@
     "clearSearch": "Aramayı temizle",
     "noResultsTitle": "Eşleşen konu yok",
     "noResultsDescription": "\"{{query}}\" ile eşleşen yardım konusu bulunamadı. Farklı anahtar kelimeler deneyin veya tüm bölümlere göz atın.",
+    "coachIntegration": {
+      "foundInHelp": "Yardım Merkezimizde ilgili bilgiler buldum!",
+      "readMore": "Yardım Merkezinde tam kılavuzu oku",
+      "needMoreHelp": "Oyunla ilgili strateji tavsiyeleri veya kişiselleştirilmiş koçluk istiyorsanız, sormaktan çekinmeyin!",
+      "answeredFromHelp": "Yardım Merkezinden yanıtlandı (AI kotası kullanılmadı)"
+    },
     "sections": {
       "gettingStarted": "Başlarken",
       "dashboard": "Panel",
