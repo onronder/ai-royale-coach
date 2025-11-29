@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { MessageSquare, Lightbulb } from 'lucide-react';
+import { Crown, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CoachChatPanel } from './CoachChatPanel';
 import { useMatchDiscussion } from '@/contexts/MatchDiscussionContext';
@@ -109,16 +109,17 @@ export function FloatingCoachButton({
                 <Button
                   onClick={() => handleOpenChange(true)}
                   className={cn(
-                    "h-14 w-14 rounded-full",
-                    "bg-gradient-to-br from-primary to-accent",
-                    "shadow-xl hover:shadow-2xl",
+                    "h-14 w-14 rounded-xl",
+                    "bg-gradient-gold shadow-gold",
+                    "hover:shadow-2xl",
                     "transition-all duration-300",
                     "hover:scale-110",
+                    "golden-shine",
                     hasProactiveSuggestion ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-background" : "animate-pulse-glow"
                   )}
                   size="icon"
                 >
-                  <MessageSquare className="h-6 w-6 text-primary-foreground" />
+                  <Crown className="h-6 w-6 text-gold-foreground" />
                 </Button>
               </div>
             </TooltipTrigger>
