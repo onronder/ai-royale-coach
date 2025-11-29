@@ -1423,5 +1423,30 @@
     "playerTagRemoved": "Tag de jogador removida",
     "playerTagRemoveFailed": "Falha ao remover tag de jogador",
     "trackingDeckStats": "Rastreando estatísticas do deck..."
+  },
+  "recommendations": {
+    "title": "Decks Recomendados",
+    "subtitle": "Personalizado para seu estilo de jogo",
+    "refreshing": "Procurando os melhores decks para você...",
+    "refreshed": "Recomendações atualizadas!",
+    "refreshFailed": "Falha ao atualizar recomendações",
+    "noRecommendations": "Sem recomendações ainda",
+    "noRecommendationsDesc": "Jogue mais batalhas para receber sugestões personalizadas de decks",
+    "matchScore": "Pontuação de Compatibilidade",
+    "tryDeck": "Experimentar Este Deck",
+    "whyThisDeck": "Por que este deck?",
+    "fromCache": "Em cache",
+    "aiEnhanced": "Aprimorado por IA",
+    "refresh": "Atualizar",
+    "yourProfile": "Seu Perfil",
+    "skillLevel": "Nível de Habilidade",
+    "bestArchetypes": "Melhores Arquétipos",
+    "recentWinRate": "Taxa de Vitória Recente",
+    "battlesAnalyzed": "Batalhas Analisadas",
+    "types": {
+      "standard": "Recomendado",
+      "counter": "Counter Pick",
+      "strength": "Joga com Seus Pontos Fortes"
+    }
   }
 }

@@ -1423,5 +1423,30 @@
     "playerTagRemoved": "Etiqueta de jugador eliminada",
     "playerTagRemoveFailed": "Error al eliminar etiqueta de jugador",
     "trackingDeckStats": "Rastreando estadísticas del mazo..."
+  },
+  "recommendations": {
+    "title": "Mazos Recomendados",
+    "subtitle": "Personalizado para tu estilo de juego",
+    "refreshing": "Buscando los mejores mazos para ti...",
+    "refreshed": "¡Recomendaciones actualizadas!",
+    "refreshFailed": "Error al actualizar recomendaciones",
+    "noRecommendations": "Sin recomendaciones aún",
+    "noRecommendationsDesc": "Juega más batallas para obtener sugerencias de mazos personalizadas",
+    "matchScore": "Puntuación de Coincidencia",
+    "tryDeck": "Probar Este Mazo",
+    "whyThisDeck": "¿Por qué este mazo?",
+    "fromCache": "En caché",
+    "aiEnhanced": "Mejorado por IA",
+    "refresh": "Actualizar",
+    "yourProfile": "Tu Perfil",
+    "skillLevel": "Nivel de Habilidad",
+    "bestArchetypes": "Mejores Arquetipos",
+    "recentWinRate": "Tasa de Victoria Reciente",
+    "battlesAnalyzed": "Batallas Analizadas",
+    "types": {
+      "standard": "Recomendado",
+      "counter": "Counter Pick",
+      "strength": "Juega a tus Fortalezas"
+    }
   }
 }

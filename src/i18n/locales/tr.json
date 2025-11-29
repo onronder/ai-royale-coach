@@ -1423,5 +1423,30 @@
     "playerTagRemoved": "Oyuncu etiketi kaldırıldı",
     "playerTagRemoveFailed": "Oyuncu etiketi kaldırılamadı",
     "trackingDeckStats": "Deste istatistikleri takip ediliyor..."
+  },
+  "recommendations": {
+    "title": "Önerilen Desteler",
+    "subtitle": "Oyun tarzınıza göre kişiselleştirildi",
+    "refreshing": "Sizin için en iyi desteler aranıyor...",
+    "refreshed": "Öneriler güncellendi!",
+    "refreshFailed": "Öneriler güncellenemedi",
+    "noRecommendations": "Henüz öneri yok",
+    "noRecommendationsDesc": "Kişiselleştirilmiş deste önerileri almak için daha fazla savaş yapın",
+    "matchScore": "Uyum Puanı",
+    "tryDeck": "Bu Desteyi Dene",
+    "whyThisDeck": "Neden bu deste?",
+    "fromCache": "Önbellekten",
+    "aiEnhanced": "Yapay Zeka Destekli",
+    "refresh": "Yenile",
+    "yourProfile": "Profiliniz",
+    "skillLevel": "Beceri Seviyesi",
+    "bestArchetypes": "En İyi Arketipler",
+    "recentWinRate": "Son Kazanma Oranı",
+    "battlesAnalyzed": "Analiz Edilen Savaşlar",
+    "types": {
+      "standard": "Önerilen",
+      "counter": "Counter Seçimi",
+      "strength": "Güçlü Yanlarınıza Oynar"
+    }
   }
 }
