@@ -4,8 +4,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PredictionHistoryEntry } from '@/hooks/usePredictionHistory';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, Target, Swords } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Swords, Minus } from 'lucide-react';
 import { format } from 'date-fns';
+
+// Calculate trend by comparing older vs newer prediction errors
+function calculateTrend(predictions: PredictionHistoryEntry[]): 'improving' | 'worsening' | 'stable' | null {
+  const withActuals = predictions
+    .filter(p => p.actualBattlesTotal > 0 && p.predictionError !== null)
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()); // oldest first
+  
+  if (withActuals.length < 4) return null; // Not enough data
+  
+  const midpoint = Math.floor(withActuals.length / 2);
+  const olderPredictions = withActuals.slice(0, midpoint);
+  const newerPredictions = withActuals.slice(midpoint);
+  
+  const olderAvgError = olderPredictions.reduce((sum, p) => sum + Math.abs(p.predictionError!), 0) / olderPredictions.length;
+  const newerAvgError = newerPredictions.reduce((sum, p) => sum + Math.abs(p.predictionError!), 0) / newerPredictions.length;
+  
+  const errorDiff = newerAvgError - olderAvgError;
+  
+  if (errorDiff <= -5) return 'improving'; // Error decreased by 5+ points
+  if (errorDiff >= 5) return 'worsening'; // Error increased by 5+ points
+  return 'stable';
+}
 
 interface PredictionAccuracyChartProps {
   predictions: PredictionHistoryEntry[];
@@ -80,18 +102,36 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
   };
 
   const accuracyBadge = getAccuracyBadge(avgError);
+  
+  // Calculate prediction accuracy trend
+  const trend = calculateTrend(predictions);
+  
+  // Get trend icon and color
+  const getTrendIcon = () => {
+    if (trend === 'improving') return <TrendingUp className="h-5 w-5 text-green-500" />;
+    if (trend === 'worsening') return <TrendingDown className="h-5 w-5 text-destructive" />;
+    if (trend === 'stable') return <Minus className="h-5 w-5 text-muted-foreground" />;
+    return <Target className="h-5 w-5 text-primary" />;
+  };
+  
+  const getTrendBadgeIcon = () => {
+    if (trend === 'improving') return <TrendingUp className="h-3 w-3 text-green-500" />;
+    if (trend === 'worsening') return <TrendingDown className="h-3 w-3 text-destructive" />;
+    return null;
+  };
 
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
+            {getTrendIcon()}
             {t('predictionHistory.title')}
           </CardTitle>
           {accuracyBadge && (
-            <Badge variant={accuracyBadge.variant} className="text-xs">
+            <Badge variant={accuracyBadge.variant} className="text-xs flex items-center gap-1">
               {accuracyBadge.label}: {avgError !== null ? `±${avgError.toFixed(1)}%` : '-'}
+              {getTrendBadgeIcon()}
             </Badge>
           )}
         </div>
