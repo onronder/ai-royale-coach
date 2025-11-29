@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
 import { GlobalProgressCenter } from "./GlobalProgressCenter";
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavbarProps {
   user?: any;
@@ -52,6 +53,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
             <span className="hidden sm:inline">{t("nav.help")}</span>
           </Link>
           <LanguageSelector />
+          <ThemeToggle />
           {user && (
             <>
               <GlobalProgressCenter />

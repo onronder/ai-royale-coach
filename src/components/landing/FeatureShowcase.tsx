@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { 
   Search, Swords, BarChart3, Bot, 
@@ -9,6 +9,7 @@ import {
   Medal, Clock, Crosshair, Brain
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 interface Feature {
   icon: React.ReactNode;
@@ -106,29 +107,13 @@ const featureCategories: FeatureCategory[] = [
 export function FeatureShowcase() {
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [visibleCards, setVisibleCards] = useState<Set<string>>(new Set());
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('data-category-id');
-            if (id) {
-              setVisibleCards(prev => new Set([...prev, id]));
-            }
-          }
-        });
-      },
-      { threshold: 0.2, rootMargin: '50px' }
-    );
-
-    const cards = sectionRef.current?.querySelectorAll('[data-category-id]');
-    cards?.forEach(card => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, []);
+  
+  // Use enhanced scroll animations
+  const { ref: sectionRef, isVisible: sectionVisible } = useScrollAnimation({ threshold: 0.1 });
+  const { containerRef, isItemVisible, getItemDelay } = useStaggeredAnimation(
+    featureCategories.length,
+    { threshold: 0.2, staggerDelay: 150, rootMargin: '50px' }
+  );
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -136,14 +121,26 @@ export function FeatureShowcase() {
 
   return (
     <section ref={sectionRef} className="py-24 bg-gradient-to-b from-background via-card/20 to-background border-t border-border/50 relative overflow-hidden">
-      {/* Background decorations */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-80 h-80 bg-royal/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/3 rounded-full blur-3xl" />
+      {/* Background decorations with scroll-triggered animation */}
+      <div className={cn(
+        "absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl transition-all duration-1000",
+        sectionVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+      )} />
+      <div className={cn(
+        "absolute bottom-20 right-10 w-80 h-80 bg-royal/5 rounded-full blur-3xl transition-all duration-1000 delay-300",
+        sectionVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+      )} />
+      <div className={cn(
+        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold/3 rounded-full blur-3xl transition-all duration-1000 delay-500",
+        sectionVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+      )} />
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        {/* Section Header with entrance animation */}
+        <div className={cn(
+          "text-center mb-16 transition-all duration-700 ease-out transform-gpu",
+          sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/20 border border-gold/30 mb-6">
             <Sparkles className="h-4 w-4 text-gold" />
             <span className="text-sm font-rajdhani font-semibold text-gold uppercase tracking-wider">{t("landing.features.badge")}</span>
@@ -157,25 +154,27 @@ export function FeatureShowcase() {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div ref={containerRef} className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {featureCategories.map((category, categoryIndex) => {
-            const isVisible = visibleCards.has(category.id);
+            const isVisible = isItemVisible(categoryIndex);
             const isExpanded = expandedId === category.id;
             
             return (
               <div
                 key={category.id}
-                data-category-id={category.id}
+                data-stagger-index={categoryIndex}
                 className={cn(
                   "group relative rounded-2xl border-2 bg-card/50 backdrop-blur-sm cursor-pointer overflow-hidden",
-                  "transition-all duration-500 ease-out",
+                  "transition-all duration-700 ease-out transform-gpu",
                   category.borderColor,
                   isExpanded ? "md:col-span-2" : "",
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  isVisible 
+                    ? "opacity-100 translate-y-0 scale-100" 
+                    : "opacity-0 translate-y-12 scale-95"
                 )}
                 onClick={() => toggleExpand(category.id)}
                 style={{ 
-                  transitionDelay: isVisible ? `${categoryIndex * 100}ms` : '0ms',
+                  transitionDelay: `${getItemDelay(categoryIndex)}ms`,
                   boxShadow: isExpanded ? `0 0 60px ${category.glowColor.replace(')', ' / 0.3)')}` : undefined,
                   borderColor: isExpanded ? category.glowColor.replace(')', ' / 0.6)') : undefined,
                 }}
