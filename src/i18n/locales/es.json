@@ -523,6 +523,97 @@
       "title": "¿Listo para Subir?",
       "subtitle": "Únete a miles de jugadores mejorando con AI Royale",
       "button": "Comenzar Gratis"
+    },
+    "valueHighlights": {
+      "aiCoach": {
+        "title": "Guía del Coach IA",
+        "desc": "Consejos personalizados después de cada juego"
+      },
+      "analytics": {
+        "title": "Análisis de Batallas Detallado",
+        "desc": "Entiende tu rendimiento en detalle"
+      },
+      "deckOptimization": {
+        "title": "Optimización de Mazos",
+        "desc": "Construye mazos ganadores más rápido"
+      },
+      "winRate": {
+        "title": "Mejora Tu Tasa de Victoria",
+        "desc": "Estrategias basadas en datos que funcionan"
+      }
+    },
+    "trust": {
+      "stats": {
+        "battles": "50,000+",
+        "battlesLabel": "Batallas Analizadas",
+        "players": "10,000+",
+        "playersLabel": "Jugadores Activos",
+        "countries": "20+",
+        "countriesLabel": "Países",
+        "rating": "4.8",
+        "ratingLabel": "Calificación Promedio"
+      },
+      "testimonials": {
+        "1": {
+          "quote": "¡AI Royale me ayudó a subir 2 arenas en solo una semana! Las sugerencias de mazos son perfectas.",
+          "author": "ClashMaster99",
+          "role": "Jugador Top 1000"
+        },
+        "2": {
+          "quote": "El análisis del coach IA de mis batallas fue revelador. Por fin entendí lo que estaba haciendo mal.",
+          "author": "ArenaKnight",
+          "role": "Líder de Clan"
+        },
+        "3": {
+          "quote": "La mejor herramienta para jugadores serios de Clash Royale. Las predicciones de enfrentamientos son increíblemente precisas.",
+          "author": "ProGamer_TR",
+          "role": "Competidor de Esports"
+        }
+      },
+      "badges": {
+        "secure": {
+          "title": "Seguro y Protegido",
+          "desc": "Usa la API Oficial"
+        },
+        "noPassword": {
+          "title": "Sin Contraseña",
+          "desc": "Solo tu etiqueta de jugador"
+        },
+        "privacy": {
+          "title": "Privacidad Protegida",
+          "desc": "Tus datos están seguros"
+        }
+      }
+    },
+    "demoTeaser": {
+      "badge": "Vista Previa",
+      "title": "Mira AI Royale en Acción",
+      "subtitle": "Previsualiza nuestro análisis IA con mazos de ejemplo antes de registrarte",
+      "statsTitle": "Estadísticas de Rendimiento",
+      "aiInsightTitle": "Consejo del Coach IA",
+      "aiInsightPreview": "Obtén consejos de coaching personalizados y recomendaciones estratégicas basadas en tus datos de juego reales...",
+      "exploreButton": "Explorar Demo Completa"
+    },
+    "demoPage": {
+      "badge": "Demo Interactiva",
+      "title": "AI Royale en Acción",
+      "subtitle": "Prueba ejemplos en vivo de nuestro análisis de mazos y consejos de coaching. No necesitas cuenta para esta demo.",
+      "noAccountNeeded": "Sin cuenta necesaria",
+      "getPersonalized": "Obtener Análisis Personalizado",
+      "readyBadge": "¿Listo para Empezar?",
+      "ctaTitle": "Imagina este consejo adaptado a TU juego",
+      "ctaSubtitle": "Crea una cuenta gratuita para vincular tu etiqueta de jugador y desbloquear coaching IA personalizado basado en tus batallas reales.",
+      "startFree": "Comenzar Gratis",
+      "backToHome": "Volver al Inicio",
+      "noCreditCard": "✓ Sin tarjeta de crédito ✓ Gratis"
+    },
+    "finalCTA": {
+      "badge": "Empieza a Ganar Hoy",
+      "title": "¿Listo para Desatar Tu Potencial en Clash Royale?",
+      "subtitle": "Únete a miles de jugadores mejorando su juego con coaching impulsado por IA. Obtén insights personalizados desde tu primera batalla.",
+      "primaryButton": "Comenzar Gratis",
+      "secondaryButton": "Probar Demo Primero",
+      "trustText": "✓ Sin tarjeta de crédito ✓ Configura en 2 minutos ✓ Cancela cuando quieras"
     }
   },
   "auth": {

@@ -523,6 +523,97 @@
       "title": "Yükselmeye Hazır Mısın?",
       "subtitle": "AI Royale ile gelişen binlerce oyuncuya katıl",
       "button": "Ücretsiz Başla"
+    },
+    "valueHighlights": {
+      "aiCoach": {
+        "title": "Yapay Zeka Koç Rehberliği",
+        "desc": "Her oyundan sonra kişiselleştirilmiş ipuçları"
+      },
+      "analytics": {
+        "title": "Derinlemesine Savaş Analitiği",
+        "desc": "Performansını detaylı olarak anla"
+      },
+      "deckOptimization": {
+        "title": "Deste Optimizasyonu",
+        "desc": "Kazanan desteleri daha hızlı oluştur"
+      },
+      "winRate": {
+        "title": "Kazanma Oranını Artır",
+        "desc": "İşe yarayan veriye dayalı stratejiler"
+      }
+    },
+    "trust": {
+      "stats": {
+        "battles": "50,000+",
+        "battlesLabel": "Analiz Edilen Savaş",
+        "players": "10,000+",
+        "playersLabel": "Aktif Oyuncu",
+        "countries": "20+",
+        "countriesLabel": "Ülke",
+        "rating": "4.8",
+        "ratingLabel": "Ortalama Puan"
+      },
+      "testimonials": {
+        "1": {
+          "quote": "AI Royale sadece bir haftada 2 arena yükselmeme yardımcı oldu! Deste önerileri tam isabetli.",
+          "author": "ClashMaster99",
+          "role": "Top 1000 Oyuncu"
+        },
+        "2": {
+          "quote": "Yapay zeka koçunun savaş analizleri gözlerimi açtı. Sonunda ne yanlış yaptığımı anladım.",
+          "author": "ArenaKnight",
+          "role": "Klan Lideri"
+        },
+        "3": {
+          "quote": "Ciddi Clash Royale oyuncuları için en iyi araç. Eşleşme tahminleri inanılmaz derecede doğru.",
+          "author": "ProGamer_TR",
+          "role": "Espor Yarışmacısı"
+        }
+      },
+      "badges": {
+        "secure": {
+          "title": "Güvenli ve Emniyetli",
+          "desc": "Resmi API Kullanır"
+        },
+        "noPassword": {
+          "title": "Şifre Gerekmez",
+          "desc": "Sadece oyuncu etiketin"
+        },
+        "privacy": {
+          "title": "Veri Gizliliği Korunur",
+          "desc": "Verilerin güvende"
+        }
+      }
+    },
+    "demoTeaser": {
+      "badge": "Canlı Önizleme",
+      "title": "AI Royale'i İş Başında Gör",
+      "subtitle": "Kaydolmadan önce örnek destelerle yapay zeka analizimizi önizle",
+      "statsTitle": "Performans İstatistikleri",
+      "aiInsightTitle": "Yapay Zeka Koç İpucu",
+      "aiInsightPreview": "Gerçek oyun verilerine dayalı kişiselleştirilmiş koçluk ipuçları ve stratejik öneriler al...",
+      "exploreButton": "Tam Demoyu Keşfet"
+    },
+    "demoPage": {
+      "badge": "Etkileşimli Demo",
+      "title": "AI Royale İş Başında",
+      "subtitle": "Deste analizimizi ve koçluk ipuçlarımızı canlı örneklerle dene. Bu demo için hesap gerekmez.",
+      "noAccountNeeded": "Hesap gerekmez",
+      "getPersonalized": "Kişiselleştirilmiş Analiz Al",
+      "readyBadge": "Başlamaya Hazır Mısın?",
+      "ctaTitle": "Bu ipucunu SENİN oyununa uyarlanmış hayal et",
+      "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zeka koçluğunu açmak için ücretsiz hesap oluştur.",
+      "startFree": "Ücretsiz Başla",
+      "backToHome": "Ana Sayfaya Dön",
+      "noCreditCard": "✓ Kredi kartı gerekmez ✓ Ücretsiz kullanım"
+    },
+    "finalCTA": {
+      "badge": "Bugün Kazanmaya Başla",
+      "title": "Clash Royale Potansiyelini Serbest Bırakmaya Hazır Mısın?",
+      "subtitle": "Yapay zeka destekli koçlukla oyunlarını geliştiren binlerce oyuncuya katıl. İlk savaşından itibaren kişiselleştirilmiş içgörüler al.",
+      "primaryButton": "Ücretsiz Başla",
+      "secondaryButton": "Önce Demoyu Dene",
+      "trustText": "✓ Kredi kartı gerekmez ✓ 2 dakikada kur ✓ İstediğin zaman iptal et"
     }
   },
   "auth": {
