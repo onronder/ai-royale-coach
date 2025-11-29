@@ -698,6 +698,7 @@
     "noRecentConversations": "Son sohbet yok",
     "messageCount": "{{count}} mesaj",
     "loadingHistory": "Sohbet geçmişi yükleniyor...",
+    "loadOlderMessages": "Eski mesajları yükle",
     "emptyStateTitle": "Oyununuzu geliştirmek hakkında bana her şeyi sorun!",
     "emptyStateSubtitle": "Deste oluşturma, strateji ve maç analizi konusunda yardımcı olabilirim.",
     "discussingMatch": "Maç Tartışılıyor",

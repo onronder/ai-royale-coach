@@ -691,6 +691,7 @@
     "noRecentConversations": "No recent conversations",
     "messageCount": "{{count}} messages",
     "loadingHistory": "Loading chat history...",
+    "loadOlderMessages": "Load older messages",
     "emptyStateTitle": "Ask me anything about improving your game!",
     "emptyStateSubtitle": "I can help with deck building, strategy, and match analysis.",
     "discussingMatch": "Discussing Match",

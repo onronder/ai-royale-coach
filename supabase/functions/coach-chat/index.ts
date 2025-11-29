@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const DAILY_AI_LIMIT = 10;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,6 +41,48 @@ serve(async (req) => {
         JSON.stringify({ error: 'Unauthorized - invalid token' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // SERVER-SIDE AI QUOTA CHECK
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check current usage
+    const { data: usageData, error: usageError } = await supabase
+      .from('user_ai_usage')
+      .select('request_count')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .single();
+
+    if (usageError && usageError.code !== 'PGRST116') {
+      console.error('Error checking AI quota:', usageError);
+    }
+
+    const currentCount = usageData?.request_count || 0;
+    
+    if (currentCount >= DAILY_AI_LIMIT) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Daily AI quota exceeded. Please try again tomorrow.',
+          quota_exceeded: true,
+          requests_used: currentCount,
+          daily_limit: DAILY_AI_LIMIT
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Increment usage count
+    if (usageData) {
+      await supabase
+        .from('user_ai_usage')
+        .update({ request_count: currentCount + 1, updated_at: new Date().toISOString() })
+        .eq('user_id', user.id)
+        .eq('date', today);
+    } else {
+      await supabase
+        .from('user_ai_usage')
+        .insert({ user_id: user.id, date: today, request_count: 1 });
     }
 
     const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language = 'en' } = await req.json();
