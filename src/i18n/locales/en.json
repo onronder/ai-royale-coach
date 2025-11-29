@@ -691,12 +691,33 @@
         "pipeline": {
           "title": "How Our AI Works",
           "subtitle": "From your battles to personalized insights in seconds",
+          "clickHint": "Click any step to learn more",
           "steps": {
-            "yourBattles": "Your Battles",
-            "apiSync": "API Sync",
-            "aiAnalysis": "AI Analysis",
-            "playerProfile": "Player Profile",
-            "insights": "Personalized Insights"
+            "yourBattles": {
+              "title": "Your Battles",
+              "description": "Every match you play is a data source. We analyze your recent battles to understand your playstyle, strengths, and areas for improvement.",
+              "details": ["Win/Loss tracking", "Deck usage patterns", "Trophy progression", "Crown performance"]
+            },
+            "apiSync": {
+              "title": "API Sync",
+              "description": "We securely sync with Clash Royale's official API to fetch your latest battle data, card collection, and player profile in real-time.",
+              "details": ["Real-time updates", "Secure connection", "Card inventory sync", "Battle log retrieval"]
+            },
+            "aiAnalysis": {
+              "title": "AI Analysis",
+              "description": "Our advanced AI models analyze your data, identifying patterns, calculating matchup predictions, and generating strategic insights.",
+              "details": ["Pattern recognition", "Matchup calculations", "Meta comparisons", "Strategic modeling"]
+            },
+            "playerProfile": {
+              "title": "Player Profile",
+              "description": "We build a comprehensive profile of your gameplay, tracking your preferred archetypes, card mastery levels, and skill progression.",
+              "details": ["Archetype preferences", "Skill assessment", "Card mastery tracking", "Progress history"]
+            },
+            "insights": {
+              "title": "Personalized Insights",
+              "description": "Receive tailored recommendations, deck suggestions, and coaching tips specifically designed for your playstyle and trophy range.",
+              "details": ["Custom deck recommendations", "Targeted coaching", "Improvement areas", "Meta adaptation tips"]
+            }
           }
         },
         "stats": {

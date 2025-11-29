@@ -689,12 +689,33 @@
         "pipeline": {
           "title": "Como Nossa IA Funciona",
           "subtitle": "Das suas batalhas a insights personalizados em segundos",
+          "clickHint": "Clique em qualquer etapa para saber mais",
           "steps": {
-            "yourBattles": "Suas Batalhas",
-            "apiSync": "Sincronização API",
-            "aiAnalysis": "Análise IA",
-            "playerProfile": "Perfil do Jogador",
-            "insights": "Insights Personalizados"
+            "yourBattles": {
+              "title": "Suas Batalhas",
+              "description": "Cada partida que você joga é uma fonte de dados. Analisamos suas batalhas recentes para entender seu estilo de jogo, pontos fortes e áreas de melhoria.",
+              "details": ["Rastreamento de vitórias/derrotas", "Padrões de uso de decks", "Progressão de troféus", "Desempenho em coroas"]
+            },
+            "apiSync": {
+              "title": "Sincronização API",
+              "description": "Sincronizamos de forma segura com a API oficial do Clash Royale para buscar seus dados de batalha mais recentes, coleção de cartas e perfil do jogador em tempo real.",
+              "details": ["Atualizações em tempo real", "Conexão segura", "Sync de inventário", "Recuperação do histórico"]
+            },
+            "aiAnalysis": {
+              "title": "Análise IA",
+              "description": "Nossos modelos avançados de IA analisam seus dados, identificando padrões, calculando previsões de confrontos e gerando insights estratégicos.",
+              "details": ["Reconhecimento de padrões", "Cálculos de confrontos", "Comparações de meta", "Modelagem estratégica"]
+            },
+            "playerProfile": {
+              "title": "Perfil do Jogador",
+              "description": "Construímos um perfil abrangente do seu gameplay, rastreando seus arquétipos preferidos, níveis de maestria de cartas e progressão de habilidades.",
+              "details": ["Preferências de arquétipos", "Avaliação de habilidades", "Rastreamento de maestria", "Histórico de progresso"]
+            },
+            "insights": {
+              "title": "Insights Personalizados",
+              "description": "Receba recomendações personalizadas, sugestões de decks e dicas de coaching especialmente projetadas para seu estilo de jogo e faixa de troféus.",
+              "details": ["Recomendações de decks", "Coaching direcionado", "Áreas de melhoria", "Dicas de adaptação ao meta"]
+            }
           }
         },
         "stats": {

@@ -689,12 +689,33 @@
         "pipeline": {
           "title": "Yapay Zekamız Nasıl Çalışır",
           "subtitle": "Savaşlarınızdan kişiselleştirilmiş içgörülere saniyeler içinde",
+          "clickHint": "Daha fazla bilgi için herhangi bir adıma tıklayın",
           "steps": {
-            "yourBattles": "Savaşlarınız",
-            "apiSync": "API Senkronizasyonu",
-            "aiAnalysis": "Yapay Zeka Analizi",
-            "playerProfile": "Oyuncu Profili",
-            "insights": "Kişisel İçgörüler"
+            "yourBattles": {
+              "title": "Savaşlarınız",
+              "description": "Oynadığınız her maç bir veri kaynağıdır. Oyun tarzınızı, güçlü yanlarınızı ve gelişim alanlarınızı anlamak için son savaşlarınızı analiz ediyoruz.",
+              "details": ["Galibiyet/mağlubiyet takibi", "Deste kullanım kalıpları", "Kupa ilerlemesi", "Taç performansı"]
+            },
+            "apiSync": {
+              "title": "API Senkronizasyonu",
+              "description": "En son savaş verilerinizi, kart koleksiyonunuzu ve oyuncu profilinizi gerçek zamanlı olarak almak için Clash Royale'in resmi API'si ile güvenli bir şekilde senkronize ediyoruz.",
+              "details": ["Gerçek zamanlı güncellemeler", "Güvenli bağlantı", "Envanter senkronizasyonu", "Geçmiş kaydı alma"]
+            },
+            "aiAnalysis": {
+              "title": "Yapay Zeka Analizi",
+              "description": "Gelişmiş yapay zeka modellerimiz verilerinizi analiz eder, kalıpları belirler, eşleşme tahminlerini hesaplar ve stratejik içgörüler üretir.",
+              "details": ["Kalıp tanıma", "Eşleşme hesaplamaları", "Meta karşılaştırmaları", "Stratejik modelleme"]
+            },
+            "playerProfile": {
+              "title": "Oyuncu Profili",
+              "description": "Tercih ettiğiniz arketipleri, kart ustalık seviyelerinizi ve beceri gelişiminizi takip ederek oyununuzun kapsamlı bir profilini oluşturuyoruz.",
+              "details": ["Arketip tercihleri", "Beceri değerlendirmesi", "Ustalık takibi", "İlerleme geçmişi"]
+            },
+            "insights": {
+              "title": "Kişisel İçgörüler",
+              "description": "Oyun tarzınıza ve kupa aralığınıza özel olarak tasarlanmış kişiselleştirilmiş öneriler, deste önerileri ve koçluk ipuçları alın.",
+              "details": ["Özel deste önerileri", "Hedefli koçluk", "Gelişim alanları", "Meta uyum ipuçları"]
+            }
           }
         },
         "stats": {
