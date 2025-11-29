@@ -2,7 +2,8 @@
   "nav": {
     "signIn": "Connexion",
     "getStarted": "Commencer",
-    "signOut": "Déconnexion"
+    "signOut": "Déconnexion",
+    "help": "Aide"
   },
   "landing": {
     "hero": {
