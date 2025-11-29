@@ -1,4 +1,4 @@
-import { Crown, Trophy, Sparkles } from "lucide-react";
+import { Crown, Trophy, Sparkles, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -16,6 +16,15 @@ export function Footer() {
               <div className="absolute inset-0 bg-gold/20 blur-lg -z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <span className="font-rajdhani font-bold text-lg text-foreground">AI ROYALE</span>
+          </Link>
+          
+          {/* Help Link */}
+          <Link 
+            to="/help" 
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <HelpCircle className="h-4 w-4" />
+            <span className="text-sm">{t("nav.help")}</span>
           </Link>
           
           {/* Tagline */}

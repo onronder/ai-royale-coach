@@ -1,0 +1,362 @@
+{
+  "help": {
+    "title": "Help Center",
+    "subtitle": "Complete guide to mastering AI Royale",
+    "searchPlaceholder": "Search help topics...",
+    "navigation": "Navigation",
+    "backToTop": "Back to Top",
+    "sections": {
+      "gettingStarted": "Getting Started",
+      "dashboard": "Dashboard",
+      "stats": "Stats",
+      "matches": "Matches",
+      "deck": "Deck",
+      "builder": "Builder",
+      "analytics": "Analytics",
+      "collection": "Collection",
+      "leaderboard": "Leaderboard",
+      "tournaments": "Tournaments",
+      "clans": "Clans",
+      "coach": "AI Coach",
+      "features": "Features",
+      "faq": "FAQ"
+    },
+    "gettingStarted": {
+      "title": "Getting Started",
+      "badge": "Start Here",
+      "createAccount": {
+        "title": "Creating Your Account",
+        "step1": "Click 'Get Started' on the homepage",
+        "step2": "Enter your email address and create a password",
+        "step3": "Check your email for verification (auto-confirmed for faster access)",
+        "step4": "You're ready to link your Clash Royale account!"
+      },
+      "findTag": {
+        "title": "Finding Your Player Tag",
+        "intro": "Your Player Tag is a unique identifier for your Clash Royale account. Here's how to find it:",
+        "step1": "Open Clash Royale on your device",
+        "step2": "Tap your profile picture in the top-left corner",
+        "step3": "Your Player Tag is displayed below your name (starts with #)",
+        "step4": "Copy the entire tag including the # symbol",
+        "example": "Example format:"
+      },
+      "multiAccount": {
+        "title": "Managing Multiple Accounts",
+        "intro": "AI Royale supports up to 3 Clash Royale accounts per user:",
+        "point1": "Add multiple accounts from the Player Selection screen",
+        "point2": "Switch between accounts instantly without re-authenticating",
+        "point3": "Each account has its own analytics, recommendations, and coaching history"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard Overview",
+      "badge": "Navigation",
+      "overview": {
+        "title": "Dashboard Tabs",
+        "intro": "Your dashboard is organized into 9 main tabs, each offering specialized features:"
+      },
+      "tabs": {
+        "stats": "Stats",
+        "matches": "Matches",
+        "deck": "Deck",
+        "builder": "Builder",
+        "analytics": "Analytics",
+        "collection": "Collection",
+        "leaderboard": "Leaderboard",
+        "tournaments": "Tournaments",
+        "clans": "Clans"
+      },
+      "navigation": {
+        "title": "Navigating the Dashboard",
+        "point1": "Click any tab to switch views - your data is cached for fast loading",
+        "point2": "On mobile, tabs are scrollable horizontally",
+        "point3": "The AI Coach button (bottom-right) is accessible from any tab"
+      },
+      "sync": {
+        "title": "Data Sync & Refresh",
+        "intro": "Your data syncs automatically when you open the dashboard. You can manually refresh using the sync indicator in the header.",
+        "note": "Note: Clash Royale API has a 5-15 minute delay. Recent in-game changes may not appear immediately."
+      }
+    },
+    "stats": {
+      "title": "Stats Tab",
+      "badge": "Overview",
+      "overview": {
+        "title": "Player Statistics",
+        "intro": "The Stats tab displays your key performance metrics:",
+        "trophies": "Current Trophies",
+        "trophiesDesc": "Your current trophy count and personal best",
+        "winRate": "Win Rate",
+        "winRateDesc": "Calculated from your last 25 battles",
+        "arena": "Arena",
+        "arenaDesc": "Your current arena based on trophy count",
+        "clan": "Clan",
+        "clanDesc": "Your clan name and badge (if member of a clan)"
+      },
+      "charts": {
+        "title": "Trophy Progress Chart",
+        "intro": "View your trophy progression over time with interactive charts showing gains and losses."
+      },
+      "aiSummary": {
+        "title": "AI Coach Summary",
+        "intro": "A personalized AI-generated summary of your recent performance, including strengths, areas for improvement, and strategic recommendations."
+      }
+    },
+    "matches": {
+      "title": "Matches Tab",
+      "badge": "Battle History",
+      "history": {
+        "title": "Battle History",
+        "intro": "View your recent battles with detailed information:",
+        "point1": "Win/Loss indicator with crown count",
+        "point2": "Trophy change (+/- trophies)",
+        "point3": "Your deck and opponent's deck",
+        "point4": "Time since the battle"
+      },
+      "detail": {
+        "title": "Match Detail View",
+        "intro": "Click any match to open detailed analysis:",
+        "comparison": "Deck Comparison",
+        "comparisonDesc": "Side-by-side view of both decks with card levels",
+        "analysis": "AI Analysis",
+        "analysisDesc": "What happened in the match and recommendations",
+        "moments": "Key Moments",
+        "momentsDesc": "Pivotal card interactions at critical phases",
+        "counter": "Counter-Deck",
+        "counterDesc": "AI-suggested deck to beat your opponent"
+      },
+      "discuss": {
+        "title": "Discuss with AI Coach",
+        "intro": "Click 'Discuss with AI Coach' to send match context to the AI for deeper strategic conversation and personalized advice."
+      }
+    },
+    "deck": {
+      "title": "Deck Tab",
+      "badge": "Your Deck",
+      "current": {
+        "title": "Current Deck Display",
+        "intro": "View your currently equipped deck with all 8 cards, their levels, and average elixir cost."
+      },
+      "recommendations": {
+        "title": "Personalized Recommendations",
+        "intro": "AI Royale analyzes your profile to suggest decks that fit you:",
+        "ownership": "Card Ownership",
+        "ownershipDesc": "Only recommends decks where you own all 8 cards",
+        "skill": "Skill Matching",
+        "skillDesc": "Matches deck difficulty to your trophy range",
+        "adopt": "Adopt Recommendation",
+        "adoptDesc": "Click to track the recommendation and measure improvement"
+      },
+      "analysis": {
+        "title": "Deck Analysis Panel",
+        "intro": "Get AI-powered analysis of your deck including synergies, weaknesses, and improvement suggestions."
+      }
+    },
+    "builder": {
+      "title": "Builder Tab",
+      "badge": "Deck Building",
+      "create": {
+        "title": "Building a Deck",
+        "intro": "Create custom decks with our visual deck builder:",
+        "step1": "Click cards from the card pool to add them to your deck",
+        "step2": "Click cards in your deck to remove them",
+        "step3": "Watch the average elixir update in real-time",
+        "step4": "Click 'AI Analysis' to get strategic insights",
+        "step5": "Save your deck with a name and description"
+      },
+      "templates": {
+        "title": "Meta Templates Library",
+        "intro": "Browse pre-built competitive decks from the meta:",
+        "point1": "Filter by archetype (Beatdown, Cycle, Control, etc.)",
+        "point2": "Recommended decks (⭐) show decks you can build with your cards",
+        "point3": "Click any template to import it into the builder"
+      },
+      "compare": {
+        "title": "Deck Comparison",
+        "intro": "Compare two decks side-by-side:",
+        "point1": "See elixir distribution and average cost differences",
+        "point2": "View card-by-card breakdown",
+        "point3": "Run AI Matchup Prediction to see win probability and tips"
+      }
+    },
+    "analytics": {
+      "title": "Analytics Tab",
+      "badge": "Performance",
+      "deckStats": {
+        "title": "Deck Statistics Dashboard",
+        "intro": "Track your deck performance over time:",
+        "point1": "Win rate trends (7, 14, 30 days)",
+        "point2": "Trophy changes per deck",
+        "point3": "Usage frequency and battle count",
+        "point4": "Most used cards across all your decks"
+      },
+      "mastery": {
+        "title": "Card Mastery System",
+        "intro": "Track your proficiency with individual cards:",
+        "levels": "Mastery Levels",
+        "levelsDesc": "Progress from Bronze to Master (10 tiers)",
+        "partners": "Best Partner Cards",
+        "partnersDesc": "Cards that work well with this card in your hands",
+        "matchups": "Tough Matchups",
+        "matchupsDesc": "Cards you struggle against when using this card",
+        "tips": "AI Tips",
+        "tipsDesc": "Personalized advice for improving with this card"
+      },
+      "achievements": {
+        "title": "Achievements Dashboard",
+        "intro": "Track your milestones and unlock achievement badges as you improve. Achievements are categorized by skill area and tier."
+      }
+    },
+    "collection": {
+      "title": "Collection Tab",
+      "badge": "Card Inventory",
+      "overview": {
+        "title": "Your Card Collection",
+        "intro": "View and manage all your Clash Royale cards:",
+        "point1": "Filter by rarity (Common, Rare, Epic, Legendary, Champion)",
+        "point2": "See current level and progress to next upgrade",
+        "point3": "Track total card count and upgrade requirements"
+      },
+      "levels": {
+        "title": "Understanding Card Levels",
+        "intro": "Card levels are displayed matching in-game levels. The range depends on rarity:"
+      },
+      "sync": {
+        "title": "Syncing Your Collection",
+        "intro": "Your collection syncs automatically with the Clash Royale API. If you notice missing cards, use the manual sync button."
+      }
+    },
+    "leaderboard": {
+      "title": "Leaderboard Tab",
+      "badge": "Rankings",
+      "yourRanking": {
+        "title": "Your Global Ranking",
+        "intro": "See where your accounts rank globally. All your linked accounts are displayed with their current trophies and estimated global position."
+      },
+      "global": {
+        "title": "Top 100 Global Players",
+        "intro": "View the top 100 players worldwide. If your accounts appear in the top 100, they'll be highlighted."
+      },
+      "clan": {
+        "title": "Clan Leaderboard",
+        "intro": "If you're in a clan, see how you rank among clan members and how your clan ranks globally."
+      }
+    },
+    "tournaments": {
+      "title": "Tournaments Tab",
+      "badge": "Compete",
+      "browse": {
+        "title": "Browsing Tournaments",
+        "intro": "View active and upcoming tournaments:",
+        "registration": "Registration Open",
+        "registrationDesc": "Sign up before the tournament starts",
+        "inProgress": "In Progress",
+        "inProgressDesc": "Tournament is currently being played",
+        "completed": "Completed",
+        "completedDesc": "View final results and standings"
+      },
+      "create": {
+        "title": "Creating a Tournament",
+        "intro": "Host your own tournament:",
+        "step1": "Click 'Create Tournament' button",
+        "step2": "Set name, description, max participants, and start date",
+        "step3": "Share with your clan or friends to join"
+      }
+    },
+    "clans": {
+      "title": "Clans Tab",
+      "badge": "Community",
+      "search": {
+        "title": "Searching for Clans",
+        "intro": "Find clans to join:",
+        "point1": "Search by clan name or clan tag",
+        "point2": "View clan details including member count and trophy requirements",
+        "point3": "Send join requests to Invite Only clans"
+      },
+      "types": {
+        "title": "Clan Types",
+        "open": "Open",
+        "openDesc": "Anyone can join without approval",
+        "invite": "Invite Only",
+        "inviteDesc": "Requires approval from clan leader/elders",
+        "closed": "Closed",
+        "closedDesc": "Not accepting new members"
+      }
+    },
+    "coach": {
+      "title": "AI Coach",
+      "badge": "Personal Coaching",
+      "overview": {
+        "title": "Using the AI Coach",
+        "intro": "Your personal Clash Royale strategy advisor:",
+        "step1": "Click the floating chat button in the bottom-right corner",
+        "step2": "Type your question or select a suggested topic",
+        "step3": "Receive personalized advice based on your actual game data"
+      },
+      "context": {
+        "title": "What the AI Knows",
+        "intro": "The AI Coach has access to your complete profile:",
+        "point1": "Your saved decks and their performance",
+        "point2": "Your card mastery levels and win rates",
+        "point3": "Your achievement progress",
+        "point4": "Your card collection and levels"
+      },
+      "proactive": {
+        "title": "Proactive Suggestions",
+        "intro": "When your win rate drops below 55%, the AI Coach will proactively suggest deck changes. Look for the pulsing amber badge on the chat button."
+      },
+      "quota": {
+        "title": "Daily AI Quota",
+        "intro": "AI coaching uses a daily quota system to ensure fair usage for all players.",
+        "limit": "Free limit: 10 AI requests per day. Quota resets at midnight UTC."
+      },
+      "tips": {
+        "title": "Tips for Better Responses",
+        "tip1": "Be specific about what you want help with",
+        "tip2": "Mention the deck archetype you're asking about",
+        "tip3": "Reference specific matchups you're struggling with",
+        "tip4": "Use the 'Discuss' button from match details for context-aware coaching"
+      }
+    },
+    "features": {
+      "title": "Additional Features",
+      "badge": "More Tools",
+      "language": {
+        "title": "Language Selection",
+        "intro": "AI Royale supports 5 languages. Change your language using the selector in the navigation bar. All AI coaching responses will be generated in your selected language."
+      },
+      "notifications": {
+        "title": "Notification Center",
+        "intro": "View all past notifications including achievement unlocks, sync updates, and recommendations. Click the bell icon in the header to open the notification history."
+      },
+      "progress": {
+        "title": "Global Progress Center",
+        "intro": "See all active background operations (syncing, calculations, analyses) in real-time. Click the activity indicator in the header to view detailed progress."
+      },
+      "comparison": {
+        "title": "Account Comparison",
+        "intro": "Compare stats across your linked accounts to see which is performing better and identify areas for improvement."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "badge": "FAQ",
+      "q1": "Why doesn't my latest deck show up?",
+      "a1": "The Clash Royale API has a 5-15 minute delay. Your recent in-game changes will appear after this delay. Try refreshing in a few minutes.",
+      "q2": "How is my win rate calculated?",
+      "a2": "Win rate is calculated from your last 25 battles available from the API. It only includes ladder and challenge battles, not friendly battles or 2v2.",
+      "q3": "Why are some features requiring login?",
+      "a3": "Features like saving decks, AI coaching, and personalized recommendations require an account to store your preferences and history.",
+      "q4": "Can I use AI Royale on mobile?",
+      "a4": "Yes! AI Royale is fully responsive and works on all devices. The interface adapts to your screen size.",
+      "q5": "How accurate are the AI matchup predictions?",
+      "a5": "Predictions are based on deck composition analysis and historical data. Actual results may vary based on skill level and card levels.",
+      "q6": "Why can't I add more than 3 accounts?",
+      "a6": "The 3-account limit ensures fair usage of our AI services and API resources for all users.",
+      "q7": "How do I change my email or password?",
+      "a7": "Account management features are available through the authentication system. Contact support if you need to change your email.",
+      "q8": "Is my data secure?",
+      "a8": "Yes! We use industry-standard encryption and never store your Clash Royale login credentials. We only access public data through your Player Tag."
+    }
+  }
+}
