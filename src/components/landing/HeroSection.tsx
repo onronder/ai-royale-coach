@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,27 @@ interface HeroSectionProps {
   user: any;
 }
 
+// Generate random particles for visual effect
+const generateParticles = (count: number, type: 'ember' | 'sparkle') => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: 20 + Math.random() * 60,
+    delay: Math.random() * 4,
+    duration: 3 + Math.random() * 3,
+    size: type === 'ember' ? 2 + Math.random() * 4 : 4 + Math.random() * 4,
+  }));
+};
+
 export function HeroSection({ user }: HeroSectionProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [playerTag, setPlayerTag] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+
+  // Memoize particles to prevent regeneration on every render
+  const embers = useMemo(() => generateParticles(12, 'ember'), []);
+  const sparkles = useMemo(() => generateParticles(6, 'sparkle'), []);
 
   useEffect(() => {
     setIsVisible(true);
@@ -44,32 +60,72 @@ export function HeroSection({ user }: HeroSectionProps) {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden arena-bg">
-      {/* Animated background layers for parallax effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Deep background glow */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/8 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-royal/8 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/3 rounded-full blur-[120px]" />
-        
-        {/* Floating particles */}
-        <div className="floating-particles">
-          <span style={{ animationDelay: '0s' }}></span>
-          <span style={{ animationDelay: '0.5s' }}></span>
-          <span style={{ animationDelay: '1s' }}></span>
-          <span style={{ animationDelay: '1.5s' }}></span>
-          <span style={{ animationDelay: '2s' }}></span>
+    <section className="relative min-h-[90vh] flex items-center overflow-hidden arena-bg parallax-container">
+      {/* Gradient mesh background */}
+      <div className="absolute inset-0 hero-gradient-mesh" />
+      
+      {/* Noise texture overlay for depth */}
+      <div className="noise-overlay" />
+
+      {/* Animated particle layers */}
+      <div className="hero-particles">
+        {/* Large floating orbs - back layer with parallax */}
+        <div className="parallax-layer parallax-layer--back">
+          <div className="hero-particle hero-particle--orb absolute top-[10%] left-[15%]" />
+          <div className="hero-particle hero-particle--orb-royal absolute top-[30%] right-[10%]" />
+          <div className="hero-particle hero-particle--orb-gold absolute bottom-[20%] left-[60%]" />
         </div>
 
-        {/* Floating card silhouettes */}
-        <div className="absolute top-20 left-[10%] w-16 h-20 rounded-lg bg-gradient-to-br from-gold/10 to-transparent border border-gold/10 animate-float opacity-30" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-40 right-[15%] w-12 h-16 rounded-lg bg-gradient-to-br from-primary/10 to-transparent border border-primary/10 animate-float opacity-30" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-40 left-[20%] w-14 h-18 rounded-lg bg-gradient-to-br from-royal/10 to-transparent border border-royal/10 animate-float opacity-30" style={{ animationDelay: '2s' }} />
-        <div className="absolute bottom-20 right-[10%] w-10 h-14 rounded-lg bg-gradient-to-br from-emerald/10 to-transparent border border-emerald/10 animate-float opacity-30" style={{ animationDelay: '0.5s' }} />
+        {/* Mid layer orbs */}
+        <div className="parallax-layer parallax-layer--mid">
+          <div className="hero-particle hero-particle--orb absolute top-[50%] left-[5%]" style={{ width: 120, height: 120 }} />
+          <div className="hero-particle hero-particle--orb-gold absolute top-[15%] right-[25%]" style={{ width: 100, height: 100 }} />
+        </div>
+
+        {/* Rising embers */}
+        {embers.map((ember) => (
+          <div
+            key={`ember-${ember.id}`}
+            className="hero-particle hero-particle--ember"
+            style={{
+              left: `${ember.left}%`,
+              bottom: '-10px',
+              width: ember.size,
+              height: ember.size,
+              animationDelay: `${ember.delay}s`,
+              animationDuration: `${ember.duration}s`,
+            }}
+          />
+        ))}
+
+        {/* Sparkles */}
+        {sparkles.map((sparkle) => (
+          <div
+            key={`sparkle-${sparkle.id}`}
+            className="hero-particle hero-particle--sparkle"
+            style={{
+              left: `${sparkle.left}%`,
+              top: `${sparkle.top}%`,
+              width: sparkle.size,
+              height: sparkle.size,
+              animationDelay: `${sparkle.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Floating card silhouettes with parallax */}
+      <div className="parallax-layer parallax-layer--front pointer-events-none">
+        <div className="floating-card absolute top-20 left-[8%] w-14 h-20" style={{ animationDelay: '0s' }} />
+        <div className="floating-card absolute top-32 right-[12%] w-12 h-16" style={{ animationDelay: '1.5s' }} />
+        <div className="floating-card absolute bottom-32 left-[18%] w-16 h-22" style={{ animationDelay: '3s' }} />
+        <div className="floating-card absolute bottom-24 right-[8%] w-10 h-14" style={{ animationDelay: '0.5s' }} />
+        <div className="floating-card absolute top-1/2 left-[3%] w-12 h-16" style={{ animationDelay: '2s' }} />
+        <div className="floating-card absolute top-1/3 right-[5%] w-14 h-18" style={{ animationDelay: '2.5s' }} />
       </div>
 
       {/* Vignette overlay for dramatic effect */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_100%)] opacity-50 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_100%)] opacity-60 pointer-events-none" />
 
       <div className="relative container mx-auto px-4 py-20 md:py-24 z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8">

@@ -523,6 +523,97 @@
       "title": "Prêt à Grimper?",
       "subtitle": "Rejoignez des milliers de joueurs qui s'améliorent avec AI Royale",
       "button": "Commencer Gratuitement"
+    },
+    "valueHighlights": {
+      "aiCoach": {
+        "title": "Conseils du Coach IA",
+        "desc": "Conseils personnalisés après chaque partie"
+      },
+      "analytics": {
+        "title": "Analyses de Batailles Détaillées",
+        "desc": "Comprenez vos performances en détail"
+      },
+      "deckOptimization": {
+        "title": "Optimisation de Decks",
+        "desc": "Construisez des decks gagnants plus vite"
+      },
+      "winRate": {
+        "title": "Améliorez Votre Taux de Victoire",
+        "desc": "Stratégies basées sur les données qui fonctionnent"
+      }
+    },
+    "trust": {
+      "stats": {
+        "battles": "50,000+",
+        "battlesLabel": "Batailles Analysées",
+        "players": "10,000+",
+        "playersLabel": "Joueurs Actifs",
+        "countries": "20+",
+        "countriesLabel": "Pays",
+        "rating": "4.8",
+        "ratingLabel": "Note Moyenne"
+      },
+      "testimonials": {
+        "1": {
+          "quote": "AI Royale m'a aidé à monter de 2 arènes en seulement une semaine ! Les suggestions de decks sont parfaites.",
+          "author": "ClashMaster99",
+          "role": "Joueur Top 1000"
+        },
+        "2": {
+          "quote": "L'analyse du coach IA de mes batailles m'a ouvert les yeux. J'ai enfin compris ce que je faisais mal.",
+          "author": "ArenaKnight",
+          "role": "Chef de Clan"
+        },
+        "3": {
+          "quote": "Le meilleur outil pour les joueurs sérieux de Clash Royale. Les prédictions de matchups sont incroyablement précises.",
+          "author": "ProGamer_TR",
+          "role": "Compétiteur Esports"
+        }
+      },
+      "badges": {
+        "secure": {
+          "title": "Sûr et Sécurisé",
+          "desc": "Utilise l'API Officielle"
+        },
+        "noPassword": {
+          "title": "Pas de Mot de Passe",
+          "desc": "Juste votre tag de joueur"
+        },
+        "privacy": {
+          "title": "Confidentialité Protégée",
+          "desc": "Vos données restent en sécurité"
+        }
+      }
+    },
+    "demoTeaser": {
+      "badge": "Aperçu en Direct",
+      "title": "Voyez AI Royale en Action",
+      "subtitle": "Prévisualisez notre analyse IA avec des decks d'exemple avant de vous inscrire",
+      "statsTitle": "Statistiques de Performance",
+      "aiInsightTitle": "Conseil du Coach IA",
+      "aiInsightPreview": "Recevez des conseils de coaching personnalisés et des recommandations stratégiques basées sur vos données de jeu réelles...",
+      "exploreButton": "Explorer la Démo Complète"
+    },
+    "demoPage": {
+      "badge": "Démo Interactive",
+      "title": "AI Royale en Action",
+      "subtitle": "Essayez des exemples en direct de notre analyse de decks et conseils de coaching. Pas de compte nécessaire pour cette démo.",
+      "noAccountNeeded": "Pas de compte nécessaire",
+      "getPersonalized": "Obtenir une Analyse Personnalisée",
+      "readyBadge": "Prêt à Commencer?",
+      "ctaTitle": "Imaginez ce conseil adapté à VOTRE gameplay",
+      "ctaSubtitle": "Créez un compte gratuit pour relier votre tag de joueur et débloquer un coaching IA personnalisé basé sur vos vraies batailles.",
+      "startFree": "Commencer Gratuitement",
+      "backToHome": "Retour à l'Accueil",
+      "noCreditCard": "✓ Pas de carte de crédit ✓ Gratuit"
+    },
+    "finalCTA": {
+      "badge": "Commencez à Gagner Aujourd'hui",
+      "title": "Prêt à Libérer Votre Potentiel Clash Royale?",
+      "subtitle": "Rejoignez des milliers de joueurs qui améliorent leur jeu avec un coaching propulsé par l'IA. Obtenez des insights personnalisés dès votre première bataille.",
+      "primaryButton": "Commencer Gratuitement",
+      "secondaryButton": "Essayer la Démo d'Abord",
+      "trustText": "✓ Pas de carte de crédit ✓ Configuration en 2 minutes ✓ Annulez quand vous voulez"
     }
   },
   "auth": {

@@ -171,6 +171,44 @@ export default {
           "50%": { transform: "scale(1.1)", opacity: "0.8" },
           "100%": { transform: "scale(1)", opacity: "1" },
         },
+        "particle-float": {
+          "0%": { transform: "translateY(100vh) translateX(0) rotate(0deg)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateY(-100vh) translateX(100px) rotate(720deg)", opacity: "0" },
+        },
+        "particle-glow": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(1)" },
+          "50%": { opacity: "0.8", transform: "scale(1.5)" },
+        },
+        "parallax-slow": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-20px)" },
+        },
+        "parallax-medium": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-40px)" },
+        },
+        "parallax-fast": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-60px)" },
+        },
+        "drift-left": {
+          "0%, 100%": { transform: "translateX(0) translateY(0)" },
+          "50%": { transform: "translateX(-30px) translateY(-15px)" },
+        },
+        "drift-right": {
+          "0%, 100%": { transform: "translateX(0) translateY(0)" },
+          "50%": { transform: "translateX(30px) translateY(-15px)" },
+        },
+        "ember-rise": {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "1" },
+          "100%": { transform: "translateY(-100px) scale(0.5)", opacity: "0" },
+        },
+        "sparkle": {
+          "0%, 100%": { opacity: "0", transform: "scale(0)" },
+          "50%": { opacity: "1", transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -185,6 +223,15 @@ export default {
         "arena-entrance": "arena-entrance 0.4s ease-out",
         "hover-lift": "hover-lift 0.2s ease-out forwards",
         "victory-burst": "victory-burst 0.5s ease-out",
+        "particle-float": "particle-float 15s linear infinite",
+        "particle-glow": "particle-glow 3s ease-in-out infinite",
+        "parallax-slow": "parallax-slow 20s ease-in-out infinite alternate",
+        "parallax-medium": "parallax-medium 15s ease-in-out infinite alternate",
+        "parallax-fast": "parallax-fast 10s ease-in-out infinite alternate",
+        "drift-left": "drift-left 8s ease-in-out infinite",
+        "drift-right": "drift-right 8s ease-in-out infinite",
+        "ember-rise": "ember-rise 4s ease-out infinite",
+        "sparkle": "sparkle 2s ease-in-out infinite",
       },
     },
   },
