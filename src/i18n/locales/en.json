@@ -1428,6 +1428,7 @@
       "strength": "Plays to Strengths"
     },
     "proactive": {
+      "title": "Deck Suggestion",
       "struggling": "Your win rate is {{winRate}}%. Try {{deckName}} to improve your results!",
       "improvement": "Want to push higher? {{deckName}} could help you climb!"
     }
