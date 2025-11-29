@@ -611,34 +611,97 @@
         "badge": "Advanced AI Technology",
         "title": "Powered by Advanced AI",
         "subtitle": "Our intelligent coaching system analyzes your gameplay and provides personalized insights to help you improve.",
-        "flowTitle": "How AI Enhances Your Gameplay",
+        "featureCount": "11 AI-Powered Features",
+        "categories": {
+          "smartAnalysis": {
+            "title": "Smart Analysis",
+            "description": "Deep AI insights from every battle, identifying patterns and opportunities for improvement.",
+            "count": "{{count}} features"
+          },
+          "predictions": {
+            "title": "Predictions & Matchups",
+            "description": "Know your win probability and counter strategies before you enter battle.",
+            "count": "{{count}} features"
+          },
+          "deckIntelligence": {
+            "title": "Deck Intelligence",
+            "description": "Build the perfect deck with AI-powered recommendations based on your collection and playstyle.",
+            "count": "{{count}} features"
+          },
+          "personalCoaching": {
+            "title": "Personal Coaching",
+            "description": "Your AI coach has full context of your gameplay, decks, and progress.",
+            "count": "{{count}} feature"
+          }
+        },
         "features": {
           "battleAnalysis": {
-            "title": "Smart Battle Analysis",
-            "description": "AI analyzes your matches to identify winning patterns and mistakes"
+            "title": "Battle Analysis",
+            "description": "AI identifies winning patterns and critical mistakes in every match"
+          },
+          "playerProfile": {
+            "title": "Player Profile Analysis",
+            "description": "Complete assessment of your gameplay style and skill level"
+          },
+          "pivotalMoments": {
+            "title": "Pivotal Moments Detection",
+            "description": "Identifies key card interactions that decided your matches"
+          },
+          "advancedStats": {
+            "title": "Advanced Deck Statistics",
+            "description": "Elixir trades, defensive/offensive cost analysis, and efficiency metrics"
           },
           "matchupPredictions": {
             "title": "Matchup Predictions",
-            "description": "Predict win rates against any deck before you battle"
+            "description": "Win rate predictions between any two decks with confidence levels"
+          },
+          "trophyPerformance": {
+            "title": "Trophy Performance Analysis",
+            "description": "How your decks perform across different trophy ranges"
+          },
+          "counterDeck": {
+            "title": "Counter-Deck Builder",
+            "description": "AI designs 8-card decks specifically to beat your opponents"
+          },
+          "personalizedRecs": {
+            "title": "Personalized Recommendations",
+            "description": "5-step algorithm analyzes your playstyle to suggest perfect decks"
+          },
+          "cardReplacements": {
+            "title": "Card Replacement Suggestions",
+            "description": "Smart swap recommendations based on your card collection"
+          },
+          "compositionAnalysis": {
+            "title": "Composition Analysis",
+            "description": "Win conditions, cycle cards, and spell balance breakdown"
           },
           "coachChat": {
             "title": "AI Coach Chat",
-            "description": "Ask questions, get personalized strategy advice instantly"
-          },
-          "deckOptimization": {
-            "title": "Deck Optimization",
-            "description": "AI suggests card swaps to improve your deck's performance"
+            "description": "Context-aware coaching with full access to your game data"
           }
         },
-        "flow": {
-          "yourData": "Your Data",
-          "aiAnalysis": "AI Analysis",
-          "insights": "Insights",
-          "betterWins": "Better Wins"
+        "coachContext": {
+          "title": "Coach Has Access To:",
+          "savedDecks": "Your Saved Decks",
+          "cardMastery": "Card Mastery Levels",
+          "achievements": "Achievement Progress",
+          "matchHistory": "Recent Match History",
+          "cardCollection": "Card Collection"
+        },
+        "pipeline": {
+          "title": "How Our AI Works",
+          "subtitle": "From your battles to personalized insights in seconds",
+          "steps": {
+            "yourBattles": "Your Battles",
+            "apiSync": "API Sync",
+            "aiAnalysis": "AI Analysis",
+            "playerProfile": "Player Profile",
+            "insights": "Personalized Insights"
+          }
         },
         "stats": {
+          "aiFeatures": "AI-powered features",
           "battlesAnalyzed": "battles analyzed",
-          "playersCoached": "players coached",
           "accuracy": "prediction accuracy"
         }
       },

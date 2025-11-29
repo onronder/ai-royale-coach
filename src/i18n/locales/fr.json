@@ -609,36 +609,98 @@
       "aiFeatures": {
         "badge": "Technologie IA Avancée",
         "title": "Propulsé par l'IA Avancée",
-        "subtitle": "Notre système de coaching intelligent analyse votre jeu et fournit des informations personnalisées pour vous aider à vous améliorer.",
-        "flowTitle": "Comment l'IA Améliore Votre Jeu",
+        "featureCount": "11 Fonctionnalités IA",
+        "categories": {
+          "smartAnalysis": {
+            "title": "Analyse Intelligente",
+            "description": "Insights IA approfondis de chaque bataille, identifiant les patterns et opportunités d'amélioration.",
+            "count": "{{count}} fonctionnalités"
+          },
+          "predictions": {
+            "title": "Prédictions et Matchups",
+            "description": "Connaissez vos probabilités de victoire et stratégies counter avant d'entrer en bataille.",
+            "count": "{{count}} fonctionnalités"
+          },
+          "deckIntelligence": {
+            "title": "Intelligence de Deck",
+            "description": "Construisez le deck parfait avec des recommandations IA basées sur votre collection et style de jeu.",
+            "count": "{{count}} fonctionnalités"
+          },
+          "personalCoaching": {
+            "title": "Coaching Personnel",
+            "description": "Votre coach IA a le contexte complet de votre jeu, decks et progression.",
+            "count": "{{count}} fonctionnalité"
+          }
+        },
         "features": {
           "battleAnalysis": {
-            "title": "Analyse de Bataille Intelligente",
-            "description": "L'IA analyse vos matchs pour identifier les schémas gagnants et les erreurs"
+            "title": "Analyse de Bataille",
+            "description": "L'IA identifie les patterns gagnants et erreurs critiques dans chaque match"
+          },
+          "playerProfile": {
+            "title": "Analyse de Profil Joueur",
+            "description": "Évaluation complète de votre style de jeu et niveau de compétence"
+          },
+          "pivotalMoments": {
+            "title": "Détection des Moments Clés",
+            "description": "Identifie les interactions de cartes clés qui ont décidé vos matchs"
+          },
+          "advancedStats": {
+            "title": "Statistiques Avancées de Deck",
+            "description": "Échanges d'élixir, analyse des coûts défensifs/offensifs et métriques d'efficacité"
           },
           "matchupPredictions": {
-            "title": "Prédictions d'Affrontement",
-            "description": "Prédisez les taux de victoire contre n'importe quel deck avant de combattre"
+            "title": "Prédictions de Matchup",
+            "description": "Prédictions de taux de victoire entre deux decks avec niveaux de confiance"
+          },
+          "trophyPerformance": {
+            "title": "Analyse de Performance par Trophées",
+            "description": "Comment vos decks performent dans différentes tranches de trophées"
+          },
+          "counterDeck": {
+            "title": "Constructeur de Counter-Deck",
+            "description": "L'IA conçoit des decks de 8 cartes spécifiquement pour battre vos adversaires"
+          },
+          "personalizedRecs": {
+            "title": "Recommandations Personnalisées",
+            "description": "Algorithme en 5 étapes analyse votre style de jeu pour suggérer des decks parfaits"
+          },
+          "cardReplacements": {
+            "title": "Suggestions de Remplacement de Cartes",
+            "description": "Recommandations d'échange intelligentes basées sur votre collection de cartes"
+          },
+          "compositionAnalysis": {
+            "title": "Analyse de Composition",
+            "description": "Conditions de victoire, cartes de cycle et analyse de l'équilibre des sorts"
           },
           "coachChat": {
             "title": "Chat Coach IA",
-            "description": "Posez des questions, obtenez des conseils de stratégie personnalisés instantanément"
-          },
-          "deckOptimization": {
-            "title": "Optimisation de Deck",
-            "description": "L'IA suggère des échanges de cartes pour améliorer les performances de votre deck"
+            "description": "Coaching contextuel avec accès complet à vos données de jeu"
           }
         },
-        "flow": {
-          "yourData": "Vos Données",
-          "aiAnalysis": "Analyse IA",
-          "insights": "Insights",
-          "betterWins": "Plus de Victoires"
+        "coachContext": {
+          "title": "Le Coach a Accès À:",
+          "savedDecks": "Vos Decks Sauvegardés",
+          "cardMastery": "Niveaux de Maîtrise des Cartes",
+          "achievements": "Progression des Succès",
+          "matchHistory": "Historique des Matchs Récents",
+          "cardCollection": "Collection de Cartes"
+        },
+        "pipeline": {
+          "title": "Comment Notre IA Fonctionne",
+          "subtitle": "De vos batailles à des insights personnalisés en secondes",
+          "steps": {
+            "yourBattles": "Vos Batailles",
+            "apiSync": "Synchronisation API",
+            "aiAnalysis": "Analyse IA",
+            "playerProfile": "Profil Joueur",
+            "insights": "Insights Personnalisés"
+          }
         },
         "stats": {
+          "aiFeatures": "fonctionnalités IA",
           "battlesAnalyzed": "batailles analysées",
-          "playersCoached": "joueurs coachés",
-          "accuracy": "précision des prédictions"
+          "accuracy": "précision de prédiction"
         }
       },
       "explainer": {
