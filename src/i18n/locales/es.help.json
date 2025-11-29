@@ -10,6 +10,12 @@
     "clearSearch": "Limpiar búsqueda",
     "noResultsTitle": "Sin temas coincidentes",
     "noResultsDescription": "No hay temas de ayuda que coincidan con \"{{query}}\". Intenta con diferentes palabras clave o explora todas las secciones.",
+    "coachIntegration": {
+      "foundInHelp": "¡Encontré información relevante en nuestro Centro de Ayuda!",
+      "readMore": "Leer guía completa en el Centro de Ayuda",
+      "needMoreHelp": "Si necesitas consejos de estrategia o coaching personalizado sobre el juego, ¡no dudes en preguntar!",
+      "answeredFromHelp": "Respondido desde el Centro de Ayuda (sin usar cuota de IA)"
+    },
     "sections": {
       "gettingStarted": "Primeros Pasos",
       "dashboard": "Panel",
