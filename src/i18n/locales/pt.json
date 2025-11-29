@@ -605,7 +605,60 @@
       "ctaSubtitle": "Crie uma conta gratuita para vincular sua tag de jogador e desbloquear coaching IA personalizado baseado nas suas batalhas reais.",
       "startFree": "Começar Grátis",
       "backToHome": "Voltar ao Início",
-      "noCreditCard": "✓ Sem cartão de crédito ✓ Grátis"
+      "noCreditCard": "✓ Sem cartão de crédito ✓ Grátis",
+      "aiFeatures": {
+        "badge": "Tecnologia IA Avançada",
+        "title": "Impulsionado por IA Avançada",
+        "subtitle": "Nosso sistema de coaching inteligente analisa seu jogo e fornece insights personalizados para ajudá-lo a melhorar.",
+        "flowTitle": "Como a IA Melhora Seu Jogo",
+        "features": {
+          "battleAnalysis": {
+            "title": "Análise de Batalha Inteligente",
+            "description": "A IA analisa suas partidas para identificar padrões vencedores e erros"
+          },
+          "matchupPredictions": {
+            "title": "Previsões de Confronto",
+            "description": "Preveja taxas de vitória contra qualquer deck antes de batalhar"
+          },
+          "coachChat": {
+            "title": "Chat com Coach IA",
+            "description": "Faça perguntas, obtenha conselhos de estratégia personalizados instantaneamente"
+          },
+          "deckOptimization": {
+            "title": "Otimização de Deck",
+            "description": "A IA sugere trocas de cartas para melhorar o desempenho do seu deck"
+          }
+        },
+        "flow": {
+          "yourData": "Seus Dados",
+          "aiAnalysis": "Análise IA",
+          "insights": "Insights",
+          "betterWins": "Mais Vitórias"
+        },
+        "stats": {
+          "battlesAnalyzed": "batalhas analisadas",
+          "playersCoached": "jogadores treinados",
+          "accuracy": "precisão de previsão"
+        }
+      },
+      "explainer": {
+        "badge": "O Que Você Acabou de Experimentar",
+        "title": "Como Isso Potencializa Seu Jogo",
+        "items": {
+          "deckAnalysis": {
+            "title": "Análise de Deck",
+            "description": "Impulsionado pelo nosso motor IA analisando sinergias de cartas e matchups meta"
+          },
+          "winRates": {
+            "title": "Previsões de Taxa de Vitória",
+            "description": "A IA calcula probabilidades de matchups similares e histórico do jogador"
+          },
+          "coachTips": {
+            "title": "Dicas do Coach",
+            "description": "A mesma IA que fornece orientação personalizada no app completo"
+          }
+        }
+      }
     },
     "finalCTA": {
       "badge": "Comece a Vencer Hoje",

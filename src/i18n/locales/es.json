@@ -605,7 +605,60 @@
       "ctaSubtitle": "Crea una cuenta gratuita para vincular tu etiqueta de jugador y desbloquear coaching IA personalizado basado en tus batallas reales.",
       "startFree": "Comenzar Gratis",
       "backToHome": "Volver al Inicio",
-      "noCreditCard": "✓ Sin tarjeta de crédito ✓ Gratis"
+      "noCreditCard": "✓ Sin tarjeta de crédito ✓ Gratis",
+      "aiFeatures": {
+        "badge": "Tecnología IA Avanzada",
+        "title": "Impulsado por IA Avanzada",
+        "subtitle": "Nuestro sistema de coaching inteligente analiza tu juego y proporciona información personalizada para ayudarte a mejorar.",
+        "flowTitle": "Cómo la IA Mejora Tu Juego",
+        "features": {
+          "battleAnalysis": {
+            "title": "Análisis de Batalla Inteligente",
+            "description": "La IA analiza tus partidas para identificar patrones ganadores y errores"
+          },
+          "matchupPredictions": {
+            "title": "Predicciones de Enfrentamiento",
+            "description": "Predice tasas de victoria contra cualquier mazo antes de batallar"
+          },
+          "coachChat": {
+            "title": "Chat con Coach IA",
+            "description": "Haz preguntas, obtén consejos de estrategia personalizados al instante"
+          },
+          "deckOptimization": {
+            "title": "Optimización de Mazo",
+            "description": "La IA sugiere cambios de cartas para mejorar el rendimiento de tu mazo"
+          }
+        },
+        "flow": {
+          "yourData": "Tus Datos",
+          "aiAnalysis": "Análisis IA",
+          "insights": "Información",
+          "betterWins": "Más Victorias"
+        },
+        "stats": {
+          "battlesAnalyzed": "batallas analizadas",
+          "playersCoached": "jugadores entrenados",
+          "accuracy": "precisión de predicción"
+        }
+      },
+      "explainer": {
+        "badge": "Lo Que Acabas de Experimentar",
+        "title": "Cómo Impulsa Tu Juego",
+        "items": {
+          "deckAnalysis": {
+            "title": "Análisis de Mazo",
+            "description": "Impulsado por nuestro motor IA analizando sinergias de cartas y matchups meta"
+          },
+          "winRates": {
+            "title": "Predicciones de Tasa de Victoria",
+            "description": "La IA calcula probabilidades de matchups similares e historial del jugador"
+          },
+          "coachTips": {
+            "title": "Consejos del Coach",
+            "description": "La misma IA que proporciona orientación personalizada en la app completa"
+          }
+        }
+      }
     },
     "finalCTA": {
       "badge": "Empieza a Ganar Hoy",
