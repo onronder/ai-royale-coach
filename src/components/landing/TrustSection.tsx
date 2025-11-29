@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Shield, Lock, Globe, Star, Users, Swords, BarChart3, Quote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AnimatedCounter } from "./AnimatedCounter";
+import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 interface Stat {
   icon: React.ReactNode;
@@ -98,26 +99,14 @@ const trustBadges: TrustBadge[] = [
 
 export function TrustSection() {
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
+  
+  // Use enhanced scroll animations
+  const { ref: sectionRef, isVisible } = useScrollAnimation({ threshold: 0.15 });
+  const { containerRef: statsRef, isItemVisible: isStatVisible, getItemDelay: getStatDelay } = useStaggeredAnimation(
+    stats.length,
+    { threshold: 0.2, staggerDelay: 100 }
+  );
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -134,33 +123,43 @@ export function TrustSection() {
     >
       {/* Background texture */}
       <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+        <div className={cn(
+          "absolute top-1/4 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl transition-all duration-1000",
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+        )} />
+        <div className={cn(
+          "absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl transition-all duration-1000 delay-300",
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-50"
+        )} />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-4xl mx-auto">
+        <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-20 max-w-4xl mx-auto">
           {stats.map((stat, index) => (
             <div
               key={stat.labelKey}
+              data-stagger-index={index}
               className={cn(
                 "text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50",
-                "transition-all duration-500",
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                "transition-all duration-700 ease-out transform-gpu",
+                "hover:shadow-lg hover:-translate-y-1",
+                isStatVisible(index) 
+                  ? "opacity-100 translate-y-0 scale-100" 
+                  : "opacity-0 translate-y-10 scale-95"
               )}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              style={{ transitionDelay: `${getStatDelay(index)}ms` }}
             >
-              <div className={cn("mx-auto mb-3", stat.color)}>
+              <div className={cn("mx-auto mb-3 transition-transform duration-500", stat.color, isStatVisible(index) && "animate-bounce-once")}>
                 {stat.icon}
               </div>
               <div className={cn("text-3xl md:text-4xl font-bold font-rajdhani mb-1", stat.color)}>
-                {isVisible && (
+                {isStatVisible(index) && (
                   <AnimatedCounter 
                     end={stat.value} 
                     decimals={stat.value < 10 ? 1 : 0}
                     suffix={stat.suffix}
-                    delay={index * 150}
+                    delay={getStatDelay(index) + 200}
                   />
                 )}
               </div>
@@ -173,15 +172,21 @@ export function TrustSection() {
 
         {/* Testimonials */}
         <div className={cn(
-          "max-w-3xl mx-auto mb-16 transition-all duration-500",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          "max-w-3xl mx-auto mb-16 transition-all duration-700 ease-out transform-gpu",
+          isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-10 scale-95"
         )} style={{ transitionDelay: '400ms' }}>
-          <div className="relative bg-card/50 backdrop-blur-sm rounded-2xl border border-gold/20 p-8 md:p-12">
+          <div className="relative bg-card/50 backdrop-blur-sm rounded-2xl border border-gold/20 p-8 md:p-12 overflow-hidden">
+            {/* Animated background glow */}
+            <div className={cn(
+              "absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent transition-opacity duration-500",
+              isVisible ? "opacity-100" : "opacity-0"
+            )} />
+            
             {/* Quote icon */}
             <Quote className="absolute top-6 left-6 h-8 w-8 text-gold/30" />
             
             {/* Testimonial content */}
-            <div className="text-center space-y-6">
+            <div className="text-center space-y-6 relative z-10">
               <p className="text-lg md:text-xl text-foreground leading-relaxed italic">
                 "{t(testimonials[activeTestimonial].quoteKey)}"
               </p>
@@ -196,16 +201,16 @@ export function TrustSection() {
             </div>
 
             {/* Testimonial indicators */}
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-6 relative z-10">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
                   className={cn(
-                    "w-2 h-2 rounded-full transition-all duration-300",
+                    "h-2 rounded-full transition-all duration-300",
                     index === activeTestimonial 
                       ? "w-8 bg-gold" 
-                      : "bg-border hover:bg-muted-foreground"
+                      : "w-2 bg-border hover:bg-muted-foreground"
                   )}
                 />
               ))}
@@ -215,13 +220,18 @@ export function TrustSection() {
 
         {/* Trust Badges */}
         <div className={cn(
-          "flex flex-wrap justify-center gap-4 md:gap-8 transition-all duration-500",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          "flex flex-wrap justify-center gap-4 md:gap-8 transition-all duration-700 ease-out",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         )} style={{ transitionDelay: '600ms' }}>
           {trustBadges.map((badge, index) => (
             <div
               key={badge.titleKey}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-card/30 border border-border/50"
+              className={cn(
+                "flex items-center gap-3 px-4 py-3 rounded-xl bg-card/30 border border-border/50",
+                "transition-all duration-500 hover:bg-card/50 hover:border-emerald/30",
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              )}
+              style={{ transitionDelay: `${600 + index * 100}ms` }}
             >
               <div className="text-emerald">
                 {badge.icon}

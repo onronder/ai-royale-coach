@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Bot, BarChart3, Zap, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 
 interface ValueCard {
   icon: React.ReactNode;
@@ -44,53 +44,36 @@ const valueCards: ValueCard[] = [
 
 export function ValueHighlights() {
   const { t } = useTranslation();
-  const [visibleCards, setVisibleCards] = useState<Set<number>>(new Set());
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = parseInt(entry.target.getAttribute('data-index') || '0');
-            setTimeout(() => {
-              setVisibleCards(prev => new Set([...prev, index]));
-            }, index * 100);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    const cards = sectionRef.current?.querySelectorAll('[data-index]');
-    cards?.forEach(card => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, []);
+  const { containerRef, isItemVisible, getItemDelay } = useStaggeredAnimation(
+    valueCards.length,
+    { threshold: 0.15, staggerDelay: 150, rootMargin: '50px' }
+  );
 
   return (
     <section 
       id="value-highlights" 
-      ref={sectionRef} 
-      className="py-16 bg-gradient-to-b from-background via-card/30 to-background border-y border-border/30"
+      ref={containerRef} 
+      className="py-16 bg-gradient-to-b from-background via-card/30 to-background border-y border-border/30 overflow-hidden"
     >
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
           {valueCards.map((card, index) => {
-            const isVisible = visibleCards.has(index);
+            const isVisible = isItemVisible(index);
             
             return (
               <div
                 key={card.titleKey}
-                data-index={index}
+                data-stagger-index={index}
                 className={cn(
                   "group relative p-4 md:p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50",
-                  "transition-all duration-500 ease-out",
-                  "hover:border-border hover:-translate-y-2",
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  "transition-all duration-700 ease-out transform-gpu",
+                  "hover:border-border hover:-translate-y-2 hover:shadow-lg",
+                  isVisible 
+                    ? "opacity-100 translate-y-0 scale-100" 
+                    : "opacity-0 translate-y-12 scale-95"
                 )}
                 style={{
-                  transitionDelay: isVisible ? `${index * 100}ms` : '0ms',
+                  transitionDelay: `${getItemDelay(index)}ms`,
                 }}
               >
                 {/* Hover glow effect */}

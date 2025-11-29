@@ -28,7 +28,7 @@ const deckInsightKeys: Record<string, string> = {
 
 export function DemoSection() {
   const { t } = useTranslation();
-  const { ref, isVisible } = useScrollAnimation(0.2);
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
   const navigate = useNavigate();
   const sectionId = "demo-section";
   const [selectedDeck, setSelectedDeck] = useState<SampleDeck>(sampleDecks[0]);
