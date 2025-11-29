@@ -435,11 +435,76 @@ serve(async (req) => {
       }
     }
 
+    // ==========================================
+    // PART 4: Update Success Metrics for Adopted Recommendations
+    // ==========================================
+    console.log('Updating success metrics for adopted recommendations...');
+    
+    const { data: adoptedRecs } = await supabase
+      .from('recommendation_history')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('player_tag', playerTag)
+      .eq('adopted', true)
+      .is('outcome_tracked_at', null)
+      .gte('adopted_at', new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString());
+
+    let successMetricsUpdated = 0;
+
+    if (adoptedRecs && adoptedRecs.length > 0) {
+      for (const rec of adoptedRecs) {
+        const recCards = rec.recommended_cards as string[] || [];
+        if (recCards.length === 0) continue;
+        
+        // Count battles with this recommended deck since adoption
+        let battlesWithDeck = 0;
+        let winsWithDeck = 0;
+        
+        const adoptedAt = new Date(rec.adopted_at);
+        
+        for (const battle of battles) {
+          if (!battle.team?.[0]?.cards || !battle.battleTime) continue;
+          
+          const battleTime = parseBattleTime(battle.battleTime);
+          if (battleTime < adoptedAt) continue;
+          
+          const battleDeck = battle.team[0].cards.map((c: any) => c.name).sort();
+          
+          if (decksMatch(battleDeck, recCards)) {
+            battlesWithDeck++;
+            const playerWon = battle.team[0].crowns > (battle.opponent?.[0]?.crowns || 0);
+            if (playerWon) winsWithDeck++;
+          }
+        }
+        
+        // Only update if player has played at least 5 battles with the deck
+        if (battlesWithDeck >= 5) {
+          const winRateAfter = (winsWithDeck / battlesWithDeck) * 100;
+          
+          const { error: updateError } = await supabase
+            .from('recommendation_history')
+            .update({
+              battles_after_adoption: battlesWithDeck,
+              wins_after_adoption: winsWithDeck,
+              win_rate_after: winRateAfter,
+              outcome_tracked_at: new Date().toISOString()
+            })
+            .eq('id', rec.id);
+          
+          if (!updateError) {
+            successMetricsUpdated++;
+            console.log(`Updated success metrics for recommendation ${rec.id}: ${winRateAfter.toFixed(1)}% win rate`);
+          }
+        }
+      }
+    }
+
     return new Response(JSON.stringify({ 
       success: true, 
       decks_tracked: deckStats.size,
       predictions_updated: predictionsUpdated,
-      recommendations_adopted: recommendationsAdopted
+      recommendations_adopted: recommendationsAdopted,
+      success_metrics_updated: successMetricsUpdated
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

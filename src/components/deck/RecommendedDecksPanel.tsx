@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useRecommendations, useRefreshRecommendations, DeckRecommendation } from "@/hooks/useRecommendations";
+import { RecommendationHistoryCard } from "./RecommendationHistoryCard";
 import { 
   Sparkles, 
   RefreshCw, 
@@ -281,6 +282,9 @@ export const RecommendedDecksPanel = memo(({
           />
         ))}
       </div>
+      
+      {/* Recommendation History */}
+      <RecommendationHistoryCard playerTag={playerTag} />
     </div>
   );
 });
