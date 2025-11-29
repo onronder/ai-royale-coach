@@ -772,8 +772,11 @@ export type Database = {
           adopted_at: string | null
           ai_explanation: string | null
           archetype: string | null
+          avg_elixir: number | null
           battles_after_adoption: number | null
           created_at: string | null
+          deck_name: string | null
+          difficulty: string | null
           expires_at: string | null
           id: string
           outcome_tracked_at: string | null
@@ -793,8 +796,11 @@ export type Database = {
           adopted_at?: string | null
           ai_explanation?: string | null
           archetype?: string | null
+          avg_elixir?: number | null
           battles_after_adoption?: number | null
           created_at?: string | null
+          deck_name?: string | null
+          difficulty?: string | null
           expires_at?: string | null
           id?: string
           outcome_tracked_at?: string | null
@@ -814,8 +820,11 @@ export type Database = {
           adopted_at?: string | null
           ai_explanation?: string | null
           archetype?: string | null
+          avg_elixir?: number | null
           battles_after_adoption?: number | null
           created_at?: string | null
+          deck_name?: string | null
+          difficulty?: string | null
           expires_at?: string | null
           id?: string
           outcome_tracked_at?: string | null
