@@ -280,10 +280,12 @@ serve(async (req) => {
           JSON.stringify({
             recommendations: cachedRecs.map(r => ({
               deckId: r.recommended_deck_id,
-              deckName: r.archetype,
+              deckName: r.deck_name || r.archetype, // Use stored deck_name, fallback to archetype
               cards: r.recommended_cards,
               archetype: r.archetype,
-              matchScore: r.recommendation_score,
+              avgElixir: r.avg_elixir || 0,
+              difficulty: r.difficulty || 'intermediate',
+              matchScore: r.recommendation_score * 100, // Convert back to percentage
               reason: r.recommendation_reason,
               aiExplanation: r.ai_explanation,
               recommendationType: r.recommendation_type,
@@ -610,7 +612,7 @@ Rank these decks for this player and provide personalized explanations. Consider
                           c.scores.archetypeFit >= 0.8 ? 'strength' : 'standard'
     }));
 
-    // Store recommendations in history
+    // Store recommendations in history (including new deck_name, avg_elixir, difficulty fields)
     const insertPromises = recommendations.map(rec => 
       supabase.from('recommendation_history').insert({
         user_id: user.id,
@@ -622,7 +624,10 @@ Rank these decks for this player and provide personalized explanations. Consider
         ai_explanation: rec.aiExplanation,
         archetype: rec.archetype,
         recommendation_type: rec.recommendationType,
-        win_rate_before: profile.recentWinRate
+        win_rate_before: profile.recentWinRate,
+        deck_name: rec.deckName,
+        avg_elixir: rec.avgElixir,
+        difficulty: rec.difficulty
       })
     );
 
