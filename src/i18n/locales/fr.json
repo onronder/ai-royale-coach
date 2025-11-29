@@ -3,7 +3,8 @@
     "signIn": "Connexion",
     "getStarted": "Commencer",
     "signOut": "Déconnexion",
-    "help": "Aide"
+    "help": "Aide",
+    "demo": "Démo"
   },
   "landing": {
     "hero": {
@@ -20,7 +21,9 @@
       "errors": {
         "enterTag": "Veuillez entrer un tag de joueur",
         "signIn": "Veuillez vous connecter pour continuer"
-      }
+      },
+      "tryDemo": "Essayer la Démo",
+      "scrollToExplore": "Faites défiler pour explorer"
     },
     "features": {
       "title": "Tout Ce Dont Vous Avez Besoin pour",

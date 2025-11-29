@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, Sparkles, HelpCircle } from "lucide-react";
+import { Crown, LogOut, Sparkles, HelpCircle, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
@@ -37,6 +37,13 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
         </Link>
 
         <div className="flex items-center gap-2">
+          <Link 
+            to="/demo" 
+            className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-primary hover:text-primary/80 font-semibold transition-colors"
+          >
+            <Play className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("nav.demo")}</span>
+          </Link>
           <Link 
             to="/help" 
             className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
