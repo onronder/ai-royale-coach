@@ -1,58 +1,60 @@
 project_id = "vraqbzokccvqhthixoof"
 
+# Public endpoints - no JWT required
 [functions.clash-royale-api]
-verify_jwt = false
-
-[functions.track-deck-stats]
-verify_jwt = false
-
-[functions.calculate-card-mastery]
-verify_jwt = false
-
-[functions.generate-card-tips]
-verify_jwt = false
-
-[functions.analyze-player]
-verify_jwt = false
-
-[functions.analyze-match]
-verify_jwt = false
-
-[functions.analyze-deck]
-verify_jwt = false
-
-[functions.sync-card-collection]
-verify_jwt = false
-
-[functions.analyze-deck-builder]
-verify_jwt = false
-
-[functions.coach-chat]
-verify_jwt = false
-
-[functions.analyze-deck-advanced]
-verify_jwt = false
-
-[functions.analyze-meta-trends]
-verify_jwt = false
-
-[functions.calculate-player-stats]
-verify_jwt = false
-
-[functions.suggest-card-replacements]
-verify_jwt = false
-
-[functions.sync-achievements]
 verify_jwt = false
 
 [functions.search-clans]
 verify_jwt = false
 
+# Protected endpoints - JWT required for security
+[functions.track-deck-stats]
+verify_jwt = true
+
+[functions.calculate-card-mastery]
+verify_jwt = true
+
+[functions.generate-card-tips]
+verify_jwt = true
+
+[functions.analyze-player]
+verify_jwt = true
+
+[functions.analyze-match]
+verify_jwt = true
+
+[functions.analyze-deck]
+verify_jwt = true
+
+[functions.sync-card-collection]
+verify_jwt = true
+
+[functions.analyze-deck-builder]
+verify_jwt = true
+
+[functions.coach-chat]
+verify_jwt = true
+
+[functions.analyze-deck-advanced]
+verify_jwt = true
+
+[functions.analyze-meta-trends]
+verify_jwt = true
+
+[functions.calculate-player-stats]
+verify_jwt = true
+
+[functions.suggest-card-replacements]
+verify_jwt = true
+
+[functions.sync-achievements]
+verify_jwt = true
+
 [functions.sync-leaderboard]
-verify_jwt = false
+verify_jwt = true
 
 [functions.predict-deck-performance]
-verify_jwt = false
+verify_jwt = true
 
 [functions.predict-deck-matchup]
-verify_jwt = false
+verify_jwt = true

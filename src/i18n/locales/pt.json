@@ -698,6 +698,7 @@
     "noRecentConversations": "Sem conversas recentes",
     "messageCount": "{{count}} mensagens",
     "loadingHistory": "Carregando histórico de chat...",
+    "loadOlderMessages": "Carregar mensagens antigas",
     "emptyStateTitle": "Pergunte-me qualquer coisa sobre melhorar seu jogo!",
     "emptyStateSubtitle": "Posso ajudar com construção de decks, estratégia e análise de partidas.",
     "discussingMatch": "Discutindo Partida",

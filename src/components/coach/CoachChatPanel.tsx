@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown } from "lucide-react";
+import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { AIQuotaIndicator } from "./AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
+
+const MESSAGES_PER_PAGE = 50;
 
 interface Message {
   id: string;
@@ -88,6 +90,9 @@ export function CoachChatPanel({
   const scrollRef = useRef<HTMLDivElement>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [hasAutoSentMatchContext, setHasAutoSentMatchContext] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(false);
+  const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
+  const [oldestMessageTimestamp, setOldestMessageTimestamp] = useState<string | null>(null);
   
   // AI quota tracking
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
@@ -242,9 +247,63 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
   const loadMessages = async (conversationId: string) => {
     if (conversationId === "new") {
       setMessages([]);
+      setHasMoreMessages(false);
+      setOldestMessageTimestamp(null);
       return;
     }
 
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get total count first for this conversation date
+      const { data: allData } = await supabase
+        .from("chat_messages")
+        .select("created_at")
+        .eq("player_tag", playerTag)
+        .eq("user_id", user.id);
+
+      // Filter by conversation date
+      const conversationMessages = allData?.filter((msg: any) => {
+        const msgDate = new Date(msg.created_at).toLocaleDateString();
+        return msgDate === conversationId;
+      }) || [];
+
+      const totalCount = conversationMessages.length;
+
+      // Fetch most recent 50 messages for this conversation
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select("*")
+        .eq("player_tag", playerTag)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(MESSAGES_PER_PAGE);
+
+      if (error) throw error;
+
+      // Filter messages for this conversation (by date) and reverse for display
+      const filtered = data?.filter((msg: any) => {
+        const msgDate = new Date(msg.created_at).toLocaleDateString();
+        return msgDate === conversationId;
+      }).reverse() || [];
+
+      setMessages(filtered as Message[]);
+      setHasMoreMessages(totalCount > filtered.length);
+      
+      if (filtered.length > 0) {
+        setOldestMessageTimestamp(filtered[0].created_at);
+      }
+    } catch (error) {
+      console.error("Error loading messages:", error);
+    }
+  };
+
+  const loadOlderMessages = async () => {
+    if (!oldestMessageTimestamp || !currentConversationId || currentConversationId === "new") return;
+    
+    setLoadingMoreMessages(true);
+    
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -254,19 +313,29 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
         .select("*")
         .eq("player_tag", playerTag)
         .eq("user_id", user.id)
-        .order("created_at", { ascending: true });
+        .lt("created_at", oldestMessageTimestamp)
+        .order("created_at", { ascending: false })
+        .limit(MESSAGES_PER_PAGE);
 
       if (error) throw error;
 
-      // Filter messages for this conversation (by date)
-      const filtered = data?.filter((msg: any) => {
+      // Filter by conversation date and reverse for display
+      const filtered = (data?.filter((msg: any) => {
         const msgDate = new Date(msg.created_at).toLocaleDateString();
-        return msgDate === conversationId;
-      }) || [];
+        return msgDate === currentConversationId;
+      }).reverse() || []) as Message[];
 
-      setMessages(filtered as Message[]);
+      if (filtered.length > 0) {
+        setMessages(prev => [...filtered, ...prev]);
+        setOldestMessageTimestamp(filtered[0].created_at);
+        setHasMoreMessages(filtered.length === MESSAGES_PER_PAGE);
+      } else {
+        setHasMoreMessages(false);
+      }
     } catch (error) {
-      console.error("Error loading messages:", error);
+      console.error("Error loading older messages:", error);
+    } finally {
+      setLoadingMoreMessages(false);
     }
   };
 
@@ -522,6 +591,26 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                 <>
                   <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
                     <div className="space-y-4">
+                      {/* Load Older Messages Button */}
+                      {hasMoreMessages && (
+                        <div className="flex justify-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={loadOlderMessages}
+                            disabled={loadingMoreMessages}
+                            className="text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            {loadingMoreMessages ? (
+                              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                            ) : (
+                              <ChevronUp className="h-3 w-3 mr-1" />
+                            )}
+                            {t('coach.loadOlderMessages')}
+                          </Button>
+                        </div>
+                      )}
+                      
                       {/* Match Context Card */}
                       {matchContext && (
                         <div className="p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 mb-4">
