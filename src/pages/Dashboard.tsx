@@ -166,6 +166,7 @@ const Dashboard = () => {
               battles={battles || null}
               playerLoading={playerLoading}
               playerError={playerError}
+              playerTag={playerTag || ''}
             />
           </TabsContent>
 

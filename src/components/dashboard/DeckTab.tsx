@@ -4,6 +4,7 @@ import { PageTransition } from "@/components/ui/loading-states";
 import { DataLoader } from "@/components/ui/data-loader";
 import { DeckGrid } from "@/components/cards/DeckGrid";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
+import { RecommendedDecksPanel } from "@/components/deck/RecommendedDecksPanel";
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 interface DeckTabProps {
@@ -11,6 +12,7 @@ interface DeckTabProps {
   battles: ClashRoyaleBattle[] | null;
   playerLoading: boolean;
   playerError: Error | null;
+  playerTag: string;
 }
 
 export function DeckTab({
@@ -18,12 +20,28 @@ export function DeckTab({
   battles,
   playerLoading,
   playerError,
+  playerTag,
 }: DeckTabProps) {
   const { t } = useTranslation();
+
+  const handleImportDeck = (cards: string[]) => {
+    // Navigate to deck builder with the selected deck
+    const deckParam = encodeURIComponent(cards.join(','));
+    window.location.href = `/player/${playerTag}?tab=builder&deck=${deckParam}`;
+  };
 
   return (
     <PageTransition delay={100}>
       <div className="space-y-6">
+        {/* Personalized Recommendations */}
+        {player && (
+          <RecommendedDecksPanel
+            playerTag={playerTag}
+            trophies={player.trophies || 0}
+            onImportDeck={handleImportDeck}
+          />
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>{t('dashboard.currentDeck')}</CardTitle>
