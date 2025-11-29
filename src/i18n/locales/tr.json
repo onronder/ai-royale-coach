@@ -2,7 +2,8 @@
   "nav": {
     "signIn": "Giriş Yap",
     "getStarted": "Başla",
-    "signOut": "Çıkış Yap"
+    "signOut": "Çıkış Yap",
+    "help": "Yardım"
   },
   "landing": {
     "hero": {

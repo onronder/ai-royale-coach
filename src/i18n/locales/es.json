@@ -2,7 +2,8 @@
   "nav": {
     "signIn": "Iniciar Sesión",
     "getStarted": "Comenzar",
-    "signOut": "Cerrar Sesión"
+    "signOut": "Cerrar Sesión",
+    "help": "Ayuda"
   },
   "landing": {
     "hero": {

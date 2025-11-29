@@ -2,7 +2,8 @@
   "nav": {
     "signIn": "Entrar",
     "getStarted": "Começar",
-    "signOut": "Sair"
+    "signOut": "Sair",
+    "help": "Ajuda"
   },
   "landing": {
     "hero": {
