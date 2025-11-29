@@ -3,7 +3,8 @@
     "signIn": "Sign In",
     "getStarted": "Get Started",
     "signOut": "Sign Out",
-    "help": "Help"
+    "help": "Help",
+    "demo": "Demo"
   },
   "landing": {
     "hero": {
@@ -20,7 +21,9 @@
       "errors": {
         "enterTag": "Please enter a player tag",
         "signIn": "Please sign in to continue"
-      }
+      },
+      "tryDemo": "Try Demo",
+      "scrollToExplore": "Scroll to explore"
     },
     "features": {
       "title": "Everything You Need to",
@@ -521,6 +524,97 @@
       "title": "Ready to Climb?",
       "subtitle": "Join thousands of players improving with AI Royale",
       "button": "Start Free Now"
+    },
+    "valueHighlights": {
+      "aiCoach": {
+        "title": "AI Coach Guidance",
+        "desc": "Personalized tips after every game"
+      },
+      "analytics": {
+        "title": "In-Depth Battle Analytics",
+        "desc": "Understand your performance in detail"
+      },
+      "deckOptimization": {
+        "title": "Deck Optimization",
+        "desc": "Build winning decks faster"
+      },
+      "winRate": {
+        "title": "Improve Your Win Rate",
+        "desc": "Data-driven strategies that work"
+      }
+    },
+    "trust": {
+      "stats": {
+        "battles": "50,000+",
+        "battlesLabel": "Battles Analyzed",
+        "players": "10,000+",
+        "playersLabel": "Active Players",
+        "countries": "20+",
+        "countriesLabel": "Countries",
+        "rating": "4.8",
+        "ratingLabel": "Average Rating"
+      },
+      "testimonials": {
+        "1": {
+          "quote": "AI Royale helped me climb 2 arenas in just one week! The deck suggestions are spot on.",
+          "author": "ClashMaster99",
+          "role": "Top 1000 Player"
+        },
+        "2": {
+          "quote": "The AI coach's analysis of my battles was eye-opening. I finally understood what I was doing wrong.",
+          "author": "ArenaKnight",
+          "role": "Clan Leader"
+        },
+        "3": {
+          "quote": "Best tool for serious Clash Royale players. The matchup predictions are incredibly accurate.",
+          "author": "ProGamer_TR",
+          "role": "Esports Competitor"
+        }
+      },
+      "badges": {
+        "secure": {
+          "title": "Safe & Secure",
+          "desc": "Uses Official API"
+        },
+        "noPassword": {
+          "title": "No Password Required",
+          "desc": "Only your player tag"
+        },
+        "privacy": {
+          "title": "Data Privacy Protected",
+          "desc": "Your data stays safe"
+        }
+      }
+    },
+    "demoTeaser": {
+      "badge": "Live Preview",
+      "title": "See AI Royale in Action",
+      "subtitle": "Preview our AI analysis with sample decks before signing up",
+      "statsTitle": "Performance Stats",
+      "aiInsightTitle": "AI Coach Insight",
+      "aiInsightPreview": "Get personalized coaching tips and strategic recommendations based on your actual gameplay data...",
+      "exploreButton": "Explore Full Demo"
+    },
+    "demoPage": {
+      "badge": "Interactive Demo",
+      "title": "AI Royale In Action",
+      "subtitle": "Try out live examples of our deck analysis and coaching insights. No account needed for this demo.",
+      "noAccountNeeded": "No account needed",
+      "getPersonalized": "Get Personalized Analysis",
+      "readyBadge": "Ready to Start?",
+      "ctaTitle": "Imagine this insight tailored to YOUR gameplay",
+      "ctaSubtitle": "Create a free account to plug in your player tag and unlock personalized AI coaching based on your actual battles.",
+      "startFree": "Start Free Now",
+      "backToHome": "Back to Home",
+      "noCreditCard": "✓ No credit card required ✓ Free to use"
+    },
+    "finalCTA": {
+      "badge": "Start Winning Today",
+      "title": "Ready to Unleash Your Clash Royale Potential?",
+      "subtitle": "Join thousands of players improving their game with AI-powered coaching. Get personalized insights from your very first battle.",
+      "primaryButton": "Get Started Free",
+      "secondaryButton": "Try Demo First",
+      "trustText": "✓ No credit card required ✓ Set up in 2 minutes ✓ Cancel anytime"
     }
   },
   "auth": {

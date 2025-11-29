@@ -3,7 +3,8 @@
     "signIn": "Giriş Yap",
     "getStarted": "Başla",
     "signOut": "Çıkış Yap",
-    "help": "Yardım"
+    "help": "Yardım",
+    "demo": "Demo"
   },
   "landing": {
     "hero": {
@@ -20,7 +21,9 @@
       "errors": {
         "enterTag": "Lütfen bir oyuncu etiketi girin",
         "signIn": "Devam etmek için lütfen giriş yapın"
-      }
+      },
+      "tryDemo": "Demo Dene",
+      "scrollToExplore": "Keşfetmek için kaydır"
     },
     "features": {
       "title": "İhtiyacın Olan Her Şey",

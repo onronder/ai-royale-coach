@@ -3,7 +3,8 @@
     "signIn": "Iniciar Sesión",
     "getStarted": "Comenzar",
     "signOut": "Cerrar Sesión",
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "demo": "Demo"
   },
   "landing": {
     "hero": {
@@ -20,7 +21,9 @@
       "errors": {
         "enterTag": "Por favor ingresa un tag de jugador",
         "signIn": "Por favor inicia sesión para continuar"
-      }
+      },
+      "tryDemo": "Probar Demo",
+      "scrollToExplore": "Desplázate para explorar"
     },
     "features": {
       "title": "Todo lo que Necesitas para",

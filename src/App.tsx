@@ -14,6 +14,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const SelectPlayer = lazy(() => import("./pages/SelectPlayer"));
 const Help = lazy(() => import("./pages/Help"));
+const Demo = lazy(() => import("./pages/Demo"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
                 <Route path="/select-player" element={<SelectPlayer />} />
                 <Route path="/player/:playerTag" element={<Dashboard />} />
                 <Route path="/help" element={<Help />} />
+                <Route path="/demo" element={<Demo />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
