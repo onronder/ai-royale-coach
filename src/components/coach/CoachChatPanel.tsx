@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Loader2, X, MessageSquare, Plus, Swords, Crown, ChevronUp, BookOpen } from "lucide-react";
+import { Send, Crown, User, Loader2, X, MessageSquare, Plus, Swords, ChevronUp, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -608,10 +608,11 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
     >
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-card/50 backdrop-blur">
+        <div className="flex items-center justify-between p-4 border-b border-gold/30 bg-gradient-to-r from-card via-card/95 to-card backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Bot className="h-6 w-6 text-primary-foreground" />
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-gold shadow-gold flex items-center justify-center golden-shine">
+              <Crown className="h-5 w-5 text-gold-foreground" />
+              <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
             </div>
             <div>
               <h2 className="font-rajdhani font-bold text-lg text-foreground">{t('coach.title')}</h2>
@@ -700,7 +701,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                       
                       {messages.length === 0 && !matchContext && (
                         <div className="text-center py-8 text-muted-foreground">
-                          <Bot className="h-12 w-12 mx-auto mb-4 text-primary/50" />
+                          <Crown className="h-12 w-12 mx-auto mb-4 text-gold/50" />
                           <p className="font-rajdhani text-lg">{t('coach.emptyStateTitle')}</p>
                           <p className="text-sm mt-2">{t('coach.emptyStateSubtitle')}</p>
                         </div>
@@ -714,8 +715,8 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                           )}
                         >
                           {msg.role === "assistant" && (
-                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <Bot className="h-5 w-5 text-primary" />
+                            <div className="w-8 h-8 rounded-lg bg-gradient-gold/20 flex items-center justify-center flex-shrink-0">
+                              <Crown className="h-4 w-4 text-gold" />
                             </div>
                           )}
                           <div
