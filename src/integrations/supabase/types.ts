@@ -441,6 +441,7 @@ export type Database = {
       }
       deck_usage_stats: {
         Row: {
+          archetype: string | null
           avg_elixir: number | null
           battles_lost: number | null
           battles_played: number | null
@@ -450,13 +451,17 @@ export type Database = {
           deck_cards: Json
           deck_hash: string
           id: string
+          losses_by_opponent_archetype: Json | null
+          opponent_archetypes: Json | null
           player_tag: string
           total_crowns: number | null
           total_trophy_change: number | null
           updated_at: string | null
           user_id: string
+          wins_by_opponent_archetype: Json | null
         }
         Insert: {
+          archetype?: string | null
           avg_elixir?: number | null
           battles_lost?: number | null
           battles_played?: number | null
@@ -466,13 +471,17 @@ export type Database = {
           deck_cards: Json
           deck_hash: string
           id?: string
+          losses_by_opponent_archetype?: Json | null
+          opponent_archetypes?: Json | null
           player_tag: string
           total_crowns?: number | null
           total_trophy_change?: number | null
           updated_at?: string | null
           user_id: string
+          wins_by_opponent_archetype?: Json | null
         }
         Update: {
+          archetype?: string | null
           avg_elixir?: number | null
           battles_lost?: number | null
           battles_played?: number | null
@@ -482,11 +491,14 @@ export type Database = {
           deck_cards?: Json
           deck_hash?: string
           id?: string
+          losses_by_opponent_archetype?: Json | null
+          opponent_archetypes?: Json | null
           player_tag?: string
           total_crowns?: number | null
           total_trophy_change?: number | null
           updated_at?: string | null
           user_id?: string
+          wins_by_opponent_archetype?: Json | null
         }
         Relationships: []
       }
@@ -753,6 +765,80 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      recommendation_history: {
+        Row: {
+          adopted: boolean | null
+          adopted_at: string | null
+          ai_explanation: string | null
+          archetype: string | null
+          battles_after_adoption: number | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          outcome_tracked_at: string | null
+          player_tag: string
+          recommendation_reason: string
+          recommendation_score: number
+          recommendation_type: string | null
+          recommended_cards: Json | null
+          recommended_deck_id: string | null
+          user_id: string
+          win_rate_after: number | null
+          win_rate_before: number | null
+          wins_after_adoption: number | null
+        }
+        Insert: {
+          adopted?: boolean | null
+          adopted_at?: string | null
+          ai_explanation?: string | null
+          archetype?: string | null
+          battles_after_adoption?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          outcome_tracked_at?: string | null
+          player_tag: string
+          recommendation_reason: string
+          recommendation_score: number
+          recommendation_type?: string | null
+          recommended_cards?: Json | null
+          recommended_deck_id?: string | null
+          user_id: string
+          win_rate_after?: number | null
+          win_rate_before?: number | null
+          wins_after_adoption?: number | null
+        }
+        Update: {
+          adopted?: boolean | null
+          adopted_at?: string | null
+          ai_explanation?: string | null
+          archetype?: string | null
+          battles_after_adoption?: number | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          outcome_tracked_at?: string | null
+          player_tag?: string
+          recommendation_reason?: string
+          recommendation_score?: number
+          recommendation_type?: string | null
+          recommended_cards?: Json | null
+          recommended_deck_id?: string | null
+          user_id?: string
+          win_rate_after?: number | null
+          win_rate_before?: number | null
+          wins_after_adoption?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendation_history_recommended_deck_id_fkey"
+            columns: ["recommended_deck_id"]
+            isOneToOne: false
+            referencedRelation: "deck_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_decks: {
         Row: {
