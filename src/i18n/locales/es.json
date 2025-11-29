@@ -1451,6 +1451,7 @@
       "strength": "Juega a tus Fortalezas"
     },
     "proactive": {
+      "title": "Sugerencia de Mazo",
       "struggling": "Tu tasa de victoria es {{winRate}}%. ¡Prueba {{deckName}} para mejorar tus resultados!",
       "improvement": "¿Quieres subir más? ¡{{deckName}} podría ayudarte a escalar!"
     }

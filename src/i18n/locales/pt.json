@@ -1451,6 +1451,7 @@
       "strength": "Joga com Seus Pontos Fortes"
     },
     "proactive": {
+      "title": "Sugestão de Deck",
       "struggling": "Sua taxa de vitória é {{winRate}}%. Experimente {{deckName}} para melhorar seus resultados!",
       "improvement": "Quer subir mais? {{deckName}} pode te ajudar a escalar!"
     }

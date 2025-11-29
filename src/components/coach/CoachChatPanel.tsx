@@ -46,6 +46,13 @@ interface MatchContextData {
   trophyChange: number;
 }
 
+interface ProactiveSuggestion {
+  type: 'struggling' | 'new_deck' | 'improvement';
+  message: string;
+  deckName?: string;
+  reason?: string;
+}
+
 interface CoachChatPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -66,6 +73,7 @@ interface CoachChatPanelProps {
   achievements?: any[];
   cardCollection?: any[];
   matchContext?: MatchContextData | null;
+  proactiveSuggestion?: ProactiveSuggestion;
 }
 
 export function CoachChatPanel({ 
@@ -78,7 +86,8 @@ export function CoachChatPanel({
   cardMastery,
   achievements,
   cardCollection,
-  matchContext
+  matchContext,
+  proactiveSuggestion
 }: CoachChatPanelProps) {
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);

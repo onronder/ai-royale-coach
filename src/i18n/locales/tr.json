@@ -1451,6 +1451,7 @@
       "strength": "Güçlü Yanlarınıza Oynar"
     },
     "proactive": {
+      "title": "Deste Önerisi",
       "struggling": "Kazanma oranınız {{winRate}}%. Sonuçlarınızı iyileştirmek için {{deckName}} deneyin!",
       "improvement": "Daha yükseğe çıkmak mı istiyorsunuz? {{deckName}} tırmanmanıza yardımcı olabilir!"
     }
