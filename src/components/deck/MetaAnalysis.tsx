@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { TrendingUp, TrendingDown, Flame, Snowflake } from "lucide-react";
+import { TrendingUp, TrendingDown, Flame, Snowflake, Lock } from "lucide-react";
 import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface MetaTrend {
   archetype: string;
@@ -18,21 +21,62 @@ interface MetaTrend {
 
 export function MetaAnalysis() {
   const { t, i18n } = useTranslation();
+  const [showPricingModal, setShowPricingModal] = useState(false);
   
-  const { data: metaData, isLoading } = useQuery({
+  const { data: metaData, isLoading, error } = useQuery({
     queryKey: ["meta-trends", i18n.language],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke("analyze-meta-trends", {
         body: { language: i18n.language }
       });
-      if (error) throw error;
+      
+      // Check for subscription_required in response
+      if ((data as any)?.subscription_required) {
+        throw new Error('SUBSCRIPTION_REQUIRED');
+      }
+      
+      if (error) {
+        if (error.message?.includes('403') || error.message?.includes('subscription')) {
+          throw new Error('SUBSCRIPTION_REQUIRED');
+        }
+        throw error;
+      }
       return data.trends as MetaTrend[];
     },
     staleTime: 60 * 60 * 1000, // 1 hour
+    retry: (failureCount, err) => {
+      if (err instanceof Error && err.message === 'SUBSCRIPTION_REQUIRED') return false;
+      return failureCount < 2;
+    },
   });
+  
+  const requiresSubscription = error instanceof Error && error.message === 'SUBSCRIPTION_REQUIRED';
 
   if (isLoading) {
     return <DataLoader context="analytics" variant="card" customMessage={t('metaAnalysis.analyzing')} />;
+  }
+  
+  if (requiresSubscription) {
+    return (
+      <>
+        <Card className="border-warning/50 bg-warning/5">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center justify-center gap-4 py-8">
+              <Lock className="h-12 w-12 text-warning" />
+              <div className="text-center">
+                <h3 className="text-lg font-heading text-foreground">{t('subscription.metaAnalysisRequiresPro')}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{t('subscription.upgradeToPro')}</p>
+              </div>
+              <Button onClick={() => setShowPricingModal(true)} className="gap-2">
+                <Lock className="h-4 w-4" />
+                {t('subscription.upgrade')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
+      </>
+    );
   }
 
   const getTrendIcon = (trend: string) => {

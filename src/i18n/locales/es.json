@@ -4,6 +4,7 @@
     "upgrade": "Mejorar",
     "proFeature": "Función Pro",
     "deckAnalysisRequiresPro": "El análisis de mazos con IA requiere suscripción a AI Royale Pro",
+    "metaAnalysisRequiresPro": "El análisis del meta requiere suscripción a AI Royale Pro",
     "upgradeToPro": "Mejorar a Pro"
   },
   "nav": {

@@ -4,6 +4,7 @@
     "upgrade": "Atualizar",
     "proFeature": "Recurso Pro",
     "deckAnalysisRequiresPro": "A análise de decks com IA requer assinatura AI Royale Pro",
+    "metaAnalysisRequiresPro": "A análise do meta requer assinatura AI Royale Pro",
     "upgradeToPro": "Atualizar para Pro"
   },
   "nav": {
