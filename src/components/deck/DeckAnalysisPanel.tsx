@@ -6,9 +6,11 @@ import { WinRateChart } from "./WinRateChart";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, Target } from "lucide-react";
+import { AlertCircle, Target, Lock, Crown } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataLoader } from "@/components/ui/data-loader";
+import { useState } from "react";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -34,6 +36,8 @@ interface DeckAnalysisPanelProps {
 
 export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   const { t, i18n } = useTranslation();
+  const [showPricing, setShowPricing] = useState(false);
+  
   const { data: analysis, isLoading, error } = useQuery({
     queryKey: ['deck-analysis', player.tag, i18n.language],
     queryFn: async () => {
@@ -44,13 +48,20 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           throw new Error('AUTH_REQUIRED');
         }
+        if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
+          throw new Error('SUBSCRIPTION_REQUIRED');
+        }
         throw error;
+      }
+      // Check if response indicates subscription required
+      if ((data as any)?.subscription_required) {
+        throw new Error('SUBSCRIPTION_REQUIRED');
       }
       return data;
     },
     staleTime: 24 * 60 * 60 * 1000,
     retry: (failureCount, err) => {
-      if (err instanceof Error && err.message === 'AUTH_REQUIRED') return false;
+      if (err instanceof Error && (err.message === 'AUTH_REQUIRED' || err.message === 'SUBSCRIPTION_REQUIRED')) return false;
       return failureCount < 1;
     },
   });
@@ -61,6 +72,40 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
 
   if (error) {
     const isAuthError = error instanceof Error && error.message === 'AUTH_REQUIRED';
+    const isSubscriptionError = error instanceof Error && error.message === 'SUBSCRIPTION_REQUIRED';
+    
+    if (isSubscriptionError) {
+      return (
+        <>
+          <Card className="border-warning/50 bg-gradient-to-br from-warning/10 to-warning/5">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="p-3 rounded-full bg-warning/20">
+                  <Crown className="w-8 h-8 text-warning" />
+                </div>
+                <div>
+                  <h3 className="font-heading text-lg text-foreground mb-1">
+                    {t('subscription.proFeature')}
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    {t('subscription.deckAnalysisRequiresPro')}
+                  </p>
+                </div>
+                <Button
+                  onClick={() => setShowPricing(true)}
+                  className="bg-gradient-to-r from-warning to-warning/80 text-warning-foreground"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  {t('subscription.upgradeToPro')}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          <PricingModal open={showPricing} onOpenChange={setShowPricing} />
+        </>
+      );
+    }
+    
     return (
       <Card className="border-destructive/50">
         <CardContent className="pt-6">

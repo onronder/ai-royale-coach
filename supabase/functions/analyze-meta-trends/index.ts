@@ -16,6 +16,50 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Validate authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check subscription status
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single();
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('trial_ends_at, trial_used')
+      .eq('id', user.id)
+      .single();
+
+    const now = new Date();
+    const isTrialActive = profile?.trial_ends_at && 
+      new Date(profile.trial_ends_at) > now;
+    const hasAccess = subscription?.status === 'active' || isTrialActive;
+
+    if (!hasAccess) {
+      return new Response(
+        JSON.stringify({ error: 'Subscription required for meta analysis', subscription_required: true }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Fetch deck archetypes from database
     const { data: archetypes, error: dbError } = await supabase
       .from('deck_archetypes')

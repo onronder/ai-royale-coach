@@ -408,6 +408,25 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           toast.error(t('coach.sessionExpired'));
           return;
         }
+        if (resp.status === 403) {
+          // Check if it's a subscription required error
+          try {
+            const errorData = await resp.json();
+            if (errorData.subscription_required) {
+              toast.error(t('subscription.requiredForAI'), {
+                action: {
+                  label: t('subscription.upgrade'),
+                  onClick: () => window.location.href = '/auth?upgrade=true'
+                }
+              });
+              return;
+            }
+          } catch {
+            // If can't parse JSON, treat as generic 403
+          }
+          toast.error(t('coach.accessDenied'));
+          return;
+        }
         if (resp.status === 429) {
           toast.error(t('coach.rateLimitExceeded'));
           return;

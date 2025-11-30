@@ -1,4 +1,11 @@
 {
+  "subscription": {
+    "requiredForAI": "AI özellikleri aktif bir abonelik gerektirir",
+    "upgrade": "Yükselt",
+    "proFeature": "Pro Özellik",
+    "deckAnalysisRequiresPro": "AI deste analizi AI Royale Pro aboneliği gerektirir",
+    "upgradeToPro": "Pro'ya Yükselt"
+  },
   "nav": {
     "signIn": "Giriş Yap",
     "getStarted": "Başla",

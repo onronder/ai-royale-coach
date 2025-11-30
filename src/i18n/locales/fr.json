@@ -1,4 +1,11 @@
 {
+  "subscription": {
+    "requiredForAI": "Les fonctionnalités IA nécessitent un abonnement actif",
+    "upgrade": "Améliorer",
+    "proFeature": "Fonctionnalité Pro",
+    "deckAnalysisRequiresPro": "L'analyse de deck par IA nécessite un abonnement AI Royale Pro",
+    "upgradeToPro": "Passer à Pro"
+  },
   "nav": {
     "signIn": "Connexion",
     "getStarted": "Commencer",

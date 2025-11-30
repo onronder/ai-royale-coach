@@ -120,7 +120,22 @@ export const useGenerateCardTips = () => {
         body: { cardName, winRate, timesUsed, bestPartners, worstMatchups, language: i18n.language }
       });
       
-      if (error) throw error;
+      if (error) {
+        // Check for subscription required error
+        if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
+          const subscriptionError = new Error('Subscription required') as any;
+          subscriptionError.subscription_required = true;
+          throw subscriptionError;
+        }
+        throw error;
+      }
+      
+      // Check if response indicates subscription required
+      if (data?.subscription_required) {
+        const subscriptionError = new Error('Subscription required') as any;
+        subscriptionError.subscription_required = true;
+        throw subscriptionError;
+      }
 
       // Update card mastery with tips
       const { data: { user } } = await supabase.auth.getUser();
@@ -138,8 +153,18 @@ export const useGenerateCardTips = () => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', variables.playerTag] });
       toast.success(i18n.t('cardMastery.tipsGenerated', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
     },
-    onError: (error, variables) => {
-      toast.error(i18n.t('cardMastery.tipsFailed', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
+    onError: (error: any, variables) => {
+      if (error?.subscription_required) {
+        toast.error(i18n.t('subscription.requiredForAI'), { 
+          id: `card-tips-${variables.cardId}`,
+          action: {
+            label: i18n.t('subscription.upgrade'),
+            onClick: () => window.location.href = '/auth?upgrade=true'
+          }
+        });
+      } else {
+        toast.error(i18n.t('cardMastery.tipsFailed', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
+      }
       console.error('Card tips generation error:', error);
     },
   });

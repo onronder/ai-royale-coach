@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 
 export interface DeckRecommendation {
   deckId: string;
@@ -50,12 +51,33 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for subscription required error
+        if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
+          const subscriptionError = new Error('Subscription required') as any;
+          subscriptionError.subscription_required = true;
+          throw subscriptionError;
+        }
+        throw error;
+      }
+      
+      // Check if response indicates subscription required
+      if (data?.subscription_required) {
+        const subscriptionError = new Error('Subscription required') as any;
+        subscriptionError.subscription_required = true;
+        throw subscriptionError;
+      }
+      
       return data as RecommendationResponse;
     },
     enabled: !!playerTag && trophies > 0,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     gcTime: 48 * 60 * 60 * 1000, // 48 hours
+    retry: (failureCount, error: any) => {
+      // Don't retry subscription errors
+      if (error?.subscription_required) return false;
+      return failureCount < 1;
+    },
   });
 };
 
@@ -81,7 +103,23 @@ export const useRefreshRecommendations = () => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for subscription required error
+        if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
+          const subscriptionError = new Error('Subscription required') as any;
+          subscriptionError.subscription_required = true;
+          throw subscriptionError;
+        }
+        throw error;
+      }
+      
+      // Check if response indicates subscription required
+      if (data?.subscription_required) {
+        const subscriptionError = new Error('Subscription required') as any;
+        subscriptionError.subscription_required = true;
+        throw subscriptionError;
+      }
+      
       return data as RecommendationResponse;
     },
     onSuccess: (data, variables) => {
@@ -91,9 +129,19 @@ export const useRefreshRecommendations = () => {
       );
       toast.success(t('recommendations.refreshed'), { id: 'refresh-recommendations' });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Recommendation refresh error:', error);
-      toast.error(t('recommendations.refreshFailed'), { id: 'refresh-recommendations' });
+      if (error?.subscription_required) {
+        toast.error(i18n.t('subscription.requiredForAI'), { 
+          id: 'refresh-recommendations',
+          action: {
+            label: i18n.t('subscription.upgrade'),
+            onClick: () => window.location.href = '/auth?upgrade=true'
+          }
+        });
+      } else {
+        toast.error(i18n.t('recommendations.refreshFailed'), { id: 'refresh-recommendations' });
+      }
     },
   });
 };
