@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
-import { RefreshCw, TrendingUp, TrendingDown, Zap } from "lucide-react";
+import { RefreshCw, TrendingUp, TrendingDown, Zap, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { PricingModal } from "@/components/subscription/PricingModal";
 import { useSubscription } from "@/hooks/useSubscription";
 
 interface Suggestion {
@@ -36,6 +37,7 @@ export function CardReplacementSuggester({
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetchedLanguage, setLastFetchedLanguage] = useState<string | null>(null);
+  const [showPricingModal, setShowPricingModal] = useState(false);
 
   // Clear suggestions when language changes
   useEffect(() => {
@@ -57,11 +59,27 @@ export function CardReplacementSuggester({
         },
       });
 
-      if (error) throw error;
+      // Check for subscription_required in response
+      if ((data as any)?.subscription_required) {
+        setShowPricingModal(true);
+        return;
+      }
+
+      if (error) {
+        if (error.message?.includes('403') || error.message?.includes('subscription')) {
+          setShowPricingModal(true);
+          return;
+        }
+        throw error;
+      }
       setSuggestions(data.suggestions);
       setLastFetchedLanguage(i18n.language);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching suggestions:", error);
+      if (error?.subscription_required || error?.message?.includes('subscription')) {
+        setShowPricingModal(true);
+        return;
+      }
       toast.error(t('cardReplacements.fetchFailed'));
     } finally {
       setIsLoading(false);
@@ -87,6 +105,7 @@ export function CardReplacementSuggester({
 
   if (!suggestions.length && !isLoading) {
     return (
+      <>
       <SubscriptionGate feature={t('subscription.features.cardReplacements')}>
         <Card>
           <CardHeader>
@@ -108,6 +127,8 @@ export function CardReplacementSuggester({
           </CardContent>
         </Card>
       </SubscriptionGate>
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
+      </>
     );
   }
 

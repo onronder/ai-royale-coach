@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Target, TrendingUp } from "lucide-react";
+import { Trophy, Target, TrendingUp, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface WinRatePrediction {
   trophy_range: string;
@@ -29,6 +30,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   const [predictions, setPredictions] = useState<WinRatePrediction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastPredictedLanguage, setLastPredictedLanguage] = useState<string | null>(null);
+  const [showPricingModal, setShowPricingModal] = useState(false);
 
   // Clear predictions when language changes
   useEffect(() => {
@@ -45,11 +47,27 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
         body: { deck, targetTrophies, language: i18n.language },
       });
 
-      if (error) throw error;
+      // Check for subscription_required in response
+      if ((data as any)?.subscription_required) {
+        setShowPricingModal(true);
+        return;
+      }
+
+      if (error) {
+        if (error.message?.includes('403') || error.message?.includes('subscription')) {
+          setShowPricingModal(true);
+          return;
+        }
+        throw error;
+      }
       setPredictions(data.predictions);
       setLastPredictedLanguage(i18n.language);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching predictions:", error);
+      if (error?.subscription_required || error?.message?.includes('subscription')) {
+        setShowPricingModal(true);
+        return;
+      }
       toast.error(t('trophyPredictor.fetchFailed'));
     } finally {
       setIsLoading(false);
@@ -73,6 +91,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   }
 
   return (
+    <>
     <SubscriptionGate feature={t('subscription.features.winRatePredictions')}>
       <div className="space-y-4">
         <Card>
@@ -157,5 +176,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
         </Card>
       </div>
     </SubscriptionGate>
+    <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
+    </>
   );
 }

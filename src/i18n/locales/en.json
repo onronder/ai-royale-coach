@@ -4,6 +4,7 @@
     "upgrade": "Upgrade",
     "proFeature": "Pro Feature",
     "deckAnalysisRequiresPro": "AI deck analysis requires AI Royale Pro subscription",
+    "metaAnalysisRequiresPro": "Meta analysis requires AI Royale Pro subscription",
     "upgradeToPro": "Upgrade to Pro"
   },
   "nav": {
