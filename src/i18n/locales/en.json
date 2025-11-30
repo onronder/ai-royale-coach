@@ -1692,6 +1692,7 @@
       "matchupAnalysis": "Matchup Analysis"
     },
     "startThreeDayTrial": "Start 3-Day Free Trial",
+    "featureRequiresPro": "{{feature}} requires AI Royale Pro",
     "subscribeNow": "Subscribe Now",
     "cancelAnytime": "Cancel anytime. No questions asked.",
     "proPlan": "AI Royale Pro",

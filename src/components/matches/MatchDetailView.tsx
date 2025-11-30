@@ -6,13 +6,15 @@ import { DeckGrid } from "@/components/cards/DeckGrid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Clock } from "lucide-react";
+import { Trophy, Crown, Swords, Sparkles, MessageSquare, Zap, Shield, Clock, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useMatchDiscussion } from "@/contexts/MatchDiscussionContext";
 import { CounterDeckModal } from "@/components/deck/CounterDeckModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useSubscription } from "@/hooks/useSubscription";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface MatchDetailViewProps {
   battle: ClashRoyaleBattle | null;
@@ -307,9 +309,11 @@ function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t
 
 export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
   const { t, i18n } = useTranslation();
+  const { hasAccess } = useSubscription();
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [counterDeckOpen, setCounterDeckOpen] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const { setMatchContext } = useMatchDiscussion();
   
   // Normalize player tag - ensure it has # prefix
@@ -326,26 +330,44 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
     queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag, i18n.language],
     queryFn: async () => {
       if (!battle) throw new Error('No battle data');
-      const { data, error } = await supabase.functions.invoke<MatchAnalysis>('analyze-match', {
+      
+      // Check subscription before making AI call
+      if (!hasAccess) {
+        throw new Error('SUBSCRIPTION_REQUIRED');
+      }
+      
+      const { data, error } = await supabase.functions.invoke('analyze-match', {
         body: { battle, playerTag: normalizedPlayerTag, language: i18n.language }
       });
+      
+      // Check for subscription_required in response
+      if ((data as any)?.subscription_required) {
+        throw new Error('SUBSCRIPTION_REQUIRED');
+      }
+      
       if (error) {
         // Check if it's an auth error
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           throw new Error('AUTH_REQUIRED');
         }
+        // Check if subscription required
+        if (error.message?.includes('403') || error.message?.includes('subscription')) {
+          throw new Error('SUBSCRIPTION_REQUIRED');
+        }
         throw error;
       }
-      return data;
+      return data as MatchAnalysis;
     },
-    enabled: open && !!battle,
+    enabled: open && !!battle && hasAccess,
     staleTime: 24 * 60 * 60 * 1000,
     retry: (failureCount, error) => {
-      // Don't retry auth errors
-      if (error instanceof Error && error.message === 'AUTH_REQUIRED') return false;
+      // Don't retry auth or subscription errors
+      if (error instanceof Error && (error.message === 'AUTH_REQUIRED' || error.message === 'SUBSCRIPTION_REQUIRED')) return false;
       return failureCount < 2;
     },
   });
+  
+  const requiresSubscription = analysisError instanceof Error && analysisError.message === 'SUBSCRIPTION_REQUIRED';
 
   useEffect(() => {
     if (open && battle && playerTeam) {
@@ -458,7 +480,15 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
             {/* AI Analysis */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">{t('matchDetail.matchAnalysis')}</h3>
-              {isLoading ? (
+              {!hasAccess ? (
+                <div className="p-6 bg-primary/5 border border-primary/20 rounded-lg text-center space-y-3">
+                  <Lock className="w-8 h-8 text-primary mx-auto" />
+                  <p className="text-sm text-muted-foreground">{t('subscription.featureRequiresPro', { feature: t('subscription.features.matchupAnalysis') })}</p>
+                  <Button onClick={() => setShowPricingModal(true)} size="sm">
+                    {t('subscription.upgradeToPro')}
+                  </Button>
+                </div>
+              ) : isLoading ? (
                 <DataLoader context="match-analysis" variant="inline" />
               ) : analysisError ? (
                 <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -471,6 +501,14 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                         onClick={() => window.location.href = '/auth?mode=signin'}
                       >
                         {t('nav.signIn')}
+                      </Button>
+                    </div>
+                  ) : requiresSubscription ? (
+                    <div className="text-center space-y-2">
+                      <Lock className="w-6 h-6 text-primary mx-auto" />
+                      <p className="text-sm text-muted-foreground">{t('subscription.featureRequiresPro', { feature: t('subscription.features.matchupAnalysis') })}</p>
+                      <Button onClick={() => setShowPricingModal(true)} size="sm">
+                        {t('subscription.upgradeToPro')}
                       </Button>
                     </div>
                   ) : (
@@ -554,6 +592,8 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
           opponentName={opponent.name}
         />
       )}
+
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
     </>
   );
 }

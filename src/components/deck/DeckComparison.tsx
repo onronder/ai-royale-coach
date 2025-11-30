@@ -12,12 +12,14 @@ import { PredictionAccuracyChart } from "./PredictionAccuracyChart";
 import { AIQuotaIndicator } from "@/components/coach/AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
 import { usePredictionHistory } from "@/hooks/usePredictionHistory";
+import { useSubscription } from "@/hooks/useSubscription";
+import { PricingModal } from "@/components/subscription/PricingModal";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { 
   ArrowRight, TrendingUp, TrendingDown, Minus, Zap, ChevronDown, ChevronUp, 
-  Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info, History, Database
+  Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info, History, Database, Lock
 } from "lucide-react";
 
 interface SavedDeck {
@@ -58,12 +60,14 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   const { t, i18n } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
+  const { hasAccess } = useSubscription();
   const { data: predictionHistory, isLoading: isLoadingHistory } = usePredictionHistory(playerTag || null);
   
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
   const [comparisonCards, setComparisonCards] = useState<ClashRoyaleCard[]>([]);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showPredictionHistory, setShowPredictionHistory] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   
   // AI Matchup prediction state
   const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
@@ -105,6 +109,12 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   };
 
   const predictMatchup = async () => {
+    // Check subscription first
+    if (!hasAccess) {
+      setShowPricingModal(true);
+      return;
+    }
+
     if (!hasQuotaRemaining) {
       toast({
         title: t('deckComparison.noQuotaRemaining'),
@@ -130,7 +140,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke<MatchupPrediction>('predict-deck-matchup', {
+      const { data, error } = await supabase.functions.invoke('predict-deck-matchup', {
         body: { 
           deckA: deckANames, 
           deckB: deckBNames,
@@ -139,18 +149,29 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
         }
       });
 
+      // Handle subscription required error from backend
+      if ((data as any)?.subscription_required) {
+        setShowPricingModal(true);
+        return;
+      }
+
       if (error) throw error;
       if (!data) throw new Error('No prediction returned');
 
-      setMatchupPrediction(data);
+      setMatchupPrediction(data as MatchupPrediction);
       // Only increment usage if it was a fresh prediction (not cached)
       if (!data.fromCache) {
         await incrementUsage();
       }
       setShowMatchupAnalysis(true);
 
-    } catch (err) {
+    } catch (err: any) {
       console.error('Matchup prediction error:', err);
+      // Handle subscription_required in error
+      if (err?.subscription_required || err?.message?.includes('subscription_required')) {
+        setShowPricingModal(true);
+        return;
+      }
       toast({
         title: t('deckComparison.predictionFailed'),
         description: err instanceof Error ? err.message : 'Unknown error',
@@ -318,7 +339,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <Button
                     onClick={predictMatchup}
-                    disabled={isLoadingPrediction || !hasQuotaRemaining}
+                    disabled={isLoadingPrediction || (!hasAccess ? false : !hasQuotaRemaining)}
                     className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                   >
                     {isLoadingPrediction ? (
@@ -328,13 +349,14 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                       </>
                     ) : (
                       <>
+                        {!hasAccess && <Lock className="h-4 w-4 mr-2" />}
                         <Sparkles className="h-4 w-4 mr-2" />
                         {t('deckComparison.aiMatchupPrediction')}
-                        <Badge variant="secondary" className="ml-2 text-xs">AI</Badge>
+                        <Badge variant="secondary" className="ml-2 text-xs">{hasAccess ? 'AI' : 'PRO'}</Badge>
                       </>
                     )}
                   </Button>
-                  <AIQuotaIndicator compact />
+                  {hasAccess && <AIQuotaIndicator compact />}
                 </div>
 
                 {/* AI Matchup Results */}
@@ -552,6 +574,8 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
           </CardContent>
         </Card>
       )}
+
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
     </div>
   );
 }
