@@ -748,6 +748,9 @@ export type Database = {
           email: string | null
           id: string
           preferred_language: string | null
+          trial_ends_at: string | null
+          trial_started_at: string | null
+          trial_used: boolean | null
           updated_at: string | null
         }
         Insert: {
@@ -755,6 +758,9 @@ export type Database = {
           email?: string | null
           id: string
           preferred_language?: string | null
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          trial_used?: boolean | null
           updated_at?: string | null
         }
         Update: {
@@ -762,6 +768,9 @@ export type Database = {
           email?: string | null
           id?: string
           preferred_language?: string | null
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          trial_used?: boolean | null
           updated_at?: string | null
         }
         Relationships: []
@@ -1128,6 +1137,48 @@ export type Database = {
           request_count?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          account_slots: number | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          id: string
+          lemon_squeezy_customer_id: string | null
+          lemon_squeezy_subscription_id: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          account_slots?: number | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          lemon_squeezy_customer_id?: string | null
+          lemon_squeezy_subscription_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          account_slots?: number | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          id?: string
+          lemon_squeezy_customer_id?: string | null
+          lemon_squeezy_subscription_id?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+          variant_id?: string | null
         }
         Relationships: []
       }

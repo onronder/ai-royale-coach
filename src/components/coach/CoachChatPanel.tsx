@@ -14,6 +14,8 @@ import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { AIQuotaIndicator } from "./AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
 import { matchHelpTopic, generateHelpResponse } from "@/utils/helpTopicMatcher";
+import { useSubscription } from "@/hooks/useSubscription";
+import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
 
 const MESSAGES_PER_PAGE = 50;
 
@@ -106,6 +108,7 @@ export function CoachChatPanel({
   
   // AI quota tracking
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
+  const { hasAccess: hasSubscriptionAccess } = useSubscription();
 
   useEffect(() => {
     if (scrollRef.current) {

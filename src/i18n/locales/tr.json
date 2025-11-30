@@ -1686,5 +1686,43 @@
       "struggling": "Kazanma oranınız {{winRate}}%. Sonuçlarınızı iyileştirmek için {{deckName}} deneyin!",
       "improvement": "Daha yükseğe çıkmak mı istiyorsunuz? {{deckName}} tırmanmanıza yardımcı olabilir!"
     }
+  },
+  "subscription": {
+    "unlockFeature": "{{feature}} Kilidi Aç",
+    "premiumDescription": "Yapay zeka koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
+    "trialExpiredDescription": "Ücretsiz denemeniz sona erdi. Yapay zeka özelliklerini kullanmaya devam etmek için abone olun.",
+    "startFreeTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
+    "subscribePro": "Pro'ya Abone Ol",
+    "priceInfo": "$4.99/ay • İstediğiniz zaman iptal edin",
+    "trialStarted": "3 günlük ücretsiz denemeniz başladı!",
+    "trialError": "Deneme başlatılamadı. Lütfen tekrar deneyin.",
+    "checkoutError": "Ödeme oluşturulamadı. Lütfen tekrar deneyin.",
+    "unlockPro": "AI Royale Pro Kilidi Aç",
+    "proDescription": "Yapay zeka koçluğu ve gelişmiş analize sınırsız erişim elde edin.",
+    "month": "ay",
+    "threeAccountsIncluded": "3 Oyuncu Hesabı Dahil",
+    "features": {
+      "aiCoach": "Sınırsız Yapay Zeka Koçu sohbetleri",
+      "deckAnalysis": "Gelişmiş deste analizi ve önerileri",
+      "matchPredictions": "Maç tahminleri ve counter stratejileri",
+      "multiAccount": "3'e kadar oyuncu hesabı"
+    },
+    "startThreeDayTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
+    "subscribeNow": "Şimdi Abone Ol",
+    "cancelAnytime": "İstediğiniz zaman iptal edin. Soru sorulmaz.",
+    "proPlan": "AI Royale Pro",
+    "accountSlots": "{{count}} oyuncu hesabı",
+    "freeTrial": "Ücretsiz Deneme",
+    "trialDaysLeft": "{{days}} gün kaldı",
+    "noSubscription": "Aktif Abonelik Yok",
+    "trialExpired": "Ücretsiz denemeniz sona erdi",
+    "startTrialPrompt": "Bugün ücretsiz denemenizi başlatın",
+    "subscribe": "Abone Ol",
+    "startTrial": "Ücretsiz Denemeyi Başlat",
+    "active": "Aktif",
+    "upgrade": "Yükselt",
+    "tryFree": "Ücretsiz Dene",
+    "subscriptionSuccess": "AI Royale Pro'ya Hoş Geldiniz!",
+    "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zeka özelliklerinin tadını çıkarın!"
   }
 }
