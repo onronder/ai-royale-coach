@@ -1,4 +1,11 @@
 {
+  "subscription": {
+    "requiredForAI": "Las funciones de IA requieren una suscripción activa",
+    "upgrade": "Mejorar",
+    "proFeature": "Función Pro",
+    "deckAnalysisRequiresPro": "El análisis de mazos con IA requiere suscripción a AI Royale Pro",
+    "upgradeToPro": "Mejorar a Pro"
+  },
   "nav": {
     "signIn": "Iniciar Sesión",
     "getStarted": "Comenzar",
