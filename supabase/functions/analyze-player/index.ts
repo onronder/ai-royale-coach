@@ -53,6 +53,31 @@ serve(async (req) => {
       );
     }
 
+    // Check subscription status
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single();
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('trial_ends_at, trial_used')
+      .eq('id', user.id)
+      .single();
+
+    const now = new Date();
+    const isTrialActive = profile?.trial_ends_at && 
+      new Date(profile.trial_ends_at) > now;
+    const hasAccess = subscription?.status === 'active' || isTrialActive;
+
+    if (!hasAccess) {
+      return new Response(
+        JSON.stringify({ error: 'Subscription required for AI analysis', subscription_required: true }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { playerData, battles, language = 'en' } = await req.json();
     
     if (!playerData || !battles) {

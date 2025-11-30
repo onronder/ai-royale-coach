@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,6 +19,54 @@ serve(async (req) => {
   }
 
   try {
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Validate authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Check subscription status
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single();
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('trial_ends_at, trial_used')
+      .eq('id', user.id)
+      .single();
+
+    const now = new Date();
+    const isTrialActive = profile?.trial_ends_at && 
+      new Date(profile.trial_ends_at) > now;
+    const hasAccess = subscription?.status === 'active' || isTrialActive;
+
+    if (!hasAccess) {
+      return new Response(
+        JSON.stringify({ error: 'Subscription required for advanced AI analysis', subscription_required: true }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { cards, language = 'en' } = await req.json();
 
     if (!cards || cards.length !== 8) {
