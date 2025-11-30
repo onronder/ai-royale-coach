@@ -1,12 +1,4 @@
 {
-  "subscription": {
-    "requiredForAI": "Recursos de IA requerem uma assinatura ativa",
-    "upgrade": "Atualizar",
-    "proFeature": "Recurso Pro",
-    "deckAnalysisRequiresPro": "A análise de decks com IA requer assinatura AI Royale Pro",
-    "metaAnalysisRequiresPro": "A análise do meta requer assinatura AI Royale Pro",
-    "upgradeToPro": "Atualizar para Pro"
-  },
   "nav": {
     "signIn": "Entrar",
     "getStarted": "Começar",
@@ -1696,6 +1688,11 @@
     }
   },
   "subscription": {
+    "requiredForAI": "Recursos de IA requerem uma assinatura ativa",
+    "proFeature": "Recurso Pro",
+    "deckAnalysisRequiresPro": "A análise de decks com IA requer assinatura AI Royale Pro",
+    "metaAnalysisRequiresPro": "A análise do meta requer assinatura AI Royale Pro",
+    "upgradeToPro": "Atualizar para Pro",
     "unlockFeature": "Desbloquear {{feature}}",
     "premiumDescription": "Obtenha acesso completo ao coaching de IA, análise de decks e recomendações personalizadas.",
     "trialExpiredDescription": "Seu período de teste gratuito terminou. Assine para continuar usando os recursos de IA.",
@@ -1738,6 +1735,15 @@
     "upgrade": "Melhorar",
     "tryFree": "Experimentar Grátis",
     "subscriptionSuccess": "Bem-vindo ao AI Royale Pro!",
-    "subscriptionSuccessDescription": "Sua assinatura está ativa. Aproveite os recursos de IA ilimitados!"
+    "subscriptionSuccessDescription": "Sua assinatura está ativa. Aproveite os recursos de IA ilimitados!",
+    "navBadge": {
+      "pro": "PRO",
+      "trialDays": "{{days}}d restantes",
+      "upgrade": "Melhorar"
+    },
+    "previewTitle": "Prévia da Análise IA",
+    "previewDescription": "Atualize para ver a análise completa",
+    "seeFull": "Ver Análise Completa",
+    "trialExpiredPreview": "Seu teste terminou. Assine para ver a análise completa."
   }
 }

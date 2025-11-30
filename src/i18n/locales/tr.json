@@ -1,12 +1,4 @@
 {
-  "subscription": {
-    "requiredForAI": "AI özellikleri aktif bir abonelik gerektirir",
-    "upgrade": "Yükselt",
-    "proFeature": "Pro Özellik",
-    "deckAnalysisRequiresPro": "AI deste analizi AI Royale Pro aboneliği gerektirir",
-    "metaAnalysisRequiresPro": "Meta analizi AI Royale Pro aboneliği gerektirir",
-    "upgradeToPro": "Pro'ya Yükselt"
-  },
   "nav": {
     "signIn": "Giriş Yap",
     "getStarted": "Başla",
@@ -1696,6 +1688,11 @@
     }
   },
   "subscription": {
+    "requiredForAI": "AI özellikleri aktif bir abonelik gerektirir",
+    "proFeature": "Pro Özellik",
+    "deckAnalysisRequiresPro": "AI deste analizi AI Royale Pro aboneliği gerektirir",
+    "metaAnalysisRequiresPro": "Meta analizi AI Royale Pro aboneliği gerektirir",
+    "upgradeToPro": "Pro'ya Yükselt",
     "unlockFeature": "{{feature}} Kilidi Aç",
     "premiumDescription": "Yapay zeka koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
     "trialExpiredDescription": "Ücretsiz denemeniz sona erdi. Yapay zeka özelliklerini kullanmaya devam etmek için abone olun.",
@@ -1738,6 +1735,15 @@
     "upgrade": "Yükselt",
     "tryFree": "Ücretsiz Dene",
     "subscriptionSuccess": "AI Royale Pro'ya Hoş Geldiniz!",
-    "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zeka özelliklerinin tadını çıkarın!"
+    "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zeka özelliklerinin tadını çıkarın!",
+    "navBadge": {
+      "pro": "PRO",
+      "trialDays": "{{days}}g kaldı",
+      "upgrade": "Yükselt"
+    },
+    "previewTitle": "AI Analiz Önizlemesi",
+    "previewDescription": "Tam analizi görmek için yükseltin",
+    "seeFull": "Tam Analizi Gör",
+    "trialExpiredPreview": "Denemeniz sona erdi. Tam analizi görmek için abone olun."
   }
 }

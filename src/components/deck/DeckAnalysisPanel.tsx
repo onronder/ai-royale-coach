@@ -10,7 +10,9 @@ import { AlertCircle, Target, Lock, Crown } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { DataLoader } from "@/components/ui/data-loader";
 import { useState } from "react";
+import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { DeckAnalysisPreview } from "@/components/subscription/AIPreviewContent";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -74,33 +76,15 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
     const isAuthError = error instanceof Error && error.message === 'AUTH_REQUIRED';
     const isSubscriptionError = error instanceof Error && error.message === 'SUBSCRIPTION_REQUIRED';
     
-    if (isSubscriptionError) {
+  if (isSubscriptionError) {
       return (
         <>
-          <Card className="border-warning/50 bg-gradient-to-br from-warning/10 to-warning/5">
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center gap-4 text-center">
-                <div className="p-3 rounded-full bg-warning/20">
-                  <Crown className="w-8 h-8 text-warning" />
-                </div>
-                <div>
-                  <h3 className="font-heading text-lg text-foreground mb-1">
-                    {t('subscription.proFeature')}
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    {t('subscription.deckAnalysisRequiresPro')}
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setShowPricing(true)}
-                  className="bg-gradient-to-r from-warning to-warning/80 text-warning-foreground"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  {t('subscription.upgradeToPro')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <AIFeaturePreview 
+            featureName={t('subscription.features.deckAnalysis')}
+            previewContent={<DeckAnalysisPreview />}
+          >
+            <div />
+          </AIFeaturePreview>
           <PricingModal open={showPricing} onOpenChange={setShowPricing} />
         </>
       );

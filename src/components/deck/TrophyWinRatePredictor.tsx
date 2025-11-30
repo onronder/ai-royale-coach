@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
-import { Trophy, Target, TrendingUp, Lock } from "lucide-react";
+import { Trophy, Target, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { WinRatePredictionPreview } from "@/components/subscription/AIPreviewContent";
 
 interface WinRatePrediction {
   trophy_range: string;
@@ -92,7 +93,10 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
 
   return (
     <>
-    <SubscriptionGate feature={t('subscription.features.winRatePredictions')}>
+    <AIFeaturePreview 
+      featureName={t('subscription.features.winRatePredictions')}
+      previewContent={<WinRatePredictionPreview />}
+    >
       <div className="space-y-4">
         <Card>
           <CardHeader>
@@ -175,7 +179,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
           </CardContent>
         </Card>
       </div>
-    </SubscriptionGate>
+    </AIFeaturePreview>
     <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
     </>
   );
