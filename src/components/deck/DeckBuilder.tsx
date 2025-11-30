@@ -8,13 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardImage } from "@/components/cards/CardImage";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
-import { Sparkles, Save, Zap, X, Library, GitCompare } from "lucide-react";
+import { Sparkles, Save, Zap, X, Library, GitCompare, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DataLoader } from "@/components/ui/data-loader";
 import { AdvancedAnalysisTabs } from "./AdvancedAnalysisTabs";
 import { DeckTemplatesLibrary } from "./DeckTemplatesLibrary";
 import { DeckComparison } from "./DeckComparison";
+import { useSubscription } from "@/hooks/useSubscription";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface SavedDeck {
   id: string;
@@ -72,6 +74,7 @@ export function DeckBuilder({
   playerTrophies = 0
 }: DeckBuilderProps) {
   const { t, i18n } = useTranslation();
+  const { hasAccess } = useSubscription();
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
@@ -81,6 +84,7 @@ export function DeckBuilder({
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
   const [lastAnalyzedLanguage, setLastAnalyzedLanguage] = useState<string | null>(null);
+  const [showPricingModal, setShowPricingModal] = useState(false);
 
   // Clear analysis when language changes to force re-analysis in new language
   useEffect(() => {
@@ -127,6 +131,11 @@ export function DeckBuilder({
       return;
     }
 
+    if (!hasAccess) {
+      setShowPricingModal(true);
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
       const [basicResult, advancedResult] = await Promise.all([
@@ -138,6 +147,12 @@ export function DeckBuilder({
         })
       ]);
 
+      // Handle subscription required errors
+      if (basicResult.data?.subscription_required || advancedResult.data?.subscription_required) {
+        setShowPricingModal(true);
+        return;
+      }
+
       if (basicResult.error) throw basicResult.error;
       if (advancedResult.error) throw advancedResult.error;
       
@@ -145,8 +160,13 @@ export function DeckBuilder({
       setAdvancedAnalysis(advancedResult.data);
       setLastAnalyzedLanguage(i18n.language);
       toast.success(t('deck.analysisReady'));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error analyzing deck:', error);
+      // Check for subscription_required in error response
+      if (error?.message?.includes('subscription_required') || error?.subscription_required) {
+        setShowPricingModal(true);
+        return;
+      }
       toast.error(t('deck.analyzeFailed'));
     } finally {
       setIsAnalyzing(false);
@@ -250,8 +270,10 @@ export function DeckBuilder({
                   disabled={selectedCards.length !== 8 || isAnalyzing}
                   className="flex-1"
                 >
+                  {!hasAccess && <Lock className="w-4 h-4 mr-2" />}
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAnalyzing ? t('deck.analyzing') : t('deck.aiAnalyze')}
+                  {!hasAccess && <Badge variant="secondary" className="ml-2 text-xs">PRO</Badge>}
                 </Button>
                 <Button 
                   onClick={saveDeck} 
@@ -360,6 +382,8 @@ export function DeckBuilder({
           )}
         </TabsContent>
       </Tabs>
+
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
     </div>
   );
 }
