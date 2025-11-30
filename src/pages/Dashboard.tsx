@@ -191,14 +191,14 @@ const Dashboard = () => {
 
           <TabsContent value="tournaments" className="mt-6">
             <PageTransition delay={100}>
-              <TournamentList onSelectTournament={(id) => console.log('Tournament:', id)} />
+              <TournamentList onSelectTournament={() => {}} />
             </PageTransition>
           </TabsContent>
 
           <TabsContent value="clans" className="mt-6">
             <PageTransition delay={100}>
               <ClanSearch 
-                onSelectClan={(clan) => console.log('Clan:', clan)} 
+                onSelectClan={() => {}} 
                 userPlayerTag={playerTag}
               />
             </PageTransition>
