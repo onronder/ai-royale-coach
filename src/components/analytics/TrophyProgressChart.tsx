@@ -245,8 +245,8 @@ export function TrophyProgressChart({
               stroke="hsl(var(--primary))"
               strokeWidth={2}
               fill="url(#trophyGradient)"
-              dot={(props) => {
-                const { cx, cy, payload } = props;
+            dot={(props) => {
+                const { cx, cy, payload, index } = props;
                 const color = payload.result === 'win' 
                   ? 'hsl(var(--success))' 
                   : payload.result === 'loss' 
@@ -254,6 +254,7 @@ export function TrophyProgressChart({
                     : 'hsl(var(--muted-foreground))';
                 return (
                   <circle 
+                    key={`dot-${index}`}
                     cx={cx} 
                     cy={cy} 
                     r={3} 
