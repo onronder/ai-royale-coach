@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
 import { RefreshCw, TrendingUp, TrendingDown, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Suggestion {
   card: string;
@@ -30,6 +32,7 @@ export function CardReplacementSuggester({
   onReplace,
 }: CardReplacementSuggesterProps) {
   const { t, i18n } = useTranslation();
+  const { hasAccess } = useSubscription();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetchedLanguage, setLastFetchedLanguage] = useState<string | null>(null);
@@ -84,25 +87,27 @@ export function CardReplacementSuggester({
 
   if (!suggestions.length && !isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{t('cardReplacements.title')}</span>
-            <Badge variant="secondary">{t('common.aiPowered')}</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
-              {t('cardReplacements.getSuggestions', { card: targetCard })}
-            </p>
-            <Button onClick={fetchSuggestions} className="gap-2">
-              <RefreshCw className="h-4 w-4" />
-              {t('cardReplacements.findReplacements')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <SubscriptionGate feature={t('subscription.features.cardReplacements')}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>{t('cardReplacements.title')}</span>
+              <Badge variant="secondary">{t('common.aiPowered')}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-4">
+                {t('cardReplacements.getSuggestions', { card: targetCard })}
+              </p>
+              <Button onClick={fetchSuggestions} className="gap-2">
+                <RefreshCw className="h-4 w-4" />
+                {t('cardReplacements.findReplacements')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </SubscriptionGate>
     );
   }
 

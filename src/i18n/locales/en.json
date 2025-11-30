@@ -1680,10 +1680,16 @@
     "month": "month",
     "threeAccountsIncluded": "3 Player Accounts Included",
     "features": {
-      "aiCoach": "Unlimited AI Coach conversations",
-      "deckAnalysis": "Advanced deck analysis & recommendations",
-      "matchPredictions": "Match predictions & counter strategies",
-      "multiAccount": "Up to 3 player accounts"
+      "aiCoach": "AI Coach",
+      "deckAnalysis": "Deck Analysis",
+      "matchPredictions": "Match Predictions",
+      "multiAccount": "Multiple Accounts",
+      "aiAnalysis": "AI Analysis",
+      "deckRecommendations": "Deck Recommendations",
+      "metaAnalysis": "Meta Analysis",
+      "cardReplacements": "Card Replacements",
+      "winRatePredictions": "Win Rate Predictions",
+      "matchupAnalysis": "Matchup Analysis"
     },
     "startThreeDayTrial": "Start 3-Day Free Trial",
     "subscribeNow": "Subscribe Now",

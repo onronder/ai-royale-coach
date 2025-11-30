@@ -1702,10 +1702,16 @@
     "month": "ay",
     "threeAccountsIncluded": "3 Oyuncu Hesabı Dahil",
     "features": {
-      "aiCoach": "Sınırsız Yapay Zeka Koçu sohbetleri",
-      "deckAnalysis": "Gelişmiş deste analizi ve önerileri",
-      "matchPredictions": "Maç tahminleri ve counter stratejileri",
-      "multiAccount": "3'e kadar oyuncu hesabı"
+      "aiCoach": "Yapay Zeka Koçu",
+      "deckAnalysis": "Deste Analizi",
+      "matchPredictions": "Maç Tahminleri",
+      "multiAccount": "Çoklu Hesaplar",
+      "aiAnalysis": "Yapay Zeka Analizi",
+      "deckRecommendations": "Deste Önerileri",
+      "metaAnalysis": "Meta Analizi",
+      "cardReplacements": "Kart Değişimleri",
+      "winRatePredictions": "Kazanma Oranı Tahminleri",
+      "matchupAnalysis": "Eşleşme Analizi"
     },
     "startThreeDayTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
     "subscribeNow": "Şimdi Abone Ol",
