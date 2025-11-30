@@ -1,12 +1,4 @@
 {
-  "subscription": {
-    "requiredForAI": "AI features require an active subscription",
-    "upgrade": "Upgrade",
-    "proFeature": "Pro Feature",
-    "deckAnalysisRequiresPro": "AI deck analysis requires AI Royale Pro subscription",
-    "metaAnalysisRequiresPro": "Meta analysis requires AI Royale Pro subscription",
-    "upgradeToPro": "Upgrade to Pro"
-  },
   "nav": {
     "signIn": "Sign In",
     "getStarted": "Get Started",
@@ -1674,6 +1666,11 @@
     }
   },
   "subscription": {
+    "requiredForAI": "AI features require an active subscription",
+    "proFeature": "Pro Feature",
+    "deckAnalysisRequiresPro": "AI deck analysis requires AI Royale Pro subscription",
+    "metaAnalysisRequiresPro": "Meta analysis requires AI Royale Pro subscription",
+    "upgradeToPro": "Upgrade to Pro",
     "unlockFeature": "Unlock {{feature}}",
     "premiumDescription": "Get full access to AI coaching, deck analysis, and personalized recommendations.",
     "trialExpiredDescription": "Your free trial has ended. Subscribe to continue using AI features.",
@@ -1716,6 +1713,15 @@
     "upgrade": "Upgrade",
     "tryFree": "Try Free",
     "subscriptionSuccess": "Welcome to AI Royale Pro!",
-    "subscriptionSuccessDescription": "Your subscription is now active. Enjoy unlimited AI features!"
+    "subscriptionSuccessDescription": "Your subscription is now active. Enjoy unlimited AI features!",
+    "navBadge": {
+      "pro": "PRO",
+      "trialDays": "{{days}}d left",
+      "upgrade": "Upgrade"
+    },
+    "previewTitle": "Preview of AI Analysis",
+    "previewDescription": "Upgrade to see the full insights",
+    "seeFull": "See Full Analysis",
+    "trialExpiredPreview": "Your trial has ended. Subscribe to see the full analysis."
   }
 }

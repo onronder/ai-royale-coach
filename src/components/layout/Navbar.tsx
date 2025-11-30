@@ -8,6 +8,7 @@ import { NotificationCenter } from "./NotificationCenter";
 import { GlobalProgressCenter } from "./GlobalProgressCenter";
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
+import { NavbarSubscriptionBadge } from "./NavbarSubscriptionBadge";
 
 interface NavbarProps {
   user?: any;
@@ -56,6 +57,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
           <ThemeToggle />
           {user && (
             <>
+              <NavbarSubscriptionBadge />
               <GlobalProgressCenter />
               <NotificationCenter />
             </>

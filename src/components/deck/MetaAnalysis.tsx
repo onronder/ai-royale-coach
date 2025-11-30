@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
 import { TrendingUp, TrendingDown, Flame, Snowflake, Lock } from "lucide-react";
-import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { MetaAnalysisPreview } from "@/components/subscription/AIPreviewContent";
 
 interface MetaTrend {
   archetype: string;
@@ -104,7 +105,10 @@ export function MetaAnalysis() {
   };
 
   return (
-    <SubscriptionGate feature={t('subscription.features.metaAnalysis')}>
+    <AIFeaturePreview 
+      featureName={t('subscription.features.metaAnalysis')}
+      previewContent={<MetaAnalysisPreview />}
+    >
       <div className="space-y-4">
         <div>
           <h2 className="text-2xl font-heading text-foreground">{t('metaAnalysis.title')}</h2>
@@ -167,6 +171,6 @@ export function MetaAnalysis() {
           })}
         </div>
       </div>
-    </SubscriptionGate>
+    </AIFeaturePreview>
   );
 }

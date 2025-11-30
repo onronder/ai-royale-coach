@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
-import { RefreshCw, TrendingUp, TrendingDown, Zap, Lock } from "lucide-react";
+import { RefreshCw, TrendingUp, TrendingDown, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
-import { useSubscription } from "@/hooks/useSubscription";
+import { CardReplacementPreview } from "@/components/subscription/AIPreviewContent";
 
 interface Suggestion {
   card: string;
@@ -33,7 +33,6 @@ export function CardReplacementSuggester({
   onReplace,
 }: CardReplacementSuggesterProps) {
   const { t, i18n } = useTranslation();
-  const { hasAccess } = useSubscription();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [lastFetchedLanguage, setLastFetchedLanguage] = useState<string | null>(null);
@@ -106,7 +105,10 @@ export function CardReplacementSuggester({
   if (!suggestions.length && !isLoading) {
     return (
       <>
-      <SubscriptionGate feature={t('subscription.features.cardReplacements')}>
+      <AIFeaturePreview 
+        featureName={t('subscription.features.cardReplacements')}
+        previewContent={<CardReplacementPreview />}
+      >
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -126,7 +128,7 @@ export function CardReplacementSuggester({
             </div>
           </CardContent>
         </Card>
-      </SubscriptionGate>
+      </AIFeaturePreview>
       <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
       </>
     );

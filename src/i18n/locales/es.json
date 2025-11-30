@@ -1,12 +1,4 @@
 {
-  "subscription": {
-    "requiredForAI": "Las funciones de IA requieren una suscripción activa",
-    "upgrade": "Mejorar",
-    "proFeature": "Función Pro",
-    "deckAnalysisRequiresPro": "El análisis de mazos con IA requiere suscripción a AI Royale Pro",
-    "metaAnalysisRequiresPro": "El análisis del meta requiere suscripción a AI Royale Pro",
-    "upgradeToPro": "Mejorar a Pro"
-  },
   "nav": {
     "signIn": "Iniciar Sesión",
     "getStarted": "Comenzar",
@@ -1696,6 +1688,11 @@
     }
   },
   "subscription": {
+    "requiredForAI": "Las funciones de IA requieren una suscripción activa",
+    "proFeature": "Función Pro",
+    "deckAnalysisRequiresPro": "El análisis de mazos con IA requiere suscripción a AI Royale Pro",
+    "metaAnalysisRequiresPro": "El análisis del meta requiere suscripción a AI Royale Pro",
+    "upgradeToPro": "Mejorar a Pro",
     "unlockFeature": "Desbloquear {{feature}}",
     "premiumDescription": "Obtén acceso completo al coaching de IA, análisis de mazos y recomendaciones personalizadas.",
     "trialExpiredDescription": "Tu prueba gratuita ha terminado. Suscríbete para seguir usando las funciones de IA.",
@@ -1738,6 +1735,15 @@
     "upgrade": "Mejorar",
     "tryFree": "Probar Gratis",
     "subscriptionSuccess": "¡Bienvenido a AI Royale Pro!",
-    "subscriptionSuccessDescription": "Tu suscripción está activa. ¡Disfruta de las funciones de IA ilimitadas!"
+    "subscriptionSuccessDescription": "Tu suscripción está activa. ¡Disfruta de las funciones de IA ilimitadas!",
+    "navBadge": {
+      "pro": "PRO",
+      "trialDays": "{{days}}d restantes",
+      "upgrade": "Mejorar"
+    },
+    "previewTitle": "Vista Previa del Análisis IA",
+    "previewDescription": "Mejora para ver los análisis completos",
+    "seeFull": "Ver Análisis Completo",
+    "trialExpiredPreview": "Tu prueba ha terminado. Suscríbete para ver el análisis completo."
   }
 }
