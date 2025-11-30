@@ -34,7 +34,15 @@ export function usePlayerAnalysis(
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           throw new Error('AUTH_REQUIRED');
         }
+        if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
+          throw new Error('SUBSCRIPTION_REQUIRED');
+        }
         throw error;
+      }
+
+      // Check for subscription_required in response data
+      if (data && typeof data === 'object' && 'subscription_required' in data) {
+        throw new Error('SUBSCRIPTION_REQUIRED');
       }
       if (!data) throw new Error('No analysis data returned');
 
@@ -43,7 +51,7 @@ export function usePlayerAnalysis(
     enabled: !!player && !!battles && battles.length > 0,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     retry: (failureCount, err) => {
-      if (err instanceof Error && err.message === 'AUTH_REQUIRED') return false;
+      if (err instanceof Error && (err.message === 'AUTH_REQUIRED' || err.message === 'SUBSCRIPTION_REQUIRED')) return false;
       return failureCount < 1;
     },
   });
