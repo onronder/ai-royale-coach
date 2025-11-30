@@ -1686,5 +1686,43 @@
       "struggling": "Tu tasa de victoria es {{winRate}}%. ¡Prueba {{deckName}} para mejorar tus resultados!",
       "improvement": "¿Quieres subir más? ¡{{deckName}} podría ayudarte a escalar!"
     }
+  },
+  "subscription": {
+    "unlockFeature": "Desbloquear {{feature}}",
+    "premiumDescription": "Obtén acceso completo al coaching de IA, análisis de mazos y recomendaciones personalizadas.",
+    "trialExpiredDescription": "Tu prueba gratuita ha terminado. Suscríbete para seguir usando las funciones de IA.",
+    "startFreeTrial": "Iniciar Prueba Gratuita de 3 Días",
+    "subscribePro": "Suscribirse a Pro",
+    "priceInfo": "$4.99/mes • Cancela cuando quieras",
+    "trialStarted": "¡Tu prueba gratuita de 3 días ha comenzado!",
+    "trialError": "Error al iniciar la prueba. Inténtalo de nuevo.",
+    "checkoutError": "Error al crear el pago. Inténtalo de nuevo.",
+    "unlockPro": "Desbloquear AI Royale Pro",
+    "proDescription": "Obtén acceso ilimitado al coaching de IA y análisis avanzado.",
+    "month": "mes",
+    "threeAccountsIncluded": "3 Cuentas de Jugador Incluidas",
+    "features": {
+      "aiCoach": "Conversaciones ilimitadas con el Coach IA",
+      "deckAnalysis": "Análisis avanzado de mazos y recomendaciones",
+      "matchPredictions": "Predicciones de partidas y estrategias counter",
+      "multiAccount": "Hasta 3 cuentas de jugador"
+    },
+    "startThreeDayTrial": "Iniciar Prueba Gratuita de 3 Días",
+    "subscribeNow": "Suscribirse Ahora",
+    "cancelAnytime": "Cancela cuando quieras. Sin preguntas.",
+    "proPlan": "AI Royale Pro",
+    "accountSlots": "{{count}} cuentas de jugador",
+    "freeTrial": "Prueba Gratuita",
+    "trialDaysLeft": "{{days}} días restantes",
+    "noSubscription": "Sin Suscripción Activa",
+    "trialExpired": "Tu prueba gratuita ha terminado",
+    "startTrialPrompt": "Comienza tu prueba gratuita hoy",
+    "subscribe": "Suscribirse",
+    "startTrial": "Iniciar Prueba Gratuita",
+    "active": "Activa",
+    "upgrade": "Mejorar",
+    "tryFree": "Probar Gratis",
+    "subscriptionSuccess": "¡Bienvenido a AI Royale Pro!",
+    "subscriptionSuccessDescription": "Tu suscripción está activa. ¡Disfruta de las funciones de IA ilimitadas!"
   }
 }

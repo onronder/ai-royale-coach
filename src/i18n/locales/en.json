@@ -1664,5 +1664,43 @@
       "struggling": "Your win rate is {{winRate}}%. Try {{deckName}} to improve your results!",
       "improvement": "Want to push higher? {{deckName}} could help you climb!"
     }
+  },
+  "subscription": {
+    "unlockFeature": "Unlock {{feature}}",
+    "premiumDescription": "Get full access to AI coaching, deck analysis, and personalized recommendations.",
+    "trialExpiredDescription": "Your free trial has ended. Subscribe to continue using AI features.",
+    "startFreeTrial": "Start 3-Day Free Trial",
+    "subscribePro": "Subscribe to Pro",
+    "priceInfo": "$4.99/month • Cancel anytime",
+    "trialStarted": "Your 3-day free trial has started!",
+    "trialError": "Failed to start trial. Please try again.",
+    "checkoutError": "Failed to create checkout. Please try again.",
+    "unlockPro": "Unlock AI Royale Pro",
+    "proDescription": "Get unlimited access to AI coaching and advanced analysis.",
+    "month": "month",
+    "threeAccountsIncluded": "3 Player Accounts Included",
+    "features": {
+      "aiCoach": "Unlimited AI Coach conversations",
+      "deckAnalysis": "Advanced deck analysis & recommendations",
+      "matchPredictions": "Match predictions & counter strategies",
+      "multiAccount": "Up to 3 player accounts"
+    },
+    "startThreeDayTrial": "Start 3-Day Free Trial",
+    "subscribeNow": "Subscribe Now",
+    "cancelAnytime": "Cancel anytime. No questions asked.",
+    "proPlan": "AI Royale Pro",
+    "accountSlots": "{{count}} player accounts",
+    "freeTrial": "Free Trial",
+    "trialDaysLeft": "{{days}} days left",
+    "noSubscription": "No Active Subscription",
+    "trialExpired": "Your free trial has ended",
+    "startTrialPrompt": "Start your free trial today",
+    "subscribe": "Subscribe",
+    "startTrial": "Start Free Trial",
+    "active": "Active",
+    "upgrade": "Upgrade",
+    "tryFree": "Try Free",
+    "subscriptionSuccess": "Welcome to AI Royale Pro!",
+    "subscriptionSuccessDescription": "Your subscription is now active. Enjoy unlimited AI features!"
   }
 }

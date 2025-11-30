@@ -7,6 +7,16 @@ verify_jwt = false
 [functions.search-clans]
 verify_jwt = false
 
+[functions.lemon-webhook]
+verify_jwt = false
+
+# Subscription endpoints - JWT required
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.get-subscription-status]
+verify_jwt = true
+
 # Protected endpoints - JWT required for security
 [functions.track-deck-stats]
 verify_jwt = true

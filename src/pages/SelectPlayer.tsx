@@ -1,17 +1,30 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Crown, LogOut, Trophy, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerTagSelector } from "@/components/player/PlayerTagSelector";
+import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
 import { toast } from "sonner";
 
 const SelectPlayer = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Check for subscription success
+  useEffect(() => {
+    if (searchParams.get('subscription') === 'success') {
+      toast.success(t('subscription.subscriptionSuccess'), {
+        description: t('subscription.subscriptionSuccessDescription'),
+      });
+      // Clean up URL
+      navigate('/select-player', { replace: true });
+    }
+  }, [searchParams, navigate, t]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -103,6 +116,11 @@ const SelectPlayer = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12 relative z-10">
         <div className="max-w-2xl mx-auto animate-arena-entrance">
+          {/* Subscription Status */}
+          <div className="mb-6">
+            <SubscriptionStatus />
+          </div>
+
           {/* Page Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/20 border border-gold/30 mb-4">
@@ -114,7 +132,7 @@ const SelectPlayer = () => {
             <p className="text-muted-foreground">{t('selectPlayer.subtitle')}</p>
           </div>
 
-          <PlayerTagSelector 
+          <PlayerTagSelector
             userId={user.id} 
             onSelect={handleSelectPlayer}
           />
