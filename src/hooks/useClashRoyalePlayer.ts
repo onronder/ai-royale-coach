@@ -19,7 +19,6 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
     if (cached && cached.player_data) {
       const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
       if (cacheAge < 5 * 60 * 1000) {
-        console.log(`Using cached player data (age: ${Math.floor(cacheAge / 1000)}s)`);
         return cached.player_data as unknown as ClashRoyalePlayer;
       }
     }
@@ -48,7 +47,6 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
       .maybeSingle();
       
     if (cached?.player_data) {
-      console.warn('API failed, using stale cache');
       toast({
         title: i18n.t('dataSync.usingCachedData'),
         description: i18n.t('dataSync.playerProfileUnavailable'),

@@ -19,7 +19,6 @@ async function fetchBattles(playerTag: string, forceRefresh: boolean = false): P
     if (cached && cached.battles_data) {
       const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
       if (cacheAge < 2 * 60 * 1000) {
-        console.log(`Using cached battles (age: ${Math.floor(cacheAge / 1000)}s)`);
         return cached.battles_data as unknown as ClashRoyaleBattle[];
       }
     }
@@ -48,7 +47,6 @@ async function fetchBattles(playerTag: string, forceRefresh: boolean = false): P
       .maybeSingle();
       
     if (cached?.battles_data) {
-      console.warn('API failed, using stale cache');
       toast({
         title: i18n.t('dataSync.usingCachedData'),
         description: i18n.t('dataSync.battleHistoryUnavailable'),

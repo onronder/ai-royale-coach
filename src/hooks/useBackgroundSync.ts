@@ -23,7 +23,6 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
     const runBackgroundSync = async () => {
       // Check lock to prevent concurrent executions
       if (syncLock) {
-        console.log('Background sync already running, skipping...');
         return;
       }
       
@@ -38,7 +37,6 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
           .eq('player_tag', playerTag);
 
         if (collectionCount === 0) {
-          console.log('Starting background card collection sync...');
           try {
             await supabase.functions.invoke('sync-card-collection', { body: { playerTag } });
             toast.success(t('dashboard.sync.collectionSynced'));
@@ -57,7 +55,6 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
           .eq('player_tag', playerTag);
 
         if (masteryCount === 0) {
-          console.log('Starting background card mastery calculation...');
           try {
             await supabase.functions.invoke('calculate-card-mastery', { body: { playerTag } });
             toast.success(t('dashboard.sync.masteryCalculated'));
@@ -76,7 +73,6 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
           .eq('player_tag', playerTag);
 
         if (deckStatsCount === 0) {
-          console.log('Starting background deck stats tracking...');
           try {
             await supabase.functions.invoke('track-deck-stats', { body: { playerTag } });
             toast.success(t('dashboard.sync.deckStatsTracked'));
