@@ -10,12 +10,12 @@ verify_jwt = false
 [functions.lemon-webhook]
 verify_jwt = false
 
-# Subscription endpoints - JWT required
+# Subscription endpoints - handle auth internally for CORS support
 [functions.create-checkout]
-verify_jwt = true
+verify_jwt = false
 
 [functions.get-subscription-status]
-verify_jwt = true
+verify_jwt = false
 
 # Protected endpoints - JWT required for security
 [functions.track-deck-stats]
