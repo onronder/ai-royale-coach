@@ -599,6 +599,50 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
     }
   };
 
+  // If user doesn't have subscription access, show the gate
+  if (!hasSubscriptionAccess) {
+    return (
+      <div
+        className={cn(
+          "fixed top-0 right-0 h-full w-full md:w-[500px] z-50",
+          "bg-background border-l border-border",
+          "transform transition-transform duration-300 ease-in-out",
+          "shadow-2xl",
+          isOpen ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <div className="h-full flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gold/30 bg-gradient-to-r from-card via-card/95 to-card backdrop-blur">
+            <div className="flex items-center gap-3">
+              <div className="relative w-10 h-10 rounded-xl bg-gradient-gold shadow-gold flex items-center justify-center golden-shine">
+                <Crown className="h-5 w-5 text-gold-foreground" />
+                <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
+              </div>
+              <div>
+                <h2 className="font-rajdhani font-bold text-lg text-foreground">{t('coach.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('coach.panelDescription')}</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="hover:bg-destructive/10 hover:text-destructive"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4">
+            <SubscriptionGate feature={t('subscription.features.aiCoach')}>
+              <div />
+            </SubscriptionGate>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(

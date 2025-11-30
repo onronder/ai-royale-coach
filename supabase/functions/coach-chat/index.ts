@@ -43,6 +43,34 @@ serve(async (req) => {
       );
     }
 
+    // SUBSCRIPTION CHECK: Verify user has active subscription or trial
+    const { data: subscription } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single();
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('trial_ends_at, trial_used')
+      .eq('id', user.id)
+      .single();
+
+    const now = new Date();
+    const isTrialActive = profile?.trial_ends_at && 
+      new Date(profile.trial_ends_at) > now;
+    const hasAccess = subscription?.status === 'active' || isTrialActive;
+
+    if (!hasAccess) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Subscription required to use AI features',
+          subscription_required: true 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // SERVER-SIDE AI QUOTA CHECK
     const today = new Date().toISOString().split('T')[0];
     

@@ -1702,10 +1702,16 @@
     "month": "mês",
     "threeAccountsIncluded": "3 Contas de Jogador Incluídas",
     "features": {
-      "aiCoach": "Conversas ilimitadas com o Coach IA",
-      "deckAnalysis": "Análise avançada de decks e recomendações",
-      "matchPredictions": "Previsões de partidas e estratégias counter",
-      "multiAccount": "Até 3 contas de jogador"
+      "aiCoach": "Coach IA",
+      "deckAnalysis": "Análise de Decks",
+      "matchPredictions": "Previsões de Partidas",
+      "multiAccount": "Múltiplas Contas",
+      "aiAnalysis": "Análise de IA",
+      "deckRecommendations": "Recomendações de Decks",
+      "metaAnalysis": "Análise do Meta",
+      "cardReplacements": "Substituições de Cartas",
+      "winRatePredictions": "Previsões de Taxa de Vitória",
+      "matchupAnalysis": "Análise de Confrontos"
     },
     "startThreeDayTrial": "Iniciar Teste Grátis de 3 Dias",
     "subscribeNow": "Assinar Agora",

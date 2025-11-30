@@ -259,6 +259,34 @@ serve(async (req) => {
       );
     }
 
+    // SUBSCRIPTION CHECK: Verify user has active subscription or trial
+    const { data: subscriptionData } = await supabase
+      .from('user_subscriptions')
+      .select('status')
+      .eq('user_id', user.id)
+      .single();
+
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('trial_ends_at')
+      .eq('id', user.id)
+      .single();
+
+    const now = new Date();
+    const isTrialActive = userProfile?.trial_ends_at && 
+      new Date(userProfile.trial_ends_at) > now;
+    const hasAccess = subscriptionData?.status === 'active' || isTrialActive;
+
+    if (!hasAccess) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Subscription required to use AI features',
+          subscription_required: true 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log(`[recommend-deck] Starting for user ${user.id}, player ${playerTag}`);
 
     // ============= Step 1: Check Cache =============

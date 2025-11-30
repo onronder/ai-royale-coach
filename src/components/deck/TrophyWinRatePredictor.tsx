@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DataLoader } from "@/components/ui/data-loader";
 import { Trophy, Target, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
 
 interface WinRatePrediction {
   trophy_range: string;
@@ -72,87 +73,89 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   }
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-warning" />
-            {t('trophyPredictor.title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{t('trophyPredictor.targetRange')}</span>
-              <Badge variant="secondary">{targetTrophies} 🏆</Badge>
+    <SubscriptionGate feature={t('subscription.features.winRatePredictions')}>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-warning" />
+              {t('trophyPredictor.title')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{t('trophyPredictor.targetRange')}</span>
+                <Badge variant="secondary">{targetTrophies} 🏆</Badge>
+              </div>
+              <Slider
+                value={[targetTrophies]}
+                onValueChange={(val) => setTargetTrophies(val[0])}
+                min={3000}
+                max={10000}
+                step={100}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>3000</span>
+                <span>10000</span>
+              </div>
             </div>
-            <Slider
-              value={[targetTrophies]}
-              onValueChange={(val) => setTargetTrophies(val[0])}
-              min={3000}
-              max={10000}
-              step={100}
-              className="w-full"
-            />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>3000</span>
-              <span>10000</span>
-            </div>
-          </div>
 
-          <Button onClick={fetchPredictions} className="w-full gap-2">
-            <Target className="h-4 w-4" />
-            {t('trophyPredictor.predict')}
-          </Button>
+            <Button onClick={fetchPredictions} className="w-full gap-2">
+              <Target className="h-4 w-4" />
+              {t('trophyPredictor.predict')}
+            </Button>
 
-          {predictions.length > 0 && (
-            <div className="space-y-3 pt-4 border-t">
-              {predictions.map((pred, idx) => (
-                <Card key={idx} className={`${pred.is_sweet_spot ? "border-primary shadow-glow" : ""}`}>
-                  <CardContent className="pt-4 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-warning" />
-                        <span className="font-heading">{pred.trophy_range}</span>
-                        {pred.is_sweet_spot && (
-                          <Badge variant="default" className="gap-1">
-                            <TrendingUp className="h-3 w-3" />
-                            {t('trophyPredictor.sweetSpot')}
-                          </Badge>
-                        )}
+            {predictions.length > 0 && (
+              <div className="space-y-3 pt-4 border-t">
+                {predictions.map((pred, idx) => (
+                  <Card key={idx} className={`${pred.is_sweet_spot ? "border-primary shadow-glow" : ""}`}>
+                    <CardContent className="pt-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Trophy className="h-4 w-4 text-warning" />
+                          <span className="font-heading">{pred.trophy_range}</span>
+                          {pred.is_sweet_spot && (
+                            <Badge variant="default" className="gap-1">
+                              <TrendingUp className="h-3 w-3" />
+                              {t('trophyPredictor.sweetSpot')}
+                            </Badge>
+                          )}
+                        </div>
+                        <span className={`text-lg font-heading ${getWinRateColor(pred.predicted_win_rate)}`}>
+                          {pred.predicted_win_rate.toFixed(1)}%
+                        </span>
                       </div>
-                      <span className={`text-lg font-heading ${getWinRateColor(pred.predicted_win_rate)}`}>
-                        {pred.predicted_win_rate.toFixed(1)}%
-                      </span>
-                    </div>
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{t('trophyPredictor.confidence')}</span>
-                      <span className={getConfidenceColor(pred.confidence)}>
-                        {pred.confidence}%
-                      </span>
-                    </div>
-
-                    {pred.tips.length > 0 && (
-                      <div className="space-y-1 pt-2 border-t">
-                        <p className="text-xs font-medium text-muted-foreground">{t('trophyPredictor.arenaTips')}:</p>
-                        <ul className="space-y-1">
-                          {pred.tips.map((tip, tipIdx) => (
-                            <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">
-                              <span className="text-primary">•</span>
-                              <span>{tip}</span>
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{t('trophyPredictor.confidence')}</span>
+                        <span className={getConfidenceColor(pred.confidence)}>
+                          {pred.confidence}%
+                        </span>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+
+                      {pred.tips.length > 0 && (
+                        <div className="space-y-1 pt-2 border-t">
+                          <p className="text-xs font-medium text-muted-foreground">{t('trophyPredictor.arenaTips')}:</p>
+                          <ul className="space-y-1">
+                            {pred.tips.map((tip, tipIdx) => (
+                              <li key={tipIdx} className="text-xs text-muted-foreground flex items-start gap-2">
+                                <span className="text-primary">•</span>
+                                <span>{tip}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </SubscriptionGate>
   );
 }

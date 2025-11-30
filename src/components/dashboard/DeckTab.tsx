@@ -6,6 +6,7 @@ import { DeckGrid } from "@/components/cards/DeckGrid";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { RecommendedDecksPanel } from "@/components/deck/RecommendedDecksPanel";
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
+import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
 
 interface DeckTabProps {
   player: ClashRoyalePlayer | null;
@@ -33,13 +34,15 @@ export function DeckTab({
   return (
     <PageTransition delay={100}>
       <div className="space-y-6">
-        {/* Personalized Recommendations */}
+        {/* Personalized Recommendations - Subscription Gated */}
         {player && (
-          <RecommendedDecksPanel
-            playerTag={playerTag}
-            trophies={player.trophies || 0}
-            onImportDeck={handleImportDeck}
-          />
+          <SubscriptionGate feature={t('subscription.features.deckRecommendations')}>
+            <RecommendedDecksPanel
+              playerTag={playerTag}
+              trophies={player.trophies || 0}
+              onImportDeck={handleImportDeck}
+            />
+          </SubscriptionGate>
         )}
 
         <Card>
@@ -61,7 +64,9 @@ export function DeckTab({
         </Card>
 
         {player && battles && battles.length > 0 && (
-          <DeckAnalysisPanel player={player} battles={battles} />
+          <SubscriptionGate feature={t('subscription.features.deckAnalysis')}>
+            <DeckAnalysisPanel player={player} battles={battles} />
+          </SubscriptionGate>
         )}
       </div>
     </PageTransition>

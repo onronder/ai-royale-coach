@@ -8,6 +8,7 @@ import { TrophyProgressChart } from "@/components/analytics/TrophyProgressChart"
 import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
+import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
 
 interface OverviewTabProps {
   playerTag: string;
@@ -89,12 +90,14 @@ export function OverviewTab({
           bestTrophies={player?.bestTrophies}
         />
 
-        {/* AI Analysis Card */}
-        <AIAnalysisCard
-          analysis={analysis}
-          analysisLoading={analysisLoading}
-          analysisError={analysisError}
-        />
+        {/* AI Analysis Card - Subscription Gated */}
+        <SubscriptionGate feature={t('subscription.features.aiAnalysis')}>
+          <AIAnalysisCard
+            analysis={analysis}
+            analysisLoading={analysisLoading}
+            analysisError={analysisError}
+          />
+        </SubscriptionGate>
 
         {/* Achievement Badge Widget */}
         <AchievementBadgeWidget playerTag={playerTag} />
