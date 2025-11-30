@@ -1705,7 +1705,8 @@
     "unlockPro": "Desbloquear AI Royale Pro",
     "proDescription": "Obtenha acesso ilimitado ao coaching de IA e análise avançada.",
     "month": "mês",
-    "threeAccountsIncluded": "3 Contas de Jogador Incluídas",
+    "onePlayerOneAccount": "1 Jogador, 1 Conta",
+    "additionalAccountsInfo": "Adicione até 3 contas. $1,99/mês por conta adicional.",
     "features": {
       "aiCoach": "Coach IA",
       "deckAnalysis": "Análise de Decks",

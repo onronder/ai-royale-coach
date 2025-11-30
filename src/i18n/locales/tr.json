@@ -1705,7 +1705,8 @@
     "unlockPro": "AI Royale Pro Kilidi Aç",
     "proDescription": "Yapay zeka koçluğu ve gelişmiş analize sınırsız erişim elde edin.",
     "month": "ay",
-    "threeAccountsIncluded": "3 Oyuncu Hesabı Dahil",
+    "onePlayerOneAccount": "1 Oyuncu, 1 Hesap",
+    "additionalAccountsInfo": "3 hesaba kadar ekleyin. Her ek hesap için $1,99/ay.",
     "features": {
       "aiCoach": "Yapay Zeka Koçu",
       "deckAnalysis": "Deste Analizi",

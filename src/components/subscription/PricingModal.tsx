@@ -65,8 +65,8 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
               <span className="text-4xl font-bold font-rajdhani text-gold">$4.99</span>
               <span className="text-muted-foreground">/{t('subscription.month')}</span>
             </div>
-            <Badge variant="outline" className="mt-2 border-emerald-500/50 text-emerald-500 bg-emerald-500/10">
-              {t('subscription.threeAccountsIncluded')}
+          <Badge variant="outline" className="mt-2 border-emerald-500/50 text-emerald-500 bg-emerald-500/10">
+              {t('subscription.onePlayerOneAccount')}
             </Badge>
           </div>
 
@@ -108,6 +108,9 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
 
           <p className="text-xs text-muted-foreground text-center">
             {t('subscription.cancelAnytime')}
+          </p>
+          <p className="text-xs text-muted-foreground text-center mt-1">
+            {t('subscription.additionalAccountsInfo')}
           </p>
         </div>
       </DialogContent>
