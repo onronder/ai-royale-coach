@@ -4,7 +4,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Sparkles, Brain, Shield, Zap, Users } from "lucide-react";
+import { Check, Crown, Brain, Shield, Zap, Users } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -34,18 +34,8 @@ const pricingTiers: PricingTier[] = [
 
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
   const { t } = useTranslation();
-  const { hasUsedTrial, startTrial, isStartingTrial, createCheckout, isCreatingCheckout } = useSubscription();
+  const { createCheckout, isCreatingCheckout } = useSubscription();
   const [selectedTier, setSelectedTier] = useState<number>(1);
-
-  const handleStartTrial = async () => {
-    try {
-      await startTrial();
-      toast.success(t('subscription.trialStarted'));
-      onOpenChange(false);
-    } catch (error) {
-      toast.error(t('subscription.trialError'));
-    }
-  };
 
   const handleSubscribe = async () => {
     try {
@@ -146,19 +136,8 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
             </div>
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Button */}
           <div className="space-y-3">
-            {!hasUsedTrial && (
-              <Button 
-                onClick={handleStartTrial}
-                disabled={isStartingTrial}
-                variant="outline"
-                className="w-full border-gold/50 hover:bg-gold/10"
-              >
-                <Sparkles className="mr-2 h-4 w-4 text-gold" />
-                {isStartingTrial ? t('common.loading') : t('subscription.startThreeDayTrial')}
-              </Button>
-            )}
             <Button 
               onClick={handleSubscribe}
               disabled={isCreatingCheckout}

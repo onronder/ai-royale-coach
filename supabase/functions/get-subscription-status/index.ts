@@ -86,7 +86,7 @@ serve(async (req) => {
       subscription.current_period_end && 
       new Date(subscription.current_period_end) > now;
 
-    const accountSlots = subscription?.account_slots || (isTrialActive ? 1 : 0);
+    const accountSlots = subscription?.account_slots || (isTrialActive ? 3 : 0);
 
     // Determine access level
     const hasAccess = hasActiveSubscription || isTrialActive || cancelledButActive;

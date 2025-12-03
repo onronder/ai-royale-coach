@@ -87,8 +87,8 @@ serve(async (req) => {
       );
     }
 
-    // PER-PLAYER AI ACCESS CHECK
-    if (playerData.tag) {
+    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    if (playerData.tag && !isTrialActive) {
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')

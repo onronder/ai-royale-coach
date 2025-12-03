@@ -261,58 +261,76 @@ const Settings = () => {
                   <DataLoader context="player-profiles" variant="minimal" />
                 ) : (
                   <div className="space-y-2">
-                    {profiles.map((profile) => (
-                      <div 
-                        key={profile.id}
-                        className={cn(
-                          "flex items-center justify-between p-3 rounded-lg border transition-all",
-                          profile.ai_enabled
-                            ? "border-primary/50 bg-primary/5"
-                            : "border-border/50 bg-muted/30"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "w-10 h-10 rounded-lg flex items-center justify-center",
-                            profile.ai_enabled ? "bg-primary/20" : "bg-muted"
-                          )}>
-                            {profile.ai_enabled ? (
-                              <Brain className="h-5 w-5 text-primary" />
-                            ) : (
-                              <AlertCircle className="h-5 w-5 text-muted-foreground" />
-                            )}
-                          </div>
-                          <div>
-                            <span className="font-medium">
-                              {profile.player_name || `#${profile.player_tag}`}
-                            </span>
-                            {profile.trophies && (
-                              <p className="text-xs text-muted-foreground">
-                                {profile.trophies.toLocaleString()} {t('common.trophies')}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <Badge 
-                          variant={profile.ai_enabled ? "default" : "outline"}
-                          className={profile.ai_enabled ? "bg-primary/20 text-primary border-primary/30" : ""}
+                    {profiles.map((profile) => {
+                      // During trial, all accounts have AI access regardless of ai_enabled field
+                      const hasAIAccess = isTrialActive || profile.ai_enabled;
+                      
+                      return (
+                        <div 
+                          key={profile.id}
+                          className={cn(
+                            "flex items-center justify-between p-3 rounded-lg border transition-all",
+                            hasAIAccess
+                              ? "border-primary/50 bg-primary/5"
+                              : "border-border/50 bg-muted/30"
+                          )}
                         >
-                          {profile.ai_enabled ? t('settings.aiAccounts.enabled') : t('settings.aiAccounts.disabled')}
-                        </Badge>
-                      </div>
-                    ))}
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "w-10 h-10 rounded-lg flex items-center justify-center",
+                              hasAIAccess ? "bg-primary/20" : "bg-muted"
+                            )}>
+                              {hasAIAccess ? (
+                                <Brain className="h-5 w-5 text-primary" />
+                              ) : (
+                                <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                              )}
+                            </div>
+                            <div>
+                              <span className="font-medium">
+                                {profile.player_name || `#${profile.player_tag}`}
+                              </span>
+                              {profile.trophies && (
+                                <p className="text-xs text-muted-foreground">
+                                  {profile.trophies.toLocaleString()} {t('common.trophies')}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <Badge 
+                            variant={hasAIAccess ? "default" : "outline"}
+                            className={hasAIAccess ? "bg-primary/20 text-primary border-primary/30" : ""}
+                          >
+                            {hasAIAccess 
+                              ? (isTrialActive && !profile.ai_enabled 
+                                  ? t('settings.aiAccounts.trialAccess') 
+                                  : t('settings.aiAccounts.enabled'))
+                              : t('settings.aiAccounts.disabled')
+                            }
+                          </Badge>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
-                {/* Change AI Accounts Button */}
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => setShowAISelector(true)}
-                >
-                  <ChevronRight className="mr-2 h-4 w-4" />
-                  {t('settings.aiAccounts.manage')}
-                </Button>
+                {/* Change AI Accounts Button - only show for non-trial users */}
+                {!isTrialActive && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setShowAISelector(true)}
+                  >
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    {t('settings.aiAccounts.manage')}
+                  </Button>
+                )}
+                
+                {isTrialActive && (
+                  <p className="text-xs text-muted-foreground text-center py-2">
+                    {t('settings.aiAccounts.trialNote')}
+                  </p>
+                )}
               </CardContent>
             </Card>
           )}

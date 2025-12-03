@@ -49,28 +49,6 @@ export function useSubscription() {
     refetchOnWindowFocus: true,
   });
 
-  const startTrialMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const now = new Date();
-      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          trial_started_at: now.toISOString(),
-          trial_ends_at: trialEnd.toISOString(),
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-status'] });
-    },
-  });
 
   interface CheckoutParams {
     accountSlots?: number;
@@ -101,8 +79,6 @@ export function useSubscription() {
     accountSlots: data?.accountSlots ?? 0,
     subscriptionStatus: data?.subscription?.status ?? null,
     needsAISelection: data?.subscription?.needsAISelection ?? false,
-    startTrial: startTrialMutation.mutateAsync,
-    isStartingTrial: startTrialMutation.isPending,
     createCheckout: createCheckoutMutation.mutateAsync,
     isCreatingCheckout: createCheckoutMutation.isPending,
   };

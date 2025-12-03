@@ -277,23 +277,25 @@ serve(async (req) => {
       new Date(userProfile.trial_ends_at) > now;
     const hasAccess = subscriptionData?.status === 'active' || isTrialActive;
 
-    // PER-PLAYER AI ACCESS CHECK
-    const { data: playerProfile } = await supabase
-      .from('player_profiles')
-      .select('ai_enabled')
-      .eq('user_id', user.id)
-      .eq('player_tag', playerTag)
-      .single();
+    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    if (!isTrialActive) {
+      const { data: playerProfile } = await supabase
+        .from('player_profiles')
+        .select('ai_enabled')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerTag)
+        .single();
 
-    if (!playerProfile?.ai_enabled) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'AI not enabled for this account',
-          ai_not_enabled: true,
-          player_tag: playerTag
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      if (!playerProfile?.ai_enabled) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI not enabled for this account',
+            ai_not_enabled: true,
+            player_tag: playerTag
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     if (!hasAccess) {

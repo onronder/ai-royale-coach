@@ -77,8 +77,8 @@ serve(async (req) => {
 
     const { playerData, battles, language = 'en' }: DeckAnalysisRequest & { language?: string } = await req.json();
 
-    // PER-PLAYER AI ACCESS CHECK
-    if (playerData?.tag) {
+    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    if (playerData?.tag && !isTrialActive) {
       const playerTag = playerData.tag;
       const { data: playerProfile } = await supabase
         .from('player_profiles')

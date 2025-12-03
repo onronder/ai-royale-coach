@@ -19,7 +19,7 @@ const SelectPlayer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAISelector, setShowAISelector] = useState(false);
   
-  const { needsAISelection, accountSlots, refetch: refetchSubscription } = useSubscription();
+  const { needsAISelection, accountSlots, isTrialActive, trialDaysRemaining, refetch: refetchSubscription } = useSubscription();
 
   // Check for subscription success and show AI selector if needed
   useEffect(() => {
@@ -34,6 +34,18 @@ const SelectPlayer = () => {
       });
     }
   }, [searchParams, navigate, t, refetchSubscription]);
+
+  // Show trial notification once when trial is active
+  useEffect(() => {
+    const trialNotificationShown = localStorage.getItem('trial_notification_shown');
+    if (isTrialActive && !trialNotificationShown) {
+      toast.success(t('subscription.trialStartedAuto'), {
+        description: t('subscription.trialStartedAutoDescription', { days: trialDaysRemaining }),
+        duration: 8000,
+      });
+      localStorage.setItem('trial_notification_shown', 'true');
+    }
+  }, [isTrialActive, trialDaysRemaining, t]);
 
   // Show AI selector when needed
   useEffect(() => {
