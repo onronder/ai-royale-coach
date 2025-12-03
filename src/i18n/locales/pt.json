@@ -786,7 +786,75 @@
       "networkError": "Erro de rede. Por favor tente novamente.",
       "generic": "Ocorreu um erro. Por favor tente novamente."
     },
-    "signInRequired": "Por favor, faça login para continuar"
+    "signInRequired": "Por favor, faça login para continuar",
+    "termsRequired": "Você deve aceitar os Termos de Serviço e a Política de Privacidade",
+    "agreeToTerms": "Eu concordo com os"
+  },
+  "legal": {
+    "termsOfService": "Termos de Serviço",
+    "privacyPolicy": "Política de Privacidade",
+    "and": "e",
+    "lastUpdated": "Última atualização",
+    "terms": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "Bem-vindo ao AI Royale. Ao usar nosso serviço, você concorda com estes termos. Por favor, leia-os cuidadosamente.",
+      "serviceDescription": {
+        "title": "Descrição do Serviço",
+        "content": "AI Royale é uma ferramenta de análise com IA para Clash Royale. Fornecemos análise de decks, insights de batalhas e recomendações estratégicas baseadas em dados do jogo obtidos através da API oficial do Clash Royale."
+      },
+      "dataProcessing": {
+        "title": "Processamento de Dados",
+        "content": "AI Royale processa exclusivamente dados relacionados ao jogo obtidos através da API oficial do Clash Royale. Isso inclui: estatísticas do jogador, histórico de batalhas, composições de decks, níveis de cartas e contagem de troféus.\n\nNÃO acessamos, processamos ou armazenamos nenhum dado pessoal sensível. Usamos seu endereço de email apenas para fins de autenticação."
+      },
+      "aiDisclaimer": {
+        "title": "Aviso sobre IA",
+        "content": "Todas as análises, previsões e recomendações fornecidas pelo AI Royale são apenas para fins informativos.\n\nAs saídas geradas por IA NÃO são garantidas como 100% precisas. A IA fornece sugestões baseadas em padrões e dados do jogo, mas os resultados reais do jogo dependem de muitos fatores, incluindo habilidade do jogador, timing e comportamento do oponente.\n\nVocê deve usar as recomendações da IA como orientação, não como estratégias garantidas."
+      },
+      "liability": {
+        "title": "Limitação de Responsabilidade",
+        "content": "Na máxima extensão permitida por lei, Fittechs Yazılım Anonim Şirketi não será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos decorrentes do seu uso do AI Royale.\n\nIsso inclui, mas não se limita a, quaisquer perdas resultantes de seguir recomendações da IA, mudanças de troféus ou decisões no jogo baseadas em nossa análise.\n\nFittechs Yazılım Anonim Şirketi não é responsável por quaisquer análises ou previsões incorretas fornecidas pela IA."
+      },
+      "governingLaw": {
+        "title": "Lei Aplicável",
+        "content": "Estes termos serão regidos e interpretados de acordo com as leis da Turquia. Quaisquer disputas decorrentes do uso do AI Royale estarão sujeitas à jurisdição exclusiva dos tribunais da Turquia."
+      },
+      "contact": {
+        "title": "Informações de Contato",
+        "content": "Se você tiver alguma dúvida sobre estes Termos de Serviço, entre em contato conosco:"
+      }
+    },
+    "privacy": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "Esta Política de Privacidade explica como o AI Royale lida com seus dados. Estamos comprometidos em proteger sua privacidade e ser transparentes sobre nossas práticas de dados.",
+      "noSensitiveData": {
+        "title": "Dados que NÃO Coletamos",
+        "content": "• NÃO coletamos ou processamos dados pessoais sensíveis\n• NÃO acessamos informações pessoais, contatos ou localização do seu dispositivo\n• NÃO armazenamos detalhes de cartões de pagamento (pagamentos são processados por terceiros)\n• NÃO coletamos nenhum dado além do necessário para o serviço\n• NÃO vendemos, compartilhamos ou monetizamos seus dados de forma alguma"
+      },
+      "dataWeCollect": {
+        "title": "Dados que Coletamos",
+        "content": "• Endereço de email: Usado apenas para autenticação de conta e recuperação de senha\n• Tag de Jogador do Clash Royale: Usado para buscar suas estatísticas do jogo da API oficial do Clash Royale\n• Dados do jogo: Estatísticas do jogador, histórico de batalhas, composições de decks, níveis de cartas - todos disponíveis publicamente através da API oficial da Supercell\n• Dados de uso: Análises básicas para melhorar nosso serviço"
+      },
+      "howWeUseData": {
+        "title": "Como Usamos os Dados",
+        "content": "Estatísticas do jogo são processadas apenas para fornecer análise com IA e recomendações de coaching. Seus dados são usados para:\n\n• Gerar recomendações personalizadas de decks\n• Analisar seu desempenho em batalhas\n• Fornecer insights estratégicos de coaching\n• Acompanhar seu progresso ao longo do tempo\n\nNão usamos seus dados para publicidade ou marketing."
+      },
+      "dataRetention": {
+        "title": "Retenção de Dados",
+        "content": "• Dados da conta: Mantidos enquanto sua conta estiver ativa\n• Estatísticas do jogo: Armazenadas temporariamente em cache (5-30 minutos) para performance\n• Histórico de chat: Mantido por 30 dias, depois deletado automaticamente\n• Você pode solicitar a exclusão da sua conta e todos os dados associados a qualquer momento"
+      },
+      "thirdParty": {
+        "title": "Serviços de Terceiros",
+        "content": "AI Royale utiliza os seguintes serviços de terceiros:\n\n• API Clash Royale da Supercell: Para buscar dados do jogo\n• Provedor de autenticação: Para login seguro\n• Infraestrutura em nuvem: Para armazenamento e processamento de dados\n\nTodos os serviços de terceiros são contratualmente obrigados a proteger seus dados."
+      },
+      "kvkk": {
+        "title": "Conformidade KVKK (Proteção de Dados Turca)",
+        "content": "AI Royale está em conformidade com a Lei de Proteção de Dados Pessoais da Turquia (KVKK - Kişisel Verilerin Korunması Kanunu).\n\nComo controlador de dados, Fittechs Yazılım Anonim Şirketi processa seus dados de acordo com os princípios da KVKK. Você tem o direito de:\n\n• Saber se seus dados pessoais estão sendo processados\n• Solicitar informações sobre atividades de processamento\n• Solicitar correção ou exclusão de seus dados\n• Opor-se ao processamento e solicitar restrição\n\nPara solicitações relacionadas à KVKK, entre em contato conosco no endereço abaixo."
+      },
+      "contact": {
+        "title": "Contate-nos",
+        "content": "Se você tiver alguma dúvida sobre esta Política de Privacidade ou seus dados, entre em contato:"
+      }
+    }
   },
   "dashboard": {
     "title": "Painel",

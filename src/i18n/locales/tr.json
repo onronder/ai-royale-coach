@@ -786,7 +786,75 @@
       "networkError": "Ağ hatası. Lütfen tekrar deneyin.",
       "generic": "Bir hata oluştu. Lütfen tekrar deneyin."
     },
-    "signInRequired": "Devam etmek için lütfen giriş yapın"
+    "signInRequired": "Devam etmek için lütfen giriş yapın",
+    "termsRequired": "Kullanım Koşullarını ve Gizlilik Politikasını kabul etmelisiniz",
+    "agreeToTerms": "Kabul ediyorum:"
+  },
+  "legal": {
+    "termsOfService": "Kullanım Koşulları",
+    "privacyPolicy": "Gizlilik Politikası",
+    "and": "ve",
+    "lastUpdated": "Son güncelleme",
+    "terms": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "AI Royale'e hoş geldiniz. Hizmetimizi kullanarak bu koşulları kabul etmiş olursunuz. Lütfen dikkatlice okuyunuz.",
+      "serviceDescription": {
+        "title": "Hizmet Açıklaması",
+        "content": "AI Royale, Clash Royale için yapay zeka destekli bir analiz aracıdır. Resmi Clash Royale API'si üzerinden elde edilen oyun verilerine dayalı olarak deste analizi, savaş içgörüleri ve stratejik öneriler sunuyoruz."
+      },
+      "dataProcessing": {
+        "title": "Veri İşleme",
+        "content": "AI Royale, yalnızca resmi Clash Royale API'si aracılığıyla elde edilen oyunla ilgili verileri işler. Bunlar şunları içerir: oyuncu istatistikleri, savaş geçmişi, deste bileşimleri, kart seviyeleri ve kupa sayıları.\n\nHassas kişisel verileri erişmiyor, işlemiyor veya saklamıyoruz. E-posta adresinizi yalnızca kimlik doğrulama amacıyla kullanıyoruz."
+      },
+      "aiDisclaimer": {
+        "title": "Yapay Zeka Uyarısı",
+        "content": "AI Royale tarafından sağlanan tüm analizler, tahminler ve öneriler yalnızca bilgilendirme amaçlıdır.\n\nYapay zeka tarafından üretilen çıktıların %100 doğru olduğu garanti edilmez. Yapay zeka, kalıplara ve oyun verilerine dayalı öneriler sunar, ancak gerçek oyun sonuçları oyuncu becerisi, zamanlama ve rakip davranışı dahil birçok faktöre bağlıdır.\n\nYapay zeka önerilerini garantili stratejiler olarak değil, rehber olarak kullanmalısınız."
+      },
+      "liability": {
+        "title": "Sorumluluk Sınırlaması",
+        "content": "Yasaların izin verdiği azami ölçüde, Fittechs Yazılım Anonim Şirketi, AI Royale kullanımınızdan kaynaklanan dolaylı, arızi, özel, sonuç olarak ortaya çıkan veya cezai zararlardan sorumlu olmayacaktır.\n\nBu, yapay zeka önerilerini takip etmekten kaynaklanan kayıplar, kupa değişiklikleri veya analizimize dayalı oyun içi kararlar dahil ancak bunlarla sınırlı değildir.\n\nFittechs Yazılım Anonim Şirketi, yapay zeka tarafından sağlanan herhangi bir hatalı analiz veya tahmin için sorumlu değildir."
+      },
+      "governingLaw": {
+        "title": "Geçerli Yasa",
+        "content": "Bu koşullar Türkiye yasalarına göre yönetilecek ve yorumlanacaktır. AI Royale kullanımından doğan herhangi bir uyuşmazlık, Türkiye mahkemelerinin münhasır yargı yetkisine tabi olacaktır."
+      },
+      "contact": {
+        "title": "İletişim Bilgileri",
+        "content": "Bu Kullanım Koşulları hakkında herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:"
+      }
+    },
+    "privacy": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "Bu Gizlilik Politikası, AI Royale'in verilerinizi nasıl işlediğini açıklar. Gizliliğinizi korumaya ve veri uygulamalarımız hakkında şeffaf olmaya kararlıyız.",
+      "noSensitiveData": {
+        "title": "Toplamadığımız Veriler",
+        "content": "• Hassas kişisel verileri toplamıyoruz veya işlemiyoruz\n• Cihazınızın kişisel bilgilerine, kişilerine veya konumuna erişmiyoruz\n• Ödeme kartı bilgilerini saklamıyoruz (ödemeler üçüncü taraf işlemciler tarafından yürütülür)\n• Hizmet için gerekli olanın ötesinde herhangi bir veri toplamıyoruz\n• Verilerinizi hiçbir şekilde satmıyoruz, paylaşmıyoruz veya paraya dönüştürmüyoruz"
+      },
+      "dataWeCollect": {
+        "title": "Topladığımız Veriler",
+        "content": "• E-posta adresi: Yalnızca hesap doğrulama ve şifre kurtarma için kullanılır\n• Clash Royale Oyuncu Etiketi: Resmi Clash Royale API'sinden oyun istatistiklerinizi almak için kullanılır\n• Oyun verileri: Oyuncu istatistikleri, savaş geçmişi, deste bileşimleri, kart seviyeleri - tümü Supercell'in resmi API'si aracılığıyla kamuya açıktır\n• Kullanım verileri: Hizmetimizi iyileştirmek için temel analizler"
+      },
+      "howWeUseData": {
+        "title": "Verileri Nasıl Kullanıyoruz",
+        "content": "Oyun istatistikleri yalnızca yapay zeka destekli analiz ve koçluk önerileri sağlamak için işlenir. Verileriniz şunlar için kullanılır:\n\n• Kişiselleştirilmiş deste önerileri oluşturmak\n• Savaş performansınızı analiz etmek\n• Stratejik koçluk içgörüleri sağlamak\n• Zaman içindeki ilerlemenizi takip etmek\n\nVerilerinizi reklam veya pazarlama amaçlı kullanmıyoruz."
+      },
+      "dataRetention": {
+        "title": "Veri Saklama",
+        "content": "• Hesap verileri: Hesabınız aktif olduğu sürece saklanır\n• Oyun istatistikleri: Performans için geçici olarak önbelleğe alınır (5-30 dakika)\n• Sohbet geçmişi: 30 gün saklanır, ardından otomatik olarak silinir\n• Hesabınızın ve ilişkili tüm verilerin silinmesini istediğiniz zaman talep edebilirsiniz"
+      },
+      "thirdParty": {
+        "title": "Üçüncü Taraf Hizmetleri",
+        "content": "AI Royale aşağıdaki üçüncü taraf hizmetlerini kullanır:\n\n• Supercell Clash Royale API'si: Oyun verilerini almak için\n• Kimlik doğrulama sağlayıcısı: Güvenli giriş için\n• Bulut altyapısı: Veri depolama ve işleme için\n\nTüm üçüncü taraf hizmetleri verilerinizi korumak için sözleşmeyle bağlıdır."
+      },
+      "kvkk": {
+        "title": "KVKK Uyumluluğu (Kişisel Verilerin Korunması)",
+        "content": "AI Royale, Türkiye'nin Kişisel Verilerin Korunması Kanunu'na (KVKK) uygundur.\n\nVeri sorumlusu olarak, Fittechs Yazılım Anonim Şirketi verilerinizi KVKK ilkeleri doğrultusunda işler. Şu haklara sahipsiniz:\n\n• Kişisel verilerinizin işlenip işlenmediğini öğrenme\n• İşleme faaliyetleri hakkında bilgi talep etme\n• Verilerinizin düzeltilmesini veya silinmesini talep etme\n• İşlemeye itiraz etme ve kısıtlama talep etme\n\nKVKK ile ilgili talepler için lütfen aşağıdaki adresten bizimle iletişime geçin."
+      },
+      "contact": {
+        "title": "Bize Ulaşın",
+        "content": "Bu Gizlilik Politikası veya verileriniz hakkında herhangi bir sorunuz varsa, lütfen iletişime geçin:"
+      }
+    }
   },
   "dashboard": {
     "title": "Gösterge Paneli",

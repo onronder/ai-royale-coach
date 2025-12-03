@@ -785,7 +785,75 @@
       "invalidCredentials": "Invalid email or password",
       "emailInUse": "Email already in use"
     },
-    "signInRequired": "Please sign in to continue"
+    "signInRequired": "Please sign in to continue",
+    "termsRequired": "You must accept the Terms of Service and Privacy Policy",
+    "agreeToTerms": "I agree to the"
+  },
+  "legal": {
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "and": "and",
+    "lastUpdated": "Last updated",
+    "terms": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "Welcome to AI Royale. By using our service, you agree to these terms. Please read them carefully.",
+      "serviceDescription": {
+        "title": "Service Description",
+        "content": "AI Royale is an AI-powered analytics tool for Clash Royale. We provide deck analysis, battle insights, and strategic recommendations based on game data obtained through the official Clash Royale API."
+      },
+      "dataProcessing": {
+        "title": "Data Processing",
+        "content": "AI Royale exclusively processes game-related data obtained through the official Clash Royale API. This includes: player statistics, battle history, deck compositions, card levels, and trophy counts.\n\nWe do NOT access, process, or store any sensitive personal data. We only use your email address for authentication purposes."
+      },
+      "aiDisclaimer": {
+        "title": "AI Disclaimer",
+        "content": "All analyses, predictions, and recommendations provided by AI Royale are for informational purposes only.\n\nAI-generated outputs are NOT guaranteed to be 100% accurate. The AI provides suggestions based on patterns and game data, but actual game outcomes depend on many factors including player skill, timing, and opponent behavior.\n\nYou should use AI recommendations as guidance, not as guaranteed strategies."
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "content": "To the maximum extent permitted by law, Fittechs Yazılım Anonim Şirketi shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of AI Royale.\n\nThis includes, but is not limited to, any losses resulting from following AI recommendations, trophy changes, or in-game decisions made based on our analysis.\n\nFittechs Yazılım Anonim Şirketi is not responsible for any incorrect analyses or predictions provided by the AI."
+      },
+      "governingLaw": {
+        "title": "Governing Law",
+        "content": "These terms shall be governed by and construed in accordance with the laws of Turkey. Any disputes arising from the use of AI Royale shall be subject to the exclusive jurisdiction of the courts in Turkey."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "content": "If you have any questions about these Terms of Service, please contact us:"
+      }
+    },
+    "privacy": {
+      "companyName": "Fittechs Yazılım Anonim Şirketi",
+      "introduction": "This Privacy Policy explains how AI Royale handles your data. We are committed to protecting your privacy and being transparent about our data practices.",
+      "noSensitiveData": {
+        "title": "Data We Do NOT Collect",
+        "content": "• We do NOT collect or process sensitive personal data\n• We do NOT access your device's personal information, contacts, or location\n• We do NOT store payment card details (payments are handled by third-party processors)\n• We do NOT collect any data beyond what is necessary for the service\n• We do NOT sell, share, or monetize your data in any way"
+      },
+      "dataWeCollect": {
+        "title": "Data We Collect",
+        "content": "• Email address: Used solely for account authentication and password recovery\n• Clash Royale Player Tag: Used to fetch your game statistics from the official Clash Royale API\n• Game data: Player statistics, battle history, deck compositions, card levels - all publicly available through Supercell's official API\n• Usage data: Basic analytics to improve our service"
+      },
+      "howWeUseData": {
+        "title": "How We Use Data",
+        "content": "Game statistics are processed solely to provide AI-powered analysis and coaching recommendations. Your data is used to:\n\n• Generate personalized deck recommendations\n• Analyze your battle performance\n• Provide strategic coaching insights\n• Track your progress over time\n\nWe do not use your data for advertising or marketing purposes."
+      },
+      "dataRetention": {
+        "title": "Data Retention",
+        "content": "• Account data: Retained while your account is active\n• Game statistics: Cached temporarily (5-30 minutes) for performance\n• Chat history: Retained for 30 days, then automatically deleted\n• You can request deletion of your account and all associated data at any time"
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "content": "AI Royale uses the following third-party services:\n\n• Supercell Clash Royale API: To fetch game data\n• Authentication provider: For secure login\n• Cloud infrastructure: For data storage and processing\n\nAll third-party services are contractually bound to protect your data."
+      },
+      "kvkk": {
+        "title": "KVKK Compliance (Turkish Data Protection)",
+        "content": "AI Royale complies with Turkey's Personal Data Protection Law (KVKK - Kişisel Verilerin Korunması Kanunu).\n\nAs a data controller, Fittechs Yazılım Anonim Şirketi processes your data in accordance with KVKK principles. You have the right to:\n\n• Learn whether your personal data is being processed\n• Request information about processing activities\n• Request correction or deletion of your data\n• Object to processing and request restriction\n\nFor KVKK-related requests, please contact us at the address below."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "content": "If you have any questions about this Privacy Policy or your data, please contact:"
+      }
+    }
   },
   "dashboard": {
     "title": "Dashboard",
