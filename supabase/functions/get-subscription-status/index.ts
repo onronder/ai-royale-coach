@@ -6,6 +6,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const defaultResponse = {
+  hasAccess: false,
+  subscription: null,
+  trial: { isActive: false, daysRemaining: 0, hasUsedTrial: false, endsAt: null },
+  accountSlots: 0,
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,11 +22,11 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-    // Get user from auth header
+    // Get user from auth header - return default response if not authenticated
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
+      console.log('No auth header, returning default response');
+      return new Response(JSON.stringify(defaultResponse), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -30,8 +37,8 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
+      console.log('Auth error or no user, returning default response:', authError?.message);
+      return new Response(JSON.stringify(defaultResponse), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -87,9 +94,8 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error('Get subscription status error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
+    // Return default response instead of error to prevent app crash
+    return new Response(JSON.stringify(defaultResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
