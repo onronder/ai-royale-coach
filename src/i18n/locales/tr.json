@@ -846,8 +846,18 @@
         "title": "Üçüncü Taraf Hizmetleri",
         "content": "AI Royale aşağıdaki üçüncü taraf hizmetlerini kullanır:\n\n• Supercell Clash Royale API'si: Oyun verilerini almak için\n• Kimlik doğrulama sağlayıcısı: Güvenli giriş için\n• Bulut altyapısı: Veri depolama ve işleme için\n\nTüm üçüncü taraf hizmetleri verilerinizi korumak için sözleşmeyle bağlıdır."
       },
+      "complianceTitle": "Uluslararası Veri Koruma Uyumluluğu",
+      "complianceSubtitle": "AI Royale küresel veri koruma düzenlemelerine uygundur",
+      "gdpr": {
+        "title": "GDPR Uyumluluğu (Avrupa Birliği)",
+        "content": "AI Royale, Avrupa Ekonomik Alanı'ndaki kullanıcılar için Genel Veri Koruma Yönetmeliği'ne (GDPR) uygundur.\n\nGDPR kapsamında aşağıdaki haklara sahipsiniz:\n\n• Erişim Hakkı: Kişisel verilerinizin bir kopyasını talep etme\n• Düzeltme Hakkı: Yanlış verilerin düzeltilmesini talep etme\n• Silme Hakkı: Verilerinizin silinmesini talep etme (\"unutulma hakkı\")\n• İşlemeyi Kısıtlama Hakkı: Verilerinizi nasıl kullandığımızı sınırlama\n• Veri Taşınabilirliği Hakkı: Verilerinizi taşınabilir formatta alma\n• İtiraz Hakkı: Meşru menfaatlere dayalı işlemeye itiraz etme\n\nBu hakları kullanmak için aşağıdaki adresten bizimle iletişime geçin. 30 gün içinde yanıt vereceğiz."
+      },
+      "ccpa": {
+        "title": "CCPA Uyumluluğu (Kaliforniya, ABD)",
+        "content": "AI Royale, Kaliforniya sakinleri için Kaliforniya Tüketici Gizlilik Yasası'na (CCPA) uygundur.\n\nCCPA kapsamında, Kaliforniya sakinleri şu haklara sahiptir:\n\n• Hangi kişisel bilgilerin toplandığını bilme\n• Kişisel bilgilerin satılıp satılmadığını veya ifşa edilip edilmediğini bilme\n• Kişisel bilgilerin satışına hayır deme\n• Kişisel bilgilerine erişme\n• Kişisel bilgilerin silinmesini talep etme\n• Eşit hizmet ve fiyat (ayrımcılık yasağı)\n\nKişisel bilgilerinizi üçüncü taraflara SATMIYORUZ. CCPA talebi göndermek için aşağıdaki adresten bizimle iletişime geçin."
+      },
       "kvkk": {
-        "title": "KVKK Uyumluluğu (Kişisel Verilerin Korunması)",
+        "title": "KVKK Uyumluluğu (Türkiye)",
         "content": "AI Royale, Türkiye'nin Kişisel Verilerin Korunması Kanunu'na (KVKK) uygundur.\n\nVeri sorumlusu olarak, Fittechs Yazılım Anonim Şirketi verilerinizi KVKK ilkeleri doğrultusunda işler. Şu haklara sahipsiniz:\n\n• Kişisel verilerinizin işlenip işlenmediğini öğrenme\n• İşleme faaliyetleri hakkında bilgi talep etme\n• Verilerinizin düzeltilmesini veya silinmesini talep etme\n• İşlemeye itiraz etme ve kısıtlama talep etme\n\nKVKK ile ilgili talepler için lütfen aşağıdaki adresten bizimle iletişime geçin."
       },
       "contact": {

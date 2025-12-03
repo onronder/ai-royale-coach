@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Database, Eye, Clock, Users, Mail } from "lucide-react";
+import { ShieldCheck, Database, Eye, Clock, Users, Mail, Globe, Scale } from "lucide-react";
 
 const Privacy = () => {
   const { t } = useTranslation();
@@ -32,6 +32,24 @@ const Privacy = () => {
       icon: Users,
       title: t("legal.privacy.thirdParty.title"),
       content: t("legal.privacy.thirdParty.content"),
+    },
+  ];
+
+  const complianceSections = [
+    {
+      icon: Globe,
+      title: t("legal.privacy.gdpr.title"),
+      content: t("legal.privacy.gdpr.content"),
+    },
+    {
+      icon: Scale,
+      title: t("legal.privacy.ccpa.title"),
+      content: t("legal.privacy.ccpa.content"),
+    },
+    {
+      icon: ShieldCheck,
+      title: t("legal.privacy.kvkk.title"),
+      content: t("legal.privacy.kvkk.content"),
     },
   ];
 
@@ -80,22 +98,35 @@ const Privacy = () => {
           ))}
         </div>
 
-        {/* KVKK Compliance Section */}
-        <Card className="border-primary/30 bg-primary/5 backdrop-blur-sm mt-8">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-3 text-xl">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-              </div>
-              {t("legal.privacy.kvkk.title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-              {t("legal.privacy.kvkk.content")}
-            </p>
-          </CardContent>
-        </Card>
+        {/* International Compliance Section */}
+        <div className="mt-10 mb-6">
+          <h2 className="text-2xl font-bold text-foreground text-center mb-2">
+            {t("legal.privacy.complianceTitle")}
+          </h2>
+          <p className="text-muted-foreground text-center text-sm">
+            {t("legal.privacy.complianceSubtitle")}
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {complianceSections.map((section, index) => (
+            <Card key={index} className="border-primary/30 bg-primary/5 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <section.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  {section.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {section.content}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm mt-8">
           <CardContent className="p-6">

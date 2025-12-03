@@ -845,8 +845,18 @@
         "title": "Third-Party Services",
         "content": "AI Royale uses the following third-party services:\n\n• Supercell Clash Royale API: To fetch game data\n• Authentication provider: For secure login\n• Cloud infrastructure: For data storage and processing\n\nAll third-party services are contractually bound to protect your data."
       },
+      "complianceTitle": "International Data Protection Compliance",
+      "complianceSubtitle": "AI Royale complies with global data protection regulations",
+      "gdpr": {
+        "title": "GDPR Compliance (European Union)",
+        "content": "AI Royale complies with the General Data Protection Regulation (GDPR) for users in the European Economic Area.\n\nUnder GDPR, you have the following rights:\n\n• Right of Access: Request a copy of your personal data\n• Right to Rectification: Request correction of inaccurate data\n• Right to Erasure: Request deletion of your data (\"right to be forgotten\")\n• Right to Restrict Processing: Limit how we use your data\n• Right to Data Portability: Receive your data in a portable format\n• Right to Object: Object to processing based on legitimate interests\n\nTo exercise these rights, contact us at the address below. We will respond within 30 days."
+      },
+      "ccpa": {
+        "title": "CCPA Compliance (California, USA)",
+        "content": "AI Royale complies with the California Consumer Privacy Act (CCPA) for California residents.\n\nUnder CCPA, California residents have the right to:\n\n• Know what personal information is collected\n• Know whether personal information is sold or disclosed\n• Say no to the sale of personal information\n• Access their personal information\n• Request deletion of personal information\n• Equal service and price (non-discrimination)\n\nWe do NOT sell your personal information to third parties. To submit a CCPA request, contact us at the address below."
+      },
       "kvkk": {
-        "title": "KVKK Compliance (Turkish Data Protection)",
+        "title": "KVKK Compliance (Turkey)",
         "content": "AI Royale complies with Turkey's Personal Data Protection Law (KVKK - Kişisel Verilerin Korunması Kanunu).\n\nAs a data controller, Fittechs Yazılım Anonim Şirketi processes your data in accordance with KVKK principles. You have the right to:\n\n• Learn whether your personal data is being processed\n• Request information about processing activities\n• Request correction or deletion of your data\n• Object to processing and request restriction\n\nFor KVKK-related requests, please contact us at the address below."
       },
       "contact": {
