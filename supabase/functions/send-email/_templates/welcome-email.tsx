@@ -186,7 +186,7 @@ export const WelcomeEmail = ({
             <Text style={unsubscribe}>{t.unsubscribe}</Text>
             <Text style={footerLinks}>
               <Link href={`${appUrl}/privacy`} style={footerLink}>{t.privacy}</Link>
-              {' • '}
+              {' - '}
               <Link href={`${appUrl}/terms`} style={footerLink}>{t.terms}</Link>
             </Text>
           </Section>
@@ -203,6 +203,7 @@ const main = {
   backgroundColor: '#0a0a1a',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+  padding: '20px 0',
 }
 
 const container = {
@@ -217,6 +218,7 @@ const container = {
 
 const header = {
   background: 'linear-gradient(135deg, #1a1a3e 0%, #12122a 100%)',
+  backgroundColor: '#1a1a3e',
   padding: '40px 20px',
   textAlign: 'center' as const,
   borderBottom: '1px solid rgba(212, 175, 55, 0.2)',
@@ -247,6 +249,7 @@ const title = {
 
 const content = {
   padding: '32px 24px',
+  backgroundColor: '#12122a',
 }
 
 const greeting = {
@@ -275,7 +278,7 @@ const featuresSection = {
 }
 
 const featureBox = {
-  backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  backgroundColor: '#1a1a2e',
   border: '1px solid rgba(255, 255, 255, 0.1)',
   borderRadius: '12px',
   padding: '16px',
@@ -327,6 +330,7 @@ const hr = {
 const footer = {
   padding: '24px',
   textAlign: 'center' as const,
+  backgroundColor: '#12122a',
 }
 
 const copyright = {

@@ -89,6 +89,15 @@ serve(async (req) => {
         const isTrialing = subscription.status === 'trialing';
         const accountSlots = getAccountSlotsFromProductId(subscription.product_id);
 
+        // Check if this is a NEW subscription (not a renewal)
+        const { data: existingSub } = await supabase
+          .from('user_subscriptions')
+          .select('id, created_at')
+          .eq('user_id', userId)
+          .single();
+
+        const isNewSubscription = !existingSub;
+
         // Get user's linked player profiles
         const { data: profiles } = await supabase
           .from('player_profiles')
@@ -153,6 +162,45 @@ serve(async (req) => {
 
           if (profileError) {
             console.error('Error updating profile trial:', profileError);
+          }
+        }
+
+        // Send subscription confirmation email only for NEW subscriptions (not renewals)
+        if (isNewSubscription) {
+          try {
+            // Get user email and preferred language from profiles
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('email, preferred_language')
+              .eq('id', userId)
+              .single();
+
+            if (profile?.email) {
+              console.log(`Sending subscription email to ${profile.email}`);
+              
+              const { error: emailError } = await supabase.functions.invoke('send-email', {
+                body: {
+                  email: profile.email,
+                  type: 'subscription',
+                  language: profile.preferred_language || 'en',
+                  subscriptionData: {
+                    accountSlots,
+                    renewalDate: subscription.current_period_end,
+                  }
+                }
+              });
+
+              if (emailError) {
+                console.error('Failed to send subscription email:', emailError);
+              } else {
+                console.log('Subscription confirmation email sent successfully');
+              }
+            } else {
+              console.warn('No email found for user, skipping subscription email');
+            }
+          } catch (emailErr) {
+            console.error('Error sending subscription email:', emailErr);
+            // Don't fail the webhook for email errors
           }
         }
         break;
