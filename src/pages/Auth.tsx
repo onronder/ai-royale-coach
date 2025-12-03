@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,9 +112,18 @@ const Auth = () => {
               terms_version: TERMS_VERSION,
             })
             .eq('id', data.user.id);
+          
+          // Send branded welcome email (fire and forget - don't block signup)
+          supabase.functions.invoke('send-email', {
+            body: {
+              email: data.user.email,
+              type: 'welcome',
+              language: i18n.language,
+            }
+          }).catch(err => console.error('Welcome email failed:', err));
         }
         
-        toast.success(t("auth.checkEmail"));
+        toast.success(t("auth.signupSuccess"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
