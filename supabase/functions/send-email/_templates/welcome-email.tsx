@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -10,7 +9,7 @@ import {
   Preview,
   Section,
   Text,
-} from 'https://esm.sh/@react-email/components@0.0.22'
+} from 'https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1'
 import * as React from 'https://esm.sh/react@18.3.1'
 
 interface WelcomeEmailProps {
@@ -38,6 +37,8 @@ const translations = {
     footer: "Let's climb the ladder together!",
     copyright: '© 2024 AI Royale. All rights reserved.',
     unsubscribe: "You're receiving this because you signed up for AI Royale.",
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
   },
   es: {
     preview: 'Bienvenido a AI Royale - ¡Tu Coach IA te espera!',
@@ -57,6 +58,8 @@ const translations = {
     footer: '¡Subamos juntos en la escalera!',
     copyright: '© 2024 AI Royale. Todos los derechos reservados.',
     unsubscribe: 'Recibes esto porque te registraste en AI Royale.',
+    privacy: 'Política de Privacidad',
+    terms: 'Términos de Servicio',
   },
   pt: {
     preview: 'Bem-vindo ao AI Royale - Seu Coach IA está esperando!',
@@ -76,6 +79,8 @@ const translations = {
     footer: 'Vamos subir juntos na ladder!',
     copyright: '© 2024 AI Royale. Todos os direitos reservados.',
     unsubscribe: 'Você recebeu isso porque se cadastrou no AI Royale.',
+    privacy: 'Política de Privacidade',
+    terms: 'Termos de Serviço',
   },
   tr: {
     preview: "AI Royale'e Hoş Geldiniz - AI Koçunuz Hazır!",
@@ -95,6 +100,8 @@ const translations = {
     footer: 'Birlikte zirveye çıkalım!',
     copyright: '© 2024 AI Royale. Tüm hakları saklıdır.',
     unsubscribe: "Bu e-postayı AI Royale'e kaydolduğunuz için alıyorsunuz.",
+    privacy: 'Gizlilik Politikası',
+    terms: 'Hizmet Şartları',
   },
   fr: {
     preview: 'Bienvenue sur AI Royale - Votre Coach IA vous attend!',
@@ -114,6 +121,8 @@ const translations = {
     footer: 'Grimpons ensemble dans le classement!',
     copyright: '© 2024 AI Royale. Tous droits réservés.',
     unsubscribe: 'Vous recevez ceci car vous vous êtes inscrit sur AI Royale.',
+    privacy: 'Politique de Confidentialité',
+    terms: "Conditions d'Utilisation",
   },
 }
 
@@ -130,45 +139,41 @@ export const WelcomeEmail = ({
       <Preview>{t.preview}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with Logo */}
           <Section style={header}>
-            <div style={logoContainer}>
+            <Section style={logoContainer}>
               <Text style={logoText}>👑</Text>
-            </div>
+            </Section>
             <Heading style={title}>{t.title}</Heading>
           </Section>
 
-          {/* Main Content */}
           <Section style={content}>
             <Text style={greeting}>{t.greeting(name)}</Text>
             <Text style={subtitle}>{t.subtitle}</Text>
             <Text style={intro}>{t.intro}</Text>
 
-            {/* Features Grid */}
             <Section style={featuresSection}>
-              <div style={featureBox}>
+              <Section style={featureBox}>
                 <Text style={featureTitle}>{t.feature1Title}</Text>
                 <Text style={featureDesc}>{t.feature1Desc}</Text>
-              </div>
-              <div style={featureBox}>
+              </Section>
+              <Section style={featureBox}>
                 <Text style={featureTitle}>{t.feature2Title}</Text>
                 <Text style={featureDesc}>{t.feature2Desc}</Text>
-              </div>
-              <div style={featureBox}>
+              </Section>
+              <Section style={featureBox}>
                 <Text style={featureTitle}>{t.feature3Title}</Text>
                 <Text style={featureDesc}>{t.feature3Desc}</Text>
-              </div>
-              <div style={featureBox}>
+              </Section>
+              <Section style={featureBox}>
                 <Text style={featureTitle}>{t.feature4Title}</Text>
                 <Text style={featureDesc}>{t.feature4Desc}</Text>
-              </div>
+              </Section>
             </Section>
 
-            {/* CTA Button */}
             <Section style={ctaSection}>
-              <Button style={ctaButton} href={`${appUrl}/select-player`}>
+              <Link style={ctaButton} href={`${appUrl}/select-player`}>
                 {t.cta}
-              </Button>
+              </Link>
             </Section>
 
             <Text style={footerText}>{t.footer}</Text>
@@ -176,17 +181,14 @@ export const WelcomeEmail = ({
 
           <Hr style={hr} />
 
-          {/* Footer */}
           <Section style={footer}>
             <Text style={copyright}>{t.copyright}</Text>
             <Text style={unsubscribe}>{t.unsubscribe}</Text>
-            <Link href={`${appUrl}/privacy`} style={footerLink}>
-              Privacy Policy
-            </Link>
-            {' • '}
-            <Link href={`${appUrl}/terms`} style={footerLink}>
-              Terms of Service
-            </Link>
+            <Text style={footerLinks}>
+              <Link href={`${appUrl}/privacy`} style={footerLink}>{t.privacy}</Link>
+              {' • '}
+              <Link href={`${appUrl}/terms`} style={footerLink}>{t.terms}</Link>
+            </Text>
           </Section>
         </Container>
       </Body>
@@ -300,7 +302,7 @@ const ctaSection = {
 }
 
 const ctaButton = {
-  background: 'linear-gradient(135deg, #d4af37 0%, #b8960c 100%)',
+  backgroundColor: '#d4af37',
   color: '#0a0a1a',
   padding: '16px 48px',
   borderRadius: '12px',
@@ -308,7 +310,6 @@ const ctaButton = {
   fontWeight: '700',
   textDecoration: 'none',
   display: 'inline-block',
-  boxShadow: '0 4px 24px rgba(212, 175, 55, 0.4)',
 }
 
 const footerText = {
@@ -338,6 +339,12 @@ const unsubscribe = {
   color: '#606080',
   fontSize: '12px',
   margin: '0 0 12px',
+}
+
+const footerLinks = {
+  color: '#606080',
+  fontSize: '12px',
+  margin: '0',
 }
 
 const footerLink = {
