@@ -3,7 +3,6 @@ import { Resend } from 'https://esm.sh/resend@4.0.0'
 import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
-import { VerificationEmail } from './_templates/verification-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
@@ -30,36 +29,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify JWT token
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      console.error('No authorization header')
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Verify the token with Supabase
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: authHeader },
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
-    if (authError || !user) {
-      console.error('Auth error:', authError)
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Parse request body
     const body: EmailRequest = await req.json()
     const { email, type, name, language = 'en' } = body
@@ -71,13 +40,36 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Validate email matches authenticated user (security)
-    if (email !== user.email) {
-      console.error('Email mismatch:', { requested: email, user: user.email })
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
       return new Response(
-        JSON.stringify({ error: 'Email does not match authenticated user' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Invalid email format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    // For welcome emails, verify the user exists in our database (just signed up)
+    if (type === 'welcome') {
+      const supabaseAdmin = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      )
+      
+      // Check if user exists in profiles (created on signup)
+      const { data: profile, error: profileError } = await supabaseAdmin
+        .from('profiles')
+        .select('id, email')
+        .eq('email', email)
+        .single()
+      
+      if (profileError || !profile) {
+        console.error('User not found in profiles:', email)
+        return new Response(
+          JSON.stringify({ error: 'User not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
     console.log(`Processing ${type} email for ${email} in ${language}`)
