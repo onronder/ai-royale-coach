@@ -1238,7 +1238,9 @@
       "slotsDescription": "{{count}} hesaba kadar yapay zekayı etkinleştirebilirsiniz",
       "enabled": "Yapay Zeka Etkin",
       "disabled": "Yapay Zeka Erişimi Yok",
-      "manage": "Yapay Zeka Hesaplarını Yönet"
+      "manage": "Yapay Zeka Hesaplarını Yönet",
+      "trialAccess": "Deneme Erişimi",
+      "trialNote": "Deneme süresi boyunca tüm hesaplar yapay zeka erişimine sahip"
     }
   },
   "matchDetail": {
@@ -1815,6 +1817,8 @@
     "subscribePro": "Pro'ya Abone Ol",
     "priceInfo": "$4.99/ay • İstediğiniz zaman iptal edin",
     "trialStarted": "3 günlük ücretsiz denemeniz başladı!",
+    "trialStartedAuto": "Hoş geldiniz! Ücretsiz denemeniz başladı",
+    "trialStartedAutoDescription": "Tüm yapay zeka özellikleri {{days}} gün boyunca açık. Tüm hesaplarınızda yapay zeka koçluğunun keyfini çıkarın!",
     "trialError": "Deneme başlatılamadı. Lütfen tekrar deneyin.",
     "checkoutError": "Ödeme oluşturulamadı. Lütfen tekrar deneyin.",
     "unlockPro": "AI Royale Pro Kilidi Aç",
