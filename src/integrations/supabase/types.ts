@@ -717,6 +717,7 @@ export type Database = {
       }
       player_profiles: {
         Row: {
+          ai_enabled: boolean | null
           created_at: string | null
           id: string
           last_seen_at: string | null
@@ -725,6 +726,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          ai_enabled?: boolean | null
           created_at?: string | null
           id?: string
           last_seen_at?: string | null
@@ -733,6 +735,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          ai_enabled?: boolean | null
           created_at?: string | null
           id?: string
           last_seen_at?: string | null
@@ -1153,6 +1156,9 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
+          needs_ai_selection: boolean | null
+          pending_account_slots: number | null
+          pending_change_effective_at: string | null
           polar_customer_external_id: string | null
           polar_customer_id: string | null
           polar_subscription_id: string | null
@@ -1167,6 +1173,9 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          needs_ai_selection?: boolean | null
+          pending_account_slots?: number | null
+          pending_change_effective_at?: string | null
           polar_customer_external_id?: string | null
           polar_customer_id?: string | null
           polar_subscription_id?: string | null
@@ -1181,6 +1190,9 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          needs_ai_selection?: boolean | null
+          pending_account_slots?: number | null
+          pending_change_effective_at?: string | null
           polar_customer_external_id?: string | null
           polar_customer_id?: string | null
           polar_subscription_id?: string | null
