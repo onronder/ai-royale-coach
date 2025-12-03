@@ -1809,6 +1809,12 @@
     "subscribeTier": "Subscribe for {{price}}/month",
     "onePlayerOneAccount": "1 Player, 1 Account",
     "additionalAccountsInfo": "Add up to 3 accounts. $1.99/month per additional account.",
+    "aiNotEnabledTitle": "AI Not Enabled",
+    "aiNotEnabledForAccount": "AI features are not enabled for this account",
+    "enableAIInSettings": "Go to Settings to enable AI on this account or switch to an AI-enabled account.",
+    "manageAIAccounts": "Manage AI Accounts",
+    "switchToAIAccount": "Switch to an AI-enabled account",
+    "viewPlans": "View Plans",
     "features": {
       "aiCoach": "AI Coach - Personal strategy advisor",
       "deckAnalysis": "Deck Analysis - Deep insights on your builds",

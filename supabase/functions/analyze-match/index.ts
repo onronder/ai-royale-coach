@@ -87,6 +87,27 @@ serve(async (req) => {
     }
 
     const { battle, playerTag, language = 'en' }: MatchAnalysisRequest & { language?: string } = await req.json();
+
+    // PER-PLAYER AI ACCESS CHECK
+    if (playerTag) {
+      const { data: playerProfile } = await supabase
+        .from('player_profiles')
+        .select('ai_enabled')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerTag)
+        .single();
+
+      if (!playerProfile?.ai_enabled) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI not enabled for this account',
+            ai_not_enabled: true,
+            player_tag: playerTag
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     
     // Language instruction based on user preference
     const languageInstructions: Record<string, string> = {

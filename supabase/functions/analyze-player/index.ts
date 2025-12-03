@@ -87,6 +87,27 @@ serve(async (req) => {
       );
     }
 
+    // PER-PLAYER AI ACCESS CHECK
+    if (playerData.tag) {
+      const { data: playerProfile } = await supabase
+        .from('player_profiles')
+        .select('ai_enabled')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerData.tag)
+        .single();
+
+      if (!playerProfile?.ai_enabled) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI not enabled for this account',
+            ai_not_enabled: true,
+            player_tag: playerData.tag
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Language instruction based on user preference
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',

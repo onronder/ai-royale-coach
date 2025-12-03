@@ -60,6 +60,30 @@ serve(async (req) => {
       );
     }
 
+    // PER-PLAYER AI ACCESS CHECK
+    const requestBody = await req.json().catch(() => ({}));
+    const { playerTag } = requestBody;
+    
+    if (playerTag) {
+      const { data: playerProfile } = await supabase
+        .from('player_profiles')
+        .select('ai_enabled')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerTag)
+        .single();
+
+      if (!playerProfile?.ai_enabled) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI not enabled for this account',
+            ai_not_enabled: true,
+            player_tag: playerTag
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     // Fetch deck archetypes from database
     const { data: archetypes, error: dbError } = await supabase
       .from('deck_archetypes')
