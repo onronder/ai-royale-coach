@@ -792,7 +792,8 @@
     "continueWithGoogle": "Continue with Google",
     "termsModalTitle": "Accept Terms to Continue",
     "termsModalDesc": "To complete your registration, please accept our terms and conditions.",
-    "acceptAndContinue": "Accept & Continue"
+    "acceptAndContinue": "Accept & Continue",
+    "welcomeNewUser": "Welcome to AI Royale! Let's set up your profile."
   },
   "legal": {
     "termsOfService": "Terms of Service",

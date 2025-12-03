@@ -793,7 +793,8 @@
     "continueWithGoogle": "Google ile Devam Et",
     "termsModalTitle": "Devam Etmek İçin Şartları Kabul Et",
     "termsModalDesc": "Kaydınızı tamamlamak için lütfen şartlar ve koşullarımızı kabul edin.",
-    "acceptAndContinue": "Kabul Et ve Devam Et"
+    "acceptAndContinue": "Kabul Et ve Devam Et",
+    "welcomeNewUser": "AI Royale'e hoş geldiniz! Profilinizi ayarlayalım."
   },
   "legal": {
     "termsOfService": "Kullanım Koşulları",
