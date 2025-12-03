@@ -123,7 +123,7 @@ const Auth = () => {
           }).catch(err => console.error('Welcome email failed:', err));
         }
         
-        toast.success(t("auth.signupSuccess"));
+        toast.success(t("auth.welcomeNewUser"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
