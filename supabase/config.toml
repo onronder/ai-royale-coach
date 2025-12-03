@@ -7,7 +7,7 @@ verify_jwt = false
 [functions.search-clans]
 verify_jwt = false
 
-[functions.lemon-webhook]
+[functions.polar-webhook]
 verify_jwt = false
 
 # Subscription endpoints - handle auth internally for CORS support
