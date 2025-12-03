@@ -17,6 +17,13 @@ interface SubscriptionStatus {
   accountSlots: number;
 }
 
+const defaultStatus: SubscriptionStatus = {
+  hasAccess: false,
+  subscription: null,
+  trial: { isActive: false, daysRemaining: 0, hasUsedTrial: false, endsAt: null },
+  accountSlots: 0,
+};
+
 export function useSubscription() {
   const queryClient = useQueryClient();
 
@@ -25,22 +32,18 @@ export function useSubscription() {
     queryFn: async (): Promise<SubscriptionStatus> => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        return {
-          hasAccess: false,
-          subscription: null,
-          trial: { isActive: false, daysRemaining: 0, hasUsedTrial: false, endsAt: null },
-          accountSlots: 0,
-        };
+        return defaultStatus;
       }
 
       const { data, error } = await supabase.functions.invoke('get-subscription-status');
       
       if (error) {
         console.error('Error fetching subscription status:', error);
-        throw error;
+        // Return default status instead of throwing to prevent app crash
+        return defaultStatus;
       }
       
-      return data;
+      return data || defaultStatus;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: true,
