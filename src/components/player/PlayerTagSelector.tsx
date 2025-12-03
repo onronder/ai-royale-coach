@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare } from "lucide-react";
+import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
+import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AccountComparison } from "./AccountComparison";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 interface PlayerTagSelectorProps {
@@ -35,6 +37,13 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
     isRemoving,
     canAddMore 
   } = usePlayerProfiles(userId);
+
+  const { profiles: aiProfiles } = useUserAIProfiles();
+  
+  // Create a map of player_tag -> ai_enabled status
+  const aiStatusMap = new Map(
+    aiProfiles.map(p => [p.player_tag, p.ai_enabled])
+  );
 
   const handleSelectPlayer = (playerTag: string) => {
     if (onSelect) {
@@ -109,6 +118,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
               onRemove={(e) => handleRemoveTag(e, profile.id)}
               isRemoving={isRemoving}
               index={index}
+              aiEnabled={aiStatusMap.get(profile.player_tag) ?? false}
             />
           ))}
         </div>
@@ -196,9 +206,10 @@ interface PlayerTagCardProps {
   onRemove: (e: React.MouseEvent) => void;
   isRemoving: boolean;
   index: number;
+  aiEnabled: boolean;
 }
 
-function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index }: PlayerTagCardProps) {
+function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index, aiEnabled }: PlayerTagCardProps) {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
@@ -231,17 +242,49 @@ function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index }: Playe
             </div>
             
             {/* Player Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="font-bold font-rajdhani text-xl truncate">
-                  {profile.player_name || `#${profile.player_tag}`}
-                </h3>
-                {profile.player_name && (
-                  <Badge variant="secondary" className="text-xs font-mono bg-secondary/50">
-                    #{profile.player_tag}
-                  </Badge>
-                )}
-              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold font-rajdhani text-xl truncate">
+                    {profile.player_name || `#${profile.player_tag}`}
+                  </h3>
+                  {profile.player_name && (
+                    <Badge variant="secondary" className="text-xs font-mono bg-secondary/50">
+                      #{profile.player_tag}
+                    </Badge>
+                  )}
+                  {/* AI Status Badge */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge 
+                        variant={aiEnabled ? "default" : "outline"}
+                        className={cn(
+                          "text-xs gap-1",
+                          aiEnabled 
+                            ? "bg-primary/20 text-primary border-primary/30 hover:bg-primary/30" 
+                            : "text-muted-foreground border-border/50"
+                        )}
+                      >
+                        {aiEnabled ? (
+                          <>
+                            <Brain className="h-3 w-3" />
+                            {t('selectPlayer.aiEnabled')}
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="h-3 w-3" />
+                            {t('selectPlayer.noAI')}
+                          </>
+                        )}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {aiEnabled 
+                        ? t('selectPlayer.aiEnabledTooltip')
+                        : t('selectPlayer.noAITooltip')
+                      }
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               
               <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 {profile.trophies !== undefined && (
