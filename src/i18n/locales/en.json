@@ -1218,7 +1218,9 @@
       "slotsDescription": "You can enable AI on up to {{count}} account(s)",
       "enabled": "AI Enabled",
       "disabled": "No AI Access",
-      "manage": "Manage AI Accounts"
+      "manage": "Manage AI Accounts",
+      "trialAccess": "Trial Access",
+      "trialNote": "During your free trial, all accounts have AI access. After trial ends, you'll need to select which accounts keep AI features."
     }
   },
   "matchDetail": {
@@ -1795,6 +1797,8 @@
     "subscribePro": "Subscribe to Pro",
     "priceInfo": "$4.99/month • Cancel anytime",
     "trialStarted": "Your 3-day free trial has started!",
+    "trialStartedAuto": "Welcome! Your free trial has started",
+    "trialStartedAutoDescription": "All AI features are now unlocked for {{days}} days. Enjoy AI coaching on all your accounts!",
     "trialError": "Failed to start trial. Please try again.",
     "checkoutError": "Failed to create checkout. Please try again.",
     "unlockPro": "Unlock AI Royale Pro",

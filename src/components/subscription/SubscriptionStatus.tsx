@@ -21,8 +21,6 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
     accountSlots,
     createCheckout,
     isCreatingCheckout,
-    startTrial,
-    isStartingTrial,
   } = useSubscription();
 
   const handleSubscribe = async () => {
@@ -33,15 +31,6 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
       window.location.href = checkoutUrl;
     } catch (error) {
       toast.error(t('subscription.checkoutError'));
-    }
-  };
-
-  const handleStartTrial = async () => {
-    try {
-      await startTrial();
-      toast.success(t('subscription.trialStarted'));
-    } catch (error) {
-      toast.error(t('subscription.trialError'));
     }
   };
 
@@ -68,12 +57,12 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
       <Button 
         size="sm" 
         variant="outline"
-        onClick={hasUsedTrial ? handleSubscribe : handleStartTrial}
-        disabled={isCreatingCheckout || isStartingTrial}
+        onClick={handleSubscribe}
+        disabled={isCreatingCheckout}
         className="border-gold/50 hover:bg-gold/10 text-gold"
       >
         <Sparkles className="mr-1 h-3 w-3" />
-        {hasUsedTrial ? t('subscription.upgrade') : t('subscription.tryFree')}
+        {t('subscription.upgrade')}
       </Button>
     );
   }
@@ -124,11 +113,11 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
 
           {!hasAccess && (
             <Button 
-              onClick={hasUsedTrial ? handleSubscribe : handleStartTrial}
-              disabled={isCreatingCheckout || isStartingTrial}
+              onClick={handleSubscribe}
+              disabled={isCreatingCheckout}
               className="bg-gradient-to-r from-gold to-yellow-500 text-black hover:from-gold/90 hover:to-yellow-500/90"
             >
-              {hasUsedTrial ? t('subscription.subscribe') : t('subscription.startTrial')}
+              {t('subscription.subscribe')}
             </Button>
           )}
 

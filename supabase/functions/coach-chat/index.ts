@@ -115,8 +115,8 @@ serve(async (req) => {
 
     const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language = 'en' } = await req.json();
 
-    // PER-PLAYER AI ACCESS CHECK
-    if (playerTag) {
+    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    if (playerTag && !isTrialActive) {
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')

@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock, Sparkles, Crown } from "lucide-react";
-import { toast } from "sonner";
+import { Lock, Crown } from "lucide-react";
 import { PricingModal } from "./PricingModal";
 
 interface SubscriptionGateProps {
@@ -15,7 +14,7 @@ interface SubscriptionGateProps {
 
 export function SubscriptionGate({ children, feature = "this feature", showUpgradePrompt = true }: SubscriptionGateProps) {
   const { t } = useTranslation();
-  const { hasAccess, isLoading, hasUsedTrial, startTrial, isStartingTrial } = useSubscription();
+  const { hasAccess, isLoading } = useSubscription();
   const [showPricingModal, setShowPricingModal] = useState(false);
 
   if (isLoading) {
@@ -34,15 +33,6 @@ export function SubscriptionGate({ children, feature = "this feature", showUpgra
     return null;
   }
 
-  const handleStartTrial = async () => {
-    try {
-      await startTrial();
-      toast.success(t('subscription.trialStarted'));
-    } catch (error) {
-      toast.error(t('subscription.trialError'));
-    }
-  };
-
   return (
     <>
       <Card className="border-gold/30 bg-gradient-to-br from-card via-card to-gold/5">
@@ -54,25 +44,11 @@ export function SubscriptionGate({ children, feature = "this feature", showUpgra
             {t('subscription.unlockFeature', { feature })}
           </CardTitle>
           <CardDescription>
-            {hasUsedTrial 
-              ? t('subscription.trialExpiredDescription')
-              : t('subscription.premiumDescription')
-            }
+            {t('subscription.trialExpiredDescription')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3">
-            {!hasUsedTrial && (
-              <Button 
-                onClick={handleStartTrial} 
-                disabled={isStartingTrial}
-                variant="outline"
-                className="w-full border-gold/50 hover:bg-gold/10"
-              >
-                <Sparkles className="mr-2 h-4 w-4 text-gold" />
-                {isStartingTrial ? t('common.loading') : t('subscription.startFreeTrial')}
-              </Button>
-            )}
             <Button 
               onClick={() => setShowPricingModal(true)}
               className="w-full bg-gradient-to-r from-gold to-yellow-500 text-black hover:from-gold/90 hover:to-yellow-500/90"
