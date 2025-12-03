@@ -3,6 +3,7 @@ import { Resend } from 'https://esm.sh/resend@4.0.0'
 import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
+import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
@@ -13,9 +14,13 @@ const corsHeaders = {
 
 interface EmailRequest {
   email: string
-  type: 'welcome' | 'password_reset' | 'account_update'
+  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription'
   name?: string
   language?: string
+  subscriptionData?: {
+    accountSlots: number
+    renewalDate?: string
+  }
 }
 
 Deno.serve(async (req) => {
@@ -31,7 +36,7 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en' } = body
+    const { email, type, name, language = 'en', subscriptionData } = body
 
     if (!email || !type) {
       return new Response(
@@ -76,7 +81,7 @@ Deno.serve(async (req) => {
 
     let html: string
     let subject: string
-    const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
+    const appUrl = Deno.env.get('APP_URL') || 'https://vraqbzokccvqhthixoof.lovableproject.com'
 
     switch (type) {
       case 'welcome':
@@ -86,6 +91,19 @@ Deno.serve(async (req) => {
             name,
             language,
             appUrl,
+          })
+        )
+        break
+
+      case 'subscription':
+        subject = getSubscriptionSubject(language)
+        html = await renderAsync(
+          React.createElement(SubscriptionEmail, {
+            name,
+            language,
+            appUrl,
+            accountSlots: subscriptionData?.accountSlots || 1,
+            renewalDate: subscriptionData?.renewalDate,
           })
         )
         break
@@ -145,6 +163,17 @@ function getWelcomeSubject(language: string): string {
     pt: 'Bem-vindo ao AI Royale, Campeão! 👑',
     tr: "AI Royale'e Hoş Geldiniz, Şampiyon! 👑",
     fr: 'Bienvenue sur AI Royale, Champion! 👑',
+  }
+  return subjects[language] || subjects.en
+}
+
+function getSubscriptionSubject(language: string): string {
+  const subjects: Record<string, string> = {
+    en: 'Your AI Royale PRO is Active! 👑',
+    es: '¡Tu AI Royale PRO está Activo! 👑',
+    pt: 'Seu AI Royale PRO está Ativo! 👑',
+    tr: 'AI Royale PRO Aktif! 👑',
+    fr: 'Votre AI Royale PRO est Actif! 👑',
   }
   return subjects[language] || subjects.en
 }
