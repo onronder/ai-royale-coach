@@ -7,8 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Loader2, Crown, ArrowLeft, Sparkles, Shield } from "lucide-react";
+import GoogleIcon from "@/components/icons/GoogleIcon";
 
 const TERMS_VERSION = "1.0";
 
@@ -23,17 +31,50 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  // Google OAuth terms modal state
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [oauthTermsAccepted, setOauthTermsAccepted] = useState(false);
+  const [pendingOAuthUser, setPendingOAuthUser] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/select-player");
+        // Check if terms are accepted for OAuth users
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('terms_accepted_at')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (!profile?.terms_accepted_at) {
+          // Show terms modal for OAuth users who haven't accepted
+          setPendingOAuthUser(session.user.id);
+          setShowTermsModal(true);
+        } else {
+          navigate("/select-player");
+        }
       }
-    });
+    };
+    
+    checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/select-player");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Check terms acceptance
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('terms_accepted_at')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (!profile?.terms_accepted_at) {
+          setPendingOAuthUser(session.user.id);
+          setShowTermsModal(true);
+        } else {
+          navigate("/select-player");
+        }
       }
     });
 
@@ -86,6 +127,57 @@ const Auth = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || t("common.error"));
+      setIsLoading(false);
+    }
+  };
+
+  const handleAcceptTerms = async () => {
+    if (!oauthTermsAccepted || !pendingOAuthUser) return;
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          terms_accepted_at: new Date().toISOString(),
+          terms_version: TERMS_VERSION,
+        })
+        .eq('id', pendingOAuthUser);
+      
+      if (error) throw error;
+      
+      setShowTermsModal(false);
+      setPendingOAuthUser(null);
+      toast.success(t("auth.welcomeBack"));
+      navigate("/select-player");
+    } catch (error: any) {
+      toast.error(error.message || t("common.error"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCancelTerms = async () => {
+    // Sign out the user if they cancel terms
+    await supabase.auth.signOut();
+    setShowTermsModal(false);
+    setPendingOAuthUser(null);
+    setOauthTermsAccepted(false);
+    toast.error(t("auth.termsRequired"));
   };
 
   return (
@@ -142,7 +234,36 @@ const Auth = () => {
                 : t("auth.signInDesc")}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-5">
+            {/* Google Sign-in Button */}
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full bg-white hover:bg-gray-50 text-gray-700 border-gray-300"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : (
+                <GoogleIcon className="mr-2 h-5 w-5" />
+              )}
+              {t("auth.continueWithGoogle")}
+            </Button>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/50" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  {t("auth.orContinueWith")}
+                </span>
+              </div>
+            </div>
+
             <form onSubmit={handleAuth} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">{t("auth.email")}</Label>
@@ -260,6 +381,73 @@ const Auth = () => {
           <span>{t("auth.noSpam")}</span>
         </div>
       </div>
+
+      {/* OAuth Terms Acceptance Modal */}
+      <Dialog open={showTermsModal} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-gold" />
+              {t("auth.termsModalTitle")}
+            </DialogTitle>
+            <DialogDescription>
+              {t("auth.termsModalDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/50 border border-border/50">
+              <Checkbox
+                id="oauth-terms"
+                checked={oauthTermsAccepted}
+                onCheckedChange={(checked) => setOauthTermsAccepted(checked as boolean)}
+                disabled={isLoading}
+                className="mt-0.5"
+              />
+              <Label htmlFor="oauth-terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                {t("auth.agreeToTerms")}{" "}
+                <Link 
+                  to="/terms" 
+                  target="_blank" 
+                  className="text-primary hover:underline font-medium"
+                >
+                  {t("legal.termsOfService")}
+                </Link>
+                {" "}{t("legal.and")}{" "}
+                <Link 
+                  to="/privacy" 
+                  target="_blank" 
+                  className="text-primary hover:underline font-medium"
+                >
+                  {t("legal.privacyPolicy")}
+                </Link>
+              </Label>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleCancelTerms}
+                disabled={isLoading}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                variant="golden"
+                className="flex-1"
+                onClick={handleAcceptTerms}
+                disabled={!oauthTermsAccepted || isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-2 h-4 w-4" />
+                )}
+                {t("auth.acceptAndContinue")}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

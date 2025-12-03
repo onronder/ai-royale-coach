@@ -788,7 +788,11 @@
     },
     "signInRequired": "Veuillez vous connecter pour continuer",
     "termsRequired": "Vous devez accepter les Conditions d'Utilisation et la Politique de Confidentialité",
-    "agreeToTerms": "J'accepte les"
+    "agreeToTerms": "J'accepte les",
+    "continueWithGoogle": "Continuer avec Google",
+    "termsModalTitle": "Accepter les Conditions pour Continuer",
+    "termsModalDesc": "Pour terminer votre inscription, veuillez accepter nos conditions d'utilisation.",
+    "acceptAndContinue": "Accepter et Continuer"
   },
   "legal": {
     "termsOfService": "Conditions d'Utilisation",
