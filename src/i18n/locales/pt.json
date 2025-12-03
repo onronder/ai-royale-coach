@@ -846,8 +846,18 @@
         "title": "Serviços de Terceiros",
         "content": "AI Royale utiliza os seguintes serviços de terceiros:\n\n• API Clash Royale da Supercell: Para buscar dados do jogo\n• Provedor de autenticação: Para login seguro\n• Infraestrutura em nuvem: Para armazenamento e processamento de dados\n\nTodos os serviços de terceiros são contratualmente obrigados a proteger seus dados."
       },
+      "complianceTitle": "Conformidade Internacional de Proteção de Dados",
+      "complianceSubtitle": "AI Royale está em conformidade com as regulamentações globais de proteção de dados",
+      "gdpr": {
+        "title": "Conformidade GDPR (União Europeia)",
+        "content": "AI Royale está em conformidade com o Regulamento Geral de Proteção de Dados (GDPR) para usuários no Espaço Econômico Europeu.\n\nSob o GDPR, você tem os seguintes direitos:\n\n• Direito de Acesso: Solicitar uma cópia de seus dados pessoais\n• Direito de Retificação: Solicitar correção de dados imprecisos\n• Direito de Apagamento: Solicitar exclusão de seus dados (\"direito ao esquecimento\")\n• Direito de Restringir Processamento: Limitar como usamos seus dados\n• Direito à Portabilidade de Dados: Receber seus dados em formato portátil\n• Direito de Objeção: Opor-se ao processamento baseado em interesses legítimos\n\nPara exercer esses direitos, entre em contato conosco no endereço abaixo. Responderemos em 30 dias."
+      },
+      "ccpa": {
+        "title": "Conformidade CCPA (Califórnia, EUA)",
+        "content": "AI Royale está em conformidade com a Lei de Privacidade do Consumidor da Califórnia (CCPA) para residentes da Califórnia.\n\nSob a CCPA, residentes da Califórnia têm o direito de:\n\n• Saber quais informações pessoais são coletadas\n• Saber se informações pessoais são vendidas ou divulgadas\n• Recusar a venda de informações pessoais\n• Acessar suas informações pessoais\n• Solicitar exclusão de informações pessoais\n• Serviço e preço igualitários (não discriminação)\n\nNÃO vendemos suas informações pessoais a terceiros. Para enviar uma solicitação CCPA, entre em contato conosco no endereço abaixo."
+      },
       "kvkk": {
-        "title": "Conformidade KVKK (Proteção de Dados Turca)",
+        "title": "Conformidade KVKK (Turquia)",
         "content": "AI Royale está em conformidade com a Lei de Proteção de Dados Pessoais da Turquia (KVKK - Kişisel Verilerin Korunması Kanunu).\n\nComo controlador de dados, Fittechs Yazılım Anonim Şirketi processa seus dados de acordo com os princípios da KVKK. Você tem o direito de:\n\n• Saber se seus dados pessoais estão sendo processados\n• Solicitar informações sobre atividades de processamento\n• Solicitar correção ou exclusão de seus dados\n• Opor-se ao processamento e solicitar restrição\n\nPara solicitações relacionadas à KVKK, entre em contato conosco no endereço abaixo."
       },
       "contact": {
