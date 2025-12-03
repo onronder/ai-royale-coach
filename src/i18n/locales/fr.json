@@ -1238,7 +1238,9 @@
       "slotsDescription": "Vous pouvez activer l'IA sur {{count}} compte(s) maximum",
       "enabled": "IA Activée",
       "disabled": "Pas d'Accès IA",
-      "manage": "Gérer les Comptes IA"
+      "manage": "Gérer les Comptes IA",
+      "trialAccess": "Accès Essai",
+      "trialNote": "Tous les comptes ont accès à l'IA pendant la période d'essai"
     }
   },
   "matchDetail": {
@@ -1815,6 +1817,8 @@
     "subscribePro": "S'abonner à Pro",
     "priceInfo": "$4.99/mois • Annulez à tout moment",
     "trialStarted": "Votre essai gratuit de 3 jours a commencé!",
+    "trialStartedAuto": "Bienvenue ! Votre essai gratuit a commencé",
+    "trialStartedAutoDescription": "Toutes les fonctionnalités IA sont débloquées pendant {{days}} jours. Profitez du coaching IA sur tous vos comptes !",
     "trialError": "Échec du démarrage de l'essai. Veuillez réessayer.",
     "checkoutError": "Échec de la création du paiement. Veuillez réessayer.",
     "unlockPro": "Débloquer AI Royale Pro",
