@@ -10,9 +10,9 @@ verify_jwt = false
 [functions.polar-webhook]
 verify_jwt = false
 
-# Email webhook - called by Supabase Auth
+# Email sending - requires authentication
 [functions.send-email]
-verify_jwt = false
+verify_jwt = true
 
 # Subscription endpoints - handle auth internally for CORS support
 [functions.create-checkout]
