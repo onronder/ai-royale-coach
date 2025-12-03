@@ -6,6 +6,8 @@ import { Crown, LogOut, Trophy, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerTagSelector } from "@/components/player/PlayerTagSelector";
 import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
+import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
+import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 
 const SelectPlayer = () => {
@@ -14,17 +16,30 @@ const SelectPlayer = () => {
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAISelector, setShowAISelector] = useState(false);
   
-  // Check for subscription success
+  const { needsAISelection, accountSlots, refetch: refetchSubscription } = useSubscription();
+
+  // Check for subscription success and show AI selector if needed
   useEffect(() => {
     if (searchParams.get('subscription') === 'success') {
       toast.success(t('subscription.subscriptionSuccess'), {
         description: t('subscription.subscriptionSuccessDescription'),
       });
-      // Clean up URL
-      navigate('/select-player', { replace: true });
+      // Refetch subscription status to get latest needsAISelection
+      refetchSubscription().then(() => {
+        // Clean up URL
+        navigate('/select-player', { replace: true });
+      });
     }
-  }, [searchParams, navigate, t]);
+  }, [searchParams, navigate, t, refetchSubscription]);
+
+  // Show AI selector when needed
+  useEffect(() => {
+    if (needsAISelection && accountSlots > 0) {
+      setShowAISelector(true);
+    }
+  }, [needsAISelection, accountSlots]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -55,6 +70,10 @@ const SelectPlayer = () => {
 
   const handleSelectPlayer = (playerTag: string) => {
     navigate(`/player/${playerTag}`);
+  };
+
+  const handleAISelectorComplete = () => {
+    refetchSubscription();
   };
 
   if (isLoading) {
@@ -138,6 +157,14 @@ const SelectPlayer = () => {
           />
         </div>
       </main>
+
+      {/* AI Account Selector Modal */}
+      <AIAccountSelector
+        open={showAISelector}
+        onOpenChange={setShowAISelector}
+        accountSlots={accountSlots}
+        onComplete={handleAISelectorComplete}
+      />
     </div>
   );
 };

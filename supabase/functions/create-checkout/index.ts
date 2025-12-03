@@ -15,7 +15,13 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const polarAccessToken = Deno.env.get('POLAR_ACCESS_TOKEN')!;
-    const polarProductId = Deno.env.get('POLAR_PRODUCT_ID')!;
+    
+    // Get product IDs for each tier
+    const productIds: Record<number, string> = {
+      1: Deno.env.get('POLAR_PRODUCT_ID_1')!,
+      2: Deno.env.get('POLAR_PRODUCT_ID_2')!,
+      3: Deno.env.get('POLAR_PRODUCT_ID_3')!,
+    };
 
     // Get user from auth header
     const authHeader = req.headers.get('Authorization');
@@ -38,10 +44,24 @@ serve(async (req) => {
       });
     }
 
-    const { successUrl, cancelUrl } = await req.json();
+    const { successUrl, cancelUrl, accountSlots = 1 } = await req.json();
+    
+    // Validate accountSlots
+    const slots = Math.min(Math.max(1, accountSlots), 3); // Clamp between 1-3
+    const polarProductId = productIds[slots];
+    
+    if (!polarProductId) {
+      console.error(`No product ID configured for ${slots} slots`);
+      return new Response(JSON.stringify({ error: 'Invalid tier selected' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     
     // Default success URL if not provided
     const finalSuccessUrl = successUrl || `${req.headers.get('origin')}/select-player?subscription=success`;
+
+    console.log(`Creating checkout for user ${user.id} with ${slots} account slots, product: ${polarProductId}`);
 
     // Create checkout session via Polar API
     const checkoutResponse = await fetch('https://api.polar.sh/v1/checkouts/custom/', {
@@ -54,11 +74,11 @@ serve(async (req) => {
         product_id: polarProductId,
         success_url: finalSuccessUrl,
         customer_email: user.email,
-        customer_external_id: user.id, // Links Polar customer to our user_id
+        customer_external_id: user.id,
         metadata: {
           user_id: user.id,
+          account_slots: slots,
         },
-        // Allow promotion codes
         allow_discount_codes: true,
       }),
     });
@@ -83,7 +103,7 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Polar checkout created for user ${user.id}`);
+    console.log(`Polar checkout created for user ${user.id} - ${slots} account tier`);
 
     return new Response(JSON.stringify({ checkoutUrl }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

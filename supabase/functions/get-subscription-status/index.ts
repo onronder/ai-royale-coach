@@ -99,6 +99,7 @@ serve(async (req) => {
         currentPeriodEnd: subscription.current_period_end,
         polarSubscriptionId: subscription.polar_subscription_id,
         polarCustomerId: subscription.polar_customer_id,
+        needsAISelection: subscription.needs_ai_selection || false,
       } : null,
       trial: {
         isActive: isTrialActive,

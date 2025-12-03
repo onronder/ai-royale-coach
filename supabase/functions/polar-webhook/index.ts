@@ -7,8 +7,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature',
 };
 
+// Map product IDs to account slots
+function getAccountSlotsFromProductId(productId: string): number {
+  const productId1 = Deno.env.get('POLAR_PRODUCT_ID_1');
+  const productId2 = Deno.env.get('POLAR_PRODUCT_ID_2');
+  const productId3 = Deno.env.get('POLAR_PRODUCT_ID_3');
+  
+  if (productId === productId1) return 1;
+  if (productId === productId2) return 2;
+  if (productId === productId3) return 3;
+  
+  console.warn(`Unknown product ID: ${productId}, defaulting to 1 slot`);
+  return 1;
+}
+
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -26,10 +39,7 @@ serve(async (req) => {
       });
     }
 
-    // Get raw body for signature verification
     const payload = await req.text();
-    
-    // Get webhook headers for verification
     const webhookId = req.headers.get('webhook-id');
     const webhookTimestamp = req.headers.get('webhook-timestamp');
     const webhookSignature = req.headers.get('webhook-signature');
@@ -42,7 +52,6 @@ serve(async (req) => {
       });
     }
 
-    // Verify webhook signature using Standard Webhooks
     const wh = new Webhook(webhookSecret);
     let event;
     
@@ -62,14 +71,11 @@ serve(async (req) => {
 
     console.log('Polar webhook received:', event.type);
 
-    // Initialize Supabase client with service role
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Handle different event types
     switch (event.type) {
       case 'subscription.created':
       case 'subscription.active': {
-        // Subscription created or became active (including trial start)
         const subscription = event.data;
         const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
         
@@ -80,8 +86,33 @@ serve(async (req) => {
 
         console.log(`Processing subscription active for user ${userId}`);
 
-        // Determine if this is a trial
         const isTrialing = subscription.status === 'trialing';
+        const accountSlots = getAccountSlotsFromProductId(subscription.product_id);
+
+        // Get user's linked player profiles
+        const { data: profiles } = await supabase
+          .from('player_profiles')
+          .select('id, player_tag, last_seen_at')
+          .eq('user_id', userId)
+          .order('last_seen_at', { ascending: false });
+
+        const profileCount = profiles?.length || 0;
+        
+        // Determine if user needs to select which accounts get AI
+        // If user has more profiles than slots, they need to choose
+        const needsAISelection = profileCount > accountSlots;
+
+        // If user has profiles <= slots, auto-enable AI on all profiles
+        if (!needsAISelection && profiles && profiles.length > 0) {
+          const profilesToEnable = profiles.slice(0, accountSlots);
+          for (const profile of profilesToEnable) {
+            await supabase
+              .from('player_profiles')
+              .update({ ai_enabled: true })
+              .eq('id', profile.id);
+          }
+          console.log(`Auto-enabled AI on ${profilesToEnable.length} profiles for user ${userId}`);
+        }
 
         const { error: upsertError } = await supabase
           .from('user_subscriptions')
@@ -94,7 +125,10 @@ serve(async (req) => {
             variant_id: subscription.product_id,
             current_period_start: subscription.current_period_start,
             current_period_end: subscription.current_period_end,
-            account_slots: 3, // Pro users get 3 account slots
+            account_slots: accountSlots,
+            needs_ai_selection: needsAISelection,
+            pending_account_slots: null,
+            pending_change_effective_at: null,
             updated_at: new Date().toISOString(),
           }, {
             onConflict: 'user_id',
@@ -103,10 +137,9 @@ serve(async (req) => {
         if (upsertError) {
           console.error('Error upserting subscription:', upsertError);
         } else {
-          console.log(`Subscription activated for user ${userId}`);
+          console.log(`Subscription activated for user ${userId} with ${accountSlots} slots, needs_selection: ${needsAISelection}`);
         }
 
-        // Update profiles table for trial tracking if trialing
         if (isTrialing) {
           const { error: profileError } = await supabase
             .from('profiles')
@@ -126,7 +159,6 @@ serve(async (req) => {
       }
 
       case 'subscription.updated': {
-        // Subscription was updated (renewal, plan change, etc.)
         const subscription = event.data;
         const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
 
@@ -136,13 +168,53 @@ serve(async (req) => {
         }
 
         console.log(`Processing subscription update for user ${userId}`);
+        
+        const accountSlots = getAccountSlotsFromProductId(subscription.product_id);
+
+        // Get current subscription to check for tier changes
+        const { data: currentSub } = await supabase
+          .from('user_subscriptions')
+          .select('account_slots, pending_account_slots')
+          .eq('user_id', userId)
+          .single();
+
+        // If tier changed (renewal with pending change), update ai_enabled accordingly
+        if (currentSub?.pending_account_slots && currentSub.pending_account_slots !== currentSub.account_slots) {
+          const newSlots = accountSlots;
+          
+          // Get user's profiles
+          const { data: profiles } = await supabase
+            .from('player_profiles')
+            .select('id, ai_enabled')
+            .eq('user_id', userId);
+
+          const enabledCount = profiles?.filter(p => p.ai_enabled).length || 0;
+
+          // If downgrading, may need to disable some accounts
+          if (enabledCount > newSlots) {
+            // Disable excess accounts (user will need to re-select)
+            await supabase
+              .from('player_profiles')
+              .update({ ai_enabled: false })
+              .eq('user_id', userId);
+            
+            // Set needs_ai_selection flag
+            await supabase
+              .from('user_subscriptions')
+              .update({ needs_ai_selection: true })
+              .eq('user_id', userId);
+          }
+        }
 
         const { error: updateError } = await supabase
           .from('user_subscriptions')
           .update({
             status: subscription.status === 'trialing' ? 'trialing' : 'active',
+            account_slots: accountSlots,
             current_period_start: subscription.current_period_start,
             current_period_end: subscription.current_period_end,
+            pending_account_slots: null,
+            pending_change_effective_at: null,
             updated_at: new Date().toISOString(),
           })
           .eq('user_id', userId);
@@ -156,7 +228,6 @@ serve(async (req) => {
       }
 
       case 'subscription.canceled': {
-        // User cancelled but still has access until period end
         const subscription = event.data;
         const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
 
@@ -184,7 +255,6 @@ serve(async (req) => {
       }
 
       case 'subscription.uncanceled': {
-        // User re-subscribed before period ended
         const subscription = event.data;
         const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
 
@@ -212,7 +282,6 @@ serve(async (req) => {
       }
 
       case 'subscription.revoked': {
-        // Access removed - payment failed or cancelled period ended
         const subscription = event.data;
         const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
 
@@ -223,11 +292,18 @@ serve(async (req) => {
 
         console.log(`Processing subscription revocation for user ${userId}`);
 
+        // Disable AI on all profiles
+        await supabase
+          .from('player_profiles')
+          .update({ ai_enabled: false })
+          .eq('user_id', userId);
+
         const { error: revokeError } = await supabase
           .from('user_subscriptions')
           .update({
             status: 'expired',
-            account_slots: 1, // Reset to free tier
+            account_slots: 0,
+            needs_ai_selection: false,
             updated_at: new Date().toISOString(),
           })
           .eq('user_id', userId);
@@ -235,20 +311,18 @@ serve(async (req) => {
         if (revokeError) {
           console.error('Error revoking subscription:', revokeError);
         } else {
-          console.log(`Subscription revoked for user ${userId}`);
+          console.log(`Subscription revoked for user ${userId}, AI disabled on all profiles`);
         }
         break;
       }
 
       case 'checkout.created':
       case 'checkout.updated': {
-        // Checkout session events - log for debugging
         console.log(`Checkout event: ${event.type}`, event.data?.id);
         break;
       }
 
       case 'order.created': {
-        // Order created - can be used for one-time purchases
         console.log('Order created:', event.data?.id);
         break;
       }
