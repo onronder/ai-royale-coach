@@ -7,6 +7,7 @@ interface SubscriptionStatus {
     status: string;
     accountSlots: number;
     currentPeriodEnd: string | null;
+    needsAISelection: boolean;
   } | null;
   trial: {
     isActive: boolean;
@@ -39,13 +40,12 @@ export function useSubscription() {
       
       if (error) {
         console.error('Error fetching subscription status:', error);
-        // Return default status instead of throwing to prevent app crash
         return defaultStatus;
       }
       
       return data || defaultStatus;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
   });
 
@@ -55,7 +55,7 @@ export function useSubscription() {
       if (!user) throw new Error('Not authenticated');
 
       const now = new Date();
-      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
+      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
 
       const { error } = await supabase
         .from('profiles')
@@ -72,10 +72,16 @@ export function useSubscription() {
     },
   });
 
+  interface CheckoutParams {
+    accountSlots?: number;
+    successUrl?: string;
+    cancelUrl?: string;
+  }
+
   const createCheckoutMutation = useMutation({
-    mutationFn: async ({ successUrl, cancelUrl }: { successUrl?: string; cancelUrl?: string }) => {
+    mutationFn: async ({ accountSlots = 1, successUrl, cancelUrl }: CheckoutParams) => {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { successUrl, cancelUrl },
+        body: { accountSlots, successUrl, cancelUrl },
       });
       
       if (error) throw error;
@@ -94,6 +100,7 @@ export function useSubscription() {
     hasUsedTrial: data?.trial?.hasUsedTrial ?? false,
     accountSlots: data?.accountSlots ?? 0,
     subscriptionStatus: data?.subscription?.status ?? null,
+    needsAISelection: data?.subscription?.needsAISelection ?? false,
     startTrial: startTrialMutation.mutateAsync,
     isStartingTrial: startTrialMutation.isPending,
     createCheckout: createCheckoutMutation.mutateAsync,

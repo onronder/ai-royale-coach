@@ -1759,14 +1759,21 @@
     "trialError": "Failed to start trial. Please try again.",
     "checkoutError": "Failed to create checkout. Please try again.",
     "unlockPro": "Unlock AI Royale Pro",
-    "proDescription": "Get unlimited access to AI coaching and advanced analysis.",
+    "proDescription": "Choose how many accounts get AI coaching features.",
     "month": "month",
+    "perAccount": "account",
+    "accounts": "{{count}} Account",
+    "accounts_plural": "{{count}} Accounts",
+    "popular": "Most Popular",
+    "includedFeatures": "Included in all plans",
+    "aiOnAccounts": "AI features on {{count}} account(s)",
+    "subscribeTier": "Subscribe for {{price}}/month",
     "onePlayerOneAccount": "1 Player, 1 Account",
     "additionalAccountsInfo": "Add up to 3 accounts. $1.99/month per additional account.",
     "features": {
-      "aiCoach": "AI Coach",
-      "deckAnalysis": "Deck Analysis",
-      "matchPredictions": "Match Predictions",
+      "aiCoach": "AI Coach - Personal strategy advisor",
+      "deckAnalysis": "Deck Analysis - Deep insights on your builds",
+      "matchPredictions": "Match Predictions - Know your odds",
       "multiAccount": "Multiple Accounts",
       "aiAnalysis": "AI Analysis",
       "deckRecommendations": "Deck Recommendations",
@@ -1801,6 +1808,17 @@
     "previewTitle": "Preview of AI Analysis",
     "previewDescription": "Upgrade to see the full insights",
     "seeFull": "See Full Analysis",
-    "trialExpiredPreview": "Your trial has ended. Subscribe to see the full analysis."
+    "trialExpiredPreview": "Your trial has ended. Subscribe to see the full analysis.",
+    "aiSelector": {
+      "title": "Select AI-Enabled Accounts",
+      "description": "Choose which {{count}} account(s) will have access to AI features.",
+      "selected": "Selected accounts",
+      "maxReached": "You can only select {{count}} account(s) with your current plan",
+      "selectAtLeastOne": "Please select at least one account",
+      "saved": "AI access updated successfully!",
+      "error": "Failed to update AI access. Please try again.",
+      "confirm": "Confirm Selection",
+      "noProfiles": "No player accounts linked. Add a player tag first."
+    }
   }
 }
