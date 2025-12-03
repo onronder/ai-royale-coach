@@ -788,7 +788,11 @@
     },
     "signInRequired": "Devam etmek için lütfen giriş yapın",
     "termsRequired": "Kullanım Koşullarını ve Gizlilik Politikasını kabul etmelisiniz",
-    "agreeToTerms": "Kabul ediyorum:"
+    "agreeToTerms": "Kabul ediyorum:",
+    "continueWithGoogle": "Google ile Devam Et",
+    "termsModalTitle": "Devam Etmek İçin Şartları Kabul Et",
+    "termsModalDesc": "Kaydınızı tamamlamak için lütfen şartlar ve koşullarımızı kabul edin.",
+    "acceptAndContinue": "Kabul Et ve Devam Et"
   },
   "legal": {
     "termsOfService": "Kullanım Koşulları",

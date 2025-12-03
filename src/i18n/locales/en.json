@@ -787,7 +787,11 @@
     },
     "signInRequired": "Please sign in to continue",
     "termsRequired": "You must accept the Terms of Service and Privacy Policy",
-    "agreeToTerms": "I agree to the"
+    "agreeToTerms": "I agree to the",
+    "continueWithGoogle": "Continue with Google",
+    "termsModalTitle": "Accept Terms to Continue",
+    "termsModalDesc": "To complete your registration, please accept our terms and conditions.",
+    "acceptAndContinue": "Accept & Continue"
   },
   "legal": {
     "termsOfService": "Terms of Service",

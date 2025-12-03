@@ -788,7 +788,11 @@
     },
     "signInRequired": "Por favor inicia sesión para continuar",
     "termsRequired": "Debes aceptar los Términos de Servicio y la Política de Privacidad",
-    "agreeToTerms": "Acepto los"
+    "agreeToTerms": "Acepto los",
+    "continueWithGoogle": "Continuar con Google",
+    "termsModalTitle": "Acepta los Términos para Continuar",
+    "termsModalDesc": "Para completar tu registro, acepta nuestros términos y condiciones.",
+    "acceptAndContinue": "Aceptar y Continuar"
   },
   "legal": {
     "termsOfService": "Términos de Servicio",
