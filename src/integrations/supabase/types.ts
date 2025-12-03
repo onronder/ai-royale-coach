@@ -1153,8 +1153,9 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
-          lemon_squeezy_customer_id: string | null
-          lemon_squeezy_subscription_id: string | null
+          polar_customer_external_id: string | null
+          polar_customer_id: string | null
+          polar_subscription_id: string | null
           status: string
           updated_at: string | null
           user_id: string
@@ -1166,8 +1167,9 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
-          lemon_squeezy_customer_id?: string | null
-          lemon_squeezy_subscription_id?: string | null
+          polar_customer_external_id?: string | null
+          polar_customer_id?: string | null
+          polar_subscription_id?: string | null
           status?: string
           updated_at?: string | null
           user_id: string
@@ -1179,8 +1181,9 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
-          lemon_squeezy_customer_id?: string | null
-          lemon_squeezy_subscription_id?: string | null
+          polar_customer_external_id?: string | null
+          polar_customer_id?: string | null
+          polar_subscription_id?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string

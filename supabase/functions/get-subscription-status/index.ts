@@ -43,7 +43,7 @@ serve(async (req) => {
       });
     }
 
-    // Get subscription status
+    // Get subscription status (now using polar_* columns)
     const { data: subscription, error: subError } = await supabase
       .from('user_subscriptions')
       .select('*')
@@ -61,7 +61,16 @@ serve(async (req) => {
     let isTrialActive = false;
     let trialDaysRemaining = 0;
 
-    if (profile && profile.trial_ends_at && !profile.trial_used) {
+    // Check Polar-managed trial (from subscription status)
+    if (subscription?.status === 'trialing' && subscription.current_period_end) {
+      const trialEnd = new Date(subscription.current_period_end);
+      if (trialEnd > now) {
+        isTrialActive = true;
+        trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      }
+    }
+    // Fallback to profile-based trial (legacy support)
+    else if (profile && profile.trial_ends_at) {
       const trialEnd = new Date(profile.trial_ends_at);
       if (trialEnd > now) {
         isTrialActive = true;
@@ -69,11 +78,18 @@ serve(async (req) => {
       }
     }
 
-    const hasActiveSubscription = subscription?.status === 'active';
+    // Active subscription includes: active, trialing, cancelled (still has access until period end)
+    const hasActiveSubscription = ['active', 'trialing'].includes(subscription?.status || '');
+    
+    // Check if cancelled but still within period
+    const cancelledButActive = subscription?.status === 'cancelled' && 
+      subscription.current_period_end && 
+      new Date(subscription.current_period_end) > now;
+
     const accountSlots = subscription?.account_slots || (isTrialActive ? 1 : 0);
 
     // Determine access level
-    const hasAccess = hasActiveSubscription || isTrialActive;
+    const hasAccess = hasActiveSubscription || isTrialActive || cancelledButActive;
 
     return new Response(JSON.stringify({
       hasAccess,
@@ -81,12 +97,14 @@ serve(async (req) => {
         status: subscription.status,
         accountSlots: subscription.account_slots,
         currentPeriodEnd: subscription.current_period_end,
+        polarSubscriptionId: subscription.polar_subscription_id,
+        polarCustomerId: subscription.polar_customer_id,
       } : null,
       trial: {
         isActive: isTrialActive,
         daysRemaining: trialDaysRemaining,
-        hasUsedTrial: profile?.trial_used || false,
-        endsAt: profile?.trial_ends_at,
+        hasUsedTrial: profile?.trial_used || subscription?.status === 'trialing' || false,
+        endsAt: subscription?.status === 'trialing' ? subscription.current_period_end : profile?.trial_ends_at,
       },
       accountSlots,
     }), {
