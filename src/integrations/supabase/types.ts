@@ -249,7 +249,7 @@ export type Database = {
           id: string
           player_tag: string
           role: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           content: string
@@ -257,7 +257,7 @@ export type Database = {
           id?: string
           player_tag: string
           role: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           content?: string
@@ -265,7 +265,7 @@ export type Database = {
           id?: string
           player_tag?: string
           role?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -723,7 +723,7 @@ export type Database = {
           last_seen_at: string | null
           note: string | null
           player_tag: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           ai_enabled?: boolean | null
@@ -732,7 +732,7 @@ export type Database = {
           last_seen_at?: string | null
           note?: string | null
           player_tag: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           ai_enabled?: boolean | null
@@ -741,7 +741,7 @@ export type Database = {
           last_seen_at?: string | null
           note?: string | null
           player_tag?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
