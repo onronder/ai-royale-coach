@@ -61,10 +61,31 @@ serve(async (req) => {
       );
     }
 
-    const { cards, language = 'en' } = await req.json();
+    const { cards, playerTag, language = 'en' } = await req.json();
     
     if (!cards || cards.length !== 8) {
       throw new Error('Deck must contain exactly 8 cards');
+    }
+
+    // PER-PLAYER AI ACCESS CHECK
+    if (playerTag) {
+      const { data: playerProfile } = await supabase
+        .from('player_profiles')
+        .select('ai_enabled')
+        .eq('user_id', user.id)
+        .eq('player_tag', playerTag)
+        .single();
+
+      if (!playerProfile?.ai_enabled) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'AI not enabled for this account',
+            ai_not_enabled: true,
+            player_tag: playerTag
+          }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
     // Language instruction based on user preference

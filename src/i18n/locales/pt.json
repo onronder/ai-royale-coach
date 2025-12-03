@@ -1822,6 +1822,12 @@
     "month": "mês",
     "onePlayerOneAccount": "1 Jogador, 1 Conta",
     "additionalAccountsInfo": "Adicione até 3 contas. $1,99/mês por conta adicional.",
+    "aiNotEnabledTitle": "IA Não Habilitada",
+    "aiNotEnabledForAccount": "Recursos de IA não estão habilitados para esta conta",
+    "enableAIInSettings": "Vá para Configurações para habilitar IA nesta conta ou mude para uma conta com IA habilitada.",
+    "manageAIAccounts": "Gerenciar Contas IA",
+    "switchToAIAccount": "Mudar para uma conta com IA habilitada",
+    "viewPlans": "Ver Planos",
     "features": {
       "aiCoach": "Coach IA",
       "deckAnalysis": "Análise de Decks",

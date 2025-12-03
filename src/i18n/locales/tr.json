@@ -1822,6 +1822,12 @@
     "month": "ay",
     "onePlayerOneAccount": "1 Oyuncu, 1 Hesap",
     "additionalAccountsInfo": "3 hesaba kadar ekleyin. Her ek hesap için $1,99/ay.",
+    "aiNotEnabledTitle": "AI Etkin Değil",
+    "aiNotEnabledForAccount": "Bu hesap için AI özellikleri etkinleştirilmemiş",
+    "enableAIInSettings": "Bu hesapta AI'ı etkinleştirmek için Ayarlar'a gidin veya AI etkin bir hesaba geçin.",
+    "manageAIAccounts": "AI Hesaplarını Yönet",
+    "switchToAIAccount": "AI etkin bir hesaba geç",
+    "viewPlans": "Planları Görüntüle",
     "features": {
       "aiCoach": "Yapay Zeka Koçu",
       "deckAnalysis": "Deste Analizi",

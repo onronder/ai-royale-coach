@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Crown, User, Loader2, X, MessageSquare, Plus, Swords, ChevronUp, BookOpen } from "lucide-react";
+import { Send, Crown, User, Loader2, X, MessageSquare, Plus, Swords, ChevronUp, BookOpen, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -15,7 +15,9 @@ import { AIQuotaIndicator } from "./AIQuotaIndicator";
 import { useAIQuota } from "@/hooks/useAIQuota";
 import { matchHelpTopic, generateHelpResponse } from "@/utils/helpTopicMatcher";
 import { useSubscription } from "@/hooks/useSubscription";
-import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
+import { usePlayerAIAccess } from "@/hooks/usePlayerAIAccess";
+import { AIFeatureGate } from "@/components/subscription/AIFeatureGate";
+import { useNavigate } from "react-router-dom";
 
 const MESSAGES_PER_PAGE = 50;
 
@@ -109,6 +111,8 @@ export function CoachChatPanel({
   // AI quota tracking
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
   const { hasAccess: hasSubscriptionAccess } = useSubscription();
+  const { hasAIAccess } = usePlayerAIAccess(playerTag);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -409,7 +413,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           return;
         }
         if (resp.status === 403) {
-          // Check if it's a subscription required error
+          // Check if it's a subscription required or AI not enabled error
           try {
             const errorData = await resp.json();
             if (errorData.subscription_required) {
@@ -417,6 +421,15 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                 action: {
                   label: t('subscription.upgrade'),
                   onClick: () => window.location.href = '/auth?upgrade=true'
+                }
+              });
+              return;
+            }
+            if (errorData.ai_not_enabled) {
+              toast.error(t('subscription.aiNotEnabledForAccount'), {
+                action: {
+                  label: t('subscription.manageAIAccounts'),
+                  onClick: () => navigate('/settings')
                 }
               });
               return;
@@ -618,8 +631,8 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
     }
   };
 
-  // If user doesn't have subscription access, show the gate
-  if (!hasSubscriptionAccess) {
+  // If user doesn't have subscription access or AI not enabled for this player, show the gate
+  if (!hasSubscriptionAccess || !hasAIAccess) {
     return (
       <div
         className={cn(
@@ -653,9 +666,9 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
             </Button>
           </div>
           <div className="flex-1 flex items-center justify-center p-4">
-            <SubscriptionGate feature={t('subscription.features.aiCoach')}>
+            <AIFeatureGate playerTag={playerTag} feature={t('subscription.features.aiCoach')}>
               <div />
-            </SubscriptionGate>
+            </AIFeatureGate>
           </div>
         </div>
       </div>
