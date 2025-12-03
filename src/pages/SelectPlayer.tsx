@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Trophy, Sparkles } from "lucide-react";
+import { Crown, LogOut, Trophy, Sparkles, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerTagSelector } from "@/components/player/PlayerTagSelector";
 import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
 import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const SelectPlayer = () => {
   const { t } = useTranslation();
@@ -124,6 +125,19 @@ const SelectPlayer = () => {
             <span className="text-sm text-muted-foreground hidden sm:inline px-3 py-1.5 rounded-full bg-card border border-border/50">
               {user.email}
             </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => navigate('/settings')}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('settings.title')}</TooltipContent>
+            </Tooltip>
             <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               {t('nav.signOut')}

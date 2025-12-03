@@ -1202,7 +1202,44 @@
     "remove": "Supprimer",
     "maxAccounts": "Maximum de 3 comptes atteint",
     "invalidTag": "Tag de joueur invalide",
-    "playerNotFound": "Joueur non trouvé"
+    "playerNotFound": "Joueur non trouvé",
+    "aiEnabled": "IA Activée",
+    "noAI": "Sans IA",
+    "aiEnabledTooltip": "Ce compte a accès aux fonctionnalités IA",
+    "noAITooltip": "Améliorez ou activez l'IA pour ce compte dans les Paramètres"
+  },
+  "settings": {
+    "title": "Paramètres du Compte",
+    "subtitle": "Gérez votre compte et votre abonnement",
+    "backToAccounts": "Retour aux Comptes",
+    "account": {
+      "title": "Informations du Compte",
+      "description": "Vos identifiants et comptes liés",
+      "email": "E-mail",
+      "linkedAccounts": "Tags de Joueur Liés"
+    },
+    "subscription": {
+      "title": "Abonnement",
+      "description": "Gérez votre abonnement AI Royale Pro",
+      "status": "Statut",
+      "plan": "Plan Actuel",
+      "proTier": "AI Royale Pro ({{count}} comptes)",
+      "renewsOn": "Renouvellement le",
+      "upgrade": "Améliorer le Plan",
+      "subscribe": "S'abonner à Pro",
+      "active": "Actif",
+      "inactive": "Pas d'Abonnement",
+      "trial": "Essai ({{days}} jours restants)"
+    },
+    "aiAccounts": {
+      "title": "Comptes avec IA Activée",
+      "description": "Choisissez quels comptes ont accès aux fonctionnalités de coaching IA",
+      "slotsUsed": "Emplacements IA Utilisés",
+      "slotsDescription": "Vous pouvez activer l'IA sur {{count}} compte(s) maximum",
+      "enabled": "IA Activée",
+      "disabled": "Pas d'Accès IA",
+      "manage": "Gérer les Comptes IA"
+    }
   },
   "matchDetail": {
     "victory": "Victoire",

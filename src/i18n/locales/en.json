@@ -1120,6 +1120,7 @@
     "error": "Something went wrong",
     "retry": "Try Again",
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -1139,6 +1140,7 @@
     "unknown": "Unknown",
     "aiPowered": "AI Powered",
     "elixir": "Elixir",
+    "trophies": "trophies",
     "description": "Description",
     "mayTakeMoment": "This may take a moment",
     "pleaseWait": "Please wait while we process your request",
@@ -1180,7 +1182,44 @@
     "addTag": "Add Tag",
     "addAnotherTag": "Add Another Player Tag",
     "maxTagsReached": "Maximum of 3 player tags reached. Remove one to add a new one.",
-    "lastUsed": "Last used"
+    "lastUsed": "Last used",
+    "aiEnabled": "AI Enabled",
+    "noAI": "No AI",
+    "aiEnabledTooltip": "This account has access to AI features",
+    "noAITooltip": "Upgrade or enable AI for this account in Settings"
+  },
+  "settings": {
+    "title": "Account Settings",
+    "subtitle": "Manage your account and subscription",
+    "backToAccounts": "Back to Accounts",
+    "account": {
+      "title": "Account Information",
+      "description": "Your login details and linked accounts",
+      "email": "Email",
+      "linkedAccounts": "Linked Player Tags"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "Manage your AI Royale Pro subscription",
+      "status": "Status",
+      "plan": "Current Plan",
+      "proTier": "AI Royale Pro ({{count}} accounts)",
+      "renewsOn": "Renews On",
+      "upgrade": "Upgrade Plan",
+      "subscribe": "Subscribe to Pro",
+      "active": "Active",
+      "inactive": "No Subscription",
+      "trial": "Trial ({{days}} days left)"
+    },
+    "aiAccounts": {
+      "title": "AI-Enabled Accounts",
+      "description": "Choose which accounts have access to AI coaching features",
+      "slotsUsed": "AI Slots Used",
+      "slotsDescription": "You can enable AI on up to {{count}} account(s)",
+      "enabled": "AI Enabled",
+      "disabled": "No AI Access",
+      "manage": "Manage AI Accounts"
+    }
   },
   "matchDetail": {
     "victory": "Victory",

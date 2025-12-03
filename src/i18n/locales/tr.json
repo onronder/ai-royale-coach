@@ -1202,7 +1202,44 @@
     "remove": "Kaldır",
     "maxAccounts": "Maksimum 3 hesaba ulaşıldı",
     "invalidTag": "Geçersiz oyuncu etiketi",
-    "playerNotFound": "Oyuncu bulunamadı"
+    "playerNotFound": "Oyuncu bulunamadı",
+    "aiEnabled": "Yapay Zeka Etkin",
+    "noAI": "Yapay Zeka Yok",
+    "aiEnabledTooltip": "Bu hesap yapay zeka özelliklerine erişebilir",
+    "noAITooltip": "Ayarlar'dan bu hesap için yapay zekayı yükseltin veya etkinleştirin"
+  },
+  "settings": {
+    "title": "Hesap Ayarları",
+    "subtitle": "Hesabınızı ve aboneliğinizi yönetin",
+    "backToAccounts": "Hesaplara Dön",
+    "account": {
+      "title": "Hesap Bilgileri",
+      "description": "Giriş bilgileriniz ve bağlı hesaplarınız",
+      "email": "E-posta",
+      "linkedAccounts": "Bağlı Oyuncu Etiketleri"
+    },
+    "subscription": {
+      "title": "Abonelik",
+      "description": "AI Royale Pro aboneliğinizi yönetin",
+      "status": "Durum",
+      "plan": "Mevcut Plan",
+      "proTier": "AI Royale Pro ({{count}} hesap)",
+      "renewsOn": "Yenilenme Tarihi",
+      "upgrade": "Planı Yükselt",
+      "subscribe": "Pro'ya Abone Ol",
+      "active": "Aktif",
+      "inactive": "Abonelik Yok",
+      "trial": "Deneme ({{days}} gün kaldı)"
+    },
+    "aiAccounts": {
+      "title": "Yapay Zeka Etkin Hesaplar",
+      "description": "Hangi hesapların yapay zeka koçluk özelliklerine erişeceğini seçin",
+      "slotsUsed": "Kullanılan Yapay Zeka Slotları",
+      "slotsDescription": "{{count}} hesaba kadar yapay zekayı etkinleştirebilirsiniz",
+      "enabled": "Yapay Zeka Etkin",
+      "disabled": "Yapay Zeka Erişimi Yok",
+      "manage": "Yapay Zeka Hesaplarını Yönet"
+    }
   },
   "matchDetail": {
     "victory": "Zafer",

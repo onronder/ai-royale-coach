@@ -14,6 +14,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const SelectPlayer = lazy(() => import("./pages/SelectPlayer"));
+const Settings = lazy(() => import("./pages/Settings"));
 const Help = lazy(() => import("./pages/Help"));
 const Demo = lazy(() => import("./pages/Demo"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -36,6 +37,7 @@ const App = () => (
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/select-player" element={<SelectPlayer />} />
+                  <Route path="/settings" element={<Settings />} />
                   <Route path="/player/:playerTag" element={<Dashboard />} />
                   <Route path="/help" element={<Help />} />
                   <Route path="/demo" element={<Demo />} />
