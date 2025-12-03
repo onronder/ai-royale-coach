@@ -1,4 +1,4 @@
-import { Crown, Trophy, Sparkles, HelpCircle, Play } from "lucide-react";
+import { Crown, Trophy, Sparkles, HelpCircle, Play, FileText, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -19,7 +19,7 @@ export function Footer() {
           </Link>
           
           {/* Navigation Links */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 flex-wrap justify-center">
             <Link 
               to="/demo" 
               className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
@@ -33,6 +33,20 @@ export function Footer() {
             >
               <HelpCircle className="h-4 w-4" />
               <span className="text-sm">{t("nav.help")}</span>
+            </Link>
+            <Link 
+              to="/terms" 
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="text-sm">{t("legal.termsOfService")}</span>
+            </Link>
+            <Link 
+              to="/privacy" 
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Shield className="h-4 w-4" />
+              <span className="text-sm">{t("legal.privacyPolicy")}</span>
             </Link>
           </div>
           

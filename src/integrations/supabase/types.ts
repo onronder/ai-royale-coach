@@ -748,6 +748,8 @@ export type Database = {
           email: string | null
           id: string
           preferred_language: string | null
+          terms_accepted_at: string | null
+          terms_version: string | null
           trial_ends_at: string | null
           trial_started_at: string | null
           trial_used: boolean | null
@@ -758,6 +760,8 @@ export type Database = {
           email?: string | null
           id: string
           preferred_language?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           trial_used?: boolean | null
@@ -768,6 +772,8 @@ export type Database = {
           email?: string | null
           id?: string
           preferred_language?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           trial_ends_at?: string | null
           trial_started_at?: string | null
           trial_used?: boolean | null

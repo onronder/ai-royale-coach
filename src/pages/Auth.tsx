@@ -5,9 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, Crown, ArrowLeft, Sparkles, Shield } from "lucide-react";
+
+const TERMS_VERSION = "1.0";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -19,6 +22,7 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(mode === 'signup');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -38,11 +42,17 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSignUp && !termsAccepted) {
+      toast.error(t("auth.termsRequired"));
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -50,6 +60,18 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+        
+        // Update profile with terms acceptance
+        if (data.user) {
+          await supabase
+            .from('profiles')
+            .update({
+              terms_accepted_at: new Date().toISOString(),
+              terms_version: TERMS_VERSION,
+            })
+            .eq('id', data.user.id);
+        }
+        
         toast.success(t("auth.checkEmail"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -154,12 +176,44 @@ const Auth = () => {
                   </p>
                 )}
               </div>
+              
+              {/* Terms Acceptance - Only for Sign Up */}
+              {isSignUp && (
+                <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/30 border border-border/50">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                    disabled={isLoading}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                    {t("auth.agreeToTerms")}{" "}
+                    <Link 
+                      to="/terms" 
+                      target="_blank" 
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t("legal.termsOfService")}
+                    </Link>
+                    {" "}{t("legal.and")}{" "}
+                    <Link 
+                      to="/privacy" 
+                      target="_blank" 
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {t("legal.privacyPolicy")}
+                    </Link>
+                  </Label>
+                </div>
+              )}
+              
               <Button 
                 type="submit" 
                 variant={isSignUp ? "golden" : "default"}
                 size="lg"
                 className="w-full" 
-                disabled={isLoading}
+                disabled={isLoading || (isSignUp && !termsAccepted)}
               >
                 {isLoading ? (
                   <>
