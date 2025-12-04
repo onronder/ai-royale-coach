@@ -290,7 +290,7 @@ const Auth = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-medium">{t("auth.password")}</Label>
-                <Input
+              <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
@@ -299,6 +299,7 @@ const Auth = () => {
                   required
                   minLength={6}
                   disabled={isLoading}
+                  autoComplete={isSignUp ? "new-password" : "current-password"}
                   className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                 />
                 {isSignUp && (
