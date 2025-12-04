@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Crown, Clock, Sparkles, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
+import { PricingModal } from "@/components/subscription/PricingModal";
 
 interface SubscriptionStatusProps {
   compact?: boolean;
@@ -12,6 +13,7 @@ interface SubscriptionStatusProps {
 
 export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps) {
   const { t } = useTranslation();
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const { 
     hasAccess, 
     isTrialActive, 
@@ -19,20 +21,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
     subscriptionStatus,
     hasUsedTrial,
     accountSlots,
-    createCheckout,
-    isCreatingCheckout,
   } = useSubscription();
-
-  const handleSubscribe = async () => {
-    try {
-      const checkoutUrl = await createCheckout({
-        successUrl: `${window.location.origin}/select-player?subscription=success`,
-      });
-      window.location.href = checkoutUrl;
-    } catch (error) {
-      toast.error(t('subscription.checkoutError'));
-    }
-  };
 
   if (compact) {
     if (subscriptionStatus === 'active') {
@@ -54,16 +43,18 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
     }
 
     return (
-      <Button 
-        size="sm" 
-        variant="outline"
-        onClick={handleSubscribe}
-        disabled={isCreatingCheckout}
-        className="border-gold/50 hover:bg-gold/10 text-gold"
-      >
-        <Sparkles className="mr-1 h-3 w-3" />
-        {t('subscription.upgrade')}
-      </Button>
+      <>
+        <Button 
+          size="sm" 
+          variant="outline"
+          onClick={() => setShowPricingModal(true)}
+          className="border-gold/50 hover:bg-gold/10 text-gold"
+        >
+          <Sparkles className="mr-1 h-3 w-3" />
+          {t('subscription.upgrade')}
+        </Button>
+        <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
+      </>
     );
   }
 
@@ -113,8 +104,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
 
           {!hasAccess && (
             <Button 
-              onClick={handleSubscribe}
-              disabled={isCreatingCheckout}
+              onClick={() => setShowPricingModal(true)}
               className="bg-gradient-to-r from-gold to-yellow-500 text-black hover:from-gold/90 hover:to-yellow-500/90"
             >
               {t('subscription.subscribe')}
@@ -128,6 +118,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
           )}
         </div>
       </CardContent>
+      <PricingModal open={showPricingModal} onOpenChange={setShowPricingModal} />
     </Card>
   );
 }
