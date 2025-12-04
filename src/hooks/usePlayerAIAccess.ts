@@ -19,12 +19,15 @@ export function usePlayerAIAccess(playerTag: string | null) {
         return { hasAIAccess: false, profileId: null };
       }
 
+      // Normalize player tag - remove # prefix and uppercase
+      const normalizedTag = playerTag.replace(/^#/, '').toUpperCase();
+
       const { data: profile, error } = await supabase
         .from('player_profiles')
         .select('id, ai_enabled')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
-        .single();
+        .eq('player_tag', normalizedTag)
+        .maybeSingle();
 
       if (error || !profile) {
         return { hasAIAccess: false, profileId: null };
