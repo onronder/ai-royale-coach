@@ -1666,19 +1666,6 @@
       "bronze": "Bronze"
     }
   },
-  "cardMastery": {
-    "used": "Used {{count}} times",
-    "winRate": "Win Rate",
-    "avgCrowns": "Avg Crowns",
-    "hideDetails": "Hide Details",
-    "showDetails": "Show Details",
-    "bestPartners": "Best Partners",
-    "strugglesAgainst": "Struggles Against",
-    "personalizedTips": "Personalized Tips",
-    "generate": "Generate",
-    "generatingTips": "Generating tips...",
-    "clickGenerate": "Click generate to get AI tips for this card"
-  },
   "analytics": {
     "winRateTrends": "Win Rate Trends",
     "winRatePercent": "Win Rate (%)",
