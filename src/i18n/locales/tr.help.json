@@ -57,6 +57,14 @@
         "point1": "Oyuncu Seçimi ekranından birden fazla hesap ekleyin",
         "point2": "Yeniden kimlik doğrulaması yapmadan hesaplar arasında anında geçiş yapın",
         "point3": "Her hesabın kendi analizleri, önerileri ve koçluk geçmişi vardır"
+      },
+      "restartTour": {
+        "title": "Turu Tekrar Al",
+        "description": "Hoş geldiniz turunu tekrar görmek ister misiniz? AI Royale'in sunduğu tüm özellikleri öğrenmek için aşağıdaki butona tıklayarak tanıtım deneyimini yeniden başlatın.",
+        "button": "Hoş Geldiniz Turunu Yeniden Başlat",
+        "success": "Tur sıfırlandı! Turu başlatmak için yönlendiriliyor...",
+        "error": "Tur sıfırlanamadı. Lütfen tekrar deneyin.",
+        "loginRequired": "Turu yeniden başlatmak için lütfen giriş yapın"
       }
     },
     "dashboard": {

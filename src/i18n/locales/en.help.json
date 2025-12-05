@@ -57,6 +57,14 @@
         "point1": "Add multiple accounts from the Player Selection screen",
         "point2": "Switch between accounts instantly without re-authenticating",
         "point3": "Each account has its own analytics, recommendations, and coaching history"
+      },
+      "restartTour": {
+        "title": "Take the Tour Again",
+        "description": "Want to see the welcome tour again? Click the button below to restart the onboarding experience and learn about all the features AI Royale has to offer.",
+        "button": "Restart Welcome Tour",
+        "success": "Tour reset! Redirecting to start the tour...",
+        "error": "Failed to reset tour. Please try again.",
+        "loginRequired": "Please sign in to restart the tour"
       }
     },
     "dashboard": {

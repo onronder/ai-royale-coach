@@ -57,6 +57,14 @@
         "point1": "Ajoutez plusieurs comptes depuis l'écran de Sélection du Joueur",
         "point2": "Basculez entre les comptes instantanément sans vous ré-authentifier",
         "point3": "Chaque compte a ses propres analyses, recommandations et historique de coaching"
+      },
+      "restartTour": {
+        "title": "Refaire la Visite",
+        "description": "Vous voulez revoir la visite de bienvenue ? Cliquez sur le bouton ci-dessous pour relancer l'expérience d'introduction et découvrir toutes les fonctionnalités qu'AI Royale a à offrir.",
+        "button": "Relancer la Visite de Bienvenue",
+        "success": "Visite réinitialisée ! Redirection pour démarrer la visite...",
+        "error": "Échec de la réinitialisation de la visite. Veuillez réessayer.",
+        "loginRequired": "Veuillez vous connecter pour relancer la visite"
       }
     },
     "dashboard": {

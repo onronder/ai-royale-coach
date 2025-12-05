@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { 
   BookOpen, ChevronRight, Home, User, BarChart3, Swords, 
   Wrench, TrendingUp, Wallet, Trophy, Users, Shield,
@@ -25,8 +27,24 @@ import { cn } from "@/lib/utils";
 
 const Help = () => {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSection, setActiveSection] = useState("getting-started");
+  const [isResettingTour, setIsResettingTour] = useState(false);
+
+  // Map tab help IDs to help section IDs
+  const tabToSectionMap: Record<string, string> = {
+    overview: "stats",
+    matches: "matches",
+    deck: "deck",
+    builder: "builder",
+    collection: "collection",
+    leaderboard: "leaderboard",
+    tournaments: "tournaments",
+    clans: "clans",
+    analytics: "analytics",
+  };
 
   // Define sections with searchable keywords
   const sections = [
@@ -219,6 +237,54 @@ const Help = () => {
     }
   };
 
+  // Handle URL hash on mount and hash changes
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.slice(1); // Remove '#'
+      if (hash) {
+        // Check if it's a tab help ID that needs mapping
+        const targetSection = tabToSectionMap[hash] || hash;
+        // Verify section exists
+        const sectionExists = sections.some(s => s.id === targetSection);
+        if (sectionExists) {
+          setTimeout(() => scrollToSection(targetSection), 100);
+        }
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  // Handle restart tour
+  const handleRestartTour = async () => {
+    setIsResettingTour(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error(t("help.gettingStarted.restartTour.loginRequired"));
+        navigate("/auth");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ onboarding_completed_at: null })
+        .eq("id", session.user.id);
+
+      if (error) throw error;
+
+      toast.success(t("help.gettingStarted.restartTour.success"));
+      navigate("/select-player");
+    } catch (error) {
+      console.error("Failed to reset tour:", error);
+      toast.error(t("help.gettingStarted.restartTour.error"));
+    } finally {
+      setIsResettingTour(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -374,6 +440,21 @@ const Help = () => {
                       <li>{t("help.gettingStarted.multiAccount.point2")}</li>
                       <li>{t("help.gettingStarted.multiAccount.point3")}</li>
                     </ul>
+                  </HelpCard>
+
+                  <HelpCard
+                    title={t("help.gettingStarted.restartTour.title")}
+                    icon={Lightbulb}
+                  >
+                    <p className="text-muted-foreground mb-4">{t("help.gettingStarted.restartTour.description")}</p>
+                    <Button 
+                      variant="outline" 
+                      onClick={handleRestartTour}
+                      disabled={isResettingTour}
+                      className="border-primary/50 hover:bg-primary/10"
+                    >
+                      {isResettingTour ? t("common.loading") : t("help.gettingStarted.restartTour.button")}
+                    </Button>
                   </HelpCard>
                 </div>
               </section>
