@@ -955,6 +955,7 @@
     "analytics": {
       "deckStats": "Deck Stats",
       "cardMastery": "Card Mastery",
+      "predictions": "Predictions",
       "achievements": "Achievements"
     },
     "sync": {
@@ -1258,6 +1259,21 @@
       "manage": "Manage AI Accounts",
       "trialAccess": "Trial Access",
       "trialNote": "During your free trial, all accounts have AI access. After trial ends, you'll need to select which accounts keep AI features."
+    },
+    "chatRetention": {
+      "title": "Chat History",
+      "description": "Control how long your AI Coach conversations are stored",
+      "keepMessages": "Keep messages for",
+      "updated": "Chat retention preference updated",
+      "updateFailed": "Failed to update preference",
+      "foreverNote": "Your chat history will be kept indefinitely. You can delete it manually anytime.",
+      "retentionNote": "Messages older than {{days}} days will be automatically deleted.",
+      "options": {
+        "7": "7 days",
+        "30": "30 days",
+        "90": "90 days",
+        "forever": "Keep forever"
+      }
     }
   },
   "matchDetail": {
@@ -1650,7 +1666,18 @@
     "wr": "WR",
     "battlesCount": "{{count}} battles",
     "mostUsedCards": "Most Used Cards",
-    "usedTimes": "Used {{count}} times"
+    "usedTimes": "Used {{count}} times",
+    "predictions": {
+      "total": "Total Predictions",
+      "battlesTracked": "Battles Tracked",
+      "avgError": "Avg. Error",
+      "accuracyRate": "High Accuracy Rate",
+      "mostAccurate": "Most Accurate Prediction",
+      "leastAccurate": "Least Accurate Prediction",
+      "predicted": "Predicted",
+      "actual": "Actual",
+      "error": "Error"
+    }
   },
   "templates": {
     "title": "Meta Deck Templates",

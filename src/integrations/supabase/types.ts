@@ -786,6 +786,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          chat_retention_days: number | null
           created_at: string | null
           email: string | null
           id: string
@@ -799,6 +800,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          chat_retention_days?: number | null
           created_at?: string | null
           email?: string | null
           id: string
@@ -812,6 +814,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          chat_retention_days?: number | null
           created_at?: string | null
           email?: string | null
           id?: string

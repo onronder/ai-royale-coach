@@ -960,6 +960,7 @@
     "analytics": {
       "deckStats": "Estadísticas de Mazo",
       "cardMastery": "Maestría de Cartas",
+      "predictions": "Predicciones",
       "achievements": "Logros"
     },
     "sync": {
@@ -1278,6 +1279,21 @@
       "manage": "Administrar Cuentas con IA",
       "trialAccess": "Acceso de Prueba",
       "trialNote": "Todas las cuentas tienen acceso a IA durante el período de prueba"
+    },
+    "chatRetention": {
+      "title": "Historial de Chat",
+      "description": "Controla cuánto tiempo se almacenan tus conversaciones con el Coach IA",
+      "keepMessages": "Mantener mensajes por",
+      "updated": "Preferencia de retención actualizada",
+      "updateFailed": "Error al actualizar preferencia",
+      "foreverNote": "Tu historial de chat se mantendrá indefinidamente. Puedes eliminarlo manualmente.",
+      "retentionNote": "Los mensajes con más de {{days}} días se eliminarán automáticamente.",
+      "options": {
+        "7": "7 días",
+        "30": "30 días",
+        "90": "90 días",
+        "forever": "Mantener siempre"
+      }
     }
   },
   "matchDetail": {
@@ -1670,7 +1686,18 @@
     "wr": "TV",
     "battlesCount": "{{count}} batallas",
     "mostUsedCards": "Cartas Más Usadas",
-    "usedTimes": "Usada {{count}} veces"
+    "usedTimes": "Usada {{count}} veces",
+    "predictions": {
+      "total": "Total de Predicciones",
+      "battlesTracked": "Batallas Rastreadas",
+      "avgError": "Error Promedio",
+      "accuracyRate": "Tasa de Alta Precisión",
+      "mostAccurate": "Predicción Más Precisa",
+      "leastAccurate": "Predicción Menos Precisa",
+      "predicted": "Predicho",
+      "actual": "Real",
+      "error": "Error"
+    }
   },
   "templates": {
     "title": "Plantillas de Mazos Meta",

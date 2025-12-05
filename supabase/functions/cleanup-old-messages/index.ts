@@ -17,29 +17,64 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Delete chat messages older than 30 days
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Get all users with their retention preferences
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, chat_retention_days');
 
-    const { data, error, count } = await supabase
-      .from('chat_messages')
-      .delete()
-      .lt('created_at', thirtyDaysAgo.toISOString())
-      .select('id');
-
-    if (error) {
-      console.error('Error deleting old messages:', error);
-      throw error;
+    if (profilesError) {
+      console.error('Error fetching profiles:', profilesError);
+      throw profilesError;
     }
 
-    const deletedCount = data?.length || 0;
-    console.log(`Cleanup completed: ${deletedCount} messages deleted (older than ${thirtyDaysAgo.toISOString()})`);
+    let totalDeleted = 0;
+    const results: { userId: string; deleted: number; retentionDays: number | null }[] = [];
+
+    for (const profile of profiles || []) {
+      // Skip users who want to keep messages forever (null retention)
+      if (profile.chat_retention_days === null) {
+        console.log(`User ${profile.id}: retention set to forever, skipping`);
+        continue;
+      }
+
+      const retentionDays = profile.chat_retention_days;
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+
+      // Delete old messages for this user
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .delete()
+        .eq('user_id', profile.id)
+        .lt('created_at', cutoffDate.toISOString())
+        .select('id');
+
+      if (error) {
+        console.error(`Error deleting messages for user ${profile.id}:`, error);
+        continue;
+      }
+
+      const deletedCount = data?.length || 0;
+      if (deletedCount > 0) {
+        totalDeleted += deletedCount;
+        results.push({
+          userId: profile.id,
+          deleted: deletedCount,
+          retentionDays: retentionDays,
+        });
+        console.log(`User ${profile.id}: deleted ${deletedCount} messages older than ${retentionDays} days`);
+      }
+    }
+
+    console.log(`Cleanup completed: ${totalDeleted} total messages deleted across ${results.length} users`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        deletedCount,
-        cutoffDate: thirtyDaysAgo.toISOString()
+        totalDeleted,
+        usersProcessed: profiles?.length || 0,
+        usersWithDeletions: results.length,
+        details: results
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

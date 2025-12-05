@@ -5,6 +5,7 @@ import { PageTransition } from "@/components/ui/loading-states";
 import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MatchCard } from "@/components/matches/MatchCard";
+import { VirtualMatchList } from "@/components/matches/VirtualMatchList";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 interface MatchesTabProps {
@@ -15,6 +16,8 @@ interface MatchesTabProps {
   onMatchClick: (battle: ClashRoyaleBattle) => void;
 }
 
+const VIRTUAL_SCROLL_THRESHOLD = 25;
+
 export function MatchesTab({
   playerTag,
   battles,
@@ -23,6 +26,40 @@ export function MatchesTab({
   onMatchClick,
 }: MatchesTabProps) {
   const { t } = useTranslation();
+
+  const renderBattlesList = () => {
+    if (!battles || battles.length === 0) return null;
+
+    // Use virtual scrolling for large lists
+    if (battles.length > VIRTUAL_SCROLL_THRESHOLD) {
+      return (
+        <VirtualMatchList
+          battles={battles}
+          playerTag={playerTag}
+          onMatchClick={onMatchClick}
+        />
+      );
+    }
+
+    // Regular rendering for smaller lists
+    return (
+      <div className="space-y-3">
+        {battles.slice(0, 25).map((battle, idx) => (
+          <div
+            key={idx}
+            className="animate-slide-up"
+            style={{ animationDelay: `${idx * 30}ms` }}
+          >
+            <MatchCard
+              battle={battle}
+              playerTag={playerTag}
+              onClick={() => onMatchClick(battle)}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <PageTransition delay={100}>
@@ -43,21 +80,7 @@ export function MatchesTab({
                 variant="compact"
               />
             ) : battles && battles.length > 0 ? (
-              <div className="space-y-3">
-                {battles.slice(0, 15).map((battle, idx) => (
-                  <div
-                    key={idx}
-                    className="animate-slide-up"
-                    style={{ animationDelay: `${idx * 30}ms` }}
-                  >
-                    <MatchCard
-                      battle={battle}
-                      playerTag={playerTag}
-                      onClick={() => onMatchClick(battle)}
-                    />
-                  </div>
-                ))}
-              </div>
+              renderBattlesList()
             ) : (
               <EmptyState
                 icon={Swords}
