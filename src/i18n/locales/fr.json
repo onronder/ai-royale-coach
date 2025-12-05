@@ -1194,7 +1194,8 @@
     "pleaseWait": "Veuillez patienter pendant que nous traitons votre demande",
     "pleaseWaitMoment": "Veuillez patienter un moment...",
     "loadingDashboard": "Chargement de votre tableau de bord",
-    "verifyingAuth": "Vérification de l'authentification"
+    "verifyingAuth": "Vérification de l'authentification",
+    "clickForHelp": "Cliquez pour l'aide"
   },
   "loadingMessages": {
     "playerData": "Chargement des données du joueur...",
@@ -1252,6 +1253,7 @@
   "settings": {
     "title": "Paramètres du Compte",
     "subtitle": "Gérez votre compte et votre abonnement",
+    "back": "Retour",
     "backToAccounts": "Retour aux Comptes",
     "account": {
       "title": "Informations du Compte",

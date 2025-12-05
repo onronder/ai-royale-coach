@@ -1176,7 +1176,8 @@
     "pleaseWait": "Please wait while we process your request",
     "pleaseWaitMoment": "Please wait a moment...",
     "loadingDashboard": "Loading your dashboard",
-    "verifyingAuth": "Verifying authentication"
+    "verifyingAuth": "Verifying authentication",
+    "clickForHelp": "Click for help"
   },
   "loading": {
     "playerData": "Fetching player data...",
@@ -1227,6 +1228,7 @@
   "settings": {
     "title": "Account Settings",
     "subtitle": "Manage your account and subscription",
+    "back": "Back",
     "backToAccounts": "Back to Accounts",
     "account": {
       "title": "Account Information",
