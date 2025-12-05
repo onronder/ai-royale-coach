@@ -1072,19 +1072,6 @@
     "quotaExhausted": "Límite diario de IA alcanzado. Se reinicia a medianoche.",
     "quotaLow": "Pocas solicitudes de IA restantes hoy."
   },
-  "deckComparison": {
-    "title": "Comparación de Mazos",
-    "headToHead": "Cara a Cara",
-    "cards": "cartas",
-    "avgElixir": "Elixir Promedio",
-    "similar": "Similar",
-    "matchupAnalysis": "Análisis de Enfrentamiento",
-    "matchupDisclaimer": "Las predicciones de tasa de victoria requieren historial de batalla real con ambos mazos. Compara basándote en arquetipos de enfrentamiento y contadores de cartas.",
-    "hideBreakdown": "Ocultar Desglose de Cartas",
-    "showBreakdown": "Mostrar Desglose de Cartas",
-    "deck1Cards": "Cartas del Mazo 1",
-    "deck2Cards": "Cartas del Mazo 2"
-  },
   "match": {
     "victory": "Victoria",
     "defeat": "Derrota",
