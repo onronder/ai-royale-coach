@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardImage } from "./CardImage";
+import { VirtualCardGrid } from "./VirtualCardGrid";
 import { Sparkles, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateNotification } from "@/hooks/useNotifications";
@@ -13,6 +14,8 @@ import { useOperationProgress } from "@/hooks/useOperationProgress";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { DataLoader } from "@/components/ui/data-loader";
 import { getDisplayLevel } from "@/utils/cardLevelCalculator";
+
+const VIRTUAL_SCROLL_THRESHOLD = 50;
 
 interface CardCollectionItem {
   id: string;
@@ -208,66 +211,74 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
           </TabsList>
         </Tabs>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {filteredCards.map((card) => {
-            const progress = calculateProgress(card);
-            const nextLevelReq = getNextLevelRequirement(card);
-            const isMaxLevel = card.card_level >= card.max_level;
+        {/* Cards Grid - Use virtual scrolling for large collections */}
+        {filteredCards.length > VIRTUAL_SCROLL_THRESHOLD ? (
+          <VirtualCardGrid
+            cards={filteredCards}
+            calculateProgress={calculateProgress}
+            getNextLevelRequirement={getNextLevelRequirement}
+          />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            {filteredCards.map((card) => {
+              const progress = calculateProgress(card);
+              const nextLevelReq = getNextLevelRequirement(card);
+              const isMaxLevel = card.card_level >= card.max_level;
 
-            return (
-              <div key={card.id} className="space-y-2">
-                {card.icon_url && (
-                  <CardImage
-                    card={{
-                      id: card.card_id,
-                      name: card.card_name,
-                      level: card.card_level,
-                      maxLevel: card.max_level,
-                      iconUrls: { medium: card.icon_url },
-                      elixirCost: card.elixir_cost || undefined,
-                      evolutionLevel: card.evolution_level || undefined,
-                      rarity: card.rarity,
-                    }}
-                    size="md"
-                    showLevel={true}
-                    showElixir={true}
-                  />
-                )}
-                
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-1">
-                    <Badge 
-                      variant="outline" 
-                      className={`text-xs ${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/10 border-${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/20`}
-                    >
-                      {card.rarity}
-                    </Badge>
-                    {!isMaxLevel && (
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <ArrowUp className="w-3 h-3" />
-                        <span>{card.card_count}/{nextLevelReq}</span>
+              return (
+                <div key={card.id} className="space-y-2">
+                  {card.icon_url && (
+                    <CardImage
+                      card={{
+                        id: card.card_id,
+                        name: card.card_name,
+                        level: card.card_level,
+                        maxLevel: card.max_level,
+                        iconUrls: { medium: card.icon_url },
+                        elixirCost: card.elixir_cost || undefined,
+                        evolutionLevel: card.evolution_level || undefined,
+                        rarity: card.rarity,
+                      }}
+                      size="md"
+                      showLevel={true}
+                      showElixir={true}
+                    />
+                  )}
+                  
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-1">
+                      <Badge 
+                        variant="outline" 
+                        className={`text-xs ${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/10 border-${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/20`}
+                      >
+                        {card.rarity}
+                      </Badge>
+                      {!isMaxLevel && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <ArrowUp className="w-3 h-3" />
+                          <span>{card.card_count}/{nextLevelReq}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {!isMaxLevel ? (
+                      <div className="space-y-1">
+                        <Progress value={progress} className="h-1.5" />
+                        <p className="text-xs text-center text-muted-foreground">
+                          {nextLevelReq! - card.card_count} {t('cardCollection.toLevel')} {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
+                        </p>
                       </div>
+                    ) : (
+                      <Badge variant="default" className="w-full justify-center bg-green-500 hover:bg-green-600">
+                        {t('cardCollection.max')}
+                      </Badge>
                     )}
                   </div>
-
-                  {!isMaxLevel ? (
-                    <div className="space-y-1">
-                      <Progress value={progress} className="h-1.5" />
-                      <p className="text-xs text-center text-muted-foreground">
-                        {nextLevelReq! - card.card_count} {t('cardCollection.toLevel')} {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
-                      </p>
-                    </div>
-                  ) : (
-                    <Badge variant="default" className="w-full justify-center bg-green-500 hover:bg-green-600">
-                      {t('cardCollection.max')}
-                    </Badge>
-                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {filteredCards.length === 0 && (
           <p className="text-center text-muted-foreground py-8">
