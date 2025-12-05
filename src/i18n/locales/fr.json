@@ -1,4 +1,24 @@
 {
+  "feedback": {
+    "thankYou": "Merci pour votre retour !",
+    "thankYouDescription": "Vos commentaires nous aident à améliorer les recommandations IA.",
+    "submitError": "Échec de l'envoi. Veuillez réessayer.",
+    "rateResponse": "Évaluez cette réponse",
+    "dialogDescription": "Aidez-nous à améliorer en évaluant cette réponse IA.",
+    "howHelpful": "À quel point cela a-t-il été utile ?",
+    "commentOptional": "Commentaires supplémentaires (facultatif)",
+    "commentPlaceholder": "Dites-nous en plus sur votre expérience...",
+    "submit": "Envoyer le feedback",
+    "ratings": {
+      "poor": "Médiocre",
+      "fair": "Passable",
+      "good": "Bien",
+      "great": "Très bien",
+      "excellent": "Excellent"
+    },
+    "helpful": "Utile",
+    "notHelpful": "Pas utile"
+  },
   "nav": {
     "signIn": "Connexion",
     "getStarted": "Commencer",

@@ -83,6 +83,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_feedback: {
+        Row: {
+          comment: string | null
+          context: Json | null
+          created_at: string
+          feedback_type: string
+          helpful: boolean | null
+          id: string
+          player_tag: string
+          rating: number | null
+          reference_id: string | null
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          context?: Json | null
+          created_at?: string
+          feedback_type: string
+          helpful?: boolean | null
+          id?: string
+          player_tag: string
+          rating?: number | null
+          reference_id?: string | null
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          context?: Json | null
+          created_at?: string
+          feedback_type?: string
+          helpful?: boolean | null
+          id?: string
+          player_tag?: string
+          rating?: number | null
+          reference_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       analyses: {
         Row: {
           analysis_type: string

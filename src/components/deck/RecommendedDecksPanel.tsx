@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,9 @@ import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useRecommendations, useRefreshRecommendations, DeckRecommendation } from "@/hooks/useRecommendations";
 import { RecommendationHistoryCard } from "./RecommendationHistoryCard";
+import { FeedbackDialog } from "@/components/feedback/FeedbackDialog";
+import { FeedbackRating } from "@/components/feedback/FeedbackRating";
+import { useFeedback } from "@/hooks/useFeedback";
 import { 
   Sparkles, 
   RefreshCw, 
@@ -17,7 +20,8 @@ import {
   Trophy,
   Brain,
   TrendingUp,
-  Clock
+  Clock,
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -68,14 +72,36 @@ SimpleCardGrid.displayName = "SimpleCardGrid";
 const RecommendationCard = memo(({ 
   recommendation, 
   onImport,
-  index
+  index,
+  playerTag
 }: { 
   recommendation: DeckRecommendation; 
   onImport?: (cards: string[]) => void;
   index: number;
+  playerTag: string;
 }) => {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [hasRated, setHasRated] = useState(false);
+  const { submitFeedback } = useFeedback();
+  
+  const handleRating = (value: number) => {
+    setFeedbackRating(value);
+    setHasRated(true);
+    submitFeedback({
+      playerTag,
+      feedbackType: "deck_recommendation",
+      referenceId: recommendation.deckId,
+      rating: value,
+      helpful: value >= 4,
+      context: {
+        deckName: recommendation.deckName,
+        archetype: recommendation.archetype,
+        matchScore: recommendation.matchScore
+      }
+    });
+  };
   
   return (
     <Card 
@@ -135,7 +161,7 @@ const RecommendationCard = memo(({
           </Collapsible>
         )}
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           {onImport && (
             <Button 
               onClick={() => onImport(recommendation.cards)}
@@ -146,6 +172,21 @@ const RecommendationCard = memo(({
               {t("recommendations.tryDeck")}
             </Button>
           )}
+        </div>
+        
+        {/* Feedback rating */}
+        <div className="pt-2 border-t border-border/30">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">
+              {hasRated ? t("feedback.thankYou") : t("feedback.rateResponse")}
+            </span>
+            <FeedbackRating
+              value={feedbackRating}
+              onChange={handleRating}
+              disabled={hasRated}
+              size="sm"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -279,6 +320,7 @@ export const RecommendedDecksPanel = memo(({
             recommendation={rec}
             onImport={onImportDeck}
             index={index}
+            playerTag={playerTag}
           />
         ))}
       </div>

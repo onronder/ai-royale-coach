@@ -1,4 +1,24 @@
 {
+  "feedback": {
+    "thankYou": "Thanks for your feedback!",
+    "thankYouDescription": "Your input helps us improve AI recommendations.",
+    "submitError": "Failed to submit feedback. Please try again.",
+    "rateResponse": "Rate this response",
+    "dialogDescription": "Help us improve by rating this AI response.",
+    "howHelpful": "How helpful was this?",
+    "commentOptional": "Additional comments (optional)",
+    "commentPlaceholder": "Tell us more about your experience...",
+    "submit": "Submit Feedback",
+    "ratings": {
+      "poor": "Poor",
+      "fair": "Fair",
+      "good": "Good",
+      "great": "Great",
+      "excellent": "Excellent"
+    },
+    "helpful": "Helpful",
+    "notHelpful": "Not helpful"
+  },
   "nav": {
     "signIn": "Sign In",
     "getStarted": "Get Started",
