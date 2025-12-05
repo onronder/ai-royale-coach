@@ -211,12 +211,12 @@ export default {
         },
         "active-card-glow": {
           "0%, 100%": { 
-            boxShadow: "0 0 15px hsl(190 100% 50% / 0.2), inset 0 1px 0 hsl(190 100% 50% / 0.1)",
-            borderColor: "hsl(190 100% 50% / 0.4)"
+            boxShadow: "0 0 25px hsl(190 100% 50% / 0.45), inset 0 1px 0 hsl(190 100% 50% / 0.2)",
+            borderColor: "hsl(190 100% 50% / 0.6)"
           },
           "50%": { 
-            boxShadow: "0 0 25px hsl(190 100% 50% / 0.35), inset 0 1px 0 hsl(190 100% 50% / 0.15)",
-            borderColor: "hsl(190 100% 50% / 0.6)"
+            boxShadow: "0 0 40px hsl(190 100% 50% / 0.7), inset 0 1px 0 hsl(190 100% 50% / 0.3)",
+            borderColor: "hsl(190 100% 50% / 0.9)"
           },
         },
       },
