@@ -1194,7 +1194,8 @@
     "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
     "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
     "loadingDashboard": "Panelonuz yükleniyor",
-    "verifyingAuth": "Kimlik doğrulanıyor"
+    "verifyingAuth": "Kimlik doğrulanıyor",
+    "clickForHelp": "Yardım için tıklayın"
   },
   "loadingMessages": {
     "playerData": "Oyuncu verileri yükleniyor...",
@@ -1252,6 +1253,7 @@
   "settings": {
     "title": "Hesap Ayarları",
     "subtitle": "Hesabınızı ve aboneliğinizi yönetin",
+    "back": "Geri",
     "backToAccounts": "Hesaplara Dön",
     "account": {
       "title": "Hesap Bilgileri",

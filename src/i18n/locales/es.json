@@ -1194,7 +1194,8 @@
     "pleaseWait": "Por favor espera mientras procesamos tu solicitud",
     "pleaseWaitMoment": "Por favor espera un momento...",
     "loadingDashboard": "Cargando tu panel",
-    "verifyingAuth": "Verificando autenticación"
+    "verifyingAuth": "Verificando autenticación",
+    "clickForHelp": "Haz clic para ayuda"
   },
   "loadingMessages": {
     "playerData": "Cargando datos del jugador...",
@@ -1252,6 +1253,7 @@
   "settings": {
     "title": "Configuración de Cuenta",
     "subtitle": "Administra tu cuenta y suscripción",
+    "back": "Atrás",
     "backToAccounts": "Volver a Cuentas",
     "account": {
       "title": "Información de Cuenta",
