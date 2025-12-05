@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Trophy, Sparkles, Settings } from "lucide-react";
+import { Crown, LogOut, Trophy, Sparkles, Settings, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerTagSelector } from "@/components/player/PlayerTagSelector";
 import { SubscriptionStatus } from "@/components/subscription/SubscriptionStatus";
 import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -20,6 +22,7 @@ const SelectPlayer = () => {
   const [showAISelector, setShowAISelector] = useState(false);
   
   const { needsAISelection, accountSlots, isTrialActive, trialDaysRemaining, refetch: refetchSubscription } = useSubscription();
+  const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding(user?.id);
 
   // Check for subscription success and show AI selector if needed
   useEffect(() => {
@@ -142,6 +145,19 @@ const SelectPlayer = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
+                  onClick={() => navigate('/help')}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <HelpCircle className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t('nav.help')}</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
                   onClick={() => navigate('/settings')}
                   className="text-muted-foreground hover:text-foreground"
                 >
@@ -190,6 +206,13 @@ const SelectPlayer = () => {
         onOpenChange={setShowAISelector}
         accountSlots={accountSlots}
         onComplete={handleAISelectorComplete}
+      />
+
+      {/* First-time User Onboarding */}
+      <OnboardingModal
+        open={showOnboarding}
+        onComplete={completeOnboarding}
+        onSkip={skipOnboarding}
       />
     </div>
   );

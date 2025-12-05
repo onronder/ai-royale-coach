@@ -1877,5 +1877,34 @@
     "previewDescription": "Tam analizi görmek için yükseltin",
     "seeFull": "Tam Analizi Gör",
     "trialExpiredPreview": "Denemeniz sona erdi. Tam analizi görmek için abone olun."
+  },
+  "onboarding": {
+    "stepOf": "Adım {{current}} / {{total}}",
+    "back": "Geri",
+    "next": "İleri",
+    "getStarted": "Başla",
+    "skip": "Atla",
+    "steps": {
+      "welcome": {
+        "title": "AI Royale'e Hoş Geldiniz!",
+        "description": "Yapay zeka destekli Clash Royale yardımcınız. Kişiselleştirilmiş içgörüler ve koçluk ile arenaya hükmetmeye hazır olun."
+      },
+      "playerTag": {
+        "title": "Oyuncu Etiketinizi Ekleyin",
+        "description": "İstatistiklerinizi, savaş geçmişinizi ve kart koleksiyonunuzu otomatik olarak senkronize etmek için Clash Royale hesabınızı bağlayın."
+      },
+      "dashboard": {
+        "title": "Panelini Keşfet",
+        "description": "İhtiyacınız olan her şeyi içeren 9 güçlü sekmeye erişin: maç analizi, deste oluşturma, kart koleksiyonu, sıralamalar ve daha fazlası."
+      },
+      "aiCoach": {
+        "title": "AI Koçunuzla Tanışın",
+        "description": "İstediğiniz zaman kişiselleştirilmiş koçluk tavsiyeleri alın. Strateji, deste iyileştirmeleri hakkında sorun veya belirli maçları analiz edin."
+      },
+      "trial": {
+        "title": "Denemeniz Aktif!",
+        "description": "3 gün boyunca tüm AI özelliklerinin tadını ücretsiz çıkarın. AI Royale'in sunduğu her şeyi keşfedin ve arenaya hükmedin!"
+      }
+    }
   }
 }

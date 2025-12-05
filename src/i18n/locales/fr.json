@@ -1877,5 +1877,34 @@
     "previewDescription": "Passez à Pro pour voir l'analyse complète",
     "seeFull": "Voir l'Analyse Complète",
     "trialExpiredPreview": "Votre essai est terminé. Abonnez-vous pour voir l'analyse complète."
+  },
+  "onboarding": {
+    "stepOf": "Étape {{current}} sur {{total}}",
+    "back": "Retour",
+    "next": "Suivant",
+    "getStarted": "Commencer",
+    "skip": "Passer",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur AI Royale!",
+        "description": "Votre compagnon Clash Royale alimenté par l'IA. Préparez-vous à dominer l'arène avec des conseils personnalisés et du coaching."
+      },
+      "playerTag": {
+        "title": "Ajoutez Votre Tag Joueur",
+        "description": "Liez votre compte Clash Royale pour synchroniser automatiquement vos statistiques, historique de batailles et collection de cartes."
+      },
+      "dashboard": {
+        "title": "Explorez Votre Tableau de Bord",
+        "description": "Accédez à 9 onglets puissants avec tout ce dont vous avez besoin: analyse de matchs, création de decks, collection de cartes, classements et plus."
+      },
+      "aiCoach": {
+        "title": "Rencontrez Votre Coach IA",
+        "description": "Obtenez des conseils de coaching personnalisés à tout moment. Posez des questions sur la stratégie, les améliorations de deck ou analysez des matchs spécifiques."
+      },
+      "trial": {
+        "title": "Votre Essai est Actif!",
+        "description": "Profitez de 3 jours de fonctionnalités IA complètes gratuitement. Explorez tout ce qu'AI Royale a à offrir et dominez l'arène!"
+      }
+    }
   }
 }
