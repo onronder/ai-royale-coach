@@ -58,7 +58,7 @@ function TabWithHelp({ value, icon, label, helpDescription, className }: TabWith
               <Info className="h-3 w-3 text-muted-foreground hover:text-primary" />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" sideOffset={8} className="max-w-[200px] text-xs z-[100]">
+          <TooltipContent side="bottom" sideOffset={8} className="max-w-[200px] text-xs">
             <p>{helpDescription}</p>
             <p className="text-primary mt-1 text-[10px]">{t('common.clickForHelp', 'Click for help')} →</p>
           </TooltipContent>
