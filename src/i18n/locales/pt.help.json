@@ -57,6 +57,14 @@
         "point1": "Adicione múltiplas contas na tela de Seleção de Jogador",
         "point2": "Alterne entre contas instantaneamente sem re-autenticação",
         "point3": "Cada conta tem suas próprias análises, recomendações e histórico de coaching"
+      },
+      "restartTour": {
+        "title": "Refazer o Tour",
+        "description": "Quer ver o tour de boas-vindas novamente? Clique no botão abaixo para reiniciar a experiência de introdução e conhecer todos os recursos que o AI Royale tem a oferecer.",
+        "button": "Reiniciar Tour de Boas-vindas",
+        "success": "Tour reiniciado! Redirecionando para iniciar o tour...",
+        "error": "Falha ao reiniciar o tour. Por favor, tente novamente.",
+        "loginRequired": "Por favor, faça login para reiniciar o tour"
       }
     },
     "dashboard": {
