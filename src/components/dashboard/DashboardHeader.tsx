@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Trophy, Swords, Crown } from "lucide-react";
+import { LogOut, Trophy, Swords, Crown, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
@@ -25,6 +27,7 @@ export function DashboardHeader({
   onSignOut,
 }: DashboardHeaderProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md shadow-md">
@@ -63,6 +66,19 @@ export function DashboardHeader({
             onRefresh={onRefresh} 
             isRefreshing={isRefreshing} 
           />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate('/help')}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('nav.help')}</TooltipContent>
+          </Tooltip>
           <QuickAccountSwitch 
             currentPlayerTag={playerTag} 
             userId={userId} 

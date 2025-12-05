@@ -750,6 +750,7 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
+          onboarding_completed_at: string | null
           preferred_language: string | null
           terms_accepted_at: string | null
           terms_version: string | null
@@ -762,6 +763,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id: string
+          onboarding_completed_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -774,6 +776,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
+          onboarding_completed_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null

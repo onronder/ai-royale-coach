@@ -1875,5 +1875,34 @@
       "confirm": "Confirm Selection",
       "noProfiles": "No player accounts linked. Add a player tag first."
     }
+  },
+  "onboarding": {
+    "stepOf": "Step {{current}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "skip": "Skip",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to AI Royale!",
+        "description": "Your AI-powered Clash Royale companion. Get ready to dominate the arena with personalized insights and coaching."
+      },
+      "playerTag": {
+        "title": "Add Your Player Tag",
+        "description": "Link your Clash Royale account to sync your stats, battle history, and card collection automatically."
+      },
+      "dashboard": {
+        "title": "Explore Your Dashboard",
+        "description": "Access 9 powerful tabs with everything you need: match analysis, deck building, card collection, leaderboards, and more."
+      },
+      "aiCoach": {
+        "title": "Meet Your AI Coach",
+        "description": "Get personalized coaching advice anytime. Ask about strategy, deck improvements, or analyze specific matches."
+      },
+      "trial": {
+        "title": "Your Trial is Active!",
+        "description": "Enjoy 3 days of full AI features for free. Explore everything AI Royale has to offer and dominate the arena!"
+      }
+    }
   }
 }
