@@ -59,7 +59,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
           <ChevronDown className="h-3 w-3 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72 bg-card/95 backdrop-blur-md border-border/50 shadow-xl">
+      <DropdownMenuContent align="end" className="w-72 bg-card/98 backdrop-blur-md border-border/50 shadow-xl z-50 animate-in zoom-in-95 slide-in-from-top-2 duration-200">
         <DropdownMenuLabel className="font-rajdhani text-xs text-muted-foreground uppercase tracking-wide">
           {t('dashboard.accountSwitch.title', 'Switch Account')}
         </DropdownMenuLabel>
@@ -145,7 +145,9 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
         
         <DropdownMenuItem
           onClick={() => navigate('/select-player')}
-          className="cursor-pointer mx-1 my-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          className="cursor-pointer mx-1 my-1 rounded-lg text-primary/80 hover:text-primary 
+                     hover:bg-primary/10 border border-transparent hover:border-primary/30
+                     hover:shadow-[0_0_12px_hsl(190_100%_50%/0.3)] transition-all duration-200"
         >
           <UserPlus className="mr-2 h-4 w-4" />
           {t('dashboard.accountSwitch.manage', 'Manage Accounts')}
