@@ -23,11 +23,14 @@ export function AIFeatureGate({
 }: AIFeatureGateProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { hasAccess: hasSubscriptionAccess, isLoading: isSubLoading } = useSubscription();
-  const { hasAIAccess, isLoading: isAILoading } = usePlayerAIAccess(playerTag);
+  const { hasAccess: hasSubscriptionAccess, isTrialActive: subscriptionTrialActive, isLoading: isSubLoading } = useSubscription();
+  const { hasAIAccess, isTrialActive: playerTrialActive, isLoading: isAILoading } = usePlayerAIAccess(playerTag);
   const [showPricingModal, setShowPricingModal] = useState(false);
 
   const isLoading = isSubLoading || isAILoading;
+  
+  // Trial is active from either source
+  const isTrialActive = subscriptionTrialActive || playerTrialActive;
 
   if (isLoading && showLoadingState) {
     return (
@@ -37,7 +40,12 @@ export function AIFeatureGate({
     );
   }
 
-  // No subscription - show subscription prompt
+  // Trial users get FULL access to ALL AI features - bypass all checks
+  if (isTrialActive) {
+    return <>{children}</>;
+  }
+
+  // No subscription and no trial - show subscription prompt
   if (!hasSubscriptionAccess) {
     return (
       <>
@@ -68,7 +76,7 @@ export function AIFeatureGate({
     );
   }
 
-  // Has subscription but AI not enabled for this player
+  // Has subscription but AI not enabled for this specific player account
   if (!hasAIAccess) {
     return (
       <Card className="border-accent/30 bg-gradient-to-br from-card via-card to-accent/5">
@@ -100,6 +108,6 @@ export function AIFeatureGate({
     );
   }
 
-  // Has both subscription and AI access
+  // Has both subscription and AI access for this account
   return <>{children}</>;
 }

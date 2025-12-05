@@ -1229,7 +1229,13 @@
     "aiEnabled": "AI Enabled",
     "noAI": "No AI",
     "aiEnabledTooltip": "This account has access to AI features",
-    "noAITooltip": "Upgrade or enable AI for this account in Settings"
+    "noAITooltip": "Upgrade or enable AI for this account in Settings",
+    "onTrial": "On Trial",
+    "onTrialTooltip": "All AI features are available during your 72-hour trial",
+    "trialExpired": "Trial Expired",
+    "trialExpiredTooltip": "Subscribe to AI Royale PRO to unlock AI features",
+    "proBadge": "PRO",
+    "proBadgeTooltip": "This account has full AI access with your subscription"
   },
   "settings": {
     "title": "Account Settings",

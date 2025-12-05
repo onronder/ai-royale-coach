@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock } from "lucide-react";
+import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock, Timer } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
+import { useSubscription } from "@/hooks/useSubscription";
 import { DataLoader } from "@/components/ui/data-loader";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AccountComparison } from "./AccountComparison";
@@ -39,11 +40,15 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
   } = usePlayerProfiles(userId);
 
   const { profiles: aiProfiles } = useUserAIProfiles();
+  const { hasAccess, isTrialActive, hasUsedTrial } = useSubscription();
   
   // Create a map of player_tag -> ai_enabled status
   const aiStatusMap = new Map(
     aiProfiles.map(p => [p.player_tag, p.ai_enabled])
   );
+
+  // Determine trial expired state
+  const trialExpired = hasUsedTrial && !isTrialActive && !hasAccess;
 
   const handleSelectPlayer = (playerTag: string) => {
     if (onSelect) {
@@ -119,6 +124,9 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
               isRemoving={isRemoving}
               index={index}
               aiEnabled={aiStatusMap.get(profile.player_tag) ?? false}
+              isTrialActive={isTrialActive}
+              hasSubscription={hasAccess}
+              trialExpired={trialExpired}
             />
           ))}
         </div>
@@ -207,12 +215,63 @@ interface PlayerTagCardProps {
   isRemoving: boolean;
   index: number;
   aiEnabled: boolean;
+  isTrialActive: boolean;
+  hasSubscription: boolean;
+  trialExpired: boolean;
 }
 
-function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index, aiEnabled }: PlayerTagCardProps) {
+function PlayerTagCard({ 
+  profile, 
+  onSelect, 
+  onRemove, 
+  isRemoving, 
+  index, 
+  aiEnabled,
+  isTrialActive,
+  hasSubscription,
+  trialExpired
+}: PlayerTagCardProps) {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
+
+  // Determine badge state based on user status
+  const getBadgeConfig = () => {
+    if (isTrialActive) {
+      return {
+        icon: Timer,
+        text: t('selectPlayer.onTrial'),
+        tooltip: t('selectPlayer.onTrialTooltip'),
+        className: "bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
+      };
+    }
+    if (hasSubscription && aiEnabled) {
+      return {
+        icon: Crown,
+        text: t('selectPlayer.proBadge'),
+        tooltip: t('selectPlayer.proBadgeTooltip'),
+        className: "bg-gold/20 text-gold border-gold/30 hover:bg-gold/30"
+      };
+    }
+    if (trialExpired) {
+      return {
+        icon: Lock,
+        text: t('selectPlayer.trialExpired'),
+        tooltip: t('selectPlayer.trialExpiredTooltip'),
+        className: "bg-destructive/20 text-destructive border-destructive/30"
+      };
+    }
+    // Free user or subscription without AI for this account
+    return {
+      icon: Lock,
+      text: t('selectPlayer.noAI'),
+      tooltip: t('selectPlayer.noAITooltip'),
+      className: "text-muted-foreground border-border/50"
+    };
+  };
+
+  const badgeConfig = getBadgeConfig();
+  const BadgeIcon = badgeConfig.icon;
   
   return (
     <Card 
@@ -256,32 +315,15 @@ function PlayerTagCard({ profile, onSelect, onRemove, isRemoving, index, aiEnabl
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Badge 
-                        variant={aiEnabled ? "default" : "outline"}
-                        className={cn(
-                          "text-xs gap-1",
-                          aiEnabled 
-                            ? "bg-primary/20 text-primary border-primary/30 hover:bg-primary/30" 
-                            : "text-muted-foreground border-border/50"
-                        )}
+                        variant="outline"
+                        className={cn("text-xs gap-1", badgeConfig.className)}
                       >
-                        {aiEnabled ? (
-                          <>
-                            <Brain className="h-3 w-3" />
-                            {t('selectPlayer.aiEnabled')}
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="h-3 w-3" />
-                            {t('selectPlayer.noAI')}
-                          </>
-                        )}
+                        <BadgeIcon className="h-3 w-3" />
+                        {badgeConfig.text}
                       </Badge>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {aiEnabled 
-                        ? t('selectPlayer.aiEnabledTooltip')
-                        : t('selectPlayer.noAITooltip')
-                      }
+                      {badgeConfig.tooltip}
                     </TooltipContent>
                   </Tooltip>
                 </div>
