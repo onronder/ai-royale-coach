@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogOut, Trophy, Swords, Crown, HelpCircle } from "lucide-react";
+import { LogOut, Trophy, Swords, Crown, HelpCircle, Settings } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
@@ -79,7 +79,20 @@ export function DashboardHeader({
             </TooltipTrigger>
             <TooltipContent>{t('nav.help')}</TooltipContent>
           </Tooltip>
-          <QuickAccountSwitch 
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate('/settings')}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t('settings.title')}</TooltipContent>
+          </Tooltip>
+          <QuickAccountSwitch
             currentPlayerTag={playerTag} 
             userId={userId} 
           />

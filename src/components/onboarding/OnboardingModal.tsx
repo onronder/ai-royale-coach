@@ -10,8 +10,7 @@ import {
   MessageCircle, 
   Sparkles,
   ChevronRight,
-  ChevronLeft,
-  X
+  ChevronLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -77,7 +76,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
   const Icon = step.icon;
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={onSkip}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-card border-gold/30">
         {/* Header with progress */}
         <div className="relative p-4 border-b border-border/50">
@@ -85,14 +84,6 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
             <span className="text-sm text-muted-foreground">
               {t('onboarding.stepOf', { current: currentStep + 1, total: steps.length })}
             </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-muted-foreground hover:text-foreground"
-              onClick={onSkip}
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
           <Progress value={progress} className="h-1" />
         </div>
@@ -126,7 +117,7 @@ export function OnboardingModal({ open, onComplete, onSkip }: OnboardingModalPro
               {/* Dashboard features list for dashboard step */}
               {step.key === "dashboard" && (
                 <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-                  {['overview', 'matches', 'deck', 'builder', 'collection', 'leaderboard', 'tournaments', 'clans', 'analytics'].map((tab) => (
+                  {['stats', 'matches', 'deck', 'builder', 'cards', 'ranks', 'tourneys', 'clans', 'analytics'].map((tab) => (
                     <div key={tab} className="px-2 py-1 rounded bg-muted/50 text-muted-foreground">
                       {t(`dashboard.tabs.${tab}`)}
                     </div>

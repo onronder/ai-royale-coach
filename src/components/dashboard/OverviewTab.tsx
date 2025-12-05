@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Trophy, Crown, Swords, Users, Sparkles } from "lucide-react";
 import { StatCard } from "@/components/stats/StatCard";
 import { StatCardSkeleton, PageTransition } from "@/components/ui/loading-states";
-import { statTooltips } from "@/components/ui/tooltip-helpers";
+import { useStatTooltips } from "@/components/ui/tooltip-helpers";
 import { TrophyProgressChart } from "@/components/analytics/TrophyProgressChart";
 import { AchievementBadgeWidget } from "@/components/achievements/AchievementBadgeWidget";
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
@@ -34,6 +34,7 @@ export function OverviewTab({
   analysisError,
 }: OverviewTabProps) {
   const { t } = useTranslation();
+  const statTooltips = useStatTooltips();
 
   return (
     <PageTransition>
