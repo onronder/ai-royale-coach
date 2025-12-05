@@ -1529,7 +1529,9 @@
     "activeDecks": "Aktif Desteler",
     "winRateTrends": "Kazanma Oranı Trendleri",
     "deckUsage": "Deste Kullanımı",
-    "topCards": "En İyi Kartlar"
+    "topCards": "En İyi Kartlar",
+    "updated": "Deste İstatistikleri Güncellendi",
+    "updatedMessage": "Deste istatistikleriniz en son savaş verileriyle senkronize edildi"
   },
   "notFound": {
     "title": "Hay aksi! Sayfa bulunamadı",
@@ -1692,7 +1694,10 @@
     "inProgress": "Devam Eden ({{count}})",
     "progress": "İlerleme",
     "pts": "puan",
-    "unlockedOn": "{{date}} tarihinde açıldı"
+    "unlockedOn": "{{date}} tarihinde açıldı",
+    "unlockedNew": "Yeni bir başarım kazandınız!",
+    "synced": "Başarımlar Senkronize Edildi",
+    "syncedMessage": "Başarım ilerlemeniz güncellendi"
   },
   "analytics": {
     "winRateTrends": "Kazanma Oranı Trendleri",

@@ -1529,7 +1529,9 @@
     "activeDecks": "Mazos Activos",
     "winRateTrends": "Tendencias de Victoria",
     "deckUsage": "Uso de Mazos",
-    "topCards": "Mejores Cartas"
+    "topCards": "Mejores Cartas",
+    "updated": "Estadísticas de Mazo Actualizadas",
+    "updatedMessage": "Tus estadísticas de mazo se han sincronizado con los datos de batalla más recientes"
   },
   "notFound": {
     "title": "¡Ups! Página no encontrada",
@@ -1692,7 +1694,10 @@
     "inProgress": "En Progreso ({{count}})",
     "progress": "Progreso",
     "pts": "pts",
-    "unlockedOn": "Desbloqueado {{date}}"
+    "unlockedOn": "Desbloqueado {{date}}",
+    "unlockedNew": "¡Has desbloqueado un nuevo logro!",
+    "synced": "Logros Sincronizados",
+    "syncedMessage": "Tu progreso de logros ha sido actualizado"
   },
   "analytics": {
     "winRateTrends": "Tendencias de Victoria",
