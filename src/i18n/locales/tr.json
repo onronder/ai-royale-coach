@@ -873,6 +873,17 @@
     }
   },
   "dashboard": {
+    "tabHelp": {
+      "overview": "Kupalarını, kazanma oranını ve yapay zeka destekli performans özetini görüntüle",
+      "matches": "Son savaşlarına göz at ve detaylı yapay zeka analizi al",
+      "deck": "Mevcut desteni sinerji içgörüleri ve önerilerle analiz et",
+      "builder": "Şablonlarla özel desteler oluştur, karşılaştır ve kaydet",
+      "analytics": "Deste performansını, kart ustalığını ve başarıları takip et",
+      "collection": "Tüm kartlarını, seviyelerini ve yükseltme ilerlemeni görüntüle",
+      "leaderboard": "En iyi oyuncuları ve sıralama pozisyonunu gör",
+      "tournaments": "Topluluk turnuvalarına göz at ve katıl",
+      "clans": "Klanları ara ve katılma istekleri gönder"
+    },
     "title": "Gösterge Paneli",
     "welcome": "Tekrar hoş geldin",
     "playerStats": "Oyuncu İstatistikleri",
