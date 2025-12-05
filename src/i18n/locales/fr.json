@@ -1529,7 +1529,9 @@
     "activeDecks": "Decks Actifs",
     "winRateTrends": "Tendances de Victoire",
     "deckUsage": "Utilisation des Decks",
-    "topCards": "Meilleures Cartes"
+    "topCards": "Meilleures Cartes",
+    "updated": "Statistiques de Deck Mises à Jour",
+    "updatedMessage": "Vos statistiques de deck ont été synchronisées avec les dernières données de combat"
   },
   "notFound": {
     "title": "Oups! Page non trouvée",
@@ -1692,7 +1694,10 @@
     "inProgress": "En Cours ({{count}})",
     "progress": "Progrès",
     "pts": "pts",
-    "unlockedOn": "Débloqué {{date}}"
+    "unlockedOn": "Débloqué {{date}}",
+    "unlockedNew": "Vous avez débloqué un nouveau succès !",
+    "synced": "Succès Synchronisés",
+    "syncedMessage": "Votre progression de succès a été mise à jour"
   },
   "analytics": {
     "winRateTrends": "Tendances de Victoire",

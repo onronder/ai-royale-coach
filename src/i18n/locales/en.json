@@ -1515,7 +1515,10 @@
     "inProgress": "In Progress ({{count}})",
     "progress": "Progress",
     "pts": "pts",
-    "unlockedOn": "Unlocked {{date}}"
+    "unlockedOn": "Unlocked {{date}}",
+    "unlockedNew": "You've unlocked a new achievement!",
+    "synced": "Achievements Synced",
+    "syncedMessage": "Your achievement progress has been updated"
   },
   "deckStats": {
     "title": "Deck Statistics",
@@ -1531,7 +1534,9 @@
     "activeDecks": "Active Decks",
     "winRateTrends": "Win Rate Trends",
     "deckUsage": "Deck Usage",
-    "topCards": "Top Cards"
+    "topCards": "Top Cards",
+    "updated": "Deck Stats Updated",
+    "updatedMessage": "Your deck statistics have been synced with the latest battle data"
   },
   "notFound": {
     "title": "Oops! Page not found",
