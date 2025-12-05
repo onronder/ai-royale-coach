@@ -873,6 +873,17 @@
     }
   },
   "dashboard": {
+    "tabHelp": {
+      "overview": "Veja seus troféus, taxa de vitória e resumo de desempenho com IA",
+      "matches": "Navegue por suas batalhas recentes e obtenha análise detalhada com IA",
+      "deck": "Analise seu deck atual com insights de sinergia e recomendações",
+      "builder": "Crie, compare e salve decks personalizados com templates",
+      "analytics": "Acompanhe desempenho de decks, maestria de cartas e conquistas",
+      "collection": "Veja todas as suas cartas, níveis e progresso de upgrades",
+      "leaderboard": "Veja os melhores jogadores e sua posição no ranking",
+      "tournaments": "Navegue e participe de torneios da comunidade",
+      "clans": "Procure clãs e envie pedidos de entrada"
+    },
     "title": "Painel",
     "welcome": "Bem-vindo de volta",
     "playerStats": "Estatísticas do Jogador",

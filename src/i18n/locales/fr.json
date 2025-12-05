@@ -873,6 +873,17 @@
     }
   },
   "dashboard": {
+    "tabHelp": {
+      "overview": "Consultez vos trophées, taux de victoire et résumé de performance IA",
+      "matches": "Parcourez vos batailles récentes et obtenez une analyse IA détaillée",
+      "deck": "Analysez votre deck actuel avec des insights de synergie et recommandations",
+      "builder": "Créez, comparez et sauvegardez des decks personnalisés avec des templates",
+      "analytics": "Suivez les performances des decks, maîtrise des cartes et réussites",
+      "collection": "Consultez toutes vos cartes, niveaux et progression d'améliorations",
+      "leaderboard": "Voyez les meilleurs joueurs et votre position au classement",
+      "tournaments": "Parcourez et rejoignez des tournois communautaires",
+      "clans": "Recherchez des clans et envoyez des demandes d'adhésion"
+    },
     "title": "Tableau de Bord",
     "welcome": "Bon retour",
     "playerStats": "Statistiques du Joueur",

@@ -872,6 +872,17 @@
     }
   },
   "dashboard": {
+    "tabHelp": {
+      "overview": "View your trophies, win rate, and AI-powered performance summary",
+      "matches": "Browse your recent battles and get detailed AI analysis",
+      "deck": "Analyze your current deck with synergy insights and recommendations",
+      "builder": "Create, compare, and save custom decks with templates",
+      "analytics": "Track deck performance, card mastery, and achievements",
+      "collection": "View all your cards, levels, and upgrade progress",
+      "leaderboard": "See top players and your ranking position",
+      "tournaments": "Browse and join community tournaments",
+      "clans": "Search for clans and send join requests"
+    },
     "title": "Dashboard",
     "welcome": "Welcome back",
     "playerStats": "Player Stats",

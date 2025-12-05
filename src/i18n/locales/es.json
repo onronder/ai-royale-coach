@@ -873,6 +873,17 @@
     }
   },
   "dashboard": {
+    "tabHelp": {
+      "overview": "Ve tus trofeos, tasa de victoria y resumen de rendimiento con IA",
+      "matches": "Explora tus batallas recientes y obtén análisis detallado con IA",
+      "deck": "Analiza tu mazo actual con insights de sinergia y recomendaciones",
+      "builder": "Crea, compara y guarda mazos personalizados con plantillas",
+      "analytics": "Rastrea rendimiento de mazos, maestría de cartas y logros",
+      "collection": "Ve todas tus cartas, niveles y progreso de mejoras",
+      "leaderboard": "Ve los mejores jugadores y tu posición en el ranking",
+      "tournaments": "Explora y únete a torneos de la comunidad",
+      "clans": "Busca clanes y envía solicitudes de unión"
+    },
     "title": "Panel de Control",
     "welcome": "Bienvenido de nuevo",
     "playerStats": "Estadísticas del Jugador",
