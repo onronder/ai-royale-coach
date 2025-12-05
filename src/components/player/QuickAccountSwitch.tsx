@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, Crown, Trophy, UserPlus } from "lucide-react";
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ interface QuickAccountSwitchProps {
 }
 
 export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwitchProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { profiles, isLoading } = usePlayerProfiles(userId);
   
@@ -41,73 +42,77 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className="gap-2 px-2 h-9 border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all">
           {currentProfile?.clan_badge_id ? (
-            <Avatar className="h-5 w-5">
+            <Avatar className="h-6 w-6 ring-1 ring-primary/30">
               <AvatarImage src={getClanBadgeUrl(currentProfile.clan_badge_id)} />
-              <AvatarFallback><Crown className="h-3 w-3" /></AvatarFallback>
+              <AvatarFallback className="bg-primary/20"><Crown className="h-3 w-3 text-primary" /></AvatarFallback>
             </Avatar>
           ) : (
-            <Crown className="h-4 w-4 text-primary" />
+            <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center ring-1 ring-primary/30">
+              <Crown className="h-3.5 w-3.5 text-primary" />
+            </div>
           )}
-          <span className="hidden sm:inline font-rajdhani font-semibold">
+          <span className="hidden sm:inline font-rajdhani font-semibold text-sm">
             {currentProfile?.player_name || `#${currentPlayerTag}`}
           </span>
           <ChevronDown className="h-3 w-3 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64 bg-card border-border">
-        <DropdownMenuLabel className="font-rajdhani text-xs text-muted-foreground">
-          Switch Account
+      <DropdownMenuContent align="end" className="w-72 bg-card/95 backdrop-blur-md border-border/50 shadow-xl">
+        <DropdownMenuLabel className="font-rajdhani text-xs text-muted-foreground uppercase tracking-wide">
+          {t('dashboard.accountSwitch.title', 'Switch Account')}
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-border/50" />
         
         {/* Current Account */}
         {currentProfile && (
-          <DropdownMenuItem disabled className="opacity-100 bg-primary/10">
-            <div className="flex items-center gap-3 w-full">
+          <DropdownMenuItem disabled className="opacity-100 bg-primary/10 border border-primary/20 rounded-lg mx-1 my-1">
+            <div className="flex items-center gap-3 w-full py-1">
               {currentProfile.clan_badge_id ? (
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10 ring-2 ring-primary/40">
                   <AvatarImage src={getClanBadgeUrl(currentProfile.clan_badge_id)} />
-                  <AvatarFallback><Crown className="h-4 w-4" /></AvatarFallback>
+                  <AvatarFallback className="bg-primary/20"><Crown className="h-5 w-5 text-primary" /></AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Crown className="h-4 w-4 text-primary" />
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center ring-2 ring-primary/40">
+                  <Crown className="h-5 w-5 text-primary" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-rajdhani font-semibold text-sm truncate">
+                <p className="font-rajdhani font-bold text-sm truncate text-foreground">
                   {currentProfile.player_name || `#${currentProfile.player_tag}`}
                 </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Trophy className="h-3 w-3 text-primary" />
-                  <span>{currentProfile.trophies?.toLocaleString() || '—'}</span>
-                  <span className="ml-1 text-success">● Active</span>
+                <div className="flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-1 text-gold">
+                    <Trophy className="h-3 w-3" />
+                    <span className="font-semibold">{currentProfile.trophies?.toLocaleString() || '—'}</span>
+                  </div>
+                  <span className="text-success font-medium">● {t('dashboard.accountSwitch.active', 'Active')}</span>
                 </div>
               </div>
             </div>
           </DropdownMenuItem>
         )}
         
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-border/50" />
         
         {/* Other Accounts */}
         {otherProfiles.map((profile) => (
           <DropdownMenuItem
             key={profile.id}
             onClick={() => handleSwitchAccount(profile.player_tag)}
-            className="cursor-pointer"
+            className="cursor-pointer mx-1 my-0.5 rounded-lg hover:bg-muted/50 transition-colors"
           >
-            <div className="flex items-center gap-3 w-full">
+            <div className="flex items-center gap-3 w-full py-1">
               {profile.clan_badge_id ? (
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10 ring-1 ring-border/50">
                   <AvatarImage src={getClanBadgeUrl(profile.clan_badge_id)} />
-                  <AvatarFallback><Crown className="h-4 w-4" /></AvatarFallback>
+                  <AvatarFallback className="bg-muted"><Crown className="h-5 w-5 text-muted-foreground" /></AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-                  <Crown className="h-4 w-4 text-muted-foreground" />
+                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center ring-1 ring-border/50">
+                  <Crown className="h-5 w-5 text-muted-foreground" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -115,7 +120,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
                   {profile.player_name || `#${profile.player_tag}`}
                 </p>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Trophy className="h-3 w-3 text-primary" />
+                  <Trophy className="h-3 w-3 text-gold/70" />
                   <span>{profile.trophies?.toLocaleString() || '—'}</span>
                 </div>
               </div>
@@ -123,14 +128,14 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
           </DropdownMenuItem>
         ))}
         
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-border/50" />
         
         <DropdownMenuItem
           onClick={() => navigate('/select-player')}
-          className="cursor-pointer text-muted-foreground"
+          className="cursor-pointer mx-1 my-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
         >
           <UserPlus className="mr-2 h-4 w-4" />
-          Manage Accounts
+          {t('dashboard.accountSwitch.manage', 'Manage Accounts')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

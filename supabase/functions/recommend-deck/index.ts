@@ -277,13 +277,20 @@ serve(async (req) => {
       new Date(userProfile.trial_ends_at) > now;
     const hasAccess = subscriptionData?.status === 'active' || isTrialActive;
 
+    // Helper to normalize player tags (database stores without #)
+    const normalizePlayerTag = (tag: string): string => {
+      return tag.replace(/^#/, '').toUpperCase();
+    };
+
+    const normalizedPlayerTag = normalizePlayerTag(playerTag);
+
     // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
     if (!isTrialActive) {
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
+        .eq('player_tag', normalizedPlayerTag)
         .single();
 
       if (!playerProfile?.ai_enabled) {

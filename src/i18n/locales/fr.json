@@ -893,6 +893,11 @@
     }
   },
   "dashboard": {
+    "accountSwitch": {
+      "title": "Changer de Compte",
+      "active": "Actif",
+      "manage": "Gérer les Comptes"
+    },
     "tabHelp": {
       "overview": "Consultez vos trophées, taux de victoire et résumé de performance IA",
       "matches": "Parcourez vos batailles récentes et obtenez une analyse IA détaillée",
@@ -1924,7 +1929,12 @@
     "subscriptionSuccessDescription": "Votre abonnement est maintenant actif. Profitez des fonctionnalités IA illimitées!",
     "navBadge": {
       "pro": "PRO",
+      "proEnabled": "PRO ACTIVÉ",
+      "aiDisabled": "IA DÉSACTIVÉE",
       "trialDays": "{{days}}j restants",
+      "trialHours": "{{hours}}h restants",
+      "upgrade": "Améliorer"
+    },
       "upgrade": "Améliorer"
     },
     "previewTitle": "Aperçu de l'Analyse IA",

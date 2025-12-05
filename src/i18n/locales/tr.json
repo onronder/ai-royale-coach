@@ -893,6 +893,11 @@
     }
   },
   "dashboard": {
+    "accountSwitch": {
+      "title": "Hesap Değiştir",
+      "active": "Aktif",
+      "manage": "Hesapları Yönet"
+    },
     "tabHelp": {
       "overview": "Kupalarını, kazanma oranını ve yapay zeka destekli performans özetini görüntüle",
       "matches": "Son savaşlarına göz at ve detaylı yapay zeka analizi al",
@@ -1924,7 +1929,12 @@
     "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zeka özelliklerinin tadını çıkarın!",
     "navBadge": {
       "pro": "PRO",
+      "proEnabled": "PRO ETKİN",
+      "aiDisabled": "AI DEVRE DIŞI",
       "trialDays": "{{days}}g kaldı",
+      "trialHours": "{{hours}}s kaldı",
+      "upgrade": "Yükselt"
+    },
       "upgrade": "Yükselt"
     },
     "previewTitle": "AI Analiz Önizlemesi",
