@@ -67,13 +67,19 @@ serve(async (req) => {
       throw new Error('Deck must contain exactly 8 cards');
     }
 
+    // Helper to normalize player tags (database stores without #)
+    const normalizePlayerTag = (tag: string): string => {
+      return tag.replace(/^#/, '').toUpperCase();
+    };
+
     // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
     if (playerTag && !isTrialActive) {
+      const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
+        .eq('player_tag', normalizedTag)
         .single();
 
       if (!playerProfile?.ai_enabled) {

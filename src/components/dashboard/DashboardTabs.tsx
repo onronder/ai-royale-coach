@@ -31,6 +31,7 @@ interface TabWithHelpProps {
 }
 
 function TabWithHelp({ value, icon, label, helpDescription, className }: TabWithHelpProps) {
+  const { t } = useTranslation();
   const helpSection = tabHelpSections[value];
   
   return (
@@ -46,17 +47,20 @@ function TabWithHelp({ value, icon, label, helpDescription, className }: TabWith
       <TooltipProvider delayDuration={300}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link
-              to={`/help#${helpSection}`}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                window.open(`/help#${helpSection}`, '_blank');
+              }}
               className="absolute -top-1 -right-1 p-0.5 rounded-full bg-muted/80 hover:bg-primary/20 border border-border/50 hover:border-primary/50 transition-all opacity-0 group-hover:opacity-100 z-10"
-              onClick={(e) => e.stopPropagation()}
             >
               <Info className="h-3 w-3 text-muted-foreground hover:text-primary" />
-            </Link>
+            </button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-[200px] text-xs">
+          <TooltipContent side="bottom" sideOffset={8} className="max-w-[200px] text-xs z-[100]">
             <p>{helpDescription}</p>
-            <p className="text-primary mt-1 text-[10px]">Click for help →</p>
+            <p className="text-primary mt-1 text-[10px]">{t('common.clickForHelp', 'Click for help')} →</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

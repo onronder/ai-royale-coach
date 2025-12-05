@@ -5,6 +5,7 @@ import { LogOut, Trophy, Swords, Crown, HelpCircle, Settings } from "lucide-reac
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
+import { NavbarSubscriptionBadge } from "@/components/layout/NavbarSubscriptionBadge";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 
 interface DashboardHeaderProps {
@@ -61,6 +62,9 @@ export function DashboardHeader({
 
         {/* Quick Switch & Sign Out */}
         <div className="flex items-center gap-2">
+          {/* Subscription Status Badge */}
+          <NavbarSubscriptionBadge />
+          
           <CacheStatusIndicator 
             playerTag={playerTag} 
             onRefresh={onRefresh} 
@@ -84,7 +88,7 @@ export function DashboardHeader({
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate(`/settings?returnTo=/player/${playerTag}`)}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <Settings className="h-5 w-5" />

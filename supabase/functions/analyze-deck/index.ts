@@ -77,9 +77,14 @@ serve(async (req) => {
 
     const { playerData, battles, language = 'en' }: DeckAnalysisRequest & { language?: string } = await req.json();
 
+    // Helper to normalize player tags (database stores without #)
+    const normalizePlayerTag = (tag: string): string => {
+      return tag.replace(/^#/, '').toUpperCase();
+    };
+
     // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
     if (playerData?.tag && !isTrialActive) {
-      const playerTag = playerData.tag;
+      const playerTag = normalizePlayerTag(playerData.tag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')
@@ -92,7 +97,7 @@ serve(async (req) => {
           JSON.stringify({ 
             error: 'AI not enabled for this account',
             ai_not_enabled: true,
-            player_tag: playerTag
+            player_tag: playerData.tag
           }),
           { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );

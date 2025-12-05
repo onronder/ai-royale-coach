@@ -893,6 +893,11 @@
     }
   },
   "dashboard": {
+    "accountSwitch": {
+      "title": "Cambiar Cuenta",
+      "active": "Activo",
+      "manage": "Gestionar Cuentas"
+    },
     "tabHelp": {
       "overview": "Ve tus trofeos, tasa de victoria y resumen de rendimiento con IA",
       "matches": "Explora tus batallas recientes y obtén análisis detallado con IA",
@@ -1935,7 +1940,12 @@
     "subscriptionSuccessDescription": "Tu suscripción está activa. ¡Disfruta de las funciones de IA ilimitadas!",
     "navBadge": {
       "pro": "PRO",
+      "proEnabled": "PRO ACTIVO",
+      "aiDisabled": "IA DESACTIVADA",
       "trialDays": "{{days}}d restantes",
+      "trialHours": "{{hours}}h restantes",
+      "upgrade": "Mejorar"
+    },
       "upgrade": "Mejorar"
     },
     "previewTitle": "Vista Previa del Análisis IA",

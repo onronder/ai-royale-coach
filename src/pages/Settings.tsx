@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle } from "lucide-react";
+import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,9 @@ import { cn } from "@/lib/utils";
 const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get('returnTo') || '/select-player';
+  
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAISelector, setShowAISelector] = useState(false);
@@ -123,8 +126,9 @@ const Settings = () => {
               <HelpCircle className="mr-2 h-4 w-4" />
               {t('nav.help')}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/select-player')} className="border-border/50">
-              {t('settings.backToAccounts')}
+            <Button variant="outline" size="sm" onClick={() => navigate(returnTo)} className="border-border/50">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t('settings.back', 'Back')}
             </Button>
             <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />

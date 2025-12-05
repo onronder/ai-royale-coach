@@ -892,6 +892,11 @@
     }
   },
   "dashboard": {
+    "accountSwitch": {
+      "title": "Switch Account",
+      "active": "Active",
+      "manage": "Manage Accounts"
+    },
     "tabHelp": {
       "overview": "View your trophies, win rate, and AI-powered performance summary",
       "matches": "Browse your recent battles and get detailed AI analysis",
@@ -1915,7 +1920,10 @@
     "subscriptionSuccessDescription": "Your subscription is now active. Enjoy unlimited AI features!",
     "navBadge": {
       "pro": "PRO",
+      "proEnabled": "PRO ENABLED",
+      "aiDisabled": "AI DISABLED",
       "trialDays": "{{days}}d left",
+      "trialHours": "{{hours}}h left",
       "upgrade": "Upgrade"
     },
     "previewTitle": "Preview of AI Analysis",
