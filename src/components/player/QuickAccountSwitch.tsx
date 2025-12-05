@@ -70,22 +70,22 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
           <DropdownMenuItem 
             disabled 
             className="opacity-100 rounded-lg mx-1 my-1 relative overflow-hidden
-                       bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20
-                       border-2 border-primary/40 
-                       shadow-primary-glow
+                       bg-gradient-to-r from-primary/30 via-primary/20 to-primary/30
+                       border-2 border-primary/60 
+                       shadow-[0_0_25px_hsl(190_100%_50%/0.4)]
                        animate-active-card-glow"
           >
             {/* Shimmer overlay effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer bg-[length:200%_100%]" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer bg-[length:200%_100%]" />
             
             <div className="relative flex items-center gap-3 w-full py-1">
               {currentProfile.clan_badge_id ? (
-                <Avatar className="h-10 w-10 ring-2 ring-primary/50 animate-pulse-glow">
+                <Avatar className="h-10 w-10 ring-2 ring-primary shadow-[0_0_15px_hsl(190_100%_50%/0.6)]">
                   <AvatarImage src={getClanBadgeUrl(currentProfile.clan_badge_id)} />
                   <AvatarFallback className="bg-primary/20"><Crown className="h-5 w-5 text-primary" /></AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center ring-2 ring-primary/50 animate-pulse-glow">
+                <div className="h-10 w-10 rounded-full bg-primary/30 flex items-center justify-center ring-2 ring-primary shadow-[0_0_15px_hsl(190_100%_50%/0.6)]">
                   <Crown className="h-5 w-5 text-primary" />
                 </div>
               )}
@@ -98,7 +98,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
                     <Trophy className="h-3 w-3" />
                     <span className="font-semibold">{currentProfile.trophies?.toLocaleString() || '—'}</span>
                   </div>
-                  <span className="text-success font-medium flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 bg-success/30 text-success text-[10px] font-bold rounded-full border border-success/50 shadow-[0_0_10px_hsl(145_80%_42%/0.5)] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
                     {t('dashboard.accountSwitch.active', 'Active')}
                   </span>
