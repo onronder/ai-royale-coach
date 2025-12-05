@@ -1072,19 +1072,6 @@
     "quotaExhausted": "Limite quotidienne IA atteinte. Réinitialisation à minuit.",
     "quotaLow": "Peu de requêtes IA restantes aujourd'hui."
   },
-  "deckComparison": {
-    "title": "Comparaison de Decks",
-    "headToHead": "Face à Face",
-    "cards": "cartes",
-    "avgElixir": "Élixir Moyen",
-    "similar": "Similaire",
-    "matchupAnalysis": "Analyse de Matchup",
-    "matchupDisclaimer": "Les prédictions de taux de victoire nécessitent un historique de combat réel avec les deux decks. Comparez plutôt en fonction des archétypes et des contre-cartes.",
-    "hideBreakdown": "Masquer le Détail des Cartes",
-    "showBreakdown": "Afficher le Détail des Cartes",
-    "deck1Cards": "Cartes du Deck 1",
-    "deck2Cards": "Cartes du Deck 2"
-  },
   "match": {
     "victory": "Victoire",
     "defeat": "Défaite",

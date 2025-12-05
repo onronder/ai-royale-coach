@@ -1072,19 +1072,6 @@
     "quotaExhausted": "Günlük AI limiti doldu. Gece yarısı sıfırlanır.",
     "quotaLow": "Bugün için AI istekleri azalıyor."
   },
-  "deckComparison": {
-    "title": "Deste Karşılaştırma",
-    "headToHead": "Karşı Karşıya",
-    "cards": "kart",
-    "avgElixir": "Ort. İksir",
-    "similar": "Benzer",
-    "matchupAnalysis": "Eşleşme Analizi",
-    "matchupDisclaimer": "Kazanma oranı tahminleri her iki desteyle gerçek savaş geçmişi gerektirir. Bunun yerine arketip eşleşmeleri ve kart karşılaştırmalarına göre değerlendirin.",
-    "hideBreakdown": "Kart Detaylarını Gizle",
-    "showBreakdown": "Kart Detaylarını Göster",
-    "deck1Cards": "Deste 1 Kartları",
-    "deck2Cards": "Deste 2 Kartları"
-  },
   "match": {
     "victory": "Zafer",
     "defeat": "Yenilgi",
