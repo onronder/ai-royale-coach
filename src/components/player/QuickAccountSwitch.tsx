@@ -99,7 +99,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
                     <span className="font-semibold">{currentProfile.trophies?.toLocaleString() || '—'}</span>
                   </div>
                   <span className="px-1.5 py-0.5 bg-success/30 text-success text-[10px] font-bold rounded-full border border-success/50 shadow-[0_0_10px_hsl(145_80%_42%/0.5)] flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                    <Crown className="h-2.5 w-2.5 text-gold animate-[trophy-shine_2s_ease-in-out_infinite]" />
                     {t('dashboard.accountSwitch.active', 'Active')}
                   </span>
                 </div>
@@ -115,7 +115,12 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
           <DropdownMenuItem
             key={profile.id}
             onClick={() => handleSwitchAccount(profile.player_tag)}
-            className="cursor-pointer mx-1 my-0.5 rounded-lg hover:bg-muted/50 transition-colors"
+            className="cursor-pointer mx-1 my-0.5 rounded-lg 
+                       hover:bg-muted/50 hover:border-primary/30 
+                       hover:shadow-[0_0_12px_hsl(190_100%_50%/0.2)] 
+                       hover:-translate-y-0.5
+                       border border-transparent
+                       transition-all duration-200"
           >
             <div className="flex items-center gap-3 w-full py-1">
               {profile.clan_badge_id ? (
