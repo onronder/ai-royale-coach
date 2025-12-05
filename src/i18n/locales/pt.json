@@ -1249,7 +1249,13 @@
     "aiEnabled": "IA Ativada",
     "noAI": "Sem IA",
     "aiEnabledTooltip": "Esta conta tem acesso aos recursos de IA",
-    "noAITooltip": "Atualize ou ative a IA para esta conta nas Configurações"
+    "noAITooltip": "Atualize ou ative a IA para esta conta nas Configurações",
+    "onTrial": "Em Período de Teste",
+    "onTrialTooltip": "Todos os recursos de IA estão disponíveis durante seu teste de 72 horas",
+    "trialExpired": "Teste Expirado",
+    "trialExpiredTooltip": "Assine o AI Royale PRO para desbloquear recursos de IA",
+    "proBadge": "PRO",
+    "proBadgeTooltip": "Esta conta tem acesso completo à IA com sua assinatura"
   },
   "settings": {
     "title": "Configurações da Conta",

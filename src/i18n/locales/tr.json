@@ -1249,7 +1249,13 @@
     "aiEnabled": "Yapay Zeka Etkin",
     "noAI": "Yapay Zeka Yok",
     "aiEnabledTooltip": "Bu hesap yapay zeka özelliklerine erişebilir",
-    "noAITooltip": "Ayarlar'dan bu hesap için yapay zekayı yükseltin veya etkinleştirin"
+    "noAITooltip": "Ayarlar'dan bu hesap için yapay zekayı yükseltin veya etkinleştirin",
+    "onTrial": "Deneme Süresinde",
+    "onTrialTooltip": "72 saatlik deneme sürenizde tüm yapay zeka özellikleri aktif",
+    "trialExpired": "Deneme Sona Erdi",
+    "trialExpiredTooltip": "Yapay zeka özelliklerini etkinleştirmek için AI Royale PRO'ya abone olun",
+    "proBadge": "PRO",
+    "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zeka erişimine sahip"
   },
   "settings": {
     "title": "Hesap Ayarları",
