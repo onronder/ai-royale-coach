@@ -960,6 +960,7 @@
     "analytics": {
       "deckStats": "Deste İstatistikleri",
       "cardMastery": "Kart Ustalığı",
+      "predictions": "Tahminler",
       "achievements": "Başarılar"
     },
     "sync": {
@@ -1278,6 +1279,21 @@
       "manage": "Yapay Zeka Hesaplarını Yönet",
       "trialAccess": "Deneme Erişimi",
       "trialNote": "Deneme süresi boyunca tüm hesaplar yapay zeka erişimine sahip"
+    },
+    "chatRetention": {
+      "title": "Sohbet Geçmişi",
+      "description": "AI Koç konuşmalarınızın ne kadar süre saklanacağını kontrol edin",
+      "keepMessages": "Mesajları sakla",
+      "updated": "Saklama tercihi güncellendi",
+      "updateFailed": "Tercih güncellenemedi",
+      "foreverNote": "Sohbet geçmişiniz süresiz olarak saklanacak.",
+      "retentionNote": "{{days}} günden eski mesajlar otomatik silinecek.",
+      "options": {
+        "7": "7 gün",
+        "30": "30 gün",
+        "90": "90 gün",
+        "forever": "Süresiz sakla"
+      }
     }
   },
   "matchDetail": {

@@ -11,6 +11,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { ChatRetentionSettings } from "@/components/settings/ChatRetentionSettings";
 import { DataLoader } from "@/components/ui/data-loader";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -23,6 +24,7 @@ const Settings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAISelector, setShowAISelector] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
+  const [chatRetentionDays, setChatRetentionDays] = useState<number | null>(30);
 
   const { 
     hasAccess, 
@@ -42,6 +44,8 @@ const Settings = () => {
         navigate("/auth");
       } else {
         setUser(session.user);
+        // Fetch chat retention preference
+        fetchChatRetention(session.user.id);
       }
       setIsLoading(false);
     });
@@ -56,6 +60,18 @@ const Settings = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const fetchChatRetention = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('chat_retention_days')
+      .eq('id', userId)
+      .single();
+    
+    if (!error && data) {
+      setChatRetentionDays(data.chat_retention_days);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -338,6 +354,13 @@ const Settings = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Chat Retention Settings */}
+          <ChatRetentionSettings
+            userId={user.id}
+            currentRetention={chatRetentionDays}
+            onUpdate={() => fetchChatRetention(user.id)}
+          />
         </div>
       </main>
 

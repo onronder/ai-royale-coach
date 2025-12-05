@@ -960,6 +960,7 @@
     "analytics": {
       "deckStats": "Stats de Deck",
       "cardMastery": "Maîtrise des Cartes",
+      "predictions": "Prédictions",
       "achievements": "Succès"
     },
     "sync": {
@@ -1278,6 +1279,21 @@
       "manage": "Gérer les Comptes IA",
       "trialAccess": "Accès Essai",
       "trialNote": "Tous les comptes ont accès à l'IA pendant la période d'essai"
+    },
+    "chatRetention": {
+      "title": "Historique des Discussions",
+      "description": "Contrôlez la durée de conservation de vos conversations avec le Coach IA",
+      "keepMessages": "Conserver les messages",
+      "updated": "Préférence de rétention mise à jour",
+      "updateFailed": "Échec de la mise à jour",
+      "foreverNote": "Votre historique de discussion sera conservé indéfiniment.",
+      "retentionNote": "Les messages de plus de {{days}} jours seront automatiquement supprimés.",
+      "options": {
+        "7": "7 jours",
+        "30": "30 jours",
+        "90": "90 jours",
+        "forever": "Conserver toujours"
+      }
     }
   },
   "matchDetail": {
