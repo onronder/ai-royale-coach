@@ -1935,8 +1935,6 @@
       "trialHours": "{{hours}}h restantes",
       "upgrade": "Atualizar"
     },
-      "upgrade": "Melhorar"
-    },
     "previewTitle": "Prévia da Análise IA",
     "previewDescription": "Atualize para ver a análise completa",
     "seeFull": "Ver Análise Completa",
