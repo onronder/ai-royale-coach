@@ -1305,6 +1305,12 @@
         "90": "90 jours",
         "forever": "Conserver toujours"
       }
+    },
+    "preferences": {
+      "title": "Préférences",
+      "description": "Gérez vos préférences d'application",
+      "language": "Langue",
+      "languageDescription": "Choisissez votre langue préférée"
     }
   },
   "matchDetail": {

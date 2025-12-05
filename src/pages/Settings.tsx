@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft } from "lucide-react";
+import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft, Globe } from "lucide-react";
+import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -172,6 +173,28 @@ const Settings = () => {
                 <Badge variant="outline" className="border-gold/40">
                   {profiles.length} / 3
                 </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Language & Preferences */}
+          <Card variant="arena">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Globe className="h-5 w-5 text-primary" />
+                {t('settings.preferences.title')}
+              </CardTitle>
+              <CardDescription>{t('settings.preferences.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between py-2">
+                <div>
+                  <span className="text-sm font-medium">{t('settings.preferences.language')}</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {t('settings.preferences.languageDescription')}
+                  </p>
+                </div>
+                <LanguageSelector />
               </div>
             </CardContent>
           </Card>

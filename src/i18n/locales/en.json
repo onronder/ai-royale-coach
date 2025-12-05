@@ -1285,6 +1285,12 @@
         "90": "90 days",
         "forever": "Keep forever"
       }
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Manage your app preferences",
+      "language": "Language",
+      "languageDescription": "Choose your preferred language"
     }
   },
   "matchDetail": {
