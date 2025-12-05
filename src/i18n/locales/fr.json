@@ -1661,19 +1661,6 @@
       "bronze": "Bronze"
     }
   },
-  "cardMastery": {
-    "used": "Utilisé {{count}} fois",
-    "winRate": "Taux de Victoire",
-    "avgCrowns": "Couronnes Moy",
-    "hideDetails": "Masquer les Détails",
-    "showDetails": "Afficher les Détails",
-    "bestPartners": "Meilleurs Partenaires",
-    "strugglesAgainst": "Difficultés Contre",
-    "personalizedTips": "Conseils Personnalisés",
-    "generate": "Générer",
-    "generatingTips": "Génération des conseils...",
-    "clickGenerate": "Cliquez sur générer pour obtenir des conseils IA pour cette carte"
-  },
   "achievements": {
     "title": "Centre de Succès",
     "description": "Suivez votre parcours de maîtrise et débloquez des récompenses",

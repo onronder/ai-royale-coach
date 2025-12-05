@@ -1661,19 +1661,6 @@
       "bronze": "Bronze"
     }
   },
-  "cardMastery": {
-    "used": "Usado {{count}} vezes",
-    "winRate": "Taxa de Vitória",
-    "avgCrowns": "Coroas Méd",
-    "hideDetails": "Ocultar Detalhes",
-    "showDetails": "Mostrar Detalhes",
-    "bestPartners": "Melhores Parceiros",
-    "strugglesAgainst": "Dificuldade Contra",
-    "personalizedTips": "Dicas Personalizadas",
-    "generate": "Gerar",
-    "generatingTips": "Gerando dicas...",
-    "clickGenerate": "Clique em gerar para obter dicas de IA para esta carta"
-  },
   "achievements": {
     "title": "Centro de Conquistas",
     "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",

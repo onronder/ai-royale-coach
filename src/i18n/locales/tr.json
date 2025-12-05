@@ -1661,19 +1661,6 @@
       "bronze": "Bronz"
     }
   },
-  "cardMastery": {
-    "used": "{{count}} kez kullanıldı",
-    "winRate": "Kazanma Oranı",
-    "avgCrowns": "Ort Taçlar",
-    "hideDetails": "Detayları Gizle",
-    "showDetails": "Detayları Göster",
-    "bestPartners": "En İyi Ortaklar",
-    "strugglesAgainst": "Zorluk Çektiği",
-    "personalizedTips": "Kişiselleştirilmiş İpuçları",
-    "generate": "Oluştur",
-    "generatingTips": "İpuçları oluşturuluyor...",
-    "clickGenerate": "Bu kart için AI ipuçları almak için oluştur'a tıklayın"
-  },
   "achievements": {
     "title": "Başarı Merkezi",
     "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",

@@ -1661,19 +1661,6 @@
       "bronze": "Bronce"
     }
   },
-  "cardMastery": {
-    "used": "Usado {{count}} veces",
-    "winRate": "Tasa de Victoria",
-    "avgCrowns": "Coronas Prom",
-    "hideDetails": "Ocultar Detalles",
-    "showDetails": "Mostrar Detalles",
-    "bestPartners": "Mejores Compañeros",
-    "strugglesAgainst": "Dificultad Contra",
-    "personalizedTips": "Consejos Personalizados",
-    "generate": "Generar",
-    "generatingTips": "Generando consejos...",
-    "clickGenerate": "Haz clic en generar para obtener consejos de IA para esta carta"
-  },
   "achievements": {
     "title": "Centro de Logros",
     "description": "Rastrea tu viaje de maestría y desbloquea recompensas",
