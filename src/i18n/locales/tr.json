@@ -1877,6 +1877,13 @@
     "unlockPro": "AI Royale Pro Kilidi Aç",
     "proDescription": "Yapay zeka koçluğu ve gelişmiş analize sınırsız erişim elde edin.",
     "month": "ay",
+    "perAccount": "hesap",
+    "accounts": "{{count}} Hesap",
+    "accounts_plural": "{{count}} Hesap",
+    "popular": "En Popüler",
+    "includedFeatures": "Tüm planlara dahil",
+    "aiOnAccounts": "{{count}} hesapta AI özellikleri",
+    "subscribeTier": "{{price}}/ay için abone ol",
     "onePlayerOneAccount": "1 Oyuncu, 1 Hesap",
     "additionalAccountsInfo": "3 hesaba kadar ekleyin. Her ek hesap için $1,99/ay.",
     "aiNotEnabledTitle": "AI Etkin Değil",
@@ -1923,7 +1930,18 @@
     "previewTitle": "AI Analiz Önizlemesi",
     "previewDescription": "Tam analizi görmek için yükseltin",
     "seeFull": "Tam Analizi Gör",
-    "trialExpiredPreview": "Denemeniz sona erdi. Tam analizi görmek için abone olun."
+    "trialExpiredPreview": "Denemeniz sona erdi. Tam analizi görmek için abone olun.",
+    "aiSelector": {
+      "title": "AI Etkin Hesapları Seçin",
+      "description": "Hangi {{count}} hesabın AI özelliklerine erişeceğini seçin.",
+      "selected": "Seçilen hesaplar",
+      "maxReached": "Mevcut planınızla yalnızca {{count}} hesap seçebilirsiniz",
+      "selectAtLeastOne": "Lütfen en az bir hesap seçin",
+      "saved": "AI erişimi başarıyla güncellendi!",
+      "error": "AI erişimi güncellenemedi. Lütfen tekrar deneyin.",
+      "confirm": "Seçimi Onayla",
+      "noProfiles": "Bağlı oyuncu hesabı yok. Önce bir oyuncu etiketi ekleyin."
+    }
   },
   "onboarding": {
     "stepOf": "Adım {{current}} / {{total}}",

@@ -1877,6 +1877,13 @@
     "unlockPro": "Desbloquear AI Royale Pro",
     "proDescription": "Obtenha acesso ilimitado ao coaching de IA e análise avançada.",
     "month": "mês",
+    "perAccount": "conta",
+    "accounts": "{{count}} Conta",
+    "accounts_plural": "{{count}} Contas",
+    "popular": "Mais Popular",
+    "includedFeatures": "Incluído em todos os planos",
+    "aiOnAccounts": "Recursos de IA em {{count}} conta(s)",
+    "subscribeTier": "Assinar por {{price}}/mês",
     "onePlayerOneAccount": "1 Jogador, 1 Conta",
     "additionalAccountsInfo": "Adicione até 3 contas. $1,99/mês por conta adicional.",
     "aiNotEnabledTitle": "IA Não Habilitada",
@@ -1923,7 +1930,18 @@
     "previewTitle": "Prévia da Análise IA",
     "previewDescription": "Atualize para ver a análise completa",
     "seeFull": "Ver Análise Completa",
-    "trialExpiredPreview": "Seu teste terminou. Assine para ver a análise completa."
+    "trialExpiredPreview": "Seu teste terminou. Assine para ver a análise completa.",
+    "aiSelector": {
+      "title": "Selecionar Contas com IA Habilitada",
+      "description": "Escolha quais {{count}} conta(s) terão acesso aos recursos de IA.",
+      "selected": "Contas selecionadas",
+      "maxReached": "Você só pode selecionar {{count}} conta(s) com seu plano atual",
+      "selectAtLeastOne": "Por favor, selecione pelo menos uma conta",
+      "saved": "Acesso de IA atualizado com sucesso!",
+      "error": "Falha ao atualizar o acesso de IA. Por favor, tente novamente.",
+      "confirm": "Confirmar Seleção",
+      "noProfiles": "Nenhuma conta de jogador vinculada. Adicione uma tag de jogador primeiro."
+    }
   },
   "onboarding": {
     "stepOf": "Passo {{current}} de {{total}}",
