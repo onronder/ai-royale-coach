@@ -15,6 +15,7 @@ import { CounterDeckModal } from "@/components/deck/CounterDeckModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSubscription } from "@/hooks/useSubscription";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 interface MatchDetailViewProps {
   battle: ClashRoyaleBattle | null;
@@ -538,6 +539,20 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                       </ul>
                     </div>
                   )}
+                  {/* Feedback for match analysis */}
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/30">
+                    <span className="text-xs text-muted-foreground">{t('feedback.rateResponse')}</span>
+                    <FeedbackButton
+                      playerTag={normalizedPlayerTag}
+                      feedbackType="match_analysis"
+                      referenceId={battle.battleTime}
+                      context={{ 
+                        isWin, 
+                        gameMode: battle.gameMode.name,
+                        trophyChange 
+                      }}
+                    />
+                  </div>
                 </div>
               ) : null}
             </div>

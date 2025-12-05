@@ -18,6 +18,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { usePlayerAIAccess } from "@/hooks/usePlayerAIAccess";
 import { AIFeatureGate } from "@/components/subscription/AIFeatureGate";
 import { useNavigate } from "react-router-dom";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 const MESSAGES_PER_PAGE = 50;
 
@@ -798,15 +799,29 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                               <Crown className="h-4 w-4 text-gold" />
                             </div>
                           )}
-                          <div
-                            className={cn(
-                              "max-w-[80%] rounded-lg px-4 py-3",
-                              msg.role === "user"
-                                ? "bg-gradient-primary text-primary-foreground shadow-glow"
-                                : "bg-card border border-border"
+                          <div className="flex flex-col gap-1 max-w-[80%]">
+                            <div
+                              className={cn(
+                                "rounded-lg px-4 py-3",
+                                msg.role === "user"
+                                  ? "bg-gradient-primary text-primary-foreground shadow-glow"
+                                  : "bg-card border border-border"
+                              )}
+                            >
+                              <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                            </div>
+                            {/* Feedback buttons for assistant messages */}
+                            {msg.role === "assistant" && !msg.id.startsWith("temp-") && (
+                              <div className="flex items-center gap-1 pl-1">
+                                <FeedbackButton
+                                  playerTag={playerTag}
+                                  feedbackType="coach_response"
+                                  referenceId={msg.id}
+                                  context={{ messageContent: msg.content.slice(0, 200) }}
+                                  size="sm"
+                                />
+                              </div>
                             )}
-                          >
-                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                           </div>
                           {msg.role === "user" && (
                             <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">

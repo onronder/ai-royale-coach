@@ -1,4 +1,24 @@
 {
+  "feedback": {
+    "thankYou": "Geri bildiriminiz için teşekkürler!",
+    "thankYouDescription": "Geri bildiriminiz AI önerilerini geliştirmemize yardımcı oluyor.",
+    "submitError": "Geri bildirim gönderilemedi. Lütfen tekrar deneyin.",
+    "rateResponse": "Bu yanıtı değerlendirin",
+    "dialogDescription": "Bu AI yanıtını değerlendirerek bize yardımcı olun.",
+    "howHelpful": "Bu ne kadar yardımcı oldu?",
+    "commentOptional": "Ek yorumlar (isteğe bağlı)",
+    "commentPlaceholder": "Deneyiminiz hakkında daha fazla bilgi verin...",
+    "submit": "Geri Bildirim Gönder",
+    "ratings": {
+      "poor": "Kötü",
+      "fair": "Orta",
+      "good": "İyi",
+      "great": "Çok İyi",
+      "excellent": "Mükemmel"
+    },
+    "helpful": "Yardımcı",
+    "notHelpful": "Yardımcı değil"
+  },
   "nav": {
     "signIn": "Giriş Yap",
     "getStarted": "Başla",

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { DeckAnalysisPreview } from "@/components/subscription/AIPreviewContent";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -225,6 +226,19 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
                 </li>
               ))}
             </ul>
+            {/* Feedback for deck analysis */}
+            <div className="flex items-center justify-end gap-2 pt-3 mt-3 border-t border-border/30">
+              <span className="text-xs text-muted-foreground">{t('feedback.rateResponse')}</span>
+              <FeedbackButton
+                playerTag={player.tag}
+                feedbackType="deck_analysis"
+                referenceId={player.tag}
+                context={{ 
+                  archetype: analysis.archetype.name,
+                  deckCards: player.currentDeck?.map(c => c.name) || []
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
       )}
