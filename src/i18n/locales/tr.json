@@ -1305,6 +1305,12 @@
         "90": "90 gün",
         "forever": "Süresiz sakla"
       }
+    },
+    "preferences": {
+      "title": "Tercihler",
+      "description": "Uygulama tercihlerinizi yönetin",
+      "language": "Dil",
+      "languageDescription": "Tercih ettiğiniz dili seçin"
     }
   },
   "matchDetail": {

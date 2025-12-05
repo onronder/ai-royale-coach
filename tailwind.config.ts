@@ -209,6 +209,16 @@ export default {
           "0%, 100%": { opacity: "0", transform: "scale(0)" },
           "50%": { opacity: "1", transform: "scale(1)" },
         },
+        "active-card-glow": {
+          "0%, 100%": { 
+            boxShadow: "0 0 15px hsl(190 100% 50% / 0.2), inset 0 1px 0 hsl(190 100% 50% / 0.1)",
+            borderColor: "hsl(190 100% 50% / 0.4)"
+          },
+          "50%": { 
+            boxShadow: "0 0 25px hsl(190 100% 50% / 0.35), inset 0 1px 0 hsl(190 100% 50% / 0.15)",
+            borderColor: "hsl(190 100% 50% / 0.6)"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -232,6 +242,7 @@ export default {
         "drift-right": "drift-right 8s ease-in-out infinite",
         "ember-rise": "ember-rise 4s ease-out infinite",
         "sparkle": "sparkle 2s ease-in-out infinite",
+        "active-card-glow": "active-card-glow 2s ease-in-out infinite",
       },
     },
   },
