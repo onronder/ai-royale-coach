@@ -820,20 +820,25 @@
     "privacyPolicy": "Privacy Policy",
     "and": "and",
     "lastUpdated": "Last updated",
+    "supercellDisclaimer": "This content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it.",
     "terms": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
       "introduction": "Welcome to AI Royale. By using our service, you agree to these terms. Please read them carefully.",
+      "affiliationDisclaimer": {
+        "title": "Third-Party Trademarks & Affiliation",
+        "content": "AI Royale is NOT affiliated with, endorsed, sponsored, or specifically approved by Supercell Oy.\n\nClash Royale, the Clash Royale logo, Supercell, and all related trademarks, service marks, and trade names are the exclusive property of Supercell Oy.\n\nThis content is not affiliated with, endorsed, sponsored, or specifically approved by Supercell and Supercell is not responsible for it.\n\nFor more information, see Supercell's Fan Content Policy: www.supercell.com/fan-content-policy"
+      },
       "serviceDescription": {
         "title": "Service Description",
-        "content": "AI Royale is an AI-powered analytics tool for Clash Royale. We provide deck analysis, battle insights, and strategic recommendations based on game data obtained through the official Clash Royale API."
+        "content": "AI Royale is an independent, third-party AI-powered analytics tool for Clash Royale players. We provide deck analysis, battle insights, and strategic recommendations.\n\nAll game data is obtained EXCLUSIVELY through Supercell's official public Clash Royale API. We do NOT access any internal Supercell systems, player accounts, or private data beyond what is publicly available through the official API.\n\nAI Royale is a fan-made tool created to help players improve their gameplay experience."
       },
       "dataProcessing": {
         "title": "Data Processing",
         "content": "AI Royale exclusively processes game-related data obtained through the official Clash Royale API. This includes: player statistics, battle history, deck compositions, card levels, and trophy counts.\n\nWe do NOT access, process, or store any sensitive personal data. We only use your email address for authentication purposes."
       },
       "aiDisclaimer": {
-        "title": "AI Disclaimer",
-        "content": "All analyses, predictions, and recommendations provided by AI Royale are for informational purposes only.\n\nAI-generated outputs are NOT guaranteed to be 100% accurate. The AI provides suggestions based on patterns and game data, but actual game outcomes depend on many factors including player skill, timing, and opponent behavior.\n\nYou should use AI recommendations as guidance, not as guaranteed strategies."
+        "title": "AI Recommendations Disclaimer",
+        "content": "All analyses, predictions, and recommendations provided by AI Royale are for INFORMATIONAL AND ENTERTAINMENT PURPOSES ONLY.\n\nIMPORTANT: AI-generated outputs are NOT guaranteed to be accurate. The AI provides suggestions based on patterns and publicly available game data, but actual game outcomes depend on many factors including player skill, timing, opponent behavior, and in-game circumstances.\n\nYou acknowledge that:\n• AI recommendations are suggestions only, not guaranteed winning strategies\n• Following AI advice does not guarantee improved game performance\n• Game results are influenced by factors beyond AI analysis\n• You use AI recommendations at your own discretion and risk\n\nAI Royale is not responsible for any in-game decisions, trophy changes, or outcomes resulting from following AI recommendations."
       },
       "liability": {
         "title": "Limitation of Liability",
