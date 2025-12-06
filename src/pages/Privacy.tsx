@@ -2,12 +2,18 @@ import { useTranslation } from "react-i18next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Database, Eye, Clock, Users, Mail, Globe, Scale } from "lucide-react";
+import { ShieldCheck, Database, Eye, Clock, Users, Mail, Globe, Scale, Building2 } from "lucide-react";
 
 const Privacy = () => {
   const { t } = useTranslation();
 
   const sections = [
+    {
+      icon: Building2,
+      title: t("legal.privacy.affiliationDisclaimer.title"),
+      content: t("legal.privacy.affiliationDisclaimer.content"),
+      highlight: true,
+    },
     {
       icon: ShieldCheck,
       title: t("legal.privacy.noSensitiveData.title"),
@@ -63,7 +69,7 @@ const Privacy = () => {
             {t("legal.privacyPolicy")}
           </h1>
           <p className="text-muted-foreground">
-            {t("legal.lastUpdated")}: December 3, 2025
+            {t("legal.lastUpdated")}: December 6, 2025
           </p>
           <p className="text-muted-foreground text-sm mt-2">
             {t("legal.privacy.companyName")}
@@ -80,11 +86,26 @@ const Privacy = () => {
 
         <div className="space-y-6">
           {sections.map((section, index) => (
-            <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm">
+            <Card 
+              key={index} 
+              className={`border-border/50 backdrop-blur-sm ${
+                section.highlight 
+                  ? 'bg-destructive/5 border-destructive/30' 
+                  : 'bg-card/50'
+              }`}
+            >
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-xl">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <section.icon className="h-5 w-5 text-primary" />
+                  <div className={`p-2 rounded-lg ${
+                    section.highlight 
+                      ? 'bg-destructive/10' 
+                      : 'bg-primary/10'
+                  }`}>
+                    <section.icon className={`h-5 w-5 ${
+                      section.highlight 
+                        ? 'text-destructive' 
+                        : 'text-primary'
+                    }`} />
                   </div>
                   {section.title}
                 </CardTitle>
