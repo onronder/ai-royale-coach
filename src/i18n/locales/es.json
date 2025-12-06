@@ -857,6 +857,10 @@
     "privacy": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
       "introduction": "Esta Política de Privacidad explica cómo AI Royale maneja tus datos. Estamos comprometidos a proteger tu privacidad y ser transparentes sobre nuestras prácticas de datos.",
+      "affiliationDisclaimer": {
+        "title": "Marcas de Terceros y Afiliación",
+        "content": "AI Royale NO está afiliado, respaldado, patrocinado ni específicamente aprobado por Supercell Oy. Clash Royale y Supercell son marcas comerciales de Supercell Oy.\n\nTodos los datos del juego procesados por AI Royale se obtienen EXCLUSIVAMENTE a través de la API pública oficial de Clash Royale de Supercell. No accedemos a ningún sistema interno de Supercell ni a datos privados de jugadores.\n\nPara más información, consulta la Política de Contenido de Fans de Supercell: www.supercell.com/fan-content-policy"
+      },
       "noSensitiveData": {
         "title": "Datos que NO Recopilamos",
         "content": "• NO recopilamos ni procesamos datos personales sensibles\n• NO accedemos a la información personal, contactos o ubicación de tu dispositivo\n• NO almacenamos detalles de tarjetas de pago (los pagos son manejados por procesadores de terceros)\n• NO recopilamos ningún dato más allá de lo necesario para el servicio\n• NO vendemos, compartimos ni monetizamos tus datos de ninguna manera"
