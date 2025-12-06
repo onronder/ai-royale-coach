@@ -821,20 +821,25 @@
     "privacyPolicy": "Politique de Confidentialité",
     "and": "et",
     "lastUpdated": "Dernière mise à jour",
+    "supercellDisclaimer": "Ce contenu n'est pas affilié, approuvé, sponsorisé ou spécifiquement approuvé par Supercell et Supercell n'en est pas responsable.",
     "terms": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
       "introduction": "Bienvenue sur AI Royale. En utilisant notre service, vous acceptez ces conditions. Veuillez les lire attentivement.",
+      "affiliationDisclaimer": {
+        "title": "Marques Tierces et Affiliation",
+        "content": "AI Royale N'EST PAS affilié, approuvé, sponsorisé ou spécifiquement approuvé par Supercell Oy.\n\nClash Royale, le logo Clash Royale, Supercell et toutes les marques commerciales, marques de service et noms commerciaux associés sont la propriété exclusive de Supercell Oy.\n\nCe contenu n'est pas affilié, approuvé, sponsorisé ou spécifiquement approuvé par Supercell et Supercell n'en est pas responsable.\n\nPour plus d'informations, consultez la Politique de Contenu des Fans de Supercell : www.supercell.com/fan-content-policy"
+      },
       "serviceDescription": {
         "title": "Description du Service",
-        "content": "AI Royale est un outil d'analyse alimenté par l'IA pour Clash Royale. Nous fournissons des analyses de decks, des informations sur les batailles et des recommandations stratégiques basées sur les données du jeu obtenues via l'API officielle de Clash Royale."
+        "content": "AI Royale est un outil d'analyse indépendant alimenté par l'IA pour les joueurs de Clash Royale. Nous fournissons des analyses de decks, des informations sur les batailles et des recommandations stratégiques.\n\nToutes les données de jeu sont obtenues EXCLUSIVEMENT via l'API publique officielle de Clash Royale de Supercell. Nous n'accédons à AUCUN système interne de Supercell, comptes de joueurs ou données privées au-delà de ce qui est disponible publiquement via l'API officielle.\n\nAI Royale est un outil créé par des fans pour aider les joueurs à améliorer leur expérience de jeu."
       },
       "dataProcessing": {
         "title": "Traitement des Données",
         "content": "AI Royale traite exclusivement les données liées au jeu obtenues via l'API officielle de Clash Royale. Cela comprend : les statistiques des joueurs, l'historique des batailles, les compositions de decks, les niveaux de cartes et le nombre de trophées.\n\nNous n'accédons PAS, ne traitons PAS et ne stockons PAS de données personnelles sensibles. Nous n'utilisons votre adresse email qu'à des fins d'authentification."
       },
       "aiDisclaimer": {
-        "title": "Avertissement sur l'IA",
-        "content": "Toutes les analyses, prédictions et recommandations fournies par AI Royale sont à titre informatif uniquement.\n\nLes résultats générés par l'IA ne sont PAS garantis comme étant 100% précis. L'IA fournit des suggestions basées sur des modèles et des données de jeu, mais les résultats réels dépendent de nombreux facteurs, notamment les compétences du joueur, le timing et le comportement de l'adversaire.\n\nVous devez utiliser les recommandations de l'IA comme guide, pas comme des stratégies garanties."
+        "title": "Avertissement sur les Recommandations IA",
+        "content": "Toutes les analyses, prédictions et recommandations fournies par AI Royale sont À TITRE INFORMATIF ET DE DIVERTISSEMENT UNIQUEMENT.\n\nIMPORTANT : Les résultats générés par l'IA ne sont PAS garantis comme étant précis. L'IA fournit des suggestions basées sur des modèles et des données de jeu publiquement disponibles, mais les résultats réels dépendent de nombreux facteurs, notamment les compétences du joueur, le timing, le comportement de l'adversaire et les circonstances en jeu.\n\nVous reconnaissez que :\n• Les recommandations IA sont uniquement des suggestions, pas des stratégies gagnantes garanties\n• Suivre les conseils IA ne garantit pas une amélioration des performances en jeu\n• Les résultats de jeu sont influencés par des facteurs au-delà de l'analyse IA\n• Vous utilisez les recommandations IA à votre propre discrétion et risque\n\nAI Royale n'est pas responsable des décisions en jeu, changements de trophées ou résultats découlant du suivi des recommandations IA."
       },
       "liability": {
         "title": "Limitation de Responsabilité",

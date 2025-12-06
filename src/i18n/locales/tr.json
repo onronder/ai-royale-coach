@@ -821,20 +821,25 @@
     "privacyPolicy": "Gizlilik Politikası",
     "and": "ve",
     "lastUpdated": "Son güncelleme",
+    "supercellDisclaimer": "Bu içerik Supercell ile bağlantılı değildir, onaylanmamış, desteklenmemiş veya özellikle onaylanmamıştır ve Supercell bundan sorumlu değildir.",
     "terms": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
       "introduction": "AI Royale'e hoş geldiniz. Hizmetimizi kullanarak bu koşulları kabul etmiş olursunuz. Lütfen dikkatlice okuyunuz.",
+      "affiliationDisclaimer": {
+        "title": "Üçüncü Taraf Markaları ve Bağlantı",
+        "content": "AI Royale, Supercell Oy ile bağlantılı değildir, onaylanmamış, desteklenmemiş veya özellikle onaylanmamıştır.\n\nClash Royale, Clash Royale logosu, Supercell ve ilgili tüm ticari markalar, hizmet markaları ve ticari isimler Supercell Oy'un münhasır mülkiyetindedir.\n\nBu içerik Supercell ile bağlantılı değildir, onaylanmamış, desteklenmemiş veya özellikle onaylanmamıştır ve Supercell bundan sorumlu değildir.\n\nDaha fazla bilgi için Supercell'in Fan İçeriği Politikasına bakın: www.supercell.com/fan-content-policy"
+      },
       "serviceDescription": {
         "title": "Hizmet Açıklaması",
-        "content": "AI Royale, Clash Royale için yapay zeka destekli bir analiz aracıdır. Resmi Clash Royale API'si üzerinden elde edilen oyun verilerine dayalı olarak deste analizi, savaş içgörüleri ve stratejik öneriler sunuyoruz."
+        "content": "AI Royale, Clash Royale oyuncuları için bağımsız, üçüncü taraf yapay zeka destekli bir analiz aracıdır. Deste analizi, savaş içgörüleri ve stratejik öneriler sunuyoruz.\n\nTüm oyun verileri YALNIZCA Supercell'in resmi halka açık Clash Royale API'si aracılığıyla elde edilir. Resmi API aracılığıyla kamuya açık olanın ötesinde hiçbir dahili Supercell sistemine, oyuncu hesabına veya özel veriye ERİŞMİYORUZ.\n\nAI Royale, oyuncuların oyun deneyimlerini geliştirmelerine yardımcı olmak için oluşturulmuş bir hayran yapımı araçtır."
       },
       "dataProcessing": {
         "title": "Veri İşleme",
         "content": "AI Royale, yalnızca resmi Clash Royale API'si aracılığıyla elde edilen oyunla ilgili verileri işler. Bunlar şunları içerir: oyuncu istatistikleri, savaş geçmişi, deste bileşimleri, kart seviyeleri ve kupa sayıları.\n\nHassas kişisel verileri erişmiyor, işlemiyor veya saklamıyoruz. E-posta adresinizi yalnızca kimlik doğrulama amacıyla kullanıyoruz."
       },
       "aiDisclaimer": {
-        "title": "Yapay Zeka Uyarısı",
-        "content": "AI Royale tarafından sağlanan tüm analizler, tahminler ve öneriler yalnızca bilgilendirme amaçlıdır.\n\nYapay zeka tarafından üretilen çıktıların %100 doğru olduğu garanti edilmez. Yapay zeka, kalıplara ve oyun verilerine dayalı öneriler sunar, ancak gerçek oyun sonuçları oyuncu becerisi, zamanlama ve rakip davranışı dahil birçok faktöre bağlıdır.\n\nYapay zeka önerilerini garantili stratejiler olarak değil, rehber olarak kullanmalısınız."
+        "title": "Yapay Zeka Önerileri Uyarısı",
+        "content": "AI Royale tarafından sağlanan tüm analizler, tahminler ve öneriler YALNIZCA BİLGİLENDİRME VE EĞLENCE AMAÇLIDIR.\n\nÖNEMLİ: Yapay zeka tarafından üretilen çıktıların doğru olduğu garanti edilmez. Yapay zeka, kalıplara ve kamuya açık oyun verilerine dayalı öneriler sunar, ancak gerçek oyun sonuçları oyuncu becerisi, zamanlama, rakip davranışı ve oyun içi koşullar dahil birçok faktöre bağlıdır.\n\nŞunları kabul ediyorsunuz:\n• Yapay zeka önerileri yalnızca önerilerdir, garantili kazanma stratejileri değildir\n• Yapay zeka tavsiyelerini takip etmek gelişmiş oyun performansını garanti etmez\n• Oyun sonuçları yapay zeka analizinin ötesindeki faktörlerden etkilenir\n• Yapay zeka önerilerini kendi takdirinize ve riskinize göre kullanırsınız\n\nAI Royale, yapay zeka önerilerini takip etmekten kaynaklanan hiçbir oyun içi karar, kupa değişikliği veya sonuçtan sorumlu değildir."
       },
       "liability": {
         "title": "Sorumluluk Sınırlaması",

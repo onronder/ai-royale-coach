@@ -821,20 +821,25 @@
     "privacyPolicy": "Política de Privacidade",
     "and": "e",
     "lastUpdated": "Última atualização",
+    "supercellDisclaimer": "Este conteúdo não é afiliado, endossado, patrocinado ou especificamente aprovado pela Supercell e a Supercell não é responsável por ele.",
     "terms": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
       "introduction": "Bem-vindo ao AI Royale. Ao usar nosso serviço, você concorda com estes termos. Por favor, leia-os cuidadosamente.",
+      "affiliationDisclaimer": {
+        "title": "Marcas de Terceiros e Afiliação",
+        "content": "AI Royale NÃO é afiliado, endossado, patrocinado ou especificamente aprovado pela Supercell Oy.\n\nClash Royale, o logotipo do Clash Royale, Supercell e todas as marcas comerciais, marcas de serviço e nomes comerciais relacionados são propriedade exclusiva da Supercell Oy.\n\nEste conteúdo não é afiliado, endossado, patrocinado ou especificamente aprovado pela Supercell e a Supercell não é responsável por ele.\n\nPara mais informações, consulte a Política de Conteúdo de Fãs da Supercell: www.supercell.com/fan-content-policy"
+      },
       "serviceDescription": {
         "title": "Descrição do Serviço",
-        "content": "AI Royale é uma ferramenta de análise com IA para Clash Royale. Fornecemos análise de decks, insights de batalhas e recomendações estratégicas baseadas em dados do jogo obtidos através da API oficial do Clash Royale."
+        "content": "AI Royale é uma ferramenta de análise independente com IA para jogadores de Clash Royale. Fornecemos análise de decks, insights de batalhas e recomendações estratégicas.\n\nTodos os dados do jogo são obtidos EXCLUSIVAMENTE através da API pública oficial do Clash Royale da Supercell. NÃO acessamos nenhum sistema interno da Supercell, contas de jogadores ou dados privados além do que está disponível publicamente através da API oficial.\n\nAI Royale é uma ferramenta feita por fãs para ajudar jogadores a melhorar sua experiência de jogo."
       },
       "dataProcessing": {
         "title": "Processamento de Dados",
         "content": "AI Royale processa exclusivamente dados relacionados ao jogo obtidos através da API oficial do Clash Royale. Isso inclui: estatísticas do jogador, histórico de batalhas, composições de decks, níveis de cartas e contagem de troféus.\n\nNÃO acessamos, processamos ou armazenamos nenhum dado pessoal sensível. Usamos seu endereço de email apenas para fins de autenticação."
       },
       "aiDisclaimer": {
-        "title": "Aviso sobre IA",
-        "content": "Todas as análises, previsões e recomendações fornecidas pelo AI Royale são apenas para fins informativos.\n\nAs saídas geradas por IA NÃO são garantidas como 100% precisas. A IA fornece sugestões baseadas em padrões e dados do jogo, mas os resultados reais do jogo dependem de muitos fatores, incluindo habilidade do jogador, timing e comportamento do oponente.\n\nVocê deve usar as recomendações da IA como orientação, não como estratégias garantidas."
+        "title": "Aviso sobre Recomendações de IA",
+        "content": "Todas as análises, previsões e recomendações fornecidas pelo AI Royale são APENAS PARA FINS INFORMATIVOS E DE ENTRETENIMENTO.\n\nIMPORTANTE: As saídas geradas por IA NÃO são garantidas como precisas. A IA fornece sugestões baseadas em padrões e dados do jogo disponíveis publicamente, mas os resultados reais do jogo dependem de muitos fatores, incluindo habilidade do jogador, timing, comportamento do oponente e circunstâncias do jogo.\n\nVocê reconhece que:\n• Recomendações de IA são apenas sugestões, não estratégias vencedoras garantidas\n• Seguir conselhos de IA não garante melhor desempenho no jogo\n• Resultados do jogo são influenciados por fatores além da análise de IA\n• Você usa as recomendações de IA por sua própria conta e risco\n\nAI Royale não é responsável por nenhuma decisão no jogo, mudanças de troféus ou resultados decorrentes de seguir recomendações de IA."
       },
       "liability": {
         "title": "Limitação de Responsabilidade",
