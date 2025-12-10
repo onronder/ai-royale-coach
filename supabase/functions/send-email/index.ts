@@ -4,6 +4,7 @@ import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
+import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
@@ -21,6 +22,7 @@ interface EmailRequest {
     accountSlots: number
     renewalDate?: string
   }
+  resetUrl?: string
 }
 
 Deno.serve(async (req) => {
@@ -36,7 +38,7 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en', subscriptionData } = body
+    const { email, type, name, language = 'en', subscriptionData, resetUrl } = body
 
     if (!email || !type) {
       return new Response(
@@ -109,8 +111,20 @@ Deno.serve(async (req) => {
         break
 
       case 'password_reset':
+        if (!resetUrl) {
+          return new Response(
+            JSON.stringify({ error: 'Missing required field: resetUrl for password_reset' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          )
+        }
         subject = getPasswordResetSubject(language)
-        html = `<p>Password reset functionality coming soon.</p>`
+        html = await renderAsync(
+          React.createElement(PasswordResetEmail, {
+            language,
+            appUrl,
+            resetUrl,
+          })
+        )
         break
 
       case 'account_update':
