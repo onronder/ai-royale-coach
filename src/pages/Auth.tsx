@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, Crown, ArrowLeft, Sparkles, Shield } from "lucide-react";
+import { Loader2, Crown, ArrowLeft, Sparkles, Shield, Mail, KeyRound, CheckCircle } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 
 const TERMS_VERSION = "1.0";
@@ -29,8 +29,12 @@ const Auth = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(mode === 'signup');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [isResetPassword, setIsResetPassword] = useState(mode === 'reset-password');
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   
   // Google OAuth terms modal state
@@ -41,6 +45,12 @@ const Auth = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      
+      // If we're in reset-password mode, don't redirect even if there's a session
+      if (isResetPassword) {
+        return;
+      }
+      
       if (session) {
         // Check if terms are accepted for OAuth users
         const { data: profile } = await supabase
@@ -62,7 +72,13 @@ const Auth = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      // Handle password recovery event
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsResetPassword(true);
+        return;
+      }
+      
+      if (event === 'SIGNED_IN' && session && !isResetPassword) {
         // Check terms acceptance
         const { data: profile } = await supabase
           .from('profiles')
@@ -80,7 +96,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, isResetPassword]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +155,67 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email) {
+      toast.error(t("auth.enterEmail"));
+      return;
+    }
+    
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+      });
+      
+      if (error) throw error;
+      
+      setResetEmailSent(true);
+      toast.success(t("auth.resetEmailSent"));
+    } catch (error: any) {
+      toast.error(error.message || t("common.error"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast.error(t("auth.passwordsDoNotMatch"));
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error(t("auth.passwordTooShort"));
+      return;
+    }
+    
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password,
+      });
+      
+      if (error) throw error;
+      
+      toast.success(t("auth.passwordResetSuccess"));
+      
+      // Navigate to select-player after successful reset
+      setTimeout(() => {
+        navigate("/select-player");
+      }, 1500);
+    } catch (error: any) {
+      toast.error(error.message || t("common.error"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
@@ -189,6 +266,244 @@ const Auth = () => {
     setOauthTermsAccepted(false);
     toast.error(t("auth.termsRequired"));
   };
+
+  const handleBackToSignIn = () => {
+    setIsForgotPassword(false);
+    setResetEmailSent(false);
+    setEmail("");
+  };
+
+  // Render Reset Password Form (when user clicks email link)
+  if (isResetPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
+        {/* Floating Particles */}
+        <div className="floating-particles">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* Decorative Orbs */}
+        <div className="absolute top-20 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-royal/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-3xl" />
+
+        <div className="w-full max-w-md space-y-6 animate-arena-entrance relative z-10">
+          {/* Logo with Golden Glow */}
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-gold shadow-gold relative golden-shine">
+              <KeyRound className="h-10 w-10 text-gold-foreground" />
+              <div className="absolute -inset-1 bg-gold/20 rounded-2xl blur-lg -z-10" />
+            </div>
+            <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYALE</h1>
+          </div>
+
+          <Card variant="arena" className="golden-shine">
+            <CardHeader className="space-y-2 text-center">
+              <div className="flex items-center justify-center gap-2">
+                <KeyRound className="h-5 w-5 text-gold" />
+                <CardTitle className="text-2xl">
+                  {t("auth.createNewPassword")}
+                </CardTitle>
+              </div>
+              <CardDescription>
+                {t("auth.createNewPasswordDesc")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <form onSubmit={handleResetPassword} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password" className="text-sm font-medium">{t("auth.newPassword")}</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                    className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("auth.minCharacters")}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password" className="text-sm font-medium">{t("auth.confirmPassword")}</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                    className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  variant="golden"
+                  size="lg"
+                  className="w-full" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("auth.pleaseWait")}
+                    </>
+                  ) : (
+                    <>
+                      <KeyRound className="mr-2 h-4 w-4" />
+                      {t("auth.setNewPassword")}
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Render Forgot Password Form
+  if (isForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
+        {/* Floating Particles */}
+        <div className="floating-particles">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        {/* Decorative Orbs */}
+        <div className="absolute top-20 left-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-royal/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gold/5 rounded-full blur-3xl" />
+
+        <div className="w-full max-w-md space-y-6 animate-arena-entrance relative z-10">
+          {/* Back Link */}
+          <button 
+            onClick={handleBackToSignIn}
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-gold transition-colors group"
+          >
+            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm">{t("auth.backToSignIn")}</span>
+          </button>
+
+          {/* Logo with Golden Glow */}
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-gold shadow-gold relative golden-shine">
+              {resetEmailSent ? (
+                <CheckCircle className="h-10 w-10 text-gold-foreground" />
+              ) : (
+                <Mail className="h-10 w-10 text-gold-foreground" />
+              )}
+              <div className="absolute -inset-1 bg-gold/20 rounded-2xl blur-lg -z-10" />
+            </div>
+            <h1 className="text-4xl font-bold font-rajdhani text-embossed">AI ROYALE</h1>
+          </div>
+
+          <Card variant="arena" className="golden-shine">
+            <CardHeader className="space-y-2 text-center">
+              <div className="flex items-center justify-center gap-2">
+                {resetEmailSent ? (
+                  <CheckCircle className="h-5 w-5 text-emerald" />
+                ) : (
+                  <Mail className="h-5 w-5 text-primary" />
+                )}
+                <CardTitle className="text-2xl">
+                  {resetEmailSent ? t("auth.resetEmailSent") : t("auth.resetPassword")}
+                </CardTitle>
+              </div>
+              <CardDescription>
+                {resetEmailSent ? t("auth.resetEmailSentDesc") : t("auth.resetPasswordDesc")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              {resetEmailSent ? (
+                <div className="space-y-4">
+                  <div className="p-4 rounded-lg bg-emerald/10 border border-emerald/30 text-center">
+                    <p className="text-sm text-foreground">
+                      {t("auth.checkSpam")}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    size="lg"
+                    className="w-full" 
+                    onClick={handleBackToSignIn}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    {t("auth.backToSignIn")}
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="reset-email" className="text-sm font-medium">{t("auth.email")}</Label>
+                    <Input
+                      id="reset-email"
+                      type="email"
+                      placeholder={t("auth.emailPlaceholder")}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
+                    />
+                  </div>
+                  
+                  <Button 
+                    type="submit" 
+                    variant="golden"
+                    size="lg"
+                    className="w-full" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("auth.pleaseWait")}
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        {t("auth.sendResetLink")}
+                      </>
+                    )}
+                  </Button>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Trust badges */}
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Shield className="h-3 w-3" />
+              {t("auth.secure")}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+            <span>{t("auth.linkExpires")}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
@@ -289,8 +604,19 @@ const Auth = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">{t("auth.password")}</Label>
-              <Input
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-sm font-medium">{t("auth.password")}</Label>
+                  {!isSignUp && (
+                    <button
+                      type="button"
+                      onClick={() => setIsForgotPassword(true)}
+                      className="text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
+                    >
+                      {t("auth.forgotPassword")}
+                    </button>
+                  )}
+                </div>
+                <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
