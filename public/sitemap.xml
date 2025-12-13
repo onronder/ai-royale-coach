@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://ai-royale.com/</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ai-royale.com/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://ai-royale.com/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://ai-royale.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://ai-royale.com/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://ai-royale.com/"/>
+  </url>
+  
+  <!-- Demo Page -->
+  <url>
+    <loc>https://ai-royale.com/demo</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Help Page -->
+  <url>
+    <loc>https://ai-royale.com/help</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Auth Page -->
+  <url>
+    <loc>https://ai-royale.com/auth</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://ai-royale.com/terms</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://ai-royale.com/privacy</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>
