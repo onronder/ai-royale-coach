@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useWinRate } from "@/hooks/useWinRate";
@@ -121,7 +122,13 @@ const Dashboard = () => {
   }
 
   return (
-    <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in">
+    <>
+      <Helmet>
+        <title>{player?.name || 'Dashboard'} - AI Royale</title>
+        <meta name="description" content={`AI-powered analytics and coaching for ${player?.name || 'Clash Royale player'}. View stats, deck analysis, and personalized recommendations.`} />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in">
       <DashboardHeader
         playerTag={playerTag}
         player={player || null}
@@ -272,6 +279,7 @@ const Dashboard = () => {
         />
       )}
     </div>
+    </>
   );
 };
 

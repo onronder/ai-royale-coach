@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -506,7 +507,18 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
+    <>
+      <Helmet>
+        <title>{isSignUp ? t("auth.createAccount") : t("auth.signIn")} - AI Royale</title>
+        <meta name="description" content="Sign in or create your AI Royale account to access AI-powered Clash Royale coaching, deck analysis, and personalized recommendations." />
+        <link rel="canonical" href="https://ai-royale.com/auth" />
+        <meta property="og:title" content="Sign In - AI Royale" />
+        <meta property="og:description" content="Access your AI Royale account for AI-powered Clash Royale coaching and deck analysis." />
+        <meta property="og:url" content="https://ai-royale.com/auth" />
+        <meta property="og:image" content="https://ai-royale.com/og-image.png" />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
       {/* Floating Particles */}
       <div className="floating-particles">
         <span></span>
@@ -786,6 +798,7 @@ const Auth = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 };
 
