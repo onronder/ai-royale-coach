@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,6 +62,14 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>Privacy Policy - AI Royale</title>
+        <meta name="description" content="AI Royale Privacy Policy. Learn how we collect, use, and protect your data. GDPR, CCPA, and KVKK compliant." />
+        <link rel="canonical" href="https://ai-royale.com/privacy" />
+        <meta property="og:title" content="Privacy Policy - AI Royale" />
+        <meta property="og:description" content="AI Royale Privacy Policy. Learn how we collect, use, and protect your data." />
+        <meta property="og:url" content="https://ai-royale.com/privacy" />
+      </Helmet>
       <Navbar user={null} />
       
       <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">

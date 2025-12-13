@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,6 +30,14 @@ const Demo = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>Interactive Demo - AI Royale | Try AI Coaching Free</title>
+        <meta name="description" content="Experience AI Royale's powerful features without an account. Try deck analysis, matchup predictions, and AI coaching for Clash Royale." />
+        <link rel="canonical" href="https://ai-royale.com/demo" />
+        <meta property="og:title" content="Interactive Demo - AI Royale" />
+        <meta property="og:description" content="Experience AI Royale's powerful features without an account. Try deck analysis, matchup predictions, and AI coaching." />
+        <meta property="og:url" content="https://ai-royale.com/demo" />
+      </Helmet>
       <Navbar user={user} />
 
       {/* Demo Page Hero */}

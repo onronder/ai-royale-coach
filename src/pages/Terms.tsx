@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +45,14 @@ const Terms = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>Terms of Service - AI Royale</title>
+        <meta name="description" content="AI Royale Terms of Service. Read our terms and conditions for using the AI-powered Clash Royale coaching platform." />
+        <link rel="canonical" href="https://ai-royale.com/terms" />
+        <meta property="og:title" content="Terms of Service - AI Royale" />
+        <meta property="og:description" content="AI Royale Terms of Service. Read our terms and conditions for using the platform." />
+        <meta property="og:url" content="https://ai-royale.com/terms" />
+      </Helmet>
       <Navbar user={null} />
       
       <main className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
