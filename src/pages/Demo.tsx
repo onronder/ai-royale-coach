@@ -37,6 +37,10 @@ const Demo = () => {
         <meta property="og:title" content="Interactive Demo - AI Royale" />
         <meta property="og:description" content="Experience AI Royale's powerful features without an account. Try deck analysis, matchup predictions, and AI coaching." />
         <meta property="og:url" content="https://ai-royale.com/demo" />
+        <meta property="og:image" content="https://ai-royale.com/og-demo.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:image" content="https://ai-royale.com/og-demo.png" />
       </Helmet>
       <Navbar user={user} />
 

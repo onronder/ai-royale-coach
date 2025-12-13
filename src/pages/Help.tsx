@@ -295,6 +295,10 @@ const Help = () => {
         <meta property="og:title" content="Help Center - AI Royale" />
         <meta property="og:description" content="Complete guide to AI Royale. Learn how to use all features to improve your Clash Royale gameplay." />
         <meta property="og:url" content="https://ai-royale.com/help" />
+        <meta property="og:image" content="https://ai-royale.com/og-help.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:image" content="https://ai-royale.com/og-help.png" />
       </Helmet>
       <Navbar />
       
