@@ -1,3 +1,6 @@
+# AI Royale - Robots.txt
+# https://ai-royale.com
+
 User-agent: Googlebot
 Allow: /
 
@@ -12,3 +15,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap location
+Sitemap: https://ai-royale.com/sitemap.xml
