@@ -24,6 +24,28 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+    // RATE LIMITING: Prevent enumeration attacks (60 requests per minute per IP)
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    const rateLimitIdentifier = `coach-chat:${clientIP}`;
+    
+    const { data: rateLimitAllowed, error: rateLimitError } = await supabase
+      .rpc('check_rate_limit', { 
+        p_identifier: rateLimitIdentifier, 
+        p_max_requests: 60, 
+        p_window_seconds: 60 
+      });
+    
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+    } else if (!rateLimitAllowed) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please slow down.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // SECURITY FIX: Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
