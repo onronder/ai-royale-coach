@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -27,6 +28,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Helmet>
+        <title>AI Royale - Your AI-Powered Clash Royale Coach</title>
+        <meta name="description" content="Dominate Clash Royale with AI-powered coaching. Get personalized deck recommendations, match analysis, and strategic tips to climb the ladder." />
+        <link rel="canonical" href="https://ai-royale.com/" />
+        <meta property="og:title" content="AI Royale - Your AI-Powered Clash Royale Coach" />
+        <meta property="og:description" content="Dominate Clash Royale with AI-powered coaching. Get personalized deck recommendations, match analysis, and strategic tips." />
+        <meta property="og:url" content="https://ai-royale.com/" />
+      </Helmet>
       <Navbar user={user} />
 
       {/* Hero Section - Full Impact First Impression */}

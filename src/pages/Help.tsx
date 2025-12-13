@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
@@ -287,6 +288,14 @@ const Help = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Helmet>
+        <title>Help Center - AI Royale | Complete User Guide</title>
+        <meta name="description" content="Complete guide to AI Royale. Learn how to use deck analysis, AI coaching, card collection tracking, and all features to improve your Clash Royale gameplay." />
+        <link rel="canonical" href="https://ai-royale.com/help" />
+        <meta property="og:title" content="Help Center - AI Royale" />
+        <meta property="og:description" content="Complete guide to AI Royale. Learn how to use all features to improve your Clash Royale gameplay." />
+        <meta property="og:url" content="https://ai-royale.com/help" />
+      </Helmet>
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-8">
