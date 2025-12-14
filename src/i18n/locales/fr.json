@@ -2016,5 +2016,12 @@
     "followUs": "Suivez-nous sur les réseaux sociaux pour les mises à jour",
     "tryAgain": "Réessayer",
     "apology": "Nous nous excusons pour tout inconvénient. Votre progression est en sécurité!"
+  },
+  "offline": {
+    "title": "Pas de Connexion",
+    "description": "Il semble que vous ayez perdu votre connexion internet. Veuillez vérifier votre réseau et réessayer.",
+    "retry": "Réessayer",
+    "checking": "Vérification...",
+    "helpText": "L'application se reconnectera automatiquement lorsque votre connexion sera rétablie."
   }
 }

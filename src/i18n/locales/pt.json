@@ -2016,5 +2016,12 @@
     "followUs": "Siga-nos nas redes sociais para atualizações",
     "tryAgain": "Tentar Novamente",
     "apology": "Pedimos desculpas pelo inconveniente. Seu progresso está seguro!"
+  },
+  "offline": {
+    "title": "Sem Conexão",
+    "description": "Parece que você perdeu sua conexão com a internet. Por favor, verifique sua rede e tente novamente.",
+    "retry": "Tentar Novamente",
+    "checking": "Verificando...",
+    "helpText": "O app reconectará automaticamente quando sua conexão for restaurada."
   }
 }

@@ -2016,5 +2016,12 @@
     "followUs": "Güncellemeler için sosyal medyada bizi takip edin",
     "tryAgain": "Tekrar Dene",
     "apology": "Herhangi bir rahatsızlık için özür dileriz. İlerlemeniz güvende!"
+  },
+  "offline": {
+    "title": "Bağlantı Yok",
+    "description": "İnternet bağlantınızı kaybetmiş görünüyorsunuz. Lütfen ağınızı kontrol edin ve tekrar deneyin.",
+    "retry": "Tekrar Dene",
+    "checking": "Kontrol ediliyor...",
+    "helpText": "Bağlantınız yeniden kurulduğunda uygulama otomatik olarak yeniden bağlanacak."
   }
 }

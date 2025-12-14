@@ -2027,5 +2027,12 @@
     "followUs": "Síguenos en redes sociales para actualizaciones",
     "tryAgain": "Intentar de Nuevo",
     "apology": "Pedimos disculpas por las molestias. ¡Tu progreso está seguro!"
+  },
+  "offline": {
+    "title": "Sin Conexión",
+    "description": "Parece que has perdido tu conexión a internet. Por favor verifica tu red e intenta de nuevo.",
+    "retry": "Intentar de Nuevo",
+    "checking": "Verificando...",
+    "helpText": "La app se reconectará automáticamente cuando se restablezca tu conexión."
   }
 }

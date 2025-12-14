@@ -2002,5 +2002,12 @@
     "followUs": "Follow us on social media for updates",
     "tryAgain": "Try Again",
     "apology": "We apologize for any inconvenience. Your progress is safe!"
+  },
+  "offline": {
+    "title": "No Connection",
+    "description": "It looks like you've lost your internet connection. Please check your network and try again.",
+    "retry": "Try Again",
+    "checking": "Checking...",
+    "helpText": "The app will reconnect automatically when your connection is restored."
   }
 }
