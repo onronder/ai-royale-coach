@@ -1992,5 +1992,15 @@
         "description": "Enjoy 3 days of full AI features for free. Explore everything AI Royale has to offer and dominate the arena!"
       }
     }
+  },
+  "maintenance": {
+    "title": "Under Maintenance",
+    "description": "We're upgrading the arena with new features and improvements. The battle will resume shortly!",
+    "estimatedTime": "Estimated Time",
+    "timeEstimate": "Usually less than 30 minutes",
+    "stayUpdated": "Stay Updated",
+    "followUs": "Follow us on social media for updates",
+    "tryAgain": "Try Again",
+    "apology": "We apologize for any inconvenience. Your progress is safe!"
   }
 }

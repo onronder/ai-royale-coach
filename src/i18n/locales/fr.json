@@ -2006,5 +2006,15 @@
         "description": "Profitez de 3 jours de fonctionnalités IA complètes gratuitement. Explorez tout ce qu'AI Royale a à offrir et dominez l'arène!"
       }
     }
+  },
+  "maintenance": {
+    "title": "En Maintenance",
+    "description": "Nous améliorons l'arène avec de nouvelles fonctionnalités et améliorations. Le combat reprendra bientôt!",
+    "estimatedTime": "Temps Estimé",
+    "timeEstimate": "Généralement moins de 30 minutes",
+    "stayUpdated": "Restez Informé",
+    "followUs": "Suivez-nous sur les réseaux sociaux pour les mises à jour",
+    "tryAgain": "Réessayer",
+    "apology": "Nous nous excusons pour tout inconvénient. Votre progression est en sécurité!"
   }
 }

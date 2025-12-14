@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { MatchDiscussionProvider } from "@/contexts/MatchDiscussionContext";
-import { PageLoader } from "@/components/ui/page-loader";
+import { SplashScreen } from "@/components/ui/splash-screen";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -21,6 +21,7 @@ const Demo = lazy(() => import("./pages/Demo"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient();
 
@@ -34,7 +35,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
-                <Suspense fallback={<PageLoader />}>
+                <Suspense fallback={<SplashScreen />}>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
@@ -45,6 +46,7 @@ const App = () => (
                     <Route path="/demo" element={<Demo />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/maintenance" element={<Maintenance />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

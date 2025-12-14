@@ -2006,5 +2006,15 @@
         "description": "3 gün boyunca tüm AI özelliklerinin tadını ücretsiz çıkarın. AI Royale'in sunduğu her şeyi keşfedin ve arenaya hükmedin!"
       }
     }
+  },
+  "maintenance": {
+    "title": "Bakımda",
+    "description": "Arenayı yeni özellikler ve iyileştirmelerle güncelliyoruz. Savaş kısa süre içinde devam edecek!",
+    "estimatedTime": "Tahmini Süre",
+    "timeEstimate": "Genellikle 30 dakikadan az",
+    "stayUpdated": "Güncel Kalın",
+    "followUs": "Güncellemeler için sosyal medyada bizi takip edin",
+    "tryAgain": "Tekrar Dene",
+    "apology": "Herhangi bir rahatsızlık için özür dileriz. İlerlemeniz güvende!"
   }
 }

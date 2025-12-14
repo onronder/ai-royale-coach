@@ -2006,5 +2006,15 @@
         "description": "Aproveite 3 dias de recursos completos de IA gratuitamente. Explore tudo que o AI Royale tem a oferecer e domine a arena!"
       }
     }
+  },
+  "maintenance": {
+    "title": "Em Manutenção",
+    "description": "Estamos atualizando a arena com novos recursos e melhorias. A batalha será retomada em breve!",
+    "estimatedTime": "Tempo Estimado",
+    "timeEstimate": "Geralmente menos de 30 minutos",
+    "stayUpdated": "Fique Atualizado",
+    "followUs": "Siga-nos nas redes sociais para atualizações",
+    "tryAgain": "Tentar Novamente",
+    "apology": "Pedimos desculpas pelo inconveniente. Seu progresso está seguro!"
   }
 }
