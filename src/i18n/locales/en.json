@@ -1555,7 +1555,10 @@
   },
   "notFound": {
     "title": "Oops! Page not found",
-    "returnHome": "Return to Home"
+    "description": "The arena you're looking for has vanished into the void. Let's get you back to the battle!",
+    "returnHome": "Return to Home",
+    "goBack": "Go Back",
+    "helpfulLinks": "Helpful links:"
   },
   "tournaments": {
     "details": "Tournament Details",

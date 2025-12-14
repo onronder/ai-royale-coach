@@ -299,6 +299,70 @@ const Help = () => {
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:image" content="https://ai-royale.com/og-help.png" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Why doesn't my latest deck show up in AI Royale?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The Clash Royale API has a 5-15 minute delay. Your recent in-game changes will appear after this delay. Try refreshing in a few minutes."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How is my win rate calculated?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Win rate is calculated from your last 25 battles available from the API. It only includes ladder and challenge battles, not friendly battles or 2v2."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Why are some features requiring login?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Features like saving decks, AI coaching, and personalized recommendations require an account to store your preferences and history."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use AI Royale on mobile?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! AI Royale is fully responsive and works on all devices. The interface adapts to your screen size."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How accurate are the AI matchup predictions?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Predictions are based on deck composition analysis and historical data. Actual results may vary based on skill level and card levels."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Why can't I add more than 3 accounts?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The 3-account limit ensures fair usage of our AI services and API resources for all users."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is my data secure with AI Royale?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes! We use industry-standard encryption and never store your Clash Royale login credentials. We only access public data through your Player Tag."
+                }
+              }
+            ]
+          })}
+        </script>
       </Helmet>
       <Navbar />
       

@@ -1555,7 +1555,10 @@
   },
   "notFound": {
     "title": "Hay aksi! Sayfa bulunamadı",
-    "returnHome": "Ana Sayfaya Dön"
+    "description": "Aradığınız arena boşluğa karıştı. Savaşa geri dönelim!",
+    "returnHome": "Ana Sayfaya Dön",
+    "goBack": "Geri Dön",
+    "helpfulLinks": "Yararlı bağlantılar:"
   },
   "tournaments": {
     "details": "Turnuva Detayları",

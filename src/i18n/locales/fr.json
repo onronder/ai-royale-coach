@@ -1555,7 +1555,10 @@
   },
   "notFound": {
     "title": "Oups! Page non trouvée",
-    "returnHome": "Retour à l'Accueil"
+    "description": "L'arène que vous recherchez a disparu dans le vide. Retournons au combat!",
+    "returnHome": "Retour à l'Accueil",
+    "goBack": "Retour",
+    "helpfulLinks": "Liens utiles:"
   },
   "tournaments": {
     "details": "Détails du Tournoi",
