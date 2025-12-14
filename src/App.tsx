@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { MatchDiscussionProvider } from "@/contexts/MatchDiscussionContext";
 import { SplashScreen } from "@/components/ui/splash-screen";
+import { OfflineIndicator } from "@/components/ui/offline-indicator";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -32,6 +33,7 @@ const App = () => (
         <TooltipProvider>
           <MatchDiscussionProvider>
             <ErrorBoundary>
+              <OfflineIndicator />
               <Toaster />
               <Sonner />
               <BrowserRouter>
