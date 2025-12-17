@@ -52,7 +52,11 @@ serve(async (req) => {
       });
     }
 
-    const wh = new Webhook(webhookSecret);
+    // Strip 'whsec_' prefix if present - standardwebhooks expects raw base64
+    const secretKey = webhookSecret.startsWith('whsec_') 
+      ? webhookSecret.slice(6) 
+      : webhookSecret;
+    const wh = new Webhook(secretKey);
     let event;
     
     try {
