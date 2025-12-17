@@ -52,7 +52,7 @@ export function NavbarSubscriptionBadge() {
     );
   }
 
-  // Trial active - show hours remaining countdown
+  // Trial active - show countdown WITH explicit upgrade button
   if (isTrialActive && hoursRemaining > 0) {
     const isLowTime = hoursRemaining <= 24;
     const displayTime = hoursRemaining > 24 
@@ -61,20 +61,33 @@ export function NavbarSubscriptionBadge() {
     
     return (
       <>
-        <button
-          onClick={() => setShowPricing(true)}
-          className={cn(
-            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all hover:scale-105",
-            isLowTime 
-              ? "bg-destructive/20 border-destructive/30 text-destructive animate-pulse" 
-              : "bg-primary/20 border-primary/30 text-primary"
-          )}
-        >
-          <Clock className="h-3.5 w-3.5" />
-          <span className="text-xs font-semibold">
-            {displayTime}
-          </span>
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Trial countdown indicator */}
+          <div
+            className={cn(
+              "flex items-center gap-1.5 px-2 py-1 rounded-full border",
+              isLowTime 
+                ? "bg-destructive/20 border-destructive/30 text-destructive animate-pulse" 
+                : "bg-primary/20 border-primary/30 text-primary"
+            )}
+          >
+            <Clock className="h-3.5 w-3.5" />
+            <span className="text-xs font-semibold">
+              {displayTime}
+            </span>
+          </div>
+          
+          {/* Explicit upgrade button - always visible during trial */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPricing(true)}
+            className="h-7 px-2.5 text-xs border-gold/30 text-gold hover:bg-gold/10 hover:border-gold/50 gap-1.5"
+          >
+            <Crown className="h-3 w-3" />
+            {t('subscription.navBadge.upgrade', 'Upgrade')}
+          </Button>
+        </div>
         <PricingModal open={showPricing} onOpenChange={setShowPricing} />
       </>
     );
