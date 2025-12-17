@@ -53,6 +53,30 @@ function validateEnv(): { valid: boolean; missing: string[] } {
   return { valid: missing.length === 0, missing };
 }
 
+// Log webhook event to database for monitoring
+async function logWebhookEvent(
+  supabase: any,
+  eventType: string,
+  eventId: string | null,
+  userId: string | null,
+  status: 'processed' | 'failed' | 'skipped',
+  errorMessage?: string,
+  payloadSummary?: Record<string, any>
+) {
+  try {
+    await supabase.from('webhook_events').insert({
+      event_type: eventType,
+      event_id: eventId,
+      user_id: userId,
+      status,
+      error_message: errorMessage || null,
+      payload_summary: payloadSummary || null,
+    });
+  } catch (err) {
+    console.error('Failed to log webhook event:', err);
+  }
+}
+
 serve(async (req) => {
   // Generate request ID for logging
   const requestId = crypto.randomUUID().slice(0, 8);
@@ -315,6 +339,13 @@ serve(async (req) => {
             });
           }
         }
+        // Log successful processing
+        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
+          accountSlots,
+          needsAISelection,
+          isTrialing,
+          isNewSubscription
+        });
         break;
       }
 
@@ -397,6 +428,11 @@ serve(async (req) => {
         }
 
         log('info', 'Subscription updated', { userId, status, accountSlots });
+        
+        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
+          status,
+          accountSlots
+        });
         break;
       }
 
@@ -421,8 +457,10 @@ serve(async (req) => {
 
         if (cancelError) {
           log('error', 'Error cancelling subscription', { error: cancelError.message, userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', cancelError.message);
         } else {
           log('info', 'Subscription cancelled (access until period end)', { userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
         }
         break;
       }
@@ -448,8 +486,10 @@ serve(async (req) => {
 
         if (uncancelError) {
           log('error', 'Error uncancelling subscription', { error: uncancelError.message });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', uncancelError.message);
         } else {
           log('info', 'Subscription reactivated', { userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
         }
         break;
       }
@@ -488,8 +528,10 @@ serve(async (req) => {
 
         if (revokeError) {
           log('error', 'Error revoking subscription', { error: revokeError.message });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', revokeError.message);
         } else {
           log('info', 'Subscription revoked, AI disabled', { userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
         }
         break;
       }
