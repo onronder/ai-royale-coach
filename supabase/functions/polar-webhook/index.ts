@@ -7,8 +7,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature',
 };
 
-// Map product IDs to account slots
-function getAccountSlotsFromProductId(productId: string): number {
+// Map product IDs to account slots with validation
+function getAccountSlotsFromProductId(productId: string | undefined | null): number {
+  if (!productId) {
+    console.warn('No product ID provided, defaulting to 1 slot');
+    return 1;
+  }
+
   const productId1 = Deno.env.get('POLAR_PRODUCT_ID_1');
   const productId2 = Deno.env.get('POLAR_PRODUCT_ID_2');
   const productId3 = Deno.env.get('POLAR_PRODUCT_ID_3');
@@ -21,43 +26,106 @@ function getAccountSlotsFromProductId(productId: string): number {
   return 1;
 }
 
+// Extract user ID from subscription data with multiple fallbacks
+function extractUserId(subscription: any): string | null {
+  // Try customer.external_id first (primary method for Polar)
+  if (subscription?.customer?.external_id && typeof subscription.customer.external_id === 'string') {
+    return subscription.customer.external_id;
+  }
+  
+  // Fallback to metadata.user_id
+  if (subscription?.metadata?.user_id && typeof subscription.metadata.user_id === 'string') {
+    return subscription.metadata.user_id;
+  }
+  
+  // Fallback to user.id if present
+  if (subscription?.user?.id && typeof subscription.user.id === 'string') {
+    return subscription.user.id;
+  }
+  
+  return null;
+}
+
+// Validate required environment variables
+function validateEnv(): { valid: boolean; missing: string[] } {
+  const required = ['POLAR_WEBHOOK_SECRET', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
+  const missing = required.filter(key => !Deno.env.get(key));
+  return { valid: missing.length === 0, missing };
+}
+
 serve(async (req) => {
+  // Generate request ID for logging
+  const requestId = crypto.randomUUID().slice(0, 8);
+  const log = (level: string, message: string, data?: any) => {
+    const logData = { requestId, timestamp: new Date().toISOString(), ...data };
+    if (level === 'error') {
+      console.error(`[${requestId}] ${message}`, JSON.stringify(logData));
+    } else if (level === 'warn') {
+      console.warn(`[${requestId}] ${message}`, JSON.stringify(logData));
+    } else {
+      console.log(`[${requestId}] ${message}`, JSON.stringify(logData));
+    }
+  };
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const webhookSecret = Deno.env.get('POLAR_WEBHOOK_SECRET');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    if (!webhookSecret) {
-      console.error('POLAR_WEBHOOK_SECRET not configured');
-      return new Response(JSON.stringify({ error: 'Webhook secret not configured' }), {
+    // Validate environment
+    const envCheck = validateEnv();
+    if (!envCheck.valid) {
+      log('error', 'Missing environment variables', { missing: envCheck.missing });
+      return new Response(JSON.stringify({ error: 'Server configuration error', requestId }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const payload = await req.text();
+    const webhookSecret = Deno.env.get('POLAR_WEBHOOK_SECRET')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // Get webhook headers
     const webhookId = req.headers.get('webhook-id');
     const webhookTimestamp = req.headers.get('webhook-timestamp');
     const webhookSignature = req.headers.get('webhook-signature');
 
+    log('info', 'Webhook received', { 
+      webhookId,
+      hasTimestamp: !!webhookTimestamp,
+      hasSignature: !!webhookSignature
+    });
+
     if (!webhookId || !webhookTimestamp || !webhookSignature) {
-      console.error('Missing webhook headers');
-      return new Response(JSON.stringify({ error: 'Missing webhook headers' }), {
+      log('error', 'Missing webhook headers');
+      return new Response(JSON.stringify({ error: 'Missing webhook headers', requestId }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Read payload
+    const payload = await req.text();
+    if (!payload) {
+      log('error', 'Empty payload received');
+      return new Response(JSON.stringify({ error: 'Empty payload', requestId }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // Strip 'whsec_' prefix if present - standardwebhooks expects raw base64
-    const secretKey = webhookSecret.startsWith('whsec_') 
-      ? webhookSecret.slice(6) 
-      : webhookSecret;
+    // Polar sends secrets with this prefix but the library needs the raw value
+    let secretKey = webhookSecret;
+    if (webhookSecret.startsWith('whsec_')) {
+      secretKey = webhookSecret.slice(6);
+      log('info', 'Stripped whsec_ prefix from webhook secret');
+    }
+
+    // Verify webhook signature
     const wh = new Webhook(secretKey);
-    let event;
+    let event: { type: string; data: any };
     
     try {
       event = wh.verify(payload, {
@@ -66,78 +134,115 @@ serve(async (req) => {
         'webhook-signature': webhookSignature,
       }) as { type: string; data: any };
     } catch (err) {
-      console.error('Webhook signature verification failed:', err);
-      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      log('error', 'Webhook signature verification failed', { error: errorMsg });
+      return new Response(JSON.stringify({ error: 'Invalid signature', requestId }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Polar webhook received:', event.type);
+    log('info', 'Webhook verified', { eventType: event.type });
 
+    // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Process event
     switch (event.type) {
       case 'subscription.created':
       case 'subscription.active': {
         const subscription = event.data;
-        const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
+        const userId = extractUserId(subscription);
         
         if (!userId) {
-          console.error('No user_id found in subscription data');
-          break;
+          log('error', 'No user_id found in subscription data', { 
+            hasCustomer: !!subscription?.customer,
+            hasMetadata: !!subscription?.metadata,
+            subscriptionId: subscription?.id
+          });
+          return new Response(JSON.stringify({ 
+            error: 'No user_id in subscription', 
+            requestId,
+            hint: 'Ensure customerExternalId is set during checkout'
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
-        console.log(`Processing subscription active for user ${userId}`);
+        log('info', 'Processing subscription activation', { 
+          userId, 
+          subscriptionId: subscription?.id,
+          status: subscription?.status,
+          productId: subscription?.product_id
+        });
 
-        const isTrialing = subscription.status === 'trialing';
-        const accountSlots = getAccountSlotsFromProductId(subscription.product_id);
+        const isTrialing = subscription?.status === 'trialing';
+        const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
 
-        // Check if this is a NEW subscription (not a renewal)
-        const { data: existingSub } = await supabase
+        // Check if subscription already exists (idempotency)
+        const { data: existingSub, error: existingError } = await supabase
           .from('user_subscriptions')
-          .select('id, created_at')
+          .select('id, created_at, polar_subscription_id, status')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
+
+        if (existingError) {
+          log('warn', 'Error checking existing subscription', { error: existingError.message });
+        }
+
+        // Skip if we already processed this exact subscription
+        if (existingSub?.polar_subscription_id === subscription?.id && existingSub?.status === 'active') {
+          log('info', 'Subscription already processed (idempotent skip)', { userId });
+          return new Response(JSON.stringify({ received: true, skipped: 'already_processed', requestId }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
 
         const isNewSubscription = !existingSub;
 
         // Get user's linked player profiles
-        const { data: profiles } = await supabase
+        const { data: profiles, error: profilesError } = await supabase
           .from('player_profiles')
           .select('id, player_tag, last_seen_at')
           .eq('user_id', userId)
           .order('last_seen_at', { ascending: false });
 
+        if (profilesError) {
+          log('warn', 'Error fetching player profiles', { error: profilesError.message });
+        }
+
         const profileCount = profiles?.length || 0;
-        
-        // Determine if user needs to select which accounts get AI
-        // If user has more profiles than slots, they need to choose
         const needsAISelection = profileCount > accountSlots;
 
-        // If user has profiles <= slots, auto-enable AI on all profiles
+        // Auto-enable AI on profiles if user has <= slots
         if (!needsAISelection && profiles && profiles.length > 0) {
           const profilesToEnable = profiles.slice(0, accountSlots);
           for (const profile of profilesToEnable) {
-            await supabase
+            const { error: enableError } = await supabase
               .from('player_profiles')
               .update({ ai_enabled: true })
               .eq('id', profile.id);
+            
+            if (enableError) {
+              log('warn', 'Error enabling AI on profile', { profileId: profile.id, error: enableError.message });
+            }
           }
-          console.log(`Auto-enabled AI on ${profilesToEnable.length} profiles for user ${userId}`);
+          log('info', 'Auto-enabled AI on profiles', { count: profilesToEnable.length, userId });
         }
 
+        // Upsert subscription
         const { error: upsertError } = await supabase
           .from('user_subscriptions')
           .upsert({
             user_id: userId,
-            polar_subscription_id: subscription.id,
-            polar_customer_id: subscription.customer?.id,
+            polar_subscription_id: subscription?.id || null,
+            polar_customer_id: subscription?.customer?.id || null,
             polar_customer_external_id: userId,
             status: isTrialing ? 'trialing' : 'active',
-            variant_id: subscription.product_id,
-            current_period_start: subscription.current_period_start,
-            current_period_end: subscription.current_period_end,
+            variant_id: subscription?.product_id || null,
+            current_period_start: subscription?.current_period_start || null,
+            current_period_end: subscription?.current_period_end || null,
             account_slots: accountSlots,
             needs_ai_selection: needsAISelection,
             pending_account_slots: null,
@@ -148,31 +253,35 @@ serve(async (req) => {
           });
 
         if (upsertError) {
-          console.error('Error upserting subscription:', upsertError);
-        } else {
-          console.log(`Subscription activated for user ${userId} with ${accountSlots} slots, needs_selection: ${needsAISelection}`);
+          log('error', 'Error upserting subscription', { error: upsertError.message, userId });
+          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
+        log('info', 'Subscription activated', { userId, accountSlots, needsAISelection, isTrialing });
+
+        // Update trial info if trialing
         if (isTrialing) {
           const { error: profileError } = await supabase
             .from('profiles')
             .update({
-              trial_started_at: subscription.current_period_start,
-              trial_ends_at: subscription.current_period_end,
+              trial_started_at: subscription?.current_period_start || new Date().toISOString(),
+              trial_ends_at: subscription?.current_period_end || null,
               trial_used: true,
               updated_at: new Date().toISOString(),
             })
             .eq('id', userId);
 
           if (profileError) {
-            console.error('Error updating profile trial:', profileError);
+            log('warn', 'Error updating profile trial', { error: profileError.message, userId });
           }
         }
 
-        // Send subscription confirmation email only for NEW subscriptions (not renewals)
-        if (isNewSubscription) {
+        // Send subscription confirmation email for NEW subscriptions only
+        if (isNewSubscription && !isTrialing) {
           try {
-            // Get user email and preferred language from profiles
             const { data: profile } = await supabase
               .from('profiles')
               .select('email, preferred_language')
@@ -180,7 +289,7 @@ serve(async (req) => {
               .single();
 
             if (profile?.email) {
-              console.log(`Sending subscription email to ${profile.email}`);
+              log('info', 'Sending subscription email', { email: profile.email });
               
               const { error: emailError } = await supabase.functions.invoke('send-email', {
                 body: {
@@ -189,22 +298,21 @@ serve(async (req) => {
                   language: profile.preferred_language || 'en',
                   subscriptionData: {
                     accountSlots,
-                    renewalDate: subscription.current_period_end,
+                    renewalDate: subscription?.current_period_end,
                   }
                 }
               });
 
               if (emailError) {
-                console.error('Failed to send subscription email:', emailError);
+                log('warn', 'Failed to send subscription email', { error: emailError.message });
               } else {
-                console.log('Subscription confirmation email sent successfully');
+                log('info', 'Subscription email sent');
               }
-            } else {
-              console.warn('No email found for user, skipping subscription email');
             }
           } catch (emailErr) {
-            console.error('Error sending subscription email:', emailErr);
-            // Don't fail the webhook for email errors
+            log('warn', 'Exception sending subscription email', { 
+              error: emailErr instanceof Error ? emailErr.message : String(emailErr) 
+            });
           }
         }
         break;
@@ -212,29 +320,29 @@ serve(async (req) => {
 
       case 'subscription.updated': {
         const subscription = event.data;
-        const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
+        const userId = extractUserId(subscription);
 
         if (!userId) {
-          console.error('No user_id found in subscription update');
-          break;
+          log('error', 'No user_id found in subscription update');
+          return new Response(JSON.stringify({ error: 'No user_id in subscription update', requestId }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
-        console.log(`Processing subscription update for user ${userId}`);
+        log('info', 'Processing subscription update', { userId, status: subscription?.status });
         
-        const accountSlots = getAccountSlotsFromProductId(subscription.product_id);
+        const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
 
         // Get current subscription to check for tier changes
         const { data: currentSub } = await supabase
           .from('user_subscriptions')
           .select('account_slots, pending_account_slots')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
-        // If tier changed (renewal with pending change), update ai_enabled accordingly
+        // Handle tier downgrade
         if (currentSub?.pending_account_slots && currentSub.pending_account_slots !== currentSub.account_slots) {
-          const newSlots = accountSlots;
-          
-          // Get user's profiles
           const { data: profiles } = await supabase
             .from('player_profiles')
             .select('id, ai_enabled')
@@ -242,29 +350,38 @@ serve(async (req) => {
 
           const enabledCount = profiles?.filter(p => p.ai_enabled).length || 0;
 
-          // If downgrading, may need to disable some accounts
-          if (enabledCount > newSlots) {
-            // Disable excess accounts (user will need to re-select)
+          if (enabledCount > accountSlots) {
             await supabase
               .from('player_profiles')
               .update({ ai_enabled: false })
               .eq('user_id', userId);
             
-            // Set needs_ai_selection flag
             await supabase
               .from('user_subscriptions')
               .update({ needs_ai_selection: true })
               .eq('user_id', userId);
+            
+            log('info', 'Disabled AI due to downgrade', { userId, oldSlots: enabledCount, newSlots: accountSlots });
           }
+        }
+
+        // Determine status - handle various Polar status values
+        let status = 'active';
+        if (subscription?.status === 'trialing') {
+          status = 'trialing';
+        } else if (subscription?.status === 'canceled' || subscription?.status === 'cancelled') {
+          status = 'cancelled';
+        } else if (subscription?.status === 'past_due') {
+          status = 'past_due';
         }
 
         const { error: updateError } = await supabase
           .from('user_subscriptions')
           .update({
-            status: subscription.status === 'trialing' ? 'trialing' : 'active',
+            status,
             account_slots: accountSlots,
-            current_period_start: subscription.current_period_start,
-            current_period_end: subscription.current_period_end,
+            current_period_start: subscription?.current_period_start,
+            current_period_end: subscription?.current_period_end,
             pending_account_slots: null,
             pending_change_effective_at: null,
             updated_at: new Date().toISOString(),
@@ -272,23 +389,27 @@ serve(async (req) => {
           .eq('user_id', userId);
 
         if (updateError) {
-          console.error('Error updating subscription:', updateError);
-        } else {
-          console.log(`Subscription renewed/updated for user ${userId}`);
+          log('error', 'Error updating subscription', { error: updateError.message, userId });
+          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
+
+        log('info', 'Subscription updated', { userId, status, accountSlots });
         break;
       }
 
       case 'subscription.canceled': {
         const subscription = event.data;
-        const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
+        const userId = extractUserId(subscription);
 
         if (!userId) {
-          console.error('No user_id found in subscription cancel');
+          log('error', 'No user_id found in subscription cancel');
           break;
         }
 
-        console.log(`Processing subscription cancellation for user ${userId}`);
+        log('info', 'Processing subscription cancellation', { userId });
 
         const { error: cancelError } = await supabase
           .from('user_subscriptions')
@@ -299,23 +420,23 @@ serve(async (req) => {
           .eq('user_id', userId);
 
         if (cancelError) {
-          console.error('Error cancelling subscription:', cancelError);
+          log('error', 'Error cancelling subscription', { error: cancelError.message, userId });
         } else {
-          console.log(`Subscription cancelled for user ${userId} (access until period end)`);
+          log('info', 'Subscription cancelled (access until period end)', { userId });
         }
         break;
       }
 
       case 'subscription.uncanceled': {
         const subscription = event.data;
-        const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
+        const userId = extractUserId(subscription);
 
         if (!userId) {
-          console.error('No user_id found in subscription uncancel');
+          log('error', 'No user_id found in subscription uncancel');
           break;
         }
 
-        console.log(`Processing subscription uncancellation for user ${userId}`);
+        log('info', 'Processing subscription uncancellation', { userId });
 
         const { error: uncancelError } = await supabase
           .from('user_subscriptions')
@@ -326,29 +447,34 @@ serve(async (req) => {
           .eq('user_id', userId);
 
         if (uncancelError) {
-          console.error('Error uncancelling subscription:', uncancelError);
+          log('error', 'Error uncancelling subscription', { error: uncancelError.message });
         } else {
-          console.log(`Subscription reactivated for user ${userId}`);
+          log('info', 'Subscription reactivated', { userId });
         }
         break;
       }
 
-      case 'subscription.revoked': {
+      case 'subscription.revoked':
+      case 'subscription.ended': {
         const subscription = event.data;
-        const userId = subscription.customer?.external_id || subscription.metadata?.user_id;
+        const userId = extractUserId(subscription);
 
         if (!userId) {
-          console.error('No user_id found in subscription revoke');
+          log('error', `No user_id found in ${event.type}`);
           break;
         }
 
-        console.log(`Processing subscription revocation for user ${userId}`);
+        log('info', `Processing ${event.type}`, { userId });
 
         // Disable AI on all profiles
-        await supabase
+        const { error: disableError } = await supabase
           .from('player_profiles')
           .update({ ai_enabled: false })
           .eq('user_id', userId);
+
+        if (disableError) {
+          log('warn', 'Error disabling AI on profiles', { error: disableError.message });
+        }
 
         const { error: revokeError } = await supabase
           .from('user_subscriptions')
@@ -361,36 +487,38 @@ serve(async (req) => {
           .eq('user_id', userId);
 
         if (revokeError) {
-          console.error('Error revoking subscription:', revokeError);
+          log('error', 'Error revoking subscription', { error: revokeError.message });
         } else {
-          console.log(`Subscription revoked for user ${userId}, AI disabled on all profiles`);
+          log('info', 'Subscription revoked, AI disabled', { userId });
         }
         break;
       }
 
       case 'checkout.created':
       case 'checkout.updated': {
-        console.log(`Checkout event: ${event.type}`, event.data?.id);
+        log('info', 'Checkout event received', { checkoutId: event.data?.id });
         break;
       }
 
       case 'order.created': {
-        console.log('Order created:', event.data?.id);
+        log('info', 'Order created', { orderId: event.data?.id });
         break;
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        log('warn', 'Unhandled event type', { eventType: event.type });
     }
 
-    return new Response(JSON.stringify({ received: true }), {
+    return new Response(JSON.stringify({ received: true, requestId }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Polar webhook error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error(`[${requestId}] Polar webhook fatal error:`, { error: errorMessage, stack: errorStack });
+    
+    return new Response(JSON.stringify({ error: errorMessage, requestId }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
