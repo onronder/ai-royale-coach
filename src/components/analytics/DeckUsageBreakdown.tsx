@@ -35,8 +35,9 @@ export function DeckUsageBreakdown({ decks }: DeckUsageBreakdownProps) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col lg:flex-row gap-8">
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
+          <div className="min-h-[300px] w-full lg:w-1/2">
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
@@ -58,10 +59,11 @@ export function DeckUsageBreakdown({ decks }: DeckUsageBreakdownProps) {
                   borderRadius: '8px',
                 }}
               />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
 
-          <div className="space-y-4 flex-1">
+          <div className="space-y-4 flex-1 lg:w-1/2">
             {chartData.map((deck, index) => (
               <div
                 key={index}

@@ -36,8 +36,9 @@ export function DeckTrendChart({ stats }: DeckTrendChartProps) {
         <CardTitle className="text-foreground">{t('analytics.winRateTrends')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+        <div className="min-h-[300px] w-full">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis 
               dataKey="date" 
@@ -73,8 +74,9 @@ export function DeckTrendChart({ stats }: DeckTrendChartProps) {
               name={t('analytics.trophyChange')}
               dot={{ fill: 'hsl(var(--accent))' }}
             />
-          </LineChart>
-        </ResponsiveContainer>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </CardContent>
     </Card>
   );
