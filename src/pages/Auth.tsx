@@ -53,18 +53,29 @@ const Auth = () => {
       }
       
       if (session) {
-        // Check if terms are accepted for OAuth users
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('terms_accepted_at')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (!profile?.terms_accepted_at) {
-          // Show terms modal for OAuth users who haven't accepted
-          setPendingOAuthUser(session.user.id);
-          setShowTermsModal(true);
-        } else {
+        try {
+          // Check if terms are accepted for OAuth users
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('terms_accepted_at')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (error) {
+            console.error('Error checking profile:', error);
+            navigate("/select-player");
+            return;
+          }
+          
+          if (!profile?.terms_accepted_at) {
+            // Show terms modal for OAuth users who haven't accepted
+            setPendingOAuthUser(session.user.id);
+            setShowTermsModal(true);
+          } else {
+            navigate("/select-player");
+          }
+        } catch (err) {
+          console.error('Unexpected error in checkSession:', err);
           navigate("/select-player");
         }
       }
@@ -72,7 +83,7 @@ const Auth = () => {
     
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       // Handle password recovery event
       if (event === 'PASSWORD_RECOVERY') {
         setIsResetPassword(true);
@@ -80,19 +91,32 @@ const Auth = () => {
       }
       
       if (event === 'SIGNED_IN' && session && !isResetPassword) {
-        // Check terms acceptance
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('terms_accepted_at')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (!profile?.terms_accepted_at) {
-          setPendingOAuthUser(session.user.id);
-          setShowTermsModal(true);
-        } else {
-          navigate("/select-player");
-        }
+        // Defer Supabase call to avoid deadlock
+        setTimeout(async () => {
+          try {
+            const { data: profile, error } = await supabase
+              .from('profiles')
+              .select('terms_accepted_at')
+              .eq('id', session.user.id)
+              .single();
+            
+            if (error) {
+              console.error('Error fetching profile:', error);
+              navigate("/select-player");
+              return;
+            }
+            
+            if (!profile?.terms_accepted_at) {
+              setPendingOAuthUser(session.user.id);
+              setShowTermsModal(true);
+            } else {
+              navigate("/select-player");
+            }
+          } catch (err) {
+            console.error('Unexpected error in auth callback:', err);
+            navigate("/select-player");
+          }
+        }, 0);
       }
     });
 
@@ -148,6 +172,15 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success(t("auth.welcomeBack"));
+        
+        // Fallback navigation in case onAuthStateChange doesn't trigger
+        setTimeout(() => {
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+              navigate("/select-player");
+            }
+          });
+        }, 500);
       }
     } catch (error: any) {
       toast.error(error.message || t("common.error"));
