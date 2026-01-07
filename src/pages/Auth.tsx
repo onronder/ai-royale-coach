@@ -456,7 +456,7 @@ const Auth = () => {
                 <form onSubmit={handleForgotPassword} className="space-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="reset-email" className="text-sm font-medium">{t("auth.email")}</Label>
-                    <Input
+                <Input
                       id="reset-email"
                       type="email"
                       placeholder={t("auth.emailPlaceholder")}
@@ -464,6 +464,7 @@ const Auth = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={isLoading}
+                      autoComplete="email"
                       className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                     />
                   </div>
@@ -612,6 +613,7 @@ const Auth = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
+                  autoComplete="email"
                   className="h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                 />
               </div>
