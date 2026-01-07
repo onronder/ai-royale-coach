@@ -1,4 +1,23 @@
 {
+  "dashboard": {
+    "tabs": {
+      "coach": "KOÇ",
+      "deck": "DESTE",
+      "stats": "İSTATİSTİK",
+      "social": "SOSYAL"
+    },
+    "subtabs": {
+      "overview": "Genel Bakış",
+      "matches": "Maçlar",
+      "current": "Mevcut",
+      "builder": "Oluşturucu",
+      "collection": "Koleksiyon",
+      "analytics": "Analitik",
+      "leaderboard": "Sıralama",
+      "clans": "Klanlar",
+      "tournaments": "Turnuvalar"
+    }
+  },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",
     "thankYouDescription": "Geri bildiriminiz AI önerilerini geliştirmemize yardımcı oluyor.",

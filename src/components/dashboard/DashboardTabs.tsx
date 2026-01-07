@@ -1,12 +1,15 @@
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Brain, Swords, BarChart3, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function DashboardTabs() {
+  const { t } = useTranslation();
+  
   const tabs = [
-    { value: "coach", label: "COACH", icon: Brain },
-    { value: "deck", label: "DECK", icon: Swords },
-    { value: "stats", label: "STATS", icon: BarChart3 },
-    { value: "social", label: "SOCIAL", icon: Users },
+    { value: "coach", label: t("dashboard.tabs.coach"), icon: Brain },
+    { value: "deck", label: t("dashboard.tabs.deck"), icon: Swords },
+    { value: "stats", label: t("dashboard.tabs.stats"), icon: BarChart3 },
+    { value: "social", label: t("dashboard.tabs.social"), icon: Users },
   ];
 
   return (

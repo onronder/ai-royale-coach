@@ -147,8 +147,8 @@ const Dashboard = () => {
           <TabsContent value="coach" className="mt-6">
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
-                <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
-                <TabsTrigger value="matches" className="flex-1">Matches</TabsTrigger>
+                <TabsTrigger value="overview" className="flex-1">{t("dashboard.subtabs.overview")}</TabsTrigger>
+                <TabsTrigger value="matches" className="flex-1">{t("dashboard.subtabs.matches")}</TabsTrigger>
               </TabsList>
               <TabsContent value="overview" className="mt-4">
                 <OverviewTab
@@ -179,9 +179,9 @@ const Dashboard = () => {
           <TabsContent value="deck" className="mt-6">
             <Tabs defaultValue="current" className="w-full">
               <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
-                <TabsTrigger value="current" className="flex-1">Current</TabsTrigger>
-                <TabsTrigger value="builder" className="flex-1">Builder</TabsTrigger>
-                <TabsTrigger value="collection" className="flex-1">Collection</TabsTrigger>
+                <TabsTrigger value="current" className="flex-1">{t("dashboard.subtabs.current")}</TabsTrigger>
+                <TabsTrigger value="builder" className="flex-1">{t("dashboard.subtabs.builder")}</TabsTrigger>
+                <TabsTrigger value="collection" className="flex-1">{t("dashboard.subtabs.collection")}</TabsTrigger>
               </TabsList>
               <TabsContent value="current" className="mt-4">
                 <DeckTab
@@ -227,8 +227,8 @@ const Dashboard = () => {
           <TabsContent value="stats" className="mt-6">
             <Tabs defaultValue="analytics" className="w-full">
               <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
-                <TabsTrigger value="analytics" className="flex-1">Analytics</TabsTrigger>
-                <TabsTrigger value="leaderboard" className="flex-1">Leaderboard</TabsTrigger>
+                <TabsTrigger value="analytics" className="flex-1">{t("dashboard.subtabs.analytics")}</TabsTrigger>
+                <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
               </TabsList>
               <TabsContent value="analytics" className="mt-4">
                 <AnalyticsTab playerTag={playerTag} />
@@ -249,8 +249,8 @@ const Dashboard = () => {
           <TabsContent value="social" className="mt-6">
             <Tabs defaultValue="clans" className="w-full">
               <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
-                <TabsTrigger value="clans" className="flex-1">Clans</TabsTrigger>
-                <TabsTrigger value="tournaments" className="flex-1">Tournaments</TabsTrigger>
+                <TabsTrigger value="clans" className="flex-1">{t("dashboard.subtabs.clans")}</TabsTrigger>
+                <TabsTrigger value="tournaments" className="flex-1">{t("dashboard.subtabs.tournaments")}</TabsTrigger>
               </TabsList>
               <TabsContent value="clans" className="mt-4">
                 <PageTransition delay={100}>
