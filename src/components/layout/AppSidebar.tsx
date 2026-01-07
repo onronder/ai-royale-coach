@@ -84,9 +84,24 @@ export function AppSidebar({
   trophies,
   onSignOut
 }: AppSidebarProps) {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
   const navigate = useNavigate();
   const { state, isMobile } = useSidebar();
+
+  // Wait for translations to be ready before rendering
+  if (!ready) {
+    return (
+      <Sidebar variant="sidebar" collapsible="icon" className="hidden md:flex border-r border-border/50">
+        <SidebarContent className="px-2">
+          <div className="animate-pulse space-y-2 p-4">
+            <div className="h-10 w-10 rounded-xl bg-muted" />
+            <div className="h-4 w-24 rounded bg-muted" />
+            <div className="h-3 w-16 rounded bg-muted" />
+          </div>
+        </SidebarContent>
+      </Sidebar>
+    );
+  }
   const isCollapsed = state === "collapsed";
 
   const mainTabs = [
