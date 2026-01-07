@@ -406,6 +406,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_usage_logs: {
+        Row: {
+          feature_name: string
+          id: string
+          metadata: Json | null
+          player_tag: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          feature_name: string
+          id?: string
+          metadata?: Json | null
+          player_tag: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          feature_name?: string
+          id?: string
+          metadata?: Json | null
+          player_tag?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deck_archetypes: {
         Row: {
           countered_by: string[] | null
@@ -781,6 +808,24 @@ export type Database = {
           note?: string | null
           player_tag?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      player_tag_claims: {
+        Row: {
+          claimed_at: string
+          claimed_by_user_id: string
+          player_tag: string
+        }
+        Insert: {
+          claimed_at?: string
+          claimed_by_user_id: string
+          player_tag: string
+        }
+        Update: {
+          claimed_at?: string
+          claimed_by_user_id?: string
+          player_tag?: string
         }
         Relationships: []
       }
@@ -1295,6 +1340,18 @@ export type Database = {
           p_max_requests?: number
           p_window_seconds?: number
         }
+        Returns: boolean
+      }
+      claim_player_tag_for_trial: {
+        Args: { p_player_tag: string; p_user_id: string }
+        Returns: boolean
+      }
+      get_daily_feature_usage: {
+        Args: { p_date?: string; p_feature_name: string; p_user_id: string }
+        Returns: number
+      }
+      is_player_tag_available_for_trial: {
+        Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
     }
