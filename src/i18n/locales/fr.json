@@ -1,10 +1,10 @@
 {
   "dashboard": {
     "tabs": {
-      "coach": "COACH",
-      "deck": "DECK",
-      "stats": "STATS",
-      "social": "SOCIAL"
+      "coach": "Coach",
+      "deck": "Deck",
+      "stats": "Stats",
+      "social": "Social"
     },
     "subtabs": {
       "overview": "Aperçu",
@@ -16,7 +16,14 @@
       "leaderboard": "Classement",
       "clans": "Clans",
       "tournaments": "Tournois"
+    },
+    "header": {
+      "winRate": "VR"
     }
+  },
+  "sidebar": {
+    "navigation": "Navigation",
+    "quickActions": "Actions Rapides"
   },
   "feedback": {
     "thankYou": "Merci pour votre retour !",

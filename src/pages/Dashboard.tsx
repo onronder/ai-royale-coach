@@ -152,7 +152,15 @@ const Dashboard = () => {
       <SidebarProvider defaultOpen={true}>
         <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in flex w-full">
           {/* Desktop Sidebar */}
-          <AppSidebar activeTab={activeTab} activeSubTab={activeSubTab} onTabChange={setActiveTab} />
+          <AppSidebar 
+            activeTab={activeTab} 
+            activeSubTab={activeSubTab} 
+            onTabChange={setActiveTab}
+            playerTag={playerTag}
+            playerName={player?.name}
+            trophies={player?.trophies}
+            onSignOut={handleSignOutWithToast}
+          />
           
           {/* Main Content Area */}
           <SidebarInset className="flex-1">

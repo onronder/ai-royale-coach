@@ -1,10 +1,10 @@
 {
   "dashboard": {
     "tabs": {
-      "coach": "KOÇ",
-      "deck": "DESTE",
-      "stats": "İSTATİSTİK",
-      "social": "SOSYAL"
+      "coach": "Koç",
+      "deck": "Deste",
+      "stats": "İstatistik",
+      "social": "Sosyal"
     },
     "subtabs": {
       "overview": "Genel Bakış",
@@ -16,7 +16,14 @@
       "leaderboard": "Sıralama",
       "clans": "Klanlar",
       "tournaments": "Turnuvalar"
+    },
+    "header": {
+      "winRate": "KO"
     }
+  },
+  "sidebar": {
+    "navigation": "Navigasyon",
+    "quickActions": "Hızlı Eylemler"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",

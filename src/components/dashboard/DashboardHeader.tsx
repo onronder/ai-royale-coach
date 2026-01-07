@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { LogOut, Trophy, Swords, Crown, HelpCircle, Settings } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Trophy, Swords, Crown } from "lucide-react";
 import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
 import { QuickAccountSwitch } from "@/components/player/QuickAccountSwitch";
-import { NavbarSubscriptionBadge } from "@/components/layout/NavbarSubscriptionBadge";
+import { LanguageSelector } from "@/components/layout/LanguageSelector";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { NotificationCenter } from "@/components/layout/NotificationCenter";
+import { GlobalProgressCenter } from "@/components/layout/GlobalProgressCenter";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 
 interface DashboardHeaderProps {
@@ -31,79 +32,52 @@ export function DashboardHeader({
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md shadow-md">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-md">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        {/* Left: Logo (mobile only) + Player Stats */}
         <div className="flex items-center gap-4">
-          <div className="relative">
-            <Crown className="h-7 w-7 text-gold" />
-            <div className="absolute inset-0 bg-gold/20 blur-lg -z-10" />
+          {/* Mobile logo */}
+          <div className="md:hidden flex items-center gap-2">
+            <Crown className="h-6 w-6 text-gold" />
+            <span className="font-rajdhani font-bold text-foreground">AI ROYALE</span>
           </div>
-          <div>
-            <h1 className="text-xl font-bold font-rajdhani text-foreground">AI ROYALE</h1>
-            <p className="text-xs text-muted-foreground font-mono">#{playerTag}</p>
-          </div>
-        </div>
-        
-        {/* Quick Stats */}
-        {player && (
-          <div className="hidden md:flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/20">
-              <Trophy className="h-4 w-4 text-gold trophy-shimmer" />
-              <span className="font-rajdhani font-bold text-gold">{player.trophies.toLocaleString()}</span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-success/10 border border-success/20">
-              <Swords className="h-4 w-4 text-success" />
-              <span className="font-rajdhani font-bold text-success">
-                {winRate.toFixed(0)}% WR
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Quick Switch & Sign Out */}
-        <div className="flex items-center gap-2">
-          {/* Subscription Status Badge */}
-          <NavbarSubscriptionBadge />
           
+          {/* Quick Stats (desktop) */}
+          {player && (
+            <div className="hidden md:flex items-center gap-3">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold/10 border border-gold/20">
+                <Trophy className="h-3.5 w-3.5 text-gold" />
+                <span className="text-sm font-rajdhani font-bold text-gold">
+                  {player.trophies.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-success/10 border border-success/20">
+                <Swords className="h-3.5 w-3.5 text-success" />
+                <span className="text-sm font-rajdhani font-bold text-success">
+                  {winRate.toFixed(0)}% {t("dashboard.header.winRate")}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-1.5">
           <CacheStatusIndicator 
             playerTag={playerTag} 
             onRefresh={onRefresh} 
             isRefreshing={isRefreshing} 
           />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => navigate('/help')}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('nav.help')}</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => navigate(`/settings?returnTo=/player/${playerTag}`)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t('settings.title')}</TooltipContent>
-          </Tooltip>
+          <GlobalProgressCenter />
+          <NotificationCenter />
+          <div className="hidden sm:flex items-center gap-1">
+            <LanguageSelector />
+            <ThemeToggle />
+          </div>
           <QuickAccountSwitch
             currentPlayerTag={playerTag} 
             userId={userId} 
           />
-          <Button variant="outline" size="sm" onClick={onSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">{t('nav.signOut')}</span>
-          </Button>
         </div>
       </div>
     </header>
