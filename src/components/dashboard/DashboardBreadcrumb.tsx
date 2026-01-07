@@ -33,7 +33,12 @@ const subTabLabels: Record<string, string> = {
 };
 
 export const DashboardBreadcrumb = ({ activeTab, activeSubTab }: DashboardBreadcrumbProps) => {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
+
+  // Return null while translations are loading
+  if (!ready) {
+    return null;
+  }
 
   const tabLabel = t(tabLabels[activeTab] || activeTab);
   const subTabLabel = t(subTabLabels[activeSubTab] || activeSubTab);

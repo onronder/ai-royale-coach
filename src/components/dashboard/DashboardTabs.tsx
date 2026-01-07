@@ -3,7 +3,18 @@ import { Brain, Swords, BarChart3, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function DashboardTabs() {
-  const { t } = useTranslation();
+  const { t, ready } = useTranslation();
+  
+  // Show skeleton while translations are loading
+  if (!ready) {
+    return (
+      <TabsList className="hidden md:grid w-full grid-cols-4 gap-2 h-auto p-2 bg-card/80 border border-gold/20 rounded-xl backdrop-blur-sm">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col items-center justify-center gap-1 h-20 rounded-lg bg-muted/30 animate-pulse" />
+        ))}
+      </TabsList>
+    );
+  }
   
   const tabs = [
     { value: "coach", label: t("dashboard.tabs.coach"), icon: Brain },

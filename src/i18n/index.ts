@@ -35,6 +35,7 @@ const i18nInit = i18n
       fr: { translation: { ...fr, ...frHelp } },
     },
     fallbackLng: 'en',
+    initImmediate: true, // Force synchronous init for bundled resources
     interpolation: {
       escapeValue: false,
     },
