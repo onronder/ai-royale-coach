@@ -17,6 +17,7 @@ import { useUnifiedRealtime } from "@/hooks/useUnifiedRealtime";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DashboardLoader } from "@/components/ui/page-loader";
 import { PageTransition } from "@/components/ui/loading-states";
+import { DataLoader } from "@/components/ui/data-loader";
 
 // Dashboard sub-components
 import { 
@@ -244,7 +245,9 @@ const Dashboard = () => {
                     </TabsContent>
                     <TabsContent value="builder" className="mt-4">
                       <PageTransition delay={100}>
-                        {player?.cards && user && (
+                        {playerLoading ? (
+                          <DataLoader context="deck" variant="inline" />
+                        ) : player?.cards && user ? (
                           <DeckBuilder 
                             availableCards={player.cards} 
                             userId={user.id}
@@ -259,6 +262,10 @@ const Dashboard = () => {
                             userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
                             playerTrophies={player.trophies || 0}
                           />
+                        ) : (
+                          <div className="text-center py-12 text-muted-foreground">
+                            <p>{t('common.noData')}</p>
+                          </div>
                         )}
                       </PageTransition>
                     </TabsContent>
