@@ -1,26 +1,4 @@
 {
-  "dashboard": {
-    "tabs": {
-      "coach": "Coach",
-      "deck": "Deck",
-      "stats": "Stats",
-      "social": "Social"
-    },
-    "subtabs": {
-      "overview": "Overview",
-      "matches": "Matches",
-      "current": "Current",
-      "builder": "Builder",
-      "collection": "Collection",
-      "analytics": "Analytics",
-      "leaderboard": "Leaderboard",
-      "clans": "Clans",
-      "tournaments": "Tournaments"
-    },
-    "header": {
-      "winRate": "WR"
-    }
-  },
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Quick Actions"
@@ -993,15 +971,31 @@
     "noBattlesDesc": "Play some matches in Clash Royale and come back to track your performance!",
     "failedLoadDeck": "Failed to load deck",
     "tabs": {
-      "stats": "Stats",
-      "matches": "Matches",
+      "coach": "Coach",
       "deck": "Deck",
+      "stats": "Stats",
+      "social": "Social",
+      "matches": "Matches",
       "builder": "Builder",
       "analytics": "Analytics",
       "cards": "Cards",
       "ranks": "Ranks",
       "tourneys": "Tourneys",
       "clans": "Clans"
+    },
+    "subtabs": {
+      "overview": "Overview",
+      "matches": "Matches",
+      "current": "Current",
+      "builder": "Builder",
+      "collection": "Collection",
+      "analytics": "Analytics",
+      "leaderboard": "Leaderboard",
+      "clans": "Clans",
+      "tournaments": "Tournaments"
+    },
+    "header": {
+      "winRate": "WR"
     },
     "aiCoach": {
       "title": "AI Coach Summary",

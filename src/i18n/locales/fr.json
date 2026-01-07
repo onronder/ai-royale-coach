@@ -1,26 +1,4 @@
 {
-  "dashboard": {
-    "tabs": {
-      "coach": "Coach",
-      "deck": "Deck",
-      "stats": "Stats",
-      "social": "Social"
-    },
-    "subtabs": {
-      "overview": "Aperçu",
-      "matches": "Matchs",
-      "current": "Actuel",
-      "builder": "Constructeur",
-      "collection": "Collection",
-      "analytics": "Analytique",
-      "leaderboard": "Classement",
-      "clans": "Clans",
-      "tournaments": "Tournois"
-    },
-    "header": {
-      "winRate": "VR"
-    }
-  },
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Actions Rapides"
@@ -998,15 +976,31 @@
     "level": "Niveau",
     "expLevel": "Niveau d'Expérience",
     "tabs": {
-      "stats": "Stats",
-      "matches": "Matchs",
+      "coach": "Coach",
       "deck": "Deck",
+      "stats": "Stats",
+      "social": "Social",
+      "matches": "Matchs",
       "builder": "Constructeur",
       "analytics": "Analytiques",
       "cards": "Cartes",
       "ranks": "Classements",
       "tourneys": "Tournois",
       "clans": "Clans"
+    },
+    "subtabs": {
+      "overview": "Aperçu",
+      "matches": "Matchs",
+      "current": "Actuel",
+      "builder": "Constructeur",
+      "collection": "Collection",
+      "analytics": "Analytique",
+      "leaderboard": "Classement",
+      "clans": "Clans",
+      "tournaments": "Tournois"
+    },
+    "header": {
+      "winRate": "VR"
     },
     "aiCoach": {
       "title": "Résumé du Coach IA",

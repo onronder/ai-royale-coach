@@ -1,26 +1,4 @@
 {
-  "dashboard": {
-    "tabs": {
-      "coach": "Coach",
-      "deck": "Mazo",
-      "stats": "Stats",
-      "social": "Social"
-    },
-    "subtabs": {
-      "overview": "Resumen",
-      "matches": "Partidas",
-      "current": "Actual",
-      "builder": "Constructor",
-      "collection": "Colección",
-      "analytics": "Analíticas",
-      "leaderboard": "Clasificación",
-      "clans": "Clanes",
-      "tournaments": "Torneos"
-    },
-    "header": {
-      "winRate": "VR"
-    }
-  },
   "sidebar": {
     "navigation": "Navegación",
     "quickActions": "Acciones Rápidas"
@@ -998,15 +976,31 @@
     "level": "Nivel",
     "expLevel": "Nivel de Experiencia",
     "tabs": {
-      "stats": "Estadísticas",
-      "matches": "Partidas",
+      "coach": "Coach",
       "deck": "Mazo",
+      "stats": "Stats",
+      "social": "Social",
+      "matches": "Partidas",
       "builder": "Constructor",
       "analytics": "Analíticas",
       "cards": "Cartas",
       "ranks": "Rankings",
       "tourneys": "Torneos",
       "clans": "Clanes"
+    },
+    "subtabs": {
+      "overview": "Resumen",
+      "matches": "Partidas",
+      "current": "Actual",
+      "builder": "Constructor",
+      "collection": "Colección",
+      "analytics": "Analíticas",
+      "leaderboard": "Clasificación",
+      "clans": "Clanes",
+      "tournaments": "Torneos"
+    },
+    "header": {
+      "winRate": "VR"
     },
     "aiCoach": {
       "title": "Resumen del Coach IA",
