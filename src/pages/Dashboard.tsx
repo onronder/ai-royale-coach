@@ -161,6 +161,9 @@ const Dashboard = () => {
             playerTag={playerTag}
             playerName={player?.name}
             trophies={player?.trophies}
+            winRate={winRate}
+            isRefreshing={isRefreshing}
+            onRefresh={handleRefreshData}
             onSignOut={handleSignOutWithToast}
           />
           
