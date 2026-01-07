@@ -1116,7 +1116,8 @@
     "sessionExpired": "Oturum süresi doldu. Lütfen tekrar giriş yapın.",
     "aiQuota": "Bugünkü AI İstekleri",
     "quotaExhausted": "Günlük AI limiti doldu. Gece yarısı sıfırlanır.",
-    "quotaLow": "Bugün için AI istekleri azalıyor."
+    "quotaLow": "Bugün için AI istekleri azalıyor.",
+    "accessDenied": "Erişim reddedildi. Bu hesap için AI Koç etkin değil."
   },
   "match": {
     "victory": "Zafer",
@@ -1129,6 +1130,18 @@
     "opponent": "Rakip",
     "viewDetails": "Detayları Gör",
     "analysis": "Maç Analizi"
+  },
+  "matches": {
+    "details": "Maç Detayları",
+    "battleTime": "Savaş Zamanı",
+    "trophyChange": "Kupa Değişimi",
+    "crowns": "Taçlar",
+    "yourDeck": "Desten",
+    "opponentDeck": "Rakibin Destesi",
+    "analysis": "Maç Analizi",
+    "keyMoments": "Kilit Anlar",
+    "counterDeck": "Counter Deste",
+    "discussWithCoach": "AI Koç ile Tartış"
   },
   "cards": {
     "collection": "Kart Koleksiyonu",
