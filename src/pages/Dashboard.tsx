@@ -157,6 +157,7 @@ const Dashboard = () => {
             activeTab={activeTab} 
             activeSubTab={activeSubTab} 
             onTabChange={setActiveTab}
+            onSubTabChange={setActiveSubTab}
             playerTag={playerTag}
             playerName={player?.name}
             trophies={player?.trophies}

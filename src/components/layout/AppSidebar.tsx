@@ -36,6 +36,7 @@ interface AppSidebarProps {
   activeTab: string;
   activeSubTab: string;
   onTabChange: (value: string) => void;
+  onSubTabChange: (value: string) => void;
   playerTag?: string;
   playerName?: string;
   trophies?: number;
@@ -79,6 +80,7 @@ export function AppSidebar({
   activeTab, 
   activeSubTab, 
   onTabChange, 
+  onSubTabChange,
   playerTag,
   playerName,
   trophies,
@@ -215,7 +217,7 @@ export function AppSidebar({
                         {config.subtabs.map((subtab) => (
                           <button
                             key={subtab.id}
-                            onClick={() => {}}
+                            onClick={() => onSubTabChange(subtab.id)}
                             className={cn(
                               "w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors",
                               activeSubTab === subtab.id 
