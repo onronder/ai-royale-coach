@@ -139,15 +139,21 @@ serve(async (req) => {
       });
     }
 
-    // Strip webhook secret prefix if present - standardwebhooks expects raw base64
-    // Polar can send secrets with 'whsec_' OR 'polar_whs_' prefix
+    // Polar webhook secrets come in format 'polar_whs_<raw_secret>'
+    // The standardwebhooks library expects a base64-encoded secret
+    // We need to: 1) strip the prefix, 2) base64-encode the remaining raw secret
     let secretKey = webhookSecret;
     if (webhookSecret.startsWith('polar_whs_')) {
-      secretKey = webhookSecret.slice(10); // Remove 'polar_whs_'
-      log('info', 'Stripped polar_whs_ prefix from webhook secret');
+      const rawSecret = webhookSecret.slice(10); // Remove 'polar_whs_'
+      secretKey = btoa(rawSecret);
+      log('info', 'Converted polar_whs_ secret to base64');
     } else if (webhookSecret.startsWith('whsec_')) {
-      secretKey = webhookSecret.slice(6); // Remove 'whsec_'
+      secretKey = webhookSecret.slice(6); // Remove 'whsec_' (already base64)
       log('info', 'Stripped whsec_ prefix from webhook secret');
+    } else {
+      // Assume it's already in the correct format or encode it
+      secretKey = btoa(webhookSecret);
+      log('info', 'Encoded raw webhook secret to base64');
     }
 
     log('info', 'Attempting signature verification', { 
