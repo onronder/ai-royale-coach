@@ -139,18 +139,45 @@ serve(async (req) => {
       });
     }
 
-    // Strip 'whsec_' prefix if present - standardwebhooks expects raw base64
-    // Polar sends secrets with this prefix but the library needs the raw value
+    // Strip webhook secret prefix if present - standardwebhooks expects raw base64
+    // Polar can send secrets with 'whsec_' OR 'polar_whs_' prefix
     let secretKey = webhookSecret;
-    if (webhookSecret.startsWith('whsec_')) {
-      secretKey = webhookSecret.slice(6);
+    if (webhookSecret.startsWith('polar_whs_')) {
+      secretKey = webhookSecret.slice(10); // Remove 'polar_whs_'
+      log('info', 'Stripped polar_whs_ prefix from webhook secret');
+    } else if (webhookSecret.startsWith('whsec_')) {
+      secretKey = webhookSecret.slice(6); // Remove 'whsec_'
       log('info', 'Stripped whsec_ prefix from webhook secret');
     }
 
+    log('info', 'Attempting signature verification', { 
+      secretPrefix: webhookSecret.substring(0, Math.min(12, webhookSecret.length)) + '...',
+      secretKeyLength: secretKey.length,
+      payloadLength: payload.length 
+    });
+
+    // Initialize Webhook verifier
+    let wh: Webhook;
+    try {
+      wh = new Webhook(secretKey);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      log('error', 'Failed to initialize Webhook verifier', { 
+        error: errorMsg,
+        secretKeyLength: secretKey.length
+      });
+      return new Response(JSON.stringify({ 
+        error: 'Webhook configuration error', 
+        details: 'Failed to initialize signature verifier',
+        requestId 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Verify webhook signature
-    const wh = new Webhook(secretKey);
     let event: { type: string; data: any };
-    
     try {
       event = wh.verify(payload, {
         'webhook-id': webhookId,
@@ -159,8 +186,16 @@ serve(async (req) => {
       }) as { type: string; data: any };
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      log('error', 'Webhook signature verification failed', { error: errorMsg });
-      return new Response(JSON.stringify({ error: 'Invalid signature', requestId }), {
+      log('error', 'Webhook signature verification failed', { 
+        error: errorMsg,
+        webhookId,
+        signaturePrefix: webhookSignature?.substring(0, 20) + '...'
+      });
+      return new Response(JSON.stringify({ 
+        error: 'Invalid signature', 
+        details: errorMsg,
+        requestId 
+      }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
