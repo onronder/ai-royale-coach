@@ -1,6 +1,8 @@
 export { DashboardHeader } from './DashboardHeader';
 export { DashboardTabs } from './DashboardTabs';
+export { DashboardBreadcrumb } from './DashboardBreadcrumb';
 export { MobileBottomNav } from './MobileBottomNav';
+export { SwipeableTabsWrapper } from './SwipeableTabsWrapper';
 export { OverviewTab } from './OverviewTab';
 export { MatchesTab } from './MatchesTab';
 export { DeckTab } from './DeckTab';
