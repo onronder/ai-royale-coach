@@ -13,7 +13,7 @@ export function DashboardTabs() {
   ];
 
   return (
-    <TabsList className="grid w-full grid-cols-4 gap-2 h-auto p-2 bg-card/80 border border-gold/20 rounded-xl backdrop-blur-sm">
+    <TabsList className="hidden md:grid w-full grid-cols-4 gap-2 h-auto p-2 bg-card/80 border border-gold/20 rounded-xl backdrop-blur-sm">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         return (

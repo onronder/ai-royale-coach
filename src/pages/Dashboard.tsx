@@ -20,7 +20,8 @@ import { PageTransition } from "@/components/ui/loading-states";
 // Dashboard sub-components
 import { 
   DashboardHeader, 
-  DashboardTabs, 
+  DashboardTabs,
+  MobileBottomNav,
   OverviewTab, 
   MatchesTab, 
   DeckTab, 
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState("coach");
   
   // Custom hooks for data management
   const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
@@ -139,8 +141,8 @@ const Dashboard = () => {
         onSignOut={handleSignOutWithToast}
       />
 
-      <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="coach" className="w-full">
+      <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DashboardTabs />
 
           {/* COACH TAB */}
@@ -310,6 +312,9 @@ const Dashboard = () => {
           onDismiss={dismissNotification}
         />
       )}
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
     </>
   );
