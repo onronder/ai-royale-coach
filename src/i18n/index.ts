@@ -22,6 +22,7 @@ export const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ];
 
+// Initialize i18n with all translations
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
