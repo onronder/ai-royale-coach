@@ -23,7 +23,7 @@ export const languages = [
 ];
 
 // Initialize i18n with all translations
-i18n
+const i18nInit = i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -42,6 +42,10 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },
+    react: {
+      useSuspense: true,
+    },
   });
 
+export { i18nInit };
 export default i18n;
