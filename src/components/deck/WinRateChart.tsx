@@ -52,7 +52,8 @@ export function WinRateChart({ data }: WinRateChartProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Chart */}
-        <ResponsiveContainer width="100%" height={350}>
+        <div className="min-h-[350px] w-full">
+          <ResponsiveContainer width="100%" height={350}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
             <defs>
               <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
@@ -136,8 +137,9 @@ export function WinRateChart({ data }: WinRateChartProps) {
                 fontWeight="bold"
               />
             </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* Legend */}
         <div className="flex flex-wrap justify-center gap-6 pt-4 border-t border-border/50">

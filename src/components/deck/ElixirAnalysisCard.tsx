@@ -102,8 +102,9 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
           <CardDescription>{t('deckAnalysis.elixirDistributionDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={180}>
-            <AreaChart data={analysis.elixirDistribution}>
+          <div className="min-h-[180px] w-full">
+            <ResponsiveContainer width="100%" height={180}>
+              <AreaChart data={analysis.elixirDistribution}>
               <defs>
                 <linearGradient id="elixirGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
@@ -138,8 +139,9 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                 strokeWidth={2}
                 fill="url(#elixirGradient)" 
               />
-            </AreaChart>
-          </ResponsiveContainer>
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
@@ -150,8 +152,9 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
           <CardDescription>{t('deckAnalysis.defVsOffDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
+          <div className="min-h-[200px] w-full">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
               <Pie
                 data={splitData}
                 cx="50%"
@@ -175,8 +178,9 @@ export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
                 }}
                 formatter={(value) => `${value} ${t('deckAnalysis.elixir').toLowerCase()}`}
               />
-            </PieChart>
-          </ResponsiveContainer>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
