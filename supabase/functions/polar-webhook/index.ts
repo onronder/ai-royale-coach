@@ -139,21 +139,24 @@ serve(async (req) => {
       });
     }
 
-    // Polar webhook secrets come in format 'polar_whs_<raw_secret>'
-    // The standardwebhooks library expects a base64-encoded secret
-    // We need to: 1) strip the prefix, 2) base64-encode the remaining raw secret
-    let secretKey = webhookSecret;
+    // Polar webhook secrets: the standardwebhooks library expects a base64-encoded secret
+    // Per Polar SDK source: we must base64-encode the ENTIRE secret (including polar_whs_ prefix)
+    let secretKey: string;
     if (webhookSecret.startsWith('polar_whs_')) {
-      const rawSecret = webhookSecret.slice(10); // Remove 'polar_whs_'
-      secretKey = btoa(rawSecret);
-      log('info', 'Converted polar_whs_ secret to base64');
+      // Base64 encode the ENTIRE secret including the prefix
+      secretKey = btoa(webhookSecret);
+      log('info', 'Base64 encoded entire polar_whs_ secret', { 
+        originalLength: webhookSecret.length,
+        encodedLength: secretKey.length 
+      });
     } else if (webhookSecret.startsWith('whsec_')) {
-      secretKey = webhookSecret.slice(6); // Remove 'whsec_' (already base64)
+      // Supabase/Svix format: strip prefix (rest is already base64)
+      secretKey = webhookSecret.slice(6);
       log('info', 'Stripped whsec_ prefix from webhook secret');
     } else {
-      // Assume it's already in the correct format or encode it
+      // Fallback: encode the entire secret
       secretKey = btoa(webhookSecret);
-      log('info', 'Encoded raw webhook secret to base64');
+      log('info', 'Base64 encoded raw webhook secret');
     }
 
     log('info', 'Attempting signature verification', { 
