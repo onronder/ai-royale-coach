@@ -22,7 +22,9 @@ import { PageTransition } from "@/components/ui/loading-states";
 import { 
   DashboardHeader, 
   DashboardTabs,
+  DashboardBreadcrumb,
   MobileBottomNav,
+  SwipeableTabsWrapper,
   OverviewTab, 
   MatchesTab, 
   DeckTab, 
@@ -165,9 +167,10 @@ const Dashboard = () => {
             />
 
             <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">
-              {/* Sidebar Toggle for Desktop - positioned at top of content */}
-              <div className="hidden md:flex items-center gap-2 mb-4">
+              {/* Desktop: Sidebar Toggle + Breadcrumb */}
+              <div className="hidden md:flex items-center gap-4 mb-4">
                 <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground" />
+                <DashboardBreadcrumb activeTab={activeTab} activeSubTab={activeSubTab} />
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -175,6 +178,13 @@ const Dashboard = () => {
                 <div className="md:hidden">
                   <DashboardTabs />
                 </div>
+
+                {/* Mobile Swipeable Wrapper */}
+                <SwipeableTabsWrapper
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
+                  tabs={["coach", "deck", "stats", "social"]}
+                >
 
                 <TabsContent value="coach" className="mt-6 md:mt-0">
                   <Tabs value={activeTab === "coach" ? activeSubTab : "overview"} onValueChange={setActiveSubTab} className="w-full">
@@ -299,6 +309,7 @@ const Dashboard = () => {
                     </TabsContent>
                   </Tabs>
                 </TabsContent>
+                </SwipeableTabsWrapper>
               </Tabs>
             </main>
 
