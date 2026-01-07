@@ -2,11 +2,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Area, AreaChart } from "recharts";
+import { XAxis, YAxis, ReferenceLine, Area, AreaChart } from "recharts";
 import { Trophy, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { format } from "date-fns";
 import { parseClashRoyaleDate } from "@/lib/utils";
+import { ChartSkeleton } from "@/components/ui/chart-skeleton";
+import { ChartEmptyState } from "@/components/ui/chart-empty-state";
 
 function formatBattleDate(battleTime: string): string {
   try {
@@ -22,13 +24,15 @@ interface TrophyProgressChartProps {
   playerTag: string;
   currentTrophies?: number;
   bestTrophies?: number;
+  isLoading?: boolean;
 }
 
 export function TrophyProgressChart({ 
   battles, 
   playerTag, 
   currentTrophies = 0,
-  bestTrophies = 0 
+  bestTrophies = 0,
+  isLoading = false
 }: TrophyProgressChartProps) {
   const { t } = useTranslation();
 
@@ -128,6 +132,22 @@ export function TrophyProgressChart({
     }
   };
 
+  if (isLoading) {
+    return (
+      <Card className="bg-card/50 border-border">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-rajdhani">
+            <Trophy className="h-5 w-5 text-primary" />
+            {t('dashboard.trophyProgress.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ChartSkeleton variant="area" height={200} />
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!battles || battles.length === 0) {
     return (
       <Card className="bg-card/50 border-border">
@@ -136,8 +156,16 @@ export function TrophyProgressChart({
             <Trophy className="h-5 w-5 text-primary" />
             {t('dashboard.trophyProgress.title')}
           </CardTitle>
-          <CardDescription>{t('dashboard.trophyProgress.noBattleData')}</CardDescription>
         </CardHeader>
+        <CardContent>
+          <ChartEmptyState 
+            icon={Trophy}
+            variant="trend"
+            height={200}
+            title={t('dashboard.trophyProgress.noBattleData')}
+            description={t('dashboard.trophyProgress.playToSee', 'Play battles to track your trophy progress')}
+          />
+        </CardContent>
       </Card>
     );
   }

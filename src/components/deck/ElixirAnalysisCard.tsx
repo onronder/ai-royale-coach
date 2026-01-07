@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Zap, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { ChartSkeleton } from "@/components/ui/chart-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ElixirTradeScenario {
   yourCard: string;
@@ -23,11 +25,44 @@ interface ElixirAnalysisData {
 }
 
 interface ElixirAnalysisCardProps {
-  analysis: ElixirAnalysisData;
+  analysis: ElixirAnalysisData | null;
+  isLoading?: boolean;
 }
 
-export function ElixirAnalysisCard({ analysis }: ElixirAnalysisCardProps) {
+export function ElixirAnalysisCard({ analysis, isLoading }: ElixirAnalysisCardProps) {
   const { t } = useTranslation();
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-3 gap-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="bg-gradient-to-br from-card to-card-elevated">
+              <CardContent className="p-4 text-center">
+                <Skeleton className="w-6 h-6 mx-auto mb-2 rounded-full" />
+                <Skeleton className="h-8 w-12 mx-auto mb-1" />
+                <Skeleton className="h-3 w-16 mx-auto" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-4 w-40" />
+          </CardHeader>
+          <CardContent>
+            <ChartSkeleton variant="area" height={180} />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!analysis) {
+    return null;
+  }
 
   const cycleSpeedColors = {
     fast: 'hsl(var(--success))',

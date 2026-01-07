@@ -1,7 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart3 } from "lucide-react";
+import { ChartSkeleton } from "@/components/ui/chart-skeleton";
+import { ChartEmptyState } from "@/components/ui/chart-empty-state";
 
 interface ArchetypeWinRate {
   archetype: string;
@@ -12,11 +14,12 @@ interface ArchetypeWinRate {
 
 interface WinRateChartProps {
   data: ArchetypeWinRate[];
+  isLoading?: boolean;
 }
 
-export function WinRateChart({ data }: WinRateChartProps) {
+export function WinRateChart({ data, isLoading }: WinRateChartProps) {
   const { t } = useTranslation();
-  const chartData = data.map(d => ({
+  const chartData = (data || []).map(d => ({
     name: d.archetype,
     winRate: Math.round(d.winRate),
     total: d.wins + d.losses,
@@ -53,8 +56,19 @@ export function WinRateChart({ data }: WinRateChartProps) {
       <CardContent className="space-y-6">
         {/* Chart */}
         <div className="min-h-[350px] w-full">
-          <ResponsiveContainer width="100%" height={350}>
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+          {isLoading ? (
+            <ChartSkeleton variant="bar" height={350} />
+          ) : chartData.length === 0 ? (
+            <ChartEmptyState 
+              variant="bar"
+              icon={BarChart3}
+              height={350}
+              title={t('winRateChart.noData', 'No win rate data')}
+              description={t('winRateChart.noDataDesc', 'Play against different archetypes to see your performance')}
+            />
+          ) : (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
             <defs>
               <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={1} />
@@ -137,11 +151,13 @@ export function WinRateChart({ data }: WinRateChartProps) {
                 fontWeight="bold"
               />
             </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         {/* Legend */}
+        {chartData.length > 0 && (
         <div className="flex flex-wrap justify-center gap-6 pt-4 border-t border-border/50">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-sm bg-chart-1 shadow-victory" />
@@ -156,6 +172,7 @@ export function WinRateChart({ data }: WinRateChartProps) {
             <span className="text-xs text-muted-foreground">{t('winRateChart.weak')}</span>
           </div>
         </div>
+        )}
       </CardContent>
     </Card>
   );
