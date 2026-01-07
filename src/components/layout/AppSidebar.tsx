@@ -11,13 +11,8 @@ import {
   LogOut,
   ChevronRight,
   Trophy,
-  Sparkles,
-  Target,
-  RefreshCw,
-  Database
+  Sparkles
 } from "lucide-react";
-import { CacheStatusIndicator } from "@/components/analytics/CacheStatusIndicator";
-import { GlobalProgressCenter } from "@/components/layout/GlobalProgressCenter";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -45,9 +40,6 @@ interface AppSidebarProps {
   playerTag?: string;
   playerName?: string;
   trophies?: number;
-  winRate?: number;
-  isRefreshing?: boolean;
-  onRefresh?: () => void;
   onSignOut?: () => void;
 }
 
@@ -92,9 +84,6 @@ export function AppSidebar({
   playerTag,
   playerName,
   trophies,
-  winRate,
-  isRefreshing,
-  onRefresh,
   onSignOut
 }: AppSidebarProps) {
   const { t, ready } = useTranslation();
@@ -245,91 +234,6 @@ export function AppSidebar({
                 );
               })}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarSeparator className="my-2" />
-
-        {/* Player Stats Section */}
-        <SidebarGroup>
-          {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-2">
-              {t("sidebar.playerStats")}
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <div className={cn("space-y-2", isCollapsed ? "px-1" : "px-2")}>
-              {/* Trophy Badge */}
-              {trophies !== undefined && (
-                isCollapsed ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center justify-center p-2 rounded-lg bg-gold/10 border border-gold/20">
-                        <Trophy className="h-4 w-4 text-gold" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      {trophies.toLocaleString()} {t("dashboard.trophies")}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gold/10 border border-gold/20">
-                    <Trophy className="h-4 w-4 text-gold" />
-                    <span className="font-bold text-gold text-sm">{trophies.toLocaleString()}</span>
-                  </div>
-                )
-              )}
-              
-              {/* Win Rate Badge */}
-              {winRate !== undefined && (
-                isCollapsed ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center justify-center p-2 rounded-lg bg-success/10 border border-success/20">
-                        <Target className="h-4 w-4 text-success" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      {winRate.toFixed(0)}% {t("dashboard.winRate")}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-success/10 border border-success/20">
-                    <Target className="h-4 w-4 text-success" />
-                    <span className="font-bold text-success text-sm">{winRate.toFixed(0)}% WR</span>
-                  </div>
-                )
-              )}
-              
-              {/* Cache Status & Refresh */}
-              {playerTag && onRefresh && (
-                isCollapsed ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button 
-                        onClick={onRefresh}
-                        disabled={isRefreshing}
-                        className="flex items-center justify-center p-2 rounded-lg bg-muted/50 border border-border/50 hover:bg-muted transition-colors w-full disabled:opacity-50"
-                      >
-                        <RefreshCw className={cn("h-4 w-4 text-muted-foreground", isRefreshing && "animate-spin")} />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      {t("cacheStatus.refresh")}
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <CacheStatusIndicator
-                    playerTag={playerTag}
-                    onRefresh={onRefresh}
-                    isRefreshing={isRefreshing || false}
-                  />
-                )
-              )}
-              
-              {/* Sync Progress Indicator */}
-              {!isCollapsed && <GlobalProgressCenter />}
-            </div>
           </SidebarGroupContent>
         </SidebarGroup>
 

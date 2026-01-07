@@ -1,8 +1,7 @@
 {
   "sidebar": {
     "navigation": "Navegação",
-    "quickActions": "Ações Rápidas",
-    "playerStats": "Estatísticas do Jogador"
+    "quickActions": "Ações Rápidas"
   },
   "feedback": {
     "thankYou": "Obrigado pelo seu feedback!",

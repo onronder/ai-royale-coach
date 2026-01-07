@@ -1,8 +1,7 @@
 {
   "sidebar": {
     "navigation": "Navigasyon",
-    "quickActions": "Hızlı Eylemler",
-    "playerStats": "Oyuncu İstatistikleri"
+    "quickActions": "Hızlı Eylemler"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",
