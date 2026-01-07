@@ -52,6 +52,7 @@ const Dashboard = () => {
   const [coachOpen, setCoachOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("coach");
+  const [activeSubTab, setActiveSubTab] = useState("overview");
   
   // Custom hooks for data management
   const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
@@ -89,6 +90,17 @@ const Dashboard = () => {
       updateLastSeen(playerTag);
     }
   }, [user?.id, playerTag, updateLastSeen]);
+
+  // Reset sub-tab to default when switching main tabs
+  useEffect(() => {
+    const defaultSubTabs: Record<string, string> = {
+      coach: "overview",
+      deck: "current",
+      stats: "analytics",
+      social: "clans",
+    };
+    setActiveSubTab(defaultSubTabs[activeTab] || "overview");
+  }, [activeTab]);
 
   // Event handlers
   const handleRefreshData = useCallback(async () => {
@@ -138,7 +150,7 @@ const Dashboard = () => {
       <SidebarProvider defaultOpen={true}>
         <div key={playerTag} className="min-h-screen bg-background arena-bg animate-page-fade-in flex w-full">
           {/* Desktop Sidebar */}
-          <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+          <AppSidebar activeTab={activeTab} activeSubTab={activeSubTab} onTabChange={setActiveTab} />
           
           {/* Main Content Area */}
           <SidebarInset className="flex-1">
@@ -164,9 +176,8 @@ const Dashboard = () => {
                   <DashboardTabs />
                 </div>
 
-                {/* COACH TAB */}
                 <TabsContent value="coach" className="mt-6 md:mt-0">
-                  <Tabs defaultValue="overview" className="w-full">
+                  <Tabs value={activeTab === "coach" ? activeSubTab : "overview"} onValueChange={setActiveSubTab} className="w-full">
                     <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
                       <TabsTrigger value="overview" className="flex-1">{t("dashboard.subtabs.overview")}</TabsTrigger>
                       <TabsTrigger value="matches" className="flex-1">{t("dashboard.subtabs.matches")}</TabsTrigger>
@@ -198,7 +209,7 @@ const Dashboard = () => {
 
                 {/* DECK TAB */}
                 <TabsContent value="deck" className="mt-6 md:mt-0">
-                  <Tabs defaultValue="current" className="w-full">
+                  <Tabs value={activeTab === "deck" ? activeSubTab : "current"} onValueChange={setActiveSubTab} className="w-full">
                     <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
                       <TabsTrigger value="current" className="flex-1">{t("dashboard.subtabs.current")}</TabsTrigger>
                       <TabsTrigger value="builder" className="flex-1">{t("dashboard.subtabs.builder")}</TabsTrigger>
@@ -246,7 +257,7 @@ const Dashboard = () => {
 
                 {/* STATS TAB */}
                 <TabsContent value="stats" className="mt-6 md:mt-0">
-                  <Tabs defaultValue="analytics" className="w-full">
+                  <Tabs value={activeTab === "stats" ? activeSubTab : "analytics"} onValueChange={setActiveSubTab} className="w-full">
                     <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
                       <TabsTrigger value="analytics" className="flex-1">{t("dashboard.subtabs.analytics")}</TabsTrigger>
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
@@ -268,7 +279,7 @@ const Dashboard = () => {
 
                 {/* SOCIAL TAB */}
                 <TabsContent value="social" className="mt-6 md:mt-0">
-                  <Tabs defaultValue="clans" className="w-full">
+                  <Tabs value={activeTab === "social" ? activeSubTab : "clans"} onValueChange={setActiveSubTab} className="w-full">
                     <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
                       <TabsTrigger value="clans" className="flex-1">{t("dashboard.subtabs.clans")}</TabsTrigger>
                       <TabsTrigger value="tournaments" className="flex-1">{t("dashboard.subtabs.tournaments")}</TabsTrigger>
