@@ -6,17 +6,17 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Crown, User, Loader2, X, MessageSquare, Plus, Swords, ChevronUp, BookOpen, Settings } from "lucide-react";
+import { Send, Crown, User, Loader2, X, MessageSquare, Plus, Swords, ChevronUp, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
-import { AIQuotaIndicator } from "./AIQuotaIndicator";
-import { useAIQuota } from "@/hooks/useAIQuota";
 import { matchHelpTopic, generateHelpResponse } from "@/utils/helpTopicMatcher";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePlayerAIAccess } from "@/hooks/usePlayerAIAccess";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { AIFeatureGate } from "@/components/subscription/AIFeatureGate";
+import { FeatureUsageIndicator } from "@/components/common/FeatureUsageIndicator";
 import { useNavigate } from "react-router-dom";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 
@@ -109,8 +109,8 @@ export function CoachChatPanel({
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const [oldestMessageTimestamp, setOldestMessageTimestamp] = useState<string | null>(null);
   
-  // AI quota tracking
-  const { hasQuotaRemaining, incrementUsage } = useAIQuota();
+  // Feature access control - uses the new 3-layer check
+  const { logUsage, canAccess, remainingUses } = useFeatureAccess('ai_coach', playerTag);
   const { hasAccess: hasSubscriptionAccess } = useSubscription();
   const { hasAIAccess } = usePlayerAIAccess(playerTag);
   const navigate = useNavigate();
@@ -364,18 +364,6 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
   const streamChat = async (userMessage: string) => {
     if (!userId) return;
-    
-    // Check and increment AI quota
-    if (!hasQuotaRemaining) {
-      toast.error(t('coach.quotaExhausted'));
-      return;
-    }
-    
-    try {
-      await incrementUsage();
-    } catch (error) {
-      console.error('Failed to increment AI usage:', error);
-    }
 
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/coach-chat`;
     
@@ -510,7 +498,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
         }
       }
 
-      // Save to database
+      // Save to database and log usage
       if (assistantContent) {
         const { data: assistantMsg, error: assistantError } = await supabase
           .from("chat_messages")
@@ -528,6 +516,13 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
             const newMessages = prev.filter(m => m.id !== tempId);
             return [...newMessages, assistantMsg as Message];
           });
+          
+          // Log AI usage after successful response
+          try {
+            await logUsage({ message_length: userMessage.length });
+          } catch (error) {
+            console.error('Failed to log AI usage:', error);
+          }
           
           // Refresh conversations list
           loadConversations();

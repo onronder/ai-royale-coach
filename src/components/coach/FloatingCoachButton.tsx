@@ -6,6 +6,10 @@ import { cn } from '@/lib/utils';
 import { CoachChatPanel } from './CoachChatPanel';
 import { useMatchDiscussion } from '@/contexts/MatchDiscussionContext';
 import { useProactiveRecommendations } from '@/hooks/useProactiveRecommendations';
+import { useFeatureAccess } from '@/hooks/useFeatureAccess';
+import { FeatureUsageIndicator } from '@/components/common/FeatureUsageIndicator';
+import { PricingModal } from '@/components/subscription/PricingModal';
+import { toast } from 'sonner';
 import {
   Tooltip,
   TooltipContent,
@@ -47,10 +51,21 @@ export function FloatingCoachButton({
 }: FloatingCoachButtonProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
   const { matchContext, clearMatchContext } = useMatchDiscussion();
   
   // Normalize playerTag to ensure consistent format (with #)
   const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+
+  // Feature access control
+  const {
+    canAccess,
+    checkAccess,
+    accessResult,
+    usageCount,
+    dailyLimit,
+    remainingUses,
+  } = useFeatureAccess('ai_coach', normalizedPlayerTag);
 
   // Proactive recommendations for struggling players
   const proactiveSuggestion = useProactiveRecommendations({
@@ -74,7 +89,28 @@ export function FloatingCoachButton({
     }
   }, [matchContext]);
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = async (open: boolean) => {
+    if (open) {
+      // Check access before opening
+      const result = await checkAccess();
+      
+      if (!result.allowed) {
+        if (result.reason === 'fraud_detected') {
+          toast.error(result.message || t('subscription.tagClaimedMessage'));
+          return;
+        }
+        if (result.reason === 'quota_exceeded') {
+          setShowPricingModal(true);
+          toast.warning(t('subscription.dailyLimitReached'));
+          return;
+        }
+        if (result.reason === 'not_authenticated') {
+          toast.error(t('auth.signInRequired'));
+          return;
+        }
+      }
+    }
+    
     setIsOpen(open);
     onOpenChange?.(open);
     
@@ -86,6 +122,9 @@ export function FloatingCoachButton({
 
   // Show proactive suggestion indicator
   const hasProactiveSuggestion = proactiveSuggestion !== null;
+
+  // Determine if we should show usage indicator (for free users)
+  const showUsageIndicator = accessResult?.reason === 'daily_free' || accessResult?.reason === 'quota_exceeded';
 
   return (
     <>
@@ -106,6 +145,18 @@ export function FloatingCoachButton({
                     </div>
                   </div>
                 )}
+                
+                {/* Usage indicator badge for free users */}
+                {showUsageIndicator && !hasProactiveSuggestion && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <FeatureUsageIndicator
+                      feature="ai_coach"
+                      playerTag={normalizedPlayerTag}
+                      variant="tooltip"
+                    />
+                  </div>
+                )}
+                
                 <Button
                   onClick={() => handleOpenChange(true)}
                   className={cn(
@@ -155,6 +206,11 @@ export function FloatingCoachButton({
         cardCollection={cardCollection}
         matchContext={matchContext}
         proactiveSuggestion={hasProactiveSuggestion ? proactiveSuggestion : undefined}
+      />
+
+      <PricingModal 
+        open={showPricingModal} 
+        onOpenChange={setShowPricingModal}
       />
     </>
   );
