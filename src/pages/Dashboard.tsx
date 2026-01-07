@@ -45,7 +45,7 @@ import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t, ready: translationsReady } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   
   // State for dialogs and interactions
@@ -136,8 +136,8 @@ const Dashboard = () => {
     toast.success(t('dashboard.signedOut'));
   }, [handleSignOut, t]);
 
-  // Loading states
-  if (!user || !playerTag) {
+  // Loading states - wait for user, player tag, and translations
+  if (!user || !playerTag || !translationsReady) {
     return <DashboardLoader />;
   }
 
