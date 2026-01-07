@@ -1116,7 +1116,8 @@
     "sessionExpired": "Sessão expirada. Faça login novamente.",
     "aiQuota": "Solicitações IA Hoje",
     "quotaExhausted": "Limite diário de IA atingido. Reinicia à meia-noite.",
-    "quotaLow": "Poucas solicitações de IA restantes hoje."
+    "quotaLow": "Poucas solicitações de IA restantes hoje.",
+    "accessDenied": "Acesso negado. O Coach IA não está habilitado para esta conta."
   },
   "match": {
     "victory": "Vitória",
@@ -1129,6 +1130,18 @@
     "opponent": "Oponente",
     "viewDetails": "Ver Detalhes",
     "analysis": "Análise da Partida"
+  },
+  "matches": {
+    "details": "Detalhes da Partida",
+    "battleTime": "Hora da Batalha",
+    "trophyChange": "Mudança de Troféus",
+    "crowns": "Coroas",
+    "yourDeck": "Seu Deck",
+    "opponentDeck": "Deck do Oponente",
+    "analysis": "Análise da Partida",
+    "keyMoments": "Momentos Chave",
+    "counterDeck": "Deck Counter",
+    "discussWithCoach": "Discutir com Coach IA"
   },
   "cards": {
     "collection": "Coleção de Cartas",

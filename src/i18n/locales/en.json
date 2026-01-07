@@ -1110,7 +1110,8 @@
     "sessionExpired": "Session expired. Please sign in again.",
     "aiQuota": "AI Requests Today",
     "quotaExhausted": "Daily AI limit reached. Resets at midnight.",
-    "quotaLow": "Running low on AI requests today."
+    "quotaLow": "Running low on AI requests today.",
+    "accessDenied": "Access denied. AI Coach is not enabled for this account."
   },
   "matches": {
     "details": "Match Details",

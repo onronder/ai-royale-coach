@@ -1116,7 +1116,8 @@
     "sessionExpired": "Session expirée. Reconnectez-vous.",
     "aiQuota": "Requêtes IA Aujourd'hui",
     "quotaExhausted": "Limite quotidienne IA atteinte. Réinitialisation à minuit.",
-    "quotaLow": "Peu de requêtes IA restantes aujourd'hui."
+    "quotaLow": "Peu de requêtes IA restantes aujourd'hui.",
+    "accessDenied": "Accès refusé. Le Coach IA n'est pas activé pour ce compte."
   },
   "match": {
     "victory": "Victoire",
@@ -1129,6 +1130,18 @@
     "opponent": "Adversaire",
     "viewDetails": "Voir les Détails",
     "analysis": "Analyse du Match"
+  },
+  "matches": {
+    "details": "Détails du Match",
+    "battleTime": "Heure du Combat",
+    "trophyChange": "Changement de Trophées",
+    "crowns": "Couronnes",
+    "yourDeck": "Votre Deck",
+    "opponentDeck": "Deck de l'Adversaire",
+    "analysis": "Analyse du Match",
+    "keyMoments": "Moments Clés",
+    "counterDeck": "Deck Counter",
+    "discussWithCoach": "Discuter avec Coach IA"
   },
   "cards": {
     "collection": "Collection de Cartes",
