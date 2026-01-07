@@ -1,26 +1,4 @@
 {
-  "dashboard": {
-    "tabs": {
-      "coach": "Koç",
-      "deck": "Deste",
-      "stats": "İstatistik",
-      "social": "Sosyal"
-    },
-    "subtabs": {
-      "overview": "Genel Bakış",
-      "matches": "Maçlar",
-      "current": "Mevcut",
-      "builder": "Oluşturucu",
-      "collection": "Koleksiyon",
-      "analytics": "Analitik",
-      "leaderboard": "Sıralama",
-      "clans": "Klanlar",
-      "tournaments": "Turnuvalar"
-    },
-    "header": {
-      "winRate": "KO"
-    }
-  },
   "sidebar": {
     "navigation": "Navigasyon",
     "quickActions": "Hızlı Eylemler"
@@ -998,15 +976,31 @@
     "level": "Seviye",
     "expLevel": "Deneyim Seviyesi",
     "tabs": {
-      "stats": "İstatistikler",
-      "matches": "Maçlar",
+      "coach": "Koç",
       "deck": "Deste",
+      "stats": "İstatistik",
+      "social": "Sosyal",
+      "matches": "Maçlar",
       "builder": "Oluşturucu",
       "analytics": "Analitik",
       "cards": "Kartlar",
       "ranks": "Sıralamalar",
       "tourneys": "Turnuvalar",
       "clans": "Klanlar"
+    },
+    "subtabs": {
+      "overview": "Genel Bakış",
+      "matches": "Maçlar",
+      "current": "Mevcut",
+      "builder": "Oluşturucu",
+      "collection": "Koleksiyon",
+      "analytics": "Analitik",
+      "leaderboard": "Sıralama",
+      "clans": "Klanlar",
+      "tournaments": "Turnuvalar"
+    },
+    "header": {
+      "winRate": "KO"
     },
     "aiCoach": {
       "title": "AI Koç Özeti",
