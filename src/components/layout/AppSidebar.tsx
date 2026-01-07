@@ -1,126 +1,304 @@
-import { Brain, Swords, BarChart3, Users, Crown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { 
+  Brain, 
+  Swords, 
+  BarChart3, 
+  Users, 
+  Crown, 
+  Settings, 
+  HelpCircle,
+  LogOut,
+  ChevronRight,
+  Trophy,
+  Sparkles
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
+  SidebarFooter,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { NavbarSubscriptionBadge } from "./NavbarSubscriptionBadge";
 
 interface AppSidebarProps {
   activeTab: string;
   activeSubTab: string;
   onTabChange: (value: string) => void;
+  playerTag?: string;
+  playerName?: string;
+  trophies?: number;
+  onSignOut?: () => void;
 }
 
-// Map of sub-tabs for each main tab
-const subTabLabels: Record<string, Record<string, string>> = {
-  coach: { overview: "Overview", matches: "Matches" },
-  deck: { current: "Current", builder: "Builder", collection: "Collection" },
-  stats: { analytics: "Analytics", leaderboard: "Leaderboard" },
-  social: { clans: "Clans", tournaments: "Tournaments" },
+// Sub-tabs configuration for each main tab
+const tabConfig = {
+  coach: {
+    icon: Brain,
+    subtabs: [
+      { id: "overview", labelKey: "dashboard.subtabs.overview" },
+      { id: "matches", labelKey: "dashboard.subtabs.matches" },
+    ]
+  },
+  deck: {
+    icon: Swords,
+    subtabs: [
+      { id: "current", labelKey: "dashboard.subtabs.current" },
+      { id: "builder", labelKey: "dashboard.subtabs.builder" },
+      { id: "collection", labelKey: "dashboard.subtabs.collection" },
+    ]
+  },
+  stats: {
+    icon: BarChart3,
+    subtabs: [
+      { id: "analytics", labelKey: "dashboard.subtabs.analytics" },
+      { id: "leaderboard", labelKey: "dashboard.subtabs.leaderboard" },
+    ]
+  },
+  social: {
+    icon: Users,
+    subtabs: [
+      { id: "clans", labelKey: "dashboard.subtabs.clans" },
+      { id: "tournaments", labelKey: "dashboard.subtabs.tournaments" },
+    ]
+  },
 };
 
-export function AppSidebar({ activeTab, activeSubTab, onTabChange }: AppSidebarProps) {
+export function AppSidebar({ 
+  activeTab, 
+  activeSubTab, 
+  onTabChange, 
+  playerTag,
+  playerName,
+  trophies,
+  onSignOut
+}: AppSidebarProps) {
   const { t } = useTranslation();
-  const { state } = useSidebar();
+  const navigate = useNavigate();
+  const { state, isMobile } = useSidebar();
   const isCollapsed = state === "collapsed";
 
-  const menuItems = [
-    { id: "coach", label: t("dashboard.tabs.coach"), icon: Brain, defaultSub: "overview" },
-    { id: "deck", label: t("dashboard.tabs.deck"), icon: Swords, defaultSub: "current" },
-    { id: "stats", label: t("dashboard.tabs.stats"), icon: BarChart3, defaultSub: "analytics" },
-    { id: "social", label: t("dashboard.tabs.social"), icon: Users, defaultSub: "clans" },
+  const mainTabs = [
+    { id: "coach", labelKey: "dashboard.tabs.coach" },
+    { id: "deck", labelKey: "dashboard.tabs.deck" },
+    { id: "stats", labelKey: "dashboard.tabs.stats" },
+    { id: "social", labelKey: "dashboard.tabs.social" },
   ];
-
-  const getSubTabLabel = (tabId: string): string | null => {
-    if (activeTab !== tabId) return null;
-    return subTabLabels[tabId]?.[activeSubTab] || null;
-  };
 
   return (
     <Sidebar 
-      variant="floating" 
+      variant="sidebar" 
       collapsible="icon" 
-      className={cn(
-        "hidden md:flex transition-all duration-300 ease-out",
-        isCollapsed ? "animate-slide-out-left" : "animate-slide-in-left"
-      )}
+      className="hidden md:flex border-r border-border/50"
     >
-      <SidebarHeader className="p-4 border-b border-white/10 bg-black/40 backdrop-blur-md">
+      {/* Header - Player Info */}
+      <SidebarHeader className="p-4 border-b border-border/50">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center flex-shrink-0 transition-transform duration-200 hover:scale-110">
-            <Crown className="h-4 w-4 text-primary-foreground" />
+          <div className="relative flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-gold/60 flex items-center justify-center shadow-gold">
+              <Crown className="h-5 w-5 text-gold-foreground" />
+            </div>
+            {!isCollapsed && trophies && (
+              <div className="absolute -bottom-1 -right-1 bg-card border border-gold/30 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
+                <Trophy className="h-2.5 w-2.5 text-gold" />
+                <span className="text-[9px] font-bold text-gold">{trophies >= 1000 ? `${(trophies / 1000).toFixed(1)}k` : trophies}</span>
+              </div>
+            )}
           </div>
-          <span className={cn(
-            "font-rajdhani font-bold text-lg tracking-wider text-primary transition-all duration-200",
-            isCollapsed ? "opacity-0 w-0" : "opacity-100"
-          )}>
-            AI COACH
-          </span>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <h2 className="font-rajdhani font-bold text-foreground truncate">
+                {playerName || "AI ROYALE"}
+              </h2>
+              {playerTag && (
+                <p className="text-xs text-muted-foreground font-mono truncate">
+                  #{playerTag}
+                </p>
+              )}
+            </div>
+          )}
         </div>
+        {!isCollapsed && (
+          <div className="mt-3">
+            <NavbarSubscriptionBadge />
+          </div>
+        )}
       </SidebarHeader>
       
-      <SidebarContent className="bg-black/40 backdrop-blur-md border-r border-white/10">
+      {/* Main Navigation */}
+      <SidebarContent className="px-2">
         <SidebarGroup>
+          {!isCollapsed && (
+            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-2">
+              {t("sidebar.navigation")}
+            </SidebarGroupLabel>
+          )}
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.id;
-                const subTabLabel = getSubTabLabel(item.id);
+              {mainTabs.map((tab) => {
+                const config = tabConfig[tab.id as keyof typeof tabConfig];
+                const Icon = config.icon;
+                const isActive = activeTab === tab.id;
                 
                 return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => onTabChange(item.id)}
-                      isActive={isActive}
-                      tooltip={item.label}
-                      className={cn(
-                        "transition-all duration-200 group/item relative",
-                        isActive && "bg-primary/10 text-primary border-l-2 border-primary"
+                  <SidebarMenuItem key={tab.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          onClick={() => onTabChange(tab.id)}
+                          isActive={isActive}
+                          className={cn(
+                            "group relative transition-all duration-200",
+                            isActive && "bg-primary/10 text-primary"
+                          )}
+                        >
+                          <Icon className={cn(
+                            "h-5 w-5 transition-colors",
+                            isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                          )} />
+                          {!isCollapsed && (
+                            <>
+                              <span className={cn(
+                                "flex-1 font-medium",
+                                isActive && "text-primary"
+                              )}>
+                                {t(tab.labelKey)}
+                              </span>
+                              <ChevronRight className={cn(
+                                "h-4 w-4 text-muted-foreground transition-transform",
+                                isActive && "rotate-90 text-primary"
+                              )} />
+                            </>
+                          )}
+                          {/* Active indicator */}
+                          {isActive && (
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-primary rounded-r-full" />
+                          )}
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {isCollapsed && (
+                        <TooltipContent side="right">
+                          {t(tab.labelKey)}
+                        </TooltipContent>
                       )}
-                    >
-                      <Icon className={cn(
-                        "h-5 w-5 transition-all duration-200",
-                        isActive ? "text-primary scale-110" : "text-muted-foreground group-hover/item:text-foreground"
-                      )} />
-                      <div className={cn(
-                        "flex flex-col items-start transition-all duration-200",
-                        isCollapsed ? "opacity-0 w-0" : "opacity-100"
-                      )}>
-                        <span className={cn(
-                          "font-rajdhani font-semibold uppercase tracking-wide text-sm",
-                          isActive && "text-primary"
-                        )}>
-                          {item.label}
-                        </span>
-                        {/* Sub-tab indicator badge */}
-                        {isActive && subTabLabel && !isCollapsed && (
-                          <span className="text-[10px] font-medium text-primary/70 bg-primary/10 px-1.5 py-0.5 rounded-full mt-0.5 animate-fade-in">
-                            {subTabLabel}
-                          </span>
-                        )}
+                    </Tooltip>
+                    
+                    {/* Sub-tabs (only shown when expanded and active) */}
+                    {!isCollapsed && isActive && (
+                      <div className="ml-6 mt-1 mb-2 space-y-0.5 border-l-2 border-border/50 pl-3">
+                        {config.subtabs.map((subtab) => (
+                          <button
+                            key={subtab.id}
+                            onClick={() => {}}
+                            className={cn(
+                              "w-full text-left px-2 py-1.5 text-sm rounded-md transition-colors",
+                              activeSubTab === subtab.id 
+                                ? "text-primary bg-primary/5 font-medium" 
+                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            {t(subtab.labelKey)}
+                          </button>
+                        ))}
                       </div>
-                      
-                      {/* Active indicator dot for collapsed state */}
-                      {isActive && isCollapsed && (
-                        <span className="absolute right-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                      )}
-                    </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                 );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        {/* Quick Actions */}
+        <SidebarGroup>
+          {!isCollapsed && (
+            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-2">
+              {t("sidebar.quickActions")}
+            </SidebarGroupLabel>
+          )}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={() => navigate('/help')}
+                      className="group"
+                    >
+                      <HelpCircle className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                      {!isCollapsed && (
+                        <span className="flex-1">{t("nav.help")}</span>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t("nav.help")}</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={() => navigate(`/settings${playerTag ? `?returnTo=/player/${playerTag}` : ''}`)}
+                      className="group"
+                    >
+                      <Settings className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                      {!isCollapsed && (
+                        <span className="flex-1">{t("settings.title")}</span>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t("settings.title")}</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
+      
+      {/* Footer - Sign Out */}
+      <SidebarFooter className="p-3 border-t border-border/50">
+        {isCollapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={onSignOut}
+                className="w-full h-10 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">{t("nav.signOut")}</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Button 
+            variant="ghost" 
+            onClick={onSignOut}
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          >
+            <LogOut className="h-4 w-4" />
+            <span>{t("nav.signOut")}</span>
+          </Button>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }

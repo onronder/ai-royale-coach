@@ -1,10 +1,10 @@
 {
   "dashboard": {
     "tabs": {
-      "coach": "COACH",
-      "deck": "MAZO",
-      "stats": "STATS",
-      "social": "SOCIAL"
+      "coach": "Coach",
+      "deck": "Mazo",
+      "stats": "Stats",
+      "social": "Social"
     },
     "subtabs": {
       "overview": "Resumen",
@@ -16,7 +16,14 @@
       "leaderboard": "Clasificación",
       "clans": "Clanes",
       "tournaments": "Torneos"
+    },
+    "header": {
+      "winRate": "VR"
     }
+  },
+  "sidebar": {
+    "navigation": "Navegación",
+    "quickActions": "Acciones Rápidas"
   },
   "feedback": {
     "thankYou": "¡Gracias por tu opinión!",
