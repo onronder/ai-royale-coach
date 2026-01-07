@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +10,7 @@ import { SplashScreen } from "@/components/ui/splash-screen";
 import { OfflineIndicator } from "@/components/ui/offline-indicator";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
+import i18n from "./i18n";
 
 // Lazy load pages for better initial bundle size
 const Index = lazy(() => import("./pages/Index"));
@@ -26,7 +27,34 @@ const Maintenance = lazy(() => import("./pages/Maintenance"));
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
+
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setI18nReady(true);
+      return;
+    }
+
+    const handleInitialized = () => {
+      setI18nReady(true);
+    };
+
+    i18n.on('initialized', handleInitialized);
+    i18n.on('loaded', handleInitialized);
+
+    return () => {
+      i18n.off('initialized', handleInitialized);
+      i18n.off('loaded', handleInitialized);
+    };
+  }, []);
+
+  // Show splash screen until i18n is fully initialized
+  if (!i18nReady) {
+    return <SplashScreen />;
+  }
+
+  return (
   <HelmetProvider>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
@@ -60,6 +88,7 @@ const App = () => (
       </QueryClientProvider>
     </ThemeProvider>
   </HelmetProvider>
-);
+  );
+};
 
 export default App;
