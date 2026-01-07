@@ -1,4 +1,23 @@
 {
+  "dashboard": {
+    "tabs": {
+      "coach": "COACH",
+      "deck": "MAZO",
+      "stats": "STATS",
+      "social": "SOCIAL"
+    },
+    "subtabs": {
+      "overview": "Resumen",
+      "matches": "Partidas",
+      "current": "Actual",
+      "builder": "Constructor",
+      "collection": "Colección",
+      "analytics": "Analíticas",
+      "leaderboard": "Clasificación",
+      "clans": "Clanes",
+      "tournaments": "Torneos"
+    }
+  },
   "feedback": {
     "thankYou": "¡Gracias por tu opinión!",
     "thankYouDescription": "Tu feedback nos ayuda a mejorar las recomendaciones de IA.",

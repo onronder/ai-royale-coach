@@ -1,4 +1,23 @@
 {
+  "dashboard": {
+    "tabs": {
+      "coach": "COACH",
+      "deck": "DECK",
+      "stats": "STATS",
+      "social": "SOCIAL"
+    },
+    "subtabs": {
+      "overview": "Visão Geral",
+      "matches": "Partidas",
+      "current": "Atual",
+      "builder": "Construtor",
+      "collection": "Coleção",
+      "analytics": "Análises",
+      "leaderboard": "Ranking",
+      "clans": "Clãs",
+      "tournaments": "Torneios"
+    }
+  },
   "feedback": {
     "thankYou": "Obrigado pelo seu feedback!",
     "thankYouDescription": "Sua opinião nos ajuda a melhorar as recomendações de IA.",
