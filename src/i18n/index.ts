@@ -35,7 +35,7 @@ const i18nInit = i18n
       fr: { translation: { ...fr, ...frHelp } },
     },
     fallbackLng: 'en',
-    initImmediate: true, // Force synchronous init for bundled resources
+    debug: false, // Set to true for debugging
     interpolation: {
       escapeValue: false,
     },
@@ -44,7 +44,9 @@ const i18nInit = i18n
       caches: ['localStorage'],
     },
     react: {
-      useSuspense: true,
+      useSuspense: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
     },
   });
 
