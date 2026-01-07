@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useWinRate } from "@/hooks/useWinRate";
 import { useClashRoyalePlayer } from "@/hooks/useClashRoyalePlayer";
@@ -140,100 +140,132 @@ const Dashboard = () => {
       />
 
       <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs defaultValue="coach" className="w-full">
           <DashboardTabs />
 
-          <TabsContent value="overview" className="mt-6">
-            <OverviewTab
-              playerTag={playerTag}
-              player={player || null}
-              battles={battles || null}
-              playerLoading={playerLoading}
-              formattedWinRate={formattedWinRate}
-              winRate={winRate}
-              analysis={analysis}
-              analysisLoading={analysisLoading}
-              analysisError={analysisError}
-            />
-          </TabsContent>
-
-          <TabsContent value="matches" className="mt-6">
-            <MatchesTab
-              playerTag={playerTag}
-              battles={battles || null}
-              battlesLoading={battlesLoading}
-              battlesError={battlesError}
-              onMatchClick={handleMatchClick}
-            />
-          </TabsContent>
-
-          <TabsContent value="deck" className="mt-6">
-            <DeckTab
-              player={player || null}
-              battles={battles || null}
-              playerLoading={playerLoading}
-              playerError={playerError}
-              playerTag={playerTag || ''}
-            />
-          </TabsContent>
-
-          <TabsContent value="collection" className="mt-6">
-            <PageTransition delay={100}>
-              <CardCollectionTracker 
-                playerTag={playerTag} 
-                userId={user.id}
-              />
-            </PageTransition>
-          </TabsContent>
-
-          <TabsContent value="leaderboard" className="mt-6">
-            <PageTransition delay={100}>
-              <LeaderboardView 
-                userClanTag={player?.clan?.tag} 
-                userId={user?.id}
-                currentPlayerTag={playerTag}
-              />
-            </PageTransition>
-          </TabsContent>
-
-          <TabsContent value="tournaments" className="mt-6">
-            <PageTransition delay={100}>
-              <TournamentList onSelectTournament={() => {}} />
-            </PageTransition>
-          </TabsContent>
-
-          <TabsContent value="clans" className="mt-6">
-            <PageTransition delay={100}>
-              <ClanSearch 
-                onSelectClan={() => {}} 
-                userPlayerTag={playerTag}
-              />
-            </PageTransition>
-          </TabsContent>
-
-          <TabsContent value="builder" className="mt-6">
-            <PageTransition delay={100}>
-              {player?.cards && user && (
-                <DeckBuilder 
-                  availableCards={player.cards} 
-                  userId={user.id}
-                  savedDecks={playerContext.savedDecks?.map(d => ({
-                    id: d.id,
-                    name: d.name,
-                    cards: d.cards as any,
-                    avg_elixir: d.avg_elixir || undefined,
-                    archetype: d.archetype || undefined
-                  })) || []}
-                  currentDeck={player.currentDeck || null}
-                  userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
-                  playerTrophies={player.trophies || 0}
+          {/* COACH TAB */}
+          <TabsContent value="coach" className="mt-6">
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
+                <TabsTrigger value="overview" className="flex-1">Overview</TabsTrigger>
+                <TabsTrigger value="matches" className="flex-1">Matches</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview" className="mt-4">
+                <OverviewTab
+                  playerTag={playerTag}
+                  player={player || null}
+                  battles={battles || null}
+                  playerLoading={playerLoading}
+                  formattedWinRate={formattedWinRate}
+                  winRate={winRate}
+                  analysis={analysis}
+                  analysisLoading={analysisLoading}
+                  analysisError={analysisError}
                 />
-              )}
-            </PageTransition>
+              </TabsContent>
+              <TabsContent value="matches" className="mt-4">
+                <MatchesTab
+                  playerTag={playerTag}
+                  battles={battles || null}
+                  battlesLoading={battlesLoading}
+                  battlesError={battlesError}
+                  onMatchClick={handleMatchClick}
+                />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          <TabsContent value="analytics" className="mt-6">
-            <AnalyticsTab playerTag={playerTag} />
+          {/* DECK TAB */}
+          <TabsContent value="deck" className="mt-6">
+            <Tabs defaultValue="current" className="w-full">
+              <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
+                <TabsTrigger value="current" className="flex-1">Current</TabsTrigger>
+                <TabsTrigger value="builder" className="flex-1">Builder</TabsTrigger>
+                <TabsTrigger value="collection" className="flex-1">Collection</TabsTrigger>
+              </TabsList>
+              <TabsContent value="current" className="mt-4">
+                <DeckTab
+                  player={player || null}
+                  battles={battles || null}
+                  playerLoading={playerLoading}
+                  playerError={playerError}
+                  playerTag={playerTag || ''}
+                />
+              </TabsContent>
+              <TabsContent value="builder" className="mt-4">
+                <PageTransition delay={100}>
+                  {player?.cards && user && (
+                    <DeckBuilder 
+                      availableCards={player.cards} 
+                      userId={user.id}
+                      savedDecks={playerContext.savedDecks?.map(d => ({
+                        id: d.id,
+                        name: d.name,
+                        cards: d.cards as any,
+                        avg_elixir: d.avg_elixir || undefined,
+                        archetype: d.archetype || undefined
+                      })) || []}
+                      currentDeck={player.currentDeck || null}
+                      userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
+                      playerTrophies={player.trophies || 0}
+                    />
+                  )}
+                </PageTransition>
+              </TabsContent>
+              <TabsContent value="collection" className="mt-4">
+                <PageTransition delay={100}>
+                  <CardCollectionTracker 
+                    playerTag={playerTag} 
+                    userId={user.id}
+                  />
+                </PageTransition>
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
+
+          {/* STATS TAB */}
+          <TabsContent value="stats" className="mt-6">
+            <Tabs defaultValue="analytics" className="w-full">
+              <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
+                <TabsTrigger value="analytics" className="flex-1">Analytics</TabsTrigger>
+                <TabsTrigger value="leaderboard" className="flex-1">Leaderboard</TabsTrigger>
+              </TabsList>
+              <TabsContent value="analytics" className="mt-4">
+                <AnalyticsTab playerTag={playerTag} />
+              </TabsContent>
+              <TabsContent value="leaderboard" className="mt-4">
+                <PageTransition delay={100}>
+                  <LeaderboardView 
+                    userClanTag={player?.clan?.tag} 
+                    userId={user?.id}
+                    currentPlayerTag={playerTag}
+                  />
+                </PageTransition>
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
+
+          {/* SOCIAL TAB */}
+          <TabsContent value="social" className="mt-6">
+            <Tabs defaultValue="clans" className="w-full">
+              <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
+                <TabsTrigger value="clans" className="flex-1">Clans</TabsTrigger>
+                <TabsTrigger value="tournaments" className="flex-1">Tournaments</TabsTrigger>
+              </TabsList>
+              <TabsContent value="clans" className="mt-4">
+                <PageTransition delay={100}>
+                  <ClanSearch 
+                    onSelectClan={() => {}} 
+                    userPlayerTag={playerTag}
+                  />
+                </PageTransition>
+              </TabsContent>
+              <TabsContent value="tournaments" className="mt-4">
+                <PageTransition delay={100}>
+                  <TournamentList onSelectTournament={() => {}} />
+                </PageTransition>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </main>
