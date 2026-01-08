@@ -2273,6 +2273,89 @@
     "loading": "Carregando...",
     "new": "NOVO",
     "pro": "PRO",
-    "ai": "IA"
+    "ai": "IA",
+    "elixir": "Elixir",
+    "aiPowered": "Com IA",
+    "pleaseWait": "Por favor aguarde...",
+    "thisMayTakeMoment": "Isso pode levar um momento"
+  },
+  "admin": {
+    "fraudOverview": {
+      "signalsToday": "Sinais Hoje",
+      "pendingReviews": "Revisões Pendentes",
+      "softBlocked": "Bloqueio Suave",
+      "warnedUsers": "Usuários Alertados",
+      "signalsByType": "Sinais por Tipo (Últimos 30 Dias)",
+      "noSignals": "Nenhum sinal de fraude detectado nos últimos 30 dias",
+      "daySummary": "Resumo de 30 Dias",
+      "totalSignals": "Total de sinais de fraude nos últimos 30 dias"
+    },
+    "fraudCases": {
+      "title": "Casos de Fraude",
+      "userId": "ID do Usuário",
+      "status": "Status",
+      "score": "Pontuação",
+      "signals": "Sinais",
+      "lastSignal": "Último Sinal",
+      "reviewed": "Revisado",
+      "pending": "Pendente",
+      "all": "Todos",
+      "blocked": "Bloqueado",
+      "warning": "Aviso",
+      "review": "Revisar",
+      "noCases": "Nenhum caso de fraude pendente de revisão",
+      "showing": "Mostrando"
+    },
+    "userLookup": {
+      "title": "Busca de Usuário",
+      "email": "Email",
+      "playerTag": "Tag do Jogador",
+      "searchByEmail": "Buscar por email...",
+      "searchByTag": "Buscar por tag do jogador...",
+      "searching": "Buscando...",
+      "noUsersFound": "Nenhum usuário encontrado",
+      "clean": "Limpo",
+      "score": "Pontuação"
+    }
+  },
+  "whatsNew": {
+    "title": "Novidades",
+    "gotIt": "Entendi, obrigado!",
+    "features": {
+      "oracle": {
+        "title": "O Oráculo",
+        "subtitle": "Previsões de Partida ao Vivo",
+        "description": "Escaneie a tag do seu oponente e preveja o deck dele ANTES da partida começar. Ganhe a vantagem estratégica definitiva.",
+        "cta": "Experimentar O Oráculo"
+      },
+      "quickscan": {
+        "title": "Scan Rápido",
+        "subtitle": "Análise de Partida com Um Clique",
+        "description": "Vê o ícone do Olho ao lado das suas partidas recentes? Toque nele para prever instantaneamente o deck atual desse oponente e ver suas chances de confronto.",
+        "cta": "Ver Partidas"
+      }
+    }
+  },
+  "dataLoader": {
+    "player": "Carregando perfil do jogador...",
+    "playerProfiles": "Carregando suas tags de jogador...",
+    "battles": "Buscando histórico de batalhas...",
+    "deck": "Carregando deck atual...",
+    "deckAnalysis": "IA analisando estratégia do deck...",
+    "collection": "Carregando coleção de cartas...",
+    "mastery": "Calculando níveis de maestria...",
+    "analytics": "Processando estatísticas do deck...",
+    "leaderboard": "Buscando rankings globais...",
+    "tournaments": "Carregando dados do torneio...",
+    "tournamentDetail": "Carregando detalhes do torneio...",
+    "tournamentBracket": "Carregando chave do torneio...",
+    "clans": "Buscando clãs...",
+    "achievements": "Carregando conquistas...",
+    "coach": "O Coach IA está pensando...",
+    "syncing": "Sincronizando com servidores do Clash Royale...",
+    "notifications": "Carregando notificações...",
+    "matchAnalysis": "IA analisando desempenho da partida...",
+    "replacements": "Encontrando substituições de cartas ideais...",
+    "generic": "Carregando dados..."
   }
 }

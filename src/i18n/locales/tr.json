@@ -2281,6 +2281,89 @@
     "loading": "Yükleniyor...",
     "new": "YENİ",
     "pro": "PRO",
-    "ai": "AI"
+    "ai": "AI",
+    "elixir": "İksir",
+    "aiPowered": "AI Destekli",
+    "pleaseWait": "Lütfen bekleyin...",
+    "thisMayTakeMoment": "Bu biraz zaman alabilir"
+  },
+  "admin": {
+    "fraudOverview": {
+      "signalsToday": "Bugünkü Sinyaller",
+      "pendingReviews": "Bekleyen İncelemeler",
+      "softBlocked": "Yumuşak Engelli",
+      "warnedUsers": "Uyarılan Kullanıcılar",
+      "signalsByType": "Sinyal Türüne Göre (Son 30 Gün)",
+      "noSignals": "Son 30 günde dolandırıcılık sinyali tespit edilmedi",
+      "daySummary": "30 Günlük Özet",
+      "totalSignals": "Son 30 günde toplam dolandırıcılık sinyali"
+    },
+    "fraudCases": {
+      "title": "Dolandırıcılık Vakaları",
+      "userId": "Kullanıcı ID",
+      "status": "Durum",
+      "score": "Puan",
+      "signals": "Sinyaller",
+      "lastSignal": "Son Sinyal",
+      "reviewed": "İncelendi",
+      "pending": "Bekliyor",
+      "all": "Tümü",
+      "blocked": "Engelli",
+      "warning": "Uyarı",
+      "review": "İncele",
+      "noCases": "İnceleme bekleyen dolandırıcılık vakası yok",
+      "showing": "Gösterilen"
+    },
+    "userLookup": {
+      "title": "Kullanıcı Arama",
+      "email": "E-posta",
+      "playerTag": "Oyuncu Etiketi",
+      "searchByEmail": "E-posta ile ara...",
+      "searchByTag": "Oyuncu etiketi ile ara...",
+      "searching": "Aranıyor...",
+      "noUsersFound": "Kullanıcı bulunamadı",
+      "clean": "Temiz",
+      "score": "Puan"
+    }
+  },
+  "whatsNew": {
+    "title": "Yenilikler",
+    "gotIt": "Anladım, teşekkürler!",
+    "features": {
+      "oracle": {
+        "title": "Kahin",
+        "subtitle": "Canlı Maç Tahminleri",
+        "description": "Rakibinizin etiketini tarayın ve maç başlamadan ÖNCE destesini tahmin edin. Nihai stratejik avantajı elde edin.",
+        "cta": "Kahini Dene"
+      },
+      "quickscan": {
+        "title": "Hızlı Tarama",
+        "subtitle": "Tek Tıkla Maç Analizi",
+        "description": "Son maçlarınızın yanındaki Göz simgesini görüyor musunuz? Rakibin mevcut destesini anında tahmin etmek ve eşleşme olasılıklarınızı görmek için dokunun.",
+        "cta": "Maçları Görüntüle"
+      }
+    }
+  },
+  "dataLoader": {
+    "player": "Oyuncu profili yükleniyor...",
+    "playerProfiles": "Oyuncu etiketleriniz yükleniyor...",
+    "battles": "Savaş geçmişi alınıyor...",
+    "deck": "Mevcut deste yükleniyor...",
+    "deckAnalysis": "AI deste stratejisini analiz ediyor...",
+    "collection": "Kart koleksiyonu yükleniyor...",
+    "mastery": "Kart ustalık seviyeleri hesaplanıyor...",
+    "analytics": "Deste istatistikleri işleniyor...",
+    "leaderboard": "Küresel sıralamalar alınıyor...",
+    "tournaments": "Turnuva verileri yükleniyor...",
+    "tournamentDetail": "Turnuva detayları yükleniyor...",
+    "tournamentBracket": "Turnuva çekişmesi yükleniyor...",
+    "clans": "Klanlar aranıyor...",
+    "achievements": "Başarılar yükleniyor...",
+    "coach": "AI Koç düşünüyor...",
+    "syncing": "Clash Royale sunucularıyla senkronize ediliyor...",
+    "notifications": "Bildirimler yükleniyor...",
+    "matchAnalysis": "AI maç performansını analiz ediyor...",
+    "replacements": "En iyi kart değişiklikleri bulunuyor...",
+    "generic": "Veri yükleniyor..."
   }
 }

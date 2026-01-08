@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 import { Loader2, Swords, Target, Trophy, Sparkles, Users, TrendingUp, Award, Database, RefreshCw, Crown, Zap, Shield, PackageOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -31,105 +32,105 @@ interface DataLoaderProps {
   className?: string;
 }
 
-const contextConfig: Record<LoaderContext, { icon: typeof Loader2; message: string; color: string }> = {
+const contextConfig: Record<LoaderContext, { icon: typeof Loader2; translationKey: string; color: string }> = {
   player: {
     icon: Crown,
-    message: "Loading player profile...",
+    translationKey: "dataLoader.player",
     color: "text-primary"
   },
   "player-profiles": {
     icon: Users,
-    message: "Loading your player tags...",
+    translationKey: "dataLoader.playerProfiles",
     color: "text-primary"
   },
   battles: {
     icon: Swords,
-    message: "Fetching battle history...",
+    translationKey: "dataLoader.battles",
     color: "text-chart-1"
   },
   deck: {
     icon: Target,
-    message: "Loading current deck...",
+    translationKey: "dataLoader.deck",
     color: "text-accent"
   },
   "deck-analysis": {
     icon: Sparkles,
-    message: "AI analyzing deck strategy...",
+    translationKey: "dataLoader.deckAnalysis",
     color: "text-primary"
   },
   collection: {
     icon: PackageOpen,
-    message: "Loading card collection...",
+    translationKey: "dataLoader.collection",
     color: "text-chart-2"
   },
   mastery: {
     icon: Zap,
-    message: "Calculating card mastery levels...",
+    translationKey: "dataLoader.mastery",
     color: "text-accent"
   },
   analytics: {
     icon: TrendingUp,
-    message: "Processing deck statistics...",
+    translationKey: "dataLoader.analytics",
     color: "text-chart-4"
   },
   leaderboard: {
     icon: Trophy,
-    message: "Fetching global rankings...",
+    translationKey: "dataLoader.leaderboard",
     color: "text-gold"
   },
   tournaments: {
     icon: Award,
-    message: "Loading tournament data...",
+    translationKey: "dataLoader.tournaments",
     color: "text-primary"
   },
   clans: {
     icon: Users,
-    message: "Searching clans...",
+    translationKey: "dataLoader.clans",
     color: "text-chart-3"
   },
   achievements: {
     icon: Shield,
-    message: "Loading achievements...",
+    translationKey: "dataLoader.achievements",
     color: "text-accent"
   },
   coach: {
     icon: Sparkles,
-    message: "AI Coach is thinking...",
+    translationKey: "dataLoader.coach",
     color: "text-primary"
   },
   syncing: {
     icon: RefreshCw,
-    message: "Syncing with Clash Royale servers...",
+    translationKey: "dataLoader.syncing",
     color: "text-accent"
   },
   notifications: {
     icon: Award,
-    message: "Loading notifications...",
+    translationKey: "dataLoader.notifications",
     color: "text-primary"
   },
   "tournament-detail": {
     icon: Trophy,
-    message: "Loading tournament details...",
+    translationKey: "dataLoader.tournamentDetail",
     color: "text-gold"
   },
   "tournament-bracket": {
     icon: Swords,
-    message: "Loading tournament bracket...",
+    translationKey: "dataLoader.tournamentBracket",
     color: "text-primary"
   },
   "match-analysis": {
     icon: Sparkles,
-    message: "AI analyzing match performance...",
+    translationKey: "dataLoader.matchAnalysis",
     color: "text-accent"
   },
   replacements: {
     icon: Zap,
-    message: "Finding optimal card replacements...",
+    translationKey: "dataLoader.replacements",
     color: "text-chart-2"
   },
   generic: {
     icon: Database,
-    message: "Loading data...",
+    translationKey: "dataLoader.generic",
     color: "text-muted-foreground"
   }
 };
@@ -140,9 +141,10 @@ export function DataLoader({
   variant = "card",
   className 
 }: DataLoaderProps) {
+  const { t } = useTranslation();
   const config = contextConfig[context];
   const Icon = config.icon;
-  const message = customMessage || config.message;
+  const message = customMessage || t(config.translationKey);
 
   if (variant === "minimal") {
     return (
@@ -162,7 +164,7 @@ export function DataLoader({
         </div>
         <div className="flex flex-col">
           <span className="font-rajdhani font-semibold text-foreground">{message}</span>
-          <span className="text-xs text-muted-foreground">Please wait...</span>
+          <span className="text-xs text-muted-foreground">{t('common.pleaseWait')}</span>
         </div>
       </div>
     );
@@ -178,7 +180,7 @@ export function DataLoader({
         </div>
         <div className="text-center space-y-1">
           <p className="font-rajdhani font-semibold text-lg text-foreground">{message}</p>
-          <p className="text-sm text-muted-foreground">This may take a moment</p>
+          <p className="text-sm text-muted-foreground">{t('common.thisMayTakeMoment')}</p>
         </div>
         <div className="w-48 h-1 bg-muted rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] animate-shimmer" />
@@ -190,5 +192,5 @@ export function DataLoader({
 
 // Export a helper for showing refresh status in toasts
 export function getRefreshMessage(context: LoaderContext): string {
-  return contextConfig[context]?.message || "Loading...";
+  return contextConfig[context]?.translationKey || "dataLoader.generic";
 }

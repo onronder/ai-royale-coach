@@ -2284,6 +2284,89 @@
     "loading": "Cargando...",
     "new": "NUEVO",
     "pro": "PRO",
-    "ai": "IA"
+    "ai": "IA",
+    "elixir": "Elixir",
+    "aiPowered": "Con IA",
+    "pleaseWait": "Por favor espera...",
+    "thisMayTakeMoment": "Esto puede tomar un momento"
+  },
+  "admin": {
+    "fraudOverview": {
+      "signalsToday": "Señales Hoy",
+      "pendingReviews": "Revisiones Pendientes",
+      "softBlocked": "Bloqueo Suave",
+      "warnedUsers": "Usuarios Advertidos",
+      "signalsByType": "Señales por Tipo (Últimos 30 Días)",
+      "noSignals": "No se detectaron señales de fraude en los últimos 30 días",
+      "daySummary": "Resumen de 30 Días",
+      "totalSignals": "Total de señales de fraude en los últimos 30 días"
+    },
+    "fraudCases": {
+      "title": "Casos de Fraude",
+      "userId": "ID de Usuario",
+      "status": "Estado",
+      "score": "Puntuación",
+      "signals": "Señales",
+      "lastSignal": "Última Señal",
+      "reviewed": "Revisado",
+      "pending": "Pendiente",
+      "all": "Todos",
+      "blocked": "Bloqueado",
+      "warning": "Advertencia",
+      "review": "Revisar",
+      "noCases": "No hay casos de fraude pendientes de revisión",
+      "showing": "Mostrando"
+    },
+    "userLookup": {
+      "title": "Búsqueda de Usuario",
+      "email": "Correo",
+      "playerTag": "Tag de Jugador",
+      "searchByEmail": "Buscar por correo...",
+      "searchByTag": "Buscar por tag de jugador...",
+      "searching": "Buscando...",
+      "noUsersFound": "No se encontraron usuarios",
+      "clean": "Limpio",
+      "score": "Puntuación"
+    }
+  },
+  "whatsNew": {
+    "title": "Novedades",
+    "gotIt": "¡Entendido, gracias!",
+    "features": {
+      "oracle": {
+        "title": "El Oráculo",
+        "subtitle": "Predicciones de Partida en Vivo",
+        "description": "Escanea el tag de tu oponente y predice su mazo ANTES de que comience la partida. Obtén la máxima ventaja estratégica.",
+        "cta": "Probar El Oráculo"
+      },
+      "quickscan": {
+        "title": "Escaneo Rápido",
+        "subtitle": "Análisis de Partida con Un Clic",
+        "description": "¿Ves el ícono del Ojo junto a tus partidas recientes? Tócalo para predecir instantáneamente el mazo actual de ese oponente y ver tus probabilidades de enfrentamiento.",
+        "cta": "Ver Partidas"
+      }
+    }
+  },
+  "dataLoader": {
+    "player": "Cargando perfil de jugador...",
+    "playerProfiles": "Cargando tus tags de jugador...",
+    "battles": "Obteniendo historial de batallas...",
+    "deck": "Cargando mazo actual...",
+    "deckAnalysis": "IA analizando estrategia del mazo...",
+    "collection": "Cargando colección de cartas...",
+    "mastery": "Calculando niveles de maestría...",
+    "analytics": "Procesando estadísticas del mazo...",
+    "leaderboard": "Obteniendo rankings globales...",
+    "tournaments": "Cargando datos del torneo...",
+    "tournamentDetail": "Cargando detalles del torneo...",
+    "tournamentBracket": "Cargando bracket del torneo...",
+    "clans": "Buscando clanes...",
+    "achievements": "Cargando logros...",
+    "coach": "El Coach IA está pensando...",
+    "syncing": "Sincronizando con servidores de Clash Royale...",
+    "notifications": "Cargando notificaciones...",
+    "matchAnalysis": "IA analizando rendimiento de la partida...",
+    "replacements": "Encontrando reemplazos óptimos de cartas...",
+    "generic": "Cargando datos..."
   }
 }
