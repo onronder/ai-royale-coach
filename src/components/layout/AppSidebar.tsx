@@ -16,6 +16,8 @@ import {
   Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useWhatsNew } from "@/hooks/useWhatsNew";
+import { Badge } from "@/components/ui/badge";
 import {
   Sidebar,
   SidebarContent,
@@ -93,6 +95,7 @@ export function AppSidebar({
   const { t, ready } = useTranslation();
   const navigate = useNavigate();
   const { state, isMobile } = useSidebar();
+  const { showOracleNewBadge } = useWhatsNew();
 
   // Wait for translations to be ready before rendering
   if (!ready) {
@@ -267,7 +270,7 @@ export function AppSidebar({
               </SidebarMenuItem>
 
               {/* The Oracle */}
-              <SidebarMenuItem>
+              <SidebarMenuItem className="relative">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
@@ -280,7 +283,17 @@ export function AppSidebar({
                     >
                       <Eye className="h-5 w-5 text-emerald-400" />
                       {!isCollapsed && (
-                        <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
+                        <>
+                          <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
+                          {showOracleNewBadge && (
+                            <Badge 
+                              variant="outline" 
+                              className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse"
+                            >
+                              NEW
+                            </Badge>
+                          )}
+                        </>
                       )}
                     </SidebarMenuButton>
                   </TooltipTrigger>
@@ -288,6 +301,9 @@ export function AppSidebar({
                     <TooltipContent side="right">The Oracle</TooltipContent>
                   )}
                 </Tooltip>
+                {isCollapsed && showOracleNewBadge && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                )}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
