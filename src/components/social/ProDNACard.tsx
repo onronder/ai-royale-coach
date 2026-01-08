@@ -14,21 +14,21 @@ const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: {
   gradientFrom: string;
   gradientTo: string;
 }) => (
-  <div className="flex items-center gap-3">
+  <div className="flex items-center gap-2.5">
     <div 
-      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+      className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
       style={{ background: `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})` }}
     >
-      <Icon className="w-4 h-4 text-white" strokeWidth={2.5} />
+      <Icon className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
     </div>
     <div className="flex-1 min-w-0">
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#d4af37' }}>{label}</span>
-        <span className="text-base font-black text-white tabular-nums">{value}</span>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#d4af37' }}>{label}</span>
+        <span className="text-sm font-black text-white tabular-nums">{value}</span>
       </div>
       <div 
-        className="h-2.5 rounded-full overflow-hidden"
-        style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212, 175, 55, 0.3)' }}
+        className="h-2 rounded-full overflow-hidden"
+        style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212, 175, 55, 0.25)' }}
       >
         <div 
           className="h-full rounded-full"
@@ -52,9 +52,9 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
       style={{ 
         width: '320px', 
         height: '440px',
-        padding: '4px',
-        background: 'linear-gradient(135deg, #d4af37 0%, #f5d87a 25%, #d4af37 50%, #b8963c 75%, #d4af37 100%)',
-        borderRadius: '20px',
+        padding: '3px',
+        background: 'linear-gradient(135deg, #d4af37 0%, #f5d87a 30%, #d4af37 50%, #b8963c 70%, #d4af37 100%)',
+        borderRadius: '16px',
       }}
     >
       {/* Inner Card */}
@@ -62,7 +62,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
         className="relative w-full h-full overflow-hidden"
         style={{ 
           background: 'linear-gradient(180deg, #1a1508 0%, #0d0a04 50%, #1a1508 100%)',
-          borderRadius: '16px',
+          borderRadius: '13px',
         }}
       >
         {/* Top Glow Effect */}
@@ -74,7 +74,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
         />
 
         {/* Content Container */}
-        <div className="relative h-full flex flex-col px-5 py-4">
+        <div className="relative h-full flex flex-col px-4 py-3">
           {/* Header Badge */}
           <div className="flex justify-center">
             <div 
@@ -209,10 +209,10 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
         </div>
 
         {/* Corner Accents */}
-        <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 rounded-tl-lg" style={{ borderColor: 'rgba(212, 175, 55, 0.4)' }} />
-        <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 rounded-tr-lg" style={{ borderColor: 'rgba(212, 175, 55, 0.4)' }} />
-        <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 rounded-bl-lg" style={{ borderColor: 'rgba(212, 175, 55, 0.4)' }} />
-        <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 rounded-br-lg" style={{ borderColor: 'rgba(212, 175, 55, 0.4)' }} />
+        <div className="absolute top-3 left-3 w-4 h-4 border-t border-l rounded-tl" style={{ borderColor: 'rgba(212, 175, 55, 0.35)' }} />
+        <div className="absolute top-3 right-3 w-4 h-4 border-t border-r rounded-tr" style={{ borderColor: 'rgba(212, 175, 55, 0.35)' }} />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l rounded-bl" style={{ borderColor: 'rgba(212, 175, 55, 0.35)' }} />
+        <div className="absolute bottom-3 right-3 w-4 h-4 border-b border-r rounded-br" style={{ borderColor: 'rgba(212, 175, 55, 0.35)' }} />
       </div>
     </div>
   );
