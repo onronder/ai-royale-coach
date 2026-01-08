@@ -264,9 +264,17 @@ export function AppSidebar({
                 >
                   <Medal className="h-5 w-5 text-amber-400" />
                   {!isCollapsed && (
-                    <span className="flex-1 font-semibold text-amber-400">
-                      {t('sidebar.achievements', 'Achievements')}
-                    </span>
+                    <>
+                      <span className="flex-1 font-semibold text-amber-400">
+                        {t('sidebar.achievements', 'Achievements')}
+                      </span>
+                      <Badge 
+                        variant="outline" 
+                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-amber-500/20 text-amber-400 border-amber-500/50"
+                      >
+                        NEW
+                      </Badge>
+                    </>
                   )}
                 </SidebarMenuButton>
               </TooltipTrigger>
@@ -288,7 +296,15 @@ export function AppSidebar({
                 >
                   <Fingerprint className="h-5 w-5 text-gold" />
                   {!isCollapsed && (
-                    <span className="flex-1 font-semibold text-gold">Pro DNA</span>
+                    <>
+                      <span className="flex-1 font-semibold text-gold">Pro DNA</span>
+                      <Badge 
+                        variant="outline" 
+                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-gold/20 text-gold border-gold/50"
+                      >
+                        NEW
+                      </Badge>
+                    </>
                   )}
                 </SidebarMenuButton>
               </TooltipTrigger>
