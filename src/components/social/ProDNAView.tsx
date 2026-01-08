@@ -18,26 +18,28 @@ interface ProDNAViewProps {
 
 function DNACardSkeleton() {
   return (
-    <div className="w-full max-w-[280px] sm:max-w-[320px] mx-auto p-1">
+    <div className="w-[280px] mx-auto">
       <div 
-        className="rounded-2xl p-4 sm:p-6 space-y-3 sm:space-y-4 aspect-[320/440]"
+        className="rounded-2xl p-4 space-y-3"
         style={{ 
+          width: '280px',
+          height: '400px',
           background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, rgba(0,0,0,0.3) 100%)',
           border: '2px solid rgba(212, 175, 55, 0.3)'
         }}
       >
         <div className="flex justify-center">
-          <Skeleton className="h-5 sm:h-6 w-20 sm:w-24 bg-gold/20" />
+          <Skeleton className="h-5 w-20 bg-gold/20" />
         </div>
-        <Skeleton className="h-6 sm:h-8 w-32 sm:w-40 mx-auto bg-gold/20" />
-        <div className="flex justify-center py-3 sm:py-4">
-          <Skeleton className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gold/20" />
+        <Skeleton className="h-6 w-32 mx-auto bg-gold/20" />
+        <div className="flex justify-center py-3">
+          <Skeleton className="h-16 w-16 rounded-full bg-gold/20" />
         </div>
-        <Skeleton className="h-4 sm:h-5 w-24 sm:w-32 mx-auto bg-gold/20" />
-        <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
-          <Skeleton className="h-8 sm:h-10 w-full bg-gold/10" />
-          <Skeleton className="h-8 sm:h-10 w-full bg-gold/10" />
-          <Skeleton className="h-8 sm:h-10 w-full bg-gold/10" />
+        <Skeleton className="h-4 w-24 mx-auto bg-gold/20" />
+        <div className="space-y-2 pt-3">
+          <Skeleton className="h-8 w-full bg-gold/10" />
+          <Skeleton className="h-8 w-full bg-gold/10" />
+          <Skeleton className="h-8 w-full bg-gold/10" />
         </div>
       </div>
     </div>
@@ -48,7 +50,8 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
   const { data: battles, isLoading } = useClashRoyaleBattles(playerTag);
   const [dna, setDna] = useState<PlayerDNA | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [showCaptureElement, setShowCaptureElement] = useState(false);
+  const captureRef = useRef<HTMLDivElement>(null);
 
   // Calculate DNA when battles are available
   const calculatedDna = battles ? calculatePlayerDNA(battles, playerTag) : null;
@@ -60,24 +63,26 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
   }
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
+    if (!displayDna) return;
     
     setIsDownloading(true);
+    setShowCaptureElement(true);
+    
+    // Wait for the hidden element to render
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     try {
-      // Find the actual card element inside the wrapper
-      const cardElement = cardRef.current.querySelector('[data-dna-card-inner]') as HTMLElement || cardRef.current;
+      if (!captureRef.current) {
+        throw new Error('Capture element not found');
+      }
       
-      const canvas = await html2canvas(cardElement, {
+      const canvas = await html2canvas(captureRef.current, {
         backgroundColor: '#0d0a04',
         scale: 3,
         useCORS: true,
         logging: false,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.querySelector('[data-dna-card-inner]');
-          if (clonedElement) {
-            (clonedElement as HTMLElement).style.transform = 'none';
-          }
-        }
+        width: 280,
+        height: 400,
       });
       
       const link = document.createElement("a");
@@ -91,24 +96,37 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
       toast.error("Failed to download card");
     } finally {
       setIsDownloading(false);
+      setShowCaptureElement(false);
     }
   };
 
   const handleShare = async () => {
-    if (!cardRef.current) return;
+    if (!displayDna) return;
+    
+    setShowCaptureElement(true);
+    
+    // Wait for the hidden element to render
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     try {
-      const cardElement = cardRef.current.querySelector('[data-dna-card-inner]') as HTMLElement || cardRef.current;
+      if (!captureRef.current) {
+        throw new Error('Capture element not found');
+      }
       
-      const canvas = await html2canvas(cardElement, {
+      const canvas = await html2canvas(captureRef.current, {
         backgroundColor: '#0d0a04',
         scale: 3,
         useCORS: true,
         logging: false,
+        width: 280,
+        height: 400,
       });
       
       canvas.toBlob(async (blob) => {
-        if (!blob) return;
+        if (!blob) {
+          setShowCaptureElement(false);
+          return;
+        }
         
         if (navigator.share && navigator.canShare) {
           const file = new File([blob], `pro-dna-${playerName}.png`, { type: "image/png" });
@@ -120,84 +138,108 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
             });
             toast.success("Shared successfully!");
           } catch {
-            handleDownload();
+            // User cancelled or share failed, try download
+            const link = document.createElement("a");
+            link.download = `pro-dna-${playerName.replace(/\s+/g, "-").toLowerCase()}.png`;
+            link.href = canvas.toDataURL("image/png", 1.0);
+            link.click();
           }
         } else {
-          handleDownload();
+          // No native share, download instead
+          const link = document.createElement("a");
+          link.download = `pro-dna-${playerName.replace(/\s+/g, "-").toLowerCase()}.png`;
+          link.href = canvas.toDataURL("image/png", 1.0);
+          link.click();
         }
+        setShowCaptureElement(false);
       }, "image/png", 1.0);
     } catch (error) {
       console.error("Failed to share card:", error);
       toast.error("Failed to share card");
+      setShowCaptureElement(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
-        className="w-[95vw] max-w-[380px] sm:max-w-[420px] p-4 sm:p-6 bg-background/95 backdrop-blur-lg border-gold/20 flex flex-col"
-        style={{ 
-          maxHeight: 'calc(100dvh - 2rem)',
-        }}
-      >
-        <DialogHeader className="pb-2 sm:pb-3 flex-shrink-0">
-          <DialogTitle className="text-center font-rajdhani text-base sm:text-lg text-gold">
-            Your Pro DNA
-          </DialogTitle>
-        </DialogHeader>
-
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
-          <div className="flex flex-col items-center gap-4 sm:gap-5 py-2">
-            {isLoading ? (
-              <DNACardSkeleton />
-            ) : displayDna ? (
-              <div ref={cardRef} className="w-full flex justify-center">
-                <div data-dna-card-inner>
-                  <ProDNACard
-                    dna={displayDna}
-                    playerName={playerName}
-                    playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-muted-foreground py-8">
-                <p>Not enough battle data to generate your DNA.</p>
-                <p className="text-sm mt-2">Play some matches first!</p>
-              </div>
-            )}
+    <>
+      {/* Hidden off-screen element for html2canvas capture */}
+      {showCaptureElement && displayDna && (
+        <div className="fixed -left-[9999px] top-0 pointer-events-none">
+          <div 
+            ref={captureRef}
+            style={{ width: '280px', height: '400px' }}
+          >
+            <ProDNACard
+              dna={displayDna}
+              playerName={playerName}
+              playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
+            />
           </div>
         </div>
+      )}
 
-        {/* Action Buttons - fixed at bottom */}
-        {displayDna && (
-          <div className="flex gap-3 w-full pt-3 sm:pt-4 flex-shrink-0 border-t border-border/50">
-            <Button
-              variant="outline"
-              className="flex-1 min-h-[44px] border-gold/30 hover:bg-gold/10 hover:border-gold/50"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent 
+          className="w-[95vw] max-w-[340px] p-4 bg-background/95 backdrop-blur-lg border-gold/20 flex flex-col"
+          style={{ 
+            maxHeight: 'calc(100dvh - 2rem)',
+          }}
+        >
+          <DialogHeader className="pb-2 flex-shrink-0">
+            <DialogTitle className="text-center font-rajdhani text-base text-gold">
+              Your Pro DNA
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+            <div className="flex flex-col items-center py-2">
+              {isLoading ? (
+                <DNACardSkeleton />
+              ) : displayDna ? (
+                <ProDNACard
+                  dna={displayDna}
+                  playerName={playerName}
+                  playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
+                />
               ) : (
-                <Download className="h-4 w-4 mr-2" />
+                <div className="text-center text-muted-foreground py-8">
+                  <p>Not enough battle data to generate your DNA.</p>
+                  <p className="text-sm mt-2">Play some matches first!</p>
+                </div>
               )}
-              Download
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1 min-h-[44px] border-gold/30 hover:bg-gold/10 hover:border-gold/50"
-              onClick={handleShare}
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
+            </div>
           </div>
-        )}
-      </DialogContent>
-    </Dialog>
+
+          {/* Action Buttons - fixed at bottom */}
+          {displayDna && (
+            <div className="flex gap-3 w-full pt-3 flex-shrink-0 border-t border-border/50">
+              <Button
+                variant="outline"
+                className="flex-1 min-h-[44px] border-gold/30 hover:bg-gold/10 hover:border-gold/50"
+                onClick={handleDownload}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
+                Download
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 min-h-[44px] border-gold/30 hover:bg-gold/10 hover:border-gold/50"
+                onClick={handleShare}
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
