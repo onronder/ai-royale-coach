@@ -383,7 +383,7 @@ const Dashboard = () => {
           </SidebarInset>
           
           {/* Mobile Bottom Navigation */}
-          <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+          <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} onDnaClick={() => setDnaOpen(true)} />
         </div>
       </SidebarProvider>
     </>

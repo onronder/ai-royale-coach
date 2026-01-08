@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Loader2 } from "lucide-react";
@@ -6,6 +6,8 @@ import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
 import { calculatePlayerDNA, PlayerDNA } from "@/utils/playerDnaCalculator";
 import { ProDNACard } from "./ProDNACard";
 import { Skeleton } from "@/components/ui/skeleton";
+import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 interface ProDNAViewProps {
   open: boolean;
@@ -37,6 +39,8 @@ function DNACardSkeleton() {
 export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNAViewProps) {
   const { data: battles, isLoading } = useClashRoyaleBattles(playerTag);
   const [dna, setDna] = useState<PlayerDNA | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // Calculate DNA when battles are available
   const calculatedDna = battles ? calculatePlayerDNA(battles, playerTag) : null;
@@ -47,14 +51,67 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
     setDna(calculatedDna);
   }
 
-  const handleDownload = () => {
-    // Placeholder for download functionality
-    console.log("Download card - to be implemented");
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
+    
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      const link = document.createElement("a");
+      link.download = `pro-dna-${playerName.replace(/\s+/g, "-").toLowerCase()}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      
+      toast.success("DNA card downloaded!");
+    } catch (error) {
+      console.error("Failed to download card:", error);
+      toast.error("Failed to download card");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
-  const handleShare = () => {
-    // Placeholder for share functionality
-    console.log("Share card - to be implemented");
+  const handleShare = async () => {
+    if (!cardRef.current) return;
+    
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        
+        if (navigator.share && navigator.canShare) {
+          const file = new File([blob], `pro-dna-${playerName}.png`, { type: "image/png" });
+          try {
+            await navigator.share({
+              files: [file],
+              title: `${playerName}'s Pro DNA`,
+              text: "Check out my Clash Royale Pro DNA!",
+            });
+          } catch {
+            // User cancelled or share failed, fallback to download
+            handleDownload();
+          }
+        } else {
+          // Fallback to download if share not available
+          handleDownload();
+        }
+      }, "image/png");
+    } catch (error) {
+      console.error("Failed to share card:", error);
+      toast.error("Failed to share card");
+    }
   };
 
   return (
@@ -70,11 +127,13 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
           {isLoading ? (
             <DNACardSkeleton />
           ) : displayDna ? (
-            <ProDNACard
-              dna={displayDna}
-              playerName={playerName}
-              playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
-            />
+            <div ref={cardRef}>
+              <ProDNACard
+                dna={displayDna}
+                playerName={playerName}
+                playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
+              />
+            </div>
           ) : (
             <div className="text-center text-muted-foreground py-8">
               <p>Not enough battle data to generate your DNA.</p>
@@ -89,8 +148,13 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
                 variant="outline"
                 className="flex-1 border-gold/30 hover:bg-gold/10 hover:border-gold/50"
                 onClick={handleDownload}
+                disabled={isDownloading}
               >
-                <Download className="h-4 w-4 mr-2" />
+                {isDownloading ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
                 Download
               </Button>
               <Button
