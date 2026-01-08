@@ -16,6 +16,7 @@ import { useWhatsNew } from "@/hooks/useWhatsNew";
 import { useBackgroundSync } from "@/hooks/useBackgroundSync";
 import { useUnifiedRealtime } from "@/hooks/useUnifiedRealtime";
 import { usePlayerAchievements } from "@/hooks/usePlayerAchievements";
+import { useFraudStatus } from "@/hooks/useFraudStatus";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DashboardLoader } from "@/components/ui/page-loader";
 import { PageTransition } from "@/components/ui/loading-states";
@@ -50,6 +51,7 @@ import { AchievementNotification } from "@/components/achievements/AchievementNo
 import { ProDNAView } from "@/components/social/ProDNAView";
 import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
 import { AchievementsTab } from "@/components/gamification/AchievementsTab";
+import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
 
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
@@ -70,6 +72,9 @@ const Dashboard = () => {
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
   const { showWhatsNew, dismissWhatsNew } = useWhatsNew();
+  
+  // Fraud status - triggers fingerprint logging and provides warning state
+  const { fraudStatus, isSoftBlocked, isWarned } = useFraudStatus(user?.id || null);
   
   // Data fetching hooks
   const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
@@ -189,6 +194,11 @@ const Dashboard = () => {
             />
 
             <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">
+              {/* Fraud Warning Banner */}
+              {(isSoftBlocked || isWarned) && fraudStatus && (
+                <SoftBlockWarning status={fraudStatus.status} className="mb-4" />
+              )}
+              
               {/* Desktop: Sidebar Toggle + Breadcrumb */}
               <div className="hidden md:flex items-center gap-4 mb-4">
                 <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground" />

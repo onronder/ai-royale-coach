@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubscription } from "./useSubscription";
+import { useFraudStatus } from "./useFraudStatus";
 
 // Daily limits for each premium feature (for free/expired users)
 export const FEATURE_LIMITS = {
@@ -27,12 +28,15 @@ type AccessReason =
   | 'daily_free'       // Free daily usage available
   | 'fraud_detected'   // Tag claimed by another user
   | 'quota_exceeded'   // Daily limit reached
+  | 'velocity_exceeded' // Rate limiting triggered
+  | 'soft_blocked'     // User is soft-blocked due to fraud
   | 'not_authenticated'; // User not logged in
 
 export interface AccessResult {
   allowed: boolean;
   reason: AccessReason;
   message?: string;
+  reducedLimits?: boolean;
 }
 
 interface UseFeatureAccessReturn {
@@ -41,10 +45,12 @@ interface UseFeatureAccessReturn {
   accessResult: AccessResult | null;
   usageCount: number;
   dailyLimit: number;
+  effectiveLimit: number;
   remainingUses: number;
   checkAccess: () => Promise<AccessResult>;
   logUsage: (metadata?: Record<string, string | number | boolean | null>) => Promise<void>;
   refetch: () => void;
+  fraudStatus: 'clean' | 'warning' | 'soft_blocked' | 'blocked' | null;
 }
 
 function normalizePlayerTag(tag: string): string {
@@ -91,10 +97,24 @@ export function useFeatureAccess(
 
   const usageCount = usageData?.usageCount ?? 0;
   const userId = usageData?.userId;
-  const isLoading = isSubLoading || isUsageLoading;
+  
+  // Integrate fraud status for velocity checks and reduced limits
+  const { 
+    fraudStatus, 
+    getFeatureLimit, 
+    checkVelocity, 
+    isSoftBlocked, 
+    isWarned,
+    isLoading: isFraudLoading 
+  } = useFraudStatus(userId || null);
+  
+  const isLoading = isSubLoading || isUsageLoading || isFraudLoading;
 
-  // Calculate remaining uses for free tier
-  const remainingUses = Math.max(0, dailyLimit - usageCount);
+  // Calculate effective limit based on fraud status
+  const effectiveLimit = getFeatureLimit(featureName, dailyLimit);
+  
+  // Calculate remaining uses based on effective limit
+  const remainingUses = Math.max(0, effectiveLimit - usageCount);
 
   // Determine current access status without async checks
   const getStaticAccessResult = (): AccessResult | null => {
@@ -104,29 +124,46 @@ export function useFeatureAccess(
       return { allowed: false, reason: 'not_authenticated', message: 'Please sign in to use this feature.' };
     }
 
-    // Layer 1: Pro users always have access
+    // Check for soft-blocked users - they can still use with reduced limits
+    if (isSoftBlocked) {
+      if (usageCount < effectiveLimit) {
+        return { 
+          allowed: true, 
+          reason: 'soft_blocked', 
+          message: 'Your account has reduced access due to unusual activity.',
+          reducedLimits: true 
+        };
+      }
+      return { 
+        allowed: false, 
+        reason: 'quota_exceeded', 
+        message: `Reduced limit reached (${effectiveLimit} uses per day due to account restrictions).` 
+      };
+    }
+
+    // Layer 1: Pro users always have access (but still track for velocity)
     if (hasPaidAccess && !isTrialActive) {
-      return { allowed: true, reason: 'pro' };
+      return { allowed: true, reason: 'pro', reducedLimits: isWarned };
     }
 
     // Layer 3 (partial): Trial users have access (fraud check done in checkAccess)
     if (isTrialActive) {
-      return { allowed: true, reason: 'trial' };
+      return { allowed: true, reason: 'trial', reducedLimits: isWarned };
     }
 
-    // Layer 3: Free tier quota check
-    if (usageCount < dailyLimit) {
-      return { allowed: true, reason: 'daily_free' };
+    // Layer 3: Free tier quota check (with effective limit for warned users)
+    if (usageCount < effectiveLimit) {
+      return { allowed: true, reason: 'daily_free', reducedLimits: isWarned };
     }
 
     return { 
       allowed: false, 
       reason: 'quota_exceeded', 
-      message: `Daily free limit reached (${dailyLimit} uses per day). Upgrade for unlimited access.` 
+      message: `Daily free limit reached (${effectiveLimit} uses per day). Upgrade for unlimited access.` 
     };
   };
 
-  // Full access check including fraud detection (async)
+  // Full access check including fraud detection and velocity checks (async)
   const checkAccess = async (): Promise<AccessResult> => {
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -134,12 +171,56 @@ export function useFeatureAccess(
       return { allowed: false, reason: 'not_authenticated', message: 'Please sign in to use this feature.' };
     }
 
-    // Layer 1: Pro subscription check
-    if (hasPaidAccess && !isTrialActive) {
-      return { allowed: true, reason: 'pro' };
+    // Check for velocity abuse (rate limiting) - applies to all users
+    try {
+      const isVelocityAbuse = await checkVelocity({
+        featureName,
+        windowSeconds: 60,
+        maxRequests: 15, // Max 15 requests per minute per feature
+      });
+      
+      if (isVelocityAbuse) {
+        return {
+          allowed: false,
+          reason: 'velocity_exceeded',
+          message: 'Too many requests. Please slow down and try again in a minute.',
+        };
+      }
+    } catch (error) {
+      console.error('Velocity check error:', error);
+      // Fail open - don't block on velocity check errors
     }
 
-    // Layer 2: Fraud check (The Golden Rule)
+    // Check soft-blocked status
+    if (isSoftBlocked) {
+      const currentLimit = getFeatureLimit(featureName, dailyLimit);
+      const { data: currentUsage } = await supabase.rpc('get_daily_feature_usage', {
+        p_user_id: user.id,
+        p_feature_name: featureName,
+        p_date: todayDate,
+      });
+      
+      if ((currentUsage || 0) < currentLimit) {
+        return { 
+          allowed: true, 
+          reason: 'soft_blocked', 
+          message: 'Your account has reduced access due to unusual activity.',
+          reducedLimits: true 
+        };
+      }
+      return {
+        allowed: false,
+        reason: 'quota_exceeded',
+        message: `Reduced limit reached (${currentLimit} uses per day due to account restrictions).`,
+      };
+    }
+
+    // Layer 1: Pro subscription check
+    if (hasPaidAccess && !isTrialActive) {
+      return { allowed: true, reason: 'pro', reducedLimits: isWarned };
+    }
+
+    // Layer 2: Fraud check (The Golden Rule for trial abuse)
     const { data: isAvailable, error: availError } = await supabase.rpc('is_player_tag_available_for_trial', {
       p_player_tag: normalizedTag,
       p_user_id: user.id,
@@ -168,10 +249,11 @@ export function useFeatureAccess(
 
     // Layer 3: Trial check
     if (isTrialActive) {
-      return { allowed: true, reason: 'trial' };
+      return { allowed: true, reason: 'trial', reducedLimits: isWarned };
     }
 
-    // Layer 3: Free tier quota check
+    // Layer 3: Free tier quota check (use effective limit for warned users)
+    const currentLimit = getFeatureLimit(featureName, dailyLimit);
     const { data: currentUsage, error: usageError } = await supabase.rpc('get_daily_feature_usage', {
       p_user_id: user.id,
       p_feature_name: featureName,
@@ -180,17 +262,17 @@ export function useFeatureAccess(
 
     if (usageError) {
       console.error('Error fetching usage:', usageError);
-      return { allowed: true, reason: 'daily_free' }; // Fail open
+      return { allowed: true, reason: 'daily_free', reducedLimits: isWarned }; // Fail open
     }
 
-    if ((currentUsage || 0) < dailyLimit) {
-      return { allowed: true, reason: 'daily_free' };
+    if ((currentUsage || 0) < currentLimit) {
+      return { allowed: true, reason: 'daily_free', reducedLimits: isWarned };
     }
 
     return {
       allowed: false,
       reason: 'quota_exceeded',
-      message: `Daily free limit reached (${dailyLimit} uses per day). Upgrade for unlimited access.`,
+      message: `Daily free limit reached (${currentLimit} uses per day). Upgrade for unlimited access.`,
     };
   };
 
@@ -224,9 +306,11 @@ export function useFeatureAccess(
     accessResult,
     usageCount,
     dailyLimit,
+    effectiveLimit,
     remainingUses,
     checkAccess,
     logUsage,
     refetch,
+    fraudStatus: fraudStatus?.status || null,
   };
 }

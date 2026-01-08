@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Crown, LogOut, Sparkles, HelpCircle, Play } from "lucide-react";
+import { Crown, LogOut, Sparkles, HelpCircle, Play, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { NotificationCenter } from "./NotificationCenter";
@@ -9,6 +9,7 @@ import { GlobalProgressCenter } from "./GlobalProgressCenter";
 import { LanguageSelector } from "./LanguageSelector";
 import { ThemeToggle } from "./ThemeToggle";
 import { NavbarSubscriptionBadge } from "./NavbarSubscriptionBadge";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 interface NavbarProps {
   user?: any;
@@ -18,12 +19,15 @@ interface NavbarProps {
 export function Navbar({ user, showAuth = true }: NavbarProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isAdmin, isModerator } = useAdminAccess();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/");
     toast.success(t("nav.signOut"));
   };
+  
+  const showAdminLink = user && (isAdmin || isModerator);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gold/20 bg-card/90 backdrop-blur-md">
@@ -53,6 +57,15 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
             <HelpCircle className="h-4 w-4" />
             <span className="hidden sm:inline">{t("nav.help")}</span>
           </Link>
+          {showAdminLink && (
+            <Link 
+              to="/admin" 
+              className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-destructive hover:text-destructive/80 font-medium transition-colors"
+            >
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+          )}
           <LanguageSelector />
           <ThemeToggle />
           {user && (
