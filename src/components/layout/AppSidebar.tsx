@@ -13,7 +13,8 @@ import {
   Trophy,
   Sparkles,
   Fingerprint,
-  Eye
+  Eye,
+  Medal
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWhatsNew } from "@/hooks/useWhatsNew";
@@ -46,6 +47,7 @@ interface AppSidebarProps {
   trophies?: number;
   onSignOut?: () => void;
   onOpenDNA?: () => void;
+  onOpenAchievements?: () => void;
 }
 
 // Sub-tabs configuration for each main tab
@@ -90,7 +92,8 @@ export function AppSidebar({
   playerName,
   trophies,
   onSignOut,
-  onOpenDNA
+  onOpenDNA,
+  onOpenAchievements
 }: AppSidebarProps) {
   const { t, ready } = useTranslation();
   const navigate = useNavigate();
@@ -246,10 +249,36 @@ export function AppSidebar({
 
         <SidebarSeparator className="my-2" />
 
-        {/* Pro DNA Button */}
+        {/* Special Features */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              {/* Achievements */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={onOpenAchievements}
+                      isActive={activeTab === "achievements"}
+                      className="group bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:from-amber-500/20 hover:to-orange-500/20"
+                    >
+                      <Medal className="h-5 w-5 text-amber-400" />
+                      {!isCollapsed && (
+                        <span className="flex-1 font-semibold text-amber-400">
+                          {t('sidebar.achievements', 'Achievements')}
+                        </span>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">
+                      {t('sidebar.achievements', 'Achievements')}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+
+              {/* Pro DNA */}
               <SidebarMenuItem>
                 <Tooltip>
                   <TooltipTrigger asChild>

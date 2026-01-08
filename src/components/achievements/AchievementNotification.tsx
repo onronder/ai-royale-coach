@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Trophy, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import * as LucideIcons from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface AchievementNotificationProps {
   achievement: {
@@ -20,12 +21,59 @@ interface AchievementNotificationProps {
 export function AchievementNotification({ achievement, onDismiss }: AchievementNotificationProps) {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
+  const hasTriggeredConfetti = useRef(false);
 
   useEffect(() => {
     // Trigger entrance animation
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  // Trigger confetti celebration
+  useEffect(() => {
+    if (isVisible && !hasTriggeredConfetti.current) {
+      hasTriggeredConfetti.current = true;
+      
+      // Get tier-based colors
+      const tierColors = getTierConfettiColors(achievement.tier);
+      
+      // Fire confetti from the right side where the notification appears
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x: 0.9, y: 0.3 },
+        colors: tierColors,
+        zIndex: 9999,
+      });
+
+      // Second burst for more impact
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 0.95, y: 0.4 },
+          colors: tierColors,
+          zIndex: 9999,
+        });
+      }, 200);
+    }
+  }, [isVisible, achievement.tier]);
+
+  const getTierConfettiColors = (tier: string): string[] => {
+    switch (tier) {
+      case 'master':
+        return ['#8b5cf6', '#a78bfa', '#c4b5fd']; // Purple
+      case 'diamond':
+        return ['#00ced1', '#22d3ee', '#67e8f9']; // Cyan
+      case 'gold':
+        return ['#ffd700', '#fbbf24', '#fcd34d']; // Gold
+      case 'silver':
+        return ['#c0c0c0', '#9ca3af', '#d1d5db']; // Silver
+      default:
+        return ['#cd7f32', '#f97316', '#fb923c']; // Bronze
+    }
+  };
 
   const getTierInfo = (tier: string) => {
     switch (tier) {
