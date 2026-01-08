@@ -1,11 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 interface MatchupPredictionRequest {
   deckA: string[];
@@ -14,19 +11,12 @@ interface MatchupPredictionRequest {
   language?: string;
 }
 
-interface KeyMatchup {
-  deckACard: string;
-  deckBCard: string;
-  advantage: 'deckA' | 'deckB' | 'even';
-  reason: string;
-}
-
 interface MatchupPredictionResult {
   deckAWinRate: number;
   deckBWinRate: number;
   confidence: 'high' | 'medium' | 'low';
   explanation: string;
-  keyMatchups: KeyMatchup[];
+  keyMatchups: any[];
   tips: {
     forDeckA: string[];
     forDeckB: string[];
@@ -45,9 +35,8 @@ function generateDeckHash(deckA: string[], deckB: string[]): string {
 const CACHE_DURATION_DAYS = 7;
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -63,23 +52,17 @@ serve(async (req) => {
     // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    // SUBSCRIPTION CHECK: Verify user has active subscription or trial
+    // Check subscription status
     const { data: subscription } = await supabase
       .from('user_subscriptions')
       .select('status')
@@ -98,23 +81,17 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Subscription required to use AI features',
-          subscription_required: true 
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
     const { deckA, deckB, playerTag, language = 'en' }: MatchupPredictionRequest = await req.json();
 
-    // Helper to normalize player tags (database stores without #)
+    // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
       return tag.replace(/^#/, '').toUpperCase();
     };
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     if (playerTag && !isTrialActive) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
@@ -125,28 +102,18 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
     // Validate decks
     if (!deckA || !deckB || deckA.length !== 8 || deckB.length !== 8) {
-      return new Response(
-        JSON.stringify({ error: 'Both decks must contain exactly 8 cards' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Both decks must contain exactly 8 cards', 400);
     }
 
     // Generate deck hash for caching
     const deckHash = generateDeckHash(deckA, deckB);
-    console.log('Deck hash for caching:', deckHash);
+    logger.debug('Deck hash for caching', { deckHash });
 
     // Check cache for existing prediction
     const cacheExpiry = new Date();
@@ -162,7 +129,7 @@ serve(async (req) => {
       .single();
 
     if (cachedPrediction) {
-      console.log('Returning cached prediction');
+      logger.info('Returning cached prediction');
       const result: MatchupPredictionResult = {
         deckAWinRate: cachedPrediction.predicted_win_rate_a,
         deckBWinRate: cachedPrediction.predicted_win_rate_b,
@@ -172,15 +139,12 @@ serve(async (req) => {
         tips: cachedPrediction.tips || { forDeckA: [], forDeckB: [] },
         fromCache: true,
       };
-      return new Response(
-        JSON.stringify(result),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonResponse(result);
     }
 
-    console.log('No cache found, generating new prediction');
+    logger.info('No cache found, generating new prediction');
 
-    // Language instruction based on user preference
+    // Language instruction
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',
       es: 'Responde en español.',
@@ -250,26 +214,20 @@ Return ONLY valid JSON, no markdown or extra text.`;
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('Rate limit exceeded. Please try again later.', 429);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI quota exceeded. Please add credits.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI quota exceeded. Please add credits.', 402);
       }
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      logger.error('Lovable AI error', { status: response.status, error: errorText });
       throw new Error(`AI analysis failed: ${response.status}`);
     }
 
     const aiData = await response.json();
     const analysisText = aiData.choices[0].message.content;
     
-    console.log('AI Response:', analysisText);
+    logger.debug('AI Response received');
 
     // Parse JSON response
     let parsedAnalysis: MatchupPredictionResult;
@@ -277,7 +235,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
       const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       parsedAnalysis = JSON.parse(cleanedText);
     } catch (parseError) {
-      console.error('JSON parse error:', parseError);
+      logger.warn('JSON parse error');
       parsedAnalysis = {
         deckAWinRate: 50,
         deckBWinRate: 50,
@@ -345,18 +303,12 @@ Return ONLY valid JSON, no markdown or extra text.`;
         onConflict: 'user_id,deck_hash,language',
       });
 
-    console.log('Prediction cached successfully');
+    logger.info('Prediction cached successfully');
 
-    return new Response(
-      JSON.stringify(result),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse(result);
 
   } catch (error) {
-    console.error('Error in predict-deck-matchup:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in predict-deck-matchup', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

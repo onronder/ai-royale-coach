@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 const CLASH_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -16,21 +13,12 @@ const RATE_LIMIT_WINDOW_SECONDS = 60;
 
 // Cache TTLs (in seconds)
 const CACHE_TTL = {
-  player: 300, // 5 minutes
-  battles: 120, // 2 minutes
+  player: 300,
+  battles: 120,
 };
 
-interface ClashApiError {
-  reason: string;
-  message: string;
-}
-
-/**
- * Check rate limit using database-backed storage (persists across edge function instances)
- */
 async function checkRateLimitDb(supabase: any, identifier: string): Promise<{ allowed: boolean; resetIn?: number }> {
   try {
-    // Use database function for atomic rate limit check
     const { data, error } = await supabase.rpc('check_rate_limit', {
       p_identifier: identifier,
       p_max_requests: MAX_REQUESTS_PER_MINUTE,
@@ -38,8 +26,7 @@ async function checkRateLimitDb(supabase: any, identifier: string): Promise<{ al
     });
 
     if (error) {
-      console.error('Rate limit check error:', error);
-      // On error, allow the request but log the issue
+      logger.error('Rate limit check error', { error: error.message });
       return { allowed: true };
     }
 
@@ -49,8 +36,7 @@ async function checkRateLimitDb(supabase: any, identifier: string): Promise<{ al
 
     return { allowed: true };
   } catch (error) {
-    console.error('Rate limit exception:', error);
-    // On exception, allow the request
+    logger.error('Rate limit exception', { error: error instanceof Error ? error.message : 'Unknown' });
     return { allowed: true };
   }
 }
@@ -64,7 +50,7 @@ function encodePlayerTag(tag: string): string {
 }
 
 async function fetchFromClashApi(endpoint: string): Promise<any> {
-  console.log(`Fetching from Clash Royale API: ${endpoint}`);
+  logger.debug('Fetching from Clash Royale API', { endpoint });
   
   const response = await fetch(`https://proxy.royaleapi.dev/v1${endpoint}`, {
     headers: {
@@ -74,12 +60,12 @@ async function fetchFromClashApi(endpoint: string): Promise<any> {
   });
 
   if (!response.ok) {
-    const errorData: ClashApiError = await response.json().catch(() => ({
+    const errorData = await response.json().catch(() => ({
       reason: 'unknown',
       message: `HTTP ${response.status}: ${response.statusText}`,
     }));
     
-    console.error('Clash API error:', errorData);
+    logger.error('Clash API error', { error: errorData });
     throw new Error(errorData.message || `Clash API returned status ${response.status}`);
   }
 
@@ -97,7 +83,6 @@ async function getCachedOrFetch(
   const now = new Date();
   const cacheTTL = CACHE_TTL[type];
 
-  // Try to get from player_cache table
   const { data: cached, error: cacheError } = await supabase
     .from('player_cache')
     .select('*')
@@ -112,33 +97,30 @@ async function getCachedOrFetch(
     cachedData = type === 'player' ? cached.player_data : cached.battles_data;
     
     if (cachedData && cacheAge < cacheTTL) {
-      console.log(`Cache hit for ${type} (age: ${cacheAge.toFixed(1)}s)`);
+      logger.debug('Cache hit', { type, ageSeconds: cacheAge.toFixed(1) });
       return { data: cachedData, cacheHit: true, stale: false };
     }
     
     staleCache = cacheAge >= cacheTTL && cachedData;
   } else if (forceRefresh) {
-    console.log(`Force refresh requested for ${type}, bypassing cache`);
+    logger.debug('Force refresh requested, bypassing cache', { type });
     if (cached && !cacheError) {
       cachedData = type === 'player' ? cached.player_data : cached.battles_data;
       staleCache = !!cachedData;
     }
   }
 
-  // Fetch fresh data
-  console.log(`Cache miss for ${type}, fetching fresh data`);
+  logger.debug('Cache miss, fetching fresh data', { type });
   
   try {
     const freshData = await fetchFn();
 
-    // Get existing cache to preserve other data
     const { data: existingCache } = await supabase
       .from('player_cache')
       .select('player_data, battles_data')
       .eq('player_tag', normalizedTag)
       .maybeSingle();
 
-    // Build cache update preserving existing data
     const cacheUpdate: any = {
       player_tag: normalizedTag,
       player_data: type === 'player' ? freshData : (existingCache?.player_data || null),
@@ -147,33 +129,21 @@ async function getCachedOrFetch(
       cached_at: now.toISOString(),
     };
 
-    console.log(`Attempting to cache ${type} data for tag: ${normalizedTag}`);
-    
-    const { data: cacheResult, error: upsertError } = await supabase
+    const { error: upsertError } = await supabase
       .from('player_cache')
       .upsert(cacheUpdate, { onConflict: 'player_tag' })
       .select();
     
     if (upsertError) {
-      console.error(`Failed to cache ${type} data for ${normalizedTag}:`, {
-        error: upsertError,
-        code: upsertError.code,
-        message: upsertError.message,
-        details: upsertError.details
-      });
+      logger.error('Failed to cache data', { error: upsertError.message, type, playerTag: normalizedTag });
     } else {
-      console.log(`Successfully cached ${type} data for ${normalizedTag}:`, {
-        recordsAffected: cacheResult?.length || 0,
-        playerTag: normalizedTag,
-        hasPlayerData: !!cacheUpdate.player_data,
-        hasBattlesData: !!cacheUpdate.battles_data
-      });
+      logger.debug('Successfully cached data', { type, playerTag: normalizedTag });
     }
 
     return { data: freshData, cacheHit: false, stale: false };
   } catch (error) {
     if (staleCache && cachedData) {
-      console.warn(`API failed, returning stale cache for ${type}`);
+      logger.warn('API failed, returning stale cache', { type });
       return { data: cachedData, cacheHit: true, stale: true };
     }
     throw error;
@@ -181,11 +151,9 @@ async function getCachedOrFetch(
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
-  // Initialize Supabase client early for rate limiting
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   try {
@@ -193,12 +161,12 @@ serve(async (req) => {
       throw new Error('CLASH_ROYALE_API_KEY not configured');
     }
 
-    // Database-backed rate limiting (persists across instances)
+    // Database-backed rate limiting
     const identifier = req.headers.get('x-forwarded-for') || req.headers.get('authorization') || 'anonymous';
     const rateCheck = await checkRateLimitDb(supabase, identifier);
     
     if (!rateCheck.allowed) {
-      console.warn(`Rate limit exceeded for ${identifier}`);
+      logger.warn('Rate limit exceeded', { identifier });
       return new Response(
         JSON.stringify({ 
           error: 'Rate limit exceeded', 
@@ -216,7 +184,7 @@ serve(async (req) => {
       );
     }
 
-    // Support both query params AND POST body for backward compatibility
+    // Support both query params AND POST body
     let endpoint: string | null = null;
     let playerTag: string | null = null;
     let forceRefresh = false;
@@ -233,9 +201,9 @@ serve(async (req) => {
         endpoint = body.endpoint;
         playerTag = body.playerTag;
         forceRefresh = body.forceRefresh === true;
-        console.log('Using POST body params:', { endpoint, playerTag, forceRefresh });
+        logger.debug('Using POST body params', { endpoint, playerTag, forceRefresh });
       } catch (e) {
-        console.log('No JSON body or parse error:', e);
+        logger.debug('No JSON body or parse error');
       }
     }
 
@@ -291,18 +259,12 @@ serve(async (req) => {
     });
 
   } catch (error: any) {
-    console.error('Error in clash-royale-api function:', error);
+    logger.error('Error in clash-royale-api function', { error: error.message });
     
     const statusCode = error.message.includes('not found') ? 404 :
                       error.message.includes('Rate limit') ? 429 :
                       error.message.includes('Missing') ? 400 : 500;
 
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: statusCode,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return errorResponse(error.message, statusCode);
   }
 });

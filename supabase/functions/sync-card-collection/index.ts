@@ -1,16 +1,12 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     // Parse request body first
@@ -30,26 +26,19 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // SECURITY FIX: Get user from auth token instead of trusting client-supplied userId
+    // Get user from auth token
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    // Use server-verified userId, not client-supplied
     const userId = user.id;
 
     // Helper function to check for cancellation
@@ -66,7 +55,7 @@ serve(async (req) => {
         
         return data !== null;
       } catch (error) {
-        console.error('Error checking cancellation:', error);
+        logger.error('Error checking cancellation', { error: error instanceof Error ? error.message : 'Unknown' });
         return false;
       }
     };
@@ -93,12 +82,9 @@ serve(async (req) => {
 
     // Check for cancellation
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     // Fetch player data from Clash Royale API
@@ -121,18 +107,15 @@ serve(async (req) => {
 
     // Check for cancellation
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     const playerData = await response.json();
     const cards = playerData.cards || [];
 
-    console.log(`Syncing ${cards.length} cards for player ${playerTag}`);
+    logger.info('Syncing cards', { playerTag, count: cards.length });
     
     await updateProgress(30, 100, `Syncing ${cards.length} cards...`);
 
@@ -141,12 +124,9 @@ serve(async (req) => {
     for (let i = 0; i < cards.length; i++) {
       // Check for cancellation every 10 cards
       if (i % 10 === 0 && await checkCancellation()) {
-        console.log('Operation cancelled by user');
+        logger.info('Operation cancelled by user');
         await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-        return new Response(
-          JSON.stringify({ success: false, message: 'Operation cancelled' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-        );
+        return jsonResponse({ success: false, message: 'Operation cancelled' });
       }
 
       const card = cards[i];
@@ -170,12 +150,12 @@ serve(async (req) => {
         });
 
       if (error) {
-        console.error(`Error upserting card ${card.name}:`, error);
+        logger.error('Error upserting card', { cardName: card.name, error: error.message });
       }
 
       // Update progress every 10 cards
       if (i % 10 === 0) {
-        const progressPercent = 30 + Math.floor((i / totalCards) * 50); // 30-80%
+        const progressPercent = 30 + Math.floor((i / totalCards) * 50);
         await updateProgress(progressPercent, 100, `Synced ${i + 1}/${totalCards} cards...`);
       }
     }
@@ -198,26 +178,19 @@ serve(async (req) => {
       });
 
     if (leaderboardError) {
-      console.error('Error updating leaderboard:', leaderboardError);
+      logger.error('Error updating leaderboard', { error: leaderboardError.message });
     }
 
     await updateProgress(100, 100, 'Sync completed!', 'completed');
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        synced_cards: cards.length,
-        message: 'Card collection and leaderboard synced successfully'
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({ 
+      success: true, 
+      synced_cards: cards.length,
+      message: 'Card collection and leaderboard synced successfully'
+    });
 
   } catch (error) {
-    console.error('Error in sync-card-collection:', error);
-    
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in sync-card-collection', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

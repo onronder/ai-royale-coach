@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -19,10 +15,7 @@ serve(async (req) => {
     // Get user from auth header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Unauthorized', 401);
     }
 
     const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
@@ -31,19 +24,13 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Unauthorized', 401);
     }
 
     const { enabledProfileIds } = await req.json();
     
     if (!Array.isArray(enabledProfileIds)) {
-      return new Response(JSON.stringify({ error: 'enabledProfileIds must be an array' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('enabledProfileIds must be an array', 400);
     }
 
     // Use service role for database operations
@@ -57,29 +44,17 @@ serve(async (req) => {
       .single();
 
     if (subError || !subscription) {
-      return new Response(JSON.stringify({ error: 'No active subscription found' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('No active subscription found', 400);
     }
 
     // Check subscription is active
     if (!['active', 'trialing', 'cancelled'].includes(subscription.status)) {
-      return new Response(JSON.stringify({ error: 'Subscription not active' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Subscription not active', 400);
     }
 
     // Validate selection count against account_slots
     if (enabledProfileIds.length > subscription.account_slots) {
-      return new Response(JSON.stringify({ 
-        error: `Cannot enable AI on more than ${subscription.account_slots} accounts`,
-        maxSlots: subscription.account_slots 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse(`Cannot enable AI on more than ${subscription.account_slots} accounts`, 400, { maxSlots: subscription.account_slots });
     }
 
     // Get user's profiles to verify ownership
@@ -89,11 +64,8 @@ serve(async (req) => {
       .eq('user_id', user.id);
 
     if (profilesError) {
-      console.error('Error fetching profiles:', profilesError);
-      return new Response(JSON.stringify({ error: 'Failed to fetch profiles' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.error('Error fetching profiles', { error: profilesError.message });
+      return errorResponse('Failed to fetch profiles', 500);
     }
 
     const userProfileIds = profiles?.map(p => p.id) || [];
@@ -101,10 +73,7 @@ serve(async (req) => {
     // Verify all provided profile IDs belong to user
     const invalidIds = enabledProfileIds.filter(id => !userProfileIds.includes(id));
     if (invalidIds.length > 0) {
-      return new Response(JSON.stringify({ error: 'Invalid profile IDs provided' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Invalid profile IDs provided', 400);
     }
 
     // Disable AI on all user's profiles first
@@ -114,11 +83,8 @@ serve(async (req) => {
       .eq('user_id', user.id);
 
     if (disableError) {
-      console.error('Error disabling AI:', disableError);
-      return new Response(JSON.stringify({ error: 'Failed to update profiles' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.error('Error disabling AI', { error: disableError.message });
+      return errorResponse('Failed to update profiles', 500);
     }
 
     // Enable AI on selected profiles
@@ -129,11 +95,8 @@ serve(async (req) => {
         .in('id', enabledProfileIds);
 
       if (enableError) {
-        console.error('Error enabling AI:', enableError);
-        return new Response(JSON.stringify({ error: 'Failed to enable AI on profiles' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+        logger.error('Error enabling AI', { error: enableError.message });
+        return errorResponse('Failed to enable AI on profiles', 500);
       }
     }
 
@@ -143,22 +106,16 @@ serve(async (req) => {
       .update({ needs_ai_selection: false })
       .eq('user_id', user.id);
 
-    console.log(`User ${user.id} updated AI access: enabled on ${enabledProfileIds.length} profiles`);
+    logger.info('Updated AI access', { userId: user.id, enabledCount: enabledProfileIds.length });
 
-    return new Response(JSON.stringify({ 
+    return jsonResponse({ 
       success: true,
       enabledCount: enabledProfileIds.length,
       maxSlots: subscription.account_slots
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Manage AI accounts error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    logger.error('Manage AI accounts error', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

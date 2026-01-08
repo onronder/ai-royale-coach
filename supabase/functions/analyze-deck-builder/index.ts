@@ -1,16 +1,12 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -20,20 +16,14 @@ serve(async (req) => {
     // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // Check subscription status
@@ -55,10 +45,7 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Subscription required for AI deck analysis', subscription_required: true }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required for AI deck analysis', 403, { subscription_required: true });
     }
 
     const { cards, playerTag, language = 'en' } = await req.json();
@@ -67,12 +54,12 @@ serve(async (req) => {
       throw new Error('Deck must contain exactly 8 cards');
     }
 
-    // Helper to normalize player tags (database stores without #)
+    // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
       return tag.replace(/^#/, '').toUpperCase();
     };
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     if (playerTag && !isTrialActive) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
@@ -83,18 +70,11 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
-    // Language instruction based on user preference
+    // Language instruction
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',
       es: 'Responde en español.',
@@ -176,7 +156,7 @@ Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      logger.error('Lovable AI error', { status: response.status, error: errorText });
       throw new Error(`AI analysis failed: ${response.status}`);
     }
 
@@ -189,25 +169,17 @@ Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
-    // Return only real, calculable data + AI insights
-    // Synergy and meta scores removed - these would require historical user battle data
-    return new Response(
-      JSON.stringify({
-        synergy_score: null,
-        meta_score: null,
-        strengths: analysis.strengths,
-        weaknesses: analysis.weaknesses,
-        recommendations: analysis.recommendations,
-        avg_elixir: avgElixir,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({
+      synergy_score: null,
+      meta_score: null,
+      strengths: analysis.strengths,
+      weaknesses: analysis.weaknesses,
+      recommendations: analysis.recommendations,
+      avg_elixir: avgElixir,
+    });
 
   } catch (error) {
-    console.error('Error in analyze-deck-builder:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-deck-builder', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

@@ -1,35 +1,17 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 interface MatchAnalysisRequest {
   battle: any;
   playerTag: string;
 }
 
-interface PivotalInteraction {
-  yourCard: string;
-  opponentCard: string;
-  phase: 'early' | 'mid' | 'late' | 'overtime';
-  description: string;
-  impact: 'high' | 'medium';
-}
-
-interface CounterDeckSuggestion {
-  cards: string[];
-  explanations: Record<string, string>;
-  overallStrategy: string;
-}
-
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -42,7 +24,7 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // RATE LIMITING: Prevent enumeration attacks (60 requests per minute per IP)
+    // RATE LIMITING
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                      req.headers.get('x-real-ip') || 
                      'unknown';
@@ -56,31 +38,22 @@ serve(async (req) => {
       });
     
     if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
+      logger.error('Rate limit check error', { error: rateLimitError.message });
     } else if (!rateLimitAllowed) {
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please slow down.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Too many requests. Please slow down.', 429);
     }
 
-    // SECURITY FIX: Validate authentication
+    // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // Check subscription status
@@ -102,20 +75,17 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Subscription required for AI match analysis', subscription_required: true }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required for AI match analysis', 403, { subscription_required: true });
     }
 
     const { battle, playerTag, language = 'en' }: MatchAnalysisRequest & { language?: string } = await req.json();
 
-    // Helper to normalize player tags (database stores without #)
+    // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
       return tag.replace(/^#/, '').toUpperCase();
     };
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     if (playerTag && !isTrialActive) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
@@ -126,18 +96,11 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
     
-    // Language instruction based on user preference
+    // Language instruction
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',
       es: 'Responde en español.',
@@ -147,25 +110,20 @@ serve(async (req) => {
     };
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
-    // Normalize player tag - ensure it has # prefix for matching
     const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
-    console.log('Analyzing match for player:', normalizedTag);
-    console.log('Battle team tags:', battle.team?.map((p: any) => p.tag));
+    logger.info('Analyzing match', { playerTag: normalizedTag });
 
     const playerTeam = battle.team.find((p: any) => p.tag === normalizedTag);
     const opponent = battle.opponent[0];
     
     if (!playerTeam || !opponent) {
-      console.error('Player not found. Looking for:', normalizedTag);
-      console.error('Available tags in team:', battle.team?.map((p: any) => p.tag));
+      logger.error('Player not found', { lookingFor: normalizedTag, available: battle.team?.map((p: any) => p.tag) });
       throw new Error('Player or opponent not found in battle data');
     }
 
     const isWin = playerTeam.crowns > opponent.crowns;
     const playerCards = playerTeam.cards.map((c: any) => c.name).join(', ');
     const opponentCards = opponent.cards.map((c: any) => c.name).join(', ');
-    const playerCardsList = playerTeam.cards.map((c: any) => c.name);
-    const opponentCardsList = opponent.cards.map((c: any) => c.name);
 
     const prompt = `Analyze this Clash Royale match and provide structured insights:
 
@@ -197,9 +155,6 @@ Provide your analysis in the following JSON format:
   }
 }
 
-For pivotalInteractions: identify 3-4 key card matchups that likely decided or influenced the game.
-For counterDeck: suggest 8 cards that would effectively counter the opponent's deck composition.
-
 Return ONLY valid JSON, no markdown or extra text.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -223,24 +178,22 @@ Return ONLY valid JSON, no markdown or extra text.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      logger.error('Lovable AI error', { status: response.status, error: errorText });
       throw new Error(`AI analysis failed: ${response.status}`);
     }
 
     const aiData = await response.json();
     const analysisText = aiData.choices[0].message.content;
     
-    console.log('AI Response:', analysisText);
+    logger.debug('AI Response received', { length: analysisText.length });
 
     // Parse JSON response
     let parsedAnalysis;
     try {
-      // Clean up potential markdown code blocks
       const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       parsedAnalysis = JSON.parse(cleanedText);
     } catch (parseError) {
-      console.error('JSON parse error, falling back to text parsing:', parseError);
-      // Fallback to simple text extraction
+      logger.warn('JSON parse error, falling back to text parsing');
       parsedAnalysis = {
         deckMatchup: analysisText.slice(0, 300),
         analysis: analysisText,
@@ -275,16 +228,10 @@ Return ONLY valid JSON, no markdown or extra text.`;
       } : null,
     };
 
-    return new Response(
-      JSON.stringify(result),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse(result);
 
   } catch (error) {
-    console.error('Error in analyze-match:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-match', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });
