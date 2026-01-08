@@ -2358,5 +2358,56 @@
     "upgradeForUnlimited": "Passez à Pro pour des matchs illimités",
     "matchesRemaining": "{{count}} matchs restants aujourd'hui",
     "unlimitedMatches": "Matchs illimités disponibles"
+  },
+  "achievements": {
+    "title": "Succès",
+    "subtitle": "Vos accomplissements de combat",
+    "description": "Suivez votre parcours de maîtrise et débloquez des récompenses",
+    "syncProgress": "Synchroniser le Progrès",
+    "unlocked": "Débloqués",
+    "masteryPoints": "Points de Maîtrise",
+    "learningPhase": "Phase d'Apprentissage",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé",
+    "completion": "Complétion",
+    "skillBreakdown": "Répartition des Compétences",
+    "skillBreakdownDescription": "Votre performance dans différents domaines de compétence",
+    "skills": "Compétences",
+    "mastery": "Maîtrise",
+    "learning": "Apprentissage",
+    "milestones": "Jalons",
+    "unlockedCount": "{{count}} Débloqués",
+    "inProgress": "{{count}} En Cours",
+    "progress": "Progrès",
+    "pts": "pts",
+    "points": "points",
+    "unlockedOn": "Débloqué le {{date}}"
+  },
+  "proPlayers": {
+    "mohamedLight": {
+      "playstyle": "Spécialiste de l'appât agressif qui punit chaque erreur avec des Tonneaux de Gobelins parfaits",
+      "specialty": "Spam de Pont"
+    },
+    "oyassuu": {
+      "playstyle": "Maître du cycle légendaire qui surpasse chaque deck avec des Hog Riders ultra-rapides",
+      "specialty": "Maître du Cycle"
+    },
+    "morten": {
+      "playstyle": "Contrôleur patient qui épuise les adversaires avec des dégâts chip implacables du Mineur",
+      "specialty": "Mur Défensif"
+    },
+    "ryley": {
+      "playstyle": "Joueur d'appât agressif qui applique une pression sur deux voies avec Prince et Rascals",
+      "specialty": "Spécialiste de l'Appât"
+    },
+    "ian77": {
+      "playstyle": "Destructeur de bâtiments qui fait fondre les tours avec des Tremblements de Terre parfaitement chronométrés",
+      "specialty": "Roi du Tremblement"
+    },
+    "surgicalGoblin": {
+      "playstyle": "Joueur de siège calculé qui verrouille les X-Bows au moment parfait",
+      "specialty": "Maître du Siège"
+    }
   }
 }

@@ -2358,5 +2358,56 @@
     "upgradeForUnlimited": "Atualize para Pro para partidas ilimitadas",
     "matchesRemaining": "{{count}} partidas restantes hoje",
     "unlimitedMatches": "Partidas ilimitadas disponíveis"
+  },
+  "achievements": {
+    "title": "Conquistas",
+    "subtitle": "Suas conquistas de batalha",
+    "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
+    "syncProgress": "Sincronizar Progresso",
+    "unlocked": "Desbloqueadas",
+    "masteryPoints": "Pontos de Maestria",
+    "learningPhase": "Fase de Aprendizado",
+    "beginner": "Iniciante",
+    "intermediate": "Intermediário",
+    "advanced": "Avançado",
+    "completion": "Conclusão",
+    "skillBreakdown": "Detalhamento de Habilidades",
+    "skillBreakdownDescription": "Seu desempenho em diferentes áreas de habilidade",
+    "skills": "Habilidades",
+    "mastery": "Maestria",
+    "learning": "Aprendizado",
+    "milestones": "Marcos",
+    "unlockedCount": "{{count}} Desbloqueadas",
+    "inProgress": "{{count}} Em Progresso",
+    "progress": "Progresso",
+    "pts": "pts",
+    "points": "pontos",
+    "unlockedOn": "Desbloqueado em {{date}}"
+  },
+  "proPlayers": {
+    "mohamedLight": {
+      "playstyle": "Especialista em isca agressivo que pune cada erro com Barris de Goblins perfeitos",
+      "specialty": "Spam de Ponte"
+    },
+    "oyassuu": {
+      "playstyle": "Mestre do ciclo lendário que supera qualquer deck com Hog Riders ultrarrápidos",
+      "specialty": "Mestre do Ciclo"
+    },
+    "morten": {
+      "playstyle": "Controlador paciente que desgasta oponentes com dano chip implacável do Minerador",
+      "specialty": "Muralha Defensiva"
+    },
+    "ryley": {
+      "playstyle": "Jogador de isca agressivo que aplica pressão em duas pistas com Príncipe e Rascals",
+      "specialty": "Especialista em Isca"
+    },
+    "ian77": {
+      "playstyle": "Destruidor de construções que derrete torres com Terremotos perfeitamente cronometrados",
+      "specialty": "Rei do Terremoto"
+    },
+    "surgicalGoblin": {
+      "playstyle": "Jogador de cerco calculado que trava X-Bows no momento perfeito",
+      "specialty": "Mestre do Cerco"
+    }
   }
 }

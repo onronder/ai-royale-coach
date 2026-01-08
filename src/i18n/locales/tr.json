@@ -2412,5 +2412,56 @@
     "upgradeForUnlimited": "Sınırsız maç için Pro'ya yükseltin",
     "matchesRemaining": "Bugün {{count}} maç kaldı",
     "unlimitedMatches": "Sınırsız maç mevcut"
+  },
+  "achievements": {
+    "title": "Başarılar",
+    "subtitle": "Savaş başarıların",
+    "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
+    "syncProgress": "İlerlemeyi Senkronize Et",
+    "unlocked": "Açıldı",
+    "masteryPoints": "Ustalık Puanları",
+    "learningPhase": "Öğrenme Aşaması",
+    "beginner": "Başlangıç",
+    "intermediate": "Orta",
+    "advanced": "İleri",
+    "completion": "Tamamlama",
+    "skillBreakdown": "Beceri Dağılımı",
+    "skillBreakdownDescription": "Farklı beceri alanlarındaki performansınız",
+    "skills": "Beceriler",
+    "mastery": "Ustalık",
+    "learning": "Öğrenme",
+    "milestones": "Kilometre Taşları",
+    "unlockedCount": "{{count}} Açıldı",
+    "inProgress": "{{count}} Devam Ediyor",
+    "progress": "İlerleme",
+    "pts": "puan",
+    "points": "puan",
+    "unlockedOn": "{{date}} tarihinde açıldı"
+  },
+  "proPlayers": {
+    "mohamedLight": {
+      "playstyle": "Her hatayı piksel hassasiyetindeki Goblin Barrelleriyle cezalandıran agresif tuzak uzmanı",
+      "specialty": "Köprü Spamcısı"
+    },
+    "oyassuu": {
+      "playstyle": "Yıldırım hızındaki Hog Riderlarla her desteyi döngüde geçen efsanevi döngü ustası",
+      "specialty": "Döngü Ustası"
+    },
+    "morten": {
+      "playstyle": "Acımasız Miner chip hasarıyla rakipleri yıpratan sabırlı kontrolcü",
+      "specialty": "Savunma Duvarı"
+    },
+    "ryley": {
+      "playstyle": "Prince ve Rascals ile çift şerit baskısı uygulayan agresif tuzak oyuncusu",
+      "specialty": "Tuzak Uzmanı"
+    },
+    "ian77": {
+      "playstyle": "Mükemmel zamanlanmış Earthquake'lerle kuleleri eriten bina yıkıcı",
+      "specialty": "Deprem Kralı"
+    },
+    "surgicalGoblin": {
+      "playstyle": "X-Bow'ları mükemmel anda kilitleyen hesaplı kuşatma oyuncusu",
+      "specialty": "Kuşatma Ustası"
+    }
   }
 }

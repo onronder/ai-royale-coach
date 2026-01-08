@@ -2415,5 +2415,56 @@
     "upgradeForUnlimited": "Mejora a Pro para combates ilimitados",
     "matchesRemaining": "{{count}} combates restantes hoy",
     "unlimitedMatches": "Combates ilimitados disponibles"
+  },
+  "achievements": {
+    "title": "Logros",
+    "subtitle": "Tus logros de batalla",
+    "description": "Rastrea tu camino de maestría y desbloquea recompensas",
+    "syncProgress": "Sincronizar Progreso",
+    "unlocked": "Desbloqueados",
+    "masteryPoints": "Puntos de Maestría",
+    "learningPhase": "Fase de Aprendizaje",
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado",
+    "completion": "Completado",
+    "skillBreakdown": "Desglose de Habilidades",
+    "skillBreakdownDescription": "Tu rendimiento en diferentes áreas de habilidad",
+    "skills": "Habilidades",
+    "mastery": "Maestría",
+    "learning": "Aprendizaje",
+    "milestones": "Hitos",
+    "unlockedCount": "{{count}} Desbloqueados",
+    "inProgress": "{{count}} En Progreso",
+    "progress": "Progreso",
+    "pts": "pts",
+    "points": "puntos",
+    "unlockedOn": "Desbloqueado el {{date}}"
+  },
+  "proPlayers": {
+    "mohamedLight": {
+      "playstyle": "Especialista en cebo agresivo que castiga cada error con Barriles de Duendes perfectos",
+      "specialty": "Spam de Puente"
+    },
+    "oyassuu": {
+      "playstyle": "Maestro del ciclo legendario que supera a cada mazo con Hog Riders ultrarrápidos",
+      "specialty": "Maestro del Ciclo"
+    },
+    "morten": {
+      "playstyle": "Controlador paciente que desgasta a los oponentes con daño chip implacable del Minero",
+      "specialty": "Muro Defensivo"
+    },
+    "ryley": {
+      "playstyle": "Jugador de cebo agresivo que aplica presión en dos carriles con Príncipe y Rascals",
+      "specialty": "Especialista en Cebo"
+    },
+    "ian77": {
+      "playstyle": "Destructor de edificios que derrite torres con Terremotos perfectamente cronometrados",
+      "specialty": "Rey del Terremoto"
+    },
+    "surgicalGoblin": {
+      "playstyle": "Jugador de asedio calculado que fija X-Bows en el momento perfecto",
+      "specialty": "Maestro del Asedio"
+    }
   }
 }

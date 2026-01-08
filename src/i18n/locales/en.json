@@ -2450,5 +2450,56 @@
     "upgradeForUnlimited": "Upgrade to Pro for unlimited matches",
     "matchesRemaining": "{{count}} matches remaining today",
     "unlimitedMatches": "Unlimited matches available"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "Your battle accomplishments",
+    "description": "Track your mastery journey and unlock rewards",
+    "syncProgress": "Sync Progress",
+    "unlocked": "Unlocked",
+    "masteryPoints": "Mastery Points",
+    "learningPhase": "Learning Phase",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "completion": "Completion",
+    "skillBreakdown": "Skill Breakdown",
+    "skillBreakdownDescription": "Your performance across different skill areas",
+    "skills": "Skills",
+    "mastery": "Mastery",
+    "learning": "Learning",
+    "milestones": "Milestones",
+    "unlockedCount": "{{count}} Unlocked",
+    "inProgress": "{{count}} In Progress",
+    "progress": "Progress",
+    "pts": "pts",
+    "points": "points",
+    "unlockedOn": "Unlocked on {{date}}"
+  },
+  "proPlayers": {
+    "mohamedLight": {
+      "playstyle": "Aggressive bait specialist who punishes every mistake with pixel-perfect Goblin Barrels",
+      "specialty": "Bridge Spammer"
+    },
+    "oyassuu": {
+      "playstyle": "Legendary cycle master who out-rotates every deck with lightning-fast Hog Riders",
+      "specialty": "Cycle Master"
+    },
+    "morten": {
+      "playstyle": "Patient controller who wears down opponents with relentless Miner chip damage",
+      "specialty": "Defensive Wall"
+    },
+    "ryley": {
+      "playstyle": "Aggressive bait player who applies dual-lane pressure with Prince and Rascals",
+      "specialty": "Bait Specialist"
+    },
+    "ian77": {
+      "playstyle": "Building destroyer who melts towers with perfectly timed Earthquakes",
+      "specialty": "Earthquake King"
+    },
+    "surgicalGoblin": {
+      "playstyle": "Calculated siege player who locks X-Bows at the perfect moment",
+      "specialty": "Siege Master"
+    }
   }
 }
