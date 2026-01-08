@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Download, Share, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function InstallAppPrompt() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -94,8 +96,8 @@ export function InstallAppPrompt() {
               <Download className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="font-semibold text-sm truncate">Install AI Coach</p>
-              <p className="text-xs opacity-80 truncate">Get the best experience</p>
+              <p className="font-semibold text-sm truncate">{t('installApp.title')}</p>
+              <p className="text-xs opacity-80 truncate">{t('installApp.subtitle')}</p>
             </div>
           </div>
           
@@ -106,7 +108,7 @@ export function InstallAppPrompt() {
               className="min-h-[44px] bg-primary-foreground text-primary hover:bg-primary-foreground/90"
               onClick={handleInstallClick}
             >
-              {isIOS ? 'How to Install' : 'Install'}
+              {isIOS ? t('installApp.howToInstall') : t('installApp.install')}
             </Button>
             <Button
               size="icon"
@@ -122,23 +124,23 @@ export function InstallAppPrompt() {
         {/* iOS Instructions */}
         {showIOSInstructions && isIOS && (
           <div className="mt-3 pt-3 border-t border-primary-foreground/20">
-            <p className="text-sm font-medium mb-2">To install on iPhone/iPad:</p>
+            <p className="text-sm font-medium mb-2">{t('installApp.iosTitle')}</p>
             <ol className="text-xs space-y-2 opacity-90">
               <li className="flex items-center gap-2">
                 <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center text-[10px] font-bold">1</span>
                 <span className="flex items-center gap-1">
-                  Tap the <Share className="h-4 w-4 inline" /> Share button in Safari
+                  <Share className="h-4 w-4 inline" /> {t('installApp.iosStep1')}
                 </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center text-[10px] font-bold">2</span>
                 <span className="flex items-center gap-1">
-                  Scroll down and tap <Plus className="h-4 w-4 inline" /> "Add to Home Screen"
+                  <Plus className="h-4 w-4 inline" /> {t('installApp.iosStep2')}
                 </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary-foreground/20 flex items-center justify-center text-[10px] font-bold">3</span>
-                <span>Tap "Add" in the top right corner</span>
+                <span>{t('installApp.iosStep3')}</span>
               </li>
             </ol>
           </div>

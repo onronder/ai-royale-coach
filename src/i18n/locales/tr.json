@@ -1625,7 +1625,21 @@
     "registration": "Kayıt",
     "inProgress": "Devam Ediyor",
     "completed": "Tamamlandı",
-    "cancelled": "İptal Edildi"
+    "cancelled": "İptal Edildi",
+    "bracket": "Turnuva Tablosu",
+    "bracketNotReady": "Tablo Hazır Değil",
+    "bracketWaitingForStart": "Turnuva tablosu turnuva başladığında oluşturulacak.",
+    "noBrackets": "Tablo Mevcut Değil",
+    "noBracketsDescription": "Bu turnuvanın tablosu henüz oluşturulmadı.",
+    "round": "Tur {{round}}",
+    "quarterFinal": "Çeyrek Final",
+    "semiFinal": "Yarı Final",
+    "final": "Final",
+    "champion": "Şampiyon",
+    "match": "Maç",
+    "pending": "Beklemede",
+    "tbd": "Belirlenecek",
+    "unknown": "Bilinmeyen Oyuncu"
   },
   "comparison": {
     "title": "Hesap Karşılaştırması",
@@ -2056,5 +2070,15 @@
     "retry": "Tekrar Dene",
     "checking": "Kontrol ediliyor...",
     "helpText": "Bağlantınız yeniden kurulduğunda uygulama otomatik olarak yeniden bağlanacak."
+  },
+  "installApp": {
+    "title": "AI Coach'u Yükle",
+    "subtitle": "En iyi deneyimi yaşayın",
+    "install": "Yükle",
+    "howToInstall": "Nasıl Yüklenir",
+    "iosTitle": "iPhone/iPad'e yüklemek için:",
+    "iosStep1": "Safari'de Paylaş düğmesine dokunun",
+    "iosStep2": "Aşağı kaydırın ve \"Ana Ekrana Ekle\" seçeneğine dokunun",
+    "iosStep3": "Sağ üst köşedeki \"Ekle\" seçeneğine dokunun"
   }
 }
