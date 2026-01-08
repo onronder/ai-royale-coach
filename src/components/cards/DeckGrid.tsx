@@ -35,7 +35,7 @@ export const DeckGrid = memo(function DeckGrid({ cards, showElixir = true, size 
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2 md:gap-3 w-full">
         {cards.slice(0, 8).map((card, idx) => (
           <div 
             key={`${card.id}-${idx}`}

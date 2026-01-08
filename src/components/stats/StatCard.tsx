@@ -60,7 +60,7 @@ export function StatCard({
       variantStyles[variant],
       className
     )}>
-      <CardContent className="pt-6">
+      <CardContent className="pt-4 md:pt-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2 flex-1">
             <p className={cn(
@@ -70,7 +70,7 @@ export function StatCard({
               {title}
             </p>
             <p className={cn(
-              "text-3xl font-bold font-rajdhani",
+              "text-2xl md:text-3xl font-bold font-rajdhani",
               variant === 'gradient' ? 'text-primary-foreground' : trend && trendColors[trend],
               (variant === 'arena' || variant === 'golden') && !trend && 'text-foreground'
             )}>
@@ -86,11 +86,11 @@ export function StatCard({
             )}
           </div>
           <div className={cn(
-            "w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+            "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
             iconContainerStyles[variant]
           )}>
             <Icon className={cn(
-              "w-6 h-6",
+              "w-5 h-5 md:w-6 md:h-6",
               iconStyles[variant]
             )} />
           </div>
