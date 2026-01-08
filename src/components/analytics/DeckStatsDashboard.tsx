@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDeckStats, useTrackDeckStats } from "@/hooks/useDeckStats";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -9,6 +9,7 @@ import { DeckTrendChart } from "./DeckTrendChart";
 import { MostUsedCardsGrid } from "./MostUsedCardsGrid";
 import { DeckUsageBreakdown } from "./DeckUsageBreakdown";
 import { EmptyState } from "@/components/ui/empty-state";
+import type { AggregatedDeckStat } from "@/types/dashboard.types";
 
 interface DeckStatsDashboardProps {
   playerTag: string;

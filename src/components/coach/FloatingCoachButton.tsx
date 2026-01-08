@@ -17,6 +17,13 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import type { 
+  SavedDeckRow, 
+  CardMasteryRow, 
+  UserAchievementWithDetails, 
+  CardCollectionRow 
+} from "@/types/dashboard.types";
+
 interface FloatingCoachButtonProps {
   playerTag: string;
   playerStats?: {
@@ -30,10 +37,10 @@ interface FloatingCoachButtonProps {
     losses: number;
     avgTrophyChange: string;
   };
-  savedDecks?: any[];
-  cardMastery?: any[];
-  achievements?: any[];
-  cardCollection?: any[];
+  savedDecks?: SavedDeckRow[];
+  cardMastery?: CardMasteryRow[];
+  achievements?: UserAchievementWithDetails[];
+  cardCollection?: CardCollectionRow[];
   forceOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }

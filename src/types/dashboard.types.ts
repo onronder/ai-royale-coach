@@ -2,7 +2,7 @@
  * Dashboard Types - Proper type definitions to replace `any` usage
  */
 
-import { Database } from '@/integrations/supabase/types';
+import { Database, Json } from '@/integrations/supabase/types';
 
 // Database row types
 export type DeckUsageStatRow = Database['public']['Tables']['deck_usage_stats']['Row'];
@@ -33,4 +33,19 @@ export type NotificationType = 'achievement' | 'sync' | 'calculation' | 'info' |
 export interface TypedNotification extends Omit<NotificationRow, 'type' | 'metadata'> {
   type: NotificationType;
   metadata?: Record<string, unknown>;
+}
+
+// Aggregated deck stat - from useDeckStats hook
+export interface AggregatedDeckStat {
+  id: string;
+  deck_cards: string[];
+  deck_hash: string;
+  battles_played: number;
+  battles_won: number;
+  battles_lost: number;
+  total_crowns: number;
+  total_trophy_change: number;
+  avg_elixir: number;
+  date: string;
+  win_rate: number;
 }

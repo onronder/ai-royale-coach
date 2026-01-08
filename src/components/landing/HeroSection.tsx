@@ -8,8 +8,10 @@ import { Crown, Sparkles, Zap, Users, Trophy, ChevronDown, Play } from "lucide-r
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+import type { User } from "@supabase/supabase-js";
+
 interface HeroSectionProps {
-  user: any;
+  user: User | null;
 }
 
 // Generate random particles for visual effect

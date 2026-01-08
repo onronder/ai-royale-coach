@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export type NotificationType = 'achievement' | 'sync' | 'calculation' | 'info' | 'success' | 'error';
 
@@ -13,7 +14,7 @@ export interface Notification {
   icon_name?: string;
   read: boolean;
   created_at: string;
-  metadata?: Record<string, unknown>;
+  metadata?: Json;
 }
 
 /**
@@ -113,15 +114,15 @@ export const useCreateNotification = () => {
 
       const { error } = await supabase
         .from('notifications')
-        .insert({
+        .insert([{
           player_tag: notification.player_tag,
           type: notification.type,
           title: notification.title,
           message: notification.message,
           icon_name: notification.icon_name,
-          metadata: notification.metadata as Record<string, unknown> | undefined,
+          metadata: notification.metadata,
           user_id: user.id,
-        });
+        }]);
 
       if (error) throw error;
     },

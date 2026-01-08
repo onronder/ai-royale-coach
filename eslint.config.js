@@ -21,6 +21,27 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+      
+      // Type safety rules - warn on explicit any usage
+      "@typescript-eslint/no-explicit-any": "warn",
+      
+      // Console logging - warn but allow error/warn for debugging
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
+  // Separate config for edge functions (Deno environment)
+  {
+    files: ["supabase/functions/**/*.ts"],
+    languageOptions: {
+      globals: {
+        Deno: "readonly",
+        ...globals.browser,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      // Edge functions use shared logger utility, so console is OK
+      "no-console": "off",
     },
   },
 );

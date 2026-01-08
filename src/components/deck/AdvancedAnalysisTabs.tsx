@@ -4,45 +4,18 @@ import { SynergyMatrix } from "./SynergyMatrix";
 import { MatchupPredictions } from "./MatchupPredictions";
 import { Zap, GitMerge, Swords, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
-
-interface AdvancedAnalysis {
-  elixirAnalysis: {
-    avgElixir: number;
-    cycleSpeed: 'fast' | 'medium' | 'slow';
-    defensiveCost: number;
-    offensiveCost: number;
-    elixirDistribution: { cost: number; count: number }[];
-    tradeScenarios: any[];
-  };
-  composition?: {
-    winConditions: string[];
-    defenseCards: string[];
-    cycleCards: string[];
-    spells: string[];
-    missingRoles: string[];
-    balanceNotes: string;
-  };
-  synergyMatrix: any | null;
-  matchupPredictions: any[] | null;
-}
-
-interface BasicAnalysis {
-  synergy_score: number | null;
-  meta_score: number | null;
-  strengths: string[];
-  weaknesses: string[];
-  recommendations: string[];
-  avg_elixir: number;
-}
+import type { AdvancedDeckAnalysis, DeckAnalysis } from "@/types/analysis.types";
 
 interface AdvancedAnalysisTabsProps {
-  advancedAnalysis: AdvancedAnalysis | null;
-  basicAnalysis: BasicAnalysis | null;
+  advancedAnalysis: AdvancedDeckAnalysis | null;
+  basicAnalysis: DeckAnalysis | null;
   cardNames: string[];
 }
 
 export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardNames }: AdvancedAnalysisTabsProps) {
   const { t } = useTranslation();
+
+  if (!advancedAnalysis && !basicAnalysis) return null;
 
   if (!advancedAnalysis && !basicAnalysis) return null;
 

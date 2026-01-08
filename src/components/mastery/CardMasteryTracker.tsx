@@ -108,7 +108,7 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
       {/* Sort Controls */}
       <div className="flex items-center gap-4">
         <span className="text-sm text-muted-foreground">{t('mastery.sortBy')}:</span>
-        <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+        <Select value={sortBy} onValueChange={(value: 'level' | 'usage' | 'winrate') => setSortBy(value)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue />
           </SelectTrigger>
