@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Shield, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,8 @@ interface SoftBlockWarningProps {
  * Non-blocking warning banner for users with fraud warnings or soft-blocks.
  */
 export function SoftBlockWarning({ status, className }: SoftBlockWarningProps) {
+  const navigate = useNavigate();
+  
   if (status === 'clean') {
     return null;
   }
@@ -51,10 +54,10 @@ export function SoftBlockWarning({ status, className }: SoftBlockWarningProps) {
               variant="outline" 
               size="sm" 
               className="mt-3"
-              onClick={() => window.open('mailto:support@example.com', '_blank')}
+              onClick={() => navigate('/help')}
             >
               <HelpCircle className="h-4 w-4 mr-2" />
-              Contact Support
+              Get Help
             </Button>
           )}
         </div>

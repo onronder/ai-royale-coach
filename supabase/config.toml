@@ -24,6 +24,10 @@ verify_jwt = false
 [functions.manage-ai-accounts]
 verify_jwt = false
 
+# Admin endpoints - handle auth internally for server-side role validation
+[functions.admin-fraud-action]
+verify_jwt = false
+
 # Protected endpoints - JWT required for security
 [functions.track-deck-stats]
 verify_jwt = true

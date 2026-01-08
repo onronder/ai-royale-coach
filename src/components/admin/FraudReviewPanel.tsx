@@ -93,32 +93,32 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
     },
   });
 
-  // Update status mutation
+  // Update status mutation via edge function for server-side validation
   const updateStatus = useMutation({
     mutationFn: async ({ newStatus, notes }: { newStatus: string; notes: string }) => {
-      const { error } = await supabase
-        .from('user_fraud_status')
-        .update({
-          status: newStatus,
-          reviewed_by: adminId,
-          reviewed_at: new Date().toISOString(),
-          review_notes: notes,
-          fraud_score: newStatus === 'clean' ? 0 : fraudStatus?.fraud_score,
-        })
-        .eq('user_id', userId);
+      // Map status to action
+      const actionMap: Record<string, string> = {
+        clean: 'clear_signals',
+        warning: 'set_warning',
+        soft_blocked: 'soft_block',
+      };
+      
+      const { data, error } = await supabase.functions.invoke('admin-fraud-action', {
+        body: {
+          action: actionMap[newStatus] || newStatus,
+          targetUserId: userId,
+          notes,
+        },
+      });
 
       if (error) throw error;
-
-      // Log admin action
-      await supabase.from('admin_audit_log').insert({
-        admin_id: adminId,
-        action: `set_status_${newStatus}`,
-        target_user_id: userId,
-        details: { notes, previous_status: fraudStatus?.status },
-      });
+      if (data?.error) throw new Error(data.error);
+      
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fraud-status-admin', userId] });
+      queryClient.invalidateQueries({ queryKey: ['fraud-signals-admin', userId] });
       queryClient.invalidateQueries({ queryKey: ['fraud-cases'] });
       toast.success('Status updated successfully');
     },
