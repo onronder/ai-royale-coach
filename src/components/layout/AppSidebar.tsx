@@ -48,6 +48,7 @@ interface AppSidebarProps {
   onSignOut?: () => void;
   onOpenDNA?: () => void;
   onOpenAchievements?: () => void;
+  onOpenHelp?: () => void;
 }
 
 // Sub-tabs configuration for each main tab
@@ -88,7 +89,8 @@ export function AppSidebar({
   trophies,
   onSignOut,
   onOpenDNA,
-  onOpenAchievements
+  onOpenAchievements,
+  onOpenHelp
 }: AppSidebarProps) {
   const { t, ready } = useTranslation();
   const navigate = useNavigate();
@@ -382,7 +384,7 @@ export function AppSidebar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <SidebarMenuButton
-                  onClick={() => navigate('/help')}
+                  onClick={onOpenHelp}
                   className="group"
                 >
                   <HelpCircle className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />

@@ -19,7 +19,6 @@
     "sections": {
       "gettingStarted": "Başlarken",
       "dashboard": "Panel",
-      "stats": "İstatistikler",
       "matches": "Maçlar",
       "deck": "Deste",
       "builder": "Oluşturucu",
@@ -28,6 +27,10 @@
       "leaderboard": "Liderlik Tablosu",
       "tournaments": "Turnuvalar",
       "clans": "Klanlar",
+      "oracle": "Kahin",
+      "dreamArena": "Rüya Arenası",
+      "proDna": "Pro DNA",
+      "achievements": "Başarılar",
       "coach": "AI Koç",
       "features": "Özellikler",
       "faq": "SSS"
@@ -71,19 +74,13 @@
       "title": "Panel Genel Bakış",
       "badge": "Navigasyon",
       "overview": {
-        "title": "Panel Sekmeleri",
-        "intro": "Paneliniz 9 ana sekmeye ayrılmıştır, her biri özel özellikler sunar:"
+        "title": "Panel Yapısı",
+        "intro": "Paneliniz kolay gezinme için alt sekmeli 3 ana bölüme ayrılmıştır:"
       },
-      "tabs": {
-        "stats": "İstatistikler",
-        "matches": "Maçlar",
-        "deck": "Deste",
-        "builder": "Oluşturucu",
-        "analytics": "Analitik",
-        "collection": "Koleksiyon",
-        "leaderboard": "Liderlik Tablosu",
-        "tournaments": "Turnuvalar",
-        "clans": "Klanlar"
+      "mainTabs": {
+        "coach": "Koç (Genel Bakış, Maçlar, Analitik, Liderlik)",
+        "deck": "Deste (Mevcut, Oluşturucu, Koleksiyon)",
+        "social": "Sosyal (Klanlar, Turnuvalar)"
       },
       "navigation": {
         "title": "Panelde Gezinme",
@@ -95,30 +92,6 @@
         "title": "Veri Senkronizasyonu ve Yenileme",
         "intro": "Paneli açtığınızda verileriniz otomatik olarak senkronize olur. Başlıktaki senkronizasyon göstergesini kullanarak manuel olarak yenileyebilirsiniz.",
         "note": "Not: Clash Royale API'sinin 5-15 dakikalık bir gecikmesi var. Son oyun içi değişiklikler hemen görünmeyebilir."
-      }
-    },
-    "stats": {
-      "title": "İstatistikler Sekmesi",
-      "badge": "Genel Bakış",
-      "overview": {
-        "title": "Oyuncu İstatistikleri",
-        "intro": "İstatistikler sekmesi temel performans metriklerinizi görüntüler:",
-        "trophies": "Mevcut Kupalar",
-        "trophiesDesc": "Mevcut kupa sayınız ve kişisel rekorunuz",
-        "winRate": "Kazanma Oranı",
-        "winRateDesc": "Son 25 maçınızdan hesaplanır",
-        "arena": "Arena",
-        "arenaDesc": "Kupa sayısına göre mevcut arenanız",
-        "clan": "Klan",
-        "clanDesc": "Klan adınız ve rozeti (bir klanın üyesiyseniz)"
-      },
-      "charts": {
-        "title": "Kupa İlerleme Grafiği",
-        "intro": "Kazanç ve kayıpları gösteren interaktif grafiklerle kupa ilerlemenizi zaman içinde görüntüleyin."
-      },
-      "aiSummary": {
-        "title": "AI Koç Özeti",
-        "intro": "Güçlü yönler, gelişim alanları ve stratejik öneriler dahil son performansınızın AI tarafından oluşturulan kişiselleştirilmiş özeti."
       }
     },
     "matches": {
@@ -302,6 +275,50 @@
         "closedDesc": "Yeni üye kabul etmiyor"
       }
     },
+    "oracle": {
+      "title": "Kahin",
+      "badge": "Rakip İstihbaratı",
+      "overview": {
+        "title": "Rakip Destelerini Tahmin Etme",
+        "intro": "Kahin, rakibin en olası destesini ve oyun tarzını tahmin etmek için son maçlarını analiz eder. Rövanş öncesinde veya bilinen rakiplere karşı hazırlanmak için kullanın."
+      },
+      "howToUse": {
+        "title": "Nasıl Kullanılır",
+        "step1": "Rakibin oyuncu etiketini girin (maç sonrasında bulunur)",
+        "step2": "Kahin son 25 maçını tarar",
+        "step3": "Tahmin edilen deste, kazanma oranları ve karşı stratejileri görüntüleyin"
+      }
+    },
+    "dreamArena": {
+      "title": "Rüya Arenası",
+      "badge": "Pro Meydan Okuma",
+      "overview": {
+        "title": "Pro Oyunculara Meydan Oku",
+        "intro": "Prolara karşı nasıl olacağınızı hiç merak ettiniz mi? Rüya Arenası, desteniz ile en iyi profesyonel oyuncular arasındaki maçları simüle etmek için AI kullanır."
+      },
+      "howToUse": {
+        "title": "Nasıl Çalışır",
+        "step1": "Aşağıdaki kadrodan bir pro oyuncu seçin",
+        "step2": "AI, istatistiklerinize ve oyun tarzlarına göre bir maç simüle eder",
+        "step3": "Tahmin edilen sonuçları ve gelişme stratejilerini görün"
+      }
+    },
+    "proDna": {
+      "title": "Pro DNA",
+      "badge": "Oyuncu Profili",
+      "overview": {
+        "title": "Oyuncu DNA Kartınız",
+        "intro": "Oyun tarzı parmak izinizi gösteren benzersiz, paylaşılabilir bir kart oluşturun. DNA kartınız güçlü yönlerinizi, favori arketipleri, kart ustalığını ve performans metriklerini güzel bir görsel formatta gösterir."
+      }
+    },
+    "achievements": {
+      "title": "Başarılar",
+      "badge": "Kilometre Taşları",
+      "overview": {
+        "title": "İlerlemenizi Takip Edin",
+        "intro": "Geliştikçe ve kilometre taşlarına ulaştıkça rozetler açın. Başarılar beceri alanına (saldırı, savunma, strateji) ve seviyeye (Bronz, Gümüş, Altın, Platin, Elmas) göre kategorize edilir. Puan kazanmak ve başarı liderlik tablosunda yükselmek için görevleri tamamlayın!"
+      }
+    },
     "coach": {
       "title": "AI Koç",
       "badge": "Kişisel Koçluk",
@@ -369,13 +386,13 @@
       "q4": "AI Royale'i mobilde kullanabilir miyim?",
       "a4": "Evet! AI Royale tamamen duyarlıdır ve tüm cihazlarda çalışır. Arayüz ekran boyutunuza uyum sağlar.",
       "q5": "AI eşleşme tahminleri ne kadar doğru?",
-      "a5": "Tahminler deste kompozisyonu analizi ve geçmiş verilere dayanır. Gerçek sonuçlar beceri seviyesine ve kart seviyelerine göre değişebilir.",
+      "a5": "Tahminler deste kompozisyon analizi ve geçmiş verilere dayanır. Gerçek sonuçlar beceri seviyesi ve kart seviyelerine göre değişebilir.",
       "q6": "Neden 3'ten fazla hesap ekleyemiyorum?",
-      "a6": "3 hesap limiti, tüm kullanıcılar için AI hizmetlerimizin ve API kaynaklarımızın adil kullanımını sağlar.",
+      "a6": "3 hesap sınırı, tüm kullanıcılar için AI hizmetlerimizin ve API kaynaklarımızın adil kullanımını sağlar.",
       "q7": "Email veya şifremi nasıl değiştiririm?",
-      "a7": "Hesap yönetimi özellikleri kimlik doğrulama sistemi aracılığıyla kullanılabilir. Emailinizi değiştirmeniz gerekiyorsa destekle iletişime geçin.",
+      "a7": "Hesap yönetimi özellikleri kimlik doğrulama sistemi üzerinden kullanılabilir. Email değiştirmek için destek ekibiyle iletişime geçin.",
       "q8": "Verilerim güvende mi?",
-      "a8": "Evet! Endüstri standardı şifreleme kullanıyoruz ve Clash Royale giriş bilgilerinizi asla saklamıyoruz. Oyuncu Etiketiniz aracılığıyla yalnızca herkese açık verilere erişiyoruz."
+      "a8": "Evet! Endüstri standardı şifreleme kullanıyoruz ve Clash Royale giriş bilgilerinizi asla saklamıyoruz. Sadece Oyuncu Etiketiniz aracılığıyla herkese açık verilere erişiyoruz."
     }
   }
 }

@@ -19,7 +19,6 @@
     "sections": {
       "gettingStarted": "Getting Started",
       "dashboard": "Dashboard",
-      "stats": "Stats",
       "matches": "Matches",
       "deck": "Deck",
       "builder": "Builder",
@@ -28,6 +27,10 @@
       "leaderboard": "Leaderboard",
       "tournaments": "Tournaments",
       "clans": "Clans",
+      "oracle": "The Oracle",
+      "dreamArena": "Dream Arena",
+      "proDna": "Pro DNA",
+      "achievements": "Achievements",
       "coach": "AI Coach",
       "features": "Features",
       "faq": "FAQ"
@@ -71,19 +74,13 @@
       "title": "Dashboard Overview",
       "badge": "Navigation",
       "overview": {
-        "title": "Dashboard Tabs",
-        "intro": "Your dashboard is organized into 9 main tabs, each offering specialized features:"
+        "title": "Dashboard Structure",
+        "intro": "Your dashboard is organized into 3 main sections with sub-tabs for easy navigation:"
       },
-      "tabs": {
-        "stats": "Stats",
-        "matches": "Matches",
-        "deck": "Deck",
-        "builder": "Builder",
-        "analytics": "Analytics",
-        "collection": "Collection",
-        "leaderboard": "Leaderboard",
-        "tournaments": "Tournaments",
-        "clans": "Clans"
+      "mainTabs": {
+        "coach": "Coach (Overview, Matches, Analytics, Leaderboard)",
+        "deck": "Deck (Current, Builder, Collection)",
+        "social": "Social (Clans, Tournaments)"
       },
       "navigation": {
         "title": "Navigating the Dashboard",
@@ -95,30 +92,6 @@
         "title": "Data Sync & Refresh",
         "intro": "Your data syncs automatically when you open the dashboard. You can manually refresh using the sync indicator in the header.",
         "note": "Note: Clash Royale API has a 5-15 minute delay. Recent in-game changes may not appear immediately."
-      }
-    },
-    "stats": {
-      "title": "Stats Tab",
-      "badge": "Overview",
-      "overview": {
-        "title": "Player Statistics",
-        "intro": "The Stats tab displays your key performance metrics:",
-        "trophies": "Current Trophies",
-        "trophiesDesc": "Your current trophy count and personal best",
-        "winRate": "Win Rate",
-        "winRateDesc": "Calculated from your last 25 battles",
-        "arena": "Arena",
-        "arenaDesc": "Your current arena based on trophy count",
-        "clan": "Clan",
-        "clanDesc": "Your clan name and badge (if member of a clan)"
-      },
-      "charts": {
-        "title": "Trophy Progress Chart",
-        "intro": "View your trophy progression over time with interactive charts showing gains and losses."
-      },
-      "aiSummary": {
-        "title": "AI Coach Summary",
-        "intro": "A personalized AI-generated summary of your recent performance, including strengths, areas for improvement, and strategic recommendations."
       }
     },
     "matches": {
@@ -300,6 +273,50 @@
         "inviteDesc": "Requires approval from clan leader/elders",
         "closed": "Closed",
         "closedDesc": "Not accepting new members"
+      }
+    },
+    "oracle": {
+      "title": "The Oracle",
+      "badge": "Opponent Intel",
+      "overview": {
+        "title": "Predicting Opponent Decks",
+        "intro": "The Oracle analyzes an opponent's recent battles to predict their most likely deck and playstyle. Use it before a rematch or to prepare against known opponents."
+      },
+      "howToUse": {
+        "title": "How to Use",
+        "step1": "Enter the opponent's player tag (found after a match)",
+        "step2": "The Oracle scans their last 25 battles",
+        "step3": "View predicted deck, win rates, and counter strategies"
+      }
+    },
+    "dreamArena": {
+      "title": "Dream Arena",
+      "badge": "Pro Challenge",
+      "overview": {
+        "title": "Challenge Pro Players",
+        "intro": "Ever wondered how you'd fare against the pros? Dream Arena uses AI to simulate matches between your deck and top professional players."
+      },
+      "howToUse": {
+        "title": "How it Works",
+        "step1": "Select a pro player from the roster below",
+        "step2": "AI simulates a match based on your stats and their playstyle",
+        "step3": "See predicted outcomes and strategies to improve"
+      }
+    },
+    "proDna": {
+      "title": "Pro DNA",
+      "badge": "Player Profile",
+      "overview": {
+        "title": "Your Player DNA Card",
+        "intro": "Generate a unique, shareable card showcasing your playstyle fingerprint. Your DNA card displays your strengths, favorite archetypes, card mastery, and performance metrics in a beautiful visual format."
+      }
+    },
+    "achievements": {
+      "title": "Achievements",
+      "badge": "Milestones",
+      "overview": {
+        "title": "Track Your Progress",
+        "intro": "Unlock badges as you improve and reach milestones. Achievements are categorized by skill area (offense, defense, strategy) and tier (Bronze, Silver, Gold, Platinum, Diamond). Complete challenges to earn points and climb the achievement leaderboard!"
       }
     },
     "coach": {

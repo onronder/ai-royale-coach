@@ -52,7 +52,7 @@ import { ProDNAView } from "@/components/social/ProDNAView";
 import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
 import { AchievementsTab } from "@/components/gamification/AchievementsTab";
 import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
-
+import { HelpDialog } from "@/components/help/HelpDialog";
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -63,6 +63,7 @@ const Dashboard = () => {
   const [coachOpen, setCoachOpen] = useState(false);
   const [dnaOpen, setDnaOpen] = useState(false);
   const [achievementsOpen, setAchievementsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("coach");
   const [activeSubTab, setActiveSubTab] = useState("overview");
@@ -178,6 +179,7 @@ const Dashboard = () => {
             onSignOut={handleSignOutWithToast}
             onOpenDNA={() => setDnaOpen(true)}
             onOpenAchievements={() => setAchievementsOpen(true)}
+            onOpenHelp={() => setHelpOpen(true)}
           />
           
           {/* Main Content Area - Full width on mobile, flex on desktop */}
@@ -411,6 +413,9 @@ const Dashboard = () => {
               onDismiss={dismissWhatsNew}
               playerTag={playerTag}
             />
+
+            {/* Help Dialog */}
+            <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
           </SidebarInset>
           
           {/* Mobile Bottom Navigation */}
