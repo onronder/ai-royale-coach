@@ -272,7 +272,7 @@ export function AppSidebar({
                         variant="outline" 
                         className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-amber-500/20 text-amber-400 border-amber-500/50"
                       >
-                        NEW
+                        {t('common.new', 'NEW')}
                       </Badge>
                     </>
                   )}
@@ -297,19 +297,19 @@ export function AppSidebar({
                   <Fingerprint className="h-5 w-5 text-gold" />
                   {!isCollapsed && (
                     <>
-                      <span className="flex-1 font-semibold text-gold">Pro DNA</span>
+                      <span className="flex-1 font-semibold text-gold">{t('sidebar.proDna')}</span>
                       <Badge 
                         variant="outline" 
                         className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-gold/20 text-gold border-gold/50"
                       >
-                        NEW
+                        {t('common.new', 'NEW')}
                       </Badge>
                     </>
                   )}
                 </SidebarMenuButton>
               </TooltipTrigger>
               {isCollapsed && (
-                <TooltipContent side="right">Pro DNA</TooltipContent>
+                <TooltipContent side="right">{t('sidebar.proDna')}</TooltipContent>
               )}
             </Tooltip>
           </SidebarMenuItem>
@@ -329,13 +329,13 @@ export function AppSidebar({
                   <Eye className="h-5 w-5 text-emerald-400" />
                   {!isCollapsed && (
                     <>
-                      <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
+                      <span className="flex-1 font-semibold text-emerald-400">{t('sidebar.theOracle')}</span>
                       {showOracleNewBadge && (
                         <Badge 
                           variant="outline" 
                           className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse"
                         >
-                          NEW
+                          {t('common.new', 'NEW')}
                         </Badge>
                       )}
                     </>
@@ -343,7 +343,7 @@ export function AppSidebar({
                 </SidebarMenuButton>
               </TooltipTrigger>
               {isCollapsed && (
-                <TooltipContent side="right">The Oracle</TooltipContent>
+                <TooltipContent side="right">{t('sidebar.theOracle')}</TooltipContent>
               )}
             </Tooltip>
             {isCollapsed && showOracleNewBadge && (

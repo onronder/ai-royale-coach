@@ -2179,5 +2179,100 @@
     "meta": "Méta",
     "confidence": "Confiance",
     "betterDefensiveValue": "Cette carte offre une meilleure valeur défensive et synergise bien avec vos cartes de cycle..."
+  },
+  "sidebar": {
+    "navigation": "Navigation",
+    "quickActions": "Actions Rapides",
+    "achievements": "Succès",
+    "proDna": "Pro DNA",
+    "theOracle": "L'Oracle"
+  },
+  "admin": {
+    "apiMetrics": {
+      "title": "Métriques API",
+      "subtitle": "Surveiller la fréquence des requêtes et identifier les appels redondants",
+      "totalRequests": "Total des Requêtes",
+      "requestsPerMin": "Requêtes/min",
+      "cacheHitRate": "Taux de Cache",
+      "avgDuration": "Durée Moy.",
+      "slowQueries": "Requêtes Lentes",
+      "requestTimeline": "Chronologie des Requêtes",
+      "recentRequests": "Requêtes Récentes",
+      "endpointsByCategory": "Endpoints par Catégorie",
+      "grouped": "Groupé",
+      "flat": "Plat",
+      "loading": "Chargement...",
+      "noData": "Pas encore de données",
+      "endpoints": "endpoints",
+      "calls": "appels",
+      "cache": "cache",
+      "slow": "Lent"
+    },
+    "fraudReview": {
+      "backToCases": "Retour aux Cas",
+      "caseReview": "Examen du Cas",
+      "userDetails": "Détails Utilisateur",
+      "userId": "ID Utilisateur",
+      "status": "Statut",
+      "fraudScore": "Score de Fraude",
+      "totalSignals": "Signaux Totaux",
+      "softBlocked": "Blocage Souple",
+      "warning": "Avertissement",
+      "clean": "Propre",
+      "playerTags": "Tags Joueur",
+      "noPlayerTags": "Aucun tag joueur lié",
+      "deviceFingerprints": "Empreintes Appareil",
+      "noFingerprints": "Aucune empreinte enregistrée",
+      "lastSeen": "Vu pour la dernière fois",
+      "seenCount": "Vu {{count}} fois",
+      "fraudSignals": "Signaux de Fraude",
+      "noSignals": "Aucun signal enregistré",
+      "adminActions": "Actions Admin",
+      "reviewNotes": "Notes de révision (optionnel)...",
+      "clearMarkClean": "Effacer (Marquer Propre)",
+      "setWarning": "Définir Avertissement",
+      "softBlock": "Blocage Souple",
+      "lastReviewed": "Dernière révision",
+      "notes": "Notes",
+      "loadingCaseDetails": "Chargement des détails du cas...",
+      "statusUpdated": "Statut mis à jour avec succès",
+      "updateFailed": "Échec de la mise à jour du statut",
+      "severity": {
+        "critical": "Critique",
+        "high": "Élevé",
+        "medium": "Moyen",
+        "low": "Faible"
+      }
+    }
+  },
+  "oraclePage": {
+    "title": "L'Oracle",
+    "subtitle": "Prédisez le deck de votre adversaire avant le début du match",
+    "proFeature": "Fonctionnalité PRO",
+    "proUpgradeMessage": "Passez à PRO pour débloquer les Prédictions de Match en Direct."
+  },
+  "achievements": {
+    "title": "Succès",
+    "subtitle": "Vos accomplissements de bataille",
+    "share": "Partager la Vitrine",
+    "shared": "Vitrine partagée !",
+    "downloaded": "Vitrine sauvegardée !",
+    "shareFailed": "Échec du partage",
+    "trophyCase": "Vitrine de Trophées",
+    "badgesEarned": "Badges Gagnés"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "morePages": "Plus de pages",
+    "previousPage": "Aller à la page précédente",
+    "nextPage": "Aller à la page suivante"
+  },
+  "common": {
+    "vs": "vs",
+    "loading": "Chargement...",
+    "new": "NOUVEAU",
+    "pro": "PRO",
+    "ai": "IA"
   }
 }
