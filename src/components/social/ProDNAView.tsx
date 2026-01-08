@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Loader2 } from "lucide-react";
@@ -49,6 +50,7 @@ function DNACardSkeleton() {
 }
 
 export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles: battlesProp }: ProDNAViewProps) {
+  const { t } = useTranslation();
   // Only fetch if battles not provided as prop (avoid duplicate fetch)
   const { data: fetchedBattles, isLoading } = useClashRoyaleBattles(battlesProp ? null : playerTag);
   const battles = battlesProp || fetchedBattles;
@@ -84,10 +86,10 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
       link.href = canvas.toDataURL("image/png", 1.0);
       link.click();
       
-      toast.success("DNA card downloaded!");
+      toast.success(t('proDna.downloaded'));
     } catch (error) {
       console.error("Failed to download card:", error);
-      toast.error("Failed to download card");
+      toast.error(t('proDna.downloadFailed'));
     } finally {
       setIsDownloading(false);
     }
@@ -114,9 +116,9 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
             await navigator.share({
               files: [file],
               title: `${playerName}'s Pro DNA`,
-              text: "Check out my Clash Royale Pro DNA!",
+              text: t('proDna.shareText'),
             });
-            toast.success("Shared successfully!");
+            toast.success(t('proDna.shared'));
           } catch {
             // User cancelled or share failed, try download
             const link = document.createElement("a");
@@ -134,7 +136,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
       }, "image/png", 1.0);
     } catch (error) {
       console.error("Failed to share card:", error);
-      toast.error("Failed to share card");
+      toast.error(t('proDna.shareFailed'));
     }
   };
 
@@ -148,7 +150,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
       >
         <DialogHeader className="pb-2 flex-shrink-0">
           <DialogTitle className="text-center font-rajdhani text-base text-gold">
-            Your Pro DNA
+            {t('proDna.title')}
           </DialogTitle>
         </DialogHeader>
 
@@ -165,8 +167,8 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
               />
             ) : (
               <div className="text-center text-muted-foreground py-8">
-                <p>Not enough battle data to generate your DNA.</p>
-                <p className="text-sm mt-2">Play some matches first!</p>
+                <p>{t('proDna.noData')}</p>
+                <p className="text-sm mt-2">{t('proDna.noDataHint')}</p>
               </div>
             )}
           </div>
@@ -186,7 +188,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
               ) : (
                 <Download className="h-4 w-4 mr-2" />
               )}
-              Download
+              {t('proDna.download')}
             </Button>
             <Button
               variant="outline"
@@ -194,7 +196,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
               onClick={handleShare}
             >
               <Share2 className="h-4 w-4 mr-2" />
-              Share
+              {t('proDna.share')}
             </Button>
           </div>
         )}

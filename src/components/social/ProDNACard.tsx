@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Crown, Sword, Shield, Shuffle, Sparkles } from "lucide-react";
 import type { PlayerDNA } from "@/utils/playerDnaCalculator";
 
@@ -43,6 +44,7 @@ const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: {
 );
 
 export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
+  const { t } = useTranslation();
   const { stats, archetype, similarPro } = dna;
   const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
 
@@ -88,7 +90,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
             >
               <Sparkles className="w-2.5 h-2.5" style={{ color: '#d4af37' }} />
               <span className="text-[7px] font-bold uppercase tracking-[0.15em]" style={{ color: '#d4af37' }}>
-                Player DNA
+                {t('proDna.playerDna')}
               </span>
             </div>
           </div>
@@ -166,21 +168,21 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
           {/* Stats Section */}
           <div className="space-y-2 px-1">
             <StatBar 
-              label="AGG" 
+              label={t('proDna.aggression')} 
               value={stats.aggression} 
               icon={Sword}
               gradientFrom="#ef4444"
               gradientTo="#f97316"
             />
             <StatBar 
-              label="DEF" 
+              label={t('proDna.defense')} 
               value={stats.defense} 
               icon={Shield}
               gradientFrom="#3b82f6"
               gradientTo="#06b6d4"
             />
             <StatBar 
-              label="VER" 
+              label={t('proDna.versatility')} 
               value={stats.versatility} 
               icon={Shuffle}
               gradientFrom="#a855f7"
@@ -196,7 +198,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
               border: '1px solid rgba(212, 175, 55, 0.2)'
             }}
           >
-            <span className="text-[9px]" style={{ color: 'rgba(212, 175, 55, 0.6)' }}>Similar to: </span>
+            <span className="text-[9px]" style={{ color: 'rgba(212, 175, 55, 0.6)' }}>{t('proDna.similarTo')}: </span>
             <span className="text-[10px] font-bold ml-1" style={{ color: '#d4af37' }}>{similarPro}</span>
           </div>
 
@@ -207,7 +209,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
               className="text-[7px] font-bold uppercase tracking-wider"
               style={{ color: 'rgba(212, 175, 55, 0.5)' }}
             >
-              AI Royale Coach
+              {t('proDna.branding')}
             </span>
           </div>
         </div>
