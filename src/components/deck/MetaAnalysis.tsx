@@ -32,7 +32,7 @@ export function MetaAnalysis() {
       });
       
       // Check for subscription_required in response
-      if ((data as any)?.subscription_required) {
+      if (data && typeof data === 'object' && 'subscription_required' in data && data.subscription_required) {
         throw new Error('SUBSCRIPTION_REQUIRED');
       }
       

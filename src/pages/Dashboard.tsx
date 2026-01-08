@@ -274,13 +274,16 @@ const Dashboard = () => {
                           <DeckBuilder 
                             availableCards={player.cards} 
                             userId={user.id}
-                            savedDecks={playerContext.savedDecks?.map(d => ({
-                              id: d.id,
-                              name: d.name,
-                              cards: d.cards as any,
-                              avg_elixir: d.avg_elixir || undefined,
-                              archetype: d.archetype || undefined
-                            })) || []}
+                            savedDecks={playerContext.savedDecks?.map(d => {
+                              const cardNames = Array.isArray(d.cards) ? d.cards.filter((c): c is string => typeof c === 'string') : [];
+                              return {
+                                id: d.id,
+                                name: d.name,
+                                cards: cardNames.map(name => player.cards.find(c => c.name === name)).filter((c): c is NonNullable<typeof c> => c !== undefined),
+                                avg_elixir: d.avg_elixir || undefined,
+                                archetype: d.archetype || undefined
+                              };
+                            }) || []}
                             currentDeck={player.currentDeck || null}
                             userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
                             playerTrophies={player.trophies || 0}

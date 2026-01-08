@@ -181,7 +181,7 @@ export function DeckBuilder({
         user_id: userId,
         name: deckName,
         description: deckDescription || null,
-        cards: selectedCards as any,
+        cards: selectedCards.map(c => c.name),
         synergy_score: analysis?.synergy_score || null,
         meta_score: analysis?.meta_score || null,
         avg_elixir: analysis?.avg_elixir || null,

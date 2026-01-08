@@ -123,7 +123,11 @@ export function useUserAIProfiles() {
           .eq('player_tag', profile.player_tag)
           .single();
 
-        const playerData = cache?.player_data as any;
+        const playerData = cache?.player_data as {
+          name?: string;
+          trophies?: number;
+          clan?: { name?: string };
+        } | null;
         
         enrichedProfiles.push({
           ...profile,

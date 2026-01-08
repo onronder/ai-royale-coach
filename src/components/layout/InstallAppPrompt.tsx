@@ -19,8 +19,9 @@ export function InstallAppPrompt() {
 
   useEffect(() => {
     // Check if already installed (standalone mode)
+    const nav = navigator as Navigator & { standalone?: boolean };
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-      || (window.navigator as any).standalone === true;
+      || nav.standalone === true;
     
     if (isStandalone) {
       return; // Don't show prompt if already installed
@@ -37,7 +38,8 @@ export function InstallAppPrompt() {
     }
 
     // Detect iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const win = window as Window & { MSStream?: unknown };
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !win.MSStream;
     setIsIOS(isIOSDevice);
 
     // For iOS, show prompt after a delay

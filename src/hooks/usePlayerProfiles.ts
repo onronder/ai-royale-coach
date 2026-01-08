@@ -56,7 +56,23 @@ export function usePlayerProfiles(userId: string | null) {
             .maybeSingle();
           
           if (cache?.player_data) {
-            const p = cache.player_data as any;
+            const p = cache.player_data as {
+              name?: string;
+              trophies?: number;
+              bestTrophies?: number;
+              arena?: { name?: string };
+              clan?: { name?: string; badgeId?: number };
+              wins?: number;
+              losses?: number;
+              battleCount?: number;
+              threeCrownWins?: number;
+              challengeMaxWins?: number;
+              challengeCardsWon?: number;
+              donations?: number;
+              donationsReceived?: number;
+              warDayWins?: number;
+              expLevel?: number;
+            };
             return {
               ...profile,
               player_name: p.name,
