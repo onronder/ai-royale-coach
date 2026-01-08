@@ -2092,5 +2092,46 @@
     "iosStep1": "Toca el botón Compartir en Safari",
     "iosStep2": "Desplázate y toca \"Agregar a Inicio\"",
     "iosStep3": "Toca \"Agregar\" en la esquina superior derecha"
+  },
+  "oracle": {
+    "title": "Escáner del Oráculo",
+    "subtitle": "Predice enfrentamientos contra cualquier mazo oponente",
+    "placeholder": "ej., Gólem, Bruja Nocturna, Rayo...",
+    "scanButton": "Predecir Enfrentamiento",
+    "scanning": "Analizando enfrentamiento...",
+    "result": {
+      "title": "Resultado del Enfrentamiento",
+      "yourWinChance": "Tu Probabilidad de Victoria",
+      "confidence": "Confianza",
+      "keyMatchups": "Enfrentamientos Clave",
+      "tips": "Consejos Estratégicos",
+      "yourDeck": "Tu Mazo",
+      "opponentDeck": "Mazo Oponente"
+    },
+    "errors": {
+      "noDeck": "No se encontró mazo. Por favor asegúrate de tener un mazo activo.",
+      "parseError": "No se pudieron analizar las cartas del oponente. Por favor intenta de nuevo.",
+      "predictionFailed": "La predicción del enfrentamiento falló. Por favor intenta de nuevo."
+    }
+  },
+  "proDna": {
+    "title": "ADN del Jugador",
+    "playerDna": "ADN del Jugador",
+    "aggression": "Agresión",
+    "defense": "Defensa",
+    "versatility": "Versatilidad",
+    "consistency": "Consistencia",
+    "adaptability": "Adaptabilidad",
+    "similarTo": "Estilo Similar a",
+    "branding": "AI Royale",
+    "download": "Descargar como Imagen",
+    "share": "Compartir Carta ADN",
+    "noData": "No hay datos de ADN del jugador disponibles",
+    "noDataDescription": "Juega más batallas para generar tu perfil de ADN único.",
+    "generating": "Generando imagen...",
+    "downloadSuccess": "¡Imagen descargada exitosamente!",
+    "downloadError": "Error al descargar la imagen",
+    "shareNotSupported": "Compartir no es compatible en este navegador",
+    "shareError": "Error al compartir la imagen"
   }
 }

@@ -2081,5 +2081,46 @@
     "iosStep1": "Toque no botão Compartilhar no Safari",
     "iosStep2": "Role para baixo e toque em \"Adicionar à Tela Inicial\"",
     "iosStep3": "Toque em \"Adicionar\" no canto superior direito"
+  },
+  "oracle": {
+    "title": "Scanner Oráculo",
+    "subtitle": "Preveja confrontos contra qualquer deck adversário",
+    "placeholder": "ex., Golem, Bruxa Noturna, Relâmpago...",
+    "scanButton": "Prever Confronto",
+    "scanning": "Analisando confronto...",
+    "result": {
+      "title": "Resultado do Confronto",
+      "yourWinChance": "Sua Chance de Vitória",
+      "confidence": "Confiança",
+      "keyMatchups": "Confrontos Chave",
+      "tips": "Dicas Estratégicas",
+      "yourDeck": "Seu Deck",
+      "opponentDeck": "Deck Adversário"
+    },
+    "errors": {
+      "noDeck": "Nenhum deck encontrado. Por favor, certifique-se de ter um deck ativo.",
+      "parseError": "Não foi possível analisar as cartas do adversário. Por favor, tente novamente.",
+      "predictionFailed": "A previsão do confronto falhou. Por favor, tente novamente."
+    }
+  },
+  "proDna": {
+    "title": "DNA do Jogador",
+    "playerDna": "DNA do Jogador",
+    "aggression": "Agressão",
+    "defense": "Defesa",
+    "versatility": "Versatilidade",
+    "consistency": "Consistência",
+    "adaptability": "Adaptabilidade",
+    "similarTo": "Estilo Similar a",
+    "branding": "AI Royale",
+    "download": "Baixar como Imagem",
+    "share": "Compartilhar Cartão DNA",
+    "noData": "Nenhum dado de DNA do jogador disponível",
+    "noDataDescription": "Jogue mais batalhas para gerar seu perfil DNA único.",
+    "generating": "Gerando imagem...",
+    "downloadSuccess": "Imagem baixada com sucesso!",
+    "downloadError": "Falha ao baixar imagem",
+    "shareNotSupported": "Compartilhamento não suportado neste navegador",
+    "shareError": "Falha ao compartilhar imagem"
   }
 }
