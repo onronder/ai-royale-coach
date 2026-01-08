@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Clipboard, AlertTriangle, Target, Zap, Shield, Swords, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
@@ -63,7 +64,7 @@ function useGlitchText(targetText: string, isActive: boolean, duration = 2000) {
 }
 
 // Circular progress component
-function ConfidenceMeter({ value, size = 120 }: { value: number; size?: number }) {
+function ConfidenceMeter({ value, size = 120, label }: { value: number; size?: number; label: string }) {
   const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -112,7 +113,7 @@ function ConfidenceMeter({ value, size = 120 }: { value: number; size?: number }
           {value}%
         </motion.span>
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          Confidence
+          {label}
         </span>
       </div>
     </div>
@@ -156,6 +157,7 @@ export function OracleScanner({
   userPlayerTag = '',
   userCurrentDeck 
 }: OracleScannerProps) {
+  const { t } = useTranslation();
   const [opponentTag, setOpponentTag] = useState(initialOpponentTag);
   const [searchTag, setSearchTag] = useState<string | null>(null);
   const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
@@ -163,8 +165,8 @@ export function OracleScanner({
 
   const { data: prediction, isLoading, error } = useOraclePrediction(searchTag);
 
-  const scanningText = useGlitchText('DECRYPTING ENEMY DATA...', isLoading);
-  const threatText = useGlitchText('THREAT DETECTED', !!prediction && !isLoading);
+  const scanningText = useGlitchText(t('oracle.scanning'), isLoading);
+  const threatText = useGlitchText(t('oracle.threatDetected'), !!prediction && !isLoading);
 
   // Auto-trigger search when pre-filled tag is provided
   useEffect(() => {
@@ -248,6 +250,10 @@ export function OracleScanner({
     return cost > (max?.elixirCost || 0) ? card : max;
   }, prediction.likelyDeck[0]);
 
+  const getPlaystyleText = (playstyle: string) => {
+    return playstyle === 'Aggressive' ? t('oracle.aggressive') : t('oracle.defensive');
+  };
+
   return (
     <div className="relative w-full max-w-md mx-auto p-4">
       {/* Background effects */}
@@ -258,11 +264,11 @@ export function OracleScanner({
         <div className="inline-flex items-center gap-2 mb-2">
           <Target className="w-5 h-5 text-emerald-400" />
           <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-emerald-400 font-mono">
-            The Oracle
+            {t('oracle.title')}
           </h2>
         </div>
         <p className="text-xs text-muted-foreground uppercase tracking-wider">
-          Enemy Deck Prediction System
+          {t('oracle.subtitle')}
         </p>
       </div>
 
@@ -275,7 +281,7 @@ export function OracleScanner({
               value={opponentTag}
               onChange={(e) => setOpponentTag(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter opponent tag..."
+              placeholder={t('oracle.placeholder')}
               className={cn(
                 'pl-10 font-mono uppercase bg-background/50 border-emerald-900/50',
                 'focus:border-emerald-500 focus:ring-emerald-500/20',
@@ -288,7 +294,7 @@ export function OracleScanner({
             size="icon"
             onClick={handlePaste}
             className="border-emerald-900/50 hover:bg-emerald-900/20 hover:border-emerald-500"
-            title="Paste from clipboard"
+            title={t('oracle.pasteClipboard')}
           >
             <Clipboard className="w-4 h-4" />
           </Button>
@@ -297,7 +303,7 @@ export function OracleScanner({
             disabled={opponentTag.length < 3 || isLoading}
             className="bg-emerald-600 hover:bg-emerald-500 text-white font-mono uppercase tracking-wider"
           >
-            Scan
+            {t('oracle.scan')}
           </Button>
         </div>
       </div>
@@ -351,10 +357,10 @@ export function OracleScanner({
                 <Target className="w-16 h-16 text-emerald-900 mb-4" />
               </motion.div>
               <p className="text-muted-foreground font-mono text-sm uppercase tracking-wider">
-                Awaiting Target Coordinates...
+                {t('oracle.awaitingTarget')}
               </p>
               <p className="text-muted-foreground/50 text-xs mt-2">
-                Enter an opponent's player tag to predict their deck
+                {t('oracle.enterTagPrompt')}
               </p>
             </motion.div>
           )}
@@ -370,10 +376,10 @@ export function OracleScanner({
             >
               <AlertTriangle className="w-12 h-12 text-destructive mb-4" />
               <p className="text-destructive font-mono text-sm uppercase tracking-wider">
-                Target Not Found
+                {t('oracle.targetNotFound')}
               </p>
               <p className="text-muted-foreground text-xs mt-2">
-                Could not retrieve battle data for this player
+                {t('oracle.targetNotFoundDesc')}
               </p>
             </motion.div>
           )}
@@ -404,25 +410,25 @@ export function OracleScanner({
 
               {/* Confidence & Stats Row */}
               <div className="flex items-center justify-center gap-6 mb-4">
-                <ConfidenceMeter value={prediction.confidence} size={100} />
+                <ConfidenceMeter value={prediction.confidence} size={100} label={t('oracle.confidence')} />
                 <div className="text-left space-y-2">
                   <div className="flex items-center gap-2 text-xs">
                     <Zap className="w-3 h-3 text-gold" />
-                    <span className="text-muted-foreground">Playstyle:</span>
+                    <span className="text-muted-foreground">{t('oracle.playstyle')}:</span>
                     <span className={cn(
                       'font-mono font-bold',
                       prediction.playstyle === 'Aggressive' ? 'text-destructive' : 'text-royal'
                     )}>
-                      {prediction.playstyle}
+                      {getPlaystyleText(prediction.playstyle)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs">
                     <Shield className="w-3 h-3 text-emerald-400" />
-                    <span className="text-muted-foreground">Last seen:</span>
+                    <span className="text-muted-foreground">{t('oracle.lastSeen')}:</span>
                     <span className="font-mono text-foreground">{prediction.lastPlayedAgo}</span>
                   </div>
                   <div className="text-[10px] text-muted-foreground">
-                    {prediction.matchCount}/{prediction.totalMatches} matches analyzed
+                    {t('oracle.matchesAnalyzed', { count: prediction.matchCount, total: prediction.totalMatches })}
                   </div>
                 </div>
               </div>
@@ -430,7 +436,7 @@ export function OracleScanner({
               {/* Predicted Deck Grid */}
               <div className="mb-4">
                 <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 text-center">
-                  Predicted Deck
+                  {t('oracle.predictedDeck')}
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
                   {prediction.likelyDeck.map((card, index) => (
@@ -455,14 +461,14 @@ export function OracleScanner({
                 className="text-center p-3 rounded bg-emerald-950/30 border border-emerald-900/20"
               >
                 <p className="text-xs text-muted-foreground">
-                  Opponent prefers playing this deck{' '}
+                  {t('oracle.opponentPrefers')}{' '}
                   <span className={prediction.playstyle === 'Aggressive' ? 'text-destructive' : 'text-royal'}>
-                    {prediction.playstyle.toLowerCase()}ly
+                    {getPlaystyleText(prediction.playstyle).toLowerCase()}
                   </span>
                   .{' '}
                   {highDamageCard && (
                     <>
-                      Watch out for{' '}
+                      {t('oracle.watchOutFor')}{' '}
                       <span className="text-gold font-medium">{highDamageCard.name}</span>.
                     </>
                   )}
@@ -480,14 +486,14 @@ export function OracleScanner({
                   <div className="text-center mb-3">
                     <Badge variant="outline" className="border-gold/50 text-gold">
                       <Swords className="w-3 h-3 mr-1" />
-                      Matchup Analysis
+                      {t('oracle.matchupAnalysis')}
                     </Badge>
                   </div>
                   
                   {isLoadingMatchup ? (
                     <div className="flex items-center justify-center py-4">
                       <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
-                      <span className="ml-2 text-sm text-muted-foreground">Analyzing matchup...</span>
+                      <span className="ml-2 text-sm text-muted-foreground">{t('oracle.analyzingMatchup')}</span>
                     </div>
                   ) : matchupPrediction ? (
                     <div className="space-y-3">
@@ -497,31 +503,31 @@ export function OracleScanner({
                           <div className="text-lg font-bold text-emerald-400">
                             {matchupPrediction.deckAWinRate}%
                           </div>
-                          <div className="text-[10px] text-muted-foreground">Your Deck</div>
+                          <div className="text-[10px] text-muted-foreground">{t('oracle.yourDeck')}</div>
                         </div>
                         <div className="bg-red-950/30 rounded p-2">
                           <div className="text-lg font-bold text-destructive">
                             {matchupPrediction.deckBWinRate}%
                           </div>
-                          <div className="text-[10px] text-muted-foreground">Opponent</div>
+                          <div className="text-[10px] text-muted-foreground">{t('oracle.opponent')}</div>
                         </div>
                       </div>
                       
                       {/* Matchup Verdict */}
                       <div className="text-center text-sm">
                         {matchupPrediction.deckAWinRate > 55 ? (
-                          <span className="text-success">Favorable matchup!</span>
+                          <span className="text-success">{t('oracle.favorableMatchup')}</span>
                         ) : matchupPrediction.deckAWinRate < 45 ? (
-                          <span className="text-destructive">Challenging matchup</span>
+                          <span className="text-destructive">{t('oracle.challengingMatchup')}</span>
                         ) : (
-                          <span className="text-gold">Even matchup</span>
+                          <span className="text-gold">{t('oracle.evenMatchup')}</span>
                         )}
                       </div>
                       
                       {/* Tips */}
                       {matchupPrediction.tips?.forDeckA && matchupPrediction.tips.forDeckA.length > 0 && (
                         <div className="text-[10px] text-muted-foreground bg-background/30 rounded p-2">
-                          <div className="font-medium mb-1">Quick Tips:</div>
+                          <div className="font-medium mb-1">{t('oracle.quickTips')}:</div>
                           <ul className="list-disc list-inside space-y-0.5">
                             {matchupPrediction.tips.forDeckA.slice(0, 2).map((tip, i) => (
                               <li key={i}>{tip}</li>
@@ -532,7 +538,7 @@ export function OracleScanner({
                     </div>
                   ) : (
                     <div className="text-center py-4 text-sm text-muted-foreground">
-                      Sign in to see matchup analysis
+                      {t('oracle.signInForMatchup')}
                     </div>
                   )}
                 </motion.div>
