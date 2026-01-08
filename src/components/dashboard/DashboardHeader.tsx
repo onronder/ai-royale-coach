@@ -32,8 +32,8 @@ export function DashboardHeader({
   const navigate = useNavigate();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-md">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+    <header className="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-md safe-area-top">
+      <div className="container mx-auto px-3 md:px-4 min-h-[56px] flex items-center justify-between">
         {/* Left: Logo (mobile only) + Player Stats */}
         <div className="flex items-center gap-4">
           {/* Mobile logo */}
@@ -61,9 +61,9 @@ export function DashboardHeader({
           )}
         </div>
 
-        {/* Right: Actions */}
-        <div className="flex items-center gap-1.5">
-          <CacheStatusIndicator 
+        {/* Right: Actions - Ensure touch targets */}
+        <div className="flex items-center gap-1">
+          <CacheStatusIndicator
             playerTag={playerTag} 
             onRefresh={onRefresh} 
             isRefreshing={isRefreshing} 

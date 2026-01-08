@@ -2,7 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Arena Vibrant Design System - Clash Royale Inspired */
+/* ============= Mobile Native App Fixes ============= */
+
+/* Prevent horizontal overflow globally */
+html,
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile */
+}
+
+/* Prevent iOS zoom on input focus (font-size >= 16px) */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+@media (min-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: inherit !important;
+  }
+}
+
+/* Touch target minimum size utility */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Safe area padding for notched devices */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* ============= Arena Vibrant Design System - Clash Royale Inspired ============= */
 
 @layer base {
   /* Light Theme - Arena Day Mode */
