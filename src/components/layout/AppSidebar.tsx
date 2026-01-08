@@ -247,101 +247,97 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-2" />
-
-        {/* Special Features */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {/* Achievements */}
-              <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={onOpenAchievements}
-                      isActive={activeTab === "achievements"}
-                      className="group bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:from-amber-500/20 hover:to-orange-500/20"
-                    >
-                      <Medal className="h-5 w-5 text-amber-400" />
-                      {!isCollapsed && (
-                        <span className="flex-1 font-semibold text-amber-400">
-                          {t('sidebar.achievements', 'Achievements')}
-                        </span>
-                      )}
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right">
-                      {t('sidebar.achievements', 'Achievements')}
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </SidebarMenuItem>
-
-              {/* Pro DNA */}
-              <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={onOpenDNA}
-                      className="group bg-gradient-to-r from-gold/10 to-amber-500/10 border border-gold/30 hover:from-gold/20 hover:to-amber-500/20"
-                    >
-                      <Fingerprint className="h-5 w-5 text-gold" />
-                      {!isCollapsed && (
-                        <span className="flex-1 font-semibold text-gold">Pro DNA</span>
-                      )}
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right">Pro DNA</TooltipContent>
-                  )}
-                </Tooltip>
-              </SidebarMenuItem>
-
-              {/* The Oracle */}
-              <SidebarMenuItem className="relative">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
-                      isActive={activeTab === "oracle"}
-                      className={cn(
-                        "group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20",
-                        activeTab === "oracle" && "ring-2 ring-emerald-500/50 from-emerald-500/20 to-emerald-900/20"
-                      )}
-                    >
-                      <Eye className="h-5 w-5 text-emerald-400" />
-                      {!isCollapsed && (
-                        <>
-                          <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
-                          {showOracleNewBadge && (
-                            <Badge 
-                              variant="outline" 
-                              className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse"
-                            >
-                              NEW
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right">The Oracle</TooltipContent>
-                  )}
-                </Tooltip>
-                {isCollapsed && showOracleNewBadge && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                )}
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
       </SidebarContent>
       
-      {/* Footer - Quick Actions + Sign Out */}
+      {/* Footer - Special Features + Quick Actions + Sign Out */}
       <SidebarFooter className="p-3 border-t border-border/50">
+        {/* Special Features */}
+        <SidebarMenu className="mb-2">
+          {/* Achievements */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={onOpenAchievements}
+                  isActive={activeTab === "achievements"}
+                  className="group bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:from-amber-500/20 hover:to-orange-500/20"
+                >
+                  <Medal className="h-5 w-5 text-amber-400" />
+                  {!isCollapsed && (
+                    <span className="flex-1 font-semibold text-amber-400">
+                      {t('sidebar.achievements', 'Achievements')}
+                    </span>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">
+                  {t('sidebar.achievements', 'Achievements')}
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Pro DNA */}
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={onOpenDNA}
+                  className="group bg-gradient-to-r from-gold/10 to-amber-500/10 border border-gold/30 hover:from-gold/20 hover:to-amber-500/20"
+                >
+                  <Fingerprint className="h-5 w-5 text-gold" />
+                  {!isCollapsed && (
+                    <span className="flex-1 font-semibold text-gold">Pro DNA</span>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">Pro DNA</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+
+          {/* The Oracle */}
+          <SidebarMenuItem className="relative">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
+                  isActive={activeTab === "oracle"}
+                  className={cn(
+                    "group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20",
+                    activeTab === "oracle" && "ring-2 ring-emerald-500/50 from-emerald-500/20 to-emerald-900/20"
+                  )}
+                >
+                  <Eye className="h-5 w-5 text-emerald-400" />
+                  {!isCollapsed && (
+                    <>
+                      <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
+                      {showOracleNewBadge && (
+                        <Badge 
+                          variant="outline" 
+                          className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse"
+                        >
+                          NEW
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">The Oracle</TooltipContent>
+              )}
+            </Tooltip>
+            {isCollapsed && showOracleNewBadge && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            )}
+          </SidebarMenuItem>
+        </SidebarMenu>
+
+        <SidebarSeparator className="my-2" />
+
         {/* Quick Actions */}
         <SidebarMenu className="mb-2">
           <SidebarMenuItem>
