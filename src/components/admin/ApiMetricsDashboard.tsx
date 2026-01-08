@@ -197,7 +197,7 @@ export function ApiMetricsDashboard() {
                 <p className="text-muted-foreground text-center py-4">No data yet</p>
               ) : (
                 endpointGroups?.map((group) => (
-                  <EndpointGroupCard key={group.name} group={group} />
+                  <EndpointGroupCard key={group.name} group={group} t={t} />
                 ))
               )}
             </div>
