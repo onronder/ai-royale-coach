@@ -5,9 +5,10 @@ import { ChartSkeleton } from "@/components/ui/chart-skeleton";
 import { ChartEmptyState } from "@/components/ui/chart-empty-state";
 import { PieChart as PieChartIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DeckUsageStatRow } from "@/types/dashboard.types";
 
 interface DeckUsageBreakdownProps {
-  decks: any[];
+  decks: DeckUsageStatRow[];
   isLoading?: boolean;
 }
 
@@ -24,14 +25,18 @@ export function DeckUsageBreakdown({ decks, isLoading }: DeckUsageBreakdownProps
   const { t } = useTranslation();
   
   const chartData = (decks || [])
-    .sort((a, b) => b.battles_played - a.battles_played)
+    .sort((a, b) => (b.battles_played || 0) - (a.battles_played || 0))
     .slice(0, 6)
-    .map((deck, index) => ({
-      name: t('analytics.deckNumber', { number: index + 1 }),
-      value: deck.battles_played,
-      winRate: (deck.win_rate * 100).toFixed(1),
-      cards: deck.deck_cards.slice(0, 3).join(', ') + '...',
-    }));
+    .map((deck, index) => {
+      const deckCards = deck.deck_cards as string[] | null;
+      const winRate = deck.battles_played ? (deck.battles_won || 0) / deck.battles_played : 0;
+      return {
+        name: t('analytics.deckNumber', { number: index + 1 }),
+        value: deck.battles_played || 0,
+        winRate: (winRate * 100).toFixed(1),
+        cards: deckCards ? deckCards.slice(0, 3).join(', ') + '...' : '',
+      };
+    });
 
   const renderDeckListSkeleton = () => (
     <div className="space-y-4 flex-1 lg:w-1/2">

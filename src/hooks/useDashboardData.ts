@@ -1,17 +1,17 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { 
+  SavedDeckRow, 
+  CardMasteryRow, 
+  UserAchievementWithDetails, 
+  CardCollectionRow,
+  PlayerContextData 
+} from "@/types/dashboard.types";
 
 interface DashboardUser {
   id: string;
   email?: string;
-}
-
-interface PlayerContextData {
-  savedDecks: any[];
-  cardMastery: any[];
-  achievements: any[];
-  cardCollection: any[];
 }
 
 /**

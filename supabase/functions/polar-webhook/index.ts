@@ -13,7 +13,7 @@ const corsHeaders = {
 // Map product IDs to account slots with validation
 function getAccountSlotsFromProductId(productId: string | undefined | null): number {
   if (!productId) {
-    console.warn('No product ID provided, defaulting to 1 slot');
+    logger.warn('No product ID provided, defaulting to 1 slot');
     return 1;
   }
 
@@ -25,12 +25,37 @@ function getAccountSlotsFromProductId(productId: string | undefined | null): num
   if (productId === productId2) return 2;
   if (productId === productId3) return 3;
   
-  console.warn(`Unknown product ID: ${productId}, defaulting to 1 slot`);
+  logger.warn(`Unknown product ID: ${productId}, defaulting to 1 slot`);
   return 1;
 }
 
+// Subscription data structure from Polar webhook
+interface PolarSubscription {
+  id?: string;
+  customer?: {
+    id?: string;
+    external_id?: string;
+  };
+  metadata?: {
+    user_id?: string;
+  };
+  user?: {
+    id?: string;
+  };
+  status?: string;
+  product_id?: string;
+  current_period_start?: string;
+  current_period_end?: string;
+}
+
+// Webhook event structure
+interface WebhookEvent {
+  type: string;
+  data: PolarSubscription;
+}
+
 // Extract user ID from subscription data with multiple fallbacks
-function extractUserId(subscription: any): string | null {
+function extractUserId(subscription: PolarSubscription): string | null {
   // Try customer.external_id first (primary method for Polar)
   if (subscription?.customer?.external_id && typeof subscription.customer.external_id === 'string') {
     return subscription.customer.external_id;
@@ -56,14 +81,19 @@ function validateEnv(): { valid: boolean; missing: string[] } {
   return { valid: missing.length === 0, missing };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseAdminClient = ReturnType<typeof createClient>;
+
 // Log webhook event to database for monitoring
 async function logWebhookEvent(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   eventType: string,
-  eventId: string | null,
+  eventId: string | null | undefined,
   userId: string | null,
   status: 'processed' | 'failed' | 'skipped',
   errorMessage?: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payloadSummary?: Record<string, any>
 ) {
   try {
@@ -76,7 +106,8 @@ async function logWebhookEvent(
       payload_summary: payloadSummary || null,
     });
   } catch (err) {
-    console.error('Failed to log webhook event:', err);
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logger.error('Failed to log webhook event', { error: errorMsg });
   }
 }
 
@@ -189,13 +220,13 @@ serve(async (req) => {
     }
 
     // Verify webhook signature
-    let event: { type: string; data: any };
+    let event: WebhookEvent;
     try {
       event = wh.verify(payload, {
         'webhook-id': webhookId,
         'webhook-timestamp': webhookTimestamp,
         'webhook-signature': webhookSignature,
-      }) as { type: string; data: any };
+      }) as WebhookEvent;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       log('error', 'Webhook signature verification failed', { 

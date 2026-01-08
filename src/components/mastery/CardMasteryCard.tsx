@@ -39,9 +39,10 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
         cardId: card.card_id,
         playerTag,
       });
-    } catch (error: any) {
+    } catch (error) {
       // Error handling is done in the hook, but check for subscription error
-      if (error?.subscription_required) {
+      const errorObj = error as { subscription_required?: boolean };
+      if (errorObj?.subscription_required) {
         setShowPricing(true);
       }
     }

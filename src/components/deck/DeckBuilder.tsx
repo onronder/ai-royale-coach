@@ -44,14 +44,22 @@ interface DeckAnalysis {
   avg_elixir: number;
 }
 
-interface AdvancedDeckAnalysis {
+import { 
+  AdvancedDeckAnalysis, 
+  TradeScenario, 
+  ElixirDistributionEntry,
+  SynergyMatrix,
+  MatchupPrediction 
+} from "@/types/analysis.types";
+
+interface LocalAdvancedDeckAnalysis {
   elixirAnalysis: {
     avgElixir: number;
     cycleSpeed: 'fast' | 'medium' | 'slow';
     defensiveCost: number;
     offensiveCost: number;
-    elixirDistribution: { cost: number; count: number }[];
-    tradeScenarios: any[];
+    elixirDistribution: ElixirDistributionEntry[];
+    tradeScenarios: TradeScenario[];
   };
   composition: {
     winConditions: string[];
@@ -61,8 +69,8 @@ interface AdvancedDeckAnalysis {
     missingRoles: string[];
     balanceNotes: string;
   };
-  synergyMatrix: any | null; // Removed - requires battle history
-  matchupPredictions: any[] | null; // Removed - requires battle history
+  synergyMatrix: SynergyMatrix | null;
+  matchupPredictions: MatchupPrediction[] | null;
 }
 
 export function DeckBuilder({ 
@@ -79,7 +87,7 @@ export function DeckBuilder({
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
   const [analysis, setAnalysis] = useState<DeckAnalysis | null>(null);
-  const [advancedAnalysis, setAdvancedAnalysis] = useState<AdvancedDeckAnalysis | null>(null);
+  const [advancedAnalysis, setAdvancedAnalysis] = useState<LocalAdvancedDeckAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
@@ -160,10 +168,12 @@ export function DeckBuilder({
       setAdvancedAnalysis(advancedResult.data);
       setLastAnalyzedLanguage(i18n.language);
       toast.success(t('deck.analysisReady'));
-    } catch (error: any) {
-      console.error('Error analyzing deck:', error);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Error analyzing deck:', errorMessage);
       // Check for subscription_required in error response
-      if (error?.message?.includes('subscription_required') || error?.subscription_required) {
+      const errorObj = error as { subscription_required?: boolean; message?: string };
+      if (errorObj?.message?.includes('subscription_required') || errorObj?.subscription_required) {
         setShowPricingModal(true);
         return;
       }
