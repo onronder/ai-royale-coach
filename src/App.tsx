@@ -24,6 +24,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
+const Oracle = lazy(() => import("./pages/Oracle"));
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = () => {
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/maintenance" element={<Maintenance />} />
+                    <Route path="/oracle" element={<Oracle />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

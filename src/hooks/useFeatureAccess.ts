@@ -16,6 +16,7 @@ export const FEATURE_LIMITS = {
   meta_trends: 2,
   deck_builder: 3,
   recommend_deck: 3,
+  oracle: 3,
 } as const;
 
 export type FeatureName = keyof typeof FEATURE_LIMITS;

@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Trophy,
   Sparkles,
-  Fingerprint
+  Fingerprint,
+  Eye
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -261,6 +262,26 @@ export function AppSidebar({
                   </TooltipTrigger>
                   {isCollapsed && (
                     <TooltipContent side="right">Pro DNA</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+
+              {/* The Oracle */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
+                      className="group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20"
+                    >
+                      <Eye className="h-5 w-5 text-emerald-400" />
+                      {!isCollapsed && (
+                        <span className="flex-1 font-semibold text-emerald-400">The Oracle</span>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">The Oracle</TooltipContent>
                   )}
                 </Tooltip>
               </SidebarMenuItem>
