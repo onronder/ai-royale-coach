@@ -2376,5 +2376,22 @@
     "matchAnalysis": "AI maç performansını analiz ediyor...",
     "replacements": "En iyi kart değişiklikleri bulunuyor...",
     "generic": "Veri yükleniyor..."
+  },
+  "dreamArena": {
+    "title": "Rüya Arenası",
+    "vs": "VS",
+    "you": "Sen",
+    "battleLog": "Savaş Günlüğü",
+    "skip": "Atla",
+    "pause": "Duraklat",
+    "play": "Oynat",
+    "victory": "Zafer!",
+    "defeat": "Yenilgi",
+    "youWon": "{{proName}} yendin!",
+    "youLost": "{{proName}} kazandı!",
+    "finalScore": "Final Skor",
+    "winProbability": "Kazanma Olasılığı",
+    "playAgain": "Tekrar Oyna",
+    "close": "Kapat"
   }
 }

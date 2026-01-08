@@ -2414,5 +2414,22 @@
     "matchAnalysis": "AI analyzing match performance...",
     "replacements": "Finding optimal card replacements...",
     "generic": "Loading data..."
+  },
+  "dreamArena": {
+    "title": "Dream Arena",
+    "vs": "VS",
+    "you": "You",
+    "battleLog": "Battle Log",
+    "skip": "Skip",
+    "pause": "Pause",
+    "play": "Play",
+    "victory": "Victory!",
+    "defeat": "Defeat",
+    "youWon": "You defeated {{proName}}!",
+    "youLost": "{{proName}} wins!",
+    "finalScore": "Final Score",
+    "winProbability": "Win Probability",
+    "playAgain": "Play Again",
+    "close": "Close"
   }
 }
