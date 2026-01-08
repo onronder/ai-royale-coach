@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
+import { logger } from '../_shared/logger.ts';
 
 // ============= Types =============
 
@@ -222,26 +219,19 @@ function generateReason(candidate: CandidateScore, profile: PlayerProfile): stri
 // ============= Main Handler =============
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authorization required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Authorization required', 401);
     }
 
     const { playerTag, trophies = 5000, forceRefresh = false, language = 'en' } = await req.json();
 
     if (!playerTag) {
-      return new Response(
-        JSON.stringify({ error: 'playerTag is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('playerTag is required', 400);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -253,10 +243,7 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Invalid authentication', 401);
     }
 
     // SUBSCRIPTION CHECK: Verify user has active subscription or trial
@@ -294,28 +281,15 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Subscription required to use AI features',
-          subscription_required: true 
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
-    console.log(`[recommend-deck] Starting for user ${user.id}, player ${playerTag}`);
+    logger.info('Starting deck recommendation', { userId: user.id, playerTag });
 
     // ============= Step 1: Check Cache =============
     if (!forceRefresh) {
@@ -331,31 +305,28 @@ serve(async (req) => {
         .limit(MAX_RECOMMENDATIONS);
 
       if (cachedRecs && cachedRecs.length >= MAX_RECOMMENDATIONS) {
-        console.log(`[recommend-deck] Returning ${cachedRecs.length} cached recommendations`);
-        return new Response(
-          JSON.stringify({
-            recommendations: cachedRecs.map(r => ({
-              deckId: r.recommended_deck_id,
-              deckName: r.deck_name || r.archetype, // Use stored deck_name, fallback to archetype
-              cards: r.recommended_cards,
-              archetype: r.archetype,
-              avgElixir: r.avg_elixir || 0,
-              difficulty: r.difficulty || 'intermediate',
-              matchScore: r.recommendation_score * 100, // Convert back to percentage
-              reason: r.recommendation_reason,
-              aiExplanation: r.ai_explanation,
-              recommendationType: r.recommendation_type,
-              fromCache: true
-            })),
+        logger.info('Returning cached recommendations', { count: cachedRecs.length });
+        return jsonResponse({
+          recommendations: cachedRecs.map(r => ({
+            deckId: r.recommended_deck_id,
+            deckName: r.deck_name || r.archetype,
+            cards: r.recommended_cards,
+            archetype: r.archetype,
+            avgElixir: r.avg_elixir || 0,
+            difficulty: r.difficulty || 'intermediate',
+            matchScore: r.recommendation_score * 100,
+            reason: r.recommendation_reason,
+            aiExplanation: r.ai_explanation,
+            recommendationType: r.recommendation_type,
             fromCache: true
-          }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+          })),
+          fromCache: true
+        });
       }
     }
 
     // ============= Step 2: Build Player Profile =============
-    console.log('[recommend-deck] Building player profile...');
+    logger.info('Building player profile');
 
     // Get deck usage stats for archetype analysis
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -447,7 +418,7 @@ serve(async (req) => {
       });
     });
 
-    console.log('[recommend-deck] Profile built:', {
+    logger.info('Profile built', {
       skillLevel: profile.skillLevel,
       bestArchetypes: profile.bestArchetypes,
       totalBattles: profile.totalBattles,
@@ -455,7 +426,7 @@ serve(async (req) => {
     });
 
     // ============= Step 3: Get Candidate Decks =============
-    console.log('[recommend-deck] Fetching candidate decks...');
+    logger.info('Fetching candidate decks');
 
     const { data: deckTemplates } = await supabase
       .from('deck_templates')
@@ -463,10 +434,7 @@ serve(async (req) => {
       .order('popularity_score', { ascending: false });
 
     if (!deckTemplates || deckTemplates.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No deck templates available', recommendations: [] }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonResponse({ error: 'No deck templates available', recommendations: [] });
     }
 
     // Get archetype counter relationships
@@ -482,7 +450,7 @@ serve(async (req) => {
     const ownedCards = (cardCollection || []).map(c => c.card_name);
 
     // ============= Step 4: Score Candidates =============
-    console.log('[recommend-deck] Scoring candidates...');
+    logger.info('Scoring candidates');
 
     const candidates: CandidateScore[] = [];
 
@@ -528,7 +496,7 @@ serve(async (req) => {
       c.reason = generateReason(c, profile);
     });
 
-    console.log(`[recommend-deck] Found ${candidates.length} valid candidates`);
+    logger.info('Found valid candidates', { count: candidates.length });
 
     // ============= Step 5: AI Enhancement (Optional) =============
     let topCandidates = candidates.slice(0, 5);
@@ -543,7 +511,7 @@ serve(async (req) => {
       if (LOVABLE_API_KEY) {
         // Increment AI usage counter
         await incrementAIUsage(supabase, user.id);
-        console.log('[recommend-deck] Enhancing with AI...');
+        logger.info('Enhancing with AI');
         
         const languageInstructions: Record<string, string> = {
           en: 'Respond in English.',
@@ -641,14 +609,14 @@ Rank these decks for this player and provide personalized explanations. Consider
               if (enhancedCandidates.length > 0) {
                 topCandidates = enhancedCandidates;
                 aiEnhanced = true;
-                console.log('[recommend-deck] AI enhancement successful');
+                logger.info('AI enhancement successful');
               }
             }
           } else {
-            console.warn('[recommend-deck] AI call failed, using rule-based results');
+            logger.warn('AI call failed, using rule-based results');
           }
         } catch (aiError) {
-          console.error('[recommend-deck] AI error:', aiError);
+          logger.error('AI error', { error: aiError instanceof Error ? aiError.message : String(aiError) });
         }
       }
     }
@@ -689,28 +657,22 @@ Rank these decks for this player and provide personalized explanations. Consider
 
     await Promise.all(insertPromises);
 
-    console.log(`[recommend-deck] Returning ${recommendations.length} recommendations (AI enhanced: ${aiEnhanced})`);
+    logger.info('Returning recommendations', { count: recommendations.length, aiEnhanced });
 
-    return new Response(
-      JSON.stringify({
-        recommendations,
-        profile: {
-          skillLevel: profile.skillLevel,
-          bestArchetypes: profile.bestArchetypes,
-          recentWinRate: profile.recentWinRate,
-          totalBattles: profile.totalBattles
-        },
-        aiEnhanced,
-        fromCache: false
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({
+      recommendations,
+      profile: {
+        skillLevel: profile.skillLevel,
+        bestArchetypes: profile.bestArchetypes,
+        recentWinRate: profile.recentWinRate,
+        totalBattles: profile.totalBattles
+      },
+      aiEnhanced,
+      fromCache: false
+    });
 
   } catch (error) {
-    console.error('[recommend-deck] Error:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in recommend-deck', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error');
   }
 });
