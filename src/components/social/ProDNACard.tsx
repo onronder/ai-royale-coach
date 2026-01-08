@@ -47,12 +47,12 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
   const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
 
   return (
-    // Fixed size card - 280x385 (FIFA card 2:3 ratio approx)
+    // Fixed size card - 280x400
     <div 
       className="relative select-none"
       style={{ 
         width: '280px',
-        height: '385px',
+        height: '400px',
         padding: '3px',
         background: 'linear-gradient(135deg, #d4af37 0%, #f5d87a 30%, #d4af37 50%, #b8963c 70%, #d4af37 100%)',
         borderRadius: '14px',
@@ -164,7 +164,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
           </div>
 
           {/* Stats Section */}
-          <div className="flex-1 flex flex-col justify-center gap-2 px-1">
+          <div className="space-y-2 px-1">
             <StatBar 
               label="AGG" 
               value={stats.aggression} 
@@ -190,7 +190,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
 
           {/* Similar Pro Section */}
           <div 
-            className="flex items-center justify-center py-1.5 mt-2 rounded-md"
+            className="flex items-center justify-center py-1 mt-1.5 rounded-md"
             style={{ 
               background: 'rgba(0,0,0,0.4)',
               border: '1px solid rgba(212, 175, 55, 0.2)'
