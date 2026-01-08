@@ -2258,7 +2258,18 @@
     "elixir": "Elixir",
     "aiPowered": "AI Powered",
     "pleaseWait": "Please wait...",
-    "thisMayTakeMoment": "This may take a moment"
+    "thisMayTakeMoment": "This may take a moment",
+    "all": "All",
+    "unknown": "Unknown",
+    "searching": "Searching..."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "showing": "Showing {{start}}-{{end}} of {{total}}"
   },
   "admin": {
     "apiMetrics": {
@@ -2288,32 +2299,37 @@
       "warnedUsers": "Warned Users",
       "signalsByType": "Signals by Type (Last 30 Days)",
       "noSignals": "No fraud signals detected in the last 30 days",
-      "daySummary": "30-Day Summary",
-      "totalSignals": "Total fraud signals in the last 30 days"
+      "summary30Days": "30-Day Summary",
+      "totalSignals30Days": "Total fraud signals in the last 30 days"
     },
     "fraudCases": {
       "title": "Fraud Cases",
-      "userId": "User ID",
-      "status": "Status",
-      "score": "Score",
-      "signals": "Signals",
-      "lastSignal": "Last Signal",
+      "columns": {
+        "userId": "User ID",
+        "status": "Status",
+        "score": "Score",
+        "signals": "Signals",
+        "lastSignal": "Last Signal",
+        "reviewed": "Reviewed"
+      },
+      "statuses": {
+        "softBlocked": "Soft Blocked",
+        "warning": "Warning",
+        "clean": "Clean"
+      },
       "reviewed": "Reviewed",
       "pending": "Pending",
-      "all": "All",
       "blocked": "Blocked",
       "warning": "Warning",
       "review": "Review",
-      "noCases": "No fraud cases pending review",
-      "showing": "Showing"
+      "noCasesPending": "No fraud cases pending review"
     },
     "userLookup": {
       "title": "User Lookup",
       "email": "Email",
       "playerTag": "Player Tag",
       "searchByEmail": "Search by email...",
-      "searchByTag": "Search by player tag...",
-      "searching": "Searching...",
+      "searchByPlayerTag": "Search by player tag...",
       "noUsersFound": "No users found",
       "clean": "Clean",
       "score": "Score"
@@ -2326,25 +2342,29 @@
       "status": "Status",
       "fraudScore": "Fraud Score",
       "totalSignals": "Total Signals",
-      "softBlocked": "Soft Blocked",
-      "warning": "Warning",
-      "clean": "Clean",
+      "statuses": {
+        "softBlocked": "Soft Blocked",
+        "warning": "Warning",
+        "clean": "Clean"
+      },
       "playerTags": "Player Tags",
       "noPlayerTags": "No player tags linked",
       "deviceFingerprints": "Device Fingerprints",
       "noFingerprints": "No fingerprints recorded",
       "lastSeen": "Last seen",
-      "seenCount": "Seen {{count}} times",
+      "seenTimes": "Seen {{count}} times",
       "fraudSignals": "Fraud Signals",
       "noSignals": "No signals recorded",
       "adminActions": "Admin Actions",
-      "reviewNotes": "Review notes (optional)...",
-      "clearMarkClean": "Clear (Mark Clean)",
-      "setWarning": "Set Warning",
-      "softBlock": "Soft Block",
+      "reviewNotesPlaceholder": "Review notes (optional)...",
+      "actions": {
+        "clearMarkClean": "Clear (Mark Clean)",
+        "setWarning": "Set Warning",
+        "softBlock": "Soft Block"
+      },
       "lastReviewed": "Last reviewed",
       "notes": "Notes",
-      "loadingCaseDetails": "Loading case details...",
+      "loadingDetails": "Loading case details...",
       "statusUpdated": "Status updated successfully",
       "updateFailed": "Failed to update status",
       "severity": {

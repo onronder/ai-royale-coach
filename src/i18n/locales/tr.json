@@ -2216,6 +2216,48 @@
       "cache": "önbellek",
       "slow": "Yavaş"
     },
+    "fraudOverview": {
+      "signalsToday": "Bugünkü Sinyaller",
+      "pendingReviews": "Bekleyen İncelemeler",
+      "softBlocked": "Yumuşak Engelli",
+      "warnedUsers": "Uyarılan Kullanıcılar",
+      "signalsByType": "Sinyal Türüne Göre (Son 30 Gün)",
+      "noSignals": "Son 30 günde dolandırıcılık sinyali tespit edilmedi",
+      "summary30Days": "30 Günlük Özet",
+      "totalSignals30Days": "Son 30 günde toplam dolandırıcılık sinyali"
+    },
+    "fraudCases": {
+      "title": "Dolandırıcılık Vakaları",
+      "columns": {
+        "userId": "Kullanıcı ID",
+        "status": "Durum",
+        "score": "Puan",
+        "signals": "Sinyaller",
+        "lastSignal": "Son Sinyal",
+        "reviewed": "İncelendi"
+      },
+      "statuses": {
+        "softBlocked": "Yumuşak Engel",
+        "warning": "Uyarı",
+        "clean": "Temiz"
+      },
+      "reviewed": "İncelendi",
+      "pending": "Bekliyor",
+      "blocked": "Engelli",
+      "warning": "Uyarı",
+      "review": "İncele",
+      "noCasesPending": "İnceleme bekleyen dolandırıcılık vakası yok"
+    },
+    "userLookup": {
+      "title": "Kullanıcı Arama",
+      "email": "E-posta",
+      "playerTag": "Oyuncu Etiketi",
+      "searchByEmail": "E-posta ile ara...",
+      "searchByPlayerTag": "Oyuncu etiketi ile ara...",
+      "noUsersFound": "Kullanıcı bulunamadı",
+      "clean": "Temiz",
+      "score": "Puan"
+    },
     "fraudReview": {
       "backToCases": "Vakalara Dön",
       "caseReview": "Vaka İncelemesi",
@@ -2224,25 +2266,29 @@
       "status": "Durum",
       "fraudScore": "Dolandırıcılık Puanı",
       "totalSignals": "Toplam Sinyaller",
-      "softBlocked": "Yumuşak Engel",
-      "warning": "Uyarı",
-      "clean": "Temiz",
+      "statuses": {
+        "softBlocked": "Yumuşak Engel",
+        "warning": "Uyarı",
+        "clean": "Temiz"
+      },
       "playerTags": "Oyuncu Etiketleri",
       "noPlayerTags": "Bağlı oyuncu etiketi yok",
       "deviceFingerprints": "Cihaz Parmak İzleri",
       "noFingerprints": "Kaydedilmiş parmak izi yok",
       "lastSeen": "Son görülme",
-      "seenCount": "{{count}} kez görüldü",
+      "seenTimes": "{{count}} kez görüldü",
       "fraudSignals": "Dolandırıcılık Sinyalleri",
       "noSignals": "Kaydedilmiş sinyal yok",
       "adminActions": "Yönetici İşlemleri",
-      "reviewNotes": "İnceleme notları (isteğe bağlı)...",
-      "clearMarkClean": "Temizle (Temiz İşaretle)",
-      "setWarning": "Uyarı Ver",
-      "softBlock": "Yumuşak Engel",
+      "reviewNotesPlaceholder": "İnceleme notları (isteğe bağlı)...",
+      "actions": {
+        "clearMarkClean": "Temizle (Temiz İşaretle)",
+        "setWarning": "Uyarı Ver",
+        "softBlock": "Yumuşak Engel"
+      },
       "lastReviewed": "Son inceleme",
       "notes": "Notlar",
-      "loadingCaseDetails": "Vaka detayları yükleniyor...",
+      "loadingDetails": "Vaka detayları yükleniyor...",
       "statusUpdated": "Durum başarıyla güncellendi",
       "updateFailed": "Durum güncellenemedi",
       "severity": {
@@ -2269,13 +2315,6 @@
     "trophyCase": "Kupa Dolabı",
     "badgesEarned": "Kazanılan Rozetler"
   },
-  "pagination": {
-    "previous": "Önceki",
-    "next": "Sonraki",
-    "morePages": "Daha fazla sayfa",
-    "previousPage": "Önceki sayfaya git",
-    "nextPage": "Sonraki sayfaya git"
-  },
   "common": {
     "vs": "vs",
     "loading": "Yükleniyor...",
@@ -2285,46 +2324,18 @@
     "elixir": "İksir",
     "aiPowered": "AI Destekli",
     "pleaseWait": "Lütfen bekleyin...",
-    "thisMayTakeMoment": "Bu biraz zaman alabilir"
+    "thisMayTakeMoment": "Bu biraz zaman alabilir",
+    "all": "Tümü",
+    "unknown": "Bilinmeyen",
+    "searching": "Aranıyor..."
   },
-  "admin": {
-    "fraudOverview": {
-      "signalsToday": "Bugünkü Sinyaller",
-      "pendingReviews": "Bekleyen İncelemeler",
-      "softBlocked": "Yumuşak Engelli",
-      "warnedUsers": "Uyarılan Kullanıcılar",
-      "signalsByType": "Sinyal Türüne Göre (Son 30 Gün)",
-      "noSignals": "Son 30 günde dolandırıcılık sinyali tespit edilmedi",
-      "daySummary": "30 Günlük Özet",
-      "totalSignals": "Son 30 günde toplam dolandırıcılık sinyali"
-    },
-    "fraudCases": {
-      "title": "Dolandırıcılık Vakaları",
-      "userId": "Kullanıcı ID",
-      "status": "Durum",
-      "score": "Puan",
-      "signals": "Sinyaller",
-      "lastSignal": "Son Sinyal",
-      "reviewed": "İncelendi",
-      "pending": "Bekliyor",
-      "all": "Tümü",
-      "blocked": "Engelli",
-      "warning": "Uyarı",
-      "review": "İncele",
-      "noCases": "İnceleme bekleyen dolandırıcılık vakası yok",
-      "showing": "Gösterilen"
-    },
-    "userLookup": {
-      "title": "Kullanıcı Arama",
-      "email": "E-posta",
-      "playerTag": "Oyuncu Etiketi",
-      "searchByEmail": "E-posta ile ara...",
-      "searchByTag": "Oyuncu etiketi ile ara...",
-      "searching": "Aranıyor...",
-      "noUsersFound": "Kullanıcı bulunamadı",
-      "clean": "Temiz",
-      "score": "Puan"
-    }
+  "pagination": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "morePages": "Daha fazla sayfa",
+    "previousPage": "Önceki sayfaya git",
+    "nextPage": "Sonraki sayfaya git",
+    "showing": "{{start}}-{{end}} / {{total}} gösteriliyor"
   },
   "whatsNew": {
     "title": "Yenilikler",
