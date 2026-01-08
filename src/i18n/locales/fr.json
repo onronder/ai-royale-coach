@@ -1625,7 +1625,21 @@
     "registration": "Inscription",
     "inProgress": "En Cours",
     "completed": "Terminé",
-    "cancelled": "Annulé"
+    "cancelled": "Annulé",
+    "bracket": "Tableau du Tournoi",
+    "bracketNotReady": "Tableau Non Prêt",
+    "bracketWaitingForStart": "Le tableau du tournoi sera généré au début du tournoi.",
+    "noBrackets": "Pas de Tableau Disponible",
+    "noBracketsDescription": "Le tableau de ce tournoi n'a pas encore été créé.",
+    "round": "Tour {{round}}",
+    "quarterFinal": "Quart de Finale",
+    "semiFinal": "Demi-Finale",
+    "final": "Finale",
+    "champion": "Champion",
+    "match": "Match",
+    "pending": "En Attente",
+    "tbd": "À Déterminer",
+    "unknown": "Joueur Inconnu"
   },
   "comparison": {
     "title": "Comparaison de Comptes",
@@ -2056,5 +2070,15 @@
     "retry": "Réessayer",
     "checking": "Vérification...",
     "helpText": "L'application se reconnectera automatiquement lorsque votre connexion sera rétablie."
+  },
+  "installApp": {
+    "title": "Installer AI Coach",
+    "subtitle": "Obtenez la meilleure expérience",
+    "install": "Installer",
+    "howToInstall": "Comment Installer",
+    "iosTitle": "Pour installer sur iPhone/iPad:",
+    "iosStep1": "Appuyez sur le bouton Partager dans Safari",
+    "iosStep2": "Faites défiler et appuyez sur \"Ajouter à l'écran d'accueil\"",
+    "iosStep3": "Appuyez sur \"Ajouter\" dans le coin supérieur droit"
   }
 }
