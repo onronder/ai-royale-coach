@@ -1,7 +1,8 @@
 {
   "sidebar": {
     "navigation": "Navigation",
-    "quickActions": "Actions Rapides"
+    "quickActions": "Actions Rapides",
+    "toolbox": "Outils"
   },
   "feedback": {
     "thankYou": "Merci pour votre retour !",
