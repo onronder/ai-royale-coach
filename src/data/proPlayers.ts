@@ -65,6 +65,42 @@ const xbowDeck: ClashRoyaleCard[] = [
   createCard(24, 'Ice Spirit', 1, 'Common'),
 ];
 
+// Oyassuu's Classic Hog 2.6 Cycle deck
+const hog26Deck: ClashRoyaleCard[] = [
+  createCard(25, 'Hog Rider', 4, 'Rare'),
+  createCard(26, 'Musketeer', 4, 'Rare'),
+  createCard(27, 'Ice Golem', 2, 'Rare'),
+  createCard(28, 'Cannon', 3, 'Common'),
+  createCard(29, 'Fireball', 4, 'Rare'),
+  createCard(30, 'The Log', 2, 'Legendary'),
+  createCard(31, 'Ice Spirit', 1, 'Common'),
+  createCard(32, 'Skeletons', 1, 'Common'),
+];
+
+// Ryley's Log Bait Prince deck
+const logBaitPrinceDeck: ClashRoyaleCard[] = [
+  createCard(33, 'Goblin Barrel', 3, 'Epic'),
+  createCard(34, 'Prince', 5, 'Epic'),
+  createCard(35, 'Rascals', 5, 'Common'),
+  createCard(36, 'Goblin Gang', 3, 'Common'),
+  createCard(37, 'Princess', 3, 'Legendary'),
+  createCard(38, 'Rocket', 6, 'Rare'),
+  createCard(39, 'The Log', 2, 'Legendary'),
+  createCard(40, 'Dart Goblin', 3, 'Rare'),
+];
+
+// Ian77's Hog Earthquake deck
+const hogEQDeck: ClashRoyaleCard[] = [
+  createCard(41, 'Hog Rider', 4, 'Rare'),
+  createCard(42, 'Earthquake', 3, 'Rare'),
+  createCard(43, 'Valkyrie', 4, 'Rare'),
+  createCard(44, 'Firecracker', 3, 'Common'),
+  createCard(45, 'Skeletons', 1, 'Common'),
+  createCard(46, 'Ice Spirit', 1, 'Common'),
+  createCard(47, 'The Log', 2, 'Legendary'),
+  createCard(48, 'Cannon', 3, 'Common'),
+];
+
 export const PRO_PLAYERS: ProPlayer[] = [
   {
     id: 'mohamed-light',
@@ -77,6 +113,16 @@ export const PRO_PLAYERS: ProPlayer[] = [
     specialty: 'Bridge Spammer',
   },
   {
+    id: 'oyassuu',
+    name: 'Oyassuu',
+    tag: '#OYASSUU',
+    avatarUrl: '/placeholder.svg',
+    trophies: 9300,
+    signatureDeck: hog26Deck,
+    playstyle: 'Legendary cycle master who out-rotates every deck with lightning-fast Hog Riders',
+    specialty: 'Cycle Master',
+  },
+  {
     id: 'morten',
     name: 'Morten',
     tag: '#MORTEN',
@@ -85,6 +131,26 @@ export const PRO_PLAYERS: ProPlayer[] = [
     signatureDeck: minerControlDeck,
     playstyle: 'Patient controller who wears down opponents with relentless Miner chip damage',
     specialty: 'Defensive Wall',
+  },
+  {
+    id: 'ryley',
+    name: 'Ryley',
+    tag: '#RYLEY',
+    avatarUrl: '/placeholder.svg',
+    trophies: 9100,
+    signatureDeck: logBaitPrinceDeck,
+    playstyle: 'Aggressive bait player who applies dual-lane pressure with Prince and Rascals',
+    specialty: 'Bait Specialist',
+  },
+  {
+    id: 'ian77',
+    name: 'Ian77',
+    tag: '#IAN77',
+    avatarUrl: '/placeholder.svg',
+    trophies: 9050,
+    signatureDeck: hogEQDeck,
+    playstyle: 'Building destroyer who melts towers with perfectly timed Earthquakes',
+    specialty: 'Earthquake King',
   },
   {
     id: 'surgical-goblin',
