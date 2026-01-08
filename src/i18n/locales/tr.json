@@ -2392,6 +2392,16 @@
     "finalScore": "Final Skor",
     "winProbability": "Kazanma Olasılığı",
     "playAgain": "Tekrar Oyna",
-    "close": "Kapat"
+    "close": "Kapat",
+    "iDefeated": "{{proName}} OYUNCUSUNU YENDİM!",
+    "iLostTo": "ÇOK YAKINIDI! {{proName}} kazandı",
+    "myDeck": "Destem",
+    "upsetAlert": "SÜRPRİZ!",
+    "shareResult": "Sonucu Paylaş",
+    "downloadImage": "Resmi İndir",
+    "imageSaved": "Resim kaydedildi!",
+    "downloadFailed": "İndirme başarısız",
+    "aiSimulation": "YAPAY ZEKA KOÇU SİMÜLASYONU",
+    "finalHp": "Son Can"
   }
 }

@@ -2430,6 +2430,16 @@
     "finalScore": "Final Score",
     "winProbability": "Win Probability",
     "playAgain": "Play Again",
-    "close": "Close"
+    "close": "Close",
+    "iDefeated": "I DEFEATED {{proName}}!",
+    "iLostTo": "SO CLOSE! Lost to {{proName}}",
+    "myDeck": "My Deck",
+    "upsetAlert": "UPSET!",
+    "shareResult": "Share Result",
+    "downloadImage": "Download Image",
+    "imageSaved": "Image saved!",
+    "downloadFailed": "Download failed",
+    "aiSimulation": "AI COACH SIMULATION",
+    "finalHp": "Final HP"
   }
 }
