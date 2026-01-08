@@ -36,17 +36,22 @@ export interface ResponsiveTableProps<T> {
   isLoading?: boolean;
   loadingRows?: number;
   mobileCardClassName?: string;
+  /** Custom class name function for row styling */
+  rowClassName?: (item: T) => string;
 }
 
-function ResponsiveTableSkeleton({ 
+export function ResponsiveTableSkeleton({ 
   columns, 
   rows = 3,
-  isMobile 
+  isMobile: isMobileProp 
 }: { 
   columns: number; 
   rows?: number;
-  isMobile: boolean;
+  isMobile?: boolean;
 }) {
+  const isMobileHook = useIsMobile();
+  const isMobile = isMobileProp ?? isMobileHook;
+
   if (isMobile) {
     return (
       <div className="space-y-3">
@@ -101,6 +106,7 @@ export function ResponsiveTable<T>({
   isLoading,
   loadingRows = 3,
   mobileCardClassName,
+  rowClassName,
 }: ResponsiveTableProps<T>) {
   const isMobile = useIsMobile();
 
@@ -134,7 +140,8 @@ export function ResponsiveTable<T>({
             className={cn(
               "p-4 transition-colors",
               onRowClick && "cursor-pointer active:bg-muted/50",
-              mobileCardClassName
+              mobileCardClassName,
+              rowClassName?.(item)
             )}
             onClick={() => onRowClick?.(item)}
           >
@@ -197,7 +204,10 @@ export function ResponsiveTable<T>({
           {data.map((item) => (
             <TableRow
               key={keyExtractor(item)}
-              className={cn(onRowClick && "cursor-pointer")}
+              className={cn(
+                onRowClick && "cursor-pointer",
+                rowClassName?.(item)
+              )}
               onClick={() => onRowClick?.(item)}
             >
               {visibleDesktopColumns.map((col) => (

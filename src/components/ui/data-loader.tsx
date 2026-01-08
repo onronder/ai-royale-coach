@@ -14,6 +14,7 @@ type LoaderContext =
   | "leaderboard"
   | "tournaments"
   | "tournament-detail"
+  | "tournament-bracket"
   | "clans"
   | "achievements"
   | "coach"
@@ -110,6 +111,11 @@ const contextConfig: Record<LoaderContext, { icon: typeof Loader2; message: stri
     icon: Trophy,
     message: "Loading tournament details...",
     color: "text-gold"
+  },
+  "tournament-bracket": {
+    icon: Swords,
+    message: "Loading tournament bracket...",
+    color: "text-primary"
   },
   "match-analysis": {
     icon: Sparkles,
