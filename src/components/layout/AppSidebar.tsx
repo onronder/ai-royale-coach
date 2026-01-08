@@ -338,60 +338,53 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-2" />
-
-        {/* Quick Actions */}
-        <SidebarGroup>
-          {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-2">
-              {t("sidebar.quickActions")}
-            </SidebarGroupLabel>
-          )}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={() => navigate('/help')}
-                      className="group"
-                    >
-                      <HelpCircle className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
-                      {!isCollapsed && (
-                        <span className="flex-1">{t("nav.help")}</span>
-                      )}
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right">{t("nav.help")}</TooltipContent>
-                  )}
-                </Tooltip>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      onClick={() => navigate(`/settings${playerTag ? `?returnTo=/player/${playerTag}` : ''}`)}
-                      className="group"
-                    >
-                      <Settings className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
-                      {!isCollapsed && (
-                        <span className="flex-1">{t("settings.title")}</span>
-                      )}
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCollapsed && (
-                    <TooltipContent side="right">{t("settings.title")}</TooltipContent>
-                  )}
-                </Tooltip>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
       
-      {/* Footer - Sign Out */}
+      {/* Footer - Quick Actions + Sign Out */}
       <SidebarFooter className="p-3 border-t border-border/50">
+        {/* Quick Actions */}
+        <SidebarMenu className="mb-2">
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={() => navigate('/help')}
+                  className="group"
+                >
+                  <HelpCircle className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                  {!isCollapsed && (
+                    <span className="flex-1">{t("nav.help")}</span>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">{t("nav.help")}</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={() => navigate(`/settings${playerTag ? `?returnTo=/player/${playerTag}` : ''}`)}
+                  className="group"
+                >
+                  <Settings className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                  {!isCollapsed && (
+                    <span className="flex-1">{t("settings.title")}</span>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">{t("settings.title")}</TooltipContent>
+              )}
+            </Tooltip>
+          </SidebarMenuItem>
+        </SidebarMenu>
+
+        <SidebarSeparator className="my-2" />
+
+        {/* Sign Out */}
         {isCollapsed ? (
           <Tooltip>
             <TooltipTrigger asChild>
