@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Lock, 
@@ -36,53 +37,53 @@ const iconMap: Record<string, React.ElementType> = {
 // Define all possible achievements for the locked state display
 interface LockedAchievementInfo {
   id: string;
-  title: string;
+  titleKey: string;
+  hintKey: string;
   icon: string;
-  hint: string;
   rarity: AchievementRarity;
 }
 
 const allAchievements: LockedAchievementInfo[] = [
   {
     id: 'elixir-master',
-    title: 'Elixir Master',
+    titleKey: 'achievementShowcase.achievements.elixirMaster.title',
+    hintKey: 'achievementShowcase.achievements.elixirMaster.hint',
     icon: 'Zap',
-    hint: 'Win with a heavy deck (4.0+ elixir) without losing towers',
     rarity: 'Rare',
   },
   {
     id: 'comeback-king',
-    title: 'Comeback King',
+    titleKey: 'achievementShowcase.achievements.comebackKing.title',
+    hintKey: 'achievementShowcase.achievements.comebackKing.hint',
     icon: 'Crown',
-    hint: 'Win a match after losing a tower first',
     rarity: 'Epic',
   },
   {
     id: 'perfect-defense',
-    title: 'Perfect Defense',
+    titleKey: 'achievementShowcase.achievements.perfectDefense.title',
+    hintKey: 'achievementShowcase.achievements.perfectDefense.hint',
     icon: 'Shield',
-    hint: 'Win a match without losing any towers',
     rarity: 'Rare',
   },
   {
     id: 'win-streak-warrior',
-    title: 'Win Streak Warrior',
+    titleKey: 'achievementShowcase.achievements.winStreakWarrior.title',
+    hintKey: 'achievementShowcase.achievements.winStreakWarrior.hint',
     icon: 'Flame',
-    hint: 'Win 3 or more matches in a row',
     rarity: 'Rare',
   },
   {
     id: 'underdog',
-    title: 'Underdog',
+    titleKey: 'achievementShowcase.achievements.underdog.title',
+    hintKey: 'achievementShowcase.achievements.underdog.hint',
     icon: 'TrendingUp',
-    hint: 'Beat an opponent with 100+ more trophies',
     rarity: 'Epic',
   },
   {
     id: 'three-crown-master',
-    title: 'Three Crown Master',
+    titleKey: 'achievementShowcase.achievements.threeCrownMaster.title',
+    hintKey: 'achievementShowcase.achievements.threeCrownMaster.hint',
     icon: 'Trophy',
-    hint: 'Win a match with 3 crowns',
     rarity: 'Common',
   },
 ];
@@ -93,6 +94,7 @@ interface AchievementShowcaseProps {
 }
 
 export function AchievementShowcase({ unlockedAchievements, className }: AchievementShowcaseProps) {
+  const { t } = useTranslation();
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -113,9 +115,9 @@ export function AchievementShowcase({ unlockedAchievements, className }: Achieve
           <Trophy className="h-6 w-6 text-gold-foreground" />
         </div>
         <div>
-          <h2 className="text-xl font-bold font-rajdhani text-foreground">Trophy Case</h2>
+          <h2 className="text-xl font-bold font-rajdhani text-foreground">{t('achievementShowcase.trophyCase')}</h2>
           <p className="text-sm text-muted-foreground">
-            {unlockedAchievements.length} / {allAchievements.length} badges unlocked
+            {t('achievementShowcase.badgesUnlocked', { unlocked: unlockedAchievements.length, total: allAchievements.length })}
           </p>
         </div>
       </div>
@@ -234,6 +236,7 @@ interface LockedBadgeProps {
 }
 
 function LockedBadge({ info }: LockedBadgeProps) {
+  const { t } = useTranslation();
   const Icon = iconMap[info.icon] || Trophy;
 
   return (
@@ -256,12 +259,12 @@ function LockedBadge({ info }: LockedBadgeProps) {
 
         {/* Title */}
         <span className="font-bold text-sm text-muted-foreground leading-tight">
-          {info.title}
+          {t(info.titleKey)}
         </span>
 
         {/* Hint */}
         <p className="text-[10px] text-muted-foreground/70 leading-tight line-clamp-2">
-          {info.hint}
+          {t(info.hintKey)}
         </p>
       </div>
     </div>
@@ -275,6 +278,7 @@ interface AchievementDetailDialogProps {
 }
 
 function AchievementDetailDialog({ achievement, open, onOpenChange }: AchievementDetailDialogProps) {
+  const { t } = useTranslation();
   if (!achievement) return null;
 
   const Icon = iconMap[achievement.icon] || Trophy;
@@ -356,7 +360,7 @@ function AchievementDetailDialog({ achievement, open, onOpenChange }: Achievemen
             className="flex items-center gap-2 text-sm text-muted-foreground/70"
           >
             <Trophy className="h-4 w-4" />
-            <span>Earned recently</span>
+            <span>{t('achievementShowcase.earnedRecently')}</span>
           </motion.div>
 
           {/* Encouragement message */}
@@ -369,7 +373,7 @@ function AchievementDetailDialog({ achievement, open, onOpenChange }: Achievemen
               "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
             )}
           >
-            🎉 Amazing work, Champion!
+            🎉 {t('achievementShowcase.amazingWork')}
           </motion.div>
         </div>
       </DialogContent>

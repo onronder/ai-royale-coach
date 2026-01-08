@@ -2122,5 +2122,62 @@
     "downloadError": "Falha ao baixar imagem",
     "shareNotSupported": "Compartilhamento não suportado neste navegador",
     "shareError": "Falha ao compartilhar imagem"
+  },
+  "achievementShowcase": {
+    "trophyCase": "Vitrine de Troféus",
+    "badgesUnlocked": "{{unlocked}} / {{total}} insígnias desbloqueadas",
+    "earnedRecently": "Conquistado recentemente",
+    "amazingWork": "Trabalho incrível, Campeão!",
+    "achievements": {
+      "elixirMaster": {
+        "title": "Mestre do Elixir",
+        "hint": "Vença com um deck pesado (4.0+ elixir) sem perder torres"
+      },
+      "comebackKing": {
+        "title": "Rei da Virada",
+        "hint": "Vença uma partida depois de perder uma torre primeiro"
+      },
+      "perfectDefense": {
+        "title": "Defesa Perfeita",
+        "hint": "Vença uma partida sem perder nenhuma torre"
+      },
+      "winStreakWarrior": {
+        "title": "Guerreiro de Sequência",
+        "hint": "Vença 3 ou mais partidas seguidas"
+      },
+      "underdog": {
+        "title": "Azarão",
+        "hint": "Vença um oponente com 100+ troféus a mais"
+      },
+      "threeCrownMaster": {
+        "title": "Mestre das Três Coroas",
+        "hint": "Vença uma partida com 3 coroas"
+      }
+    }
+  },
+  "aiPreview": {
+    "deckArchetype": "Arquétipo do Deck",
+    "cycleControl": "Controle de Ciclo",
+    "cycleDescription": "Este deck se destaca em manter pressão através de ciclo rápido e trocas de elixir eficientes...",
+    "strengths": "Pontos Fortes",
+    "weaknesses": "Pontos Fracos",
+    "strengthsList": {
+      "fastCycle": "Capacidade de ciclo rápido",
+      "strongDefense": "Opções defensivas fortes",
+      "consistentChip": "Dano chip consistente"
+    },
+    "weaknessesList": {
+      "heavyBeatdown": "Vulnerável a beatdown pesado",
+      "spellBait": "Dificuldades contra spell bait",
+      "lowTowerDamage": "Baixo dano à torre por golpe"
+    },
+    "winRate": "Taxa de Vitória",
+    "usage": "Uso",
+    "hot": "Em Alta",
+    "stable": "Estável",
+    "synergy": "Sinergia",
+    "meta": "Meta",
+    "confidence": "Confiança",
+    "betterDefensiveValue": "Esta carta oferece melhor valor defensivo e tem boa sinergia com suas cartas de ciclo..."
   }
 }

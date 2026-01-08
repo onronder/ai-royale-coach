@@ -2103,5 +2103,62 @@
     "noData": "Not enough battle data to generate your DNA.",
     "noDataHint": "Play some matches first!",
     "shareText": "Check out my Clash Royale Pro DNA!"
+  },
+  "achievementShowcase": {
+    "trophyCase": "Trophy Case",
+    "badgesUnlocked": "{{unlocked}} / {{total}} badges unlocked",
+    "earnedRecently": "Earned recently",
+    "amazingWork": "Amazing work, Champion!",
+    "achievements": {
+      "elixirMaster": {
+        "title": "Elixir Master",
+        "hint": "Win with a heavy deck (4.0+ elixir) without losing towers"
+      },
+      "comebackKing": {
+        "title": "Comeback King",
+        "hint": "Win a match after losing a tower first"
+      },
+      "perfectDefense": {
+        "title": "Perfect Defense",
+        "hint": "Win a match without losing any towers"
+      },
+      "winStreakWarrior": {
+        "title": "Win Streak Warrior",
+        "hint": "Win 3 or more matches in a row"
+      },
+      "underdog": {
+        "title": "Underdog",
+        "hint": "Beat an opponent with 100+ more trophies"
+      },
+      "threeCrownMaster": {
+        "title": "Three Crown Master",
+        "hint": "Win a match with 3 crowns"
+      }
+    }
+  },
+  "aiPreview": {
+    "deckArchetype": "Deck Archetype",
+    "cycleControl": "Cycle Control",
+    "cycleDescription": "This deck excels at maintaining pressure through fast cycling and efficient elixir trades...",
+    "strengths": "Strengths",
+    "weaknesses": "Weaknesses",
+    "strengthsList": {
+      "fastCycle": "Fast cycle capability",
+      "strongDefense": "Strong defensive options",
+      "consistentChip": "Consistent chip damage"
+    },
+    "weaknessesList": {
+      "heavyBeatdown": "Vulnerable to heavy beatdown",
+      "spellBait": "Struggles against spell bait",
+      "lowTowerDamage": "Low tower damage per hit"
+    },
+    "winRate": "Win Rate",
+    "usage": "Usage",
+    "hot": "Hot",
+    "stable": "Stable",
+    "synergy": "Synergy",
+    "meta": "Meta",
+    "confidence": "Confidence",
+    "betterDefensiveValue": "This card provides better defensive value and synergizes well with your cycle cards..."
   }
 }
