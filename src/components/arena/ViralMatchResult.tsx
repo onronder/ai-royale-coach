@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, X, Crown, Flame, Swords, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import html2canvas from 'html2canvas';
 import { toast } from 'sonner';
 
 import {
@@ -15,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CardImage } from '@/components/cards/CardImage';
 import { cn } from '@/lib/utils';
+import { renderArenaCardToCanvas } from '@/utils/renderArenaCard';
 import type { SimulationResult } from '@/utils/dreamArenaEngine';
 import type { ProPlayer } from '@/data/proPlayers';
 import type { ClashRoyaleCard } from '@/services/clashRoyaleApi';
@@ -39,7 +39,6 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
   proPlayer,
 }) => {
   const { t } = useTranslation();
-  const cardRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const isVictory = simulationResult.winner === 'user';
@@ -48,15 +47,27 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
   const lastFrame = simulationResult.timeline[simulationResult.timeline.length - 1];
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
     setIsGenerating(true);
 
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
+      const canvas = await renderArenaCardToCanvas({
+        winner: simulationResult.winner,
+        winProbability: simulationResult.winProbability,
+        userHp: lastFrame?.userHp ?? 0,
+        proHp: lastFrame?.proHp ?? 0,
+        proName: proPlayer.name,
+        proSpecialty: proPlayer.specialty,
+        userDeck: userProfile.deck,
+        translations: {
+          iDefeated: t('dreamArena.iDefeated', { proName: proPlayer.name.toUpperCase() }),
+          iLostTo: t('dreamArena.iLostTo', { proName: proPlayer.name }),
+          winProbability: t('dreamArena.winProbability'),
+          myDeck: t('dreamArena.myDeck'),
+          finalHp: t('dreamArena.finalHp'),
+          upsetAlert: t('dreamArena.upsetAlert'),
+          aiSimulation: t('dreamArena.aiSimulation'),
+        },
         scale: 2,
-        useCORS: true,
-        logging: false,
       });
 
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -103,7 +114,6 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
         </DialogHeader>
 
         <div
-          ref={cardRef}
           className={cn(
             'relative w-[360px] h-[640px] mx-auto rounded-2xl overflow-hidden',
             'flex flex-col items-center justify-between p-6'
