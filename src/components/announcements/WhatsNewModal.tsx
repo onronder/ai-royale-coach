@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Radar, Sparkles, ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
@@ -20,33 +21,24 @@ interface WhatsNewModalProps {
 const features = [
   {
     id: "oracle",
-    title: "The Oracle",
-    subtitle: "Live Match Predictions",
-    description:
-      "Scan your opponent's tag and predict their deck BEFORE the match begins. Gain the ultimate strategic advantage.",
     icon: Eye,
     gradient: "from-emerald-500/20 via-emerald-600/10 to-transparent",
     iconColor: "text-emerald-400",
     glowColor: "shadow-emerald-500/20",
-    ctaText: "Try The Oracle",
     ctaAction: "oracle",
   },
   {
     id: "quickscan",
-    title: "Quick Scan",
-    subtitle: "One-Click Match Analysis",
-    description:
-      "See the Eye icon next to your recent matches? Tap it to instantly predict that opponent's current deck and see your matchup odds.",
     icon: Radar,
     gradient: "from-amber-500/20 via-amber-600/10 to-transparent",
     iconColor: "text-amber-400",
     glowColor: "shadow-amber-500/20",
-    ctaText: "View Matches",
     ctaAction: "matches",
   },
 ];
 
 export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentFeature = features[currentIndex];
@@ -94,7 +86,7 @@ export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps
               <Sparkles className="h-5 w-5 text-primary" />
             </motion.div>
             <DialogTitle className="text-lg font-rajdhani uppercase tracking-wide">
-              What's New
+              {t('whatsNew.title')}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -144,15 +136,15 @@ export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps
                 {/* Text */}
                 <div className="space-y-1">
                   <h3 className="text-xl font-bold font-rajdhani uppercase tracking-wide">
-                    {currentFeature.title}
+                    {t(`whatsNew.features.${currentFeature.id}.title`)}
                   </h3>
                   <p className={cn("text-sm font-medium", currentFeature.iconColor)}>
-                    {currentFeature.subtitle}
+                    {t(`whatsNew.features.${currentFeature.id}.subtitle`)}
                   </p>
                 </div>
 
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {currentFeature.description}
+                  {t(`whatsNew.features.${currentFeature.id}.description`)}
                 </p>
 
                 {/* CTA Button */}
@@ -161,7 +153,7 @@ export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps
                   variant={currentIndex === 0 ? "glow" : "golden"}
                   className="w-full mt-2"
                 >
-                  {currentFeature.ctaText}
+                  {t(`whatsNew.features.${currentFeature.id}.cta`)}
                 </Button>
               </div>
             </motion.div>
@@ -214,7 +206,7 @@ export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps
             onClick={onDismiss}
             className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Got it, thanks!
+            {t('whatsNew.gotIt')}
           </button>
         </div>
       </DialogContent>
