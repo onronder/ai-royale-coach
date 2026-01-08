@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { 
   Brain, 
   Swords, 
-  BarChart3, 
   Users, 
   Crown, 
   Settings, 
@@ -58,6 +57,8 @@ const tabConfig = {
     subtabs: [
       { id: "overview", labelKey: "dashboard.subtabs.overview" },
       { id: "matches", labelKey: "dashboard.subtabs.matches" },
+      { id: "analytics", labelKey: "dashboard.subtabs.analytics" },
+      { id: "leaderboard", labelKey: "dashboard.subtabs.leaderboard" },
     ]
   },
   deck: {
@@ -66,13 +67,6 @@ const tabConfig = {
       { id: "current", labelKey: "dashboard.subtabs.current" },
       { id: "builder", labelKey: "dashboard.subtabs.builder" },
       { id: "collection", labelKey: "dashboard.subtabs.collection" },
-    ]
-  },
-  stats: {
-    icon: BarChart3,
-    subtabs: [
-      { id: "analytics", labelKey: "dashboard.subtabs.analytics" },
-      { id: "leaderboard", labelKey: "dashboard.subtabs.leaderboard" },
     ]
   },
   social: {
@@ -120,7 +114,6 @@ export function AppSidebar({
   const mainTabs = [
     { id: "coach", labelKey: "dashboard.tabs.coach" },
     { id: "deck", labelKey: "dashboard.tabs.deck" },
-    { id: "stats", labelKey: "dashboard.tabs.stats" },
     { id: "social", labelKey: "dashboard.tabs.social" },
   ];
 

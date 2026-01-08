@@ -114,7 +114,6 @@ const Dashboard = () => {
     const defaultSubTabs: Record<string, string> = {
       coach: "overview",
       deck: "current",
-      stats: "analytics",
       social: "clans",
     };
     setActiveSubTab(defaultSubTabs[activeTab] || "overview");
@@ -219,6 +218,8 @@ const Dashboard = () => {
                     <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
                       <TabsTrigger value="overview" className="flex-1">{t("dashboard.subtabs.overview")}</TabsTrigger>
                       <TabsTrigger value="matches" className="flex-1">{t("dashboard.subtabs.matches")}</TabsTrigger>
+                      <TabsTrigger value="analytics" className="flex-1">{t("dashboard.subtabs.analytics")}</TabsTrigger>
+                      <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
                       <OverviewTab
@@ -241,6 +242,18 @@ const Dashboard = () => {
                         battlesError={battlesError}
                         onMatchClick={handleMatchClick}
                       />
+                    </TabsContent>
+                    <TabsContent value="analytics" className="mt-4">
+                      <AnalyticsTab playerTag={playerTag} />
+                    </TabsContent>
+                    <TabsContent value="leaderboard" className="mt-4">
+                      <PageTransition delay={100}>
+                        <LeaderboardView 
+                          userClanTag={player?.clan?.tag} 
+                          userId={user?.id}
+                          currentPlayerTag={playerTag}
+                        />
+                      </PageTransition>
                     </TabsContent>
                   </Tabs>
                 </TabsContent>
@@ -296,28 +309,6 @@ const Dashboard = () => {
                         <CardCollectionTracker 
                           playerTag={playerTag} 
                           userId={user.id}
-                        />
-                      </PageTransition>
-                    </TabsContent>
-                  </Tabs>
-                </TabsContent>
-
-                {/* STATS TAB */}
-                <TabsContent value="stats" className="mt-6 md:mt-0">
-                  <Tabs value={activeTab === "stats" ? activeSubTab : "analytics"} onValueChange={setActiveSubTab} className="w-full">
-                    <TabsList className="w-full bg-muted/20 border-b border-white/5 rounded-none h-12">
-                      <TabsTrigger value="analytics" className="flex-1">{t("dashboard.subtabs.analytics")}</TabsTrigger>
-                      <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="analytics" className="mt-4">
-                      <AnalyticsTab playerTag={playerTag} />
-                    </TabsContent>
-                    <TabsContent value="leaderboard" className="mt-4">
-                      <PageTransition delay={100}>
-                        <LeaderboardView 
-                          userClanTag={player?.clan?.tag} 
-                          userId={user?.id}
-                          currentPlayerTag={playerTag}
                         />
                       </PageTransition>
                     </TabsContent>

@@ -1,4 +1,4 @@
-import { Brain, Swords, BarChart3, Users, Fingerprint } from "lucide-react";
+import { Brain, Swords, Users, Fingerprint } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
@@ -15,8 +15,8 @@ export function MobileBottomNav({ activeTab, onTabChange, onDnaClick }: MobileBo
   if (!ready) {
     return (
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-gold/20 md:hidden safe-area-bottom">
-        <div className="grid grid-cols-5 h-16">
-          {[1, 2, 3, 4, 5].map((i) => (
+        <div className="grid grid-cols-4 h-16">
+          {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex flex-col items-center justify-center gap-0.5">
               <div className="h-5 w-5 bg-muted rounded animate-pulse" />
               <div className="h-2 w-8 bg-muted rounded animate-pulse mt-1" />
@@ -31,13 +31,12 @@ export function MobileBottomNav({ activeTab, onTabChange, onDnaClick }: MobileBo
     { value: "coach", label: t("dashboard.tabs.coach"), icon: Brain },
     { value: "deck", label: t("dashboard.tabs.deck"), icon: Swords },
     { value: "dna", label: "DNA", icon: Fingerprint, action: onDnaClick },
-    { value: "stats", label: t("dashboard.tabs.stats"), icon: BarChart3 },
     { value: "social", label: t("dashboard.tabs.social"), icon: Users },
   ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-gold/20 md:hidden safe-area-bottom">
-      <div className="grid grid-cols-5 min-h-[56px]">
+      <div className="grid grid-cols-4 min-h-[56px]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.value;
