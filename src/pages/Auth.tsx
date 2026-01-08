@@ -182,8 +182,9 @@ const Auth = () => {
           });
         }, 500);
       }
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("common.error");
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -208,8 +209,9 @@ const Auth = () => {
       
       setResetEmailSent(true);
       toast.success(t("auth.resetEmailSent"));
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("common.error");
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -243,8 +245,9 @@ const Auth = () => {
       setTimeout(() => {
         navigate("/select-player");
       }, 1500);
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("common.error");
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -260,8 +263,9 @@ const Auth = () => {
         },
       });
       if (error) throw error;
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("common.error");
+      toast.error(message);
       setIsLoading(false);
     }
   };
@@ -285,8 +289,9 @@ const Auth = () => {
       setPendingOAuthUser(null);
       toast.success(t("auth.welcomeBack"));
       navigate("/select-player");
-    } catch (error: any) {
-      toast.error(error.message || t("common.error"));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t("common.error");
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

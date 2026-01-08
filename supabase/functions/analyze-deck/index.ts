@@ -1,11 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 interface DeckAnalysisRequest {
   playerData: any;
@@ -13,9 +10,8 @@ interface DeckAnalysisRequest {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -42,31 +38,22 @@ serve(async (req) => {
       });
     
     if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
+      logger.error('Rate limit check error', { error: rateLimitError.message });
     } else if (!rateLimitAllowed) {
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please slow down.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Too many requests. Please slow down.', 429);
     }
 
     // SECURITY FIX: Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // SUBSCRIPTION CHECK: Verify user has active subscription or trial
@@ -88,13 +75,7 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Subscription required to use AI features',
-          subscription_required: true 
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
     const { playerData, battles, language = 'en' }: DeckAnalysisRequest & { language?: string } = await req.json();
@@ -115,14 +96,10 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerData.tag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, {
+          ai_not_enabled: true,
+          player_tag: playerData.tag
+        });
       }
     }
 
@@ -280,7 +257,7 @@ ${languageInstruction}`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      logger.error('Lovable AI error', { status: response.status, error: errorText });
       throw new Error(`AI analysis failed: ${response.status}`);
     }
 
@@ -293,26 +270,20 @@ ${languageInstruction}`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
-    return new Response(
-      JSON.stringify({
-        archetype: {
-          name: detectedArchetype.name,
-          playstyle: detectedArchetype.playstyle,
-          tips: analysis.archetype_tips || detectedArchetype.tips,
-        },
-        archetypeWinRates,
-        strengths: analysis.strengths.slice(0, 3),
-        weaknesses: analysis.weaknesses.slice(0, 3),
-        recommendations: analysis.recommendations.slice(0, 3),
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({
+      archetype: {
+        name: detectedArchetype.name,
+        playstyle: detectedArchetype.playstyle,
+        tips: analysis.archetype_tips || detectedArchetype.tips,
+      },
+      archetypeWinRates,
+      strengths: analysis.strengths.slice(0, 3),
+      weaknesses: analysis.weaknesses.slice(0, 3),
+      recommendations: analysis.recommendations.slice(0, 3),
+    });
 
   } catch (error) {
-    console.error('Error in analyze-deck:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-deck', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });
