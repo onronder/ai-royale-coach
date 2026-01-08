@@ -4,14 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
+import { ResponsiveTable, ColumnDef } from '@/components/ui/responsive-table';
 import { 
   AlertTriangle, 
   Shield, 
@@ -78,6 +71,94 @@ export function FraudCasesList() {
     }
   };
 
+  const getScoreDisplay = (score: number) => (
+    <span className={
+      score >= 70 ? 'text-destructive font-bold' :
+      score >= 40 ? 'text-yellow-500' :
+      'text-green-500'
+    }>
+      {score}
+    </span>
+  );
+
+  const columns: ColumnDef<UserFraudStatus>[] = [
+    {
+      key: 'user_id',
+      header: 'User ID',
+      render: (item) => (
+        <span className="font-mono text-xs">
+          {item.user_id.slice(0, 8)}...
+        </span>
+      ),
+      mobilePrimary: true,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (item) => getStatusBadge(item.status),
+      mobilePrimary: true,
+    },
+    {
+      key: 'score',
+      header: 'Score',
+      render: (item) => getScoreDisplay(item.fraud_score),
+      mobileSecondary: true,
+    },
+    {
+      key: 'signals',
+      header: 'Signals',
+      render: (item) => item.signals_count,
+      mobileSecondary: true,
+    },
+    {
+      key: 'last_signal',
+      header: 'Last Signal',
+      render: (item) => (
+        <span className="text-sm text-muted-foreground">
+          {item.last_signal_at 
+            ? formatDistanceToNow(new Date(item.last_signal_at), { addSuffix: true })
+            : '-'}
+        </span>
+      ),
+      mobileHidden: true,
+    },
+    {
+      key: 'reviewed',
+      header: 'Reviewed',
+      render: (item) => (
+        item.reviewed_at ? (
+          <Badge variant="outline" className="text-green-500">
+            Reviewed
+          </Badge>
+        ) : (
+          <Badge variant="outline" className="text-yellow-500">
+            Pending
+          </Badge>
+        )
+      ),
+      mobileSecondary: true,
+    },
+    {
+      key: 'actions',
+      header: '',
+      render: (item) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="min-h-[44px]"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSelectedUserId(item.user_id);
+          }}
+        >
+          <Eye className="h-4 w-4 mr-1" />
+          <span className="md:hidden">Review</span>
+        </Button>
+      ),
+      isAction: true,
+    },
+  ];
+
   if (selectedUserId) {
     return (
       <FraudReviewPanel 
@@ -90,17 +171,25 @@ export function FraudCasesList() {
     );
   }
 
+  const emptyState = (
+    <div className="text-center py-8 text-muted-foreground">
+      <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
+      No fraud cases pending review
+    </div>
+  );
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5" />
           Fraud Cases
         </CardTitle>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant={statusFilter === 'all' ? 'default' : 'outline'}
             size="sm"
+            className="min-h-[44px] md:min-h-0"
             onClick={() => setStatusFilter('all')}
           >
             All
@@ -108,6 +197,7 @@ export function FraudCasesList() {
           <Button
             variant={statusFilter === 'soft_blocked' ? 'default' : 'outline'}
             size="sm"
+            className="min-h-[44px] md:min-h-0"
             onClick={() => setStatusFilter('soft_blocked')}
           >
             <Shield className="h-4 w-4 mr-1" />
@@ -116,6 +206,7 @@ export function FraudCasesList() {
           <Button
             variant={statusFilter === 'warning' ? 'default' : 'outline'}
             size="sm"
+            className="min-h-[44px] md:min-h-0"
             onClick={() => setStatusFilter('warning')}
           >
             <AlertTriangle className="h-4 w-4 mr-1" />
@@ -124,101 +215,42 @@ export function FraudCasesList() {
         </div>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Loading cases...
-          </div>
-        ) : cases.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            No fraud cases pending review
-          </div>
-        ) : (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User ID</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Signals</TableHead>
-                  <TableHead>Last Signal</TableHead>
-                  <TableHead>Reviewed</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {cases.map((fraudCase) => (
-                  <TableRow key={fraudCase.user_id}>
-                    <TableCell className="font-mono text-xs">
-                      {fraudCase.user_id.slice(0, 8)}...
-                    </TableCell>
-                    <TableCell>{getStatusBadge(fraudCase.status)}</TableCell>
-                    <TableCell>
-                      <span className={
-                        fraudCase.fraud_score >= 70 ? 'text-red-500 font-bold' :
-                        fraudCase.fraud_score >= 40 ? 'text-yellow-500' :
-                        'text-green-500'
-                      }>
-                        {fraudCase.fraud_score}
-                      </span>
-                    </TableCell>
-                    <TableCell>{fraudCase.signals_count}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {fraudCase.last_signal_at 
-                        ? formatDistanceToNow(new Date(fraudCase.last_signal_at), { addSuffix: true })
-                        : '-'}
-                    </TableCell>
-                    <TableCell>
-                      {fraudCase.reviewed_at ? (
-                        <Badge variant="outline" className="text-green-500">
-                          Reviewed
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-yellow-500">
-                          Pending
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedUserId(fraudCase.user_id)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+        <ResponsiveTable
+          data={cases}
+          columns={columns}
+          keyExtractor={(item) => item.user_id}
+          emptyState={emptyState}
+          isLoading={isLoading}
+          onRowClick={(item) => setSelectedUserId(item.user_id)}
+        />
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-muted-foreground">
-                Showing {page * PAGE_SIZE + 1}-{Math.min((page + 1) * PAGE_SIZE, data?.total || 0)} of {data?.total || 0}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 0}
-                  onClick={() => setPage(p => p - 1)}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages - 1}
-                  onClick={() => setPage(p => p + 1)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+        {/* Pagination */}
+        {cases.length > 0 && (
+          <div className="flex items-center justify-between mt-4 flex-wrap gap-2">
+            <div className="text-sm text-muted-foreground">
+              Showing {page * PAGE_SIZE + 1}-{Math.min((page + 1) * PAGE_SIZE, data?.total || 0)} of {data?.total || 0}
             </div>
-          </>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-[44px] md:min-h-0"
+                disabled={page === 0}
+                onClick={() => setPage(p => p - 1)}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-[44px] md:min-h-0"
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage(p => p + 1)}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
