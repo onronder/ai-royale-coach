@@ -1,0 +1,27 @@
+{
+  "name": "AI Royale Coach",
+  "short_name": "AI Coach",
+  "description": "AI-powered Clash Royale coaching with deck analysis and strategic insights",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-160.png",
+      "sizes": "160x160",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}

@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { MatchDiscussionProvider } from "@/contexts/MatchDiscussionContext";
 import { SplashScreen } from "@/components/ui/splash-screen";
 import { OfflineIndicator } from "@/components/ui/offline-indicator";
+import { InstallAppPrompt } from "@/components/layout/InstallAppPrompt";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
 import i18n from "./i18n";
@@ -63,6 +64,7 @@ const App = () => {
         <TooltipProvider>
           <MatchDiscussionProvider>
             <ErrorBoundary>
+              <InstallAppPrompt />
               <OfflineIndicator />
               <Toaster />
               <Sonner />
