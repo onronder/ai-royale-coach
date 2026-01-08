@@ -2,7 +2,7 @@ import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { MatchDiscussionProvider } from "@/contexts/MatchDiscussionContext";
@@ -11,6 +11,8 @@ import { OfflineIndicator } from "@/components/ui/offline-indicator";
 import { InstallAppPrompt } from "@/components/layout/InstallAppPrompt";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
+import { ApiMetricsProvider } from "@/components/admin/ApiMetricsProvider";
+import { createQueryClientWithMetrics } from "@/lib/queryClientWithMetrics";
 import i18n from "./i18n";
 
 // Lazy load pages for better initial bundle size
@@ -28,7 +30,7 @@ const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Oracle = lazy(() => import("./pages/Oracle"));
 const Admin = lazy(() => import("./pages/Admin"));
 
-const queryClient = new QueryClient();
+const queryClient = createQueryClientWithMetrics();
 
 const App = () => {
   const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
@@ -63,32 +65,34 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <MatchDiscussionProvider>
-            <ErrorBoundary>
-              <InstallAppPrompt />
-              <OfflineIndicator />
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Suspense fallback={<SplashScreen />}>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/select-player" element={<SelectPlayer />} />
-                    <Route path="/settings" element={<Settings />} />
-                    <Route path="/player/:playerTag" element={<Dashboard />} />
-                    <Route path="/help" element={<Help />} />
-                    <Route path="/demo" element={<Demo />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/privacy" element={<Privacy />} />
-                    <Route path="/maintenance" element={<Maintenance />} />
-                    <Route path="/oracle" element={<Oracle />} />
-                    <Route path="/admin" element={<Admin />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </BrowserRouter>
-            </ErrorBoundary>
+            <ApiMetricsProvider>
+              <ErrorBoundary>
+                <InstallAppPrompt />
+                <OfflineIndicator />
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Suspense fallback={<SplashScreen />}>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/select-player" element={<SelectPlayer />} />
+                      <Route path="/settings" element={<Settings />} />
+                      <Route path="/player/:playerTag" element={<Dashboard />} />
+                      <Route path="/help" element={<Help />} />
+                      <Route path="/demo" element={<Demo />} />
+                      <Route path="/terms" element={<Terms />} />
+                      <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/maintenance" element={<Maintenance />} />
+                      <Route path="/oracle" element={<Oracle />} />
+                      <Route path="/admin" element={<Admin />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </BrowserRouter>
+              </ErrorBoundary>
+            </ApiMetricsProvider>
           </MatchDiscussionProvider>
         </TooltipProvider>
       </QueryClientProvider>
