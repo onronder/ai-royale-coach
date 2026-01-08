@@ -10,6 +10,8 @@ import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi"
 import { cn } from "@/lib/utils";
 import { SubscriptionGate } from "@/components/subscription/SubscriptionGate";
 
+import type { PlayerAnalysis } from "@/types/analysis.types";
+
 interface OverviewTabProps {
   playerTag: string;
   player: ClashRoyalePlayer | null;
@@ -17,7 +19,7 @@ interface OverviewTabProps {
   playerLoading: boolean;
   formattedWinRate: string;
   winRate: number;
-  analysis: any;
+  analysis: PlayerAnalysis | null;
   analysisLoading: boolean;
   analysisError: Error | null;
 }
@@ -108,7 +110,7 @@ export function OverviewTab({
 }
 
 interface AIAnalysisCardProps {
-  analysis: any;
+  analysis: PlayerAnalysis | null;
   analysisLoading: boolean;
   analysisError: Error | null;
 }

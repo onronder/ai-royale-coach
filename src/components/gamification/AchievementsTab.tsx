@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Achievement } from "@/utils/achievementSystem";
 import { AchievementShowcase } from "./AchievementShowcase";
+import type { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 const iconMap: Record<string, React.ElementType> = {
   Zap, Crown, Shield, Flame, TrendingUp, Star, Trophy, Sparkles,
@@ -17,7 +18,7 @@ const iconMap: Record<string, React.ElementType> = {
 interface AchievementsTabProps {
   playerTag: string;
   playerName?: string;
-  battles: any[] | null;
+  battles: ClashRoyaleBattle[] | null;
   unlockedAchievements: Achievement[];
 }
 

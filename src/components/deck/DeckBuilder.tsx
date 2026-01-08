@@ -45,33 +45,15 @@ interface DeckAnalysis {
 }
 
 import { 
-  AdvancedDeckAnalysis, 
   TradeScenario, 
   ElixirDistributionEntry,
   SynergyMatrix,
-  MatchupPrediction 
+  MatchupPrediction,
+  AdvancedDeckAnalysis
 } from "@/types/analysis.types";
 
-interface LocalAdvancedDeckAnalysis {
-  elixirAnalysis: {
-    avgElixir: number;
-    cycleSpeed: 'fast' | 'medium' | 'slow';
-    defensiveCost: number;
-    offensiveCost: number;
-    elixirDistribution: ElixirDistributionEntry[];
-    tradeScenarios: TradeScenario[];
-  };
-  composition: {
-    winConditions: string[];
-    defenseCards: string[];
-    cycleCards: string[];
-    spells: string[];
-    missingRoles: string[];
-    balanceNotes: string;
-  };
-  synergyMatrix: SynergyMatrix | null;
-  matchupPredictions: MatchupPrediction[] | null;
-}
+// Use the shared AdvancedDeckAnalysis type
+type LocalAdvancedDeckAnalysis = AdvancedDeckAnalysis;
 
 export function DeckBuilder({ 
   availableCards, 

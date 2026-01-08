@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Target, Clock, Zap, Brain, TrendingUp, Award, CheckCircle2 } from 'lucide-react';
+import { Trophy, Target, Clock, Zap, Brain, TrendingUp, Award, CheckCircle2, LucideIcon } from 'lucide-react';
 import type { SampleDeck } from '@/data/sampleDecks';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ interface AchievementBadgesProps {
 
 interface SkillMilestone {
   name: string;
-  icon: any;
+  icon: LucideIcon;
   tier: 'bronze' | 'silver' | 'gold' | 'diamond' | 'master';
   progress: number;
   unlocked: boolean;

@@ -408,12 +408,15 @@ export function matchHelpTopic(message: string, language: string = 'en'): HelpMa
   return bestMatch;
 }
 
+// Translation function type
+type TranslationFunction = (key: string, options?: Record<string, unknown>) => string;
+
 /**
  * Generate a help response message for the AI Coach
  */
 export function generateHelpResponse(
   match: HelpMatch,
-  t: (key: string, options?: any) => string
+  t: TranslationFunction
 ): string {
   const sectionTitle = t(match.sectionTitle);
   const excerpt = t(match.excerpt);

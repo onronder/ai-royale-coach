@@ -21,18 +21,45 @@ export interface DeckAnalysis {
   avg_elixir: number;
 }
 
-// Trade scenario for elixir analysis
+// Trade scenario for elixir analysis (matches ElixirAnalysisCard component)
 export interface TradeScenario {
-  cardIn: string;
-  cardOut: string;
-  elixirDifference: number;
-  reason: string;
+  yourCard: string;
+  yourCost: number;
+  enemyCard: string;
+  enemyCost: number;
+  tradeValue: number;
+  description: string;
 }
 
 // Elixir distribution entry
 export interface ElixirDistributionEntry {
   cost: number;
   count: number;
+}
+
+// Synergy pair for synergy matrix (matches SynergyMatrix component)
+export interface CardSynergyPair {
+  card1: string;
+  card2: string;
+  rating: number;
+  explanation: string;
+}
+
+// Synergy matrix structure (matches SynergyMatrix component)
+export interface SynergyMatrix {
+  pairs: CardSynergyPair[];
+  overallScore: number;
+  topSynergies: string[];
+  antiSynergies: string[];
+}
+
+// Matchup prediction from AI (matches MatchupPredictions component)
+export interface MatchupPrediction {
+  archetype: string;
+  prediction: 'favorable' | 'even' | 'unfavorable';
+  confidence: number;
+  keyCards: string[];
+  strategy: string;
 }
 
 // Advanced deck analysis
@@ -57,19 +84,7 @@ export interface AdvancedDeckAnalysis {
   matchupPredictions: MatchupPrediction[] | null;
 }
 
-// Synergy matrix structure
-export interface SynergyMatrix {
-  [cardName: string]: { [otherCard: string]: number };
-}
-
-// Matchup prediction from AI
-export interface MatchupPrediction {
-  archetype: string;
-  winProbability: number;
-  tips: string[];
-}
-
-// Key matchup between two cards
+// Key matchup between two cards (for prediction history)
 export interface KeyMatchup {
   cardA: string;
   cardB: string;

@@ -5,10 +5,10 @@ import { ChartSkeleton } from "@/components/ui/chart-skeleton";
 import { ChartEmptyState } from "@/components/ui/chart-empty-state";
 import { PieChart as PieChartIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DeckUsageStatRow } from "@/types/dashboard.types";
+import type { AggregatedDeckStat } from "@/types/dashboard.types";
 
 interface DeckUsageBreakdownProps {
-  decks: DeckUsageStatRow[];
+  decks: AggregatedDeckStat[];
   isLoading?: boolean;
 }
 
