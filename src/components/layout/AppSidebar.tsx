@@ -250,143 +250,136 @@ export function AppSidebar({
 
       </SidebarContent>
       
-      {/* Footer - Special Features + Quick Actions + Sign Out */}
+      {/* Footer - Toolbox + Quick Actions + Sign Out */}
       <SidebarFooter className="p-3 border-t border-border/50">
-        {/* Special Features */}
-        <SidebarMenu className="mb-2">
-          {/* Achievements */}
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton
-                  onClick={onOpenAchievements}
-                  isActive={activeTab === "achievements"}
-                  className="group bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 hover:from-amber-500/20 hover:to-orange-500/20"
-                >
-                  <Medal className="h-5 w-5 text-amber-400" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 font-semibold text-amber-400">
-                        {t('sidebar.achievements', 'Achievements')}
-                      </span>
-                      <Badge 
-                        variant="outline" 
-                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-amber-500/20 text-amber-400 border-amber-500/50"
-                      >
-                        {t('common.new', 'NEW')}
-                      </Badge>
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">
-                  {t('sidebar.achievements', 'Achievements')}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </SidebarMenuItem>
-
-          {/* Pro DNA */}
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton
-                  onClick={onOpenDNA}
-                  className="group bg-gradient-to-r from-gold/10 to-amber-500/10 border border-gold/30 hover:from-gold/20 hover:to-amber-500/20"
-                >
-                  <Fingerprint className="h-5 w-5 text-gold" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 font-semibold text-gold">{t('sidebar.proDna')}</span>
-                      <Badge 
-                        variant="outline" 
-                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-gold/20 text-gold border-gold/50"
-                      >
-                        {t('common.new', 'NEW')}
-                      </Badge>
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">{t('sidebar.proDna')}</TooltipContent>
-              )}
-            </Tooltip>
-          </SidebarMenuItem>
-
-          {/* Dream Arena */}
-          <SidebarMenuItem className="relative">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton
-                  onClick={() => navigate(`/arena${playerTag ? `?player=${playerTag}` : ''}`)}
-                  isActive={activeTab === "arena"}
-                  className={cn(
-                    "group bg-gradient-to-r from-crimson/10 to-destructive/10 border border-crimson/30 hover:from-crimson/20 hover:to-destructive/20",
-                    activeTab === "arena" && "ring-2 ring-crimson/50 from-crimson/20 to-destructive/20"
-                  )}
-                >
-                  <Gamepad2 className="h-5 w-5 text-crimson" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 font-semibold text-crimson">{t('sidebar.dreamArena', 'Dream Arena')}</span>
-                      <Badge 
-                        variant="outline" 
-                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-crimson/20 text-crimson border-crimson/50 animate-pulse"
-                      >
-                        {t('common.new', 'NEW')}
-                      </Badge>
-                    </>
-                  )}
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">{t('sidebar.dreamArena', 'Dream Arena')}</TooltipContent>
-              )}
-            </Tooltip>
-            {isCollapsed && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-crimson rounded-full animate-pulse" />
-            )}
-          </SidebarMenuItem>
-
-          {/* The Oracle */}
-          <SidebarMenuItem className="relative">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton
-                  onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
-                  isActive={activeTab === "oracle"}
-                  className={cn(
-                    "group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20",
-                    activeTab === "oracle" && "ring-2 ring-emerald-500/50 from-emerald-500/20 to-emerald-900/20"
-                  )}
-                >
-                  <Eye className="h-5 w-5 text-emerald-400" />
-                  {!isCollapsed && (
-                    <>
-                      <span className="flex-1 font-semibold text-emerald-400">{t('sidebar.theOracle')}</span>
-                      {showOracleNewBadge && (
-                        <Badge 
-                          variant="outline" 
-                          className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border-emerald-500/50 animate-pulse"
-                        >
-                          {t('common.new', 'NEW')}
-                        </Badge>
+        {/* Toolbox - Special Features */}
+        <SidebarGroup className="p-0">
+          {!isCollapsed && (
+            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-2 mb-1">
+              {t('sidebar.toolbox', 'Toolbox')}
+            </SidebarGroupLabel>
+          )}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {/* The Oracle */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
+                      isActive={activeTab === "oracle"}
+                      className="group hover:bg-sidebar-accent"
+                    >
+                      <Eye className="h-5 w-5 text-emerald-500" />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1">{t('sidebar.theOracle')}</span>
+                          {showOracleNewBadge && (
+                            <Badge 
+                              variant="outline" 
+                              className="ml-1 px-1 py-0 text-[9px] text-muted-foreground border-muted-foreground/30"
+                            >
+                              {t('common.new', 'NEW')}
+                            </Badge>
+                          )}
+                        </>
                       )}
-                    </>
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t('sidebar.theOracle')}</TooltipContent>
                   )}
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">{t('sidebar.theOracle')}</TooltipContent>
-              )}
-            </Tooltip>
-            {isCollapsed && showOracleNewBadge && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            )}
-          </SidebarMenuItem>
-        </SidebarMenu>
+                </Tooltip>
+              </SidebarMenuItem>
+
+              {/* Pro DNA */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={onOpenDNA}
+                      className="group hover:bg-sidebar-accent"
+                    >
+                      <Fingerprint className="h-5 w-5 text-gold" />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1">{t('sidebar.proDna')}</span>
+                          <Badge 
+                            variant="outline" 
+                            className="ml-1 px-1 py-0 text-[9px] text-muted-foreground border-muted-foreground/30"
+                          >
+                            {t('common.new', 'NEW')}
+                          </Badge>
+                        </>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t('sidebar.proDna')}</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+
+              {/* Dream Arena */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={() => navigate(`/arena${playerTag ? `?player=${playerTag}` : ''}`)}
+                      isActive={activeTab === "arena"}
+                      className="group hover:bg-sidebar-accent"
+                    >
+                      <Gamepad2 className="h-5 w-5 text-crimson" />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1">{t('sidebar.dreamArena', 'Dream Arena')}</span>
+                          <Badge 
+                            variant="outline" 
+                            className="ml-1 px-1 py-0 text-[9px] text-muted-foreground border-muted-foreground/30"
+                          >
+                            {t('common.new', 'NEW')}
+                          </Badge>
+                        </>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t('sidebar.dreamArena', 'Dream Arena')}</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+
+              {/* Achievements */}
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={onOpenAchievements}
+                      isActive={activeTab === "achievements"}
+                      className="group hover:bg-sidebar-accent"
+                    >
+                      <Medal className="h-5 w-5 text-amber-500" />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1">{t('sidebar.achievements', 'Achievements')}</span>
+                          <Badge 
+                            variant="outline" 
+                            className="ml-1 px-1 py-0 text-[9px] text-muted-foreground border-muted-foreground/30"
+                          >
+                            {t('common.new', 'NEW')}
+                          </Badge>
+                        </>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">{t('sidebar.achievements', 'Achievements')}</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
         <SidebarSeparator className="my-2" />
 
