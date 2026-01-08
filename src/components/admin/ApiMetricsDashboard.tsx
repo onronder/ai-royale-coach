@@ -3,24 +3,79 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Activity, Clock, Database, AlertTriangle, RefreshCw, Zap } from 'lucide-react';
-import { useApiMetrics } from '@/hooks/useApiMetrics';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Activity, Clock, Database, AlertTriangle, RefreshCw, Zap, ChevronDown, Layers } from 'lucide-react';
+import { useApiMetrics, EndpointGroup } from '@/hooks/useApiMetrics';
 import { ApiMetricsChart } from './ApiMetricsChart';
 import { ApiRequestLog } from './ApiRequestLog';
 
+function EndpointGroupCard({ group }: { group: EndpointGroup }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors">
+          <div className="flex items-center gap-3">
+            <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <div>
+              <span className="font-medium">{group.name}</span>
+              <span className="text-xs text-muted-foreground ml-2">
+                ({group.endpoints.length} endpoints)
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="font-semibold">{group.totalCount} calls</span>
+            <span className="text-muted-foreground">{group.avgDuration}ms</span>
+            <span className={group.cacheHitRate >= 70 ? 'text-green-500' : group.cacheHitRate >= 40 ? 'text-yellow-500' : 'text-muted-foreground'}>
+              {group.cacheHitRate}% cache
+            </span>
+          </div>
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="ml-7 mt-1 space-y-1 border-l-2 border-muted pl-3">
+          {group.endpoints.map((ep) => (
+            <div
+              key={ep.endpoint}
+              className="flex items-center justify-between p-2 rounded text-sm hover:bg-muted/30"
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs truncate max-w-[200px]">
+                  {ep.endpoint}
+                </span>
+                {ep.avgDuration > 500 && (
+                  <Badge variant="destructive" className="text-[10px] px-1">Slow</Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span>{ep.count}</span>
+                <span>{ep.avgDuration}ms</span>
+                <span>{ep.cacheHitRate}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
 export function ApiMetricsDashboard() {
   const [timeframe, setTimeframe] = useState<'15min' | '1hr' | '24hr'>('1hr');
-  const { stats, endpoints, timeline, recentLogs, isLoading, refetch } = useApiMetrics(timeframe);
+  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
+  const { stats, endpoints, endpointGroups, timeline, recentLogs, isLoading, refetch } = useApiMetrics(timeframe);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold">API Metrics</h2>
           <p className="text-muted-foreground">Monitor query frequency and identify redundant calls</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Tabs value={timeframe} onValueChange={(v) => setTimeframe(v as typeof timeframe)}>
             <TabsList>
               <TabsTrigger value="15min">15m</TabsTrigger>
@@ -107,19 +162,47 @@ export function ApiMetricsDashboard() {
         </CardContent>
       </Card>
 
-      {/* Two Column Layout */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Top Endpoints */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Top Endpoints</CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Endpoints Section */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Layers className="h-5 w-5" />
+            Endpoints by Category
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant={viewMode === 'grouped' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('grouped')}
+            >
+              Grouped
+            </Button>
+            <Button
+              variant={viewMode === 'flat' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('flat')}
+            >
+              Flat
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <p className="text-muted-foreground">Loading...</p>
+          ) : viewMode === 'grouped' ? (
             <div className="space-y-2">
-              {isLoading ? (
-                <p className="text-muted-foreground">Loading...</p>
-              ) : endpoints?.length === 0 ? (
-                <p className="text-muted-foreground">No data yet</p>
+              {endpointGroups?.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No data yet</p>
+              ) : (
+                endpointGroups?.map((group) => (
+                  <EndpointGroupCard key={group.name} group={group} />
+                ))
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {endpoints?.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No data yet</p>
               ) : (
                 endpoints?.map((ep) => (
                   <div
@@ -127,7 +210,7 @@ export function ApiMetricsDashboard() {
                     className="flex items-center justify-between p-2 rounded bg-muted/50"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm truncate max-w-[150px]">
+                      <span className="font-mono text-sm truncate max-w-[200px]">
                         {ep.endpoint}
                       </span>
                       {ep.avgDuration > 500 && (
@@ -143,19 +226,19 @@ export function ApiMetricsDashboard() {
                 ))
               )}
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </CardContent>
+      </Card>
 
-        {/* Live Request Log */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Recent Requests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ApiRequestLog logs={recentLogs || []} isLoading={isLoading} />
-          </CardContent>
-        </Card>
-      </div>
+      {/* Recent Requests Log */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Recent Requests</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ApiRequestLog logs={recentLogs || []} isLoading={isLoading} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
