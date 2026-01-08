@@ -181,8 +181,8 @@ const Dashboard = () => {
             onOpenAchievements={() => setAchievementsOpen(true)}
           />
           
-          {/* Main Content Area */}
-          <SidebarInset className="flex-1">
+          {/* Main Content Area - Full width on mobile, flex on desktop */}
+          <SidebarInset className="flex-1 w-full max-w-full overflow-x-hidden">
             <DashboardHeader
               playerTag={playerTag}
               player={player || null}
@@ -193,7 +193,7 @@ const Dashboard = () => {
               onSignOut={handleSignOutWithToast}
             />
 
-            <main className="container mx-auto px-4 py-6 pb-24 md:pb-6">
+            <main className="container mx-auto px-3 py-4 pb-24 md:px-6 md:py-6 md:pb-6 max-w-full">
               {/* Fraud Warning Banner */}
               {(isSoftBlocked || isWarned) && fraudStatus && (
                 <SoftBlockWarning status={fraudStatus.status} className="mb-4" />

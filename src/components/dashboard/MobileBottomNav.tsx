@@ -37,7 +37,7 @@ export function MobileBottomNav({ activeTab, onTabChange, onDnaClick }: MobileBo
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-lg border-t border-gold/20 md:hidden safe-area-bottom">
-      <div className="grid grid-cols-5 h-16">
+      <div className="grid grid-cols-5 min-h-[56px]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.value;
@@ -53,7 +53,7 @@ export function MobileBottomNav({ activeTab, onTabChange, onDnaClick }: MobileBo
                 }
               }}
               className={cn(
-                "relative flex flex-col items-center justify-center gap-0.5 transition-all",
+                "relative flex flex-col items-center justify-center gap-0.5 transition-all min-h-[44px] active:scale-95",
                 isDnaTab 
                   ? "text-gold hover:text-gold/80" 
                   : isActive 
