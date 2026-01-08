@@ -2102,7 +2102,10 @@
       "noDeck": "Aucun deck trouvé. Veuillez vous assurer d'avoir un deck actif.",
       "parseError": "Impossible d'analyser les cartes adverses. Veuillez réessayer.",
       "predictionFailed": "La prédiction du matchup a échoué. Veuillez réessayer."
-    }
+    },
+    "helpTooltip": "Nous analysons les 25 derniers combats de l'adversaire pour prédire son deck et son style de jeu les plus probables.",
+    "helperText": "Entrez le tag de l'adversaire (ex. #ABC12) pour prédire son deck et sa stratégie.",
+    "tryExample": "Essayer"
   },
   "proDna": {
     "title": "ADN du Joueur",
@@ -2358,7 +2361,11 @@
     "limitReached": "Limite quotidienne atteinte",
     "upgradeForUnlimited": "Passez à Pro pour des matchs illimités",
     "matchesRemaining": "{{count}} matchs restants aujourd'hui",
-    "unlimitedMatches": "Matchs illimités disponibles"
+    "unlimitedMatches": "Matchs illimités disponibles",
+    "howItWorks": "Comment Ça Marche",
+    "step1": "Sélectionnez un Joueur Pro dans la liste ci-dessous pour le défier.",
+    "step2": "Notre IA simule un match basé sur votre deck, vos stats et le style de jeu du pro.",
+    "step3": "Regardez la bataille se dérouler et voyez si vous pouvez battre les pronostics !"
   },
   "achievements": {
     "title": "Succès",

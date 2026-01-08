@@ -2112,7 +2112,10 @@
     "challengingMatchup": "Zor eşleşme",
     "evenMatchup": "Dengeli eşleşme",
     "quickTips": "Hızlı İpuçları",
-    "signInForMatchup": "Eşleşme analizini görmek için giriş yapın"
+    "signInForMatchup": "Eşleşme analizini görmek için giriş yapın",
+    "helpTooltip": "En olası destelerini ve oyun tarzlarını tahmin etmek için rakibin son 25 maçını analiz ediyoruz.",
+    "helperText": "Destesini ve stratejisini tahmin etmek için rakibin oyuncu etiketini girin (örn. #ABC12).",
+    "tryExample": "Dene"
   },
   "proDna": {
     "title": "Pro DNA'nız",
@@ -2412,7 +2415,11 @@
     "limitReached": "Günlük limit doldu",
     "upgradeForUnlimited": "Sınırsız maç için Pro'ya yükseltin",
     "matchesRemaining": "Bugün {{count}} maç kaldı",
-    "unlimitedMatches": "Sınırsız maç mevcut"
+    "unlimitedMatches": "Sınırsız maç mevcut",
+    "howItWorks": "Nasıl Çalışır",
+    "step1": "Meydan okumak için aşağıdaki listeden bir Pro Oyuncu seçin.",
+    "step2": "Yapay zekamız destenize, istatistiklerinize ve profesyonelin oyun tarzına göre bir maç simüle eder.",
+    "step3": "Savaşı izleyin ve şansı yenip yenemeyeceğinizi görün!"
   },
   "achievements": {
     "title": "Başarılar",

@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, Clipboard, AlertTriangle, Target, Zap, Shield, Swords, Loader2 } from 'lucide-react';
+import { Search, Clipboard, AlertTriangle, Target, Zap, Shield, Swords, Loader2, HelpCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CardImage } from '@/components/cards/CardImage';
 import { useOraclePrediction } from '@/hooks/useOraclePrediction';
 import { supabase } from '@/integrations/supabase/client';
@@ -266,6 +267,16 @@ export function OracleScanner({
           <h2 className="text-lg font-bold uppercase tracking-[0.2em] text-emerald-400 font-mono">
             {t('oracle.title')}
           </h2>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-4 h-4 text-muted-foreground hover:text-emerald-400 cursor-help transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>{t('oracle.helpTooltip')}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <p className="text-xs text-muted-foreground uppercase tracking-wider">
           {t('oracle.subtitle')}
@@ -356,12 +367,34 @@ export function OracleScanner({
               >
                 <Target className="w-16 h-16 text-emerald-900 mb-4" />
               </motion.div>
-              <p className="text-muted-foreground font-mono text-sm uppercase tracking-wider">
-                {t('oracle.awaitingTarget')}
+              <p className="text-muted-foreground text-sm mb-2">
+                {t('oracle.helperText')}
               </p>
-              <p className="text-muted-foreground/50 text-xs mt-2">
+              <p className="text-muted-foreground/50 text-xs mb-4">
                 {t('oracle.enterTagPrompt')}
               </p>
+              
+              {/* Try Example Chips */}
+              <div className="flex flex-wrap justify-center items-center gap-2">
+                <span className="text-xs text-muted-foreground/70">{t('oracle.tryExample')}:</span>
+                {[
+                  { label: '#Morten', tag: 'MORTEN' },
+                  { label: '#MoLight', tag: 'MOLIGHT' },
+                  { label: '#Surgical', tag: 'SURGICAL' },
+                ].map((example) => (
+                  <Badge
+                    key={example.tag}
+                    variant="outline"
+                    className="cursor-pointer hover:bg-emerald-900/30 hover:border-emerald-500 transition-colors"
+                    onClick={() => {
+                      setOpponentTag(example.tag);
+                      setSearchTag(example.tag);
+                    }}
+                  >
+                    {example.label}
+                  </Badge>
+                ))}
+              </div>
             </motion.div>
           )}
 
