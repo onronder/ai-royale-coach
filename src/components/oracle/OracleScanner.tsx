@@ -1,11 +1,31 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, Clipboard, AlertTriangle, Target, Zap, Shield } from 'lucide-react';
+import { Search, Clipboard, AlertTriangle, Target, Zap, Shield, Swords, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { CardImage } from '@/components/cards/CardImage';
 import { useOraclePrediction } from '@/hooks/useOraclePrediction';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
+
+interface OracleScannerProps {
+  initialOpponentTag?: string;
+  userPlayerTag?: string;
+  userCurrentDeck?: ClashRoyaleCard[];
+}
+
+interface MatchupPrediction {
+  deckAWinRate: number;
+  deckBWinRate: number;
+  confidence: string;
+  explanation?: string;
+  tips?: {
+    forDeckA?: string[];
+    forDeckB?: string[];
+  };
+}
 
 // Glitch text effect hook
 function useGlitchText(targetText: string, isActive: boolean, duration = 2000) {
@@ -131,19 +151,76 @@ function ScanningOverlay() {
   );
 }
 
-export function OracleScanner() {
-  const [opponentTag, setOpponentTag] = useState('');
+export function OracleScanner({ 
+  initialOpponentTag = '', 
+  userPlayerTag = '',
+  userCurrentDeck 
+}: OracleScannerProps) {
+  const [opponentTag, setOpponentTag] = useState(initialOpponentTag);
   const [searchTag, setSearchTag] = useState<string | null>(null);
+  const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
+  const [isLoadingMatchup, setIsLoadingMatchup] = useState(false);
 
   const { data: prediction, isLoading, error } = useOraclePrediction(searchTag);
 
   const scanningText = useGlitchText('DECRYPTING ENEMY DATA...', isLoading);
   const threatText = useGlitchText('THREAT DETECTED', !!prediction && !isLoading);
 
+  // Auto-trigger search when pre-filled tag is provided
+  useEffect(() => {
+    if (initialOpponentTag && initialOpponentTag.length >= 3) {
+      setOpponentTag(initialOpponentTag);
+      setSearchTag(initialOpponentTag);
+    }
+  }, [initialOpponentTag]);
+
+  // Auto-trigger matchup prediction when both decks are available
+  useEffect(() => {
+    if (prediction && userCurrentDeck && userCurrentDeck.length === 8 && !matchupPrediction && !isLoadingMatchup) {
+      predictMatchup();
+    }
+  }, [prediction, userCurrentDeck]);
+
+  const predictMatchup = async () => {
+    if (!prediction || !userCurrentDeck || userCurrentDeck.length !== 8) return;
+    
+    setIsLoadingMatchup(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setIsLoadingMatchup(false);
+        return;
+      }
+      
+      const { data, error } = await supabase.functions.invoke('predict-deck-matchup', {
+        body: {
+          deckA: userCurrentDeck.map(c => c.name),
+          deckB: prediction.likelyDeck.map(c => c.name),
+          playerTag: userPlayerTag
+        }
+      });
+      
+      if (!error && data) {
+        setMatchupPrediction({
+          deckAWinRate: data.predicted_win_rate_a || data.predictedWinRateA || 50,
+          deckBWinRate: data.predicted_win_rate_b || data.predictedWinRateB || 50,
+          confidence: data.confidence || 'medium',
+          explanation: data.explanation,
+          tips: data.tips
+        });
+      }
+    } catch (err) {
+      console.error('Matchup prediction failed:', err);
+    } finally {
+      setIsLoadingMatchup(false);
+    }
+  };
+
   const handleSearch = useCallback(() => {
     const cleanTag = opponentTag.trim().replace(/^#/, '').toUpperCase();
     if (cleanTag.length >= 3) {
       setSearchTag(cleanTag);
+      setMatchupPrediction(null); // Reset matchup on new search
     }
   }, [opponentTag]);
 
@@ -391,6 +468,75 @@ export function OracleScanner() {
                   )}
                 </p>
               </motion.div>
+
+              {/* Auto Matchup Prediction */}
+              {userCurrentDeck && userCurrentDeck.length === 8 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="mt-4 border-t border-emerald-900/30 pt-4"
+                >
+                  <div className="text-center mb-3">
+                    <Badge variant="outline" className="border-gold/50 text-gold">
+                      <Swords className="w-3 h-3 mr-1" />
+                      Matchup Analysis
+                    </Badge>
+                  </div>
+                  
+                  {isLoadingMatchup ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+                      <span className="ml-2 text-sm text-muted-foreground">Analyzing matchup...</span>
+                    </div>
+                  ) : matchupPrediction ? (
+                    <div className="space-y-3">
+                      {/* Win Rate Bars */}
+                      <div className="grid grid-cols-2 gap-3 text-center">
+                        <div className="bg-emerald-950/30 rounded p-2">
+                          <div className="text-lg font-bold text-emerald-400">
+                            {matchupPrediction.deckAWinRate}%
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">Your Deck</div>
+                        </div>
+                        <div className="bg-red-950/30 rounded p-2">
+                          <div className="text-lg font-bold text-destructive">
+                            {matchupPrediction.deckBWinRate}%
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">Opponent</div>
+                        </div>
+                      </div>
+                      
+                      {/* Matchup Verdict */}
+                      <div className="text-center text-sm">
+                        {matchupPrediction.deckAWinRate > 55 ? (
+                          <span className="text-success">Favorable matchup!</span>
+                        ) : matchupPrediction.deckAWinRate < 45 ? (
+                          <span className="text-destructive">Challenging matchup</span>
+                        ) : (
+                          <span className="text-gold">Even matchup</span>
+                        )}
+                      </div>
+                      
+                      {/* Tips */}
+                      {matchupPrediction.tips?.forDeckA && matchupPrediction.tips.forDeckA.length > 0 && (
+                        <div className="text-[10px] text-muted-foreground bg-background/30 rounded p-2">
+                          <div className="font-medium mb-1">Quick Tips:</div>
+                          <ul className="list-disc list-inside space-y-0.5">
+                            {matchupPrediction.tips.forDeckA.slice(0, 2).map((tip, i) => (
+                              <li key={i}>{tip}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-sm text-muted-foreground">
+                      Sign in to see matchup analysis
+                    </div>
+                  )}
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

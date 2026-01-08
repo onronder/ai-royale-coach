@@ -1,8 +1,10 @@
 import { memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Crown, Swords } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Crown, Swords, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { parseClashRoyaleDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -15,6 +17,8 @@ interface MatchCardProps {
 
 // Memoized to prevent re-renders when parent updates unrelated state
 export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
+  const navigate = useNavigate();
+  
   // Normalize player tags - API returns with '#', URL param might not have it
   const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
   const playerTeam = battle.team.find(p => p.tag === normalizedPlayerTag);
@@ -24,6 +28,13 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
 
   const isWin = playerTeam.crowns > opponent.crowns;
   const trophyChange = playerTeam.trophyChange || 0;
+
+  const handleQuickScan = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const opponentTag = opponent.tag.replace(/^#/, '');
+    const cleanPlayerTag = playerTag.replace(/^#/, '');
+    navigate(`/oracle?target=${opponentTag}&player=${cleanPlayerTag}`);
+  };
 
   return (
     <Card 
@@ -79,7 +90,16 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
           </div>
         </div>
 
-        <div className="text-right">
+        <div className="flex flex-col items-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleQuickScan}
+            className="h-7 w-7 text-emerald-400 hover:bg-emerald-900/20"
+            title="Quick Scan Opponent"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
           <p className="text-xs text-muted-foreground">
             {formatDistanceToNow(parseClashRoyaleDate(battle.battleTime), { addSuffix: true })}
           </p>
