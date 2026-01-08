@@ -3,13 +3,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock } from 'lucide-react';
+import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock, HelpCircle, ChevronDown } from 'lucide-react';
 
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DreamArenaView } from '@/components/arena/DreamArenaView';
 import { supabase } from '@/integrations/supabase/client';
 import { useClashRoyalePlayer } from '@/hooks/useClashRoyalePlayer';
@@ -30,6 +31,7 @@ export default function DreamArena() {
   const [selectedPro, setSelectedPro] = useState<ProPlayer | null>(null);
   const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
   const [user, setUser] = useState<{ id: string } | null>(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // Get player data
   const { data: playerData, isLoading: isPlayerLoading } = useClashRoyalePlayer(playerTag);
@@ -173,6 +175,38 @@ export default function DreamArena() {
               </div>
             </div>
           </div>
+
+          {/* How it Works Collapsible */}
+          <Collapsible open={isHelpOpen} onOpenChange={setIsHelpOpen} className="mb-6">
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="w-full justify-between text-muted-foreground hover:text-foreground">
+                <span className="flex items-center gap-2">
+                  <HelpCircle className="w-4 h-4" />
+                  {t('dreamArena.howItWorks')}
+                </span>
+                <ChevronDown className={cn(
+                  "w-4 h-4 transition-transform duration-200",
+                  isHelpOpen && "rotate-180"
+                )} />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-3 p-4 rounded-lg bg-muted/20 border border-border/50 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">1</div>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.step1')}</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">2</div>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.step2')}</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">3</div>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.step3')}</p>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           {/* Feature Usage Indicator */}
           {!canAccess && accessResult?.reason === 'quota_exceeded' && (

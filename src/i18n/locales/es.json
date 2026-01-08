@@ -2113,7 +2113,10 @@
       "noDeck": "No se encontró mazo. Por favor asegúrate de tener un mazo activo.",
       "parseError": "No se pudieron analizar las cartas del oponente. Por favor intenta de nuevo.",
       "predictionFailed": "La predicción del enfrentamiento falló. Por favor intenta de nuevo."
-    }
+    },
+    "helpTooltip": "Analizamos las últimas 25 batallas del oponente para predecir su mazo y estilo de juego más probable.",
+    "helperText": "Ingresa el tag del oponente (ej. #ABC12) para predecir su mazo y estrategia.",
+    "tryExample": "Probar"
   },
   "proDna": {
     "title": "ADN del Jugador",
@@ -2415,7 +2418,11 @@
     "limitReached": "Límite diario alcanzado",
     "upgradeForUnlimited": "Mejora a Pro para combates ilimitados",
     "matchesRemaining": "{{count}} combates restantes hoy",
-    "unlimitedMatches": "Combates ilimitados disponibles"
+    "unlimitedMatches": "Combates ilimitados disponibles",
+    "howItWorks": "Cómo Funciona",
+    "step1": "Selecciona un Jugador Pro de la lista de abajo para desafiar.",
+    "step2": "Nuestra IA simula un combate basándose en tu mazo, estadísticas y el estilo de juego del pro.",
+    "step3": "¡Mira cómo se desarrolla la batalla y ve si puedes vencer las probabilidades!"
   },
   "achievements": {
     "title": "Logros",

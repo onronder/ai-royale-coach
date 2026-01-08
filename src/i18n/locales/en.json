@@ -2085,7 +2085,10 @@
     "challengingMatchup": "Challenging matchup",
     "evenMatchup": "Even matchup",
     "quickTips": "Quick Tips",
-    "signInForMatchup": "Sign in to see matchup analysis"
+    "signInForMatchup": "Sign in to see matchup analysis",
+    "helpTooltip": "We analyze the opponent's last 25 battles to predict their most likely deck and playstyle.",
+    "helperText": "Enter an opponent's player tag (e.g. #ABC12) to predict their deck and strategy.",
+    "tryExample": "Try"
   },
   "proDna": {
     "title": "Your Pro DNA",
@@ -2450,7 +2453,11 @@
     "limitReached": "Daily limit reached",
     "upgradeForUnlimited": "Upgrade to Pro for unlimited matches",
     "matchesRemaining": "{{count}} matches remaining today",
-    "unlimitedMatches": "Unlimited matches available"
+    "unlimitedMatches": "Unlimited matches available",
+    "howItWorks": "How it Works",
+    "step1": "Select a Pro Player from the list below to challenge.",
+    "step2": "Our AI simulates a match based on your deck, stats, and the pro's playstyle.",
+    "step3": "Watch the battle unfold and see if you can beat the odds!"
   },
   "achievements": {
     "title": "Achievements",

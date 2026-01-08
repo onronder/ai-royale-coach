@@ -2102,7 +2102,10 @@
       "noDeck": "Nenhum deck encontrado. Por favor, certifique-se de ter um deck ativo.",
       "parseError": "Não foi possível analisar as cartas do adversário. Por favor, tente novamente.",
       "predictionFailed": "A previsão do confronto falhou. Por favor, tente novamente."
-    }
+    },
+    "helpTooltip": "Analisamos as últimas 25 batalhas do oponente para prever seu deck e estilo de jogo mais provável.",
+    "helperText": "Digite a tag do oponente (ex. #ABC12) para prever seu deck e estratégia.",
+    "tryExample": "Experimente"
   },
   "proDna": {
     "title": "DNA do Jogador",
@@ -2358,7 +2361,11 @@
     "limitReached": "Limite diário atingido",
     "upgradeForUnlimited": "Atualize para Pro para partidas ilimitadas",
     "matchesRemaining": "{{count}} partidas restantes hoje",
-    "unlimitedMatches": "Partidas ilimitadas disponíveis"
+    "unlimitedMatches": "Partidas ilimitadas disponíveis",
+    "howItWorks": "Como Funciona",
+    "step1": "Selecione um Jogador Pro da lista abaixo para desafiar.",
+    "step2": "Nossa IA simula uma partida baseada no seu deck, estatísticas e no estilo de jogo do pro.",
+    "step3": "Assista a batalha se desenrolar e veja se você consegue superar as probabilidades!"
   },
   "achievements": {
     "title": "Conquistas",
