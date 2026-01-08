@@ -224,6 +224,42 @@ export type Database = {
         }
         Relationships: []
       }
+      api_request_logs: {
+        Row: {
+          cache_hit: boolean | null
+          created_at: string
+          duration_ms: number | null
+          endpoint: string
+          id: string
+          metadata: Json | null
+          method: string
+          query_key: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cache_hit?: boolean | null
+          created_at?: string
+          duration_ms?: number | null
+          endpoint: string
+          id?: string
+          metadata?: Json | null
+          method?: string
+          query_key?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cache_hit?: boolean | null
+          created_at?: string
+          duration_ms?: number | null
+          endpoint?: string
+          id?: string
+          metadata?: Json | null
+          method?: string
+          query_key?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       card_collection: {
         Row: {
           card_count: number
@@ -1514,6 +1550,7 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      cleanup_old_api_logs: { Args: never; Returns: undefined }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }
         Returns: boolean
