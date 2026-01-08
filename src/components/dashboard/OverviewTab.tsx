@@ -39,8 +39,8 @@ export function OverviewTab({
   return (
     <PageTransition>
       <div className="space-y-6">
-        {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-4">
+        {/* Stats Grid - Responsive columns */}
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           {playerLoading ? (
             <>
               <StatCardSkeleton />
@@ -147,7 +147,7 @@ function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysis
             <div className="prose prose-sm max-w-none">
               <p className="text-sm whitespace-pre-wrap text-foreground/90 leading-relaxed">{analysis.analysis}</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
+            <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 border-t border-border">
               <div className="text-center p-3 rounded-lg bg-success/10 border border-success/20">
                 <p className="text-2xl font-bold text-success">{analysis.stats.winRate}%</p>
                 <p className="text-xs text-muted-foreground">{t('dashboard.winRate')}</p>

@@ -22,7 +22,7 @@ export function VirtualMatchList({ battles, playerTag, onMatchClick }: VirtualMa
   return (
     <div
       ref={parentRef}
-      className="h-[600px] overflow-auto"
+      className="h-[500px] md:h-[600px] overflow-auto w-full"
       style={{ contain: "strict" }}
     >
       <div

@@ -40,7 +40,7 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
     <Card 
       variant={isWin ? "victory" : "defeat"}
       className={cn(
-        "p-4 cursor-pointer transition-all border-l-4 hover:-translate-y-1 animate-fade-in",
+        "p-3 md:p-4 cursor-pointer transition-all border-l-4 hover:-translate-y-1 animate-fade-in w-full",
         isWin 
           ? "border-l-success border-glow-victory" 
           : "border-l-destructive border-glow-defeat"
@@ -60,7 +60,7 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
               <Swords className="w-3 h-3 mr-1" />
               {isWin ? "VICTORY" : "DEFEAT"}
             </Badge>
-            <span className="text-sm text-muted-foreground font-medium">{battle.gameMode.name}</span>
+            <span className="text-xs md:text-sm text-muted-foreground font-medium truncate">{battle.gameMode.name}</span>
           </div>
           
           <div className="space-y-1.5">
@@ -90,17 +90,17 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleQuickScan}
-            className="h-7 w-7 text-emerald-400 hover:bg-emerald-900/20"
+            className="h-8 w-8 min-h-[44px] min-w-[44px] text-emerald-400 hover:bg-emerald-900/20"
             title="Quick Scan Opponent"
           >
             <Eye className="h-4 w-4" />
           </Button>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[10px] md:text-xs text-muted-foreground whitespace-nowrap">
             {formatDistanceToNow(parseClashRoyaleDate(battle.battleTime), { addSuffix: true })}
           </p>
         </div>
