@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft, Globe } from "lucide-react";
+import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft, Globe, Megaphone } from "lucide-react";
+import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
+import { useWhatsNew } from "@/hooks/useWhatsNew";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +43,7 @@ const Settings = () => {
   } = useSubscription();
 
   const { profiles, isLoading: isLoadingProfiles, refetch: refetchProfiles } = useUserAIProfiles();
+  const { showWhatsNew, dismissWhatsNew, openWhatsNew } = useWhatsNew();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -196,6 +199,29 @@ const Settings = () => {
                 </div>
                 <LanguageSelector />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* What's New */}
+          <Card variant="arena">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Megaphone className="h-5 w-5 text-primary" />
+                {t('settings.whatsNew.title', "What's New")}
+              </CardTitle>
+              <CardDescription>
+                {t('settings.whatsNew.description', "View the latest features and updates")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                className="w-full border-primary/50 hover:bg-primary/10"
+                onClick={openWhatsNew}
+              >
+                <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                {t('settings.whatsNew.button', "Show What's New")}
+              </Button>
             </CardContent>
           </Card>
 
@@ -403,6 +429,12 @@ const Settings = () => {
       <PricingModal
         open={showPricingModal}
         onOpenChange={setShowPricingModal}
+      />
+
+      {/* What's New Modal */}
+      <WhatsNewModal 
+        open={showWhatsNew} 
+        onDismiss={dismissWhatsNew}
       />
     </div>
   );
