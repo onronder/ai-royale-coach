@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -38,13 +38,15 @@ export function CacheStatusIndicator({
   isRefreshing = false 
 }: CacheStatusIndicatorProps) {
   const { t, i18n } = useTranslation();
-  const [cacheStatus, setCacheStatus] = useState<CacheStatus | null>(null);
+  const queryClient = useQueryClient();
   const dateLocale = getDateLocale(i18n.language);
 
-  useEffect(() => {
-    if (!playerTag) return;
-
-    const fetchCacheStatus = async () => {
+  // Use React Query with long staleTime - no polling needed
+  const { data: cacheStatus } = useQuery({
+    queryKey: ['cache-status', playerTag],
+    queryFn: async (): Promise<CacheStatus | null> => {
+      if (!playerTag) return null;
+      
       const normalizedTag = playerTag.replace(/^#/, '').toUpperCase();
       
       const { data } = await supabase
@@ -59,23 +61,29 @@ export function CacheStatusIndicator({
         const playerStaleThreshold = 5 * 60 * 1000; // 5 minutes
         const isStale = (now.getTime() - cachedAt.getTime()) > playerStaleThreshold;
 
-        setCacheStatus({
+        return {
           playerTag: normalizedTag,
           playerCachedAt: cachedAt,
           battlesCachedAt: data.battles_data ? cachedAt : null,
           isStale,
           hitCount: 1
-        });
-      } else {
-        setCacheStatus(null);
+        };
       }
-    };
+      return null;
+    },
+    enabled: !!playerTag,
+    staleTime: 5 * 60 * 1000, // 5 minutes - cache status doesn't change unless user refreshes
+    refetchOnWindowFocus: false,
+    refetchInterval: false, // No polling - only refetch on manual trigger
+  });
 
-    fetchCacheStatus();
-    
-    const interval = setInterval(fetchCacheStatus, 30000);
-    return () => clearInterval(interval);
-  }, [playerTag]);
+  const handleRefresh = () => {
+    onRefresh();
+    // Invalidate cache status after refresh completes
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['cache-status', playerTag] });
+    }, 2000);
+  };
 
   const getStatusColor = () => {
     if (!cacheStatus) return "text-muted-foreground";
@@ -174,7 +182,7 @@ export function CacheStatusIndicator({
               }
             </p>
             <Button 
-              onClick={onRefresh} 
+              onClick={handleRefresh} 
               disabled={isRefreshing}
               size="sm" 
               className="w-full gap-2"

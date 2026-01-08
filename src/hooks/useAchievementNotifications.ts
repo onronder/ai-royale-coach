@@ -55,7 +55,8 @@ export function useAchievementNotifications(playerTag: string) {
       return null;
     },
     enabled: !!playerTag,
-    staleTime: 5000,
+    staleTime: 60 * 1000, // 1 minute - achievements unlock rarely
+    refetchOnWindowFocus: false,
   });
 
   // Show notification when new achievement is detected
