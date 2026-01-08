@@ -18,6 +18,7 @@ export const FEATURE_LIMITS = {
   deck_builder: 3,
   recommend_deck: 3,
   oracle: 3,
+  dream_arena: 1, // Free users: 1 demo match per day
 } as const;
 
 export type FeatureName = keyof typeof FEATURE_LIMITS;

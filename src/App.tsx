@@ -29,6 +29,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Oracle = lazy(() => import("./pages/Oracle"));
 const Admin = lazy(() => import("./pages/Admin"));
+const DreamArena = lazy(() => import("./pages/DreamArena"));
 
 const queryClient = createQueryClientWithMetrics();
 
@@ -86,6 +87,7 @@ const App = () => {
                       <Route path="/maintenance" element={<Maintenance />} />
                       <Route path="/oracle" element={<Oracle />} />
                       <Route path="/admin" element={<Admin />} />
+                      <Route path="/arena" element={<DreamArena />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>

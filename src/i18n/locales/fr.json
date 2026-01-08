@@ -2348,6 +2348,13 @@
     "imageSaved": "Image sauvegardée !",
     "downloadFailed": "Échec du téléchargement",
     "aiSimulation": "SIMULATION COACH IA",
-    "finalHp": "PV Final"
+    "finalHp": "PV Final",
+    "subtitle": "Défiez les légendes pro dans des matchs de rêve propulsés par l'IA",
+    "selectOpponent": "Choisissez Votre Adversaire",
+    "fight": "Combattre !",
+    "limitReached": "Limite quotidienne atteinte",
+    "upgradeForUnlimited": "Passez à Pro pour des matchs illimités",
+    "matchesRemaining": "{{count}} matchs restants aujourd'hui",
+    "unlimitedMatches": "Matchs illimités disponibles"
   }
 }

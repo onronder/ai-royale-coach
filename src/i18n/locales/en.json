@@ -2440,6 +2440,13 @@
     "imageSaved": "Image saved!",
     "downloadFailed": "Download failed",
     "aiSimulation": "AI COACH SIMULATION",
-    "finalHp": "Final HP"
+    "finalHp": "Final HP",
+    "subtitle": "Challenge legendary pros in AI-powered dream matches",
+    "selectOpponent": "Select Your Opponent",
+    "fight": "Fight!",
+    "limitReached": "Daily limit reached",
+    "upgradeForUnlimited": "Upgrade to Pro for unlimited matches",
+    "matchesRemaining": "{{count}} matches remaining today",
+    "unlimitedMatches": "Unlimited matches available"
   }
 }
