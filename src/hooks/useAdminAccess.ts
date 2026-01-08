@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 export type AdminRole = 'admin' | 'moderator' | 'support';
 
@@ -13,20 +15,36 @@ export interface AdminRoleRecord {
 
 /**
  * Hook to check if the current user has admin access.
+ * Uses proper auth state listener to prevent session issues.
  */
 export function useAdminAccess() {
-  const { data: session } = useQuery({
-    queryKey: ['session'],
-    queryFn: async () => {
-      const { data } = await supabase.auth.getSession();
-      return data.session;
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
 
-  const userId = session?.user?.id;
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setSessionLoading(false);
+      }
+    );
 
-  const { data: adminRoles, isLoading } = useQuery({
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setSessionLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const userId = user?.id;
+
+  const { data: adminRoles, isLoading: rolesLoading } = useQuery({
     queryKey: ['admin-roles', userId],
     queryFn: async () => {
       if (!userId) return [];
@@ -48,6 +66,7 @@ export function useAdminAccess() {
   });
 
   const roles = adminRoles || [];
+  const isLoading = sessionLoading || (!!userId && rolesLoading);
 
   return {
     isAdmin: roles.some(r => r.role === 'admin'),
@@ -56,5 +75,8 @@ export function useAdminAccess() {
     roles,
     isLoading,
     userId,
+    user,
+    session,
+    isAuthenticated: !!session,
   };
 }

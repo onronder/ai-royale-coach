@@ -15,18 +15,25 @@ import { Navbar } from '@/components/layout/Navbar';
  */
 export default function Admin() {
   const navigate = useNavigate();
-  const { isAdmin, isModerator, isLoading } = useAdminAccess();
+  const { isAdmin, isModerator, isLoading, isAuthenticated, user } = useAdminAccess();
 
   useEffect(() => {
-    if (!isLoading && !isAdmin && !isModerator) {
+    // Redirect to auth if not authenticated
+    if (!isLoading && !isAuthenticated) {
+      navigate('/auth');
+      return;
+    }
+    
+    // Redirect to home if authenticated but not admin/moderator
+    if (!isLoading && isAuthenticated && !isAdmin && !isModerator) {
       navigate('/');
     }
-  }, [isAdmin, isModerator, isLoading, navigate]);
+  }, [isAdmin, isModerator, isLoading, isAuthenticated, navigate]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar />
+        <Navbar user={user} />
         <div className="container mx-auto px-4 py-8">
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground">
@@ -38,13 +45,14 @@ export default function Admin() {
     );
   }
 
-  if (!isAdmin && !isModerator) {
-    return null; // Will redirect
+  // Don't render anything while redirecting
+  if (!isAuthenticated || (!isAdmin && !isModerator)) {
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      <Navbar user={user} />
       <main className="container mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-2">
