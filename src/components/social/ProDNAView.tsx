@@ -137,15 +137,14 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] p-0 bg-gradient-to-br from-card via-background to-card border-gold/30 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-center font-rajdhani text-xl text-gold">
+      <DialogContent className="sm:max-w-[360px] p-4 bg-background/95 border-gold/20 overflow-visible">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-center font-rajdhani text-lg text-gold">
             Your Pro DNA
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-80px)]">
-          <div className="flex flex-col items-center gap-5 px-6 pb-6">
+        <div className="flex flex-col items-center gap-4">
             {isLoading ? (
               <DNACardSkeleton />
             ) : displayDna ? (
@@ -189,8 +188,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
                 </Button>
               </div>
             )}
-          </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
