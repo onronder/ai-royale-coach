@@ -2219,6 +2219,48 @@
       "cache": "caché",
       "slow": "Lento"
     },
+    "fraudOverview": {
+      "signalsToday": "Señales Hoy",
+      "pendingReviews": "Revisiones Pendientes",
+      "softBlocked": "Bloqueo Suave",
+      "warnedUsers": "Usuarios Advertidos",
+      "signalsByType": "Señales por Tipo (Últimos 30 Días)",
+      "noSignals": "No se detectaron señales de fraude en los últimos 30 días",
+      "summary30Days": "Resumen de 30 Días",
+      "totalSignals30Days": "Total de señales de fraude en los últimos 30 días"
+    },
+    "fraudCases": {
+      "title": "Casos de Fraude",
+      "columns": {
+        "userId": "ID de Usuario",
+        "status": "Estado",
+        "score": "Puntuación",
+        "signals": "Señales",
+        "lastSignal": "Última Señal",
+        "reviewed": "Revisado"
+      },
+      "statuses": {
+        "softBlocked": "Bloqueo Suave",
+        "warning": "Advertencia",
+        "clean": "Limpio"
+      },
+      "reviewed": "Revisado",
+      "pending": "Pendiente",
+      "blocked": "Bloqueado",
+      "warning": "Advertencia",
+      "review": "Revisar",
+      "noCasesPending": "No hay casos de fraude pendientes de revisión"
+    },
+    "userLookup": {
+      "title": "Búsqueda de Usuario",
+      "email": "Correo",
+      "playerTag": "Tag de Jugador",
+      "searchByEmail": "Buscar por correo...",
+      "searchByPlayerTag": "Buscar por tag de jugador...",
+      "noUsersFound": "No se encontraron usuarios",
+      "clean": "Limpio",
+      "score": "Puntuación"
+    },
     "fraudReview": {
       "backToCases": "Volver a Casos",
       "caseReview": "Revisión de Caso",
@@ -2227,25 +2269,29 @@
       "status": "Estado",
       "fraudScore": "Puntuación de Fraude",
       "totalSignals": "Señales Totales",
-      "softBlocked": "Bloqueo Suave",
-      "warning": "Advertencia",
-      "clean": "Limpio",
+      "statuses": {
+        "softBlocked": "Bloqueo Suave",
+        "warning": "Advertencia",
+        "clean": "Limpio"
+      },
       "playerTags": "Etiquetas de Jugador",
       "noPlayerTags": "Sin etiquetas de jugador vinculadas",
       "deviceFingerprints": "Huellas de Dispositivo",
       "noFingerprints": "Sin huellas registradas",
       "lastSeen": "Visto por última vez",
-      "seenCount": "Visto {{count}} veces",
+      "seenTimes": "Visto {{count}} veces",
       "fraudSignals": "Señales de Fraude",
       "noSignals": "Sin señales registradas",
       "adminActions": "Acciones de Admin",
-      "reviewNotes": "Notas de revisión (opcional)...",
-      "clearMarkClean": "Limpiar (Marcar Limpio)",
-      "setWarning": "Establecer Advertencia",
-      "softBlock": "Bloqueo Suave",
+      "reviewNotesPlaceholder": "Notas de revisión (opcional)...",
+      "actions": {
+        "clearMarkClean": "Limpiar (Marcar Limpio)",
+        "setWarning": "Establecer Advertencia",
+        "softBlock": "Bloqueo Suave"
+      },
       "lastReviewed": "Última revisión",
       "notes": "Notas",
-      "loadingCaseDetails": "Cargando detalles del caso...",
+      "loadingDetails": "Cargando detalles del caso...",
       "statusUpdated": "Estado actualizado exitosamente",
       "updateFailed": "Error al actualizar estado",
       "severity": {
@@ -2272,13 +2318,6 @@
     "trophyCase": "Vitrina de Trofeos",
     "badgesEarned": "Insignias Ganadas"
   },
-  "pagination": {
-    "previous": "Anterior",
-    "next": "Siguiente",
-    "morePages": "Más páginas",
-    "previousPage": "Ir a página anterior",
-    "nextPage": "Ir a página siguiente"
-  },
   "common": {
     "vs": "vs",
     "loading": "Cargando...",
@@ -2288,46 +2327,18 @@
     "elixir": "Elixir",
     "aiPowered": "Con IA",
     "pleaseWait": "Por favor espera...",
-    "thisMayTakeMoment": "Esto puede tomar un momento"
+    "thisMayTakeMoment": "Esto puede tomar un momento",
+    "all": "Todos",
+    "unknown": "Desconocido",
+    "searching": "Buscando..."
   },
-  "admin": {
-    "fraudOverview": {
-      "signalsToday": "Señales Hoy",
-      "pendingReviews": "Revisiones Pendientes",
-      "softBlocked": "Bloqueo Suave",
-      "warnedUsers": "Usuarios Advertidos",
-      "signalsByType": "Señales por Tipo (Últimos 30 Días)",
-      "noSignals": "No se detectaron señales de fraude en los últimos 30 días",
-      "daySummary": "Resumen de 30 Días",
-      "totalSignals": "Total de señales de fraude en los últimos 30 días"
-    },
-    "fraudCases": {
-      "title": "Casos de Fraude",
-      "userId": "ID de Usuario",
-      "status": "Estado",
-      "score": "Puntuación",
-      "signals": "Señales",
-      "lastSignal": "Última Señal",
-      "reviewed": "Revisado",
-      "pending": "Pendiente",
-      "all": "Todos",
-      "blocked": "Bloqueado",
-      "warning": "Advertencia",
-      "review": "Revisar",
-      "noCases": "No hay casos de fraude pendientes de revisión",
-      "showing": "Mostrando"
-    },
-    "userLookup": {
-      "title": "Búsqueda de Usuario",
-      "email": "Correo",
-      "playerTag": "Tag de Jugador",
-      "searchByEmail": "Buscar por correo...",
-      "searchByTag": "Buscar por tag de jugador...",
-      "searching": "Buscando...",
-      "noUsersFound": "No se encontraron usuarios",
-      "clean": "Limpio",
-      "score": "Puntuación"
-    }
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "morePages": "Más páginas",
+    "previousPage": "Ir a página anterior",
+    "nextPage": "Ir a página siguiente",
+    "showing": "Mostrando {{start}}-{{end}} de {{total}}"
   },
   "whatsNew": {
     "title": "Novedades",
@@ -2336,13 +2347,13 @@
       "oracle": {
         "title": "El Oráculo",
         "subtitle": "Predicciones de Partida en Vivo",
-        "description": "Escanea el tag de tu oponente y predice su mazo ANTES de que comience la partida. Obtén la máxima ventaja estratégica.",
+        "description": "Escanea el tag de tu oponente y predice su mazo ANTES de que comience la partida.",
         "cta": "Probar El Oráculo"
       },
       "quickscan": {
         "title": "Escaneo Rápido",
         "subtitle": "Análisis de Partida con Un Clic",
-        "description": "¿Ves el ícono del Ojo junto a tus partidas recientes? Tócalo para predecir instantáneamente el mazo actual de ese oponente y ver tus probabilidades de enfrentamiento.",
+        "description": "Toca el ícono del Ojo para predecir el mazo de tu oponente.",
         "cta": "Ver Partidas"
       }
     }

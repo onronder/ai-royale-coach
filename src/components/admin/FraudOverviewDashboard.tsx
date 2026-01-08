@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -24,6 +25,8 @@ interface FraudOverviewStats {
  * Admin dashboard overview showing fraud detection metrics.
  */
 export function FraudOverviewDashboard() {
+  const { t } = useTranslation();
+  
   const { data: stats, isLoading } = useQuery({
     queryKey: ['fraud-overview-stats'],
     queryFn: async () => {
@@ -58,25 +61,25 @@ export function FraudOverviewDashboard() {
 
   const statCards = [
     {
-      title: 'Signals Today',
+      title: t('admin.fraudOverview.signalsToday'),
       value: stats?.signals_today || 0,
       icon: Activity,
       color: 'text-blue-500',
     },
     {
-      title: 'Pending Reviews',
+      title: t('admin.fraudOverview.pendingReviews'),
       value: stats?.pending_reviews || 0,
       icon: Clock,
       color: 'text-yellow-500',
     },
     {
-      title: 'Soft Blocked',
+      title: t('admin.fraudOverview.softBlocked'),
       value: stats?.soft_blocked_users || 0,
       icon: Shield,
       color: 'text-red-500',
     },
     {
-      title: 'Warned Users',
+      title: t('admin.fraudOverview.warnedUsers'),
       value: stats?.warned_users || 0,
       icon: AlertTriangle,
       color: 'text-orange-500',
@@ -107,7 +110,7 @@ export function FraudOverviewDashboard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Signals by Type (Last 30 Days)
+            {t('admin.fraudOverview.signalsByType')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -125,7 +128,7 @@ export function FraudOverviewDashboard() {
           ) : (
             <div className="text-muted-foreground text-center py-8">
               <Users className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              No fraud signals detected in the last 30 days
+              {t('admin.fraudOverview.noSignals')}
             </div>
           )}
         </CardContent>
@@ -134,14 +137,14 @@ export function FraudOverviewDashboard() {
       {/* Total Signals Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>30-Day Summary</CardTitle>
+          <CardTitle>{t('admin.fraudOverview.summary30Days')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold">
             {stats?.total_signals || 0}
           </div>
           <p className="text-sm text-muted-foreground">
-            Total fraud signals in the last 30 days
+            {t('admin.fraudOverview.totalSignals30Days')}
           </p>
         </CardContent>
       </Card>

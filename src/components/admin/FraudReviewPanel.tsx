@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,7 @@ interface FraudReviewPanelProps {
  * Detailed view for reviewing and acting on a fraud case.
  */
 export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { userId: adminId } = useAdminAccess();
   const [reviewNotes, setReviewNotes] = useState('');
@@ -120,23 +122,23 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
       queryClient.invalidateQueries({ queryKey: ['fraud-status-admin', userId] });
       queryClient.invalidateQueries({ queryKey: ['fraud-signals-admin', userId] });
       queryClient.invalidateQueries({ queryKey: ['fraud-cases'] });
-      toast.success('Status updated successfully');
+      toast.success(t('admin.fraudReview.statusUpdated'));
     },
     onError: (error) => {
-      toast.error('Failed to update status: ' + error.message);
+      toast.error(t('admin.fraudReview.updateFailed') + ': ' + error.message);
     },
   });
 
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'critical':
-        return <Badge variant="destructive">Critical</Badge>;
+        return <Badge variant="destructive">{t('admin.fraudReview.severity.critical')}</Badge>;
       case 'high':
-        return <Badge variant="destructive" className="bg-red-500/80">High</Badge>;
+        return <Badge variant="destructive" className="bg-red-500/80">{t('admin.fraudReview.severity.high')}</Badge>;
       case 'medium':
-        return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-500">Medium</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-500">{t('admin.fraudReview.severity.medium')}</Badge>;
       case 'low':
-        return <Badge variant="outline">Low</Badge>;
+        return <Badge variant="outline">{t('admin.fraudReview.severity.low')}</Badge>;
       default:
         return <Badge>{severity}</Badge>;
     }
@@ -146,7 +148,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
     return (
       <Card>
         <CardContent className="py-8 text-center text-muted-foreground">
-          Loading case details...
+          {t('admin.fraudReview.loadingDetails')}
         </CardContent>
       </Card>
     );
@@ -158,9 +160,9 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={onClose}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Cases
+          {t('admin.fraudReview.backToCases')}
         </Button>
-        <h2 className="text-lg font-semibold">Case Review</h2>
+        <h2 className="text-lg font-semibold">{t('admin.fraudReview.caseReview')}</h2>
       </div>
 
       {/* User Summary */}
@@ -168,28 +170,28 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            User Details
+            {t('admin.fraudReview.userDetails')}
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <div className="text-sm text-muted-foreground">User ID</div>
+            <div className="text-sm text-muted-foreground">{t('admin.fraudReview.userId')}</div>
             <div className="font-mono text-xs">{userId}</div>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">Status</div>
+            <div className="text-sm text-muted-foreground">{t('admin.fraudReview.status')}</div>
             <div className="mt-1">
               {fraudStatus?.status === 'soft_blocked' ? (
-                <Badge variant="destructive">Soft Blocked</Badge>
+                <Badge variant="destructive">{t('admin.fraudReview.statuses.softBlocked')}</Badge>
               ) : fraudStatus?.status === 'warning' ? (
-                <Badge className="bg-yellow-500/20 text-yellow-500">Warning</Badge>
+                <Badge className="bg-yellow-500/20 text-yellow-500">{t('admin.fraudReview.statuses.warning')}</Badge>
               ) : (
-                <Badge variant="outline" className="text-green-500">Clean</Badge>
+                <Badge variant="outline" className="text-green-500">{t('admin.fraudReview.statuses.clean')}</Badge>
               )}
             </div>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">Fraud Score</div>
+            <div className="text-sm text-muted-foreground">{t('admin.fraudReview.fraudScore')}</div>
             <div className={`text-2xl font-bold ${
               (fraudStatus?.fraud_score || 0) >= 70 ? 'text-red-500' :
               (fraudStatus?.fraud_score || 0) >= 40 ? 'text-yellow-500' :
@@ -199,7 +201,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
             </div>
           </div>
           <div>
-            <div className="text-sm text-muted-foreground">Total Signals</div>
+            <div className="text-sm text-muted-foreground">{t('admin.fraudReview.totalSignals')}</div>
             <div className="text-2xl font-bold">{fraudStatus?.signals_count || 0}</div>
           </div>
         </CardContent>
@@ -210,7 +212,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Tag className="h-5 w-5" />
-            Player Tags ({playerProfiles?.length || 0})
+            {t('admin.fraudReview.playerTags')} ({playerProfiles?.length || 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -224,7 +226,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               ))}
             </div>
           ) : (
-            <div className="text-muted-foreground">No player tags linked</div>
+            <div className="text-muted-foreground">{t('admin.fraudReview.noPlayerTags')}</div>
           )}
         </CardContent>
       </Card>
@@ -234,7 +236,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Fingerprint className="h-5 w-5" />
-            Device Fingerprints ({fingerprints?.length || 0})
+            {t('admin.fraudReview.deviceFingerprints')} ({fingerprints?.length || 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -247,14 +249,14 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
                     {fp.user_agent?.slice(0, 60)}...
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Last seen: {formatDistanceToNow(new Date(fp.last_seen_at), { addSuffix: true })}
-                    {' • '}Seen {fp.seen_count} times
+                    {t('admin.fraudReview.lastSeen')}: {formatDistanceToNow(new Date(fp.last_seen_at), { addSuffix: true })}
+                    {' • '}{t('admin.fraudReview.seenTimes', { count: fp.seen_count })}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-muted-foreground">No fingerprints recorded</div>
+            <div className="text-muted-foreground">{t('admin.fraudReview.noFingerprints')}</div>
           )}
         </CardContent>
       </Card>
@@ -264,7 +266,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
-            Fraud Signals
+            {t('admin.fraudReview.fraudSignals')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -293,7 +295,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               ))}
             </div>
           ) : (
-            <div className="text-muted-foreground">No signals recorded</div>
+            <div className="text-muted-foreground">{t('admin.fraudReview.noSignals')}</div>
           )}
         </CardContent>
       </Card>
@@ -301,11 +303,11 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
       {/* Admin Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Admin Actions</CardTitle>
+          <CardTitle>{t('admin.fraudReview.adminActions')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder="Review notes (optional)..."
+            placeholder={t('admin.fraudReview.reviewNotesPlaceholder')}
             value={reviewNotes}
             onChange={(e) => setReviewNotes(e.target.value)}
             rows={3}
@@ -318,7 +320,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               className="text-green-500"
             >
               <CheckCircle className="h-4 w-4 mr-2" />
-              Clear (Mark Clean)
+              {t('admin.fraudReview.actions.clearMarkClean')}
             </Button>
             <Button
               variant="outline"
@@ -327,7 +329,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               className="text-yellow-500"
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
-              Set Warning
+              {t('admin.fraudReview.actions.setWarning')}
             </Button>
             <Button
               variant="outline"
@@ -336,15 +338,15 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               className="text-red-500"
             >
               <Shield className="h-4 w-4 mr-2" />
-              Soft Block
+              {t('admin.fraudReview.actions.softBlock')}
             </Button>
           </div>
 
           {fraudStatus?.reviewed_at && (
             <div className="text-sm text-muted-foreground mt-4 p-3 rounded-lg bg-muted/50">
-              <div>Last reviewed: {format(new Date(fraudStatus.reviewed_at), 'MMM d, yyyy HH:mm')}</div>
+              <div>{t('admin.fraudReview.lastReviewed')}: {format(new Date(fraudStatus.reviewed_at), 'MMM d, yyyy HH:mm')}</div>
               {fraudStatus.review_notes && (
-                <div className="mt-1">Notes: {fraudStatus.review_notes}</div>
+                <div className="mt-1">{t('admin.fraudReview.notes')}: {fraudStatus.review_notes}</div>
               )}
             </div>
           )}

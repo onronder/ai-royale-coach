@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +23,7 @@ const PAGE_SIZE = 10;
  * List of fraud cases pending review.
  */
 export function FraudCasesList() {
+  const { t } = useTranslation();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -61,11 +63,11 @@ export function FraudCasesList() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'soft_blocked':
-        return <Badge variant="destructive">Soft Blocked</Badge>;
+        return <Badge variant="destructive">{t('admin.fraudCases.statuses.softBlocked')}</Badge>;
       case 'warning':
-        return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-500">Warning</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-500">{t('admin.fraudCases.statuses.warning')}</Badge>;
       case 'clean':
-        return <Badge variant="outline">Clean</Badge>;
+        return <Badge variant="outline">{t('admin.fraudCases.statuses.clean')}</Badge>;
       default:
         return <Badge>{status}</Badge>;
     }
@@ -84,7 +86,7 @@ export function FraudCasesList() {
   const columns: ColumnDef<UserFraudStatus>[] = [
     {
       key: 'user_id',
-      header: 'User ID',
+      header: t('admin.fraudCases.columns.userId'),
       render: (item) => (
         <span className="font-mono text-xs">
           {item.user_id.slice(0, 8)}...
@@ -94,25 +96,25 @@ export function FraudCasesList() {
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('admin.fraudCases.columns.status'),
       render: (item) => getStatusBadge(item.status),
       mobilePrimary: true,
     },
     {
       key: 'score',
-      header: 'Score',
+      header: t('admin.fraudCases.columns.score'),
       render: (item) => getScoreDisplay(item.fraud_score),
       mobileSecondary: true,
     },
     {
       key: 'signals',
-      header: 'Signals',
+      header: t('admin.fraudCases.columns.signals'),
       render: (item) => item.signals_count,
       mobileSecondary: true,
     },
     {
       key: 'last_signal',
-      header: 'Last Signal',
+      header: t('admin.fraudCases.columns.lastSignal'),
       render: (item) => (
         <span className="text-sm text-muted-foreground">
           {item.last_signal_at 
@@ -124,15 +126,15 @@ export function FraudCasesList() {
     },
     {
       key: 'reviewed',
-      header: 'Reviewed',
+      header: t('admin.fraudCases.columns.reviewed'),
       render: (item) => (
         item.reviewed_at ? (
           <Badge variant="outline" className="text-green-500">
-            Reviewed
+            {t('admin.fraudCases.reviewed')}
           </Badge>
         ) : (
           <Badge variant="outline" className="text-yellow-500">
-            Pending
+            {t('admin.fraudCases.pending')}
           </Badge>
         )
       ),
@@ -152,7 +154,7 @@ export function FraudCasesList() {
           }}
         >
           <Eye className="h-4 w-4 mr-1" />
-          <span className="md:hidden">Review</span>
+          <span className="md:hidden">{t('admin.fraudCases.review')}</span>
         </Button>
       ),
       isAction: true,
@@ -174,7 +176,7 @@ export function FraudCasesList() {
   const emptyState = (
     <div className="text-center py-8 text-muted-foreground">
       <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
-      No fraud cases pending review
+      {t('admin.fraudCases.noCasesPending')}
     </div>
   );
 
@@ -183,7 +185,7 @@ export function FraudCasesList() {
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5" />
-          Fraud Cases
+          {t('admin.fraudCases.title')}
         </CardTitle>
         <div className="flex gap-2 flex-wrap">
           <Button
@@ -192,7 +194,7 @@ export function FraudCasesList() {
             className="min-h-[44px] md:min-h-0"
             onClick={() => setStatusFilter('all')}
           >
-            All
+            {t('common.all')}
           </Button>
           <Button
             variant={statusFilter === 'soft_blocked' ? 'default' : 'outline'}
@@ -201,7 +203,7 @@ export function FraudCasesList() {
             onClick={() => setStatusFilter('soft_blocked')}
           >
             <Shield className="h-4 w-4 mr-1" />
-            Blocked
+            {t('admin.fraudCases.blocked')}
           </Button>
           <Button
             variant={statusFilter === 'warning' ? 'default' : 'outline'}
@@ -210,7 +212,7 @@ export function FraudCasesList() {
             onClick={() => setStatusFilter('warning')}
           >
             <AlertTriangle className="h-4 w-4 mr-1" />
-            Warning
+            {t('admin.fraudCases.warning')}
           </Button>
         </div>
       </CardHeader>
@@ -228,7 +230,11 @@ export function FraudCasesList() {
         {cases.length > 0 && (
           <div className="flex items-center justify-between mt-4 flex-wrap gap-2">
             <div className="text-sm text-muted-foreground">
-              Showing {page * PAGE_SIZE + 1}-{Math.min((page + 1) * PAGE_SIZE, data?.total || 0)} of {data?.total || 0}
+              {t('pagination.showing', { 
+                start: page * PAGE_SIZE + 1, 
+                end: Math.min((page + 1) * PAGE_SIZE, data?.total || 0), 
+                total: data?.total || 0 
+              })}
             </div>
             <div className="flex gap-2">
               <Button

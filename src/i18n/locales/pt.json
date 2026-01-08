@@ -2261,13 +2261,6 @@
     "trophyCase": "Vitrine de Troféus",
     "badgesEarned": "Distintivos Ganhos"
   },
-  "pagination": {
-    "previous": "Anterior",
-    "next": "Próximo",
-    "morePages": "Mais páginas",
-    "previousPage": "Ir para página anterior",
-    "nextPage": "Ir para próxima página"
-  },
   "common": {
     "vs": "vs",
     "loading": "Carregando...",
@@ -2277,46 +2270,18 @@
     "elixir": "Elixir",
     "aiPowered": "Com IA",
     "pleaseWait": "Por favor aguarde...",
-    "thisMayTakeMoment": "Isso pode levar um momento"
+    "thisMayTakeMoment": "Isso pode levar um momento",
+    "all": "Todos",
+    "unknown": "Desconhecido",
+    "searching": "Buscando..."
   },
-  "admin": {
-    "fraudOverview": {
-      "signalsToday": "Sinais Hoje",
-      "pendingReviews": "Revisões Pendentes",
-      "softBlocked": "Bloqueio Suave",
-      "warnedUsers": "Usuários Alertados",
-      "signalsByType": "Sinais por Tipo (Últimos 30 Dias)",
-      "noSignals": "Nenhum sinal de fraude detectado nos últimos 30 dias",
-      "daySummary": "Resumo de 30 Dias",
-      "totalSignals": "Total de sinais de fraude nos últimos 30 dias"
-    },
-    "fraudCases": {
-      "title": "Casos de Fraude",
-      "userId": "ID do Usuário",
-      "status": "Status",
-      "score": "Pontuação",
-      "signals": "Sinais",
-      "lastSignal": "Último Sinal",
-      "reviewed": "Revisado",
-      "pending": "Pendente",
-      "all": "Todos",
-      "blocked": "Bloqueado",
-      "warning": "Aviso",
-      "review": "Revisar",
-      "noCases": "Nenhum caso de fraude pendente de revisão",
-      "showing": "Mostrando"
-    },
-    "userLookup": {
-      "title": "Busca de Usuário",
-      "email": "Email",
-      "playerTag": "Tag do Jogador",
-      "searchByEmail": "Buscar por email...",
-      "searchByTag": "Buscar por tag do jogador...",
-      "searching": "Buscando...",
-      "noUsersFound": "Nenhum usuário encontrado",
-      "clean": "Limpo",
-      "score": "Pontuação"
-    }
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "morePages": "Mais páginas",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "showing": "Mostrando {{start}}-{{end}} de {{total}}"
   },
   "whatsNew": {
     "title": "Novidades",
@@ -2325,13 +2290,13 @@
       "oracle": {
         "title": "O Oráculo",
         "subtitle": "Previsões de Partida ao Vivo",
-        "description": "Escaneie a tag do seu oponente e preveja o deck dele ANTES da partida começar. Ganhe a vantagem estratégica definitiva.",
+        "description": "Escaneie a tag do seu oponente e preveja o deck dele ANTES da partida começar.",
         "cta": "Experimentar O Oráculo"
       },
       "quickscan": {
         "title": "Scan Rápido",
         "subtitle": "Análise de Partida com Um Clique",
-        "description": "Vê o ícone do Olho ao lado das suas partidas recentes? Toque nele para prever instantaneamente o deck atual desse oponente e ver suas chances de confronto.",
+        "description": "Toque no ícone do Olho para prever o deck do seu oponente.",
         "cta": "Ver Partidas"
       }
     }
@@ -2355,7 +2320,7 @@
     "syncing": "Sincronizando com servidores do Clash Royale...",
     "notifications": "Carregando notificações...",
     "matchAnalysis": "IA analisando desempenho da partida...",
-    "replacements": "Encontrando substituições de cartas ideais...",
+    "replacements": "Encontrando substituições ideais...",
     "generic": "Carregando dados..."
   }
 }

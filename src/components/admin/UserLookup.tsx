@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import { FraudReviewPanel } from './FraudReviewPanel';
  * Search for users by email or player tag to view their fraud status.
  */
 export function UserLookup() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState<'email' | 'player_tag'>('email');
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export function UserLookup() {
 
         return userIds.map(userId => ({
           user_id: userId,
-          email: profiles?.find(p => p.id === userId)?.email || 'Unknown',
+          email: profiles?.find(p => p.id === userId)?.email || t('common.unknown'),
           player_tags: playerProfiles.filter(pp => pp.user_id === userId).map(pp => pp.player_tag),
           fraud_status: fraudStatuses?.find(fs => fs.user_id === userId) || null,
         }));
@@ -94,7 +96,7 @@ export function UserLookup() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Search className="h-5 w-5" />
-          User Lookup
+          {t('admin.userLookup.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -106,7 +108,7 @@ export function UserLookup() {
             onClick={() => setSearchType('email')}
           >
             <User className="h-4 w-4 mr-1" />
-            Email
+            {t('admin.userLookup.email')}
           </Button>
           <Button
             variant={searchType === 'player_tag' ? 'default' : 'outline'}
@@ -114,13 +116,13 @@ export function UserLookup() {
             onClick={() => setSearchType('player_tag')}
           >
             <Tag className="h-4 w-4 mr-1" />
-            Player Tag
+            {t('admin.userLookup.playerTag')}
           </Button>
         </div>
 
         <div className="flex gap-2">
           <Input
-            placeholder={searchType === 'email' ? 'Search by email...' : 'Search by player tag...'}
+            placeholder={searchType === 'email' ? t('admin.userLookup.searchByEmail') : t('admin.userLookup.searchByPlayerTag')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -133,7 +135,7 @@ export function UserLookup() {
         {/* Results */}
         {isLoading ? (
           <div className="text-center py-4 text-muted-foreground">
-            Searching...
+            {t('common.searching')}
           </div>
         ) : searchResults?.length ? (
           <div className="space-y-2">
@@ -166,14 +168,14 @@ export function UserLookup() {
                         result.fraud_status.fraud_score >= 40 ? 'text-yellow-500' :
                         'text-green-500'
                       }`}>
-                        Score: {result.fraud_status.fraud_score}
+                        {t('admin.userLookup.score')}: {result.fraud_status.fraud_score}
                       </span>
                       {result.fraud_status.status === 'soft_blocked' && (
                         <Shield className="h-4 w-4 text-red-500" />
                       )}
                     </>
                   ) : (
-                    <Badge variant="outline" className="text-green-500">Clean</Badge>
+                    <Badge variant="outline" className="text-green-500">{t('admin.userLookup.clean')}</Badge>
                   )}
                 </div>
               </div>
@@ -181,7 +183,7 @@ export function UserLookup() {
           </div>
         ) : searchQuery && !isLoading ? (
           <div className="text-center py-4 text-muted-foreground">
-            No users found
+            {t('admin.userLookup.noUsersFound')}
           </div>
         ) : null}
       </CardContent>
