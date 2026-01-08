@@ -2395,6 +2395,16 @@
     "finalScore": "Puntuación Final",
     "winProbability": "Probabilidad de Victoria",
     "playAgain": "Jugar de Nuevo",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "iDefeated": "¡DERROTÉ A {{proName}}!",
+    "iLostTo": "¡TAN CERCA! Perdí contra {{proName}}",
+    "myDeck": "Mi Mazo",
+    "upsetAlert": "¡SORPRESA!",
+    "shareResult": "Compartir Resultado",
+    "downloadImage": "Descargar Imagen",
+    "imageSaved": "¡Imagen guardada!",
+    "downloadFailed": "Descarga fallida",
+    "aiSimulation": "SIMULACIÓN DE COACH IA",
+    "finalHp": "PV Final"
   }
 }

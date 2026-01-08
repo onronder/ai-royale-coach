@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X } from 'lucide-react';
+import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2, RotateCcw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { ViralMatchResult } from './ViralMatchResult';
 import { cn } from '@/lib/utils';
 
 import { SimulationResult, SimulationFrame, formatMatchTime } from '@/utils/dreamArenaEngine';
@@ -42,6 +43,7 @@ export function DreamArenaView({
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 2>(1);
   const [showResult, setShowResult] = useState(false);
   const [shakeScreen, setShakeScreen] = useState(false);
+  const [showViralCard, setShowViralCard] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
   const hasTriggeredConfetti = useRef(false);
 
@@ -346,6 +348,15 @@ export function DreamArenaView({
         </div>
       </div>
 
+      {/* Viral Match Result Dialog */}
+      <ViralMatchResult
+        isOpen={showViralCard}
+        onClose={() => setShowViralCard(false)}
+        simulationResult={simulationResult}
+        userProfile={userProfile}
+        proPlayer={proPlayer}
+      />
+
       {/* Result Overlay */}
       <AnimatePresence>
         {showResult && (
@@ -400,6 +411,14 @@ export function DreamArenaView({
                     {t('dreamArena.playAgain', 'Play Again')}
                   </Button>
                 )}
+                <Button
+                  onClick={() => setShowViralCard(true)}
+                  className="bg-gradient-to-r from-gold to-amber-500 text-black hover:from-gold/90 hover:to-amber-500/90"
+                  size="lg"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  {t('dreamArena.shareResult', 'Share Result')}
+                </Button>
                 <Button onClick={onClose} variant="outline" size="lg">
                   {t('dreamArena.close', 'Close')}
                 </Button>

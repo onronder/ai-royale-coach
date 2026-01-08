@@ -2338,6 +2338,16 @@
     "finalScore": "Score Final",
     "winProbability": "Probabilité de Victoire",
     "playAgain": "Rejouer",
-    "close": "Fermer"
+    "close": "Fermer",
+    "iDefeated": "J'AI BATTU {{proName}} !",
+    "iLostTo": "SI PROCHE ! Perdu contre {{proName}}",
+    "myDeck": "Mon Deck",
+    "upsetAlert": "SURPRISE !",
+    "shareResult": "Partager le Résultat",
+    "downloadImage": "Télécharger l'Image",
+    "imageSaved": "Image sauvegardée !",
+    "downloadFailed": "Échec du téléchargement",
+    "aiSimulation": "SIMULATION COACH IA",
+    "finalHp": "PV Final"
   }
 }
