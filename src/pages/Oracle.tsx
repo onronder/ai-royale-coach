@@ -4,11 +4,16 @@ import { Button } from '@/components/ui/button';
 import { OracleScanner } from '@/components/oracle/OracleScanner';
 import { FeatureGate } from '@/components/common/FeatureGate';
 import { Navbar } from '@/components/layout/Navbar';
+import { useClashRoyalePlayer } from '@/hooks/useClashRoyalePlayer';
 
 export default function Oracle() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const playerTag = searchParams.get('player') || '';
+  const targetTag = searchParams.get('target') || '';
+  
+  // Fetch user's current deck for matchup analysis
+  const { data: userPlayer } = useClashRoyalePlayer(playerTag || null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -61,7 +66,11 @@ export default function Oracle() {
             </div>
           }
         >
-          <OracleScanner />
+          <OracleScanner 
+            initialOpponentTag={targetTag}
+            userPlayerTag={playerTag}
+            userCurrentDeck={userPlayer?.currentDeck}
+          />
         </FeatureGate>
       </main>
     </div>
