@@ -2081,5 +2081,46 @@
     "iosStep1": "Appuyez sur le bouton Partager dans Safari",
     "iosStep2": "Faites défiler et appuyez sur \"Ajouter à l'écran d'accueil\"",
     "iosStep3": "Appuyez sur \"Ajouter\" dans le coin supérieur droit"
+  },
+  "oracle": {
+    "title": "Scanner Oracle",
+    "subtitle": "Prédisez les matchups contre n'importe quel deck adverse",
+    "placeholder": "ex., Golem, Sorcière de la nuit, Éclair...",
+    "scanButton": "Prédire le Matchup",
+    "scanning": "Analyse du matchup...",
+    "result": {
+      "title": "Résultat du Matchup",
+      "yourWinChance": "Vos Chances de Victoire",
+      "confidence": "Confiance",
+      "keyMatchups": "Matchups Clés",
+      "tips": "Conseils Stratégiques",
+      "yourDeck": "Votre Deck",
+      "opponentDeck": "Deck Adverse"
+    },
+    "errors": {
+      "noDeck": "Aucun deck trouvé. Veuillez vous assurer d'avoir un deck actif.",
+      "parseError": "Impossible d'analyser les cartes adverses. Veuillez réessayer.",
+      "predictionFailed": "La prédiction du matchup a échoué. Veuillez réessayer."
+    }
+  },
+  "proDna": {
+    "title": "ADN du Joueur",
+    "playerDna": "ADN du Joueur",
+    "aggression": "Agression",
+    "defense": "Défense",
+    "versatility": "Polyvalence",
+    "consistency": "Constance",
+    "adaptability": "Adaptabilité",
+    "similarTo": "Style Similaire à",
+    "branding": "AI Royale",
+    "download": "Télécharger en Image",
+    "share": "Partager la Carte ADN",
+    "noData": "Aucune donnée ADN du joueur disponible",
+    "noDataDescription": "Jouez plus de combats pour générer votre profil ADN unique.",
+    "generating": "Génération de l'image...",
+    "downloadSuccess": "Image téléchargée avec succès!",
+    "downloadError": "Échec du téléchargement de l'image",
+    "shareNotSupported": "Le partage n'est pas supporté sur ce navigateur",
+    "shareError": "Échec du partage de l'image"
   }
 }
