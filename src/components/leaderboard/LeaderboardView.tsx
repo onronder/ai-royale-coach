@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,8 +10,8 @@ import { Trophy, Users, TrendingUp, RefreshCw, Crown, Star } from "lucide-react"
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/ui/empty-state";
-import { DataLoader } from "@/components/ui/data-loader";
 import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
+import { ResponsiveTable, ColumnDef, ResponsiveTableSkeleton } from "@/components/ui/responsive-table";
 
 interface LeaderboardEntry {
   id: string;
@@ -83,7 +83,6 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       toast.success(t('leaderboard.syncSuccess'));
       await refetchGlobal();
     } catch (error) {
-      console.error('Error syncing leaderboard:', error);
       toast.error(t('leaderboard.syncFailed'));
     } finally {
       setIsSyncing(false);
@@ -112,6 +111,93 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
     );
     return index >= 0 ? index + 1 : null;
   };
+
+  // Check if entry belongs to current user
+  const isUserEntry = (entry: LeaderboardEntry): boolean => {
+    return profiles.some(
+      p => p.player_tag === entry.player_tag.replace('#', '').toUpperCase()
+    );
+  };
+
+  // Leaderboard table columns
+  const columns: ColumnDef<LeaderboardEntry & { rank: number }>[] = useMemo(() => [
+    {
+      key: "rank",
+      header: "#",
+      mobilePrimary: false,
+      render: (entry) => {
+        const rank = entry.rank;
+        if (rank <= 3) {
+          return (
+            <Badge 
+              variant="default" 
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                rank === 1 ? 'bg-yellow-500 hover:bg-yellow-600' :
+                rank === 2 ? 'bg-gray-400 hover:bg-gray-500' :
+                'bg-orange-600 hover:bg-orange-700'
+              }`}
+            >
+              {rank}
+            </Badge>
+          );
+        }
+        return (
+          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground text-sm">
+            {rank}
+          </div>
+        );
+      },
+    },
+    {
+      key: "player_name",
+      header: t('leaderboard.player'),
+      mobilePrimary: true,
+      render: (entry) => (
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="font-semibold truncate">{entry.player_name}</span>
+          {isUserEntry(entry) && (
+            <Badge variant="secondary" className="text-xs shrink-0">
+              {t('leaderboard.you')}
+            </Badge>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "clan_name",
+      header: t('leaderboard.clan'),
+      mobileHidden: true,
+      render: (entry) => entry.clan_name ? (
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Users className="w-3 h-3" />
+          <span className="truncate max-w-[120px]">{entry.clan_name}</span>
+        </div>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      ),
+    },
+    {
+      key: "trophies",
+      header: t('leaderboard.trophies'),
+      mobileSecondary: true,
+      render: (entry) => (
+        <div className="flex items-center gap-1.5 text-primary font-bold">
+          <Trophy className="w-4 h-4" />
+          <span>{entry.trophies.toLocaleString()}</span>
+        </div>
+      ),
+    },
+    {
+      key: "last_synced_at",
+      header: t('leaderboard.lastSync'),
+      mobileHidden: true,
+      render: (entry) => (
+        <span className="text-xs text-muted-foreground">
+          {formatDistanceToNow(new Date(entry.last_synced_at), { addSuffix: true })}
+        </span>
+      ),
+    },
+  ], [t, profiles]);
 
   const renderUserRankings = () => {
     if (!profiles || profiles.length === 0) return null;
@@ -199,7 +285,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
 
   const renderLeaderboard = (entries: LeaderboardEntry[]) => {
     if (isLoading) {
-      return <DataLoader context="leaderboard" variant="inline" />;
+      return <ResponsiveTableSkeleton columns={5} rows={10} />;
     }
 
     if (entries.length === 0) {
@@ -213,86 +299,23 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       );
     }
 
+    // Add rank to entries
+    const entriesWithRank = entries.map((entry, index) => ({
+      ...entry,
+      rank: index + 1,
+    }));
+
     return (
-      <div className="space-y-2">
-        {entries.map((entry, index) => {
-          // Check if this entry is one of the user's accounts
-          const isUserAccount = profiles.some(
-            p => p.player_tag === entry.player_tag.replace('#', '').toUpperCase()
-          );
-          
-          return (
-            <div
-              key={entry.id}
-              className={`flex items-center justify-between p-4 rounded-lg transition-colors ${
-                isUserAccount 
-                  ? 'bg-primary/20 border-2 border-primary/50 shadow-glow' 
-                  : 'bg-card border border-border hover:bg-muted/50'
-              }`}
-            >
-              <div className="flex items-center gap-4 flex-1">
-                {/* Rank Badge */}
-                <div className="flex-shrink-0">
-                  {index < 3 ? (
-                    <Badge 
-                      variant="default" 
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                        index === 0 ? 'bg-yellow-500 hover:bg-yellow-600' :
-                        index === 1 ? 'bg-gray-400 hover:bg-gray-500' :
-                        'bg-orange-600 hover:bg-orange-700'
-                      }`}
-                    >
-                      {index + 1}
-                    </Badge>
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center font-semibold text-muted-foreground">
-                      {index + 1}
-                    </div>
-                  )}
-                </div>
-
-                {/* Player Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold truncate">{entry.player_name}</p>
-                    {isUserAccount && (
-                      <Badge variant="secondary" className="text-xs">
-                        {t('leaderboard.you')}
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="truncate font-mono">{entry.player_tag}</span>
-                    {entry.arena_name && (
-                      <>
-                        <span>•</span>
-                        <span className="truncate">{entry.arena_name}</span>
-                      </>
-                    )}
-                  </div>
-                  {entry.clan_name && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                      <Users className="w-3 h-3" />
-                      <span className="truncate">{entry.clan_name}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Trophies */}
-                <div className="text-right flex-shrink-0">
-                  <div className="flex items-center gap-1.5 text-primary font-bold">
-                    <Trophy className="w-5 h-5" />
-                    <span className="text-xl">{entry.trophies.toLocaleString()}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(entry.last_synced_at), { addSuffix: true })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <ResponsiveTable
+        data={entriesWithRank}
+        columns={columns}
+        keyExtractor={(entry) => entry.id}
+        rowClassName={(entry) => 
+          isUserEntry(entry) 
+            ? 'bg-primary/20 border-2 border-primary/50 shadow-glow' 
+            : ''
+        }
+      />
     );
   };
 

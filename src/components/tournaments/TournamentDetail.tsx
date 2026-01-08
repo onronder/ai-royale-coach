@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DataLoader } from "@/components/ui/data-loader";
+import { TournamentBracket } from "./TournamentBracket";
 import { Trophy, Users, Calendar, DollarSign, CheckCircle2 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { toast } from "sonner";
@@ -212,6 +213,16 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                     {isRegistering ? t('tournaments.registering') : t('tournaments.register')}
                   </Button>
                 )}
+              </div>
+            )}
+
+            {/* Tournament Bracket */}
+            {tournament.status !== 'registration' && (
+              <div className="pt-4 border-t">
+                <TournamentBracket 
+                  tournamentId={tournamentId} 
+                  tournamentStatus={tournament.status} 
+                />
               </div>
             )}
           </div>
