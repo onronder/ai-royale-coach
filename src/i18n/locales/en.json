@@ -2261,7 +2261,9 @@
     "thisMayTakeMoment": "This may take a moment",
     "all": "All",
     "unknown": "Unknown",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "back": "Back",
+    "locked": "Locked"
   },
   "pagination": {
     "previous": "Previous",

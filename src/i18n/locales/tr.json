@@ -2327,7 +2327,9 @@
     "thisMayTakeMoment": "Bu biraz zaman alabilir",
     "all": "Tümü",
     "unknown": "Bilinmeyen",
-    "searching": "Aranıyor..."
+    "searching": "Aranıyor...",
+    "back": "Geri",
+    "locked": "Kilitli"
   },
   "pagination": {
     "previous": "Önceki",
