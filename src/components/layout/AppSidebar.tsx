@@ -272,7 +272,11 @@ export function AppSidebar({
                   <TooltipTrigger asChild>
                     <SidebarMenuButton
                       onClick={() => navigate(`/oracle${playerTag ? `?player=${playerTag}` : ''}`)}
-                      className="group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20"
+                      isActive={activeTab === "oracle"}
+                      className={cn(
+                        "group bg-gradient-to-r from-emerald-500/10 to-emerald-900/10 border border-emerald-500/30 hover:from-emerald-500/20 hover:to-emerald-900/20",
+                        activeTab === "oracle" && "ring-2 ring-emerald-500/50 from-emerald-500/20 to-emerald-900/20"
+                      )}
                     >
                       <Eye className="h-5 w-5 text-emerald-400" />
                       {!isCollapsed && (
