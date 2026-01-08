@@ -46,56 +46,68 @@ export function usePlayerProfiles(userId: string | null) {
       
       if (error) throw error;
       
-      // Enrich profiles with cached player data
-      const enrichedProfiles = await Promise.all(
-        (data || []).map(async (profile) => {
-          const { data: cache } = await supabase
-            .from('player_cache')
-            .select('player_data')
-            .eq('player_tag', profile.player_tag)
-            .maybeSingle();
-          
-          if (cache?.player_data) {
-            const p = cache.player_data as {
-              name?: string;
-              trophies?: number;
-              bestTrophies?: number;
-              arena?: { name?: string };
-              clan?: { name?: string; badgeId?: number };
-              wins?: number;
-              losses?: number;
-              battleCount?: number;
-              threeCrownWins?: number;
-              challengeMaxWins?: number;
-              challengeCardsWon?: number;
-              donations?: number;
-              donationsReceived?: number;
-              warDayWins?: number;
-              expLevel?: number;
-            };
-            return {
-              ...profile,
-              player_name: p.name,
-              trophies: p.trophies,
-              bestTrophies: p.bestTrophies,
-              arena_name: p.arena?.name,
-              clan_name: p.clan?.name,
-              clan_badge_id: p.clan?.badgeId,
-              wins: p.wins,
-              losses: p.losses,
-              battleCount: p.battleCount,
-              threeCrownWins: p.threeCrownWins,
-              challengeMaxWins: p.challengeMaxWins,
-              challengeCardsWon: p.challengeCardsWon,
-              donations: p.donations,
-              donationsReceived: p.donationsReceived,
-              warDayWins: p.warDayWins,
-              expLevel: p.expLevel,
-            };
-          }
-          return profile;
-        })
-      );
+      // Batch fetch all player cache data in a single query (avoid N+1)
+      const playerTags = (data || []).map(p => p.player_tag);
+      
+      if (playerTags.length === 0) return [];
+      
+      const { data: cacheData } = await supabase
+        .from('player_cache')
+        .select('player_tag, player_data')
+        .in('player_tag', playerTags);
+
+      // Create lookup map for O(1) access
+      type CachedPlayer = {
+        name?: string;
+        trophies?: number;
+        bestTrophies?: number;
+        arena?: { name?: string };
+        clan?: { name?: string; badgeId?: number };
+        wins?: number;
+        losses?: number;
+        battleCount?: number;
+        threeCrownWins?: number;
+        challengeMaxWins?: number;
+        challengeCardsWon?: number;
+        donations?: number;
+        donationsReceived?: number;
+        warDayWins?: number;
+        expLevel?: number;
+      };
+      
+      const cacheMap = new Map<string, CachedPlayer>();
+      cacheData?.forEach(cache => {
+        if (cache.player_data) {
+          cacheMap.set(cache.player_tag, cache.player_data as CachedPlayer);
+        }
+      });
+
+      // Enrich profiles without additional queries
+      const enrichedProfiles = (data || []).map((profile) => {
+        const p = cacheMap.get(profile.player_tag);
+        if (p) {
+          return {
+            ...profile,
+            player_name: p.name,
+            trophies: p.trophies,
+            bestTrophies: p.bestTrophies,
+            arena_name: p.arena?.name,
+            clan_name: p.clan?.name,
+            clan_badge_id: p.clan?.badgeId,
+            wins: p.wins,
+            losses: p.losses,
+            battleCount: p.battleCount,
+            threeCrownWins: p.threeCrownWins,
+            challengeMaxWins: p.challengeMaxWins,
+            challengeCardsWon: p.challengeCardsWon,
+            donations: p.donations,
+            donationsReceived: p.donationsReceived,
+            warDayWins: p.warDayWins,
+            expLevel: p.expLevel,
+          };
+        }
+        return profile;
+      });
       
       return enrichedProfiles as PlayerProfile[];
     },

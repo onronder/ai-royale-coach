@@ -50,7 +50,12 @@ export function useAllOperations() {
       if (error) throw error;
       return (data || []) as OperationProgress[];
     },
-    refetchInterval: 5000, // Fallback polling for operations
+    // Only poll when there are active operations
+    refetchInterval: (query) => {
+      const ops = query.state.data as OperationProgress[] | undefined;
+      const hasActiveOperations = ops?.some(op => op.status === 'running');
+      return hasActiveOperations ? 5000 : false;
+    },
   });
 
   const cancelMutation = useMutation({

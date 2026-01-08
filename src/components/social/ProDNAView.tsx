@@ -8,12 +8,14 @@ import { ProDNACard } from "./ProDNACard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { renderDnaCardToCanvas } from "@/utils/renderDnaCard";
 import { toast } from "sonner";
+import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 interface ProDNAViewProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   playerTag: string;
   playerName: string;
+  battles?: ClashRoyaleBattle[] | null; // Optional: pass from parent to avoid duplicate fetch
 }
 
 function DNACardSkeleton() {
@@ -46,8 +48,11 @@ function DNACardSkeleton() {
   );
 }
 
-export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNAViewProps) {
-  const { data: battles, isLoading } = useClashRoyaleBattles(playerTag);
+export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles: battlesProp }: ProDNAViewProps) {
+  // Only fetch if battles not provided as prop (avoid duplicate fetch)
+  const { data: fetchedBattles, isLoading } = useClashRoyaleBattles(battlesProp ? null : playerTag);
+  const battles = battlesProp || fetchedBattles;
+  
   const [dna, setDna] = useState<PlayerDNA | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 

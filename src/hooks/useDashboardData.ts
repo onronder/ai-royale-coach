@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   SavedDeckRow, 
@@ -14,18 +15,19 @@ interface DashboardUser {
   email?: string;
 }
 
+const emptyContext: PlayerContextData = {
+  savedDecks: [],
+  cardMastery: [],
+  achievements: [],
+  cardCollection: [],
+};
+
 /**
  * Hook to manage authentication and player context data for dashboard
  */
 export function useDashboardData(playerTag: string | undefined) {
   const navigate = useNavigate();
   const [user, setUser] = useState<DashboardUser | null>(null);
-  const [playerContext, setPlayerContext] = useState<PlayerContextData>({
-    savedDecks: [],
-    cardMastery: [],
-    achievements: [],
-    cardCollection: [],
-  });
 
   // Authentication effect
   useEffect(() => {
@@ -48,10 +50,11 @@ export function useDashboardData(playerTag: string | undefined) {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Fetch player context data for AI coach - batched for performance
-  useEffect(() => {
-    const fetchPlayerContext = async () => {
-      if (!user?.id || !playerTag) return;
+  // Fetch player context data with React Query for caching
+  const { data: playerContext } = useQuery({
+    queryKey: ['player-context', user?.id, playerTag],
+    queryFn: async (): Promise<PlayerContextData> => {
+      if (!user?.id || !playerTag) return emptyContext;
       
       // Batch all context queries with Promise.all for better performance
       const [decksResult, masteryResult, achievementsResult, collectionResult] = await Promise.all([
@@ -61,25 +64,29 @@ export function useDashboardData(playerTag: string | undefined) {
         supabase.from('card_collection').select('*').eq('player_tag', playerTag),
       ]);
 
-      setPlayerContext({
-        savedDecks: decksResult.data || [],
-        cardMastery: masteryResult.data || [],
-        achievements: achievementsResult.data || [],
-        cardCollection: collectionResult.data || [],
-      });
-    };
-
-    fetchPlayerContext();
-  }, [user, playerTag]);
+      return {
+        savedDecks: (decksResult.data || []) as SavedDeckRow[],
+        cardMastery: (masteryResult.data || []) as CardMasteryRow[],
+        achievements: (achievementsResult.data || []) as UserAchievementWithDetails[],
+        cardCollection: (collectionResult.data || []) as CardCollectionRow[],
+      };
+    },
+    enabled: !!user?.id && !!playerTag,
+    staleTime: 5 * 60 * 1000, // 5 minutes - context data doesn't change often
+    refetchOnWindowFocus: false,
+  });
 
   const handleSignOut = useCallback(async () => {
     await supabase.auth.signOut();
     navigate("/");
   }, [navigate]);
 
+  // Memoize the return value to prevent unnecessary re-renders
+  const stablePlayerContext = useMemo(() => playerContext || emptyContext, [playerContext]);
+
   return {
     user,
-    playerContext,
+    playerContext: stablePlayerContext,
     handleSignOut,
   };
 }
