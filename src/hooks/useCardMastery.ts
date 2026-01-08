@@ -123,7 +123,7 @@ export const useGenerateCardTips = () => {
       if (error) {
         // Check for subscription required error
         if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
-          const subscriptionError = new Error('Subscription required') as any;
+          const subscriptionError = new Error('Subscription required') as Error & { subscription_required: boolean };
           subscriptionError.subscription_required = true;
           throw subscriptionError;
         }
@@ -132,7 +132,7 @@ export const useGenerateCardTips = () => {
       
       // Check if response indicates subscription required
       if (data?.subscription_required) {
-        const subscriptionError = new Error('Subscription required') as any;
+        const subscriptionError = new Error('Subscription required') as Error & { subscription_required: boolean };
         subscriptionError.subscription_required = true;
         throw subscriptionError;
       }

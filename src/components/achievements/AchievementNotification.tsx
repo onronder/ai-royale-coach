@@ -91,7 +91,8 @@ export function AchievementNotification({ achievement, onDismiss }: AchievementN
   };
 
   const tierInfo = getTierInfo(achievement.tier);
-  const Icon = (LucideIcons as any)[achievement.icon_name] || Trophy;
+  const icons = LucideIcons as unknown as Record<string, LucideIcons.LucideIcon>;
+  const Icon = icons[achievement.icon_name] || Trophy;
 
   const handleDismiss = () => {
     setIsVisible(false);

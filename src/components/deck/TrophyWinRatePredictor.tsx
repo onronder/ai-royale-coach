@@ -49,7 +49,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
       });
 
       // Check for subscription_required in response
-      if ((data as any)?.subscription_required) {
+      if (data && typeof data === 'object' && 'subscription_required' in data && data.subscription_required) {
         setShowPricingModal(true);
         return;
       }

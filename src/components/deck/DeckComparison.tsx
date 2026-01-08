@@ -150,7 +150,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       });
 
       // Handle subscription required error from backend
-      if ((data as any)?.subscription_required) {
+      if (data && typeof data === 'object' && 'subscription_required' in data && data.subscription_required) {
         setShowPricingModal(true);
         return;
       }

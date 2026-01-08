@@ -35,8 +35,8 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
   };
 
   const getIconComponent = (iconName: string) => {
-    const Icon = (LucideIcons as any)[iconName] || Award;
-    return Icon;
+    const icons = LucideIcons as unknown as Record<string, LucideIcons.LucideIcon>;
+    return icons[iconName] || Award;
   };
 
   const unlockedAchievements = achievements?.filter(a => a.unlocked_at) || [];
