@@ -83,13 +83,22 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         logging: false,
         width: 280,
         height: 400,
+        scrollX: 0,
+        scrollY: 0,
         windowWidth: 280,
         windowHeight: 400,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
-            (el as HTMLElement).style.transform = 'none';
-            (el as HTMLElement).style.overflow = 'visible';
+            (el as HTMLElement).style.opacity = '1';
+            (el as HTMLElement).style.visibility = 'visible';
+            (el as HTMLElement).style.position = 'relative';
+            (el as HTMLElement).style.zIndex = '1';
+          }
+          const parent = el?.parentElement;
+          if (parent) {
+            (parent as HTMLElement).style.opacity = '1';
+            (parent as HTMLElement).style.zIndex = '1';
           }
         },
       });
@@ -129,13 +138,22 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         logging: false,
         width: 280,
         height: 400,
+        scrollX: 0,
+        scrollY: 0,
         windowWidth: 280,
         windowHeight: 400,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
-            (el as HTMLElement).style.transform = 'none';
-            (el as HTMLElement).style.overflow = 'visible';
+            (el as HTMLElement).style.opacity = '1';
+            (el as HTMLElement).style.visibility = 'visible';
+            (el as HTMLElement).style.position = 'relative';
+            (el as HTMLElement).style.zIndex = '1';
+          }
+          const parent = el?.parentElement;
+          if (parent) {
+            (parent as HTMLElement).style.opacity = '1';
+            (parent as HTMLElement).style.zIndex = '1';
           }
         },
       });
@@ -184,11 +202,12 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
       {showCaptureElement && displayDna && (
         <div 
           style={{ 
-            position: 'fixed', 
-            left: '-9999px', 
-            top: '0', 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            opacity: 0,
             pointerEvents: 'none',
-            zIndex: -1,
+            zIndex: -9999,
           }}
         >
           <div 
@@ -197,8 +216,6 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
             style={{ 
               width: '280px', 
               height: '400px',
-              display: 'block',
-              overflow: 'visible',
               background: '#0d0a04',
             }}
           >
