@@ -12,6 +12,7 @@ import { usePlayerAnalysis } from "@/hooks/usePlayerAnalysis";
 import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
 import { useAchievementNotifications } from "@/hooks/useAchievementNotifications";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useWhatsNew } from "@/hooks/useWhatsNew";
 import { useBackgroundSync } from "@/hooks/useBackgroundSync";
 import { useUnifiedRealtime } from "@/hooks/useUnifiedRealtime";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
@@ -45,6 +46,7 @@ import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { ProDNAView } from "@/components/social/ProDNAView";
+import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
 
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
@@ -63,6 +65,7 @@ const Dashboard = () => {
   const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
+  const { showWhatsNew, dismissWhatsNew } = useWhatsNew();
   
   // Data fetching hooks
   const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
@@ -380,6 +383,13 @@ const Dashboard = () => {
                 onDismiss={dismissNotification}
               />
             )}
+
+            {/* What's New Modal */}
+            <WhatsNewModal
+              open={showWhatsNew}
+              onDismiss={dismissWhatsNew}
+              playerTag={playerTag}
+            />
           </SidebarInset>
           
           {/* Mobile Bottom Navigation */}
