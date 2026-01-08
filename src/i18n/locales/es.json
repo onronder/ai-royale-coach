@@ -2379,5 +2379,22 @@
     "matchAnalysis": "IA analizando rendimiento de la partida...",
     "replacements": "Encontrando reemplazos óptimos de cartas...",
     "generic": "Cargando datos..."
+  },
+  "dreamArena": {
+    "title": "Arena de Sueños",
+    "vs": "VS",
+    "you": "Tú",
+    "battleLog": "Registro de Batalla",
+    "skip": "Saltar",
+    "pause": "Pausar",
+    "play": "Reproducir",
+    "victory": "¡Victoria!",
+    "defeat": "Derrota",
+    "youWon": "¡Derrotaste a {{proName}}!",
+    "youLost": "¡{{proName}} gana!",
+    "finalScore": "Puntuación Final",
+    "winProbability": "Probabilidad de Victoria",
+    "playAgain": "Jugar de Nuevo",
+    "close": "Cerrar"
   }
 }

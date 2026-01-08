@@ -2322,5 +2322,22 @@
     "matchAnalysis": "IA analisando desempenho da partida...",
     "replacements": "Encontrando substituições ideais...",
     "generic": "Carregando dados..."
+  },
+  "dreamArena": {
+    "title": "Arena dos Sonhos",
+    "vs": "VS",
+    "you": "Você",
+    "battleLog": "Registro de Batalha",
+    "skip": "Pular",
+    "pause": "Pausar",
+    "play": "Reproduzir",
+    "victory": "Vitória!",
+    "defeat": "Derrota",
+    "youWon": "Você derrotou {{proName}}!",
+    "youLost": "{{proName}} vence!",
+    "finalScore": "Pontuação Final",
+    "winProbability": "Probabilidade de Vitória",
+    "playAgain": "Jogar Novamente",
+    "close": "Fechar"
   }
 }
