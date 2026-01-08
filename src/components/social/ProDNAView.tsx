@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useClashRoyaleBattles } from "@/hooks/useClashRoyaleBattles";
 import { calculatePlayerDNA, PlayerDNA } from "@/utils/playerDnaCalculator";
 import { ProDNACard } from "./ProDNACard";
@@ -18,7 +19,15 @@ interface ProDNAViewProps {
 
 function DNACardSkeleton() {
   return (
-    <div className="w-full max-w-[320px] aspect-[3/4] rounded-2xl bg-gradient-to-br from-gold/10 to-black/50 border border-gold/30 p-6 space-y-4">
+    <div 
+      className="rounded-2xl p-6 space-y-4"
+      style={{ 
+        width: '320px', 
+        height: '440px',
+        background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.1) 0%, rgba(0,0,0,0.3) 100%)',
+        border: '2px solid rgba(212, 175, 55, 0.3)'
+      }}
+    >
       <div className="flex justify-center">
         <Skeleton className="h-6 w-24 bg-gold/20" />
       </div>
@@ -28,9 +37,9 @@ function DNACardSkeleton() {
       </div>
       <Skeleton className="h-5 w-32 mx-auto bg-gold/20" />
       <div className="space-y-3 pt-4">
-        <Skeleton className="h-8 w-full bg-gold/10" />
-        <Skeleton className="h-8 w-full bg-gold/10" />
-        <Skeleton className="h-8 w-full bg-gold/10" />
+        <Skeleton className="h-10 w-full bg-gold/10" />
+        <Skeleton className="h-10 w-full bg-gold/10" />
+        <Skeleton className="h-10 w-full bg-gold/10" />
       </div>
     </div>
   );
@@ -57,15 +66,24 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
     setIsDownloading(true);
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 2,
+        backgroundColor: '#0d0a04',
+        scale: 3,
         useCORS: true,
         logging: false,
+        width: 320,
+        height: 440,
+        onclone: (clonedDoc) => {
+          // Ensure all elements are visible in the clone
+          const clonedElement = clonedDoc.querySelector('[data-dna-card]');
+          if (clonedElement) {
+            (clonedElement as HTMLElement).style.transform = 'none';
+          }
+        }
       });
       
       const link = document.createElement("a");
       link.download = `pro-dna-${playerName.replace(/\s+/g, "-").toLowerCase()}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.href = canvas.toDataURL("image/png", 1.0);
       link.click();
       
       toast.success("DNA card downloaded!");
@@ -82,10 +100,12 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
     
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 2,
+        backgroundColor: '#0d0a04',
+        scale: 3,
         useCORS: true,
         logging: false,
+        width: 320,
+        height: 440,
       });
       
       canvas.toBlob(async (blob) => {
@@ -99,6 +119,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
               title: `${playerName}'s Pro DNA`,
               text: "Check out my Clash Royale Pro DNA!",
             });
+            toast.success("Shared successfully!");
           } catch {
             // User cancelled or share failed, fallback to download
             handleDownload();
@@ -107,7 +128,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
           // Fallback to download if share not available
           handleDownload();
         }
-      }, "image/png");
+      }, "image/png", 1.0);
     } catch (error) {
       console.error("Failed to share card:", error);
       toast.error("Failed to share card");
@@ -116,58 +137,60 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-card via-background to-card border-gold/30">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md max-h-[90vh] p-0 bg-gradient-to-br from-card via-background to-card border-gold/30 overflow-hidden">
+        <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-center font-rajdhani text-xl text-gold">
             Your Pro DNA
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-6 py-4">
-          {isLoading ? (
-            <DNACardSkeleton />
-          ) : displayDna ? (
-            <div ref={cardRef}>
-              <ProDNACard
-                dna={displayDna}
-                playerName={playerName}
-                playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
-              />
-            </div>
-          ) : (
-            <div className="text-center text-muted-foreground py-8">
-              <p>Not enough battle data to generate your DNA.</p>
-              <p className="text-sm mt-2">Play some matches first!</p>
-            </div>
-          )}
+        <ScrollArea className="max-h-[calc(90vh-80px)]">
+          <div className="flex flex-col items-center gap-5 px-6 pb-6">
+            {isLoading ? (
+              <DNACardSkeleton />
+            ) : displayDna ? (
+              <div ref={cardRef} data-dna-card>
+                <ProDNACard
+                  dna={displayDna}
+                  playerName={playerName}
+                  playerTag={playerTag.startsWith('#') ? playerTag : `#${playerTag}`}
+                />
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground py-8">
+                <p>Not enough battle data to generate your DNA.</p>
+                <p className="text-sm mt-2">Play some matches first!</p>
+              </div>
+            )}
 
-          {/* Action Buttons */}
-          {displayDna && (
-            <div className="flex gap-3 w-full max-w-[320px]">
-              <Button
-                variant="outline"
-                className="flex-1 border-gold/30 hover:bg-gold/10 hover:border-gold/50"
-                onClick={handleDownload}
-                disabled={isDownloading}
-              >
-                {isDownloading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Download className="h-4 w-4 mr-2" />
-                )}
-                Download
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 border-gold/30 hover:bg-gold/10 hover:border-gold/50"
-                onClick={handleShare}
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-            </div>
-          )}
-        </div>
+            {/* Action Buttons */}
+            {displayDna && (
+              <div className="flex gap-3 w-full max-w-[320px]">
+                <Button
+                  variant="outline"
+                  className="flex-1 border-gold/30 hover:bg-gold/10 hover:border-gold/50"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-2" />
+                  )}
+                  Download
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex-1 border-gold/30 hover:bg-gold/10 hover:border-gold/50"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
