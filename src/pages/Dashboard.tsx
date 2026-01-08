@@ -212,11 +212,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Mobile Swipeable Wrapper */}
-                <SwipeableTabsWrapper
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  tabs={["coach", "deck", "stats", "social"]}
-                >
+                <SwipeableTabsWrapper activeTab={activeTab}>
 
                 <TabsContent value="coach" className="mt-6 md:mt-0">
                   <Tabs value={activeTab === "coach" ? activeSubTab : "overview"} onValueChange={setActiveSubTab} className="w-full">
