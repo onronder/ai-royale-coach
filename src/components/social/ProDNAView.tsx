@@ -82,9 +82,9 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         useCORS: true,
         logging: false,
         width: 280,
-        height: 400,
+        height: 340,
         windowWidth: 280,
-        windowHeight: 400,
+        windowHeight: 340,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
@@ -127,9 +127,9 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         useCORS: true,
         logging: false,
         width: 280,
-        height: 400,
+        height: 340,
         windowWidth: 280,
-        windowHeight: 400,
+        windowHeight: 340,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
@@ -194,7 +194,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
             data-capture-root
             style={{ 
               width: '280px', 
-              height: '400px',
+              height: '340px',
               display: 'block',
               overflow: 'visible',
               background: '#0d0a04',
