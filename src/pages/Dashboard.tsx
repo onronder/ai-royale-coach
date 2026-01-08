@@ -15,10 +15,12 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useWhatsNew } from "@/hooks/useWhatsNew";
 import { useBackgroundSync } from "@/hooks/useBackgroundSync";
 import { useUnifiedRealtime } from "@/hooks/useUnifiedRealtime";
+import { usePlayerAchievements } from "@/hooks/usePlayerAchievements";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { DashboardLoader } from "@/components/ui/page-loader";
 import { PageTransition } from "@/components/ui/loading-states";
 import { DataLoader } from "@/components/ui/data-loader";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Dashboard sub-components
 import { 
@@ -47,6 +49,7 @@ import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { ProDNAView } from "@/components/social/ProDNAView";
 import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
+import { AchievementsTab } from "@/components/gamification/AchievementsTab";
 
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
@@ -57,6 +60,7 @@ const Dashboard = () => {
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
   const [dnaOpen, setDnaOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("coach");
   const [activeSubTab, setActiveSubTab] = useState("overview");
@@ -71,6 +75,7 @@ const Dashboard = () => {
   const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
+  const { achievements: battleAchievements } = usePlayerAchievements(battles || null);
   
   // Background sync for first-time visitors
   useBackgroundSync(user?.id || null, playerTag);
@@ -168,6 +173,7 @@ const Dashboard = () => {
             trophies={player?.trophies}
             onSignOut={handleSignOutWithToast}
             onOpenDNA={() => setDnaOpen(true)}
+            onOpenAchievements={() => setAchievementsOpen(true)}
           />
           
           {/* Main Content Area */}
@@ -375,6 +381,21 @@ const Dashboard = () => {
               playerTag={playerTag}
               playerName={player?.name || "Player"}
             />
+
+            {/* Achievements Modal */}
+            <Dialog open={achievementsOpen} onOpenChange={setAchievementsOpen}>
+              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="sr-only">Achievements</DialogTitle>
+                </DialogHeader>
+                <AchievementsTab
+                  playerTag={playerTag}
+                  playerName={player?.name}
+                  battles={battles || null}
+                  unlockedAchievements={battleAchievements}
+                />
+              </DialogContent>
+            </Dialog>
 
             {/* Achievement Notification */}
             {newAchievement && (
