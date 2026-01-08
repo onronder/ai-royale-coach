@@ -82,13 +82,14 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         useCORS: true,
         logging: false,
         width: 280,
-        height: 340,
+        height: 400,
         windowWidth: 280,
-        windowHeight: 340,
+        windowHeight: 400,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
             (el as HTMLElement).style.transform = 'none';
+            (el as HTMLElement).style.overflow = 'visible';
           }
         },
       });
@@ -127,13 +128,14 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
         useCORS: true,
         logging: false,
         width: 280,
-        height: 340,
+        height: 400,
         windowWidth: 280,
-        windowHeight: 340,
+        windowHeight: 400,
         onclone: (clonedDoc) => {
           const el = clonedDoc.querySelector('[data-capture-root]');
           if (el) {
             (el as HTMLElement).style.transform = 'none';
+            (el as HTMLElement).style.overflow = 'visible';
           }
         },
       });
@@ -194,7 +196,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
             data-capture-root
             style={{ 
               width: '280px', 
-              height: '340px',
+              height: '400px',
               display: 'block',
               overflow: 'visible',
               background: '#0d0a04',
