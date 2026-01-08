@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronRight,
   Trophy,
-  Sparkles
+  Sparkles,
+  Fingerprint
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -41,6 +42,7 @@ interface AppSidebarProps {
   playerName?: string;
   trophies?: number;
   onSignOut?: () => void;
+  onOpenDNA?: () => void;
 }
 
 // Sub-tabs configuration for each main tab
@@ -84,7 +86,8 @@ export function AppSidebar({
   playerTag,
   playerName,
   trophies,
-  onSignOut
+  onSignOut,
+  onOpenDNA
 }: AppSidebarProps) {
   const { t, ready } = useTranslation();
   const navigate = useNavigate();
@@ -233,6 +236,34 @@ export function AppSidebar({
                   </SidebarMenuItem>
                 );
               })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        {/* Pro DNA Button */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      onClick={onOpenDNA}
+                      className="group bg-gradient-to-r from-gold/10 to-amber-500/10 border border-gold/30 hover:from-gold/20 hover:to-amber-500/20"
+                    >
+                      <Fingerprint className="h-5 w-5 text-gold" />
+                      {!isCollapsed && (
+                        <span className="flex-1 font-semibold text-gold">Pro DNA</span>
+                      )}
+                    </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCollapsed && (
+                    <TooltipContent side="right">Pro DNA</TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

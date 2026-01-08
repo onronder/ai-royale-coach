@@ -44,6 +44,7 @@ import { ClanSearch } from "@/components/clans/ClanSearch";
 import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
+import { ProDNAView } from "@/components/social/ProDNAView";
 
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
@@ -53,6 +54,7 @@ const Dashboard = () => {
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
+  const [dnaOpen, setDnaOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState("coach");
   const [activeSubTab, setActiveSubTab] = useState("overview");
@@ -162,6 +164,7 @@ const Dashboard = () => {
             playerName={player?.name}
             trophies={player?.trophies}
             onSignOut={handleSignOutWithToast}
+            onOpenDNA={() => setDnaOpen(true)}
           />
           
           {/* Main Content Area */}
@@ -361,6 +364,14 @@ const Dashboard = () => {
                 onOpenChange={setCoachOpen}
               />
             )}
+
+            {/* Pro DNA Modal */}
+            <ProDNAView
+              open={dnaOpen}
+              onOpenChange={setDnaOpen}
+              playerTag={playerTag}
+              playerName={player?.name || "Player"}
+            />
 
             {/* Achievement Notification */}
             {newAchievement && (
