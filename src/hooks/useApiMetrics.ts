@@ -17,10 +17,71 @@ export interface EndpointStats {
   cacheHitRate: number;
 }
 
+export interface EndpointGroup {
+  name: string;
+  pattern: string;
+  endpoints: EndpointStats[];
+  totalCount: number;
+  avgDuration: number;
+  cacheHitRate: number;
+}
+
 export interface TimelinePoint {
   time: string;
   count: number;
   cacheHits: number;
+}
+
+// Define endpoint grouping patterns
+const ENDPOINT_GROUPS: { name: string; pattern: RegExp; priority: number }[] = [
+  { name: 'Player Data', pattern: /^(player|clash-royale|battles)/, priority: 1 },
+  { name: 'Deck & Cards', pattern: /^(deck|card|saved_decks|card_mastery|card_collection)/, priority: 2 },
+  { name: 'Analytics', pattern: /^(api-metrics|cache-status|deck_usage)/, priority: 3 },
+  { name: 'Achievements', pattern: /^(achievement|user_achievements)/, priority: 4 },
+  { name: 'Auth & Profiles', pattern: /^(admin|profile|fraud|subscription)/, priority: 5 },
+  { name: 'Operations', pattern: /^(operation|notification)/, priority: 6 },
+  { name: 'Other', pattern: /.*/, priority: 99 },
+];
+
+function groupEndpoints(endpoints: EndpointStats[]): EndpointGroup[] {
+  const groups: Map<string, EndpointStats[]> = new Map();
+  
+  // Initialize all groups
+  ENDPOINT_GROUPS.forEach(g => groups.set(g.name, []));
+  
+  // Assign each endpoint to a group
+  endpoints.forEach(ep => {
+    for (const group of ENDPOINT_GROUPS) {
+      if (group.pattern.test(ep.endpoint)) {
+        const existing = groups.get(group.name) || [];
+        existing.push(ep);
+        groups.set(group.name, existing);
+        break;
+      }
+    }
+  });
+  
+  // Convert to EndpointGroup format
+  return ENDPOINT_GROUPS
+    .map(g => {
+      const eps = groups.get(g.name) || [];
+      if (eps.length === 0) return null;
+      
+      const totalCount = eps.reduce((sum, e) => sum + e.count, 0);
+      const weightedDuration = eps.reduce((sum, e) => sum + e.avgDuration * e.count, 0);
+      const weightedCache = eps.reduce((sum, e) => sum + e.cacheHitRate * e.count, 0);
+      
+      return {
+        name: g.name,
+        pattern: g.pattern.source,
+        endpoints: eps.sort((a, b) => b.count - a.count),
+        totalCount,
+        avgDuration: totalCount > 0 ? Math.round(weightedDuration / totalCount) : 0,
+        cacheHitRate: totalCount > 0 ? Math.round(weightedCache / totalCount) : 0,
+      };
+    })
+    .filter((g): g is EndpointGroup => g !== null && g.totalCount > 0)
+    .sort((a, b) => b.totalCount - a.totalCount);
 }
 
 export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
@@ -65,7 +126,7 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
   });
 
   // Fetch endpoint breakdown
-  const { data: endpoints, isLoading: endpointsLoading } = useQuery({
+  const { data: endpointsRaw, isLoading: endpointsLoading } = useQuery({
     queryKey: ['api-metrics-endpoints', timeframe],
     queryFn: async (): Promise<EndpointStats[]> => {
       const { data, error } = await supabase
@@ -96,12 +157,15 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
           avgDuration: Math.round(stats.totalDuration / stats.count),
           cacheHitRate: Math.round((stats.cacheHits / stats.count) * 100),
         }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 20);
+        .sort((a, b) => b.count - a.count);
     },
     enabled: isAdmin,
     staleTime: 30 * 1000,
   });
+
+  // Compute grouped endpoints
+  const endpointGroups = endpointsRaw ? groupEndpoints(endpointsRaw) : [];
+  const endpoints = endpointsRaw?.slice(0, 20);
 
   // Fetch timeline data
   const { data: timeline, isLoading: timelineLoading } = useQuery({
@@ -160,6 +224,7 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
   return {
     stats,
     endpoints,
+    endpointGroups,
     timeline,
     recentLogs,
     isLoading: statsLoading || endpointsLoading || timelineLoading || logsLoading,
