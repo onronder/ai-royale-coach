@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
+import { logger } from '../_shared/logger.ts';
 
 // Generate consistent deck hash for matchup lookups
 function generateDeckHash(deckA: string[], deckB: string[]): string {
@@ -131,9 +128,8 @@ function detectArchetype(cards: string[]): string {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const { playerTag } = await req.json();
@@ -148,14 +144,11 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Unauthorized', 401);
     }
 
     // Fetch battle log from clash-royale-api function
-    console.log('Fetching battles for player:', playerTag);
+    logger.info('Fetching battles for player', { playerTag });
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
       body: { 
         endpoint: 'battles',
@@ -164,11 +157,11 @@ serve(async (req) => {
     });
 
     if (battleError || !battles) {
-      console.error('Failed to fetch battle log:', battleError);
+      logger.error('Failed to fetch battle log', { error: battleError });
       throw new Error('Failed to fetch battle log');
     }
 
-    console.log(`Processing ${battles.length} battles for deck stats`);
+    logger.info('Processing battles for deck stats', { count: battles.length });
 
     // ==========================================
     // PART 1: Deck Usage Stats with Archetype Tracking
@@ -265,12 +258,12 @@ serve(async (req) => {
     });
 
     await Promise.all(upsertPromises);
-    console.log(`Successfully tracked ${deckStats.size} decks with archetype data`);
+    logger.info('Successfully tracked decks with archetype data', { count: deckStats.size });
 
     // ==========================================
     // PART 2: Battle Outcome Tracking for Predictions
     // ==========================================
-    console.log('Starting prediction outcome tracking...');
+    logger.info('Starting prediction outcome tracking');
     
     // Fetch user's existing predictions
     const { data: predictions, error: predError } = await supabase
@@ -280,13 +273,13 @@ serve(async (req) => {
       .eq('player_tag', playerTag);
 
     if (predError) {
-      console.error('Failed to fetch predictions:', predError);
+      logger.error('Failed to fetch predictions', { error: predError });
     }
 
     let predictionsUpdated = 0;
 
     if (predictions && predictions.length > 0) {
-      console.log(`Found ${predictions.length} predictions to check for outcome tracking`);
+      logger.info('Found predictions to check', { count: predictions.length });
       
       const predictionMap = new Map<string, any>();
       for (const pred of predictions) {
@@ -373,7 +366,7 @@ serve(async (req) => {
     // ==========================================
     // PART 3: Track Recommendation Adoption
     // ==========================================
-    console.log('Checking for recommendation adoptions...');
+    logger.info('Checking for recommendation adoptions');
     
     const { data: pendingRecs } = await supabase
       .from('recommendation_history')
@@ -386,7 +379,7 @@ serve(async (req) => {
     let recommendationsAdopted = 0;
 
     if (pendingRecs && pendingRecs.length > 0) {
-      console.log(`Found ${pendingRecs.length} pending recommendations to check`);
+      logger.info('Found pending recommendations', { count: pendingRecs.length });
       
       for (const rec of pendingRecs) {
         const recCards = rec.recommended_cards as string[] || [];
@@ -427,7 +420,7 @@ serve(async (req) => {
             
             if (!adoptError) {
               recommendationsAdopted++;
-              console.log(`Recommendation ${rec.id} marked as adopted`);
+              logger.info('Recommendation marked as adopted', { id: rec.id });
             }
             break;
           }
@@ -438,7 +431,7 @@ serve(async (req) => {
     // ==========================================
     // PART 4: Update Success Metrics for Adopted Recommendations
     // ==========================================
-    console.log('Updating success metrics for adopted recommendations...');
+    logger.info('Updating success metrics for adopted recommendations');
     
     const { data: adoptedRecs } = await supabase
       .from('recommendation_history')
@@ -493,29 +486,22 @@ serve(async (req) => {
           
           if (!updateError) {
             successMetricsUpdated++;
-            console.log(`Updated success metrics for recommendation ${rec.id}: ${winRateAfter.toFixed(1)}% win rate`);
+            logger.info('Updated success metrics for recommendation', { id: rec.id, winRate: winRateAfter.toFixed(1) });
           }
         }
       }
     }
 
-    return new Response(JSON.stringify({ 
+    return jsonResponse({ 
       success: true, 
       decks_tracked: deckStats.size,
       predictions_updated: predictionsUpdated,
       recommendations_adopted: recommendationsAdopted,
       success_metrics_updated: successMetricsUpdated
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in track-deck-stats:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    logger.error('Error in track-deck-stats', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error');
   }
 });
