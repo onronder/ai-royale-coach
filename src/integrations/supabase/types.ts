@@ -83,6 +83,57 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      admin_roles: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_feedback: {
         Row: {
           comment: string | null
@@ -565,6 +616,81 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           wins_by_opponent_archetype?: Json | null
+        }
+        Relationships: []
+      }
+      device_fingerprints: {
+        Row: {
+          fingerprint_hash: string
+          first_seen_at: string
+          id: string
+          language: string | null
+          last_seen_at: string
+          screen_resolution: string | null
+          seen_count: number | null
+          timezone: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          fingerprint_hash: string
+          first_seen_at?: string
+          id?: string
+          language?: string | null
+          last_seen_at?: string
+          screen_resolution?: string | null
+          seen_count?: number | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          fingerprint_hash?: string
+          first_seen_at?: string
+          id?: string
+          language?: string | null
+          last_seen_at?: string
+          screen_resolution?: string | null
+          seen_count?: number | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fraud_signals: {
+        Row: {
+          created_at: string
+          details: Json
+          fingerprint_hash: string | null
+          id: string
+          ip_address: string | null
+          player_tag: string | null
+          severity: string
+          signal_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json
+          fingerprint_hash?: string | null
+          id?: string
+          ip_address?: string | null
+          player_tag?: string | null
+          severity?: string
+          signal_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json
+          fingerprint_hash?: string | null
+          id?: string
+          ip_address?: string | null
+          player_tag?: string | null
+          severity?: string
+          signal_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1239,6 +1365,48 @@ export type Database = {
         }
         Relationships: []
       }
+      user_fraud_status: {
+        Row: {
+          created_at: string
+          feature_limits: Json | null
+          fraud_score: number
+          last_signal_at: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          signals_count: number | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_limits?: Json | null
+          fraud_score?: number
+          last_signal_at?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signals_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_limits?: Json | null
+          fraud_score?: number
+          last_signal_at?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signals_count?: number | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_subscriptions: {
         Row: {
           account_slots: number | null
@@ -1346,16 +1514,40 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      detect_multi_account_abuse: {
+        Args: { p_fingerprint_hash: string; p_user_id: string }
+        Returns: boolean
+      }
+      detect_velocity_abuse: {
+        Args: {
+          p_feature_name: string
+          p_max_requests?: number
+          p_user_id: string
+          p_window_seconds?: number
+        }
+        Returns: boolean
+      }
       get_daily_feature_usage: {
         Args: { p_date?: string; p_feature_name: string; p_user_id: string }
         Returns: number
       }
+      get_fraud_overview_stats: { Args: never; Returns: Json }
+      has_admin_role: {
+        Args: {
+          p_role?: Database["public"]["Enums"]["admin_role"]
+          p_user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { p_user_id: string }; Returns: boolean }
       is_player_tag_available_for_trial: {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
     }
     Enums: {
+      admin_role: "admin" | "moderator" | "support"
       app_role: "admin" | "user"
     }
     CompositeTypes: {
@@ -1484,6 +1676,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_role: ["admin", "moderator", "support"],
       app_role: ["admin", "user"],
     },
   },

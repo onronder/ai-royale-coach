@@ -25,6 +25,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Oracle = lazy(() => import("./pages/Oracle"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => {
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/maintenance" element={<Maintenance />} />
                     <Route path="/oracle" element={<Oracle />} />
+                    <Route path="/admin" element={<Admin />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
