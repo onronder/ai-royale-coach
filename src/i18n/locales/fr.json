@@ -2122,5 +2122,62 @@
     "downloadError": "Échec du téléchargement de l'image",
     "shareNotSupported": "Le partage n'est pas supporté sur ce navigateur",
     "shareError": "Échec du partage de l'image"
+  },
+  "achievementShowcase": {
+    "trophyCase": "Vitrine des Trophées",
+    "badgesUnlocked": "{{unlocked}} / {{total}} badges débloqués",
+    "earnedRecently": "Obtenu récemment",
+    "amazingWork": "Travail incroyable, Champion !",
+    "achievements": {
+      "elixirMaster": {
+        "title": "Maître de l'Élixir",
+        "hint": "Gagnez avec un deck lourd (4.0+ élixir) sans perdre de tours"
+      },
+      "comebackKing": {
+        "title": "Roi du Retour",
+        "hint": "Gagnez un match après avoir perdu une tour en premier"
+      },
+      "perfectDefense": {
+        "title": "Défense Parfaite",
+        "hint": "Gagnez un match sans perdre aucune tour"
+      },
+      "winStreakWarrior": {
+        "title": "Guerrier de Série",
+        "hint": "Gagnez 3 matchs ou plus d'affilée"
+      },
+      "underdog": {
+        "title": "Outsider",
+        "hint": "Battez un adversaire avec 100+ trophées de plus"
+      },
+      "threeCrownMaster": {
+        "title": "Maître des Trois Couronnes",
+        "hint": "Gagnez un match avec 3 couronnes"
+      }
+    }
+  },
+  "aiPreview": {
+    "deckArchetype": "Archétype du Deck",
+    "cycleControl": "Contrôle de Cycle",
+    "cycleDescription": "Ce deck excelle à maintenir la pression grâce à un cycle rapide et des échanges d'élixir efficaces...",
+    "strengths": "Forces",
+    "weaknesses": "Faiblesses",
+    "strengthsList": {
+      "fastCycle": "Capacité de cycle rapide",
+      "strongDefense": "Options défensives solides",
+      "consistentChip": "Dégâts chip constants"
+    },
+    "weaknessesList": {
+      "heavyBeatdown": "Vulnérable au beatdown lourd",
+      "spellBait": "Difficultés contre le spell bait",
+      "lowTowerDamage": "Dégâts de tour faibles par coup"
+    },
+    "winRate": "Taux de Victoire",
+    "usage": "Utilisation",
+    "hot": "Tendance",
+    "stable": "Stable",
+    "synergy": "Synergie",
+    "meta": "Méta",
+    "confidence": "Confiance",
+    "betterDefensiveValue": "Cette carte offre une meilleure valeur défensive et synergise bien avec vos cartes de cycle..."
   }
 }

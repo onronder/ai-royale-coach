@@ -2130,5 +2130,62 @@
     "noData": "DNA'nızı oluşturmak için yeterli savaş verisi yok.",
     "noDataHint": "Önce birkaç maç oynayın!",
     "shareText": "Clash Royale Pro DNA'ma göz atın!"
+  },
+  "achievementShowcase": {
+    "trophyCase": "Kupa Vitrini",
+    "badgesUnlocked": "{{unlocked}} / {{total}} rozet açıldı",
+    "earnedRecently": "Yakın zamanda kazanıldı",
+    "amazingWork": "Harika iş, Şampiyon!",
+    "achievements": {
+      "elixirMaster": {
+        "title": "İksir Ustası",
+        "hint": "Kule kaybetmeden ağır deste (4.0+ iksir) ile kazan"
+      },
+      "comebackKing": {
+        "title": "Geri Dönüş Kralı",
+        "hint": "Önce kule kaybettikten sonra maçı kazan"
+      },
+      "perfectDefense": {
+        "title": "Mükemmel Savunma",
+        "hint": "Hiç kule kaybetmeden maç kazan"
+      },
+      "winStreakWarrior": {
+        "title": "Seri Galip",
+        "hint": "Arka arkaya 3 veya daha fazla maç kazan"
+      },
+      "underdog": {
+        "title": "Mazlum",
+        "hint": "100+ daha fazla kupası olan rakibi yen"
+      },
+      "threeCrownMaster": {
+        "title": "Üç Taç Ustası",
+        "hint": "3 taçla maç kazan"
+      }
+    }
+  },
+  "aiPreview": {
+    "deckArchetype": "Deste Arketipi",
+    "cycleControl": "Döngü Kontrol",
+    "cycleDescription": "Bu deste, hızlı döngü ve verimli iksir takasları ile baskı uygulamada mükemmeldir...",
+    "strengths": "Güçlü Yönler",
+    "weaknesses": "Zayıf Yönler",
+    "strengthsList": {
+      "fastCycle": "Hızlı döngü kapasitesi",
+      "strongDefense": "Güçlü savunma seçenekleri",
+      "consistentChip": "Tutarlı yıpratma hasarı"
+    },
+    "weaknessesList": {
+      "heavyBeatdown": "Ağır beatdown'a karşı savunmasız",
+      "spellBait": "Büyü tuzağına karşı zorlanır",
+      "lowTowerDamage": "Vuruş başına düşük kule hasarı"
+    },
+    "winRate": "Kazanma Oranı",
+    "usage": "Kullanım",
+    "hot": "Popüler",
+    "stable": "Sabit",
+    "synergy": "Sinerji",
+    "meta": "Meta",
+    "confidence": "Güven",
+    "betterDefensiveValue": "Bu kart daha iyi savunma değeri sağlar ve döngü kartlarınızla iyi sinerji yapar..."
   }
 }

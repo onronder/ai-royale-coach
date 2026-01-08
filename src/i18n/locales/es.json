@@ -2133,5 +2133,62 @@
     "downloadError": "Error al descargar la imagen",
     "shareNotSupported": "Compartir no es compatible en este navegador",
     "shareError": "Error al compartir la imagen"
+  },
+  "achievementShowcase": {
+    "trophyCase": "Vitrina de Trofeos",
+    "badgesUnlocked": "{{unlocked}} / {{total}} insignias desbloqueadas",
+    "earnedRecently": "Obtenido recientemente",
+    "amazingWork": "¡Increíble trabajo, Campeón!",
+    "achievements": {
+      "elixirMaster": {
+        "title": "Maestro del Elixir",
+        "hint": "Gana con un mazo pesado (4.0+ elixir) sin perder torres"
+      },
+      "comebackKing": {
+        "title": "Rey del Regreso",
+        "hint": "Gana una partida después de perder una torre primero"
+      },
+      "perfectDefense": {
+        "title": "Defensa Perfecta",
+        "hint": "Gana una partida sin perder ninguna torre"
+      },
+      "winStreakWarrior": {
+        "title": "Guerrero de Racha",
+        "hint": "Gana 3 o más partidas seguidas"
+      },
+      "underdog": {
+        "title": "Desvalido",
+        "hint": "Vence a un oponente con 100+ trofeos más"
+      },
+      "threeCrownMaster": {
+        "title": "Maestro de Tres Coronas",
+        "hint": "Gana una partida con 3 coronas"
+      }
+    }
+  },
+  "aiPreview": {
+    "deckArchetype": "Arquetipo de Mazo",
+    "cycleControl": "Control de Ciclo",
+    "cycleDescription": "Este mazo sobresale en mantener presión a través de ciclo rápido e intercambios de elixir eficientes...",
+    "strengths": "Fortalezas",
+    "weaknesses": "Debilidades",
+    "strengthsList": {
+      "fastCycle": "Capacidad de ciclo rápido",
+      "strongDefense": "Opciones defensivas fuertes",
+      "consistentChip": "Daño chip consistente"
+    },
+    "weaknessesList": {
+      "heavyBeatdown": "Vulnerable a beatdown pesado",
+      "spellBait": "Dificultades contra spell bait",
+      "lowTowerDamage": "Bajo daño a torre por golpe"
+    },
+    "winRate": "Tasa de Victoria",
+    "usage": "Uso",
+    "hot": "Caliente",
+    "stable": "Estable",
+    "synergy": "Sinergia",
+    "meta": "Meta",
+    "confidence": "Confianza",
+    "betterDefensiveValue": "Esta carta proporciona mejor valor defensivo y sinergiza bien con tus cartas de ciclo..."
   }
 }
