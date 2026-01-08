@@ -2405,6 +2405,13 @@
     "imageSaved": "¡Imagen guardada!",
     "downloadFailed": "Descarga fallida",
     "aiSimulation": "SIMULACIÓN DE COACH IA",
-    "finalHp": "PV Final"
+    "finalHp": "PV Final",
+    "subtitle": "Desafía a leyendas pros en combates de ensueño con IA",
+    "selectOpponent": "Selecciona Tu Oponente",
+    "fight": "¡Luchar!",
+    "limitReached": "Límite diario alcanzado",
+    "upgradeForUnlimited": "Mejora a Pro para combates ilimitados",
+    "matchesRemaining": "{{count}} combates restantes hoy",
+    "unlimitedMatches": "Combates ilimitados disponibles"
   }
 }

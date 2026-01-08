@@ -2348,6 +2348,13 @@
     "imageSaved": "Imagem salva!",
     "downloadFailed": "Falha no download",
     "aiSimulation": "SIMULAÇÃO COACH IA",
-    "finalHp": "PV Final"
+    "finalHp": "PV Final",
+    "subtitle": "Desafie lendas profissionais em partidas dos sonhos com IA",
+    "selectOpponent": "Selecione Seu Oponente",
+    "fight": "Lutar!",
+    "limitReached": "Limite diário atingido",
+    "upgradeForUnlimited": "Atualize para Pro para partidas ilimitadas",
+    "matchesRemaining": "{{count}} partidas restantes hoje",
+    "unlimitedMatches": "Partidas ilimitadas disponíveis"
   }
 }

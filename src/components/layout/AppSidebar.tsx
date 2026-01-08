@@ -14,7 +14,8 @@ import {
   Sparkles,
   Fingerprint,
   Eye,
-  Medal
+  Medal,
+  Gamepad2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useWhatsNew } from "@/hooks/useWhatsNew";
@@ -312,6 +313,41 @@ export function AppSidebar({
                 <TooltipContent side="right">{t('sidebar.proDna')}</TooltipContent>
               )}
             </Tooltip>
+          </SidebarMenuItem>
+
+          {/* Dream Arena */}
+          <SidebarMenuItem className="relative">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton
+                  onClick={() => navigate(`/arena${playerTag ? `?player=${playerTag}` : ''}`)}
+                  isActive={activeTab === "arena"}
+                  className={cn(
+                    "group bg-gradient-to-r from-crimson/10 to-destructive/10 border border-crimson/30 hover:from-crimson/20 hover:to-destructive/20",
+                    activeTab === "arena" && "ring-2 ring-crimson/50 from-crimson/20 to-destructive/20"
+                  )}
+                >
+                  <Gamepad2 className="h-5 w-5 text-crimson" />
+                  {!isCollapsed && (
+                    <>
+                      <span className="flex-1 font-semibold text-crimson">{t('sidebar.dreamArena', 'Dream Arena')}</span>
+                      <Badge 
+                        variant="outline" 
+                        className="ml-1 px-1.5 py-0 text-[10px] font-bold bg-crimson/20 text-crimson border-crimson/50 animate-pulse"
+                      >
+                        {t('common.new', 'NEW')}
+                      </Badge>
+                    </>
+                  )}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">{t('sidebar.dreamArena', 'Dream Arena')}</TooltipContent>
+              )}
+            </Tooltip>
+            {isCollapsed && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-crimson rounded-full animate-pulse" />
+            )}
           </SidebarMenuItem>
 
           {/* The Oracle */}
