@@ -222,13 +222,13 @@ export default function DreamArena() {
                           </CardDescription>
                         </div>
                         <Badge variant="secondary" className="text-xs">
-                          {pro.specialty}
+                          {t(pro.specialty)}
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground line-clamp-2">
-                        {pro.playstyle}
+                        {t(pro.playstyle)}
                       </p>
 
                       <div className="mt-4 flex items-center justify-between">
