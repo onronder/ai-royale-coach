@@ -3,6 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimeChannel } from "@supabase/supabase-js";
 
+interface AchievementPayload {
+  unlocked_at: string | null;
+}
+
 /**
  * Consolidated realtime subscription hook
  * Reduces 6 separate channels to 2 unified channels for better scalability
@@ -46,8 +50,9 @@ export function useUnifiedRealtime(userId: string | null, playerTag?: string) {
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ['achievements'] });
           // Check for new unlocks
-          const newData = payload.new as any;
-          if (payload.eventType === 'UPDATE' && newData?.unlocked_at && !payload.old?.unlocked_at) {
+          const newData = payload.new as AchievementPayload | undefined;
+          const oldData = payload.old as AchievementPayload | undefined;
+          if (payload.eventType === 'UPDATE' && newData?.unlocked_at && !oldData?.unlocked_at) {
             queryClient.invalidateQueries({ queryKey: ['new-achievement'] });
           }
         }

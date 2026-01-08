@@ -1,19 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 const CLASH_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     if (!CLASH_API_KEY) {
@@ -37,7 +33,7 @@ serve(async (req) => {
     const data = await response.json();
     const players = data.items || [];
 
-    console.log(`Fetched ${players.length} players from global leaderboard`);
+    logger.info('Fetched players from global leaderboard', { count: players.length });
 
     // Prepare leaderboard entries
     const entries = players.map((player: any) => ({
@@ -56,32 +52,20 @@ serve(async (req) => {
       .upsert(entries, { onConflict: 'player_tag' });
 
     if (upsertError) {
-      console.error('Failed to upsert leaderboard entries:', upsertError);
+      logger.error('Failed to upsert leaderboard entries', { error: upsertError.message });
       throw upsertError;
     }
 
-    console.log(`Successfully synced ${entries.length} leaderboard entries`);
+    logger.info('Successfully synced leaderboard entries', { count: entries.length });
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        count: entries.length,
-        message: `Synced ${entries.length} players to leaderboard` 
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return jsonResponse({ 
+      success: true, 
+      count: entries.length,
+      message: `Synced ${entries.length} players to leaderboard` 
+    });
 
-  } catch (error: any) {
-    console.error('Error in sync-leaderboard:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+  } catch (error) {
+    logger.error('Error in sync-leaderboard', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

@@ -4,6 +4,35 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useCreateNotification } from './useNotifications';
 
+type SkillName = 'cardPlacement' | 'timing' | 'elixirManagement' | 'prediction' | 'adaptation';
+
+interface SkillLevelCriteria {
+  type: 'skill_level';
+  skill: SkillName;
+  threshold: number;
+}
+
+interface MasteryPointsCriteria {
+  type: 'mastery_points';
+  threshold: number;
+}
+
+interface WinsCountCriteria {
+  type: 'wins_count';
+  threshold: number;
+}
+
+interface BattlesCountCriteria {
+  type: 'battles_count';
+  threshold: number;
+}
+
+type AchievementCriteria = 
+  | SkillLevelCriteria 
+  | MasteryPointsCriteria 
+  | WinsCountCriteria 
+  | BattlesCountCriteria;
+
 interface Achievement {
   id: string;
   name: string;
@@ -11,7 +40,7 @@ interface Achievement {
   category: string;
   tier: 'bronze' | 'silver' | 'gold' | 'diamond' | 'master';
   icon_name: string;
-  criteria: any;
+  criteria: AchievementCriteria;
   points: number;
 }
 
@@ -51,7 +80,7 @@ export function useAchievements(playerTag: string) {
         .order('unlocked_at', { ascending: false, nullsFirst: false });
 
       if (error) throw error;
-      return data as UserAchievement[];
+      return data as unknown as UserAchievement[];
     },
     enabled: !!playerTag,
   });
@@ -99,7 +128,7 @@ export function useAllAchievements() {
         .order('tier', { ascending: true });
 
       if (error) throw error;
-      return data as Achievement[];
+      return data as unknown as Achievement[];
     },
   });
 }

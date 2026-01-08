@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -23,7 +19,7 @@ serve(async (req) => {
       .select('id, chat_retention_days');
 
     if (profilesError) {
-      console.error('Error fetching profiles:', profilesError);
+      logger.error('Error fetching profiles', { error: profilesError.message });
       throw profilesError;
     }
 
@@ -33,7 +29,7 @@ serve(async (req) => {
     for (const profile of profiles || []) {
       // Skip users who want to keep messages forever (null retention)
       if (profile.chat_retention_days === null) {
-        console.log(`User ${profile.id}: retention set to forever, skipping`);
+        logger.debug('User retention set to forever, skipping', { userId: profile.id });
         continue;
       }
 
@@ -50,7 +46,7 @@ serve(async (req) => {
         .select('id');
 
       if (error) {
-        console.error(`Error deleting messages for user ${profile.id}:`, error);
+        logger.error('Error deleting messages for user', { userId: profile.id, error: error.message });
         continue;
       }
 
@@ -62,36 +58,21 @@ serve(async (req) => {
           deleted: deletedCount,
           retentionDays: retentionDays,
         });
-        console.log(`User ${profile.id}: deleted ${deletedCount} messages older than ${retentionDays} days`);
+        logger.info('Deleted old messages for user', { userId: profile.id, count: deletedCount, retentionDays });
       }
     }
 
-    console.log(`Cleanup completed: ${totalDeleted} total messages deleted across ${results.length} users`);
+    logger.info('Cleanup completed', { totalDeleted, usersWithDeletions: results.length });
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        totalDeleted,
-        usersProcessed: profiles?.length || 0,
-        usersWithDeletions: results.length,
-        details: results
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
-    );
+    return jsonResponse({ 
+      success: true, 
+      totalDeleted,
+      usersProcessed: profiles?.length || 0,
+      usersWithDeletions: results.length,
+      details: results
+    });
   } catch (error) {
-    console.error('Cleanup failed:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
-      }
-    );
+    logger.error('Cleanup failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });
