@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { handleCors, jsonResponse } from '../_shared/cors.ts';
+import { logger } from '../_shared/logger.ts';
 
 const defaultResponse = {
   hasAccess: false,
@@ -14,9 +11,8 @@ const defaultResponse = {
 };
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -25,10 +21,8 @@ serve(async (req) => {
     // Get user from auth header - return default response if not authenticated
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      console.log('No auth header, returning default response');
-      return new Response(JSON.stringify(defaultResponse), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.debug('No auth header, returning default response');
+      return jsonResponse(defaultResponse);
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -37,21 +31,19 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      console.log('Auth error or no user, returning default response:', authError?.message);
-      return new Response(JSON.stringify(defaultResponse), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.debug('Auth error or no user, returning default response', { error: authError?.message });
+      return jsonResponse(defaultResponse);
     }
 
     // Get subscription status (now using polar_* columns)
-    const { data: subscription, error: subError } = await supabase
+    const { data: subscription } = await supabase
       .from('user_subscriptions')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle();
 
     // Get trial status from profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('trial_started_at, trial_ends_at, trial_used')
       .eq('id', user.id)
@@ -91,7 +83,7 @@ serve(async (req) => {
     // Determine access level
     const hasAccess = hasActiveSubscription || isTrialActive || cancelledButActive;
 
-    return new Response(JSON.stringify({
+    return jsonResponse({
       hasAccess,
       subscription: subscription ? {
         status: subscription.status,
@@ -108,14 +100,10 @@ serve(async (req) => {
         endsAt: subscription?.status === 'trialing' ? subscription.current_period_end : profile?.trial_ends_at,
       },
       accountSlots,
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Get subscription status error:', error);
+    logger.error('Get subscription status error', { error: error instanceof Error ? error.message : String(error) });
     // Return default response instead of error to prevent app crash
-    return new Response(JSON.stringify(defaultResponse), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse(defaultResponse);
   }
 });

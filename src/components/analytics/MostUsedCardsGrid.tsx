@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DeckUsageStatRow } from "@/types/dashboard.types";
 
 interface MostUsedCardsGridProps {
-  stats: any[];
+  stats: DeckUsageStatRow[];
 }
 
 export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
@@ -13,14 +14,17 @@ export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
   const cardUsage = new Map<string, { count: number; wins: number; battles: number }>();
 
   stats.forEach(stat => {
-    stat.deck_cards.forEach((cardName: string) => {
+    const deckCards = stat.deck_cards as string[] | null;
+    if (!deckCards) return;
+    
+    deckCards.forEach((cardName: string) => {
       if (!cardUsage.has(cardName)) {
         cardUsage.set(cardName, { count: 0, wins: 0, battles: 0 });
       }
       const usage = cardUsage.get(cardName)!;
-      usage.count += stat.battles_played;
-      usage.wins += stat.battles_won;
-      usage.battles += stat.battles_played;
+      usage.count += stat.battles_played || 0;
+      usage.wins += stat.battles_won || 0;
+      usage.battles += stat.battles_played || 0;
     });
   });
 

@@ -54,7 +54,7 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
       if (error) {
         // Check for subscription required error
         if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
-          const subscriptionError = new Error('Subscription required') as any;
+          const subscriptionError = new Error('Subscription required') as Error & { subscription_required?: boolean };
           subscriptionError.subscription_required = true;
           throw subscriptionError;
         }
@@ -62,8 +62,8 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
       }
       
       // Check if response indicates subscription required
-      if (data?.subscription_required) {
-        const subscriptionError = new Error('Subscription required') as any;
+      if ((data as { subscription_required?: boolean })?.subscription_required) {
+        const subscriptionError = new Error('Subscription required') as Error & { subscription_required?: boolean };
         subscriptionError.subscription_required = true;
         throw subscriptionError;
       }
@@ -73,9 +73,10 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
     enabled: !!playerTag && trophies > 0,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     gcTime: 48 * 60 * 60 * 1000, // 48 hours
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error) => {
       // Don't retry subscription errors
-      if (error?.subscription_required) return false;
+      const errorObj = error as { subscription_required?: boolean };
+      if (errorObj?.subscription_required) return false;
       return failureCount < 1;
     },
   });
@@ -106,7 +107,7 @@ export const useRefreshRecommendations = () => {
       if (error) {
         // Check for subscription required error
         if (error.message?.includes('403') || error.message?.includes('subscription_required')) {
-          const subscriptionError = new Error('Subscription required') as any;
+          const subscriptionError = new Error('Subscription required') as Error & { subscription_required?: boolean };
           subscriptionError.subscription_required = true;
           throw subscriptionError;
         }
@@ -114,8 +115,8 @@ export const useRefreshRecommendations = () => {
       }
       
       // Check if response indicates subscription required
-      if (data?.subscription_required) {
-        const subscriptionError = new Error('Subscription required') as any;
+      if ((data as { subscription_required?: boolean })?.subscription_required) {
+        const subscriptionError = new Error('Subscription required') as Error & { subscription_required?: boolean };
         subscriptionError.subscription_required = true;
         throw subscriptionError;
       }
@@ -129,9 +130,11 @@ export const useRefreshRecommendations = () => {
       );
       toast.success(t('recommendations.refreshed'), { id: 'refresh-recommendations' });
     },
-    onError: (error: any) => {
-      console.error('Recommendation refresh error:', error);
-      if (error?.subscription_required) {
+    onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Recommendation refresh error:', errorMessage);
+      const errorObj = error as { subscription_required?: boolean };
+      if (errorObj?.subscription_required) {
         toast.error(i18n.t('subscription.requiredForAI'), { 
           id: 'refresh-recommendations',
           action: {

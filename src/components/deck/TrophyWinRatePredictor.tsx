@@ -63,9 +63,11 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
       }
       setPredictions(data.predictions);
       setLastPredictedLanguage(i18n.language);
-    } catch (error: any) {
-      console.error("Error fetching predictions:", error);
-      if (error?.subscription_required || error?.message?.includes('subscription')) {
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("Error fetching predictions:", errorMessage);
+      const errorObj = error as { subscription_required?: boolean; message?: string };
+      if (errorObj?.subscription_required || errorObj?.message?.includes('subscription')) {
         setShowPricingModal(true);
         return;
       }

@@ -165,10 +165,12 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       }
       setShowMatchupAnalysis(true);
 
-    } catch (err: any) {
-      console.error('Matchup prediction error:', err);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error('Matchup prediction error:', errorMessage);
       // Handle subscription_required in error
-      if (err?.subscription_required || err?.message?.includes('subscription_required')) {
+      const errorObj = err as { subscription_required?: boolean; message?: string };
+      if (errorObj?.subscription_required || errorObj?.message?.includes('subscription_required')) {
         setShowPricingModal(true);
         return;
       }

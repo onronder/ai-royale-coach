@@ -4,9 +4,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { ChartSkeleton } from "@/components/ui/chart-skeleton";
 import { ChartEmptyState } from "@/components/ui/chart-empty-state";
 import { TrendingUp } from "lucide-react";
+import { DeckUsageStatRow } from "@/types/dashboard.types";
 
 interface DeckTrendChartProps {
-  stats: any[];
+  stats: DeckUsageStatRow[];
   isLoading?: boolean;
 }
 
@@ -21,14 +22,14 @@ export function DeckTrendChart({ stats, isLoading }: DeckTrendChartProps) {
       acc[date] = { date, totalWins: 0, totalBattles: 0, trophyChange: 0 };
     }
     
-    acc[date].totalWins += stat.battles_won;
-    acc[date].totalBattles += stat.battles_played;
-    acc[date].trophyChange += stat.total_trophy_change;
+    acc[date].totalWins += stat.battles_won || 0;
+    acc[date].totalBattles += stat.battles_played || 0;
+    acc[date].trophyChange += stat.total_trophy_change || 0;
     
     return acc;
-  }, {} as Record<string, any>) || {};
+  }, {} as Record<string, { date: string; totalWins: number; totalBattles: number; trophyChange: number }>) || {};
 
-  const chartData = Object.values(dailyStats).map((day: any) => ({
+  const chartData = Object.values(dailyStats).map((day) => ({
     date: day.date,
     winRate: day.totalBattles > 0 ? (day.totalWins / day.totalBattles) * 100 : 0,
     trophyChange: day.trophyChange,
