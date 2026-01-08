@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, AlertTriangle, Search, LayoutDashboard } from 'lucide-react';
+import { Shield, AlertTriangle, Search, LayoutDashboard, Activity } from 'lucide-react';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { FraudOverviewDashboard } from '@/components/admin/FraudOverviewDashboard';
 import { FraudCasesList } from '@/components/admin/FraudCasesList';
 import { UserLookup } from '@/components/admin/UserLookup';
+import { ApiMetricsDashboard } from '@/components/admin/ApiMetricsDashboard';
 import { Navbar } from '@/components/layout/Navbar';
 
 /**
@@ -65,7 +66,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-3 gap-2">
+          <TabsList className="grid w-full md:w-auto md:inline-grid grid-cols-4 gap-2">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               Overview
@@ -77,6 +78,10 @@ export default function Admin() {
             <TabsTrigger value="lookup" className="flex items-center gap-2">
               <Search className="h-4 w-4" />
               User Lookup
+            </TabsTrigger>
+            <TabsTrigger value="metrics" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              API Metrics
             </TabsTrigger>
           </TabsList>
 
@@ -90,6 +95,10 @@ export default function Admin() {
 
           <TabsContent value="lookup">
             <UserLookup />
+          </TabsContent>
+
+          <TabsContent value="metrics">
+            <ApiMetricsDashboard />
           </TabsContent>
         </Tabs>
       </main>
