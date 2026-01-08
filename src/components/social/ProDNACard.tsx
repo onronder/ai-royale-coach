@@ -47,12 +47,12 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
   const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
 
   return (
-    // Fixed size card - 280x340 (compact to fit content exactly)
+    // Fixed size card - 280x400 (full height to fit all content)
     <div 
       className="relative select-none"
       style={{ 
         width: '280px',
-        height: '340px',
+        height: '400px',
         padding: '3px',
         background: 'linear-gradient(135deg, #d4af37 0%, #f5d87a 30%, #d4af37 50%, #b8963c 70%, #d4af37 100%)',
         borderRadius: '14px',
@@ -61,7 +61,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
     >
       {/* Inner Card */}
       <div 
-        className="relative w-full h-full overflow-hidden"
+        className="relative w-full h-full"
         style={{ 
           background: 'linear-gradient(180deg, #1a1508 0%, #0d0a04 50%, #1a1508 100%)',
           borderRadius: '11px',
