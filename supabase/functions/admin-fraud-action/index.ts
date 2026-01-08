@@ -1,9 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
+import { logger } from '../_shared/logger.ts';
 
 interface AdminActionRequest {
   action: 'clear_signals' | 'set_warning' | 'soft_block' | 'unblock';
@@ -12,10 +9,8 @@ interface AdminActionRequest {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -27,10 +22,7 @@ Deno.serve(async (req) => {
     // Create client with user's auth for permission check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - no auth header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - no auth header', 401);
     }
 
     const supabaseAuth = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
@@ -40,11 +32,8 @@ Deno.serve(async (req) => {
     // Get the current user
     const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
     if (userError || !user) {
-      console.error('Auth error:', userError);
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      logger.error('Auth error', { error: userError?.message });
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     const adminId = user.id;
@@ -62,24 +51,18 @@ Deno.serve(async (req) => {
     });
 
     if (roleError || (!hasAdminRole && !hasModeratorRole)) {
-      console.error('Role check error:', roleError);
-      return new Response(
-        JSON.stringify({ error: 'Forbidden - admin or moderator role required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      logger.error('Role check error', { error: roleError?.message });
+      return errorResponse('Forbidden - admin or moderator role required', 403);
     }
 
     // Parse request body
     const { action, targetUserId, notes }: AdminActionRequest = await req.json();
 
     if (!action || !targetUserId) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields: action, targetUserId' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Missing required fields: action, targetUserId', 400);
     }
 
-    console.log(`Admin ${adminId} performing ${action} on user ${targetUserId}`);
+    logger.info('Admin performing fraud action', { adminId, action, targetUserId });
 
     // Fetch current status for audit log
     const { data: currentStatus } = await supabaseAdmin
@@ -99,21 +82,18 @@ Deno.serve(async (req) => {
         break;
       case 'set_warning':
         newStatus = 'warning';
-        newFraudScore = currentStatus?.fraud_score || 40; // Keep existing or set baseline
+        newFraudScore = currentStatus?.fraud_score || 40;
         break;
       case 'soft_block':
         newStatus = 'soft_blocked';
-        newFraudScore = currentStatus?.fraud_score || 70; // Keep existing or set baseline
+        newFraudScore = currentStatus?.fraud_score || 70;
         break;
       case 'unblock':
         newStatus = 'clean';
         newFraudScore = 0;
         break;
       default:
-        return new Response(
-          JSON.stringify({ error: `Invalid action: ${action}` }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse(`Invalid action: ${action}`, 400);
     }
 
     // Upsert the fraud status
@@ -132,11 +112,8 @@ Deno.serve(async (req) => {
       });
 
     if (updateError) {
-      console.error('Update error:', updateError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to update fraud status' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      logger.error('Update error', { error: updateError.message });
+      return errorResponse('Failed to update fraud status', 500);
     }
 
     // Log the admin action to audit log
@@ -156,28 +133,20 @@ Deno.serve(async (req) => {
       });
 
     if (auditError) {
-      console.error('Audit log error (non-fatal):', auditError);
-      // Don't fail the request for audit log errors
+      logger.warn('Audit log error (non-fatal)', { error: auditError.message });
     }
 
-    console.log(`Successfully updated user ${targetUserId} to ${newStatus}`);
+    logger.info('Successfully updated fraud status', { targetUserId, newStatus });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        newStatus,
-        newFraudScore,
-        message: `User status updated to ${newStatus}`,
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({
+      success: true,
+      newStatus,
+      newFraudScore,
+      message: `User status updated to ${newStatus}`,
+    });
 
   } catch (error) {
-    console.error('Admin fraud action error:', error);
-    const message = error instanceof Error ? error.message : 'Internal server error';
-    return new Response(
-      JSON.stringify({ error: message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Admin fraud action error', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Internal server error', 500);
   }
 });

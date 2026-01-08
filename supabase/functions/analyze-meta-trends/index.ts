@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -19,20 +15,14 @@ serve(async (req) => {
     // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // Check subscription status
@@ -54,13 +44,10 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Subscription required for meta analysis', subscription_required: true }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required for meta analysis', 403, { subscription_required: true });
     }
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     const requestBody = await req.json().catch(() => ({}));
     const { playerTag } = requestBody;
     
@@ -73,14 +60,7 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
@@ -99,12 +79,9 @@ serve(async (req) => {
     if (templatesError) throw templatesError;
 
     // Calculate real trends from actual data
-    // Note: Without historical snapshots, we can't calculate real trends
-    // This would require storing daily/weekly meta snapshots
     const trends = archetypes.map((arch: any) => {
       const relatedTemplates = templates.filter((t: any) => t.archetype === arch.name);
       
-      // Count actual usage from templates (real data from DB)
       const templateCount = relatedTemplates.length;
       const popularity = relatedTemplates.reduce((sum: number, t: any) => sum + (t.popularity_score || 0), 0) / (relatedTemplates.length || 1);
 
@@ -112,7 +89,6 @@ serve(async (req) => {
         archetype: arch.name,
         template_count: templateCount,
         popularity,
-        // Trend calculation requires historical data snapshots
         trend: 'stable',
         change_7d: 0,
         note: 'Historical trend data not available - requires time-series snapshots'
@@ -122,15 +98,9 @@ serve(async (req) => {
     // Sort by popularity
     trends.sort((a: any, b: any) => b.popularity - a.popularity);
 
-    return new Response(
-      JSON.stringify({ trends }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({ trends });
   } catch (error) {
-    console.error('Error in analyze-meta-trends:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-meta-trends', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

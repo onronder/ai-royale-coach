@@ -1,24 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const { playerTag } = await req.json();
     
     if (!playerTag) {
-      return new Response(JSON.stringify({ error: 'Player tag required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+      return errorResponse('Player tag required', 400);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -108,25 +101,18 @@ serve(async (req) => {
       winRate: stats.battles > 0 ? (stats.wins / stats.battles) * 100 : 0
     })).sort((a, b) => b.battles - a.battles);
 
-    return new Response(JSON.stringify({
+    return jsonResponse({
       totalBattles,
       wins,
       losses,
       winRate: parseFloat(winRate.toFixed(1)),
       avgCrowns: parseFloat(avgCrowns.toFixed(1)),
       avgTrophyChange: parseFloat(avgTrophyChange.toFixed(1)),
-      deckStats: deckStats.slice(0, 5) // Top 5 most used decks
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      deckStats: deckStats.slice(0, 5)
     });
 
   } catch (error) {
-    console.error('Error in calculate-player-stats:', error);
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    logger.error('Error in calculate-player-stats', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

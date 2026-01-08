@@ -1,27 +1,17 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-/**
- * Calculate in-game display level from API card data
- * Universal formula: displayLevel = level + (16 - maxLevel)
- * This applies to ALL rarities. Evolution does NOT affect display level.
- */
 function getDisplayLevel(card: { level: number; maxLevel?: number; evolutionLevel?: number }): number {
-  // If maxLevel not provided, assume Common (maxLevel = 16, offset = 0)
   const maxLevel = card.maxLevel ?? 16;
   return card.level + (16 - maxLevel);
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -34,7 +24,7 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // RATE LIMITING: Prevent enumeration attacks (60 requests per minute per IP)
+    // RATE LIMITING
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                      req.headers.get('x-real-ip') || 
                      'unknown';
@@ -48,31 +38,22 @@ serve(async (req) => {
       });
     
     if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
+      logger.error('Rate limit check error', { error: rateLimitError.message });
     } else if (!rateLimitAllowed) {
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please slow down.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Too many requests. Please slow down.', 429);
     }
 
-    // SECURITY FIX: Validate authentication
+    // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // Check subscription status
@@ -94,27 +75,21 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Subscription required for AI analysis', subscription_required: true }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
     }
 
     const { playerData, battles, language = 'en' } = await req.json();
     
     if (!playerData || !battles) {
-      return new Response(
-        JSON.stringify({ error: 'Player data and battles are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Player data and battles are required', 400);
     }
 
-    // Helper to normalize player tags (database stores without #)
+    // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
       return tag.replace(/^#/, '').toUpperCase();
     };
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     if (playerData.tag && !isTrialActive) {
       const normalizedTag = normalizePlayerTag(playerData.tag);
       const { data: playerProfile } = await supabase
@@ -125,18 +100,11 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerData.tag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerData.tag });
       }
     }
 
-    // Language instruction based on user preference
+    // Language instruction
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',
       es: 'Responde en español.',
@@ -157,15 +125,12 @@ serve(async (req) => {
       .eq('player_tag', playerData.tag)
       .eq('analysis_type', 'profile_summary')
       .eq('input_fingerprint', fingerprint)
-      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // 24h cache
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .single();
 
     if (cached) {
-      console.log('Returning cached analysis');
-      return new Response(
-        JSON.stringify(cached.output),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      logger.info('Returning cached analysis');
+      return jsonResponse(cached.output);
     }
 
     // Calculate stats
@@ -235,20 +200,14 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI gateway error:', aiResponse.status, errorText);
+      logger.error('AI gateway error', { status: aiResponse.status, error: errorText });
       
       if (aiResponse.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('Rate limit exceeded. Please try again later.', 429);
       }
       
       if (aiResponse.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI credits exhausted. Please add credits to continue.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI credits exhausted. Please add credits to continue.', 402);
       }
       
       throw new Error('AI gateway error');
@@ -275,16 +234,10 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
       output: result,
     });
 
-    return new Response(
-      JSON.stringify(result),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse(result);
 
   } catch (error) {
-    console.error('Error in analyze-player function:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-player function', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

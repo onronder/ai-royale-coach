@@ -1,19 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 const CLASH_API_KEY = Deno.env.get('CLASH_ROYALE_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     if (!CLASH_API_KEY) {
@@ -24,7 +20,7 @@ serve(async (req) => {
     
     // Handle global rankings request
     if (type === 'global_rankings') {
-      console.log('Fetching global clan rankings');
+      logger.info('Fetching global clan rankings');
       const response = await fetch(
         'https://proxy.royaleapi.dev/v1/locations/global/rankings/clans?limit=50',
         {
@@ -51,10 +47,7 @@ serve(async (req) => {
         clan_war_trophies: clan.clanWarTrophies || 0,
       }));
 
-      return new Response(
-        JSON.stringify({ clans }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return jsonResponse({ clans });
     }
     
     if (!query || query.trim().length === 0) {
@@ -124,7 +117,7 @@ serve(async (req) => {
       }
 
     } catch (apiError) {
-      console.error('API search failed:', apiError);
+      logger.warn('API search failed', { error: apiError instanceof Error ? apiError.message : 'Unknown' });
       // Fallback to database search
     }
 
@@ -163,22 +156,10 @@ serve(async (req) => {
       }));
     }
 
-    return new Response(
-      JSON.stringify({ clans }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return jsonResponse({ clans });
 
   } catch (error: any) {
-    console.error('Error in search-clans:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    logger.error('Error in search-clans', { error: error.message });
+    return errorResponse(error.message, 500);
   }
 });

@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   // Store request body early to avoid "Body already consumed" error
   let playerTag: string;
@@ -17,10 +13,7 @@ serve(async (req) => {
     const body = await req.json();
     playerTag = body.playerTag;
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Invalid request body' }), {
-      status: 400,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse('Invalid request body', 400);
   }
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -30,20 +23,14 @@ serve(async (req) => {
   // Get user from auth
   const authHeader = req.headers.get('Authorization');
   if (!authHeader) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse('Unauthorized', 401);
   }
 
   const token = authHeader.replace('Bearer ', '');
   const { data: { user }, error: authError } = await supabase.auth.getUser(token);
   
   if (authError || !user) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse('Unauthorized', 401);
   }
 
   try {
@@ -61,7 +48,7 @@ serve(async (req) => {
         
         return data !== null;
       } catch (error) {
-        console.error('Error checking cancellation:', error);
+        logger.error('Error checking cancellation', { error: error instanceof Error ? error.message : 'Unknown' });
         return false;
       }
     };
@@ -88,18 +75,15 @@ serve(async (req) => {
 
     // Check for cancellation
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     // Fetch battle log using correct endpoint format
     await updateProgress(10, 100, 'Fetching battle history...');
     
-    console.log('Fetching battles for card mastery calculation:', playerTag);
+    logger.info('Fetching battles for card mastery calculation', { playerTag });
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
       body: { 
         endpoint: 'battles',
@@ -108,21 +92,18 @@ serve(async (req) => {
     });
 
     if (battleError || !battles) {
-      console.error('Failed to fetch battle log:', battleError);
+      logger.error('Failed to fetch battle log', { error: battleError });
       await updateProgress(0, 100, 'Failed to fetch battles', 'failed');
       throw new Error('Failed to fetch battle log');
     }
 
-    console.log(`Processing ${battles.length} battles for card mastery`);
+    logger.info('Processing battles for card mastery', { count: battles.length });
 
     // Check for cancellation
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     await updateProgress(20, 100, 'Processing battles...');
@@ -159,7 +140,6 @@ serve(async (req) => {
         
         if (isWin) {
           stats.battles_won++;
-          // Track partner cards on wins
           deckCards.forEach((partnerName: string) => {
             if (partnerName !== card.name) {
               stats.partner_cards.set(partnerName, (stats.partner_cards.get(partnerName) || 0) + 1);
@@ -167,38 +147,30 @@ serve(async (req) => {
           });
         } else {
           stats.battles_lost++;
-          // Track opponent cards on losses
           battle.opponent?.[0]?.cards?.forEach((oppCard: any) => {
             stats.opponent_cards.set(oppCard.name, (stats.opponent_cards.get(oppCard.name) || 0) + 1);
           });
         }
       }
 
-      // Update progress periodically (every 5 battles)
+      // Update progress periodically
       if (i % 5 === 0) {
-        const progressPercent = 20 + Math.floor((i / totalBattles) * 40); // 20-60%
+        const progressPercent = 20 + Math.floor((i / totalBattles) * 40);
         await updateProgress(progressPercent, 100, `Processing battle ${i + 1}/${totalBattles}...`);
         
-        // Check for cancellation every 5 battles
         if (await checkCancellation()) {
-          console.log('Operation cancelled by user');
+          logger.info('Operation cancelled by user');
           await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-          return new Response(
-            JSON.stringify({ success: false, message: 'Operation cancelled' }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-          );
+          return jsonResponse({ success: false, message: 'Operation cancelled' });
         }
       }
     }
 
     // Check for cancellation
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     await updateProgress(60, 100, 'Calculating mastery levels...');
@@ -208,7 +180,6 @@ serve(async (req) => {
       const winRate = stats.battles_won / (stats.battles_won + stats.battles_lost);
       const crownAvg = stats.total_crowns / stats.times_used;
       
-      // Mastery calculation: usage (40%) + win rate (35%) + crowns (25%)
       const usageScore = Math.min(stats.times_used / 500, 1) * 40;
       const winScore = winRate * 35;
       const crownScore = (crownAvg / 3) * 25;
@@ -217,13 +188,11 @@ serve(async (req) => {
       const masteryLevel = Math.max(1, Math.min(10, Math.ceil(totalScore / 10)));
       const masteryProgress = Math.round((totalScore % 10) * 10);
       
-      // Get top 3 partner cards
       const bestPartners = (Array.from(stats.partner_cards.entries()) as Array<[string, number]>)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3)
         .map(([name]) => name);
       
-      // Get top 3 opponent cards on losses
       const worstMatchups = (Array.from(stats.opponent_cards.entries()) as Array<[string, number]>)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3)
@@ -250,12 +219,9 @@ serve(async (req) => {
 
     // Check for cancellation before saving
     if (await checkCancellation()) {
-      console.log('Operation cancelled by user');
+      logger.info('Operation cancelled by user');
       await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return new Response(
-        JSON.stringify({ success: false, message: 'Operation cancelled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
-      );
+      return jsonResponse({ success: false, message: 'Operation cancelled' });
     }
 
     await updateProgress(80, 100, 'Saving mastery data...');
@@ -264,19 +230,17 @@ serve(async (req) => {
 
     await updateProgress(100, 100, 'Completed!', 'completed');
 
-    console.log(`Successfully calculated mastery for ${cardStats.size} cards`);
+    logger.info('Successfully calculated mastery', { cardsProcessed: cardStats.size });
 
-    return new Response(JSON.stringify({ 
+    return jsonResponse({ 
       success: true, 
       cards_processed: cardStats.size 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error in calculate-card-mastery:', error);
+    logger.error('Error in calculate-card-mastery', { error: error instanceof Error ? error.message : 'Unknown error' });
     
-    // Update progress to failed state using stored playerTag
+    // Update progress to failed state
     try {
       await supabase.from('operation_progress').upsert({
         user_id: user.id,
@@ -291,14 +255,9 @@ serve(async (req) => {
         ignoreDuplicates: false,
       });
     } catch (progressError) {
-      console.error('Failed to update progress:', progressError);
+      logger.error('Failed to update progress', { error: progressError instanceof Error ? progressError.message : 'Unknown' });
     }
     
-    return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

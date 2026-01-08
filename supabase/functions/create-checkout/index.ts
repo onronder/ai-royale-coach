@@ -1,15 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -26,10 +22,7 @@ serve(async (req) => {
     // Get user from auth header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Unauthorized', 401);
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -38,30 +31,24 @@ serve(async (req) => {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return errorResponse('Unauthorized', 401);
     }
 
     const { successUrl, cancelUrl, accountSlots = 1 } = await req.json();
     
     // Validate accountSlots
-    const slots = Math.min(Math.max(1, accountSlots), 3); // Clamp between 1-3
+    const slots = Math.min(Math.max(1, accountSlots), 3);
     const polarProductId = productIds[slots];
     
     if (!polarProductId) {
-      console.error(`No product ID configured for ${slots} slots`);
-      return new Response(JSON.stringify({ error: 'Invalid tier selected' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.error('No product ID configured', { slots });
+      return errorResponse('Invalid tier selected', 400);
     }
     
     // Default success URL if not provided
     const finalSuccessUrl = successUrl || `${req.headers.get('origin')}/select-player?subscription=success`;
 
-    console.log(`Creating checkout for user ${user.id} with ${slots} account slots, product: ${polarProductId}`);
+    logger.info('Creating checkout', { userId: user.id, slots, productId: polarProductId });
 
     // Create checkout session via Polar API
     const checkoutResponse = await fetch('https://api.polar.sh/v1/checkouts/custom/', {
@@ -85,35 +72,23 @@ serve(async (req) => {
 
     if (!checkoutResponse.ok) {
       const errorText = await checkoutResponse.text();
-      console.error('Polar API error:', errorText);
-      return new Response(JSON.stringify({ error: 'Failed to create checkout' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.error('Polar API error', { error: errorText });
+      return errorResponse('Failed to create checkout', 500);
     }
 
     const checkoutData = await checkoutResponse.json();
     const checkoutUrl = checkoutData.url;
 
     if (!checkoutUrl) {
-      console.error('No checkout URL in response:', checkoutData);
-      return new Response(JSON.stringify({ error: 'Invalid checkout response' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      logger.error('No checkout URL in response', { response: checkoutData });
+      return errorResponse('Invalid checkout response', 500);
     }
 
-    console.log(`Polar checkout created for user ${user.id} - ${slots} account tier`);
+    logger.info('Polar checkout created', { userId: user.id, slots });
 
-    return new Response(JSON.stringify({ checkoutUrl }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ checkoutUrl });
   } catch (error) {
-    console.error('Checkout error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    logger.error('Checkout error', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

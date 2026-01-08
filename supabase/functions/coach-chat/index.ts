@@ -1,17 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders, handleCors, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 const DAILY_AI_LIMIT = 10;
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -24,7 +20,7 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // RATE LIMITING: Prevent enumeration attacks (60 requests per minute per IP)
+    // RATE LIMITING
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                      req.headers.get('x-real-ip') || 
                      'unknown';
@@ -38,34 +34,25 @@ serve(async (req) => {
       });
     
     if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError);
+      logger.error('Rate limit check error', { error: rateLimitError.message });
     } else if (!rateLimitAllowed) {
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please slow down.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Too many requests. Please slow down.', 429);
     }
 
-    // SECURITY FIX: Validate authentication
+    // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    // SUBSCRIPTION CHECK: Verify user has active subscription or trial
+    // Check subscription status
     const { data: subscription } = await supabase
       .from('user_subscriptions')
       .select('status')
@@ -84,19 +71,12 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Subscription required to use AI features',
-          subscription_required: true 
-        }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
     // SERVER-SIDE AI QUOTA CHECK
     const today = new Date().toISOString().split('T')[0];
     
-    // Check current usage
     const { data: usageData, error: usageError } = await supabase
       .from('user_ai_usage')
       .select('request_count')
@@ -105,21 +85,17 @@ serve(async (req) => {
       .single();
 
     if (usageError && usageError.code !== 'PGRST116') {
-      console.error('Error checking AI quota:', usageError);
+      logger.error('Error checking AI quota', { error: usageError.message });
     }
 
     const currentCount = usageData?.request_count || 0;
     
     if (currentCount >= DAILY_AI_LIMIT) {
-      return new Response(
-        JSON.stringify({ 
-          error: 'Daily AI quota exceeded. Please try again tomorrow.',
-          quota_exceeded: true,
-          requests_used: currentCount,
-          daily_limit: DAILY_AI_LIMIT
-        }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Daily AI quota exceeded. Please try again tomorrow.', 429, {
+        quota_exceeded: true,
+        requests_used: currentCount,
+        daily_limit: DAILY_AI_LIMIT
+      });
     }
 
     // Increment usage count
@@ -137,12 +113,12 @@ serve(async (req) => {
 
     const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language = 'en' } = await req.json();
 
-    // Helper to normalize player tags (database stores without #)
+    // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
       return tag.replace(/^#/, '').toUpperCase();
     };
 
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
+    // PER-PLAYER AI ACCESS CHECK
     if (playerTag && !isTrialActive) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
@@ -153,18 +129,11 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
-    // Language instruction based on user preference
+    // Language instruction
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English.',
       es: 'Responde en español.',
@@ -232,33 +201,21 @@ Guidelines:
 
     if (!response.ok) {
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("Rate limit exceeded. Please wait a moment and try again.", 429);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("AI credits exhausted. Please add credits to continue.", 402);
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "AI gateway error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      logger.error("AI gateway error", { status: response.status, error: errorText });
+      return errorResponse("AI gateway error", 500);
     }
 
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
-    console.error("Coach chat error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    logger.error("Coach chat error", { error: e instanceof Error ? e.message : "Unknown error" });
+    return errorResponse(e instanceof Error ? e.message : "Unknown error", 500);
   }
 });

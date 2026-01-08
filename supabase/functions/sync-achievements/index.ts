@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 interface SkillLevels {
   cardPlacement: number;
@@ -24,9 +21,8 @@ interface AchievementCriteria {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const authHeader = req.headers.get('Authorization');
@@ -50,7 +46,7 @@ serve(async (req) => {
       throw new Error('Missing playerTag');
     }
 
-    console.log(`Syncing achievements for user ${user.id}, player ${playerTag}`);
+    logger.info('Syncing achievements', { userId: user.id, playerTag });
 
     // Step 1: Calculate skill levels from card_mastery data
     const { data: masteryData, error: masteryError } = await supabaseClient
@@ -60,11 +56,11 @@ serve(async (req) => {
       .eq('player_tag', playerTag);
 
     if (masteryError) {
-      console.error('Error fetching mastery data:', masteryError);
+      logger.error('Error fetching mastery data', { error: masteryError.message });
       throw masteryError;
     }
 
-    console.log(`Found ${masteryData?.length || 0} mastery records`);
+    logger.info('Found mastery records', { count: masteryData?.length || 0 });
 
     // Calculate skill levels based on card mastery data
     const skillLevels: SkillLevels = {
@@ -76,29 +72,25 @@ serve(async (req) => {
     };
 
     if (masteryData && masteryData.length > 0) {
-      // Calculate average mastery level across all cards
       const avgMastery = masteryData.reduce((sum, card) => sum + (card.mastery_level || 0), 0) / masteryData.length;
       
-      // Calculate win rate
       const totalBattles = masteryData.reduce((sum, card) => sum + (card.battles_won || 0) + (card.battles_lost || 0), 0);
       const winRate = totalBattles > 0 
         ? masteryData.reduce((sum, card) => sum + (card.battles_won || 0), 0) / totalBattles 
         : 0;
 
-      // Calculate total usage
       const totalUsage = masteryData.reduce((sum, card) => sum + (card.times_used || 0), 0);
 
-      // Map metrics to skill levels (1-10 scale)
-      skillLevels.cardPlacement = Math.min(10, Math.round(avgMastery * 1.2)); // Mastery correlates with placement
-      skillLevels.timing = Math.min(10, Math.round(winRate * 12)); // Win rate shows timing skill
+      skillLevels.cardPlacement = Math.min(10, Math.round(avgMastery * 1.2));
+      skillLevels.timing = Math.min(10, Math.round(winRate * 12));
       skillLevels.elixirManagement = Math.min(10, Math.round((masteryData.filter(c => (c.avg_elixir_decks || 0) <= 3.5).length / Math.max(1, masteryData.length)) * 10));
-      skillLevels.prediction = Math.min(10, Math.round(avgMastery * 1.1)); // Related to mastery
-      skillLevels.adaptation = Math.min(10, Math.round((totalUsage / Math.max(1, masteryData.length)) / 10)); // Usage diversity
+      skillLevels.prediction = Math.min(10, Math.round(avgMastery * 1.1));
+      skillLevels.adaptation = Math.min(10, Math.round((totalUsage / Math.max(1, masteryData.length)) / 10));
     }
 
-    console.log('Calculated skill levels:', skillLevels);
+    logger.debug('Calculated skill levels', { skillLevels });
 
-    // Determine learning phase based on skill levels
+    // Determine learning phase
     const avgSkillLevel = Object.values(skillLevels).reduce((a, b) => a + b, 0) / 5;
     let learningPhase = 'beginner';
     if (avgSkillLevel >= 8) learningPhase = 'master';
@@ -117,14 +109,14 @@ serve(async (req) => {
         player_tag: playerTag,
         skill_levels: skillLevels,
         learning_phase: learningPhase,
-        total_mastery_points: 0, // Will be calculated after unlocking achievements
-        achievements_unlocked: 0, // Will be updated after checking achievements
+        total_mastery_points: 0,
+        achievements_unlocked: 0,
       }, {
         onConflict: 'user_id,player_tag',
       });
 
     if (progressError) {
-      console.error('Error updating progress:', progressError);
+      logger.error('Error updating progress', { error: progressError.message });
       throw progressError;
     }
 
@@ -134,34 +126,30 @@ serve(async (req) => {
       .select('*');
 
     if (achievementsError) {
-      console.error('Error fetching achievements:', achievementsError);
+      logger.error('Error fetching achievements', { error: achievementsError.message });
       throw achievementsError;
     }
 
-    console.log(`Checking ${achievements?.length || 0} achievements`);
+    logger.info('Checking achievements', { count: achievements?.length || 0 });
 
     // Step 4: Check and unlock achievements
     const newlyUnlocked: string[] = [];
-    const progressUpdates: any[] = [];
 
     for (const achievement of achievements || []) {
       const criteria = achievement.criteria as AchievementCriteria;
       let isUnlocked = false;
       let progress = 0;
 
-      // Check skill level achievements
       if (criteria.type === 'skill_level' && criteria.skill && criteria.threshold) {
         const skillValue = skillLevels[criteria.skill as keyof SkillLevels] || 0;
         progress = Math.min(100, (skillValue / criteria.threshold) * 100);
         isUnlocked = skillValue >= criteria.threshold;
       }
-      // Check card mastery count achievements
       else if (criteria.type === 'card_mastery_count' && criteria.level && criteria.count) {
         const cardCount = criteria.level === 10 ? legendCards : masterCards;
         progress = Math.min(100, (cardCount / criteria.count) * 100);
         isUnlocked = cardCount >= criteria.count;
       }
-      // Check learning phase achievements
       else if (criteria.type === 'learning_phase' && criteria.phase) {
         const phases = ['beginner', 'intermediate', 'advanced', 'master'];
         const currentIndex = phases.indexOf(learningPhase);
@@ -170,7 +158,6 @@ serve(async (req) => {
         isUnlocked = currentIndex >= requiredIndex;
       }
 
-      // Fetch or create user achievement record
       const { data: existingAchievement } = await supabaseClient
         .from('user_achievements')
         .select('*')
@@ -180,7 +167,6 @@ serve(async (req) => {
         .maybeSingle();
 
       if (!existingAchievement) {
-        // Create new achievement record
         const { error: insertError } = await supabaseClient
           .from('user_achievements')
           .insert({
@@ -192,12 +178,11 @@ serve(async (req) => {
           });
 
         if (insertError) {
-          console.error('Error inserting achievement:', insertError);
+          logger.error('Error inserting achievement', { error: insertError.message });
         } else if (isUnlocked) {
           newlyUnlocked.push(achievement.name);
         }
       } else if (isUnlocked && !existingAchievement.unlocked_at) {
-        // Unlock previously locked achievement
         const { error: updateError } = await supabaseClient
           .from('user_achievements')
           .update({
@@ -207,26 +192,21 @@ serve(async (req) => {
           .eq('id', existingAchievement.id);
 
         if (updateError) {
-          console.error('Error unlocking achievement:', updateError);
+          logger.error('Error unlocking achievement', { error: updateError.message });
         } else {
           newlyUnlocked.push(achievement.name);
         }
       } else if (!isUnlocked) {
-        // Update progress
-        const { error: updateError } = await supabaseClient
+        await supabaseClient
           .from('user_achievements')
           .update({
             progress: Math.round(progress),
           })
           .eq('id', existingAchievement.id);
-
-        if (updateError) {
-          console.error('Error updating progress:', updateError);
-        }
       }
     }
 
-    // Step 5: Check milestone achievements (based on total achievements unlocked)
+    // Step 5: Check milestone achievements
     const { data: unlockedAchievements } = await supabaseClient
       .from('user_achievements')
       .select('achievement_id')
@@ -236,7 +216,6 @@ serve(async (req) => {
 
     const totalUnlocked = unlockedAchievements?.length || 0;
 
-    // Check achievement count milestones
     for (const achievement of achievements || []) {
       const criteria = achievement.criteria as AchievementCriteria;
       if (criteria.type === 'achievement_count' && criteria.count) {
@@ -308,24 +287,18 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .eq('player_tag', playerTag);
 
-    console.log(`Sync complete. ${newlyUnlocked.length} newly unlocked achievements`);
+    logger.info('Sync complete', { newlyUnlocked: newlyUnlocked.length });
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        newlyUnlocked,
-        totalUnlocked,
-        totalPoints,
-        skillLevels,
-        learningPhase,
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return jsonResponse({
+      success: true,
+      newlyUnlocked,
+      totalUnlocked,
+      totalPoints,
+      skillLevels,
+      learningPhase,
+    });
   } catch (error) {
-    console.error('Error syncing achievements:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error syncing achievements', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });

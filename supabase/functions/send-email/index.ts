@@ -2,16 +2,13 @@ import React from 'https://esm.sh/react@18.3.1'
 import { Resend } from 'https://esm.sh/resend@4.0.0'
 import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts'
+import { logger } from '../_shared/logger.ts'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
 
 interface EmailRequest {
   email: string
@@ -26,10 +23,8 @@ interface EmailRequest {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
-  }
+  const corsResp = handleCors(req)
+  if (corsResp) return corsResp
 
   if (req.method !== 'POST') {
     return new Response('Method not allowed', { status: 405, headers: corsHeaders })
@@ -41,29 +36,22 @@ Deno.serve(async (req) => {
     const { email, type, name, language = 'en', subscriptionData, resetUrl } = body
 
     if (!email || !type) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required fields: email and type' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return errorResponse('Missing required fields: email and type', 400)
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid email format' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return errorResponse('Invalid email format', 400)
     }
 
-    // For welcome emails, verify the user exists in our database (just signed up)
+    // For welcome emails, verify the user exists in our database
     if (type === 'welcome') {
       const supabaseAdmin = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       )
       
-      // Check if user exists in profiles (created on signup)
       const { data: profile, error: profileError } = await supabaseAdmin
         .from('profiles')
         .select('id, email')
@@ -71,15 +59,12 @@ Deno.serve(async (req) => {
         .single()
       
       if (profileError || !profile) {
-        console.error('User not found in profiles:', email)
-        return new Response(
-          JSON.stringify({ error: 'User not found' }),
-          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        logger.error('User not found in profiles', { email })
+        return errorResponse('User not found', 404)
       }
     }
 
-    console.log(`Processing ${type} email for ${email} in ${language}`)
+    logger.info('Processing email', { type, email, language })
 
     let html: string
     let subject: string
@@ -112,10 +97,7 @@ Deno.serve(async (req) => {
 
       case 'password_reset':
         if (!resetUrl) {
-          return new Response(
-            JSON.stringify({ error: 'Missing required field: resetUrl for password_reset' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          )
+          return errorResponse('Missing required field: resetUrl for password_reset', 400)
         }
         subject = getPasswordResetSubject(language)
         html = await renderAsync(
@@ -133,10 +115,7 @@ Deno.serve(async (req) => {
         break
 
       default:
-        return new Response(
-          JSON.stringify({ error: 'Invalid email type' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
+        return errorResponse('Invalid email type', 400)
     }
 
     // Send email via Resend
@@ -148,24 +127,16 @@ Deno.serve(async (req) => {
     })
 
     if (error) {
-      console.error('Resend error:', error)
+      logger.error('Resend error', { error })
       throw error
     }
 
-    console.log('Email sent successfully:', data)
+    logger.info('Email sent successfully', { messageId: data?.id })
 
-    return new Response(
-      JSON.stringify({ success: true, messageId: data?.id }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return jsonResponse({ success: true, messageId: data?.id })
   } catch (error) {
-    console.error('Error sending email:', error)
-    return new Response(
-      JSON.stringify({
-        error: (error as Error).message || 'Failed to send email',
-      }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    logger.error('Error sending email', { error: error instanceof Error ? error.message : 'Unknown' })
+    return errorResponse((error as Error).message || 'Failed to send email', 500)
   }
 })
 

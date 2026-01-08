@@ -1,10 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { logger } from "../_shared/logger.ts";
 
 interface Card {
   id: number;
@@ -14,9 +11,8 @@ interface Card {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsResp = handleCors(req);
+  if (corsResp) return corsResp;
 
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -26,20 +22,14 @@ serve(async (req) => {
     // Validate authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - missing authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - missing authorization header', 401);
     }
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Unauthorized - invalid token', 401);
     }
 
     // Check subscription status
@@ -61,10 +51,7 @@ serve(async (req) => {
     const hasAccess = subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
-      return new Response(
-        JSON.stringify({ error: 'Subscription required for advanced AI analysis', subscription_required: true }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Subscription required for advanced AI analysis', 403, { subscription_required: true });
     }
 
     const { cards, playerTag, language = 'en' } = await req.json();
@@ -85,22 +72,12 @@ serve(async (req) => {
         .single();
 
       if (!playerProfile?.ai_enabled) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'AI not enabled for this account',
-            ai_not_enabled: true,
-            player_tag: playerTag
-          }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
       }
     }
 
     if (!cards || cards.length !== 8) {
-      return new Response(
-        JSON.stringify({ error: 'Exactly 8 cards required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Exactly 8 cards required', 400);
     }
 
     // Language instruction based on user preference
@@ -217,19 +194,13 @@ Respond with structured data only.`;
 
     if (!aiResponse.ok) {
       if (aiResponse.status === 429) {
-        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        return errorResponse('Rate limit exceeded. Please try again later.', 429);
       }
       if (aiResponse.status === 402) {
-        return new Response(JSON.stringify({ error: 'AI credits depleted. Please add funds.' }), {
-          status: 402,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
+        return errorResponse('AI credits depleted. Please add funds.', 402);
       }
       const errorText = await aiResponse.text();
-      console.error('AI API error:', aiResponse.status, errorText);
+      logger.error('AI API error', { status: aiResponse.status, error: errorText });
       throw new Error('AI analysis failed');
     }
 
@@ -247,19 +218,13 @@ Respond with structured data only.`;
     analysisData.elixirAnalysis.elixirDistribution = elixirDistribution;
     
     // Add placeholder structures for components expecting old format
-    // These would be calculated from real battle history in production
     analysisData.synergyMatrix = null;
     analysisData.matchupPredictions = null;
 
-    return new Response(JSON.stringify(analysisData), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    });
+    return jsonResponse(analysisData);
 
   } catch (error) {
-    console.error('Error in analyze-deck-advanced:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    logger.error('Error in analyze-deck-advanced', { error: error instanceof Error ? error.message : 'Unknown error' });
+    return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
 });
