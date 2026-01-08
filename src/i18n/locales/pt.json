@@ -2273,7 +2273,9 @@
     "thisMayTakeMoment": "Isso pode levar um momento",
     "all": "Todos",
     "unknown": "Desconhecido",
-    "searching": "Buscando..."
+    "searching": "Buscando...",
+    "back": "Voltar",
+    "locked": "Bloqueado"
   },
   "pagination": {
     "previous": "Anterior",

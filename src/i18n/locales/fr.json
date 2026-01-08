@@ -2273,7 +2273,9 @@
     "thisMayTakeMoment": "Cela peut prendre un moment",
     "all": "Tous",
     "unknown": "Inconnu",
-    "searching": "Recherche..."
+    "searching": "Recherche...",
+    "back": "Retour",
+    "locked": "Verrouillé"
   },
   "pagination": {
     "previous": "Précédent",
