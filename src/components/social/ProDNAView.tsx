@@ -78,11 +78,19 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
       
       const canvas = await html2canvas(captureRef.current, {
         backgroundColor: '#0d0a04',
-        scale: 3,
+        scale: 2,
         useCORS: true,
         logging: false,
         width: 280,
         height: 400,
+        windowWidth: 280,
+        windowHeight: 400,
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.querySelector('[data-capture-root]');
+          if (el) {
+            (el as HTMLElement).style.transform = 'none';
+          }
+        },
       });
       
       const link = document.createElement("a");
@@ -115,11 +123,19 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
       
       const canvas = await html2canvas(captureRef.current, {
         backgroundColor: '#0d0a04',
-        scale: 3,
+        scale: 2,
         useCORS: true,
         logging: false,
         width: 280,
         height: 400,
+        windowWidth: 280,
+        windowHeight: 400,
+        onclone: (clonedDoc) => {
+          const el = clonedDoc.querySelector('[data-capture-root]');
+          if (el) {
+            (el as HTMLElement).style.transform = 'none';
+          }
+        },
       });
       
       canvas.toBlob(async (blob) => {
@@ -162,12 +178,27 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName }: ProDNA
 
   return (
     <>
-      {/* Hidden off-screen element for html2canvas capture */}
+      {/* Hidden off-screen element for html2canvas capture - must use absolute positioning and explicit dimensions */}
       {showCaptureElement && displayDna && (
-        <div className="fixed -left-[9999px] top-0 pointer-events-none">
+        <div 
+          style={{ 
+            position: 'fixed', 
+            left: '-9999px', 
+            top: '0', 
+            pointerEvents: 'none',
+            zIndex: -1,
+          }}
+        >
           <div 
             ref={captureRef}
-            style={{ width: '280px', height: '400px' }}
+            data-capture-root
+            style={{ 
+              width: '280px', 
+              height: '400px',
+              display: 'block',
+              overflow: 'visible',
+              background: '#0d0a04',
+            }}
           >
             <ProDNACard
               dna={displayDna}
