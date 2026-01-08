@@ -153,8 +153,9 @@ export const useGenerateCardTips = () => {
       queryClient.invalidateQueries({ queryKey: ['card-mastery', variables.playerTag] });
       toast.success(i18n.t('cardMastery.tipsGenerated', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
     },
-    onError: (error: any, variables) => {
-      if (error?.subscription_required) {
+    onError: (error: unknown, variables) => {
+      const errorObj = error as { subscription_required?: boolean };
+      if (errorObj?.subscription_required) {
         toast.error(i18n.t('subscription.requiredForAI'), { 
           id: `card-tips-${variables.cardId}`,
           action: {

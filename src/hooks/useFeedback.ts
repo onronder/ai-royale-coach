@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Json } from "@/integrations/supabase/types";
 import { useTranslation } from "react-i18next";
 
 export type FeedbackType = 'coach_response' | 'deck_recommendation' | 'match_analysis' | 'deck_analysis';
@@ -25,10 +26,9 @@ export function useFeedback() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Type assertion needed because Supabase types don't include the new table yet
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('ai_feedback')
-        .insert({
+        .insert([{
           user_id: user.id,
           player_tag: params.playerTag,
           feedback_type: params.feedbackType,
@@ -36,8 +36,8 @@ export function useFeedback() {
           rating: params.rating,
           helpful: params.helpful,
           comment: params.comment,
-          context: params.context || {}
-        });
+          context: (params.context || {}) as Json
+        }]);
 
       if (error) throw error;
     },

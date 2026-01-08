@@ -11,8 +11,10 @@ import { ThemeToggle } from "./ThemeToggle";
 import { NavbarSubscriptionBadge } from "./NavbarSubscriptionBadge";
 import { useAdminAccess } from "@/hooks/useAdminAccess";
 
+import { User } from "@supabase/supabase-js";
+
 interface NavbarProps {
-  user?: any;
+  user?: User | null;
   showAuth?: boolean;
 }
 

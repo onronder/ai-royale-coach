@@ -76,9 +76,9 @@ export function AccountComparison({ profiles }: AccountComparisonProps) {
   }
 
   // Pad to 3 columns for consistent layout
-  const paddedProfiles = [...profiles];
+  const paddedProfiles: (PlayerProfile | undefined)[] = [...profiles];
   while (paddedProfiles.length < 3) {
-    paddedProfiles.push(undefined as any);
+    paddedProfiles.push(undefined);
   }
 
   const getWinRate = (profile: PlayerProfile | undefined) => {

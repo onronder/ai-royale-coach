@@ -19,6 +19,7 @@ import { AIFeatureGate } from "@/components/subscription/AIFeatureGate";
 import { FeatureUsageIndicator } from "@/components/common/FeatureUsageIndicator";
 import { useNavigate } from "react-router-dom";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
+import { SavedDeckRow, CardMasteryRow, UserAchievementWithDetails, CardCollectionRow } from "@/types/dashboard.types";
 
 const MESSAGES_PER_PAGE = 50;
 
@@ -74,10 +75,10 @@ interface CoachChatPanelProps {
     losses: number;
     avgTrophyChange: string;
   };
-  savedDecks?: any[];
-  cardMastery?: any[];
-  achievements?: any[];
-  cardCollection?: any[];
+  savedDecks?: SavedDeckRow[];
+  cardMastery?: CardMasteryRow[];
+  achievements?: UserAchievementWithDetails[];
+  cardCollection?: CardCollectionRow[];
   matchContext?: MatchContextData | null;
   proactiveSuggestion?: ProactiveSuggestion;
 }
@@ -223,7 +224,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
       if (data && data.length > 0) {
         // Group messages by conversation (using date as conversation identifier)
-        const grouped = data.reduce((acc: any, msg: any) => {
+        const grouped = data.reduce((acc: Record<string, { id: string; title: string; last_message_at: string; messages: typeof data }>, msg) => {
           const date = new Date(msg.created_at).toLocaleDateString();
           if (!acc[date]) {
             acc[date] = {
@@ -237,7 +238,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           return acc;
         }, {});
 
-        const convos = Object.values(grouped).map((conv: any) => ({
+        const convos = Object.values(grouped).map((conv) => ({
           id: conv.id,
           title: conv.title,
           last_message_at: conv.last_message_at,
@@ -282,7 +283,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
         .eq("user_id", user.id);
 
       // Filter by conversation date
-      const conversationMessages = allData?.filter((msg: any) => {
+      const conversationMessages = allData?.filter((msg) => {
         const msgDate = new Date(msg.created_at).toLocaleDateString();
         return msgDate === conversationId;
       }) || [];
@@ -301,7 +302,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       if (error) throw error;
 
       // Filter messages for this conversation (by date) and reverse for display
-      const filtered = data?.filter((msg: any) => {
+      const filtered = data?.filter((msg) => {
         const msgDate = new Date(msg.created_at).toLocaleDateString();
         return msgDate === conversationId;
       }).reverse() || [];
@@ -338,7 +339,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
       if (error) throw error;
 
       // Filter by conversation date and reverse for display
-      const filtered = (data?.filter((msg: any) => {
+      const filtered = (data?.filter((msg) => {
         const msgDate = new Date(msg.created_at).toLocaleDateString();
         return msgDate === currentConversationId;
       }).reverse() || []) as Message[];
