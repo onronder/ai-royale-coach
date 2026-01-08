@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +10,7 @@ import { useApiMetrics, EndpointGroup } from '@/hooks/useApiMetrics';
 import { ApiMetricsChart } from './ApiMetricsChart';
 import { ApiRequestLog } from './ApiRequestLog';
 
-function EndpointGroupCard({ group }: { group: EndpointGroup }) {
+function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string) => string }) {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
@@ -21,15 +22,15 @@ function EndpointGroupCard({ group }: { group: EndpointGroup }) {
             <div>
               <span className="font-medium">{group.name}</span>
               <span className="text-xs text-muted-foreground ml-2">
-                ({group.endpoints.length} endpoints)
+                ({group.endpoints.length} {t('admin.apiMetrics.endpoints')})
               </span>
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm">
-            <span className="font-semibold">{group.totalCount} calls</span>
+            <span className="font-semibold">{group.totalCount} {t('admin.apiMetrics.calls')}</span>
             <span className="text-muted-foreground">{group.avgDuration}ms</span>
             <span className={group.cacheHitRate >= 70 ? 'text-green-500' : group.cacheHitRate >= 40 ? 'text-yellow-500' : 'text-muted-foreground'}>
-              {group.cacheHitRate}% cache
+              {group.cacheHitRate}% {t('admin.apiMetrics.cache')}
             </span>
           </div>
         </div>
@@ -46,7 +47,7 @@ function EndpointGroupCard({ group }: { group: EndpointGroup }) {
                   {ep.endpoint}
                 </span>
                 {ep.avgDuration > 500 && (
-                  <Badge variant="destructive" className="text-[10px] px-1">Slow</Badge>
+                  <Badge variant="destructive" className="text-[10px] px-1">{t('admin.apiMetrics.slow')}</Badge>
                 )}
               </div>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -63,6 +64,7 @@ function EndpointGroupCard({ group }: { group: EndpointGroup }) {
 }
 
 export function ApiMetricsDashboard() {
+  const { t } = useTranslation();
   const [timeframe, setTimeframe] = useState<'15min' | '1hr' | '24hr'>('1hr');
   const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
   const { stats, endpoints, endpointGroups, timeline, recentLogs, isLoading, refetch } = useApiMetrics(timeframe);
@@ -72,8 +74,8 @@ export function ApiMetricsDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">API Metrics</h2>
-          <p className="text-muted-foreground">Monitor query frequency and identify redundant calls</p>
+          <h2 className="text-2xl font-bold">{t('admin.apiMetrics.title')}</h2>
+          <p className="text-muted-foreground">{t('admin.apiMetrics.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Tabs value={timeframe} onValueChange={(v) => setTimeframe(v as typeof timeframe)}>
@@ -95,7 +97,7 @@ export function ApiMetricsDashboard() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Activity className="h-4 w-4" />
-              Total Requests
+              {t('admin.apiMetrics.totalRequests')}
             </div>
             <p className="text-2xl font-bold mt-1">
               {isLoading ? '...' : stats?.totalRequests.toLocaleString()}
@@ -107,7 +109,7 @@ export function ApiMetricsDashboard() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Zap className="h-4 w-4" />
-              Requests/min
+              {t('admin.apiMetrics.requestsPerMin')}
             </div>
             <p className="text-2xl font-bold mt-1">
               {isLoading ? '...' : stats?.requestsPerMinute.toFixed(1)}
@@ -119,7 +121,7 @@ export function ApiMetricsDashboard() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Database className="h-4 w-4" />
-              Cache Hit Rate
+              {t('admin.apiMetrics.cacheHitRate')}
             </div>
             <p className="text-2xl font-bold mt-1">
               {isLoading ? '...' : `${stats?.cacheHitRate.toFixed(0)}%`}
@@ -131,7 +133,7 @@ export function ApiMetricsDashboard() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Clock className="h-4 w-4" />
-              Avg Duration
+              {t('admin.apiMetrics.avgDuration')}
             </div>
             <p className="text-2xl font-bold mt-1">
               {isLoading ? '...' : `${stats?.avgDuration.toFixed(0)}ms`}
@@ -143,7 +145,7 @@ export function ApiMetricsDashboard() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <AlertTriangle className="h-4 w-4" />
-              Slow Queries
+              {t('admin.apiMetrics.slowQueries')}
             </div>
             <p className="text-2xl font-bold mt-1">
               {isLoading ? '...' : stats?.slowQueries}
@@ -155,7 +157,7 @@ export function ApiMetricsDashboard() {
       {/* Timeline Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Request Timeline</CardTitle>
+          <CardTitle className="text-lg">{t('admin.apiMetrics.requestTimeline')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ApiMetricsChart data={timeline || []} isLoading={isLoading} />

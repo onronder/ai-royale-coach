@@ -2187,5 +2187,100 @@
     "meta": "Meta",
     "confidence": "Güven",
     "betterDefensiveValue": "Bu kart daha iyi savunma değeri sağlar ve döngü kartlarınızla iyi sinerji yapar..."
+  },
+  "sidebar": {
+    "navigation": "Navigasyon",
+    "quickActions": "Hızlı Eylemler",
+    "achievements": "Başarılar",
+    "proDna": "Pro DNA",
+    "theOracle": "Kahin"
+  },
+  "admin": {
+    "apiMetrics": {
+      "title": "API Metrikleri",
+      "subtitle": "Sorgu sıklığını izle ve gereksiz çağrıları belirle",
+      "totalRequests": "Toplam İstek",
+      "requestsPerMin": "İstek/dk",
+      "cacheHitRate": "Önbellek Oranı",
+      "avgDuration": "Ort. Süre",
+      "slowQueries": "Yavaş Sorgular",
+      "requestTimeline": "İstek Zaman Çizelgesi",
+      "recentRequests": "Son İstekler",
+      "endpointsByCategory": "Kategoriye Göre Uç Noktalar",
+      "grouped": "Gruplu",
+      "flat": "Düz",
+      "loading": "Yükleniyor...",
+      "noData": "Henüz veri yok",
+      "endpoints": "uç nokta",
+      "calls": "çağrı",
+      "cache": "önbellek",
+      "slow": "Yavaş"
+    },
+    "fraudReview": {
+      "backToCases": "Vakalara Dön",
+      "caseReview": "Vaka İncelemesi",
+      "userDetails": "Kullanıcı Detayları",
+      "userId": "Kullanıcı ID",
+      "status": "Durum",
+      "fraudScore": "Dolandırıcılık Puanı",
+      "totalSignals": "Toplam Sinyaller",
+      "softBlocked": "Yumuşak Engel",
+      "warning": "Uyarı",
+      "clean": "Temiz",
+      "playerTags": "Oyuncu Etiketleri",
+      "noPlayerTags": "Bağlı oyuncu etiketi yok",
+      "deviceFingerprints": "Cihaz Parmak İzleri",
+      "noFingerprints": "Kaydedilmiş parmak izi yok",
+      "lastSeen": "Son görülme",
+      "seenCount": "{{count}} kez görüldü",
+      "fraudSignals": "Dolandırıcılık Sinyalleri",
+      "noSignals": "Kaydedilmiş sinyal yok",
+      "adminActions": "Yönetici İşlemleri",
+      "reviewNotes": "İnceleme notları (isteğe bağlı)...",
+      "clearMarkClean": "Temizle (Temiz İşaretle)",
+      "setWarning": "Uyarı Ver",
+      "softBlock": "Yumuşak Engel",
+      "lastReviewed": "Son inceleme",
+      "notes": "Notlar",
+      "loadingCaseDetails": "Vaka detayları yükleniyor...",
+      "statusUpdated": "Durum başarıyla güncellendi",
+      "updateFailed": "Durum güncellenemedi",
+      "severity": {
+        "critical": "Kritik",
+        "high": "Yüksek",
+        "medium": "Orta",
+        "low": "Düşük"
+      }
+    }
+  },
+  "oraclePage": {
+    "title": "Kahin",
+    "subtitle": "Maç başlamadan önce rakibinin destesini tahmin et",
+    "proFeature": "PRO Özellik",
+    "proUpgradeMessage": "Canlı Maç Tahminlerinin kilidini açmak için PRO'ya yükseltin."
+  },
+  "achievements": {
+    "title": "Başarılar",
+    "subtitle": "Savaş başarılarınız",
+    "share": "Kupa Dolabını Paylaş",
+    "shared": "Kupa Dolabı paylaşıldı!",
+    "downloaded": "Kupa Dolabı kaydedildi!",
+    "shareFailed": "Paylaşım başarısız",
+    "trophyCase": "Kupa Dolabı",
+    "badgesEarned": "Kazanılan Rozetler"
+  },
+  "pagination": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "morePages": "Daha fazla sayfa",
+    "previousPage": "Önceki sayfaya git",
+    "nextPage": "Sonraki sayfaya git"
+  },
+  "common": {
+    "vs": "vs",
+    "loading": "Yükleniyor...",
+    "new": "YENİ",
+    "pro": "PRO",
+    "ai": "AI"
   }
 }

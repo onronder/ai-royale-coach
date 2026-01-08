@@ -136,6 +136,7 @@ interface ShareableCardProps {
 
 const ShareableCard = forwardRef<HTMLDivElement, ShareableCardProps>(
   ({ playerName, playerTag, achievements }, ref) => {
+    const { t } = useTranslation();
     return (
       <div
         ref={ref}
@@ -149,13 +150,13 @@ const ShareableCard = forwardRef<HTMLDivElement, ShareableCardProps>(
               <Trophy className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">{playerName}'s Trophy Case</h2>
+              <h2 className="text-2xl font-bold text-white">{playerName}'s {t('achievements.trophyCase')}</h2>
               <p className="text-gray-400">#{playerTag}</p>
             </div>
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-amber-400">{achievements.length}</div>
-            <div className="text-sm text-gray-400">Badges Earned</div>
+            <div className="text-sm text-gray-400">{t('achievements.badgesEarned')}</div>
           </div>
         </div>
 

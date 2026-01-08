@@ -2179,5 +2179,100 @@
     "meta": "Meta",
     "confidence": "Confiança",
     "betterDefensiveValue": "Esta carta oferece melhor valor defensivo e tem boa sinergia com suas cartas de ciclo..."
+  },
+  "sidebar": {
+    "navigation": "Navegação",
+    "quickActions": "Ações Rápidas",
+    "achievements": "Conquistas",
+    "proDna": "Pro DNA",
+    "theOracle": "O Oráculo"
+  },
+  "admin": {
+    "apiMetrics": {
+      "title": "Métricas de API",
+      "subtitle": "Monitorar frequência de consultas e identificar chamadas redundantes",
+      "totalRequests": "Total de Requisições",
+      "requestsPerMin": "Requisições/min",
+      "cacheHitRate": "Taxa de Cache",
+      "avgDuration": "Duração Méd.",
+      "slowQueries": "Consultas Lentas",
+      "requestTimeline": "Linha do Tempo de Requisições",
+      "recentRequests": "Requisições Recentes",
+      "endpointsByCategory": "Endpoints por Categoria",
+      "grouped": "Agrupado",
+      "flat": "Plano",
+      "loading": "Carregando...",
+      "noData": "Sem dados ainda",
+      "endpoints": "endpoints",
+      "calls": "chamadas",
+      "cache": "cache",
+      "slow": "Lento"
+    },
+    "fraudReview": {
+      "backToCases": "Voltar aos Casos",
+      "caseReview": "Revisão do Caso",
+      "userDetails": "Detalhes do Usuário",
+      "userId": "ID do Usuário",
+      "status": "Status",
+      "fraudScore": "Pontuação de Fraude",
+      "totalSignals": "Sinais Totais",
+      "softBlocked": "Bloqueio Suave",
+      "warning": "Aviso",
+      "clean": "Limpo",
+      "playerTags": "Tags de Jogador",
+      "noPlayerTags": "Nenhuma tag de jogador vinculada",
+      "deviceFingerprints": "Impressões de Dispositivo",
+      "noFingerprints": "Nenhuma impressão registrada",
+      "lastSeen": "Visto por último",
+      "seenCount": "Visto {{count}} vezes",
+      "fraudSignals": "Sinais de Fraude",
+      "noSignals": "Nenhum sinal registrado",
+      "adminActions": "Ações de Admin",
+      "reviewNotes": "Notas de revisão (opcional)...",
+      "clearMarkClean": "Limpar (Marcar Limpo)",
+      "setWarning": "Definir Aviso",
+      "softBlock": "Bloqueio Suave",
+      "lastReviewed": "Última revisão",
+      "notes": "Notas",
+      "loadingCaseDetails": "Carregando detalhes do caso...",
+      "statusUpdated": "Status atualizado com sucesso",
+      "updateFailed": "Falha ao atualizar status",
+      "severity": {
+        "critical": "Crítico",
+        "high": "Alto",
+        "medium": "Médio",
+        "low": "Baixo"
+      }
+    }
+  },
+  "oraclePage": {
+    "title": "O Oráculo",
+    "subtitle": "Preveja o deck do seu oponente antes da partida começar",
+    "proFeature": "Recurso PRO",
+    "proUpgradeMessage": "Atualize para PRO para desbloquear Previsões de Partida ao Vivo."
+  },
+  "achievements": {
+    "title": "Conquistas",
+    "subtitle": "Suas conquistas de batalha",
+    "share": "Compartilhar Vitrine de Troféus",
+    "shared": "Vitrine de Troféus compartilhada!",
+    "downloaded": "Vitrine de Troféus salva!",
+    "shareFailed": "Falha ao compartilhar",
+    "trophyCase": "Vitrine de Troféus",
+    "badgesEarned": "Distintivos Ganhos"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Próximo",
+    "morePages": "Mais páginas",
+    "previousPage": "Ir para página anterior",
+    "nextPage": "Ir para próxima página"
+  },
+  "common": {
+    "vs": "vs",
+    "loading": "Carregando...",
+    "new": "NOVO",
+    "pro": "PRO",
+    "ai": "IA"
   }
 }
