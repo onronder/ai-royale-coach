@@ -2433,7 +2433,10 @@
     "noClan": "Klan Yok",
     "liveDeck": "CANLI",
     "simulatedDeck": "SİM",
-    "specialist": "Uzmanı"
+    "specialist": "Uzmanı",
+    "hallOfFame": "Şöhret Salonu",
+    "fallbackNotice": "Canlı sıralama mevcut değil. Tüm Zamanların Efsaneleri gösteriliyor.",
+    "usingSimDeck": "Bu efsane için simüle edilmiş deste kullanılıyor."
   },
   "achievements": {
     "title": "Başarılar",

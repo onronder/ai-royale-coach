@@ -2435,7 +2435,10 @@
     "noClan": "Sin Clan",
     "liveDeck": "EN VIVO",
     "simulatedDeck": "SIM",
-    "specialist": "Especialista"
+    "specialist": "Especialista",
+    "hallOfFame": "Salón de la Fama",
+    "fallbackNotice": "Rankings en vivo no disponibles. Mostrando Leyendas de Todos los Tiempos.",
+    "usingSimDeck": "Usando mazo simulado para esta leyenda."
   },
   "achievements": {
     "title": "Logros",

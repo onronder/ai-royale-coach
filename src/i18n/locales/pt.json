@@ -2378,7 +2378,10 @@
     "noClan": "Sem Clã",
     "liveDeck": "AO VIVO",
     "simulatedDeck": "SIM",
-    "specialist": "Especialista"
+    "specialist": "Especialista",
+    "hallOfFame": "Hall da Fama",
+    "fallbackNotice": "Rankings ao vivo indisponíveis. Mostrando Lendas de Todos os Tempos.",
+    "usingSimDeck": "Usando deck simulado para esta lenda."
   },
   "achievements": {
     "title": "Conquistas",
