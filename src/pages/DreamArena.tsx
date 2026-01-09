@@ -1,61 +1,38 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock, HelpCircle, ChevronDown, Wifi, Search, CheckCircle2 } from 'lucide-react';
+import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock, HelpCircle, ChevronDown, Wifi, Search, CheckCircle2, Users, AlertCircle, RefreshCw } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Skeleton } from '@/components/ui/skeleton';
 import { DreamArenaView } from '@/components/arena/DreamArenaView';
 import { supabase } from '@/integrations/supabase/client';
 import { useClashRoyalePlayer } from '@/hooks/useClashRoyalePlayer';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
-import { useProPlayerDeck } from '@/hooks/useProPlayerDeck';
-import { PRO_PLAYER_PROFILES, ProPlayerProfile } from '@/data/proPlayers';
+import { clashRoyaleApi, LadderPlayer, ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { simulateDreamMatch, SimulationResult } from '@/utils/dreamArenaEngine';
-import { sampleDecks } from '@/data/sampleDecks';
-import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { cn } from '@/lib/utils';
 
-type ArenaState = 'select' | 'loading' | 'battle' | 'result';
+type ArenaState = 'select' | 'loading' | 'battle';
 type ConnectionPhase = 'connecting' | 'scouting' | 'ready';
 
-// Map pro archetypes to sampleDeck IDs for fallback
-const ARCHETYPE_FALLBACK_MAP: Record<string, string> = {
-  'Cycle': 'hog-cycle',
-  'Control': 'log-bait',
-  'Siege': 'xbow-siege',
-  'Log Bait': 'log-bait',
-  'Hog': 'hog-cycle',
-  'Beatdown': 'golem-beatdown',
-};
-
-// Convert sampleDeck cards to ClashRoyaleCard format for fallback
-const getFallbackDeck = (archetype: string): ClashRoyaleCard[] => {
-  const deckId = ARCHETYPE_FALLBACK_MAP[archetype] || 'hog-cycle';
-  const sampleDeck = sampleDecks.find(d => d.id === deckId);
-  
-  if (!sampleDeck) return [];
-  
-  return sampleDeck.cards.map((card, index) => ({
-    id: index + 1000,
-    name: card.name,
-    level: 14,
-    maxLevel: 14,
-    elixirCost: card.elixir,
-    rarity: card.rarity,
-    iconUrls: {
-      medium: `https://cdn.royaleapi.com/static/img/cards-150/${card.name.toLowerCase().replace(/\s+/g, '-')}.png`,
-    },
-  }));
-};
+// Selected opponent type (from leaderboard)
+interface SelectedOpponent {
+  tag: string;
+  name: string;
+  rank: number;
+  trophies: number;
+  clan?: { name: string; tag: string };
+}
 
 export default function DreamArena() {
   const { t } = useTranslation();
@@ -64,7 +41,8 @@ export default function DreamArena() {
   const playerTag = searchParams.get('player') || '';
 
   const [arenaState, setArenaState] = useState<ArenaState>('select');
-  const [selectedPro, setSelectedPro] = useState<ProPlayerProfile | null>(null);
+  const [selectedOpponent, setSelectedOpponent] = useState<SelectedOpponent | null>(null);
+  const [opponentDeck, setOpponentDeck] = useState<ClashRoyaleCard[]>([]);
   const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -74,13 +52,18 @@ export default function DreamArena() {
   // Get player data
   const { data: playerData, isLoading: isPlayerLoading } = useClashRoyalePlayer(playerTag);
 
-  // Fetch selected pro player's deck via API
+  // Fetch global top 10 leaderboard
   const {
-    deck: proDeck,
-    trophies: proTrophies,
-    isLoading: isProDeckLoading,
-    isError: isProDeckError,
-  } = useProPlayerDeck(selectedPro?.tag || '');
+    data: leaderboard,
+    isLoading: isLeaderboardLoading,
+    isError: isLeaderboardError,
+    refetch: refetchLeaderboard,
+  } = useQuery({
+    queryKey: ['globalLeaderboard'],
+    queryFn: () => clashRoyaleApi.getGlobalTopLadder(10),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000,
+  });
 
   // Feature access check
   const {
@@ -107,7 +90,7 @@ export default function DreamArena() {
 
   // Animate through connection phases
   useEffect(() => {
-    if (arenaState === 'loading' && selectedPro) {
+    if (arenaState === 'loading' && selectedOpponent) {
       setConnectionPhase('connecting');
       
       const timer1 = setTimeout(() => setConnectionPhase('scouting'), 1200);
@@ -118,80 +101,93 @@ export default function DreamArena() {
         clearTimeout(timer2);
       };
     }
-  }, [arenaState, selectedPro]);
+  }, [arenaState, selectedOpponent]);
 
-  // Start simulation when pro deck is loaded (success scenario)
+  // Fetch opponent deck when loading
   useEffect(() => {
-    if (arenaState === 'loading' && selectedPro && proDeck.length >= 8 && !isProDeckLoading && !isProDeckError) {
-      setIsLiveDeck(true);
-      
-      const userDeck = playerData?.currentDeck || [];
-      const finalUserDeck = userDeck.length >= 8 ? userDeck : proDeck;
+    if (arenaState === 'loading' && selectedOpponent && connectionPhase === 'ready') {
+      const fetchOpponentDeck = async () => {
+        try {
+          const opponentData = await clashRoyaleApi.getPlayer(selectedOpponent.tag);
+          
+          // Check for valid deck
+          const deck = opponentData.currentDeck || [];
+          if (deck.length < 8) {
+            throw new Error('No valid deck found');
+          }
 
-      const result = simulateDreamMatch({
-        userDeck: finalUserDeck,
-        proDeck,
-        userTrophies: playerData?.trophies || 5000,
-        proTrophies,
-        userName: playerData?.name || 'Challenger',
-        proName: selectedPro.name,
-      });
+          setOpponentDeck(deck);
+          setIsLiveDeck(true);
 
-      setSimulationResult(result);
-      logUsage({ opponent: selectedPro.id });
-      setArenaState('battle');
+          // Run simulation
+          const userDeck = playerData?.currentDeck || [];
+          const finalUserDeck = userDeck.length >= 8 ? userDeck : deck;
+
+          const result = simulateDreamMatch({
+            userDeck: finalUserDeck,
+            proDeck: deck,
+            userTrophies: playerData?.trophies || 5000,
+            proTrophies: selectedOpponent.trophies,
+            userName: playerData?.name || 'Challenger',
+            proName: selectedOpponent.name,
+          });
+
+          setSimulationResult(result);
+          logUsage({ opponent: selectedOpponent.tag, rank: selectedOpponent.rank });
+          setArenaState('battle');
+
+        } catch (error) {
+          // No fallback - show authentic error
+          toast.error(
+            t('dreamArena.profileUnavailable', 'Player profile private or unavailable. Try another opponent.'),
+            { duration: 4000 }
+          );
+          setArenaState('select');
+          setSelectedOpponent(null);
+        }
+      };
+
+      fetchOpponentDeck();
     }
-  }, [arenaState, selectedPro, proDeck, isProDeckLoading, isProDeckError, playerData, proTrophies, logUsage]);
+  }, [arenaState, selectedOpponent, connectionPhase, playerData, logUsage, t]);
 
-  // Handle API error with fallback
-  useEffect(() => {
-    if (arenaState === 'loading' && isProDeckError && selectedPro) {
-      // API failed - use fallback deck
-      const fallbackDeck = getFallbackDeck(selectedPro.archetype);
-      
-      toast.error(t('dreamArena.fallbackToast', 'Could not fetch live deck. Using simulation data.'));
-      setIsLiveDeck(false);
-      
-      const userDeck = playerData?.currentDeck || [];
-      const finalUserDeck = userDeck.length >= 8 ? userDeck : fallbackDeck;
-      
-      const result = simulateDreamMatch({
-        userDeck: finalUserDeck,
-        proDeck: fallbackDeck,
-        userTrophies: playerData?.trophies || 5000,
-        proTrophies: 9000, // Default high trophies for pro
-        userName: playerData?.name || 'Challenger',
-        proName: selectedPro.name,
-      });
-      
-      setSimulationResult(result);
-      logUsage({ opponent: selectedPro.id });
-      setArenaState('battle');
-    }
-  }, [arenaState, isProDeckError, selectedPro, playerData, logUsage, t]);
-
-  const handleSelectOpponent = async (pro: ProPlayerProfile) => {
+  const handleSelectOpponent = async (player: LadderPlayer) => {
     // Check access before starting
     const access = await checkAccess();
     if (!access.allowed) {
       return;
     }
 
-    setSelectedPro(pro);
+    setSelectedOpponent({
+      tag: player.tag,
+      name: player.name,
+      rank: player.rank,
+      trophies: player.trophies,
+      clan: player.clan,
+    });
     setArenaState('loading');
   };
 
   const handleCloseBattle = () => {
     setArenaState('select');
-    setSelectedPro(null);
+    setSelectedOpponent(null);
     setSimulationResult(null);
+    setOpponentDeck([]);
     setIsLiveDeck(true);
   };
 
   const handlePlayAgain = () => {
-    if (selectedPro) {
+    if (selectedOpponent) {
       setArenaState('loading');
     }
+  };
+
+  // Get rank badge styles
+  const getRankBadge = (rank: number) => {
+    if (rank === 1) return { bg: 'bg-gradient-to-br from-yellow-400 to-yellow-600', text: 'text-yellow-900', glow: 'shadow-yellow-500/50' };
+    if (rank === 2) return { bg: 'bg-gradient-to-br from-gray-300 to-gray-500', text: 'text-gray-900', glow: 'shadow-gray-400/50' };
+    if (rank === 3) return { bg: 'bg-gradient-to-br from-amber-600 to-amber-800', text: 'text-amber-100', glow: 'shadow-amber-600/50' };
+    return { bg: 'bg-gradient-to-br from-slate-600 to-slate-800', text: 'text-slate-100', glow: '' };
   };
 
   const isLoading = isPlayerLoading || isAccessLoading;
@@ -265,7 +261,7 @@ export default function DreamArena() {
               className="text-xl font-mono font-bold text-crimson tracking-wider uppercase"
             >
               {connectionPhase === 'connecting' && t('dreamArena.connecting', 'CONNECTING TO SUPERCELL SERVERS...')}
-              {connectionPhase === 'scouting' && t('dreamArena.scouting', 'SCOUTING {{name}}...', { name: selectedPro?.name?.toUpperCase() })}
+              {connectionPhase === 'scouting' && t('dreamArena.scouting', 'SCOUTING {{name}}...', { name: selectedOpponent?.name?.toUpperCase() })}
               {connectionPhase === 'ready' && t('dreamArena.ready', 'DATA ACQUIRED')}
             </motion.p>
             
@@ -284,8 +280,8 @@ export default function DreamArena() {
             </div>
           </div>
 
-          {/* Pro Player Card Preview */}
-          {selectedPro && (
+          {/* Opponent Card Preview */}
+          {selectedOpponent && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -293,12 +289,26 @@ export default function DreamArena() {
               className="p-4 rounded-xl bg-white/5 border border-crimson/30 backdrop-blur-sm"
             >
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-crimson to-destructive flex items-center justify-center text-xl font-bold text-white">
-                  {selectedPro.name.charAt(0)}
+                <div className={cn(
+                  "w-12 h-12 rounded-lg flex items-center justify-center text-xl font-bold shadow-lg",
+                  getRankBadge(selectedOpponent.rank).bg,
+                  getRankBadge(selectedOpponent.rank).text,
+                  getRankBadge(selectedOpponent.rank).glow
+                )}>
+                  #{selectedOpponent.rank}
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-foreground">{selectedPro.name}</p>
-                  <p className="text-sm text-muted-foreground">{selectedPro.archetype} {t('dreamArena.specialist', 'Specialist')}</p>
+                  <p className="font-bold text-foreground">{selectedOpponent.name}</p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Trophy className="w-3 h-3 text-gold" />
+                    {selectedOpponent.trophies.toLocaleString()}
+                    {selectedOpponent.clan && (
+                      <>
+                        <span className="mx-1">•</span>
+                        {selectedOpponent.clan.name}
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -309,10 +319,16 @@ export default function DreamArena() {
   }
 
   // Render battle view
-  if (arenaState === 'battle' && selectedPro && simulationResult) {
-    // Use the deck that was used for simulation (live or fallback)
-    const battleDeck = isLiveDeck ? proDeck : getFallbackDeck(selectedPro.archetype);
-    const battleTrophies = isLiveDeck ? proTrophies : 9000;
+  if (arenaState === 'battle' && selectedOpponent && simulationResult) {
+    // Create a compatible pro player object for DreamArenaView
+    const proPlayerCompat = {
+      id: selectedOpponent.tag,
+      name: selectedOpponent.name,
+      tag: selectedOpponent.tag,
+      archetype: 'Top Ladder',
+      playstyle: '',
+      specialty: '',
+    };
     
     return (
       <DreamArenaView
@@ -320,11 +336,11 @@ export default function DreamArena() {
           name: playerData?.name || 'Challenger',
           avatarUrl: undefined,
           trophies: playerData?.trophies || 5000,
-          deck: playerData?.currentDeck?.length >= 8 ? playerData.currentDeck : battleDeck,
+          deck: playerData?.currentDeck?.length >= 8 ? playerData.currentDeck : opponentDeck,
         }}
-        proPlayer={selectedPro}
-        proDeck={battleDeck}
-        proTrophies={battleTrophies}
+        proPlayer={proPlayerCompat}
+        proDeck={opponentDeck}
+        proTrophies={selectedOpponent.trophies}
         simulationResult={simulationResult}
         isLiveDeck={isLiveDeck}
         onClose={handleCloseBattle}
@@ -337,13 +353,13 @@ export default function DreamArena() {
     <>
       <Helmet>
         <title>{t('dreamArena.title')} | AI Royale Coach</title>
-        <meta name="description" content="Challenge legendary Clash Royale pros in AI-powered dream matches" />
+        <meta name="description" content="Challenge the world's best Clash Royale players in AI-powered dream matches" />
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar user={user} />
 
-        <main className="flex-1 container max-w-6xl mx-auto px-4 py-8">
+        <main className="flex-1 container max-w-4xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8">
             <Button
@@ -364,11 +380,11 @@ export default function DreamArena() {
                 <h1 className="text-3xl font-rajdhani font-bold text-foreground flex items-center gap-2">
                   {t('dreamArena.title')}
                   <Badge className="bg-crimson/20 text-crimson border-crimson/30">
-                    {t('common.new', 'NEW')}
+                    {t('dreamArena.live', 'LIVE')}
                   </Badge>
                 </h1>
                 <p className="text-muted-foreground">
-                  {t('dreamArena.subtitle', 'Challenge legendary pros in AI-powered dream matches')}
+                  {t('dreamArena.liveSubtitle', 'Challenge the Global Top 10 with real-time data')}
                 </p>
               </div>
             </div>
@@ -392,15 +408,15 @@ export default function DreamArena() {
               <div className="mt-3 p-4 rounded-lg bg-muted/20 border border-border/50 space-y-3">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">1</div>
-                  <p className="text-sm text-muted-foreground">{t('dreamArena.step1')}</p>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.liveStep1', 'Select a player from the live Global Top 10 leaderboard')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">2</div>
-                  <p className="text-sm text-muted-foreground">{t('dreamArena.step2')}</p>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.liveStep2', 'We fetch their current deck in real-time from Supercell servers')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-crimson/20 text-crimson flex items-center justify-center text-sm font-bold shrink-0">3</div>
-                  <p className="text-sm text-muted-foreground">{t('dreamArena.step3')}</p>
+                  <p className="text-sm text-muted-foreground">{t('dreamArena.liveStep3', 'Our AI simulates the match based on real playstyles and meta')}</p>
                 </div>
               </div>
             </CollapsibleContent>
@@ -418,79 +434,141 @@ export default function DreamArena() {
             </div>
           )}
 
-          {/* Opponent Selection Grid */}
+          {/* Live Leaderboard */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Crown className="w-5 h-5 text-gold" />
-              {t('dreamArena.selectOpponent', 'Select Your Opponent')}
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {PRO_PLAYER_PROFILES.map((pro) => (
-                <motion.div
-                  key={pro.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <Crown className="w-5 h-5 text-gold" />
+                {t('dreamArena.globalTop10', 'Global Top 10')}
+                <motion.span
+                  animate={{ opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="flex items-center gap-1 ml-2"
                 >
-                  <Card
-                    className={cn(
-                      'cursor-pointer transition-all duration-200 border-2 hover:border-crimson/50 hover:shadow-lg hover:shadow-crimson/10',
-                      selectedPro?.id === pro.id && 'border-crimson bg-crimson/5'
-                    )}
-                    onClick={() => !isLoading && canAccess && handleSelectOpponent(pro)}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-crimson to-destructive flex items-center justify-center text-2xl font-bold text-white shadow-md">
-                          {pro.name.charAt(0)}
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="text-lg">{pro.name}</CardTitle>
-                          <CardDescription className="flex items-center gap-1">
-                            <Trophy className="w-3 h-3 text-gold" />
-                            <span className="text-gold font-medium">{pro.archetype}</span>
-                          </CardDescription>
-                        </div>
-                        <Badge variant="secondary" className="text-xs">
-                          {t(pro.specialty)}
-                        </Badge>
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-xs text-green-500 font-medium uppercase">{t('dreamArena.live', 'LIVE')}</span>
+                </motion.span>
+              </h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => refetchLeaderboard()}
+                disabled={isLeaderboardLoading}
+              >
+                <RefreshCw className={cn("w-4 h-4", isLeaderboardLoading && "animate-spin")} />
+              </Button>
+            </div>
+
+            {/* Loading State */}
+            {isLeaderboardLoading && (
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
+                    <Skeleton className="w-12 h-12 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                    <Skeleton className="h-8 w-20" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error State */}
+            {isLeaderboardError && (
+              <div className="p-8 rounded-xl bg-destructive/5 border border-destructive/20 text-center">
+                <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
+                <p className="text-destructive font-medium mb-2">
+                  {t('dreamArena.leaderboardError', 'Failed to load leaderboard')}
+                </p>
+                <Button variant="outline" size="sm" onClick={() => refetchLeaderboard()}>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  {t('common.retry', 'Retry')}
+                </Button>
+              </div>
+            )}
+
+            {/* Leaderboard List */}
+            {leaderboard && leaderboard.length > 0 && (
+              <div className="space-y-2">
+                {leaderboard.map((player, index) => {
+                  const rankStyle = getRankBadge(player.rank);
+                  const isTopThree = player.rank <= 3;
+                  
+                  return (
+                    <motion.div
+                      key={player.tag}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: 1.01, x: 4 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => !isLoading && canAccess && handleSelectOpponent(player)}
+                      className={cn(
+                        "flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200",
+                        "bg-card border-2 border-border hover:border-crimson/50 hover:shadow-lg hover:shadow-crimson/5",
+                        isTopThree && "bg-gradient-to-r from-card to-card/80",
+                        !canAccess && "opacity-60 cursor-not-allowed"
+                      )}
+                    >
+                      {/* Rank Badge */}
+                      <div className={cn(
+                        "w-12 h-12 rounded-lg flex items-center justify-center font-bold text-lg shadow-lg",
+                        rankStyle.bg,
+                        rankStyle.text,
+                        rankStyle.glow && `shadow-lg ${rankStyle.glow}`
+                      )}>
+                        #{player.rank}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {t(pro.playstyle)}
-                      </p>
 
-                      <div className="mt-4 flex items-center justify-between">
-                        <Badge variant="outline" className="text-xs">
-                          {pro.archetype}
-                        </Badge>
+                      {/* Player Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-foreground truncate text-lg">
+                          {player.name}
+                        </p>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          {player.clan ? (
+                            <>
+                              <Users className="w-3 h-3" />
+                              <span className="truncate">{player.clan.name}</span>
+                            </>
+                          ) : (
+                            <span className="italic">{t('dreamArena.noClan', 'No Clan')}</span>
+                          )}
+                        </p>
+                      </div>
 
+                      {/* Trophies */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="text-right">
+                          <p className="font-bold text-gold flex items-center gap-1">
+                            <Trophy className="w-4 h-4" />
+                            {player.trophies.toLocaleString()}
+                          </p>
+                        </div>
+                        
+                        {/* Fight Button */}
                         <Button
                           size="sm"
                           disabled={isLoading || !canAccess}
-                          className="bg-gradient-to-r from-crimson to-destructive hover:from-crimson/90 hover:to-destructive/90"
+                          className="bg-gradient-to-r from-crimson to-destructive hover:from-crimson/90 hover:to-destructive/90 ml-2"
                         >
                           {!canAccess ? (
-                            <>
-                              <Lock className="w-3 h-3 mr-1" />
-                              {t('common.locked', 'Locked')}
-                            </>
+                            <Lock className="w-4 h-4" />
                           ) : (
                             <>
-                              <Swords className="w-3 h-3 mr-1" />
+                              <Swords className="w-4 h-4 mr-1" />
                               {t('dreamArena.fight', 'Fight!')}
                             </>
                           )}
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Usage Stats */}
