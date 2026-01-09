@@ -2469,7 +2469,14 @@
     "howItWorks": "How it Works",
     "step1": "Select a Pro Player from the list below to challenge.",
     "step2": "Our AI simulates a match based on your deck, stats, and the pro's playstyle.",
-    "step3": "Watch the battle unfold and see if you can beat the odds!"
+    "step3": "Watch the battle unfold and see if you can beat the odds!",
+    "connecting": "CONNECTING TO SUPERCELL SERVERS...",
+    "scouting": "SCOUTING {{name}}...",
+    "ready": "DATA ACQUIRED",
+    "fallbackToast": "Could not fetch live deck. Using simulation data.",
+    "liveDeck": "LIVE",
+    "simulatedDeck": "SIM",
+    "specialist": "Specialist"
   },
   "achievements": {
     "title": "Achievements",

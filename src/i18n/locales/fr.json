@@ -2362,7 +2362,14 @@
     "howItWorks": "Comment Ça Marche",
     "step1": "Sélectionnez un Joueur Pro dans la liste ci-dessous pour le défier.",
     "step2": "Notre IA simule un match basé sur votre deck, vos stats et le style de jeu du pro.",
-    "step3": "Regardez la bataille se dérouler et voyez si vous pouvez battre les pronostics !"
+    "step3": "Regardez la bataille se dérouler et voyez si vous pouvez battre les pronostics !",
+    "connecting": "CONNEXION AUX SERVEURS SUPERCELL...",
+    "scouting": "ANALYSE DE {{name}}...",
+    "ready": "DONNÉES ACQUISES",
+    "fallbackToast": "Impossible de récupérer le deck en direct. Utilisation des données de simulation.",
+    "liveDeck": "EN DIRECT",
+    "simulatedDeck": "SIM",
+    "specialist": "Spécialiste"
   },
   "achievements": {
     "title": "Succès",

@@ -2362,7 +2362,14 @@
     "howItWorks": "Como Funciona",
     "step1": "Selecione um Jogador Pro da lista abaixo para desafiar.",
     "step2": "Nossa IA simula uma partida baseada no seu deck, estatísticas e no estilo de jogo do pro.",
-    "step3": "Assista a batalha se desenrolar e veja se você consegue superar as probabilidades!"
+    "step3": "Assista a batalha se desenrolar e veja se você consegue superar as probabilidades!",
+    "connecting": "CONECTANDO AOS SERVIDORES DA SUPERCELL...",
+    "scouting": "ESPIANDO {{name}}...",
+    "ready": "DADOS ADQUIRIDOS",
+    "fallbackToast": "Não foi possível obter o deck ao vivo. Usando dados de simulação.",
+    "liveDeck": "AO VIVO",
+    "simulatedDeck": "SIM",
+    "specialist": "Especialista"
   },
   "achievements": {
     "title": "Conquistas",

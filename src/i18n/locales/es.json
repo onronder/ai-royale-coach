@@ -2419,7 +2419,14 @@
     "howItWorks": "Cómo Funciona",
     "step1": "Selecciona un Jugador Pro de la lista de abajo para desafiar.",
     "step2": "Nuestra IA simula un combate basándose en tu mazo, estadísticas y el estilo de juego del pro.",
-    "step3": "¡Mira cómo se desarrolla la batalla y ve si puedes vencer las probabilidades!"
+    "step3": "¡Mira cómo se desarrolla la batalla y ve si puedes vencer las probabilidades!",
+    "connecting": "CONECTANDO A SERVIDORES DE SUPERCELL...",
+    "scouting": "ESPIANDO A {{name}}...",
+    "ready": "DATOS ADQUIRIDOS",
+    "fallbackToast": "No se pudo obtener el mazo en vivo. Usando datos de simulación.",
+    "liveDeck": "EN VIVO",
+    "simulatedDeck": "SIM",
+    "specialist": "Especialista"
   },
   "achievements": {
     "title": "Logros",
