@@ -16,6 +16,25 @@ export interface ClashRoyaleCard {
   starLevel?: number;
 }
 
+// Player from rankings endpoint (no deck data)
+export interface LadderPlayer {
+  rank: number;
+  tag: string;
+  name: string;
+  trophies: number;
+  expLevel: number;
+  clan?: {
+    tag: string;
+    name: string;
+    badgeId: number;
+  };
+  arena?: {
+    id: number;
+    name: string;
+  };
+}
+
+// Full player profile with deck (from player endpoint)
 export interface ClashRoyalePlayer {
   tag: string;
   name: string;
@@ -81,14 +100,25 @@ export interface BattleLogResponse {
   battles: ClashRoyaleBattle[];
 }
 
+export interface GlobalRankingsResponse {
+  items: LadderPlayer[];
+}
+
 class ClashRoyaleApiService {
-  private async callEdgeFunction<T>(endpoint: string, playerTag: string): Promise<T> {
+  private async callEdgeFunction<T>(endpoint: string, playerTag?: string, params?: Record<string, string>): Promise<T> {
     const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
     const url = new URL(
       `https://${projectId}.supabase.co/functions/v1/clash-royale-api`
     );
     url.searchParams.set('endpoint', endpoint);
-    url.searchParams.set('playerTag', playerTag);
+    if (playerTag) {
+      url.searchParams.set('playerTag', playerTag);
+    }
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.set(key, value);
+      });
+    }
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -112,6 +142,13 @@ class ClashRoyaleApiService {
 
   async getBattleLog(playerTag: string): Promise<ClashRoyaleBattle[]> {
     return this.callEdgeFunction<ClashRoyaleBattle[]>('battles', playerTag);
+  }
+
+  async getGlobalTopLadder(limit: number = 10): Promise<LadderPlayer[]> {
+    const response = await this.callEdgeFunction<GlobalRankingsResponse>('rankings', undefined, { 
+      limit: limit.toString() 
+    });
+    return response.items || [];
   }
 
   normalizeTag(tag: string): string {

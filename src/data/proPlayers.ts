@@ -1,70 +1,22 @@
-import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
+// This file previously contained hardcoded pro player data.
+// All player data is now fetched from the live Clash Royale API.
+// See src/services/clashRoyaleApi.ts for LadderPlayer and related types.
 
-// Lightweight profile interface - no deck data, fetched via API
+// Re-export types from the API service for backward compatibility
+export type { LadderPlayer, ClashRoyalePlayer as BattlePlayer } from '@/services/clashRoyaleApi';
+
+// Legacy type alias - deprecated, use LadderPlayer instead
 export interface ProPlayerProfile {
   id: string;
   name: string;
-  tag: string; // Real CR Player Tag (e.g., #Q982PQ)
-  avatarUrl: string;
-  archetype: string; // e.g., "Cycle", "Control", "Siege"
-  playstyle: string; // Translation key
-  specialty: string; // Translation key
+  tag: string;
+  avatarUrl?: string;
+  archetype?: string;
+  playstyle?: string;
+  specialty?: string;
 }
 
-// Real pro player tags
-export const PRO_PLAYER_PROFILES: ProPlayerProfile[] = [
-  {
-    id: 'mohamed-light',
-    name: 'Mohamed Light',
-    tag: '#Q982PQ',
-    avatarUrl: '/placeholder.svg',
-    archetype: 'Cycle',
-    playstyle: 'proPlayers.mohamedLight.playstyle',
-    specialty: 'proPlayers.mohamedLight.specialty',
-  },
-  {
-    id: 'morten',
-    name: 'Morten',
-    tag: '#R9J0',
-    avatarUrl: '/placeholder.svg',
-    archetype: 'Control',
-    playstyle: 'proPlayers.morten.playstyle',
-    specialty: 'proPlayers.morten.specialty',
-  },
-  {
-    id: 'surgical-goblin',
-    name: 'Surgical Goblin',
-    tag: '#90L0',
-    avatarUrl: '/placeholder.svg',
-    archetype: 'Siege',
-    playstyle: 'proPlayers.surgicalGoblin.playstyle',
-    specialty: 'proPlayers.surgicalGoblin.specialty',
-  },
-  {
-    id: 'ryley',
-    name: 'Ryley',
-    tag: '#2Y2J09',
-    avatarUrl: '/placeholder.svg',
-    archetype: 'Log Bait',
-    playstyle: 'proPlayers.ryley.playstyle',
-    specialty: 'proPlayers.ryley.specialty',
-  },
-  {
-    id: 'ian77',
-    name: 'Ian77',
-    tag: '#2U00J8K',
-    avatarUrl: '/placeholder.svg',
-    archetype: 'Hog',
-    playstyle: 'proPlayers.ian77.playstyle',
-    specialty: 'proPlayers.ian77.specialty',
-  },
-];
-
-// Legacy type alias for backward compatibility during migration
-export type ProPlayer = ProPlayerProfile & {
-  trophies?: number;
-  signatureDeck?: ClashRoyaleCard[];
-};
-
-// Legacy export for components that haven't migrated yet
+// Empty array for backward compatibility during migration
+// Components should migrate to useGlobalLeaderboard hook
+export const PRO_PLAYER_PROFILES: ProPlayerProfile[] = [];
 export const PRO_PLAYERS = PRO_PLAYER_PROFILES;
