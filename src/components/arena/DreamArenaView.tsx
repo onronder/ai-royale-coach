@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2, RotateCcw } from 'lucide-react';
+import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 
@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { ViralMatchResult } from './ViralMatchResult';
 import { cn } from '@/lib/utils';
+import { useArenaSound } from '@/hooks/useArenaSound';
 
 import { SimulationResult, SimulationFrame, formatMatchTime } from '@/utils/dreamArenaEngine';
 import { ProPlayer } from '@/data/proPlayers';
@@ -38,6 +39,8 @@ export function DreamArenaView({
   onPlayAgain,
 }: DreamArenaViewProps) {
   const { t } = useTranslation();
+  const { play: playSound } = useArenaSound({ enabled: false, volume: 0.5 });
+  
   const [currentTick, setCurrentTick] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 2>(1);
@@ -45,6 +48,21 @@ export function DreamArenaView({
   const [shakeScreen, setShakeScreen] = useState(false);
   const [showViralCard, setShowViralCard] = useState(false);
   const [activeCard, setActiveCard] = useState<ClashRoyaleCard | null>(null);
+  
+  // Ghost bar state for damage trailing effect
+  const [prevUserHp, setPrevUserHp] = useState(TOWER_HP);
+  const [prevProHp, setPrevProHp] = useState(TOWER_HP);
+  const [ghostUserHp, setGhostUserHp] = useState(TOWER_HP);
+  const [ghostProHp, setGhostProHp] = useState(TOWER_HP);
+  
+  // Bar shake state
+  const [userBarShake, setUserBarShake] = useState(false);
+  const [proBarShake, setProBarShake] = useState(false);
+  
+  // Critical hit FX state
+  const [criticalFlash, setCriticalFlash] = useState(false);
+  const [criticalText, setCriticalText] = useState<string | null>(null);
+  
   const logEndRef = useRef<HTMLDivElement>(null);
   const hasTriggeredConfetti = useRef(false);
   const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -115,13 +133,58 @@ export function DreamArenaView({
     };
   }, []);
 
-  // Screen shake on critical hits
+  // Screen shake and critical FX on critical hits
   useEffect(() => {
-    if (criticalAction === 'rocket_hit' || criticalAction === 'tower_down') {
+    if (criticalAction === 'rocket_hit') {
+      // Screen flash
+      setCriticalFlash(true);
+      setTimeout(() => setCriticalFlash(false), 100);
+      
+      // Floating text
+      setCriticalText('CRITICAL!');
+      setTimeout(() => setCriticalText(null), 1000);
+      
+      // Screen shake
       setShakeScreen(true);
       setTimeout(() => setShakeScreen(false), 300);
+      
+      // Sound trigger
+      playSound('critical');
     }
-  }, [currentTick, criticalAction]);
+    
+    if (criticalAction === 'tower_down') {
+      setCriticalFlash(true);
+      setTimeout(() => setCriticalFlash(false), 100);
+      setCriticalText('TOWER DOWN!');
+      setTimeout(() => setCriticalText(null), 1200);
+      setShakeScreen(true);
+      setTimeout(() => setShakeScreen(false), 300);
+      playSound('tower_down');
+    }
+  }, [currentTick, criticalAction, playSound]);
+
+  // Ghost bar effect - detect HP changes and animate ghost bar with delay
+  useEffect(() => {
+    if (userHp < prevUserHp) {
+      // User took damage - shake bar and delay ghost
+      setUserBarShake(true);
+      setTimeout(() => setUserBarShake(false), 300);
+      setTimeout(() => setGhostUserHp(userHp), 500);
+      playSound('hit');
+    }
+    setPrevUserHp(userHp);
+  }, [userHp]);
+
+  useEffect(() => {
+    if (proHp < prevProHp) {
+      // Pro took damage - shake bar and delay ghost
+      setProBarShake(true);
+      setTimeout(() => setProBarShake(false), 300);
+      setTimeout(() => setGhostProHp(proHp), 500);
+      playSound('hit');
+    }
+    setPrevProHp(proHp);
+  }, [proHp]);
 
   // Auto-scroll battle log
   useEffect(() => {
@@ -314,14 +377,21 @@ export function DreamArenaView({
             </div>
             <div className={cn(
               "h-8 rounded-full bg-black/60 border border-emerald/30 overflow-hidden relative",
-              getHpBorderGlow(userHp, 'user')
+              getHpBorderGlow(userHp, 'user'),
+              userBarShake && "hp-bar-shake"
             )}>
+              {/* Ghost bar (white, behind main bar) */}
               <motion.div
-                className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-300", getHpColor(userHp))}
-                style={{ width: `${(userHp / TOWER_HP) * 100}%` }}
-                layout
+                className="absolute h-full bg-white/30 rounded-full"
+                animate={{ width: `${(ghostUserHp / TOWER_HP) * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               />
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+              {/* Main colored bar (drops immediately) */}
+              <motion.div
+                className={cn("absolute h-full rounded-full bg-gradient-to-r transition-all duration-100", getHpColor(userHp))}
+                style={{ width: `${(userHp / TOWER_HP) * 100}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md z-10">
                 {Math.round((userHp / TOWER_HP) * 100)}%
               </span>
             </div>
@@ -335,14 +405,21 @@ export function DreamArenaView({
             </div>
             <div className={cn(
               "h-8 rounded-full bg-black/60 border border-crimson/30 overflow-hidden relative",
-              getHpBorderGlow(proHp, 'pro')
+              getHpBorderGlow(proHp, 'pro'),
+              proBarShake && "hp-bar-shake"
             )}>
+              {/* Ghost bar (white, behind main bar) */}
               <motion.div
-                className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-300", getHpColor(proHp))}
-                style={{ width: `${(proHp / TOWER_HP) * 100}%` }}
-                layout
+                className="absolute h-full bg-white/30 rounded-full"
+                animate={{ width: `${(ghostProHp / TOWER_HP) * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
               />
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+              {/* Main colored bar (drops immediately) */}
+              <motion.div
+                className={cn("absolute h-full rounded-full bg-gradient-to-r transition-all duration-100", getHpColor(proHp))}
+                style={{ width: `${(proHp / TOWER_HP) * 100}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md z-10">
                 {Math.round((proHp / TOWER_HP) * 100)}%
               </span>
             </div>
@@ -417,6 +494,46 @@ export function DreamArenaView({
         </div>
         </div>
       </div>
+
+      {/* Critical Hit Screen Flash */}
+      <AnimatePresence>
+        {criticalFlash && (
+          <motion.div
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+            className="fixed inset-0 z-35 bg-destructive/20 pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Critical Text Overlay */}
+      <AnimatePresence>
+        {criticalText && (
+          <motion.div
+            key={criticalText}
+            initial={{ scale: 0.5, opacity: 0, y: 20 }}
+            animate={{ 
+              scale: [0.5, 1.3, 1.1],
+              opacity: 1,
+              y: 0,
+            }}
+            exit={{ opacity: 0, scale: 0.8, y: -30 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed inset-0 z-45 flex items-center justify-center pointer-events-none"
+          >
+            <span 
+              className="critical-text-shake text-6xl font-black text-white uppercase tracking-wider"
+              style={{
+                textShadow: '0 0 20px hsl(var(--destructive) / 0.8), 0 0 40px hsl(var(--destructive) / 0.6), 0 4px 0 hsl(var(--destructive))'
+              }}
+            >
+              {criticalText}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Card Spotlight Overlay */}
       <AnimatePresence>

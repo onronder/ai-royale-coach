@@ -501,6 +501,37 @@ select {
   animation: section-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Health bar shake on damage */
+@keyframes hp-bar-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px) rotate(-0.5deg); }
+  40% { transform: translateX(4px) rotate(0.5deg); }
+  60% { transform: translateX(-3px) rotate(-0.3deg); }
+  80% { transform: translateX(3px) rotate(0.3deg); }
+}
+
+.hp-bar-shake {
+  animation: hp-bar-shake 0.3s ease-in-out;
+}
+
+/* Critical text shake effect */
+@keyframes critical-text-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  10% { transform: translateX(-8px) rotate(-2deg); }
+  20% { transform: translateX(8px) rotate(2deg); }
+  30% { transform: translateX(-6px) rotate(-1.5deg); }
+  40% { transform: translateX(6px) rotate(1.5deg); }
+  50% { transform: translateX(-4px) rotate(-1deg); }
+  60% { transform: translateX(4px) rotate(1deg); }
+  70% { transform: translateX(-2px) rotate(-0.5deg); }
+  80% { transform: translateX(2px) rotate(0.5deg); }
+  90% { transform: translateX(-1px) rotate(0); }
+}
+
+.critical-text-shake {
+  animation: critical-text-shake 0.5s ease-out;
+}
+
 /* Stagger cascade animation */
 @keyframes stagger-in {
   0% {
