@@ -10,7 +10,11 @@ import {
   HelpCircle,
   Clock,
   Globe,
-  Activity
+  Activity,
+  ChevronDown,
+  Loader2,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +32,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationCenter } from "@/components/layout/NotificationCenter";
-import { GlobalProgressCenter } from "@/components/layout/GlobalProgressCenter";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { languages } from "@/i18n";
-import { useAllOperations } from "@/hooks/useAllOperations";
+import { useAllOperations, operationLabels } from "@/hooks/useAllOperations";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Progress } from "@/components/ui/progress";
+import { formatDistanceToNow } from "date-fns";
 
 interface DashboardHeaderProps {
   playerTag: string;
@@ -62,8 +68,9 @@ export function DashboardHeader({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [controlPanelOpen, setControlPanelOpen] = useState(false);
+  const [showTasks, setShowTasks] = useState(false);
   
-  const { activeCount } = useAllOperations();
+  const { operations, activeCount, cancelOperation, isCancelling } = useAllOperations();
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   // Calculate time since last update
@@ -137,7 +144,6 @@ export function DashboardHeader({
 
         {/* Right: Control Panel & Actions */}
         <div className="flex items-center gap-1">
-          <GlobalProgressCenter />
           <NotificationCenter />
           
           {/* Control Panel Popover */}
@@ -190,23 +196,66 @@ export function DashboardHeader({
                 </Button>
               </div>
               
-              {/* Active Tasks Display */}
-              <div className="p-4 space-y-2 border-b border-border/50">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
-                    <Activity className="h-3.5 w-3.5" />
-                    {t("dashboard.header.activeTasks", "Active Tasks")}
-                  </span>
-                  <Badge variant={activeCount > 0 ? "default" : "outline"} className="h-5 px-1.5 text-xs">
-                    {activeCount}
-                  </Badge>
-                </div>
-                {activeCount > 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    {t("dashboard.header.viewTasksHint", "Click the Activity icon in the header to view details")}
-                  </p>
-                )}
-              </div>
+              {/* Active Tasks - Collapsible */}
+              <Collapsible open={showTasks} onOpenChange={setShowTasks}>
+                <CollapsibleTrigger asChild>
+                  <button className="w-full p-4 border-b border-border/50 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-foreground flex items-center gap-1.5">
+                        <Activity className={cn("h-3.5 w-3.5", activeCount > 0 && "text-primary animate-pulse")} />
+                        {t("dashboard.header.activeTasks", "Active Tasks")}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={activeCount > 0 ? "default" : "outline"} className="h-5 px-1.5 text-xs">
+                          {activeCount}
+                        </Badge>
+                        <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", showTasks && "rotate-180")} />
+                      </div>
+                    </div>
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-3 space-y-2 border-b border-border/50 bg-muted/30 max-h-48 overflow-y-auto">
+                    {operations.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-2">
+                        {t("dashboard.header.noTasks", "No active or recent tasks")}
+                      </p>
+                    ) : (
+                      operations.slice(0, 5).map((op) => {
+                        const percentage = Math.round((op.progress / op.total) * 100);
+                        const label = operationLabels[op.operation_type]?.label || op.operation_type.replace(/_/g, " ");
+                        const isRunning = op.status === "running";
+                        
+                        return (
+                          <div key={op.id} className="p-2 rounded-lg border border-border/50 bg-card/50">
+                            <div className="flex items-center gap-2 mb-1">
+                              {isRunning ? (
+                                <Loader2 className="h-3 w-3 text-primary animate-spin" />
+                              ) : op.status === "completed" ? (
+                                <CheckCircle2 className="h-3 w-3 text-green-500" />
+                              ) : (
+                                <XCircle className="h-3 w-3 text-destructive" />
+                              )}
+                              <span className="text-xs font-medium flex-1 truncate">{label}</span>
+                              {isRunning && (
+                                <span className="text-xs text-muted-foreground">{percentage}%</span>
+                              )}
+                            </div>
+                            {isRunning && (
+                              <Progress value={percentage} className="h-1" />
+                            )}
+                            {!isRunning && (
+                              <p className="text-xs text-muted-foreground">
+                                {formatDistanceToNow(new Date(op.completed_at || op.updated_at), { addSuffix: true })}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
               
               {/* Language Selector */}
               <div className="p-2 border-b border-border/50">
