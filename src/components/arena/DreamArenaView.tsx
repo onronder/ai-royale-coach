@@ -63,6 +63,10 @@ export function DreamArenaView({
   const [criticalFlash, setCriticalFlash] = useState(false);
   const [criticalText, setCriticalText] = useState<string | null>(null);
   
+  // Elixir bar state
+  const [userElixir, setUserElixir] = useState(5);
+  const [proElixir, setProElixir] = useState(5);
+  
   const logEndRef = useRef<HTMLDivElement>(null);
   const hasTriggeredConfetti = useRef(false);
   const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -186,6 +190,14 @@ export function DreamArenaView({
     setPrevProHp(proHp);
   }, [proHp]);
 
+  // Elixir regeneration: ~2.8 seconds per elixir, starts at 5
+  useEffect(() => {
+    const elixirPerTick = 1 / 2.8;
+    const newElixir = Math.min(10, 5 + (currentTick * elixirPerTick));
+    setUserElixir(Math.floor(newElixir * 10) / 10);
+    setProElixir(Math.floor(newElixir * 10) / 10);
+  }, [currentTick]);
+
   // Auto-scroll battle log
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -266,17 +278,18 @@ export function DreamArenaView({
         ['--shake-x' as string]: '4px',
       }}
     >
-      {/* Arena Background Image */}
+      {/* Arena Background Image - Remote placeholder */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
         style={{ 
-          backgroundImage: "url('/assets/arena-bg-blur.jpg')",
-          filter: 'blur(2px)'
+          backgroundImage: "url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop')",
+          filter: 'blur(4px)'
         }}
       />
       
-      {/* Dark Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/80" />
+      {/* Heavy Dark Overlay for readability */}
+      <div className="absolute inset-0 bg-black/80" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40" />
       
       {/* Floating Particles */}
       <div className="arena-floating-particles">
@@ -424,6 +437,42 @@ export function DreamArenaView({
               </span>
             </div>
           </div>
+          
+          {/* Elixir Bars */}
+          <div className="border-t border-white/10 pt-3 mt-3 space-y-2">
+            {/* User Elixir */}
+            <div className="flex items-center gap-3">
+              <Zap className="w-4 h-4 text-primary shrink-0" />
+              <div className="flex-1 h-5 rounded-full bg-black/60 border border-primary/30 overflow-hidden relative">
+                <motion.div
+                  className={cn(
+                    "h-full rounded-full bg-gradient-to-r from-primary via-violet-500 to-primary",
+                    userElixir >= 10 && "elixir-bar-full"
+                  )}
+                  animate={{ width: `${(userElixir / 10) * 100}%` }}
+                  transition={{ duration: 0.3, ease: "linear" }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+                  {Math.floor(userElixir)} / 10
+                </span>
+              </div>
+            </div>
+            
+            {/* Pro Elixir */}
+            <div className="flex items-center gap-3">
+              <Zap className="w-4 h-4 text-crimson shrink-0" />
+              <div className="flex-1 h-5 rounded-full bg-black/60 border border-crimson/30 overflow-hidden relative">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-crimson via-pink-500 to-crimson"
+                  animate={{ width: `${(proElixir / 10) * 100}%` }}
+                  transition={{ duration: 0.3, ease: "linear" }}
+                />
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-md">
+                  {Math.floor(proElixir)} / 10
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Battle Log - Glassmorphism Container */}
@@ -545,15 +594,45 @@ export function DreamArenaView({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none"
           >
-            {/* Radial Flash Burst Background */}
+            {/* Rotating Burst Effect - Layer 1 */}
             <motion.div
-              initial={{ scale: 0, opacity: 0.8 }}
-              animate={{ scale: 3, opacity: 0 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ 
+                scale: [0, 2, 2.5],
+                opacity: [0, 0.8, 0],
+                rotate: [0, 45, 90]
+              }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="absolute w-80 h-80"
+              style={{
+                background: 'conic-gradient(from 0deg, transparent, hsl(var(--gold) / 0.6), transparent, hsl(var(--primary) / 0.4), transparent)',
+              }}
+            />
+            
+            {/* Pulsing Radial Glow - Layer 2 */}
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ 
+                scale: [0.5, 2, 2.5],
+                opacity: [0.8, 0.4, 0]
+              }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="absolute w-64 h-64 rounded-full"
               style={{
-                background: 'radial-gradient(circle, hsl(var(--gold) / 0.5), hsl(var(--primary) / 0.3), transparent)'
+                background: 'radial-gradient(circle, hsl(var(--gold) / 0.6), hsl(var(--primary) / 0.3), transparent)'
               }}
+            />
+
+            {/* Starburst Rays - Layer 3 */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0, rotate: 0 }}
+              animate={{ 
+                scale: [0, 1.5, 1.8],
+                opacity: [0, 0.6, 0],
+                rotate: [0, -30, -60]
+              }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="absolute w-96 h-96 spotlight-burst"
             />
             
             {/* Card Container with Pop Animation */}
@@ -573,10 +652,15 @@ export function DreamArenaView({
               className="relative"
             >
               {/* Card Glow Effect */}
-              <div 
-                className="absolute -inset-4 blur-xl rounded-3xl"
+              <motion.div 
+                className="absolute -inset-6 blur-2xl rounded-3xl"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.6, 0.8, 0.6]
+                }}
+                transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
                 style={{
-                  background: 'radial-gradient(circle, hsl(var(--gold) / 0.4), transparent)'
+                  background: 'radial-gradient(circle, hsl(var(--gold) / 0.5), hsl(var(--gold) / 0.2), transparent)'
                 }}
               />
               
