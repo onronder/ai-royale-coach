@@ -19,7 +19,6 @@
     "sections": {
       "gettingStarted": "Premiers Pas",
       "dashboard": "Tableau de Bord",
-      "stats": "Statistiques",
       "matches": "Matchs",
       "deck": "Deck",
       "builder": "Créateur",
@@ -28,6 +27,10 @@
       "leaderboard": "Classement",
       "tournaments": "Tournois",
       "clans": "Clans",
+      "oracle": "L'Oracle",
+      "dreamArena": "Arène de Rêve",
+      "proDna": "ADN Pro",
+      "achievements": "Succès",
       "coach": "Coach IA",
       "features": "Fonctionnalités",
       "faq": "FAQ"
@@ -72,18 +75,12 @@
       "badge": "Navigation",
       "overview": {
         "title": "Onglets du Tableau de Bord",
-        "intro": "Votre tableau de bord est organisé en 9 onglets principaux, chacun offrant des fonctionnalités spécialisées :"
+        "intro": "Votre tableau de bord est organisé en 3 sections principales avec des sous-onglets pour une navigation facile :"
       },
-      "tabs": {
-        "stats": "Statistiques",
-        "matches": "Matchs",
-        "deck": "Deck",
-        "builder": "Créateur",
-        "analytics": "Analyses",
-        "collection": "Collection",
-        "leaderboard": "Classement",
-        "tournaments": "Tournois",
-        "clans": "Clans"
+      "mainTabs": {
+        "coach": "Coach (Aperçu, Matchs, Analyses, Classement)",
+        "deck": "Deck (Actuel, Créateur, Collection)",
+        "social": "Social (Clans, Tournois)"
       },
       "navigation": {
         "title": "Naviguer dans le Tableau de Bord",
@@ -95,30 +92,6 @@
         "title": "Synchronisation et Actualisation des Données",
         "intro": "Vos données se synchronisent automatiquement lorsque vous ouvrez le tableau de bord. Vous pouvez actualiser manuellement en utilisant l'indicateur de synchronisation dans l'en-tête.",
         "note": "Note : L'API Clash Royale a un délai de 5-15 minutes. Les modifications récentes en jeu peuvent ne pas apparaître immédiatement."
-      }
-    },
-    "stats": {
-      "title": "Onglet Statistiques",
-      "badge": "Aperçu",
-      "overview": {
-        "title": "Statistiques du Joueur",
-        "intro": "L'onglet Statistiques affiche vos métriques de performance clés :",
-        "trophies": "Trophées Actuels",
-        "trophiesDesc": "Votre nombre actuel de trophées et record personnel",
-        "winRate": "Taux de Victoire",
-        "winRateDesc": "Calculé à partir de vos 25 derniers matchs",
-        "arena": "Arène",
-        "arenaDesc": "Votre arène actuelle basée sur le nombre de trophées",
-        "clan": "Clan",
-        "clanDesc": "Le nom et badge de votre clan (si membre d'un clan)"
-      },
-      "charts": {
-        "title": "Graphique de Progression des Trophées",
-        "intro": "Visualisez votre progression de trophées au fil du temps avec des graphiques interactifs montrant les gains et pertes."
-      },
-      "aiSummary": {
-        "title": "Résumé du Coach IA",
-        "intro": "Un résumé personnalisé généré par l'IA de votre performance récente, incluant les points forts, les domaines d'amélioration et les recommandations stratégiques."
       }
     },
     "matches": {
@@ -302,6 +275,50 @@
         "closedDesc": "N'accepte pas de nouveaux membres"
       }
     },
+    "oracle": {
+      "title": "L'Oracle",
+      "badge": "Renseignements Adversaire",
+      "overview": {
+        "title": "Prédiction des Decks Adverses",
+        "intro": "L'Oracle analyse les batailles récentes d'un adversaire pour prédire son deck le plus probable et son style de jeu. Utilisez-le avant une revanche ou pour vous préparer contre des adversaires connus."
+      },
+      "howToUse": {
+        "title": "Comment Utiliser",
+        "step1": "Entrez le tag du joueur adversaire (trouvé après un match)",
+        "step2": "L'Oracle analyse ses 25 dernières batailles",
+        "step3": "Visualisez le deck prédit, les taux de victoire et les stratégies de contre"
+      }
+    },
+    "dreamArena": {
+      "title": "Arène de Rêve",
+      "badge": "Défi Pro",
+      "overview": {
+        "title": "Affrontez les Joueurs Pro",
+        "intro": "Vous êtes-vous déjà demandé comment vous vous mesureriez aux pros ? L'Arène de Rêve utilise l'IA pour simuler des matchs entre votre deck et les meilleurs joueurs professionnels."
+      },
+      "howToUse": {
+        "title": "Comment ça Marche",
+        "step1": "Sélectionnez un joueur pro dans la liste",
+        "step2": "L'IA simule un match basé sur vos stats et leur style de jeu",
+        "step3": "Voyez les résultats prédits et les stratégies pour vous améliorer"
+      }
+    },
+    "proDna": {
+      "title": "ADN Pro",
+      "badge": "Profil Joueur",
+      "overview": {
+        "title": "Votre Carte ADN Joueur",
+        "intro": "Générez une carte unique et partageable présentant votre empreinte de style de jeu. Votre carte ADN affiche vos forces, archétypes préférés, maîtrise des cartes et métriques de performance dans un beau format visuel."
+      }
+    },
+    "achievements": {
+      "title": "Succès",
+      "badge": "Jalons",
+      "overview": {
+        "title": "Suivez Votre Progression",
+        "intro": "Débloquez des badges à mesure que vous progressez et atteignez des jalons. Les succès sont catégorisés par domaine de compétence (attaque, défense, stratégie) et niveau (Bronze, Argent, Or, Platine, Diamant). Complétez des défis pour gagner des points et grimper au classement des succès !"
+      }
+    },
     "coach": {
       "title": "Coach IA",
       "badge": "Coaching Personnel",
@@ -360,22 +377,18 @@
     "faq": {
       "title": "Questions Fréquemment Posées",
       "badge": "FAQ",
-      "q1": "Pourquoi mon dernier deck n'apparaît pas ?",
+      "q1": "Pourquoi mon dernier deck n'apparaît-il pas ?",
       "a1": "L'API Clash Royale a un délai de 5-15 minutes. Vos modifications récentes en jeu apparaîtront après ce délai. Essayez d'actualiser dans quelques minutes.",
       "q2": "Comment mon taux de victoire est-il calculé ?",
-      "a2": "Le taux de victoire est calculé à partir de vos 25 derniers combats disponibles depuis l'API. Il n'inclut que les combats de classement et de défi, pas les combats amicaux ou 2v2.",
-      "q3": "Pourquoi certaines fonctionnalités nécessitent une connexion ?",
+      "a2": "Le taux de victoire est calculé à partir de vos 25 derniers matchs disponibles de l'API. Il inclut uniquement les matchs d'échelle et de défi, pas les matchs amicaux ou 2v2.",
+      "q3": "Pourquoi certaines fonctionnalités nécessitent-elles une connexion ?",
       "a3": "Les fonctionnalités comme sauvegarder des decks, le coaching IA et les recommandations personnalisées nécessitent un compte pour stocker vos préférences et historique.",
       "q4": "Puis-je utiliser AI Royale sur mobile ?",
       "a4": "Oui ! AI Royale est entièrement responsive et fonctionne sur tous les appareils. L'interface s'adapte à la taille de votre écran.",
-      "q5": "Quelle est la précision des prédictions d'affrontement IA ?",
-      "a5": "Les prédictions sont basées sur l'analyse de la composition du deck et les données historiques. Les résultats réels peuvent varier selon le niveau de compétence et les niveaux de cartes.",
-      "q6": "Pourquoi ne puis-je pas ajouter plus de 3 comptes ?",
-      "a6": "La limite de 3 comptes assure une utilisation équitable de nos services IA et ressources API pour tous les utilisateurs.",
-      "q7": "Comment changer mon email ou mot de passe ?",
-      "a7": "Les fonctionnalités de gestion de compte sont disponibles via le système d'authentification. Contactez le support si vous devez changer votre email.",
-      "q8": "Mes données sont-elles sécurisées ?",
-      "a8": "Oui ! Nous utilisons un chiffrement standard de l'industrie et ne stockons jamais vos identifiants Clash Royale. Nous accédons uniquement aux données publiques via votre Tag de Joueur."
+      "q5": "Mes données sont-elles sécurisées ?",
+      "a5": "Oui. Nous accédons uniquement aux données publiques disponibles depuis l'API Clash Royale. Votre mot de passe de jeu n'est jamais partagé avec nous.",
+      "q6": "Comment délier un compte ?",
+      "a6": "Allez à l'écran de Sélection du Joueur et cliquez sur le bouton supprimer à côté du compte que vous souhaitez délier."
     }
   }
 }

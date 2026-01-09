@@ -19,7 +19,6 @@
     "sections": {
       "gettingStarted": "Primeros Pasos",
       "dashboard": "Panel",
-      "stats": "Estadísticas",
       "matches": "Batallas",
       "deck": "Mazo",
       "builder": "Constructor",
@@ -28,6 +27,10 @@
       "leaderboard": "Clasificación",
       "tournaments": "Torneos",
       "clans": "Clanes",
+      "oracle": "El Oráculo",
+      "dreamArena": "Arena de los Sueños",
+      "proDna": "ADN Pro",
+      "achievements": "Logros",
       "coach": "Coach IA",
       "features": "Funciones",
       "faq": "FAQ"
@@ -72,18 +75,12 @@
       "badge": "Navegación",
       "overview": {
         "title": "Pestañas del Panel",
-        "intro": "Tu panel está organizado en 9 pestañas principales, cada una ofrece funciones especializadas:"
+        "intro": "Tu panel está organizado en 3 secciones principales con sub-pestañas para fácil navegación:"
       },
-      "tabs": {
-        "stats": "Estadísticas",
-        "matches": "Batallas",
-        "deck": "Mazo",
-        "builder": "Constructor",
-        "analytics": "Análisis",
-        "collection": "Colección",
-        "leaderboard": "Clasificación",
-        "tournaments": "Torneos",
-        "clans": "Clanes"
+      "mainTabs": {
+        "coach": "Coach (General, Batallas, Análisis, Clasificación)",
+        "deck": "Mazo (Actual, Constructor, Colección)",
+        "social": "Social (Clanes, Torneos)"
       },
       "navigation": {
         "title": "Navegar por el Panel",
@@ -95,30 +92,6 @@
         "title": "Sincronización y Actualización de Datos",
         "intro": "Tus datos se sincronizan automáticamente cuando abres el panel. Puedes actualizar manualmente usando el indicador de sincronización en el encabezado.",
         "note": "Nota: La API de Clash Royale tiene un retraso de 5-15 minutos. Los cambios recientes en el juego pueden no aparecer inmediatamente."
-      }
-    },
-    "stats": {
-      "title": "Pestaña Estadísticas",
-      "badge": "Resumen",
-      "overview": {
-        "title": "Estadísticas del Jugador",
-        "intro": "La pestaña Estadísticas muestra tus métricas clave de rendimiento:",
-        "trophies": "Trofeos Actuales",
-        "trophiesDesc": "Tu conteo actual de trofeos y mejor marca personal",
-        "winRate": "Tasa de Victoria",
-        "winRateDesc": "Calculada de tus últimas 25 batallas",
-        "arena": "Arena",
-        "arenaDesc": "Tu arena actual basada en el conteo de trofeos",
-        "clan": "Clan",
-        "clanDesc": "El nombre de tu clan e insignia (si eres miembro de un clan)"
-      },
-      "charts": {
-        "title": "Gráfico de Progreso de Trofeos",
-        "intro": "Ve tu progresión de trofeos a lo largo del tiempo con gráficos interactivos que muestran ganancias y pérdidas."
-      },
-      "aiSummary": {
-        "title": "Resumen del Coach IA",
-        "intro": "Un resumen personalizado generado por IA de tu rendimiento reciente, incluyendo fortalezas, áreas de mejora y recomendaciones estratégicas."
       }
     },
     "matches": {
@@ -302,6 +275,50 @@
         "closedDesc": "No acepta nuevos miembros"
       }
     },
+    "oracle": {
+      "title": "El Oráculo",
+      "badge": "Intel del Oponente",
+      "overview": {
+        "title": "Predicción de Mazos del Oponente",
+        "intro": "El Oráculo analiza las batallas recientes de un oponente para predecir su mazo más probable y estilo de juego. Úsalo antes de una revancha o para prepararte contra oponentes conocidos."
+      },
+      "howToUse": {
+        "title": "Cómo Usar",
+        "step1": "Ingresa la etiqueta de jugador del oponente (encontrada después de una batalla)",
+        "step2": "El Oráculo escanea sus últimas 25 batallas",
+        "step3": "Ve el mazo predicho, tasas de victoria y estrategias de contraataque"
+      }
+    },
+    "dreamArena": {
+      "title": "Arena de los Sueños",
+      "badge": "Desafío Pro",
+      "overview": {
+        "title": "Desafía a Jugadores Pro",
+        "intro": "¿Alguna vez te preguntaste cómo te irías contra los profesionales? La Arena de los Sueños usa IA para simular batallas entre tu mazo y los mejores jugadores profesionales."
+      },
+      "howToUse": {
+        "title": "Cómo Funciona",
+        "step1": "Selecciona un jugador pro de la lista",
+        "step2": "La IA simula una batalla basada en tus estadísticas y su estilo de juego",
+        "step3": "Ve los resultados predichos y estrategias para mejorar"
+      }
+    },
+    "proDna": {
+      "title": "ADN Pro",
+      "badge": "Perfil de Jugador",
+      "overview": {
+        "title": "Tu Tarjeta de ADN de Jugador",
+        "intro": "Genera una tarjeta única y compartible que muestra tu huella de estilo de juego. Tu tarjeta de ADN muestra tus fortalezas, arquetipos favoritos, maestría de cartas y métricas de rendimiento en un hermoso formato visual."
+      }
+    },
+    "achievements": {
+      "title": "Logros",
+      "badge": "Hitos",
+      "overview": {
+        "title": "Rastrea Tu Progreso",
+        "intro": "Desbloquea insignias a medida que mejoras y alcanzas hitos. Los logros se categorizan por área de habilidad (ofensiva, defensiva, estrategia) y nivel (Bronce, Plata, Oro, Platino, Diamante). ¡Completa desafíos para ganar puntos y escalar en la clasificación de logros!"
+      }
+    },
     "coach": {
       "title": "Coach IA",
       "badge": "Coaching Personal",
@@ -368,14 +385,10 @@
       "a3": "Funciones como guardar mazos, coaching de IA y recomendaciones personalizadas requieren una cuenta para almacenar tus preferencias e historial.",
       "q4": "¿Puedo usar AI Royale en móvil?",
       "a4": "¡Sí! AI Royale es totalmente responsivo y funciona en todos los dispositivos. La interfaz se adapta al tamaño de tu pantalla.",
-      "q5": "¿Qué tan precisas son las predicciones de emparejamiento de IA?",
-      "a5": "Las predicciones se basan en análisis de composición del mazo y datos históricos. Los resultados reales pueden variar según el nivel de habilidad y niveles de cartas.",
-      "q6": "¿Por qué no puedo agregar más de 3 cuentas?",
-      "a6": "El límite de 3 cuentas asegura uso justo de nuestros servicios de IA y recursos de API para todos los usuarios.",
-      "q7": "¿Cómo cambio mi correo electrónico o contraseña?",
-      "a7": "Las funciones de gestión de cuenta están disponibles a través del sistema de autenticación. Contacta soporte si necesitas cambiar tu correo electrónico.",
-      "q8": "¿Mis datos están seguros?",
-      "a8": "¡Sí! Usamos cifrado estándar de la industria y nunca almacenamos tus credenciales de inicio de sesión de Clash Royale. Solo accedemos a datos públicos a través de tu Etiqueta de Jugador."
+      "q5": "¿Están seguros mis datos?",
+      "a5": "Sí. Solo accedemos a datos públicos disponibles de la API de Clash Royale. Tu contraseña del juego nunca se comparte con nosotros.",
+      "q6": "¿Cómo me desvinculo de una cuenta?",
+      "a6": "Ve a la pantalla de Selección de Jugador y haz clic en el botón de eliminar junto a la cuenta que deseas desvincular."
     }
   }
 }
