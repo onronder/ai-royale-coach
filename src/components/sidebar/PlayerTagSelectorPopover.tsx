@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 import { usePlayerProfiles, getClanBadgeUrl, PlayerProfile } from "@/hooks/usePlayerProfiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { NavbarSubscriptionBadge } from "@/components/layout/NavbarSubscriptionBadge";
 
 interface PlayerTagSelectorPopoverProps {
   userId: string | null;
@@ -129,23 +129,18 @@ export function PlayerTagSelectorPopover({
                   isActive && "bg-primary/5"
                 )}
               >
-                {/* Clan Badge or Crown */}
-                <div className="relative flex-shrink-0">
-                  {profile.clan_badge_id ? (
-                    <img
-                      src={getClanBadgeUrl(profile.clan_badge_id)}
-                      alt=""
-                      className="w-8 h-8 rounded"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
+                {/* Clan Badge or Crown (using Avatar for proper fallback) */}
+                <Avatar className="w-8 h-8 rounded flex-shrink-0">
+                  {profile.clan_badge_id && (
+                    <AvatarImage 
+                      src={getClanBadgeUrl(profile.clan_badge_id)} 
+                      alt="" 
                     />
-                  ) : (
-                    <div className="w-8 h-8 rounded bg-muted flex items-center justify-center">
-                      <Crown className="h-4 w-4 text-gold" />
-                    </div>
                   )}
-                </div>
+                  <AvatarFallback className="bg-muted">
+                    <Crown className="h-4 w-4 text-gold" />
+                  </AvatarFallback>
+                </Avatar>
 
                 {/* Profile Info */}
                 <div className="flex-1 min-w-0">
