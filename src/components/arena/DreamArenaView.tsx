@@ -44,14 +44,28 @@ export function DreamArenaView({
   const [showResult, setShowResult] = useState(false);
   const [shakeScreen, setShakeScreen] = useState(false);
   const [showViralCard, setShowViralCard] = useState(false);
+  const [activeCard, setActiveCard] = useState<ClashRoyaleCard | null>(null);
   const logEndRef = useRef<HTMLDivElement>(null);
   const hasTriggeredConfetti = useRef(false);
+  const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get current frame data
   const currentFrame = simulationResult.timeline[currentTick] ?? simulationResult.timeline[simulationResult.timeline.length - 1];
   const { userHp, proHp, events, criticalAction } = currentFrame;
 
-  // Playback loop
+  // Find card from event text by matching card names
+  const findCardFromEvent = (eventText: string): ClashRoyaleCard | null => {
+    const allCards = [...userProfile.deck, ...(proPlayer.signatureDeck || [])];
+    
+    for (const card of allCards) {
+      if (eventText.toLowerCase().includes(card.name.toLowerCase())) {
+        return card;
+      }
+    }
+    return null;
+  };
+
+  // Playback loop with card spotlight detection
   useEffect(() => {
     if (!isPlaying || currentTick >= 180) return;
 
@@ -59,17 +73,47 @@ export function DreamArenaView({
 
     const interval = setInterval(() => {
       setCurrentTick((prev) => {
-        if (prev >= 180) {
+        const nextTick = prev + 1;
+        
+        if (nextTick >= 180) {
           setIsPlaying(false);
           setShowResult(true);
           return 180;
         }
-        return prev + 1;
+        
+        // Check for cards in the next frame's events
+        const nextFrame = simulationResult.timeline[nextTick];
+        if (nextFrame?.events.length > 0) {
+          for (const event of nextFrame.events) {
+            const card = findCardFromEvent(event);
+            if (card) {
+              // Clear previous timeout if exists
+              if (activeCardTimeoutRef.current) {
+                clearTimeout(activeCardTimeoutRef.current);
+              }
+              setActiveCard(card);
+              // Clear after 1.5 seconds
+              activeCardTimeoutRef.current = setTimeout(() => setActiveCard(null), 1500);
+              break; // Only show one card per tick
+            }
+          }
+        }
+        
+        return nextTick;
       });
     }, intervalMs);
 
     return () => clearInterval(interval);
-  }, [isPlaying, playbackSpeed, currentTick]);
+  }, [isPlaying, playbackSpeed, currentTick, simulationResult.timeline]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (activeCardTimeoutRef.current) {
+        clearTimeout(activeCardTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Screen shake on critical hits
   useEffect(() => {
@@ -373,6 +417,78 @@ export function DreamArenaView({
         </div>
         </div>
       </div>
+
+      {/* Card Spotlight Overlay */}
+      <AnimatePresence>
+        {activeCard && (
+          <motion.div
+            key={activeCard.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none"
+          >
+            {/* Radial Flash Burst Background */}
+            <motion.div
+              initial={{ scale: 0, opacity: 0.8 }}
+              animate={{ scale: 3, opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="absolute w-64 h-64 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, hsl(var(--gold) / 0.5), hsl(var(--primary) / 0.3), transparent)'
+              }}
+            />
+            
+            {/* Card Container with Pop Animation */}
+            <motion.div
+              initial={{ scale: 0, rotate: -15, opacity: 0 }}
+              animate={{ 
+                scale: [0, 1.3, 1.1], 
+                rotate: [-15, 5, 0],
+                opacity: 1 
+              }}
+              exit={{ scale: 0.8, opacity: 0, rotate: 10 }}
+              transition={{ 
+                duration: 0.4, 
+                ease: "easeOut",
+                times: [0, 0.6, 1]
+              }}
+              className="relative"
+            >
+              {/* Card Glow Effect */}
+              <div 
+                className="absolute -inset-4 blur-xl rounded-3xl"
+                style={{
+                  background: 'radial-gradient(circle, hsl(var(--gold) / 0.4), transparent)'
+                }}
+              />
+              
+              {/* Card Image */}
+              <div className="relative w-40 h-52 rounded-xl overflow-hidden border-4 border-gold shadow-[0_0_40px_hsl(var(--gold)/0.6)]">
+                <img
+                  src={activeCard.iconUrls?.medium}
+                  alt={activeCard.name}
+                  className="w-full h-full object-cover bg-black/50"
+                />
+                
+                {/* Card Name Overlay */}
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+                  <p className="text-center text-white font-bold text-lg drop-shadow-lg">
+                    {activeCard.name}
+                  </p>
+                  {activeCard.elixirCost && (
+                    <div className="flex justify-center mt-1">
+                      <span className="bg-primary text-primary-foreground text-sm font-bold px-3 py-0.5 rounded-full">
+                        {activeCard.elixirCost} Elixir
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Viral Match Result Dialog */}
       <ViralMatchResult
