@@ -16,7 +16,7 @@ import { CardImage } from '@/components/cards/CardImage';
 import { cn } from '@/lib/utils';
 import { renderArenaCardToCanvas } from '@/utils/renderArenaCard';
 import type { SimulationResult } from '@/utils/dreamArenaEngine';
-import type { ProPlayer } from '@/data/proPlayers';
+import type { ProPlayerProfile } from '@/data/proPlayers';
 import type { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 
 interface ViralMatchResultProps {
@@ -28,7 +28,9 @@ interface ViralMatchResultProps {
     deck: ClashRoyaleCard[];
     trophies: number;
   };
-  proPlayer: ProPlayer;
+  proPlayer: ProPlayerProfile;
+  proDeck: ClashRoyaleCard[];
+  proTrophies: number;
 }
 
 export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
@@ -37,6 +39,8 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
   simulationResult,
   userProfile,
   proPlayer,
+  proDeck,
+  proTrophies,
 }) => {
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
