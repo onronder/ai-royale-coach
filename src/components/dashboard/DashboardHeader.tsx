@@ -111,16 +111,14 @@ export function DashboardHeader({
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
       <div className="container mx-auto px-3 md:px-4 h-14 flex items-center justify-between gap-2">
         
-        {/* Left Section */}
+        {/* Left Section - Sidebar Trigger + HUD Stats */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Sidebar Trigger (mobile) */}
           <SidebarTrigger className="md:hidden" />
-        </div>
-
-        {/* Center: HUD Stats */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+          
+          {/* HUD Stats */}
           {player && (
-            <>
+            <div className="flex items-center gap-2">
               {/* Trophies Badge - Always visible */}
               <Badge 
                 variant="outline" 
@@ -138,7 +136,7 @@ export function DashboardHeader({
                 <TrendingUp className="h-3.5 w-3.5" />
                 <span>{winRate.toFixed(1)}%</span>
               </Badge>
-            </>
+            </div>
           )}
         </div>
 
