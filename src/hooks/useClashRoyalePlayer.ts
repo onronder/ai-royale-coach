@@ -95,5 +95,6 @@ export function useClashRoyalePlayer(playerTag: string | null) {
   return {
     ...query,
     forceRefresh,
+    lastUpdated: query.dataUpdatedAt ? new Date(query.dataUpdatedAt) : null,
   };
 }
