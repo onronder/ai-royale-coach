@@ -192,6 +192,8 @@ const Dashboard = () => {
               isRefreshing={isRefreshing}
               onRefresh={handleRefreshData}
               onSignOut={handleSignOutWithToast}
+              onOpenHelp={() => setHelpOpen(true)}
+              onOpenSettings={() => window.location.href = '/settings'}
             />
 
             <main className="container mx-auto px-3 py-4 pb-24 md:px-6 md:py-6 md:pb-6 max-w-full">
