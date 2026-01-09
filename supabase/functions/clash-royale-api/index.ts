@@ -249,14 +249,26 @@ serve(async (req) => {
         const limit = parseInt(url.searchParams.get('limit') || '10', 10);
         const clampedLimit = Math.min(Math.max(limit, 1), 50); // Clamp between 1-50
         
-        // Rankings endpoint - gracefully handle failures by returning empty items
-        // This allows the client to show fallback UI (Hall of Fame)
+        // Use the Leaderboards API for global rankings
+        // Step 1: Get list of leaderboards, Step 2: Fetch players from main leaderboard
         try {
-          // Location ID 57000000 = Global rankings
-          const data = await fetchFromClashApi(`/locations/57000000/rankings/players?limit=${clampedLimit}`);
-          result = { data, cacheHit: false, stale: false };
+          // Get available leaderboards
+          const leaderboards = await fetchFromClashApi('/leaderboards');
+          
+          if (leaderboards.items && leaderboards.items.length > 0) {
+            // Use the first leaderboard (main trophy road ladder)
+            const mainLeaderboardId = leaderboards.items[0].id;
+            logger.debug('Using leaderboard', { id: mainLeaderboardId, name: leaderboards.items[0].name });
+            
+            // Fetch players from that leaderboard
+            const data = await fetchFromClashApi(`/leaderboard/${mainLeaderboardId}?limit=${clampedLimit}`);
+            result = { data, cacheHit: false, stale: false };
+          } else {
+            logger.warn('No leaderboards available');
+            result = { data: { items: [] }, cacheHit: false, stale: false };
+          }
         } catch (rankingsError: any) {
-          logger.warn('Rankings fetch failed, returning empty items', { error: rankingsError.message });
+          logger.warn('Leaderboards fetch failed, returning empty items', { error: rankingsError.message });
           // Return empty items array instead of throwing - client will use fallback
           result = { data: { items: [] }, cacheHit: false, stale: false };
         }
