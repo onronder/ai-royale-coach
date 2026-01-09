@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock, HelpCircle, ChevronDown } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
 
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -30,7 +31,7 @@ export default function DreamArena() {
   const [arenaState, setArenaState] = useState<ArenaState>('select');
   const [selectedPro, setSelectedPro] = useState<ProPlayer | null>(null);
   const [simulationResult, setSimulationResult] = useState<SimulationResult | null>(null);
-  const [user, setUser] = useState<{ id: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   // Get player data
@@ -143,7 +144,7 @@ export default function DreamArena() {
       </Helmet>
 
       <div className="min-h-screen bg-background flex flex-col">
-        <Navbar />
+        <Navbar user={user} />
 
         <main className="flex-1 container max-w-6xl mx-auto px-4 py-8">
           {/* Header */}
