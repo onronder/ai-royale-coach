@@ -95,13 +95,6 @@ export function DashboardHeader({
         <div className="flex items-center gap-3 min-w-0">
           {/* Sidebar Trigger (mobile) */}
           <SidebarTrigger className="md:hidden" />
-          
-          {/* Player Name (desktop only) */}
-          {player && (
-            <h1 className="hidden md:block font-rajdhani font-bold text-lg text-foreground truncate max-w-[200px]">
-              {player.name}
-            </h1>
-          )}
         </div>
 
         {/* Center: HUD Stats */}

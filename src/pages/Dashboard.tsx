@@ -176,6 +176,7 @@ const Dashboard = () => {
             playerTag={playerTag}
             playerName={player?.name}
             trophies={player?.trophies}
+            userId={user?.id}
             onSignOut={handleSignOutWithToast}
             onOpenDNA={() => setDnaOpen(true)}
             onOpenAchievements={() => setAchievementsOpen(true)}

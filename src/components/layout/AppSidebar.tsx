@@ -4,13 +4,10 @@ import {
   Brain, 
   Swords, 
   Users, 
-  Crown, 
   Settings, 
   HelpCircle,
   LogOut,
   ChevronRight,
-  Trophy,
-  Sparkles,
   Fingerprint,
   Eye,
   Medal,
@@ -36,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { NavbarSubscriptionBadge } from "./NavbarSubscriptionBadge";
+import { PlayerTagSelectorPopover } from "@/components/sidebar/PlayerTagSelectorPopover";
 
 interface AppSidebarProps {
   activeTab: string;
@@ -45,6 +43,7 @@ interface AppSidebarProps {
   playerTag?: string;
   playerName?: string;
   trophies?: number;
+  userId?: string | null;
   onSignOut?: () => void;
   onOpenDNA?: () => void;
   onOpenAchievements?: () => void;
@@ -87,6 +86,7 @@ export function AppSidebar({
   playerTag,
   playerName,
   trophies,
+  userId,
   onSignOut,
   onOpenDNA,
   onOpenAchievements,
@@ -125,33 +125,15 @@ export function AppSidebar({
       collapsible="icon" 
       className="hidden md:flex border-r border-border/50"
     >
-      {/* Header - Player Info */}
-      <SidebarHeader className="p-4 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <div className="relative flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-gold/60 flex items-center justify-center shadow-gold">
-              <Crown className="h-5 w-5 text-gold-foreground" />
-            </div>
-            {!isCollapsed && trophies && (
-              <div className="absolute -bottom-1 -right-1 bg-card border border-gold/30 rounded-full px-1.5 py-0.5 flex items-center gap-0.5">
-                <Trophy className="h-2.5 w-2.5 text-gold" />
-                <span className="text-[9px] font-bold text-gold">{trophies >= 1000 ? `${(trophies / 1000).toFixed(1)}k` : trophies}</span>
-              </div>
-            )}
-          </div>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <h2 className="font-rajdhani font-bold text-foreground truncate">
-                {playerName || "AI ROYALE"}
-              </h2>
-              {playerTag && (
-                <p className="text-xs text-muted-foreground font-mono truncate">
-                  #{playerTag}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
+      {/* Header - Player Tag Selector */}
+      <SidebarHeader className="p-3 border-b border-border/50">
+        <PlayerTagSelectorPopover
+          userId={userId}
+          currentPlayerTag={playerTag}
+          playerName={playerName}
+          trophies={trophies}
+          isCollapsed={isCollapsed}
+        />
         {!isCollapsed && (
           <div className="mt-3">
             <NavbarSubscriptionBadge />
