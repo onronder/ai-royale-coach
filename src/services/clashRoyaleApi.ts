@@ -145,10 +145,16 @@ class ClashRoyaleApiService {
   }
 
   async getGlobalTopLadder(limit: number = 10): Promise<LadderPlayer[]> {
-    const response = await this.callEdgeFunction<GlobalRankingsResponse>('rankings', undefined, { 
-      limit: limit.toString() 
-    });
-    return response.items || [];
+    try {
+      const response = await this.callEdgeFunction<GlobalRankingsResponse>('rankings', undefined, { 
+        limit: limit.toString() 
+      });
+      return response.items || [];
+    } catch (error) {
+      // Return empty array on error - let the UI handle fallback
+      console.warn('Global leaderboard fetch failed, using fallback:', error);
+      return [];
+    }
   }
 
   normalizeTag(tag: string): string {
