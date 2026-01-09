@@ -78,7 +78,7 @@ const Dashboard = () => {
   const { fraudStatus, isSoftBlocked, isWarned } = useFraudStatus(user?.id || null);
   
   // Data fetching hooks
-  const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer } = useClashRoyalePlayer(playerTag || null);
+  const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer, lastUpdated } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
   const { achievements: battleAchievements } = usePlayerAchievements(battles || null);
@@ -194,7 +194,8 @@ const Dashboard = () => {
               onRefresh={handleRefreshData}
               onSignOut={handleSignOutWithToast}
               onOpenHelp={() => setHelpOpen(true)}
-              onOpenSettings={() => window.location.href = '/settings'}
+              onOpenSettings={() => window.location.href = `/settings?returnTo=/player/${playerTag}`}
+              lastUpdated={lastUpdated}
             />
 
             <main className="container mx-auto px-3 py-4 pb-24 md:px-6 md:py-6 md:pb-6 max-w-full">

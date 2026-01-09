@@ -8,7 +8,8 @@ import {
   RefreshCw, 
   LogOut,
   HelpCircle,
-  Clock
+  Clock,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,12 +18,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { GlobalProgressCenter } from "@/components/layout/GlobalProgressCenter";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
+import { languages } from "@/i18n";
 
 interface DashboardHeaderProps {
   playerTag: string;
@@ -49,9 +57,11 @@ export function DashboardHeader({
   onOpenHelp,
   onOpenSettings,
 }: DashboardHeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [controlPanelOpen, setControlPanelOpen] = useState(false);
+  
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   // Calculate time since last update
   const getTimeSinceUpdate = () => {
@@ -175,6 +185,36 @@ export function DashboardHeader({
                     : t("dashboard.header.forceRefresh", "Force Refresh")
                   }
                 </Button>
+              </div>
+              
+              {/* Language Selector */}
+              <div className="p-2 border-b border-border/50">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start gap-2 h-10"
+                    >
+                      <Globe className="h-4 w-4" />
+                      <span className="flex-1 text-left">{t("dashboard.header.language", "Language")}</span>
+                      <span className="text-muted-foreground">{currentLanguage.flag}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-[150px]">
+                    {languages.map((language) => (
+                      <DropdownMenuItem
+                        key={language.code}
+                        onClick={() => i18n.changeLanguage(language.code)}
+                        className={`flex items-center gap-2 cursor-pointer ${
+                          i18n.language === language.code ? 'bg-primary/10 text-primary' : ''
+                        }`}
+                      >
+                        <span className="text-lg">{language.flag}</span>
+                        <span>{language.name}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               
               {/* Quick Links */}
