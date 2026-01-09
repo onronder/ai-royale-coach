@@ -2,7 +2,11 @@
   "sidebar": {
     "navigation": "Navigasyon",
     "quickActions": "Hızlı Eylemler",
-    "toolbox": "Araç Kutusu"
+    "toolbox": "Araç Kutusu",
+    "achievements": "Başarılar",
+    "proDna": "Pro DNA",
+    "theOracle": "Kahin",
+    "dreamArena": "Rüya Arenası"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",

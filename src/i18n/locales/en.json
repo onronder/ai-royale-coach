@@ -2,7 +2,11 @@
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Quick Actions",
-    "toolbox": "Toolbox"
+    "toolbox": "Toolbox",
+    "achievements": "Achievements",
+    "proDna": "Pro DNA",
+    "theOracle": "The Oracle",
+    "dreamArena": "Dream Arena"
   },
   "feedback": {
     "thankYou": "Thanks for your feedback!",
