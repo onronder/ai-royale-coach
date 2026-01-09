@@ -2,7 +2,11 @@
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Actions Rapides",
-    "toolbox": "Outils"
+    "toolbox": "Outils",
+    "achievements": "Succès",
+    "proDna": "Pro DNA",
+    "theOracle": "L'Oracle",
+    "dreamArena": "Arène de Rêve"
   },
   "feedback": {
     "thankYou": "Merci pour votre retour !",
@@ -2183,13 +2187,6 @@
     "meta": "Méta",
     "confidence": "Confiance",
     "betterDefensiveValue": "Cette carte offre une meilleure valeur défensive et synergise bien avec vos cartes de cycle..."
-  },
-  "sidebar": {
-    "navigation": "Navigation",
-    "quickActions": "Actions Rapides",
-    "achievements": "Succès",
-    "proDna": "Pro DNA",
-    "theOracle": "L'Oracle"
   },
   "admin": {
     "apiMetrics": {
