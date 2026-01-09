@@ -67,7 +67,7 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
           upsetAlert: t('dreamArena.upsetAlert'),
           aiSimulation: t('dreamArena.aiSimulation'),
         },
-        scale: 2,
+        scale: 3,
       });
 
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -108,14 +108,14 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-[400px] p-0 gap-0 bg-transparent border-none overflow-hidden">
+      <DialogContent className="max-w-[480px] p-0 gap-0 bg-transparent border-none overflow-hidden">
         <DialogHeader className="sr-only">
           <DialogTitle>{t('dreamArena.shareResult')}</DialogTitle>
         </DialogHeader>
 
         <div
           className={cn(
-            'relative w-[360px] h-[640px] mx-auto rounded-2xl overflow-hidden',
+            'relative w-[420px] h-[720px] mx-auto rounded-2xl overflow-hidden',
             'flex flex-col items-center justify-between p-6'
           )}
           style={{
@@ -155,13 +155,13 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
               )}
             </motion.div>
 
-            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="flex items-center gap-3 mt-4 px-4 py-2 rounded-lg bg-black/40">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-crimson to-destructive flex items-center justify-center text-xl font-bold text-white">
+            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="flex items-center gap-3 mt-4 px-4 py-3 rounded-xl bg-black/50 border border-white/10">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-crimson to-destructive flex items-center justify-center text-2xl font-bold text-white shadow-lg">
                 {proPlayer.name.charAt(0)}
               </div>
               <div>
-                <p className="font-semibold text-foreground">{proPlayer.name}</p>
-                <p className="text-xs text-muted-foreground">{proPlayer.specialty}</p>
+                <p className="font-bold text-lg text-foreground">{proPlayer.name}</p>
+                <p className="text-sm text-muted-foreground">{t(proPlayer.specialty)}</p>
               </div>
             </motion.div>
 
