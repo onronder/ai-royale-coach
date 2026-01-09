@@ -70,8 +70,8 @@ export async function renderArenaCardToCanvas(
   const isUpset = isVictory && winProbability < 0.3;
   const winProbabilityPercent = Math.round(winProbability * 100);
 
-  const BASE_WIDTH = 360;
-  const BASE_HEIGHT = 640;
+  const BASE_WIDTH = 420;
+  const BASE_HEIGHT = 720;
   const width = BASE_WIDTH * scale;
   const height = BASE_HEIGHT * scale;
 

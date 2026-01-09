@@ -700,72 +700,143 @@ export function DreamArenaView({
         proPlayer={proPlayer}
       />
 
-      {/* Result Overlay */}
+      {/* Result Overlay - Redesigned */}
       <AnimatePresence>
         {showResult && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50"
+            className="absolute inset-0 bg-black/95 backdrop-blur-xl flex items-center justify-center z-50 overflow-hidden"
           >
+            {/* Background Glow Effect */}
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 2.5, opacity: 0.4 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="absolute w-96 h-96 rounded-full"
+              style={{
+                background: simulationResult.winner === 'user'
+                  ? 'radial-gradient(circle, hsl(var(--emerald) / 0.5), hsl(var(--gold) / 0.2), transparent)'
+                  : 'radial-gradient(circle, hsl(var(--destructive) / 0.4), hsl(var(--crimson) / 0.2), transparent)'
+              }}
+            />
+            
+            {/* Rotating Rays */}
+            <motion.div
+              initial={{ opacity: 0, rotate: 0 }}
+              animate={{ opacity: 0.15, rotate: 360 }}
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              className="absolute w-[800px] h-[800px]"
+              style={{
+                background: simulationResult.winner === 'user'
+                  ? 'conic-gradient(from 0deg, transparent, hsl(var(--gold) / 0.4), transparent, hsl(var(--emerald) / 0.3), transparent, hsl(var(--gold) / 0.2), transparent)'
+                  : 'conic-gradient(from 0deg, transparent, hsl(var(--destructive) / 0.3), transparent, hsl(var(--crimson) / 0.2), transparent)'
+              }}
+            />
+
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', delay: 0.1 }}
-              className="text-center space-y-6 p-8"
+              transition={{ type: 'spring', delay: 0.1, damping: 12 }}
+              className="relative z-10 text-center space-y-8 p-8"
             >
+              {/* Icon with Animation */}
               <motion.div
-                animate={simulationResult.winner === 'user' ? { scale: [1, 1.1, 1] } : {}}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
+                initial={{ y: -60, opacity: 0, scale: 0.5 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, type: 'spring', damping: 10 }}
               >
-                <h2 className={cn(
-                  "text-5xl font-bold",
-                  simulationResult.winner === 'user' 
-                    ? "text-emerald drop-shadow-[0_0_30px_hsl(var(--emerald)/0.5)]"
-                    : "text-destructive drop-shadow-[0_0_30px_hsl(var(--destructive)/0.5)]"
-                )}>
-                  {simulationResult.winner === 'user' 
-                    ? t('dreamArena.victory', 'Victory!')
-                    : t('dreamArena.defeat', 'Defeat')}
-                </h2>
+                {simulationResult.winner === 'user' ? (
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.15, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Crown className="w-28 h-28 mx-auto text-gold drop-shadow-[0_0_60px_hsl(var(--gold)/0.8)]" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    animate={{ opacity: [1, 0.6, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <Swords className="w-28 h-28 mx-auto text-destructive drop-shadow-[0_0_40px_hsl(var(--destructive)/0.6)]" />
+                  </motion.div>
+                )}
               </motion.div>
 
-              <p className="text-xl text-muted-foreground">
+              {/* Victory/Defeat Title */}
+              <motion.h2
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.3, type: 'spring', damping: 8 }}
+                className={cn(
+                  "text-7xl font-black tracking-wider uppercase",
+                  simulationResult.winner === 'user' 
+                    ? "text-transparent bg-clip-text bg-gradient-to-r from-emerald via-gold to-emerald drop-shadow-[0_0_40px_hsl(var(--emerald)/0.6)]"
+                    : "text-destructive drop-shadow-[0_0_40px_hsl(var(--destructive)/0.6)]"
+                )}
+              >
+                {simulationResult.winner === 'user' 
+                  ? t('dreamArena.victory', 'Victory!')
+                  : t('dreamArena.defeat', 'Defeat')}
+              </motion.h2>
+
+              {/* Subtitle with pro name */}
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-2xl text-muted-foreground"
+              >
                 {simulationResult.winner === 'user'
                   ? t('dreamArena.youWon', { proName: proPlayer.name, defaultValue: `You defeated ${proPlayer.name}!` })
                   : t('dreamArena.youLost', { proName: proPlayer.name, defaultValue: `${proPlayer.name} wins!` })}
-              </p>
+              </motion.p>
 
-              <div className="flex items-center justify-center gap-8 text-lg">
-                <div>
-                  <p className="text-muted-foreground text-sm">{t('dreamArena.finalScore', 'Final Score')}</p>
-                  <p className="text-3xl font-bold text-foreground">{simulationResult.finalScore}</p>
+              {/* Stats Cards */}
+              <motion.div
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center justify-center gap-6"
+              >
+                <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl px-8 py-5 min-w-[140px]">
+                  <p className="text-muted-foreground text-sm mb-1">{t('dreamArena.finalScore', 'Final Score')}</p>
+                  <p className="text-5xl font-black text-foreground">{simulationResult.finalScore}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground text-sm">{t('dreamArena.winProbability', 'Win Probability')}</p>
-                  <p className="text-3xl font-bold text-primary">{Math.round(simulationResult.winProbability * 100)}%</p>
+                <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl px-8 py-5 min-w-[140px]">
+                  <p className="text-muted-foreground text-sm mb-1">{t('dreamArena.winProbability', 'Win Probability')}</p>
+                  <p className="text-5xl font-black text-primary">{Math.round(simulationResult.winProbability * 100)}%</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center justify-center gap-3 pt-4">
+              {/* Buttons with staggered animation */}
+              <motion.div
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="flex items-center justify-center gap-4 pt-6"
+              >
                 {onPlayAgain && (
-                  <Button onClick={onPlayAgain} variant="default" size="lg">
+                  <Button onClick={onPlayAgain} variant="default" size="lg" className="text-lg px-8 py-6">
                     {t('dreamArena.playAgain', 'Play Again')}
                   </Button>
                 )}
                 <Button
                   onClick={() => setShowViralCard(true)}
-                  className="bg-gradient-to-r from-gold to-amber-500 text-black hover:from-gold/90 hover:to-amber-500/90"
+                  className="bg-gradient-to-r from-gold to-amber-500 text-black hover:from-gold/90 hover:to-amber-500/90 text-lg px-8 py-6 shadow-lg shadow-gold/30"
                   size="lg"
                 >
-                  <Share2 className="w-4 h-4 mr-2" />
+                  <Share2 className="w-5 h-5 mr-2" />
                   {t('dreamArena.shareResult', 'Share Result')}
                 </Button>
-                <Button onClick={onClose} variant="outline" size="lg">
+                <Button onClick={onClose} variant="outline" size="lg" className="text-lg px-8 py-6">
                   {t('dreamArena.close', 'Close')}
                 </Button>
-              </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         )}
