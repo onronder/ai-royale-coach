@@ -250,7 +250,8 @@ serve(async (req) => {
         const clampedLimit = Math.min(Math.max(limit, 1), 50); // Clamp between 1-50
         
         // Rankings don't use the player cache, fetch directly
-        const data = await fetchFromClashApi(`/locations/global/rankings/players?limit=${clampedLimit}`);
+        // Location ID 57000000 = Global rankings
+        const data = await fetchFromClashApi(`/locations/57000000/rankings/players?limit=${clampedLimit}`);
         result = { data, cacheHit: false, stale: false };
         break;
       }

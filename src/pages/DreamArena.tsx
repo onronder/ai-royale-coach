@@ -20,10 +20,73 @@ import { useClashRoyalePlayer } from '@/hooks/useClashRoyalePlayer';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
 import { clashRoyaleApi, LadderPlayer, ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { simulateDreamMatch, SimulationResult } from '@/utils/dreamArenaEngine';
+import { sampleDecks } from '@/data/sampleDecks';
 import { cn } from '@/lib/utils';
 
 type ArenaState = 'select' | 'loading' | 'battle';
 type ConnectionPhase = 'connecting' | 'scouting' | 'ready';
+
+// Fallback legends for when API is unavailable - All-Time Greats
+const FALLBACK_LEGENDS: LadderPlayer[] = [
+  {
+    rank: 1,
+    tag: '#Q982PQ',
+    name: 'Mohamed Light',
+    trophies: 9900,
+    expLevel: 14,
+    clan: { tag: '#ABC123', name: 'Tribe Gaming', badgeId: 0 },
+  },
+  {
+    rank: 2,
+    tag: '#R9J0',
+    name: 'Morten',
+    trophies: 9850,
+    expLevel: 14,
+    clan: { tag: '#DEF456', name: 'Team Liquid', badgeId: 0 },
+  },
+  {
+    rank: 3,
+    tag: '#90L0',
+    name: 'Surgical Goblin',
+    trophies: 9800,
+    expLevel: 14,
+    clan: { tag: '#GHI789', name: 'GamersOrigin', badgeId: 0 },
+  },
+  {
+    rank: 4,
+    tag: '#2Y2J09',
+    name: 'Ryley',
+    trophies: 9750,
+    expLevel: 14,
+    clan: { tag: '#JKL012', name: 'SK Gaming', badgeId: 0 },
+  },
+  {
+    rank: 5,
+    tag: '#2U00J8K',
+    name: 'Ian77',
+    trophies: 9700,
+    expLevel: 14,
+    clan: { tag: '#MNO345', name: 'Ian77 Army', badgeId: 0 },
+  },
+];
+
+// Get a fallback sample deck as ClashRoyaleCard format
+const getFallbackDeck = (): ClashRoyaleCard[] => {
+  const hogCycleDeck = sampleDecks.find(d => d.id === 'hog-cycle');
+  if (!hogCycleDeck) return [];
+  
+  return hogCycleDeck.cards.map((card, index) => ({
+    id: 26000000 + index,
+    name: card.name,
+    level: 14,
+    maxLevel: 14,
+    elixirCost: card.elixir,
+    rarity: card.rarity,
+    iconUrls: {
+      medium: `https://cdn.royaleapi.com/static/img/cards-150/${card.name.toLowerCase().replace(/\s+/g, '-')}.png`,
+    },
+  }));
+};
 
 // Selected opponent type (from leaderboard)
 interface SelectedOpponent {
@@ -48,6 +111,7 @@ export default function DreamArena() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLiveDeck, setIsLiveDeck] = useState<boolean>(true);
   const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>('connecting');
+  const [isHallOfFame, setIsHallOfFame] = useState<boolean>(false);
 
   // Get player data
   const { data: playerData, isLoading: isPlayerLoading } = useClashRoyalePlayer(playerTag);
@@ -137,7 +201,38 @@ export default function DreamArena() {
           setArenaState('battle');
 
         } catch (error) {
-          // No fallback - show authentic error
+          // Check if we're using Hall of Fame fallback - use sample deck for legends
+          if (isHallOfFame) {
+            const fallbackDeck = getFallbackDeck();
+            if (fallbackDeck.length >= 8) {
+              setOpponentDeck(fallbackDeck);
+              setIsLiveDeck(false);
+              
+              toast.info(
+                t('dreamArena.usingSimDeck', 'Using simulated deck for this legend.'),
+                { duration: 3000 }
+              );
+              
+              const userDeck = playerData?.currentDeck || [];
+              const finalUserDeck = userDeck.length >= 8 ? userDeck : fallbackDeck;
+              
+              const result = simulateDreamMatch({
+                userDeck: finalUserDeck,
+                proDeck: fallbackDeck,
+                userTrophies: playerData?.trophies || 5000,
+                proTrophies: selectedOpponent.trophies,
+                userName: playerData?.name || 'Challenger',
+                proName: selectedOpponent.name,
+              });
+              
+              setSimulationResult(result);
+              logUsage({ opponent: selectedOpponent.tag, rank: selectedOpponent.rank });
+              setArenaState('battle');
+              return;
+            }
+          }
+          
+          // No fallback for live players - show authentic error
           toast.error(
             t('dreamArena.profileUnavailable', 'Player profile private or unavailable. Try another opponent.'),
             { duration: 4000 }
@@ -149,7 +244,7 @@ export default function DreamArena() {
 
       fetchOpponentDeck();
     }
-  }, [arenaState, selectedOpponent, connectionPhase, playerData, logUsage, t]);
+  }, [arenaState, selectedOpponent, connectionPhase, playerData, logUsage, t, isHallOfFame]);
 
   const handleSelectOpponent = async (player: LadderPlayer) => {
     // Check access before starting
@@ -434,65 +529,92 @@ export default function DreamArena() {
             </div>
           )}
 
-          {/* Live Leaderboard */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Crown className="w-5 h-5 text-gold" />
-                {t('dreamArena.globalTop10', 'Global Top 10')}
-                <motion.span
-                  animate={{ opacity: [1, 0.5, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="flex items-center gap-1 ml-2"
-                >
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
-                  <span className="text-xs text-green-500 font-medium uppercase">{t('dreamArena.live', 'LIVE')}</span>
-                </motion.span>
-              </h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => refetchLeaderboard()}
-                disabled={isLeaderboardLoading}
-              >
-                <RefreshCw className={cn("w-4 h-4", isLeaderboardLoading && "animate-spin")} />
-              </Button>
-            </div>
+          {/* Live Leaderboard / Hall of Fame */}
+          {(() => {
+            // Determine if we should use fallback
+            const displayPlayers = (leaderboard && leaderboard.length > 0) 
+              ? leaderboard 
+              : FALLBACK_LEGENDS;
+            const showingFallback = !leaderboard || leaderboard.length === 0;
+            
+            // Set Hall of Fame state for deck fallback logic
+            if (showingFallback !== isHallOfFame) {
+              setTimeout(() => setIsHallOfFame(showingFallback), 0);
+            }
 
-            {/* Loading State */}
-            {isLeaderboardLoading && (
-              <div className="space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
-                    <Skeleton className="w-12 h-12 rounded-lg" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-5 w-40" />
-                      <Skeleton className="h-4 w-24" />
-                    </div>
-                    <Skeleton className="h-8 w-20" />
+            return (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-gold" />
+                    {showingFallback 
+                      ? t('dreamArena.hallOfFame', 'Hall of Fame')
+                      : t('dreamArena.globalTop10', 'Global Top 10')}
+                    {!showingFallback && (
+                      <motion.span
+                        animate={{ opacity: [1, 0.5, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="flex items-center gap-1 ml-2"
+                      >
+                        <span className="w-2 h-2 rounded-full bg-green-500" />
+                        <span className="text-xs text-green-500 font-medium uppercase">{t('dreamArena.live', 'LIVE')}</span>
+                      </motion.span>
+                    )}
+                  </h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => refetchLeaderboard()}
+                    disabled={isLeaderboardLoading}
+                  >
+                    <RefreshCw className={cn("w-4 h-4", isLeaderboardLoading && "animate-spin")} />
+                  </Button>
+                </div>
+
+                {/* Fallback Notice */}
+                {showingFallback && !isLeaderboardLoading && (
+                  <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      {t('dreamArena.fallbackNotice', 'Live rankings unavailable. Showing All-Time Legends.')}
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            {/* Error State */}
-            {isLeaderboardError && (
-              <div className="p-8 rounded-xl bg-destructive/5 border border-destructive/20 text-center">
-                <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-                <p className="text-destructive font-medium mb-2">
-                  {t('dreamArena.leaderboardError', 'Failed to load leaderboard')}
-                </p>
-                <Button variant="outline" size="sm" onClick={() => refetchLeaderboard()}>
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  {t('common.retry', 'Retry')}
-                </Button>
-              </div>
-            )}
+                {/* Loading State */}
+                {isLeaderboardLoading && (
+                  <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border">
+                        <Skeleton className="w-12 h-12 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-5 w-40" />
+                          <Skeleton className="h-4 w-24" />
+                        </div>
+                        <Skeleton className="h-8 w-20" />
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-            {/* Leaderboard List */}
-            {leaderboard && leaderboard.length > 0 && (
-              <div className="space-y-2">
-                {leaderboard.map((player, index) => {
+                {/* Error State - only show if also no fallback */}
+                {isLeaderboardError && !showingFallback && (
+                  <div className="p-8 rounded-xl bg-destructive/5 border border-destructive/20 text-center">
+                    <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
+                    <p className="text-destructive font-medium mb-2">
+                      {t('dreamArena.leaderboardError', 'Failed to load leaderboard')}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={() => refetchLeaderboard()}>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      {t('common.retry', 'Retry')}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Leaderboard List - Always show something (live or fallback) */}
+                {!isLeaderboardLoading && displayPlayers.length > 0 && (
+                  <div className="space-y-2">
+                    {displayPlayers.map((player, index) => {
                   const rankStyle = getRankBadge(player.rank);
                   const isTopThree = player.rank <= 3;
                   
@@ -565,11 +687,13 @@ export default function DreamArena() {
                         </Button>
                       </div>
                     </motion.div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })()}
 
           {/* Usage Stats */}
           {canAccess && (

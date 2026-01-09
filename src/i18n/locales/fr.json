@@ -2378,7 +2378,10 @@
     "noClan": "Sans Clan",
     "liveDeck": "EN DIRECT",
     "simulatedDeck": "SIM",
-    "specialist": "Spécialiste"
+    "specialist": "Spécialiste",
+    "hallOfFame": "Temple de la Renommée",
+    "fallbackNotice": "Classement en direct indisponible. Affichage des Légendes de Tous les Temps.",
+    "usingSimDeck": "Utilisation d'un deck simulé pour cette légende."
   },
   "achievements": {
     "title": "Succès",

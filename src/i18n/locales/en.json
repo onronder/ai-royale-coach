@@ -2485,7 +2485,10 @@
     "noClan": "No Clan",
     "liveDeck": "LIVE",
     "simulatedDeck": "SIM",
-    "specialist": "Specialist"
+    "specialist": "Specialist",
+    "hallOfFame": "Hall of Fame",
+    "fallbackNotice": "Live rankings unavailable. Showing All-Time Legends.",
+    "usingSimDeck": "Using simulated deck for this legend."
   },
   "achievements": {
     "title": "Achievements",
