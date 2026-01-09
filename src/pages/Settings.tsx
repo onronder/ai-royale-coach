@@ -24,7 +24,7 @@ const Settings = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get('returnTo') || '/select-player';
+  const returnTo = searchParams.get('returnTo');
   
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,7 +130,7 @@ const Settings = () => {
               <HelpCircle className="mr-2 h-4 w-4" />
               {t('nav.help')}
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate(returnTo)} className="border-border/50">
+            <Button variant="outline" size="sm" onClick={() => returnTo ? navigate(returnTo) : navigate(-1)} className="border-border/50">
               <ArrowLeft className="mr-2 h-4 w-4" />
               {t('settings.back', 'Back')}
             </Button>
