@@ -9,7 +9,8 @@ import {
   LogOut,
   HelpCircle,
   Clock,
-  Globe
+  Globe,
+  Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,7 @@ import { GlobalProgressCenter } from "@/components/layout/GlobalProgressCenter";
 import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { languages } from "@/i18n";
+import { useAllOperations } from "@/hooks/useAllOperations";
 
 interface DashboardHeaderProps {
   playerTag: string;
@@ -61,6 +63,7 @@ export function DashboardHeader({
   const navigate = useNavigate();
   const [controlPanelOpen, setControlPanelOpen] = useState(false);
   
+  const { activeCount } = useAllOperations();
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   // Calculate time since last update
@@ -185,6 +188,24 @@ export function DashboardHeader({
                     : t("dashboard.header.forceRefresh", "Force Refresh")
                   }
                 </Button>
+              </div>
+              
+              {/* Active Tasks Display */}
+              <div className="p-4 space-y-2 border-b border-border/50">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Activity className="h-3.5 w-3.5" />
+                    {t("dashboard.header.activeTasks", "Active Tasks")}
+                  </span>
+                  <Badge variant={activeCount > 0 ? "default" : "outline"} className="h-5 px-1.5 text-xs">
+                    {activeCount}
+                  </Badge>
+                </div>
+                {activeCount > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t("dashboard.header.viewTasksHint", "Click the Activity icon in the header to view details")}
+                  </p>
+                )}
               </div>
               
               {/* Language Selector */}
