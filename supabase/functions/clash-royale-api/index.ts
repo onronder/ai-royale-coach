@@ -261,8 +261,23 @@ serve(async (req) => {
             logger.debug('Using leaderboard', { id: mainLeaderboardId, name: leaderboards.items[0].name });
             
             // Fetch players from that leaderboard
-            const data = await fetchFromClashApi(`/leaderboard/${mainLeaderboardId}?limit=${clampedLimit}`);
-            result = { data, cacheHit: false, stale: false };
+            const leaderboardData = await fetchFromClashApi(`/leaderboard/${mainLeaderboardId}?limit=${clampedLimit}`);
+            
+            // Normalize the response - handle different API response structures
+            const rawPlayers = leaderboardData.items || leaderboardData || [];
+            
+            // Map to expected LadderPlayer format with proper field mapping
+            const normalizedItems = rawPlayers.map((player: any, index: number) => ({
+              rank: player.rank ?? index + 1,
+              tag: player.tag,
+              name: player.name,
+              trophies: player.trophies ?? player.score ?? player.points ?? 0,
+              expLevel: player.expLevel ?? 14,
+              clan: player.clan,
+              arena: player.arena,
+            }));
+            
+            result = { data: { items: normalizedItems }, cacheHit: false, stale: false };
           } else {
             logger.warn('No leaderboards available');
             result = { data: { items: [] }, cacheHit: false, stale: false };
