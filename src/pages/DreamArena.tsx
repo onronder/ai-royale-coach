@@ -615,8 +615,9 @@ export default function DreamArena() {
                 {!isLeaderboardLoading && displayPlayers.length > 0 && (
                   <div className="space-y-2">
                     {displayPlayers.map((player, index) => {
-                  const rankStyle = getRankBadge(player.rank);
-                  const isTopThree = player.rank <= 3;
+                  const playerRank = player.rank ?? (index + 1);
+                  const rankStyle = getRankBadge(playerRank);
+                  const isTopThree = playerRank <= 3;
                   
                   return (
                     <motion.div
@@ -641,7 +642,7 @@ export default function DreamArena() {
                         rankStyle.text,
                         rankStyle.glow && `shadow-lg ${rankStyle.glow}`
                       )}>
-                        #{player.rank}
+                        #{player.rank ?? (index + 1)}
                       </div>
 
                       {/* Player Info */}
@@ -666,7 +667,7 @@ export default function DreamArena() {
                         <div className="text-right">
                           <p className="font-bold text-gold flex items-center gap-1">
                             <Trophy className="w-4 h-4" />
-                            {player.trophies.toLocaleString()}
+                            {(player.trophies ?? 0).toLocaleString()}
                           </p>
                         </div>
                         
