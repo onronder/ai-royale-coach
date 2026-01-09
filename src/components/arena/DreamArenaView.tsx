@@ -144,29 +144,51 @@ export function DreamArenaView({
     }
   };
 
+  const timeRemaining = 180 - currentTick;
+  const isTimerCritical = timeRemaining <= 10 && timeRemaining > 0;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-4",
+        "fixed inset-0 z-50 overflow-hidden",
         shakeScreen && "animate-[shake_0.3s_ease-in-out]"
       )}
       style={{
         ['--shake-x' as string]: '4px',
       }}
     >
-      {/* Close button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute top-4 right-4 z-50 text-muted-foreground hover:text-foreground"
-        onClick={onClose}
-      >
-        <X className="w-5 h-5" />
-      </Button>
+      {/* Arena Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
+        style={{ 
+          backgroundImage: "url('/assets/arena-bg-blur.jpg')",
+          filter: 'blur(2px)'
+        }}
+      />
+      
+      {/* Dark Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/80" />
+      
+      {/* Floating Particles */}
+      <div className="arena-floating-particles">
+        <span /><span /><span /><span /><span /><span /><span /><span />
+      </div>
 
-      <div className="w-full max-w-2xl space-y-6">
+      {/* Content Container */}
+      <div className="relative z-10 h-full flex items-center justify-center p-4">
+        {/* Close button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 z-50 text-white/70 hover:text-white hover:bg-white/10"
+          onClick={onClose}
+        >
+          <X className="w-5 h-5" />
+        </Button>
+
+        <div className="w-full max-w-2xl space-y-6">
         {/* Header - Face-off */}
         <div className="flex items-center justify-between gap-4">
           {/* User */}
@@ -204,8 +226,11 @@ export function DreamArenaView({
               <Swords className="w-4 h-4 mr-1" />
               VS
             </Badge>
-            <span className="font-mono text-2xl text-foreground mt-2 tabular-nums">
-              {formatMatchTime(180 - currentTick)}
+            <span className={cn(
+              "text-3xl mt-2 tabular-nums arena-timer",
+              isTimerCritical && "arena-timer-critical"
+            )}>
+              {formatMatchTime(timeRemaining)}
             </span>
           </motion.div>
 
@@ -235,8 +260,8 @@ export function DreamArenaView({
           </motion.div>
         </div>
 
-        {/* Health Bars */}
-        <div className="space-y-3">
+        {/* Health Bars - Glassmorphism Container */}
+        <div className="space-y-3 p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-xl">
           {/* User HP */}
           <div className="space-y-1">
             <div className="flex justify-between text-sm">
@@ -280,10 +305,10 @@ export function DreamArenaView({
           </div>
         </div>
 
-        {/* Battle Log */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-muted-foreground">{t('dreamArena.battleLog', 'Battle Log')}</h3>
-          <ScrollArea className="h-48 rounded-lg bg-black/80 backdrop-blur-sm border border-emerald/20 p-3">
+        {/* Battle Log - Glassmorphism Container */}
+        <div className="space-y-2 p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 shadow-xl">
+          <h3 className="text-sm font-semibold text-white/80">{t('dreamArena.battleLog', 'Battle Log')}</h3>
+          <ScrollArea className="h-48 rounded-lg bg-black/30 border border-white/5 p-3">
             <div className="space-y-1 font-mono text-sm">
               <AnimatePresence mode="popLayout">
                 {allEvents.map((item, idx) => (
@@ -307,8 +332,8 @@ export function DreamArenaView({
           </ScrollArea>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-3">
+        {/* Controls - Glassmorphism Container */}
+        <div className="flex items-center justify-center gap-3 p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10 shadow-xl">
           <Button
             variant="outline"
             size="sm"
@@ -345,6 +370,7 @@ export function DreamArenaView({
             <FastForward className="w-4 h-4 mr-1" />
             {t('dreamArena.skip', 'Skip')}
           </Button>
+        </div>
         </div>
       </div>
 
