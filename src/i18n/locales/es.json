@@ -2,7 +2,11 @@
   "sidebar": {
     "navigation": "Navegación",
     "quickActions": "Acciones Rápidas",
-    "toolbox": "Herramientas"
+    "toolbox": "Herramientas",
+    "achievements": "Logros",
+    "proDna": "Pro DNA",
+    "theOracle": "El Oráculo",
+    "dreamArena": "Arena de los Sueños"
   },
   "feedback": {
     "thankYou": "¡Gracias por tu opinión!",
@@ -2194,13 +2198,6 @@
     "meta": "Meta",
     "confidence": "Confianza",
     "betterDefensiveValue": "Esta carta proporciona mejor valor defensivo y sinergiza bien con tus cartas de ciclo..."
-  },
-  "sidebar": {
-    "navigation": "Navegación",
-    "quickActions": "Acciones Rápidas",
-    "achievements": "Logros",
-    "proDna": "Pro DNA",
-    "theOracle": "El Oráculo"
   },
   "admin": {
     "apiMetrics": {
