@@ -1029,3 +1029,39 @@ select {
     opacity: 0;
   }
 }
+
+/* Elixir bar full glow effect */
+@keyframes elixir-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 40px hsl(var(--primary) / 0.6);
+  }
+}
+
+.elixir-bar-full {
+  animation: elixir-pulse 1s ease-in-out infinite;
+}
+
+/* Spotlight burst rays effect */
+.spotlight-burst {
+  background: 
+    conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      hsl(var(--gold) / 0.3) 10deg,
+      transparent 20deg,
+      transparent 30deg,
+      hsl(var(--gold) / 0.2) 40deg,
+      transparent 50deg,
+      transparent 60deg,
+      hsl(var(--gold) / 0.3) 70deg,
+      transparent 80deg,
+      transparent 90deg,
+      hsl(var(--gold) / 0.2) 100deg,
+      transparent 110deg,
+      transparent 120deg
+    );
+  border-radius: 50%;
+}
