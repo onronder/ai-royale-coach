@@ -15,6 +15,7 @@ const RATE_LIMIT_WINDOW_SECONDS = 60;
 const CACHE_TTL = {
   player: 300,
   battles: 120,
+  rankings: 600, // 10 min cache for global rankings
 };
 
 async function checkRateLimitDb(supabase: any, identifier: string): Promise<{ allowed: boolean; resetIn?: number }> {
@@ -241,6 +242,16 @@ serve(async (req) => {
           () => fetchFromClashApi(`/players/${encodePlayerTag(normalizedTag)}/battlelog`),
           forceRefresh
         );
+        break;
+      }
+
+      case 'rankings': {
+        const limit = parseInt(url.searchParams.get('limit') || '10', 10);
+        const clampedLimit = Math.min(Math.max(limit, 1), 50); // Clamp between 1-50
+        
+        // Rankings don't use the player cache, fetch directly
+        const data = await fetchFromClashApi(`/locations/global/rankings/players?limit=${clampedLimit}`);
+        result = { data, cacheHit: false, stale: false };
         break;
       }
 
