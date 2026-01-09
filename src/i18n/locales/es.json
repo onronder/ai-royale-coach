@@ -1260,7 +1260,14 @@
     "pleaseWaitMoment": "Por favor espera un momento...",
     "loadingDashboard": "Cargando tu panel",
     "verifyingAuth": "Verificando autenticación",
-    "clickForHelp": "Haz clic para ayuda"
+    "clickForHelp": "Haz clic para ayuda",
+    "vs": "vs",
+    "new": "NUEVO",
+    "pro": "PRO",
+    "ai": "IA",
+    "searching": "Buscando...",
+    "locked": "Bloqueado",
+    "thisMayTakeMoment": "Esto puede tomar un momento"
   },
   "loadingMessages": {
     "playerData": "Cargando datos del jugador...",
@@ -2319,21 +2326,14 @@
     "trophyCase": "Vitrina de Trofeos",
     "badgesEarned": "Insignias Ganadas"
   },
-  "common": {
+  "commonExtra": {
     "vs": "vs",
-    "loading": "Cargando...",
     "new": "NUEVO",
     "pro": "PRO",
     "ai": "IA",
-    "elixir": "Elixir",
-    "aiPowered": "Con IA",
-    "pleaseWait": "Por favor espera...",
-    "thisMayTakeMoment": "Esto puede tomar un momento",
-    "all": "Todos",
-    "unknown": "Desconocido",
     "searching": "Buscando...",
-    "back": "Volver",
-    "locked": "Bloqueado"
+    "locked": "Bloqueado",
+    "thisMayTakeMoment": "Esto puede tomar un momento"
   },
   "pagination": {
     "previous": "Anterior",
