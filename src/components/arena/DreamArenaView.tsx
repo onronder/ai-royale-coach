@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useArenaSound } from '@/hooks/useArenaSound';
 
 import { SimulationResult, SimulationFrame, formatMatchTime } from '@/utils/dreamArenaEngine';
-import { ProPlayer } from '@/data/proPlayers';
+import { ProPlayerProfile } from '@/data/proPlayers';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 
 interface DreamArenaViewProps {
@@ -23,7 +23,9 @@ interface DreamArenaViewProps {
     trophies: number;
     deck: ClashRoyaleCard[];
   };
-  proPlayer: ProPlayer;
+  proPlayer: ProPlayerProfile;
+  proDeck: ClashRoyaleCard[];
+  proTrophies: number;
   simulationResult: SimulationResult;
   onClose?: () => void;
   onPlayAgain?: () => void;
@@ -34,6 +36,8 @@ const TOWER_HP = 3056;
 export function DreamArenaView({
   userProfile,
   proPlayer,
+  proDeck,
+  proTrophies,
   simulationResult,
   onClose,
   onPlayAgain,
@@ -77,7 +81,7 @@ export function DreamArenaView({
 
   // Find card from event text by matching card names
   const findCardFromEvent = (eventText: string): ClashRoyaleCard | null => {
-    const allCards = [...userProfile.deck, ...(proPlayer.signatureDeck || [])];
+    const allCards = [...userProfile.deck, ...proDeck];
     
     for (const card of allCards) {
       if (eventText.toLowerCase().includes(card.name.toLowerCase())) {
@@ -365,9 +369,9 @@ export function DreamArenaView({
               <p className="font-bold text-foreground truncate max-w-[100px]">{proPlayer.name}</p>
               <div className="flex items-center justify-end gap-1 text-gold text-sm">
                 <Crown className="w-3 h-3" />
-                <span>{proPlayer.trophies.toLocaleString()}</span>
+                <span>{proTrophies.toLocaleString()}</span>
               </div>
-              <Badge variant="secondary" className="text-xs mt-1">{proPlayer.specialty}</Badge>
+              <Badge variant="secondary" className="text-xs mt-1">{t(proPlayer.specialty)}</Badge>
             </div>
             <div className="relative">
               <Avatar className="w-16 h-16 border-2 border-crimson shadow-[0_0_15px_hsl(var(--crimson)/0.4)]">
@@ -698,6 +702,8 @@ export function DreamArenaView({
         simulationResult={simulationResult}
         userProfile={userProfile}
         proPlayer={proPlayer}
+        proDeck={proDeck}
+        proTrophies={proTrophies}
       />
 
       {/* Result Overlay - Redesigned */}
