@@ -2417,7 +2417,14 @@
     "howItWorks": "Nasıl Çalışır",
     "step1": "Meydan okumak için aşağıdaki listeden bir Pro Oyuncu seçin.",
     "step2": "Yapay zekamız destenize, istatistiklerinize ve profesyonelin oyun tarzına göre bir maç simüle eder.",
-    "step3": "Savaşı izleyin ve şansı yenip yenemeyeceğinizi görün!"
+    "step3": "Savaşı izleyin ve şansı yenip yenemeyeceğinizi görün!",
+    "connecting": "SUPERCELL SUNUCULARINA BAĞLANIYOR...",
+    "scouting": "{{name}} KEŞFEDİLİYOR...",
+    "ready": "VERİLER ALINDI",
+    "fallbackToast": "Canlı deste alınamadı. Simülasyon verileri kullanılıyor.",
+    "liveDeck": "CANLI",
+    "simulatedDeck": "SİM",
+    "specialist": "Uzmanı"
   },
   "achievements": {
     "title": "Başarılar",

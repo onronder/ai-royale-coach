@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2 } from 'lucide-react';
+import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import confetti from 'canvas-confetti';
 
@@ -27,6 +27,7 @@ interface DreamArenaViewProps {
   proDeck: ClashRoyaleCard[];
   proTrophies: number;
   simulationResult: SimulationResult;
+  isLiveDeck: boolean;
   onClose?: () => void;
   onPlayAgain?: () => void;
 }
@@ -39,6 +40,7 @@ export function DreamArenaView({
   proDeck,
   proTrophies,
   simulationResult,
+  isLiveDeck,
   onClose,
   onPlayAgain,
 }: DreamArenaViewProps) {
@@ -366,7 +368,29 @@ export function DreamArenaView({
             className="flex items-center gap-3"
           >
             <div className="text-right">
-              <p className="font-bold text-foreground truncate max-w-[100px]">{proPlayer.name}</p>
+              <div className="flex items-center justify-end gap-2">
+                <p className="font-bold text-foreground truncate max-w-[100px]">{proPlayer.name}</p>
+                {/* Live/Simulated Badge */}
+                {isLiveDeck ? (
+                  <motion.div
+                    animate={{ opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-red-500/20 border border-red-500/50"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider">
+                      {t('dreamArena.liveDeck', 'LIVE')}
+                    </span>
+                  </motion.div>
+                ) : (
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/50">
+                    <AlertTriangle className="w-2.5 h-2.5 text-amber-400" />
+                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                      {t('dreamArena.simulatedDeck', 'SIM')}
+                    </span>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center justify-end gap-1 text-gold text-sm">
                 <Crown className="w-3 h-3" />
                 <span>{proTrophies.toLocaleString()}</span>
