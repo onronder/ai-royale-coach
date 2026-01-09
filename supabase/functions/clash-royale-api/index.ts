@@ -249,10 +249,17 @@ serve(async (req) => {
         const limit = parseInt(url.searchParams.get('limit') || '10', 10);
         const clampedLimit = Math.min(Math.max(limit, 1), 50); // Clamp between 1-50
         
-        // Rankings don't use the player cache, fetch directly
-        // Location ID 57000000 = Global rankings
-        const data = await fetchFromClashApi(`/locations/57000000/rankings/players?limit=${clampedLimit}`);
-        result = { data, cacheHit: false, stale: false };
+        // Rankings endpoint - gracefully handle failures by returning empty items
+        // This allows the client to show fallback UI (Hall of Fame)
+        try {
+          // Location ID 57000000 = Global rankings
+          const data = await fetchFromClashApi(`/locations/57000000/rankings/players?limit=${clampedLimit}`);
+          result = { data, cacheHit: false, stale: false };
+        } catch (rankingsError: any) {
+          logger.warn('Rankings fetch failed, returning empty items', { error: rankingsError.message });
+          // Return empty items array instead of throwing - client will use fallback
+          result = { data: { items: [] }, cacheHit: false, stale: false };
+        }
         break;
       }
 
