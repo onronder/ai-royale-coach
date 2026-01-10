@@ -18,7 +18,7 @@ const CURRENT_ANNOUNCEMENT: Announcement = {
   gradient: 'from-emerald to-emerald/80',
   iconColor: 'text-emerald-foreground',
   link: '/oracle',
-  expiresAt: new Date('2025-02-15'), // Show for ~1 month
+  expiresAt: new Date('2026-02-15'), // Show for ~1 month
 };
 
 const STORAGE_KEY = 'dismissed-announcements';
