@@ -8,6 +8,21 @@
       "title": "Kahin",
       "description": "Maçtan önce rakip destelerini tahmin et",
       "cta": "Dene"
+    },
+    "proDna": {
+      "title": "Pro DNA",
+      "description": "Benzersiz oyun tarzı profilinizi keşfedin",
+      "cta": "Keşfet"
+    },
+    "dreamArena": {
+      "title": "Rüya Arenası",
+      "description": "Efsanevi pro oyuncularla savaşın",
+      "cta": "Savaş"
+    },
+    "aiPro": {
+      "title": "AI Royale Pro",
+      "description": "3 günlük ücretsiz denemenizi başlatın",
+      "cta": "Ücretsiz Dene"
     }
   },
   "sidebar": {

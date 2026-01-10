@@ -8,6 +8,21 @@
       "title": "The Oracle",
       "description": "Predict opponent decks before the match",
       "cta": "Try It"
+    },
+    "proDna": {
+      "title": "Pro DNA",
+      "description": "Discover your unique playstyle profile",
+      "cta": "Discover Yours"
+    },
+    "dreamArena": {
+      "title": "Dream Arena",
+      "description": "Battle against legendary pro players",
+      "cta": "Battle Now"
+    },
+    "aiPro": {
+      "title": "AI Royale Pro",
+      "description": "Start your free 3-day trial today",
+      "cta": "Try Free"
     }
   },
   "sidebar": {

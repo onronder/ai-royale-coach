@@ -8,6 +8,21 @@
       "title": "L'Oracle",
       "description": "Prédisez les decks adverses avant le match",
       "cta": "Essayer"
+    },
+    "proDna": {
+      "title": "ADN Pro",
+      "description": "Découvrez votre profil de style de jeu unique",
+      "cta": "Découvrir"
+    },
+    "dreamArena": {
+      "title": "Arène de Rêve",
+      "description": "Affrontez des joueurs pro légendaires",
+      "cta": "Combattre"
+    },
+    "aiPro": {
+      "title": "AI Royale Pro",
+      "description": "Commencez votre essai gratuit de 3 jours",
+      "cta": "Essai Gratuit"
     }
   },
   "sidebar": {

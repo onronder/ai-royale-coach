@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Eye, Zap, Star, Trophy } from 'lucide-react';
+import { X, Sparkles, Eye, Zap, Star, Trophy, Dna, Swords } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAnnouncement } from '@/hooks/useAnnouncement';
 import { cn } from '@/lib/utils';
@@ -11,6 +11,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Star,
   Trophy,
   Sparkles,
+  Dna,
+  Swords,
 };
 
 export function AnnouncementBanner() {
@@ -47,7 +49,10 @@ export function AnnouncementBanner() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: 'spring', stiffness: 500 }}
-                className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/20 text-xs font-bold uppercase tracking-wider"
+                className={cn(
+                  "hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/20 text-xs font-bold uppercase tracking-wider",
+                  announcement.textColor
+                )}
               >
                 <Sparkles className="h-3 w-3" />
                 {t('announcement.new')}
@@ -62,7 +67,7 @@ export function AnnouncementBanner() {
               </motion.div>
 
               {/* Text content */}
-              <span className="font-medium text-emerald-foreground">
+              <span className={cn("font-medium", announcement.textColor)}>
                 <span className="font-bold">{t(`${translationBase}.title`)}</span>
                 <span className="hidden sm:inline"> – {t(`${translationBase}.description`)}</span>
               </span>
@@ -72,7 +77,10 @@ export function AnnouncementBanner() {
                 <Link
                   to={announcement.link}
                   onClick={dismiss}
-                  className="ml-1 sm:ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/20 hover:bg-background/30 text-xs font-semibold transition-colors"
+                  className={cn(
+                    "ml-1 sm:ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/20 hover:bg-background/30 text-xs font-semibold transition-colors",
+                    announcement.textColor
+                  )}
                 >
                   {t(`${translationBase}.cta`)}
                   <span className="hidden sm:inline">→</span>
@@ -82,7 +90,10 @@ export function AnnouncementBanner() {
               {/* Dismiss button */}
               <button
                 onClick={dismiss}
-                className="absolute right-2 sm:right-4 p-1 rounded-full hover:bg-background/20 transition-colors"
+                className={cn(
+                  "absolute right-2 sm:right-4 p-1 rounded-full hover:bg-background/20 transition-colors",
+                  announcement.textColor
+                )}
                 aria-label={t('common.dismiss')}
               >
                 <X className="h-4 w-4" />

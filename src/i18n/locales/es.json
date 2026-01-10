@@ -8,6 +8,21 @@
       "title": "El Oráculo",
       "description": "Predice los mazos del oponente antes del combate",
       "cta": "Probar"
+    },
+    "proDna": {
+      "title": "ADN Pro",
+      "description": "Descubre tu perfil único de estilo de juego",
+      "cta": "Descubrir"
+    },
+    "dreamArena": {
+      "title": "Arena de los Sueños",
+      "description": "Batalla contra jugadores pro legendarios",
+      "cta": "Luchar"
+    },
+    "aiPro": {
+      "title": "AI Royale Pro",
+      "description": "Comienza tu prueba gratuita de 3 días",
+      "cta": "Probar Gratis"
     }
   },
   "sidebar": {
