@@ -99,28 +99,9 @@ export function useFraudStatus(userId: string | null) {
     staleTime: 60 * 1000, // 1 minute
   });
 
-  // Fetch fraud signals for user
-  const { data: signals } = useQuery({
-    queryKey: ['fraud-signals', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-
-      const { data, error } = await supabase
-        .from('fraud_signals')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) {
-        console.error('Failed to fetch fraud signals:', error);
-        return [];
-      }
-
-      return data as FraudSignal[];
-    },
-    enabled: !!userId,
-  });
+  // Fraud signals are intentionally NOT fetched for regular users
+  // This data is sensitive and could help attackers circumvent security
+  // Admins access fraud signals through FraudReviewPanel with their own query
 
   // Check velocity abuse
   const checkVelocity = useMutation({
@@ -174,7 +155,7 @@ export function useFraudStatus(userId: string | null) {
 
   return {
     fraudStatus,
-    signals: signals || [],
+    signals: [] as FraudSignal[], // Always empty for security - admins use FraudReviewPanel
     isLoading,
     refetch,
     checkVelocity: checkVelocity.mutateAsync,
