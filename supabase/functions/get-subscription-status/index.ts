@@ -52,14 +52,28 @@ serve(async (req) => {
     const now = new Date();
     let isTrialActive = false;
     let trialDaysRemaining = 0;
+    let trialEndsAt: string | null = null;
 
-    // ONLY check Polar-managed trial (from subscription status)
-    // Profile-based trials are NO LONGER supported - Polar is single source of truth
+    // Check Polar-managed trial first (from subscription status)
     if (subscription?.status === 'trialing' && subscription.current_period_end) {
       const trialEnd = new Date(subscription.current_period_end);
       if (trialEnd > now) {
         isTrialActive = true;
         trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        trialEndsAt = subscription.current_period_end;
+      }
+    }
+
+    // ONE-TIME GRACE PERIOD: Check profile-based trial for existing users only
+    // This ONLY works for users who have trial_ends_at set from the migration
+    // New users do NOT get trial_ends_at set automatically anymore
+    if (!isTrialActive && profile?.trial_ends_at && !profile.trial_used) {
+      const profileTrialEnd = new Date(profile.trial_ends_at);
+      if (profileTrialEnd > now) {
+        isTrialActive = true;
+        trialDaysRemaining = Math.ceil((profileTrialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        trialEndsAt = profile.trial_ends_at;
+        logger.info('Grace period trial active', { userId: user.id, endsAt: profile.trial_ends_at });
       }
     }
 
@@ -89,8 +103,8 @@ serve(async (req) => {
       trial: {
         isActive: isTrialActive,
         daysRemaining: trialDaysRemaining,
-        hasUsedTrial: profile?.trial_used || subscription?.status === 'trialing' || false,
-        endsAt: subscription?.status === 'trialing' ? subscription.current_period_end : profile?.trial_ends_at,
+        hasUsedTrial: profile?.trial_used || false,
+        endsAt: trialEndsAt,
       },
       accountSlots,
     });
