@@ -1,4 +1,15 @@
 {
+  "common": {
+    "dismiss": "Kapat"
+  },
+  "announcement": {
+    "new": "YENİ",
+    "oracle": {
+      "title": "Kahin",
+      "description": "Maçtan önce rakip destelerini tahmin et",
+      "cta": "Dene"
+    }
+  },
   "sidebar": {
     "navigation": "Navigasyon",
     "quickActions": "Hızlı Eylemler",

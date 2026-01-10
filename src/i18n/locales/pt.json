@@ -1,4 +1,15 @@
 {
+  "common": {
+    "dismiss": "Fechar"
+  },
+  "announcement": {
+    "new": "NOVO",
+    "oracle": {
+      "title": "O Oráculo",
+      "description": "Preveja os decks do oponente antes da partida",
+      "cta": "Testar"
+    }
+  },
   "sidebar": {
     "navigation": "Navegação",
     "quickActions": "Ações Rápidas",

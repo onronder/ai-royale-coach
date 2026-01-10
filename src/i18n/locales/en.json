@@ -1,4 +1,15 @@
 {
+  "common": {
+    "dismiss": "Dismiss"
+  },
+  "announcement": {
+    "new": "NEW",
+    "oracle": {
+      "title": "The Oracle",
+      "description": "Predict opponent decks before the match",
+      "cta": "Try It"
+    }
+  },
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Quick Actions",

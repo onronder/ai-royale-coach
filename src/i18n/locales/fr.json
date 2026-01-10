@@ -1,4 +1,15 @@
 {
+  "common": {
+    "dismiss": "Fermer"
+  },
+  "announcement": {
+    "new": "NOUVEAU",
+    "oracle": {
+      "title": "L'Oracle",
+      "description": "Prédisez les decks adverses avant le match",
+      "cta": "Essayer"
+    }
+  },
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Actions Rapides",
