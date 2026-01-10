@@ -13,6 +13,7 @@ import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
 import { ApiMetricsProvider } from "@/components/admin/ApiMetricsProvider";
 import { createQueryClientWithMetrics } from "@/lib/queryClientWithMetrics";
+import { RequireSubscription } from "@/components/subscription/RequireSubscription";
 import i18n from "./i18n";
 
 // Lazy load pages for better initial bundle size
@@ -75,19 +76,23 @@ const App = () => {
                 <BrowserRouter>
                   <Suspense fallback={<SplashScreen />}>
                     <Routes>
+                      {/* PUBLIC ROUTES - No subscription required */}
                       <Route path="/" element={<Index />} />
                       <Route path="/auth" element={<Auth />} />
-                      <Route path="/select-player" element={<SelectPlayer />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/player/:playerTag" element={<Dashboard />} />
                       <Route path="/help" element={<Help />} />
                       <Route path="/demo" element={<Demo />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
                       <Route path="/maintenance" element={<Maintenance />} />
-                      <Route path="/oracle" element={<Oracle />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="/arena" element={<DreamArena />} />
+                      
+                      {/* PROTECTED ROUTES - Subscription required */}
+                      <Route path="/select-player" element={<RequireSubscription><SelectPlayer /></RequireSubscription>} />
+                      <Route path="/settings" element={<RequireSubscription><Settings /></RequireSubscription>} />
+                      <Route path="/player/:playerTag" element={<RequireSubscription><Dashboard /></RequireSubscription>} />
+                      <Route path="/oracle" element={<RequireSubscription><Oracle /></RequireSubscription>} />
+                      <Route path="/admin" element={<RequireSubscription><Admin /></RequireSubscription>} />
+                      <Route path="/arena" element={<RequireSubscription><DreamArena /></RequireSubscription>} />
+                      
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>

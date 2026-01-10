@@ -2047,6 +2047,25 @@
       "error": "Error al actualizar el acceso de IA. Inténtalo de nuevo.",
       "confirm": "Confirmar Selección",
       "noProfiles": "No hay cuentas de jugador vinculadas. Añade una etiqueta de jugador primero."
+    },
+    "paywall": {
+      "title": "Suscripción Requerida",
+      "subtitle": "AI Royale requiere una suscripción activa para acceder a todas las funciones",
+      "features": {
+        "title": "Qué está Incluido",
+        "subtitle": "Desbloquea todo el poder de AI Royale",
+        "aiCoach": "Coach de IA Personal",
+        "aiCoachDesc": "Obtén consejos de estrategia en tiempo real adaptados a tu estilo de juego",
+        "deckAnalysis": "Análisis de Mazos Profundo",
+        "deckAnalysisDesc": "Optimiza tus mazos con insights potenciados por IA",
+        "matchPredictions": "Predicciones de Partidas",
+        "matchPredictionsDesc": "Conoce tu probabilidad de ganar contra cualquier mazo",
+        "multiAccount": "Soporte Multi-Cuenta",
+        "multiAccountDesc": "Rastrea hasta 3 cuentas de jugador"
+      },
+      "startTrial": "Iniciar Prueba Gratis de 3 Días",
+      "subscribe": "Suscribirse Ahora",
+      "signOut": "Cerrar Sesión"
     }
   },
   "onboarding": {

@@ -2036,6 +2036,25 @@
       "error": "Échec de la mise à jour de l'accès IA. Veuillez réessayer.",
       "confirm": "Confirmer la Sélection",
       "noProfiles": "Aucun compte joueur lié. Ajoutez d'abord un tag joueur."
+    },
+    "paywall": {
+      "title": "Abonnement Requis",
+      "subtitle": "AI Royale nécessite un abonnement actif pour accéder à toutes les fonctionnalités",
+      "features": {
+        "title": "Ce qui est Inclus",
+        "subtitle": "Débloquez toute la puissance d'AI Royale",
+        "aiCoach": "Coach IA Personnel",
+        "aiCoachDesc": "Obtenez des conseils stratégiques en temps réel adaptés à votre style de jeu",
+        "deckAnalysis": "Analyse de Decks Approfondie",
+        "deckAnalysisDesc": "Optimisez vos decks avec des insights propulsés par l'IA",
+        "matchPredictions": "Prédictions de Matchs",
+        "matchPredictionsDesc": "Connaissez votre probabilité de victoire contre n'importe quel deck",
+        "multiAccount": "Support Multi-Comptes",
+        "multiAccountDesc": "Suivez jusqu'à 3 comptes joueur"
+      },
+      "startTrial": "Démarrer l'Essai Gratuit de 3 Jours",
+      "subscribe": "S'abonner Maintenant",
+      "signOut": "Se Déconnecter"
     }
   },
   "onboarding": {
