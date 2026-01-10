@@ -7,12 +7,13 @@ import { logger } from '../_shared/logger.ts'
 import { WelcomeEmail } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
+import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
 interface EmailRequest {
   email: string
-  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription'
+  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired'
   name?: string
   language?: string
   subscriptionData?: {
@@ -114,6 +115,17 @@ Deno.serve(async (req) => {
         html = `<p>Your account has been updated.</p>`
         break
 
+      case 'trial_expired':
+        subject = getTrialExpiredSubject(language)
+        html = await renderAsync(
+          React.createElement(TrialExpiredEmail, {
+            name,
+            language,
+            appUrl,
+          })
+        )
+        break
+
       default:
         return errorResponse('Invalid email type', 400)
     }
@@ -181,6 +193,17 @@ function getAccountUpdateSubject(language: string): string {
     pt: 'Conta Atualizada - AI Royale',
     tr: 'Hesap Güncellendi - AI Royale',
     fr: 'Compte Mis à Jour - AI Royale',
+  }
+  return subjects[language] || subjects.en
+}
+
+function getTrialExpiredSubject(language: string): string {
+  const subjects: Record<string, string> = {
+    en: 'Your AI Royale Trial Has Ended - Subscribe Now!',
+    es: 'Tu Prueba de AI Royale Ha Terminado - ¡Suscríbete Ahora!',
+    pt: 'Seu Teste do AI Royale Terminou - Assine Agora!',
+    tr: 'AI Royale Denemeniz Sona Erdi - Şimdi Abone Olun!',
+    fr: 'Votre Essai AI Royale a Expiré - Abonnez-vous Maintenant!',
   }
   return subjects[language] || subjects.en
 }
