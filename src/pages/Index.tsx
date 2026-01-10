@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ValueHighlights } from "@/components/landing/ValueHighlights";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
@@ -36,6 +37,7 @@ const Index = () => {
         <meta property="og:description" content="Dominate Clash Royale with AI-powered coaching. Get personalized deck recommendations, match analysis, and strategic tips." />
         <meta property="og:url" content="https://ai-royale.com/" />
       </Helmet>
+      <AnnouncementBanner />
       <Navbar user={user} />
 
       {/* Hero Section - Full Impact First Impression */}

@@ -276,6 +276,15 @@ select {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 @keyframes float-particle {
   0%, 100% {
     transform: translateY(0) rotate(0deg);

@@ -1,4 +1,15 @@
 {
+  "common": {
+    "dismiss": "Cerrar"
+  },
+  "announcement": {
+    "new": "NUEVO",
+    "oracle": {
+      "title": "El Oráculo",
+      "description": "Predice los mazos del oponente antes del combate",
+      "cta": "Probar"
+    }
+  },
   "sidebar": {
     "navigation": "Navegación",
     "quickActions": "Acciones Rápidas",
