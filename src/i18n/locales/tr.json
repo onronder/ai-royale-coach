@@ -2036,6 +2036,25 @@
       "error": "AI erişimi güncellenemedi. Lütfen tekrar deneyin.",
       "confirm": "Seçimi Onayla",
       "noProfiles": "Bağlı oyuncu hesabı yok. Önce bir oyuncu etiketi ekleyin."
+    },
+    "paywall": {
+      "title": "Abonelik Gerekli",
+      "subtitle": "AI Royale'in tüm özelliklerine erişmek için aktif bir abonelik gereklidir",
+      "features": {
+        "title": "Neler Dahil",
+        "subtitle": "AI Royale'in tüm gücünü açın",
+        "aiCoach": "Kişisel AI Koç",
+        "aiCoachDesc": "Oyun tarzınıza uyarlanmış gerçek zamanlı strateji tavsiyeleri alın",
+        "deckAnalysis": "Derin Deste Analizi",
+        "deckAnalysisDesc": "AI destekli içgörülerle destelerinizi optimize edin",
+        "matchPredictions": "Maç Tahminleri",
+        "matchPredictionsDesc": "Herhangi bir desteye karşı kazanma olasılığınızı bilin",
+        "multiAccount": "Çoklu Hesap Desteği",
+        "multiAccountDesc": "3 oyuncu hesabına kadar takip edin"
+      },
+      "startTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
+      "subscribe": "Şimdi Abone Ol",
+      "signOut": "Çıkış Yap"
     }
   },
   "onboarding": {

@@ -53,17 +53,10 @@ serve(async (req) => {
     let isTrialActive = false;
     let trialDaysRemaining = 0;
 
-    // Check Polar-managed trial (from subscription status)
+    // ONLY check Polar-managed trial (from subscription status)
+    // Profile-based trials are NO LONGER supported - Polar is single source of truth
     if (subscription?.status === 'trialing' && subscription.current_period_end) {
       const trialEnd = new Date(subscription.current_period_end);
-      if (trialEnd > now) {
-        isTrialActive = true;
-        trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      }
-    }
-    // Fallback to profile-based trial (legacy support)
-    else if (profile && profile.trial_ends_at) {
-      const trialEnd = new Date(profile.trial_ends_at);
       if (trialEnd > now) {
         isTrialActive = true;
         trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
