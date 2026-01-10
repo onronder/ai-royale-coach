@@ -59,7 +59,8 @@
     "getStarted": "Comenzar",
     "signOut": "Cerrar Sesión",
     "help": "Ayuda",
-    "demo": "Demo"
+    "demo": "Demo",
+    "changelog": "Historial"
   },
   "landing": {
     "hero": {
@@ -2534,6 +2535,75 @@
     "surgicalGoblin": {
       "playstyle": "Jugador de asedio calculado que fija X-Bows en el momento perfecto",
       "specialty": "Maestro del Asedio"
+    }
+  },
+  "changelog": {
+    "meta": {
+      "title": "Historial de Cambios",
+      "description": "Mantente al día con las últimas características, correcciones y anuncios de AI Royale"
+    },
+    "badge": "Novedades",
+    "title": "Historial de Cambios",
+    "subtitle": "Sigue todas las actualizaciones, lanzamientos de funciones y anuncios importantes de AI Royale",
+    "types": {
+      "feature": "Nueva Función",
+      "fix": "Corrección",
+      "security": "Seguridad",
+      "announcement": "Anuncio"
+    },
+    "tryFeature": "Probar esta función",
+    "notices": {
+      "title": "Avisos Importantes",
+      "licensing": {
+        "title": "Política de Licencia y Uso Justo",
+        "description": "AI Royale opera bajo una política de uso justo. Cada cuenta está licenciada solo para uso personal. Compartir cuentas o abusar de la API puede resultar en restricciones."
+      },
+      "fraud": {
+        "title": "Sistema de Prevención de Fraude",
+        "description": "Hemos implementado detección avanzada de fraude para proteger nuestra comunidad. Los usuarios marcados por actividad sospechosa pueden enfrentar restricciones de cuenta."
+      },
+      "trial": {
+        "title": "Nuevo Modelo de Prueba",
+        "description": "Nuestra prueba gratuita de 3 días ahora está integrada directamente con nuestro sistema de pago. Después de tu prueba, puedes actualizar a Pro sin interrumpir tus funciones de IA."
+      }
+    },
+    "entries": {
+      "newTrial": {
+        "title": "Nueva Prueba Gratuita de 3 Días",
+        "description": "Experimenta todas las funciones Pro gratis durante 3 días con nuestro nuevo sistema de prueba. Integrado con pagos - actualiza en cualquier momento sin perder progreso."
+      },
+      "fraudPrevention": {
+        "title": "Prevención de Fraude Mejorada",
+        "description": "Corregidos errores críticos de licencia que permitían abuso de prueba. Implementada huella digital de dispositivo y verificaciones de velocidad para prevenir fraude multi-cuenta."
+      },
+      "licensingFix": {
+        "title": "Correcciones de Errores de Licencia",
+        "description": "Resueltos problemas con la aplicación del período de prueba y sincronización del estado de suscripción. Las reclamaciones de etiquetas de jugador ahora se rastrean correctamente."
+      },
+      "paymentIntegration": {
+        "title": "Integración Directa de Pagos",
+        "description": "Nuevo flujo de pago sin interrupciones con activación automática de suscripción. Los usuarios de prueba ahora pueden actualizar con un clic."
+      },
+      "dreamArena": {
+        "title": "Arena de los Sueños",
+        "description": "¡Batalla contra jugadores pro legendarios como Mohamed Light y Oyassuu! Experimenta partidas simuladas contra los mejores jugadores de Clash Royale."
+      },
+      "proDna": {
+        "title": "Análisis ADN Pro",
+        "description": "¡Descubre tu perfil único de estilo de juego! Nuestra IA analiza tu historial de partidas para revelar tus fortalezas y debilidades."
+      },
+      "oracle": {
+        "title": "El Oráculo",
+        "description": "¡Predice el mazo de tu oponente antes de que comience la partida! El Oráculo usa IA para darte una ventaja estratégica."
+      },
+      "aiRoyalePro": {
+        "title": "Lanzamiento de AI Royale Pro",
+        "description": "¡Bienvenido a AI Royale Pro! Obtén análisis de IA ilimitado, recomendaciones de mazos, chat con coach y funciones exclusivas."
+      }
+    },
+    "cta": {
+      "text": "¿Listo para experimentar estas funciones?",
+      "button": "Comienza Tu Prueba Gratis"
     }
   }
 }

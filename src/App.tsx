@@ -26,6 +26,7 @@ const Help = lazy(() => import("./pages/Help"));
 const Demo = lazy(() => import("./pages/Demo"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Changelog = lazy(() => import("./pages/Changelog"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Maintenance = lazy(() => import("./pages/Maintenance"));
 const Oracle = lazy(() => import("./pages/Oracle"));
@@ -83,6 +84,7 @@ const App = () => {
                       <Route path="/demo" element={<Demo />} />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
+                      <Route path="/changelog" element={<Changelog />} />
                       <Route path="/maintenance" element={<Maintenance />} />
                       
                       {/* PROTECTED ROUTES - Subscription required */}
