@@ -8,6 +8,21 @@
       "title": "O Oráculo",
       "description": "Preveja os decks do oponente antes da partida",
       "cta": "Testar"
+    },
+    "proDna": {
+      "title": "DNA Pro",
+      "description": "Descubra seu perfil único de estilo de jogo",
+      "cta": "Descobrir"
+    },
+    "dreamArena": {
+      "title": "Arena dos Sonhos",
+      "description": "Batalhe contra jogadores pro lendários",
+      "cta": "Batalhar"
+    },
+    "aiPro": {
+      "title": "AI Royale Pro",
+      "description": "Comece seu teste gratuito de 3 dias",
+      "cta": "Testar Grátis"
     }
   },
   "sidebar": {

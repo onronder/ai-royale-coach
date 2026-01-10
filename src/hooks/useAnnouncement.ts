@@ -6,22 +6,57 @@ interface Announcement {
   icon: string;
   gradient: string;
   iconColor: string;
+  textColor: string;
   link?: string;
   expiresAt?: Date;
 }
 
-// Current announcement - update this when you have new features to announce
-const CURRENT_ANNOUNCEMENT: Announcement = {
-  id: 'oracle-launch-2025',
-  translationKey: 'oracle',
-  icon: 'Eye',
-  gradient: 'from-emerald to-emerald/80',
-  iconColor: 'text-emerald-foreground',
-  link: '/oracle',
-  expiresAt: new Date('2026-02-15'), // Show for ~1 month
-};
+// All announcements to rotate through
+const ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: 'oracle-2026',
+    translationKey: 'oracle',
+    icon: 'Eye',
+    gradient: 'from-emerald to-emerald/80',
+    iconColor: 'text-emerald-foreground',
+    textColor: 'text-emerald-foreground',
+    link: '/oracle',
+    expiresAt: new Date('2026-02-15'),
+  },
+  {
+    id: 'pro-dna-2026',
+    translationKey: 'proDna',
+    icon: 'Dna',
+    gradient: 'from-purple-500 to-violet-500',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    link: '/dashboard?tab=analytics',
+    expiresAt: new Date('2026-02-15'),
+  },
+  {
+    id: 'dream-arena-2026',
+    translationKey: 'dreamArena',
+    icon: 'Swords',
+    gradient: 'from-orange-500 to-amber-500',
+    iconColor: 'text-white',
+    textColor: 'text-white',
+    link: '/dream-arena',
+    expiresAt: new Date('2026-02-15'),
+  },
+  {
+    id: 'ai-pro-2026',
+    translationKey: 'aiPro',
+    icon: 'Sparkles',
+    gradient: 'from-primary to-cyan-500',
+    iconColor: 'text-primary-foreground',
+    textColor: 'text-primary-foreground',
+    link: '/settings',
+    expiresAt: new Date('2026-02-15'),
+  },
+];
 
 const STORAGE_KEY = 'dismissed-announcements';
+const ROTATION_KEY = 'announcement-rotation-index';
 const DISMISS_DURATION_DAYS = 7;
 
 interface DismissedAnnouncement {
@@ -29,44 +64,79 @@ interface DismissedAnnouncement {
   dismissedAt: number;
 }
 
+function getValidAnnouncements(): Announcement[] {
+  const now = new Date();
+  return ANNOUNCEMENTS.filter(a => !a.expiresAt || now <= a.expiresAt);
+}
+
+function getDismissedIds(): Set<string> {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return new Set();
+    
+    const dismissed: DismissedAnnouncement[] = JSON.parse(stored);
+    const now = new Date();
+    const validDismissals = new Set<string>();
+    
+    dismissed.forEach(d => {
+      const dismissedDate = new Date(d.dismissedAt);
+      const expiryDate = new Date(dismissedDate);
+      expiryDate.setDate(expiryDate.getDate() + DISMISS_DURATION_DAYS);
+      
+      if (now < expiryDate) {
+        validDismissals.add(d.id);
+      }
+    });
+    
+    return validDismissals;
+  } catch {
+    return new Set();
+  }
+}
+
+function getNextAnnouncementIndex(validAnnouncements: Announcement[], dismissedIds: Set<string>): number {
+  try {
+    const storedIndex = localStorage.getItem(ROTATION_KEY);
+    let startIndex = storedIndex ? parseInt(storedIndex, 10) : 0;
+    
+    // Find next non-dismissed announcement
+    for (let i = 0; i < validAnnouncements.length; i++) {
+      const index = (startIndex + i) % validAnnouncements.length;
+      if (!dismissedIds.has(validAnnouncements[index].id)) {
+        // Store the next index for rotation
+        localStorage.setItem(ROTATION_KEY, String((index + 1) % validAnnouncements.length));
+        return index;
+      }
+    }
+    
+    return -1; // All dismissed
+  } catch {
+    return 0;
+  }
+}
+
 export function useAnnouncement() {
   const [isVisible, setIsVisible] = useState(false);
-  const [announcement] = useState<Announcement>(CURRENT_ANNOUNCEMENT);
+  const [announcement, setAnnouncement] = useState<Announcement>(ANNOUNCEMENTS[0]);
 
   useEffect(() => {
-    // Check if announcement has expired
-    if (announcement.expiresAt && new Date() > announcement.expiresAt) {
+    const validAnnouncements = getValidAnnouncements();
+    if (validAnnouncements.length === 0) {
       setIsVisible(false);
       return;
     }
 
-    // Check localStorage for dismissed announcements
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const dismissed: DismissedAnnouncement[] = JSON.parse(stored);
-        const found = dismissed.find(d => d.id === announcement.id);
-        
-        if (found) {
-          const dismissedDate = new Date(found.dismissedAt);
-          const expiryDate = new Date(dismissedDate);
-          expiryDate.setDate(expiryDate.getDate() + DISMISS_DURATION_DAYS);
-          
-          // If dismissal hasn't expired, keep hidden
-          if (new Date() < expiryDate) {
-            setIsVisible(false);
-            return;
-          }
-        }
-      }
-      
-      // Show the announcement
-      setIsVisible(true);
-    } catch {
-      // On error, show announcement
-      setIsVisible(true);
+    const dismissedIds = getDismissedIds();
+    const index = getNextAnnouncementIndex(validAnnouncements, dismissedIds);
+    
+    if (index === -1) {
+      setIsVisible(false);
+      return;
     }
-  }, [announcement.id, announcement.expiresAt]);
+    
+    setAnnouncement(validAnnouncements[index]);
+    setIsVisible(true);
+  }, []);
 
   const dismiss = useCallback(() => {
     setIsVisible(false);
