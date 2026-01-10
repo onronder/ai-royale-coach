@@ -610,6 +610,37 @@ serve(async (req) => {
         } else {
           log('info', 'Subscription revoked, AI disabled', { userId });
           await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
+          
+          // Send trial expired email
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('email, preferred_language')
+              .eq('id', userId)
+              .single();
+
+            if (profile?.email) {
+              log('info', 'Sending trial expired email', { email: profile.email });
+              
+              const { error: emailError } = await supabase.functions.invoke('send-email', {
+                body: {
+                  email: profile.email,
+                  type: 'trial_expired',
+                  language: profile.preferred_language || 'en',
+                }
+              });
+
+              if (emailError) {
+                log('warn', 'Failed to send trial expired email', { error: emailError.message });
+              } else {
+                log('info', 'Trial expired email sent');
+              }
+            }
+          } catch (emailErr) {
+            log('warn', 'Exception sending trial expired email', { 
+              error: emailErr instanceof Error ? emailErr.message : String(emailErr) 
+            });
+          }
         }
         break;
       }
