@@ -83,6 +83,9 @@ verify_jwt = true
 [functions.recommend-deck]
 verify_jwt = true
 
-# Cron job - no JWT (called by pg_cron)
+# Cron jobs - no JWT (called by pg_cron)
 [functions.cleanup-old-messages]
+verify_jwt = false
+
+[functions.check-grace-period-expiry]
 verify_jwt = false
