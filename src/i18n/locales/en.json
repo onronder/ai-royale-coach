@@ -59,7 +59,8 @@
     "getStarted": "Get Started",
     "signOut": "Sign Out",
     "help": "Help",
-    "demo": "Demo"
+    "demo": "Demo",
+    "changelog": "Changelog"
   },
   "landing": {
     "hero": {
@@ -2584,6 +2585,75 @@
     "surgicalGoblin": {
       "playstyle": "Calculated siege player who locks X-Bows at the perfect moment",
       "specialty": "Siege Master"
+    }
+  },
+  "changelog": {
+    "meta": {
+      "title": "Changelog & Updates",
+      "description": "Stay up to date with the latest AI Royale features, bug fixes, and announcements"
+    },
+    "badge": "What's New",
+    "title": "Changelog",
+    "subtitle": "Track all the latest updates, feature releases, and important announcements for AI Royale",
+    "types": {
+      "feature": "New Feature",
+      "fix": "Bug Fix",
+      "security": "Security",
+      "announcement": "Announcement"
+    },
+    "tryFeature": "Try this feature",
+    "notices": {
+      "title": "Important Notices",
+      "licensing": {
+        "title": "Licensing & Fair Use Policy",
+        "description": "AI Royale operates under a fair use policy. Each account is licensed for personal use only. Sharing accounts or API abuse may result in restrictions."
+      },
+      "fraud": {
+        "title": "Fraud Prevention System",
+        "description": "We've implemented advanced fraud detection to protect our community. Users flagged for suspicious activity (multiple trial signups, payment abuse) may face account restrictions."
+      },
+      "trial": {
+        "title": "New Trial Model",
+        "description": "Our 3-day free trial is now directly integrated with our payment system. After your trial ends, you can seamlessly upgrade to Pro with no interruption to your AI features."
+      }
+    },
+    "entries": {
+      "newTrial": {
+        "title": "New 3-Day Free Trial",
+        "description": "Experience all Pro features free for 3 days with our new streamlined trial system. Seamlessly integrated with payments - upgrade anytime without losing progress."
+      },
+      "fraudPrevention": {
+        "title": "Enhanced Fraud Prevention",
+        "description": "Fixed critical licensing bugs that allowed trial abuse. Implemented device fingerprinting and velocity checks to prevent multi-account fraud."
+      },
+      "licensingFix": {
+        "title": "Licensing Bug Fixes",
+        "description": "Resolved issues with trial period enforcement and subscription state synchronization. Player tag claims are now properly tracked to prevent abuse."
+      },
+      "paymentIntegration": {
+        "title": "Direct Payment Integration",
+        "description": "New seamless payment flow with automatic subscription activation. Trial users can now upgrade with one click, and payments are processed instantly."
+      },
+      "dreamArena": {
+        "title": "Dream Arena",
+        "description": "Battle against legendary pro players like Mohamed Light and Oyassuu! Experience simulated matches against the best Clash Royale players in the world."
+      },
+      "proDna": {
+        "title": "Pro DNA Analysis",
+        "description": "Discover your unique playstyle profile! Our AI analyzes your match history to reveal your strengths, weaknesses, and which pro player you play most like."
+      },
+      "oracle": {
+        "title": "The Oracle",
+        "description": "Predict your opponent's deck before the match starts! The Oracle uses AI to analyze trophy ranges and meta trends to give you a strategic advantage."
+      },
+      "aiRoyalePro": {
+        "title": "AI Royale Pro Launch",
+        "description": "Welcome to AI Royale Pro! Get unlimited AI analysis, deck recommendations, coach chat, and exclusive features designed to help you climb the ladder."
+      }
+    },
+    "cta": {
+      "text": "Ready to experience these features?",
+      "button": "Start Your Free Trial"
     }
   }
 }

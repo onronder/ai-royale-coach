@@ -59,7 +59,8 @@
     "getStarted": "Başla",
     "signOut": "Çıkış Yap",
     "help": "Yardım",
-    "demo": "Demo"
+    "demo": "Demo",
+    "changelog": "Değişiklik Günlüğü"
   },
   "landing": {
     "hero": {
@@ -2532,6 +2533,75 @@
     "surgicalGoblin": {
       "playstyle": "X-Bow'ları mükemmel anda kilitleyen hesaplı kuşatma oyuncusu",
       "specialty": "Kuşatma Ustası"
+    }
+  },
+  "changelog": {
+    "meta": {
+      "title": "Değişiklik Günlüğü",
+      "description": "AI Royale'in en son özellikleri, hata düzeltmeleri ve duyuruları hakkında güncel kalın"
+    },
+    "badge": "Yenilikler",
+    "title": "Değişiklik Günlüğü",
+    "subtitle": "AI Royale için tüm güncellemeleri, özellik sürümlerini ve önemli duyuruları takip edin",
+    "types": {
+      "feature": "Yeni Özellik",
+      "fix": "Hata Düzeltme",
+      "security": "Güvenlik",
+      "announcement": "Duyuru"
+    },
+    "tryFeature": "Bu özelliği dene",
+    "notices": {
+      "title": "Önemli Bildirimler",
+      "licensing": {
+        "title": "Lisans ve Adil Kullanım Politikası",
+        "description": "AI Royale adil kullanım politikası altında çalışır. Her hesap yalnızca kişisel kullanım için lisanslanmıştır. Hesap paylaşımı veya API suistimali kısıtlamalara yol açabilir."
+      },
+      "fraud": {
+        "title": "Dolandırıcılık Önleme Sistemi",
+        "description": "Topluluğumuzu korumak için gelişmiş dolandırıcılık tespiti uyguladık. Şüpheli aktivite için işaretlenen kullanıcılar hesap kısıtlamalarıyla karşılaşabilir."
+      },
+      "trial": {
+        "title": "Yeni Deneme Modeli",
+        "description": "3 günlük ücretsiz denememiz artık ödeme sistemimizle doğrudan entegre. Denemeniz bittikten sonra AI özelliklerinizi kesintisiz olarak Pro'ya yükseltebilirsiniz."
+      }
+    },
+    "entries": {
+      "newTrial": {
+        "title": "Yeni 3 Günlük Ücretsiz Deneme",
+        "description": "Tüm Pro özelliklerini yeni akıcı deneme sistemimizle 3 gün ücretsiz deneyimleyin. Ödemelerle entegre - ilerlemenizi kaybetmeden istediğiniz zaman yükseltin."
+      },
+      "fraudPrevention": {
+        "title": "Gelişmiş Dolandırıcılık Önleme",
+        "description": "Deneme suistimaline izin veren kritik lisans hataları düzeltildi. Çoklu hesap dolandırıcılığını önlemek için cihaz parmak izi ve hız kontrolleri uygulandı."
+      },
+      "licensingFix": {
+        "title": "Lisans Hata Düzeltmeleri",
+        "description": "Deneme süresi uygulaması ve abonelik durumu senkronizasyonu ile ilgili sorunlar çözüldü."
+      },
+      "paymentIntegration": {
+        "title": "Doğrudan Ödeme Entegrasyonu",
+        "description": "Otomatik abonelik aktivasyonu ile yeni kesintisiz ödeme akışı. Deneme kullanıcıları artık tek tıklamayla yükseltebilir."
+      },
+      "dreamArena": {
+        "title": "Rüya Arenası",
+        "description": "Mohamed Light ve Oyassuu gibi efsanevi pro oyunculara karşı savaşın! Dünyanın en iyi Clash Royale oyuncularına karşı simüle edilmiş maçlar deneyimleyin."
+      },
+      "proDna": {
+        "title": "Pro DNA Analizi",
+        "description": "Benzersiz oyun tarzı profilinizi keşfedin! AI'mız güçlü ve zayıf yönlerinizi ortaya çıkarmak için maç geçmişinizi analiz eder."
+      },
+      "oracle": {
+        "title": "Kahin",
+        "description": "Maç başlamadan önce rakibinizin destesini tahmin edin! Kahin size stratejik avantaj sağlamak için AI kullanır."
+      },
+      "aiRoyalePro": {
+        "title": "AI Royale Pro Lansmanı",
+        "description": "AI Royale Pro'ya hoş geldiniz! Sınırsız AI analizi, deste önerileri, koç sohbeti ve özel özellikler edinin."
+      }
+    },
+    "cta": {
+      "text": "Bu özellikleri denemeye hazır mısınız?",
+      "button": "Ücretsiz Denemenizi Başlatın"
     }
   }
 }
