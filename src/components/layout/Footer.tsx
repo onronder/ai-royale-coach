@@ -1,9 +1,11 @@
 import { Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
 
 export function Footer() {
   const { t } = useTranslation();
+  const { resolvedTheme } = useTheme();
 
   return (
     <footer className="border-t border-border/50 bg-card/50 mt-auto">
@@ -36,7 +38,7 @@ export function Footer() {
             className="hover:opacity-90 transition-opacity"
           >
             <img 
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1061174&theme=light&t=1768090726683" 
+              src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1061174&theme=${resolvedTheme === 'dark' ? 'dark' : 'light'}`}
               alt="AI Royale: The Live E-Sports Simulator - The unfair advantage for Clash Royale players. 🔮 | Product Hunt" 
               width="250" 
               height="54"
