@@ -129,25 +129,6 @@ export function HeroSection({ user }: HeroSectionProps) {
       {/* Vignette overlay for dramatic effect */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_100%)] opacity-60 pointer-events-none" />
 
-      {/* Product Hunt Badge - Top Right */}
-      <a 
-        href="https://www.producthunt.com/products/ai-royale-the-live-e-sports-simulator?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-ai-royale-the-live-e-sports-simulator" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className={cn(
-          "absolute top-24 right-4 md:top-28 md:right-8 z-20 transition-all duration-700 delay-500",
-          isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
-        )}
-      >
-        <img 
-          src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1061174&theme=light&t=1768090726683" 
-          alt="AI Royale: The Live E-Sports Simulator - The unfair advantage for Clash Royale players. 🔮 | Product Hunt" 
-          width="250" 
-          height="54"
-          className="hover:opacity-90 transition-opacity hover:scale-105"
-        />
-      </a>
-
       <div className="relative container mx-auto px-4 py-20 md:py-24 z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8">
           {/* Badge with Golden Accent - Animated entrance */}

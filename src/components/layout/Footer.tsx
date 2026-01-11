@@ -28,6 +28,21 @@ export function Footer() {
             <Link to="/privacy" className="hover:text-foreground transition-colors">{t("legal.privacyPolicy")}</Link>
           </nav>
           
+          {/* Product Hunt Badge */}
+          <a 
+            href="https://www.producthunt.com/products/ai-royale-the-live-e-sports-simulator?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-ai-royale-the-live-e-sports-simulator" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:opacity-90 transition-opacity"
+          >
+            <img 
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1061174&theme=light&t=1768090726683" 
+              alt="AI Royale: The Live E-Sports Simulator - The unfair advantage for Clash Royale players. 🔮 | Product Hunt" 
+              width="250" 
+              height="54"
+            />
+          </a>
+          
           {/* Copyright */}
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} AI Royale. <span className="text-gold/80">{t("footer.tagline")}</span>
