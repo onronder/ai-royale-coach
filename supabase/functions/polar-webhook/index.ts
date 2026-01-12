@@ -405,20 +405,33 @@ serve(async (req) => {
 
         log('info', 'Subscription activated', { userId, accountSlots, needsAISelection, isTrialing });
 
-        // Update trial info if trialing
+        // Update trial info if trialing - trial_used stays false until trial ends
         if (isTrialing) {
           const { error: profileError } = await supabase
             .from('profiles')
             .update({
               trial_started_at: subscription?.current_period_start || new Date().toISOString(),
               trial_ends_at: subscription?.current_period_end || null,
-              trial_used: true,
+              trial_used: false, // User is actively trialing, not finished yet
               updated_at: new Date().toISOString(),
             })
             .eq('id', userId);
 
           if (profileError) {
             log('warn', 'Error updating profile trial', { error: profileError.message, userId });
+          }
+        } else if (subscription?.status === 'active') {
+          // User converted from trial to paid - mark trial as used
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              trial_used: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', userId);
+
+          if (profileError) {
+            log('warn', 'Error updating profile trial_used on conversion', { error: profileError.message, userId });
           }
         }
 
@@ -561,13 +574,26 @@ serve(async (req) => {
             .update({
               trial_started_at: subscription?.current_period_start || new Date().toISOString(),
               trial_ends_at: subscription?.current_period_end || null,
-              trial_used: true,
+              trial_used: false, // User is actively trialing, not finished yet
               updated_at: new Date().toISOString(),
             })
             .eq('id', userId);
 
           if (profileError) {
             log('warn', 'Error updating profile trial', { error: profileError.message, userId });
+          }
+        } else if (status === 'active') {
+          // User converted from trial to paid - mark trial as used
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              trial_used: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', userId);
+
+          if (profileError) {
+            log('warn', 'Error updating profile trial_used on conversion', { error: profileError.message, userId });
           }
         }
 
@@ -683,6 +709,19 @@ serve(async (req) => {
         } else {
           log('info', 'Subscription revoked, AI disabled', { userId });
           await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
+
+          // Mark trial as used since subscription has ended
+          const { error: trialUsedError } = await supabase
+            .from('profiles')
+            .update({
+              trial_used: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', userId);
+
+          if (trialUsedError) {
+            log('warn', 'Error setting trial_used on subscription end', { error: trialUsedError.message, userId });
+          }
           
           // Send trial expired email
           try {
