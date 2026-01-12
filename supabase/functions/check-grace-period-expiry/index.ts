@@ -22,6 +22,20 @@ serve(async (req: Request): Promise<Response> => {
   const startTime = Date.now();
   console.log("[check-grace-period-expiry] Starting scheduled check");
 
+  // Auto-disable after January 16th, 2026
+  const cutoffDate = new Date("2026-01-17T00:00:00Z");
+  if (new Date() > cutoffDate) {
+    console.log("[check-grace-period-expiry] Past cutoff date (Jan 16, 2026), skipping");
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Past cutoff date - job auto-disabled",
+        duration_ms: Date.now() - startTime,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
