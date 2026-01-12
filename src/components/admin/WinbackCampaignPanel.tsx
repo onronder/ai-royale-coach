@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { ResponsiveTable, ResponsiveTableSkeleton, ColumnDef } from '@/components/ui/responsive-table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Gift, 
   Send, 
@@ -20,7 +21,8 @@ import {
   History,
   HelpCircle,
   Activity,
-  TrendingUp
+  TrendingUp,
+  ArrowUpDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -83,12 +85,44 @@ interface CampaignHistory {
   target_user_active_days: number | null;
 }
 
+type SortOption = 'activity_score' | 'ai_requests' | 'battles_tracked' | 'chat_messages' | 'linked_accounts' | 'ai_active_days';
+
 // Activity badge based on score
 const getActivityBadge = (score: number) => {
   if (score >= 70) return { label: 'Highly Active', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30', icon: TrendingUp };
   if (score >= 40) return { label: 'Active', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30', icon: Activity };
   if (score > 0) return { label: 'Low Activity', color: 'bg-amber-500/10 text-amber-600 border-amber-500/30', icon: Activity };
   return { label: 'No Activity', color: 'bg-red-500/10 text-red-600 border-red-500/30', icon: AlertCircle };
+};
+
+// Calculate individual point contributions based on the rebalanced formula
+const calculatePointBreakdown = (metrics: {
+  ai_requests?: number;
+  chat_messages?: number;
+  battles_tracked?: number;
+  linked_accounts?: number;
+  ai_active_days?: number;
+  target_user_ai_requests?: number | null;
+  target_user_chat_messages?: number | null;
+  target_user_battles_tracked?: number | null;
+  target_user_linked_accounts?: number | null;
+  target_user_active_days?: number | null;
+}) => {
+  // Handle both EligibleUser and CampaignHistory data shapes
+  const aiRequests = 'ai_requests' in metrics ? metrics.ai_requests || 0 : metrics.target_user_ai_requests || 0;
+  const chatMessages = 'chat_messages' in metrics ? metrics.chat_messages || 0 : metrics.target_user_chat_messages || 0;
+  const battlesTracked = 'battles_tracked' in metrics ? metrics.battles_tracked || 0 : metrics.target_user_battles_tracked || 0;
+  const linkedAccounts = 'linked_accounts' in metrics ? metrics.linked_accounts || 0 : metrics.target_user_linked_accounts || 0;
+  const activeDays = 'ai_active_days' in metrics ? metrics.ai_active_days || 0 : metrics.target_user_active_days || 0;
+
+  return {
+    aiPoints: Math.floor(Math.min(aiRequests, 20) * 1.5),       // max 30
+    chatPoints: Math.min(chatMessages, 15) * 1,                  // max 15
+    battlePoints: Math.min(Math.floor(battlesTracked / 10), 25), // max 25
+    accountPoints: Math.min(linkedAccounts, 3) * 5,              // max 15
+    dayPoints: Math.min(activeDays, 5) * 3,                      // max 15
+    raw: { aiRequests, chatMessages, battlesTracked, linkedAccounts, activeDays }
+  };
 };
 
 /**
@@ -104,6 +138,7 @@ export function WinbackCampaignPanel() {
   const [sendingToAll, setSendingToAll] = useState(false);
   const [confirmBulkSend, setConfirmBulkSend] = useState(false);
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<SortOption>('activity_score');
 
   // Fetch eligible users with activity metrics
   const { data: eligibleUsers, isLoading: loadingUsers } = useQuery({
@@ -157,10 +192,10 @@ export function WinbackCampaignPanel() {
     staleTime: 30 * 1000, // 30 seconds
   });
 
-  // Filter users based on activity toggle
-  const displayedUsers = eligibleUsers?.filter(user => 
-    !showActiveOnly || user.is_active
-  ) || [];
+  // Filter and sort users based on activity toggle and sort option
+  const displayedUsers = eligibleUsers
+    ?.filter(user => !showActiveOnly || user.is_active)
+    .sort((a, b) => (b[sortBy] || 0) - (a[sortBy] || 0)) || [];
 
   // Count active users
   const activeUsersCount = eligibleUsers?.filter(u => u.is_active).length || 0;
@@ -333,6 +368,7 @@ export function WinbackCampaignPanel() {
       render: (user) => {
         const badge = getActivityBadge(user.activity_score);
         const Icon = badge.icon;
+        const breakdown = calculatePointBreakdown(user);
         return (
           <div className="flex justify-center">
             <Tooltip>
@@ -342,14 +378,34 @@ export function WinbackCampaignPanel() {
                   {badge.label} ({user.activity_score})
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <div className="space-y-1 text-xs">
-                  <p className="font-medium mb-2">Activity Breakdown:</p>
-                  <p>🤖 AI Requests: {user.ai_requests}</p>
-                  <p>💬 Chat Messages: {user.chat_messages}</p>
-                  <p>⚔️ Battles Tracked: {user.battles_tracked}</p>
-                  <p>👤 Linked Accounts: {user.linked_accounts}</p>
-                  <p>📅 Active Days: {user.ai_active_days}</p>
+              <TooltipContent className="max-w-sm">
+                <div className="space-y-2 text-xs">
+                  <p className="font-medium border-b pb-1 mb-2">Activity Breakdown:</p>
+                  <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 gap-y-1 items-center">
+                    <span>🤖 AI Requests</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.aiRequests}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}pts</span>
+                    
+                    <span>⚔️ Battles Tracked</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.battlesTracked}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}pts</span>
+                    
+                    <span>💬 Chat Messages</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.chatMessages}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}pts</span>
+                    
+                    <span>👤 Linked Accounts</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.linkedAccounts}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}pts</span>
+                    
+                    <span>📅 Active Days</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.activeDays}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}pts</span>
+                  </div>
+                  <div className="border-t pt-1 mt-1 flex justify-between font-medium">
+                    <span>Total Score</span>
+                    <span className="text-primary">{user.activity_score}/100</span>
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
@@ -442,6 +498,7 @@ export function WinbackCampaignPanel() {
       render: (item) => {
         const score = item.target_user_activity_score || 0;
         const badge = getActivityBadge(score);
+        const breakdown = calculatePointBreakdown(item);
         return (
           <div className="flex justify-center">
             <Tooltip>
@@ -450,14 +507,34 @@ export function WinbackCampaignPanel() {
                   {score}
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <div className="space-y-1 text-xs">
-                  <p className="font-medium mb-2">Activity at time of send:</p>
-                  <p>🤖 AI Requests: {item.target_user_ai_requests || 0}</p>
-                  <p>💬 Chat Messages: {item.target_user_chat_messages || 0}</p>
-                  <p>⚔️ Battles Tracked: {item.target_user_battles_tracked || 0}</p>
-                  <p>👤 Linked Accounts: {item.target_user_linked_accounts || 0}</p>
-                  <p>📅 Active Days: {item.target_user_active_days || 0}</p>
+              <TooltipContent className="max-w-sm">
+                <div className="space-y-2 text-xs">
+                  <p className="font-medium border-b pb-1 mb-2">Activity at time of send:</p>
+                  <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 gap-y-1 items-center">
+                    <span>🤖 AI Requests</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.aiRequests}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}pts</span>
+                    
+                    <span>⚔️ Battles Tracked</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.battlesTracked}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}pts</span>
+                    
+                    <span>💬 Chat Messages</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.chatMessages}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}pts</span>
+                    
+                    <span>👤 Linked Accounts</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.linkedAccounts}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}pts</span>
+                    
+                    <span>📅 Active Days</span>
+                    <span className="text-muted-foreground text-right">{breakdown.raw.activeDays}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}pts</span>
+                  </div>
+                  <div className="border-t pt-1 mt-1 flex justify-between font-medium">
+                    <span>Total Score</span>
+                    <span className="text-primary">{score}/100</span>
+                  </div>
                 </div>
               </TooltipContent>
             </Tooltip>
@@ -612,6 +689,25 @@ export function WinbackCampaignPanel() {
                 </CardDescription>
               </div>
               <div className="flex flex-wrap items-center gap-4">
+                {/* Sort by dropdown */}
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                  <Label htmlFor="sort-by" className="text-sm whitespace-nowrap">Sort by:</Label>
+                  <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+                    <SelectTrigger id="sort-by" className="w-[160px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="activity_score">Activity Score</SelectItem>
+                      <SelectItem value="battles_tracked">Battles Tracked</SelectItem>
+                      <SelectItem value="ai_requests">AI Requests</SelectItem>
+                      <SelectItem value="chat_messages">Chat Messages</SelectItem>
+                      <SelectItem value="linked_accounts">Linked Accounts</SelectItem>
+                      <SelectItem value="ai_active_days">Active Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 {/* Activity filter toggle */}
                 <div className="flex items-center gap-2">
                   <Switch
