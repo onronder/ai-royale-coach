@@ -484,28 +484,53 @@ serve(async (req) => {
           status = 'past_due';
         }
 
-        const { error: updateError } = await supabase
+        // Use UPSERT to handle case where subscription.created wasn't received (common for trials)
+        const { error: upsertError } = await supabase
           .from('user_subscriptions')
-          .update({
+          .upsert({
+            user_id: userId,
+            polar_subscription_id: subscription?.id || null,
+            polar_customer_id: subscription?.customer?.id || null,
+            polar_customer_external_id: userId,
             status,
+            variant_id: subscription?.product_id || null,
             account_slots: accountSlots,
             current_period_start: subscription?.current_period_start,
             current_period_end: subscription?.current_period_end,
             pending_account_slots: null,
             pending_change_effective_at: null,
+            needs_ai_selection: false,
             updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', userId);
+          }, {
+            onConflict: 'user_id',
+          });
 
-        if (updateError) {
-          log('error', 'Error updating subscription', { error: updateError.message, userId });
+        if (upsertError) {
+          log('error', 'Error upserting subscription', { error: upsertError.message, userId });
           return new Response(JSON.stringify({ error: 'Database error', requestId }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
 
-        log('info', 'Subscription updated', { userId, status, accountSlots });
+        // Update profile trial fields for trialing subscriptions
+        if (status === 'trialing') {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              trial_started_at: subscription?.current_period_start || new Date().toISOString(),
+              trial_ends_at: subscription?.current_period_end || null,
+              trial_used: true,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', userId);
+
+          if (profileError) {
+            log('warn', 'Error updating profile trial', { error: profileError.message, userId });
+          }
+        }
+
+        log('info', 'Subscription updated/created', { userId, status, accountSlots });
         
         await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
           status,
@@ -525,13 +550,20 @@ serve(async (req) => {
 
         log('info', 'Processing subscription cancellation', { userId });
 
+        // Use UPSERT to handle case where no subscription record exists
         const { error: cancelError } = await supabase
           .from('user_subscriptions')
-          .update({
+          .upsert({
+            user_id: userId,
+            polar_subscription_id: subscription?.id || null,
+            polar_customer_id: subscription?.customer?.id || null,
+            polar_customer_external_id: userId,
             status: 'cancelled',
+            current_period_end: subscription?.current_period_end,
             updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', userId);
+          }, {
+            onConflict: 'user_id',
+          });
 
         if (cancelError) {
           log('error', 'Error cancelling subscription', { error: cancelError.message, userId });
