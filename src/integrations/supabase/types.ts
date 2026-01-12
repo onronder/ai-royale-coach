@@ -1546,7 +1546,13 @@ export type Database = {
           promo_code: string
           sent_at: string
           target_email: string
+          target_user_active_days: number | null
+          target_user_activity_score: number | null
+          target_user_ai_requests: number | null
+          target_user_battles_tracked: number | null
+          target_user_chat_messages: number | null
           target_user_id: string
+          target_user_linked_accounts: number | null
         }
         Insert: {
           admin_user_id: string
@@ -1557,7 +1563,13 @@ export type Database = {
           promo_code: string
           sent_at?: string
           target_email: string
+          target_user_active_days?: number | null
+          target_user_activity_score?: number | null
+          target_user_ai_requests?: number | null
+          target_user_battles_tracked?: number | null
+          target_user_chat_messages?: number | null
           target_user_id: string
+          target_user_linked_accounts?: number | null
         }
         Update: {
           admin_user_id?: string
@@ -1568,7 +1580,13 @@ export type Database = {
           promo_code?: string
           sent_at?: string
           target_email?: string
+          target_user_active_days?: number | null
+          target_user_activity_score?: number | null
+          target_user_ai_requests?: number | null
+          target_user_battles_tracked?: number | null
+          target_user_chat_messages?: number | null
           target_user_id?: string
+          target_user_linked_accounts?: number | null
         }
         Relationships: []
       }
@@ -1608,6 +1626,7 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      get_user_activity_metrics: { Args: { p_user_id: string }; Returns: Json }
       has_admin_role: {
         Args: {
           p_role?: Database["public"]["Enums"]["admin_role"]
