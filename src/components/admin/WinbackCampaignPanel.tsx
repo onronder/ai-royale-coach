@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { ResponsiveTable, ResponsiveTableSkeleton, ColumnDef } from '@/components/ui/responsive-table';
 import { 
   Gift, 
@@ -17,7 +18,9 @@ import {
   Mail,
   Clock,
   History,
-  HelpCircle
+  HelpCircle,
+  Activity,
+  TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -38,6 +41,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+interface ActivityMetrics {
+  activity_score: number;
+  ai_requests: number;
+  ai_active_days: number;
+  chat_messages: number;
+  battles_tracked: number;
+  linked_accounts: number;
+  is_active: boolean;
+}
+
 interface EligibleUser {
   id: string;
   email: string;
@@ -45,6 +58,14 @@ interface EligibleUser {
   trial_ends_at: string | null;
   trial_used: boolean | null;
   winback_email_sent_at: string | null;
+  // Activity metrics
+  activity_score: number;
+  ai_requests: number;
+  ai_active_days: number;
+  chat_messages: number;
+  battles_tracked: number;
+  linked_accounts: number;
+  is_active: boolean;
 }
 
 interface CampaignHistory {
@@ -54,11 +75,26 @@ interface CampaignHistory {
   discount_percent: number;
   sent_at: string;
   polar_discount_id: string | null;
+  target_user_activity_score: number | null;
+  target_user_ai_requests: number | null;
+  target_user_chat_messages: number | null;
+  target_user_battles_tracked: number | null;
+  target_user_linked_accounts: number | null;
+  target_user_active_days: number | null;
 }
+
+// Activity badge based on score
+const getActivityBadge = (score: number) => {
+  if (score >= 70) return { label: 'Highly Active', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30', icon: TrendingUp };
+  if (score >= 40) return { label: 'Active', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30', icon: Activity };
+  if (score > 0) return { label: 'Low Activity', color: 'bg-amber-500/10 text-amber-600 border-amber-500/30', icon: Activity };
+  return { label: 'No Activity', color: 'bg-red-500/10 text-red-600 border-red-500/30', icon: AlertCircle };
+};
 
 /**
  * Admin panel for sending win-back promotional emails to users who cancelled their trial.
  * Allows admins to configure promo codes with Polar discount IDs for automatic checkout application.
+ * Shows real user activity metrics to help target engaged users.
  */
 export function WinbackCampaignPanel() {
   const queryClient = useQueryClient();
@@ -67,8 +103,9 @@ export function WinbackCampaignPanel() {
   const [discountPercent, setDiscountPercent] = useState<number>(20);
   const [sendingToAll, setSendingToAll] = useState(false);
   const [confirmBulkSend, setConfirmBulkSend] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
 
-  // Fetch eligible users (cancelled/expired trials)
+  // Fetch eligible users with activity metrics
   const { data: eligibleUsers, isLoading: loadingUsers } = useQuery({
     queryKey: ['winback-eligible-users'],
     queryFn: async () => {
@@ -90,11 +127,43 @@ export function WinbackCampaignPanel() {
         .in('status', ['active', 'trialing']);
 
       const activeUserIds = new Set(activeSubscriptions?.map(s => s.user_id) || []);
+      const eligibleProfiles = (profiles || []).filter(p => !activeUserIds.has(p.id));
 
-      return (profiles || []).filter(p => !activeUserIds.has(p.id)) as EligibleUser[];
+      // Fetch activity metrics for each user using RPC
+      const usersWithActivity = await Promise.all(
+        eligibleProfiles.map(async (profile) => {
+          const { data: metrics } = await supabase.rpc('get_user_activity_metrics', {
+            p_user_id: profile.id
+          });
+          
+          const activityMetrics = metrics as unknown as ActivityMetrics | null;
+          
+          return {
+            ...profile,
+            activity_score: activityMetrics?.activity_score || 0,
+            ai_requests: activityMetrics?.ai_requests || 0,
+            ai_active_days: activityMetrics?.ai_active_days || 0,
+            chat_messages: activityMetrics?.chat_messages || 0,
+            battles_tracked: activityMetrics?.battles_tracked || 0,
+            linked_accounts: activityMetrics?.linked_accounts || 0,
+            is_active: activityMetrics?.is_active || false,
+          } as EligibleUser;
+        })
+      );
+
+      // Sort by activity score descending (most active first)
+      return usersWithActivity.sort((a, b) => b.activity_score - a.activity_score);
     },
     staleTime: 30 * 1000, // 30 seconds
   });
+
+  // Filter users based on activity toggle
+  const displayedUsers = eligibleUsers?.filter(user => 
+    !showActiveOnly || user.is_active
+  ) || [];
+
+  // Count active users
+  const activeUsersCount = eligibleUsers?.filter(u => u.is_active).length || 0;
 
   // Fetch campaign history
   const { data: campaignHistory, isLoading: loadingHistory } = useQuery({
@@ -102,7 +171,7 @@ export function WinbackCampaignPanel() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('winback_campaigns')
-        .select('id, target_email, promo_code, discount_percent, sent_at, polar_discount_id')
+        .select('id, target_email, promo_code, discount_percent, sent_at, polar_discount_id, target_user_activity_score, target_user_ai_requests, target_user_chat_messages, target_user_battles_tracked, target_user_linked_accounts, target_user_active_days')
         .order('sent_at', { ascending: false })
         .limit(50);
 
@@ -155,7 +224,7 @@ export function WinbackCampaignPanel() {
 
       if (updateError) throw updateError;
 
-      // Log the campaign with polar_discount_id
+      // Log the campaign with polar_discount_id and activity metrics
       const { data: { user: adminUser } } = await supabase.auth.getUser();
       
       const { error: logError } = await supabase
@@ -167,6 +236,13 @@ export function WinbackCampaignPanel() {
           promo_code: promoCode.toUpperCase(),
           discount_percent: discountPercent,
           polar_discount_id: polarDiscountId.trim() || null,
+          // Log activity metrics at time of sending
+          target_user_activity_score: user.activity_score,
+          target_user_ai_requests: user.ai_requests,
+          target_user_chat_messages: user.chat_messages,
+          target_user_battles_tracked: user.battles_tracked,
+          target_user_linked_accounts: user.linked_accounts,
+          target_user_active_days: user.ai_active_days,
         });
 
       if (logError) console.error('Error logging campaign:', logError);
@@ -185,7 +261,7 @@ export function WinbackCampaignPanel() {
 
   // Bulk send emails
   const handleBulkSend = async () => {
-    if (!eligibleUsers?.length) return;
+    if (!displayedUsers?.length) return;
     
     setSendingToAll(true);
     setConfirmBulkSend(false);
@@ -194,7 +270,7 @@ export function WinbackCampaignPanel() {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const usersToEmail = eligibleUsers.filter(user => {
+    const usersToEmail = displayedUsers.filter(user => {
       if (!user.winback_email_sent_at) return true;
       return new Date(user.winback_email_sent_at) < thirtyDaysAgo;
     });
@@ -230,8 +306,8 @@ export function WinbackCampaignPanel() {
     return new Date(user.winback_email_sent_at) < thirtyDaysAgo;
   };
 
-  // Count eligible users who can receive email
-  const eligibleToSendCount = eligibleUsers?.filter(canSendToUser).length || 0;
+  // Count eligible users who can receive email (based on current filter)
+  const eligibleToSendCount = displayedUsers?.filter(canSendToUser).length || 0;
 
   // Check if configuration is complete
   const isConfigValid = promoCode.trim() && 
@@ -240,7 +316,7 @@ export function WinbackCampaignPanel() {
     discountPercent >= 1 && 
     discountPercent <= 100;
 
-  // User columns
+  // User columns with activity
   const userColumns: ColumnDef<EligibleUser>[] = [
     {
       key: 'email',
@@ -249,6 +325,34 @@ export function WinbackCampaignPanel() {
       render: (user) => (
         <span className="font-mono text-sm">{user.email}</span>
       ),
+    },
+    {
+      key: 'activity',
+      header: 'Activity Score',
+      render: (user) => {
+        const badge = getActivityBadge(user.activity_score);
+        const Icon = badge.icon;
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className={`${badge.color} cursor-help`}>
+                <Icon className="h-3 w-3 mr-1" />
+                {badge.label} ({user.activity_score})
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <div className="space-y-1 text-xs">
+                <p className="font-medium mb-2">Activity Breakdown:</p>
+                <p>🤖 AI Requests: {user.ai_requests}</p>
+                <p>💬 Chat Messages: {user.chat_messages}</p>
+                <p>⚔️ Battles Tracked: {user.battles_tracked}</p>
+                <p>👤 Linked Accounts: {user.linked_accounts}</p>
+                <p>📅 Active Days: {user.ai_active_days}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
     {
       key: 'language',
@@ -308,7 +412,7 @@ export function WinbackCampaignPanel() {
     },
   ];
 
-  // History columns
+  // History columns with activity score
   const historyColumns: ColumnDef<CampaignHistory>[] = [
     {
       key: 'sent_at',
@@ -327,6 +431,33 @@ export function WinbackCampaignPanel() {
       render: (item) => (
         <span className="font-mono text-sm">{item.target_email}</span>
       ),
+    },
+    {
+      key: 'activity_at_send',
+      header: 'Activity',
+      render: (item) => {
+        const score = item.target_user_activity_score || 0;
+        const badge = getActivityBadge(score);
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className={`${badge.color} cursor-help`}>
+                {score}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-xs">
+              <div className="space-y-1 text-xs">
+                <p className="font-medium mb-2">Activity at time of send:</p>
+                <p>🤖 AI Requests: {item.target_user_ai_requests || 0}</p>
+                <p>💬 Chat Messages: {item.target_user_chat_messages || 0}</p>
+                <p>⚔️ Battles Tracked: {item.target_user_battles_tracked || 0}</p>
+                <p>👤 Linked Accounts: {item.target_user_linked_accounts || 0}</p>
+                <p>📅 Active Days: {item.target_user_active_days || 0}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        );
+      },
     },
     {
       key: 'promo_code',
@@ -464,7 +595,7 @@ export function WinbackCampaignPanel() {
         {/* Eligible Users */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
@@ -474,7 +605,30 @@ export function WinbackCampaignPanel() {
                   Users who cancelled their trial and can receive a win-back email
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
+                {/* Activity filter toggle */}
+                <div className="flex items-center gap-2">
+                  <Switch
+                    id="active-only"
+                    checked={showActiveOnly}
+                    onCheckedChange={setShowActiveOnly}
+                  />
+                  <Label htmlFor="active-only" className="text-sm cursor-pointer">
+                    Active users only
+                  </Label>
+                </div>
+                
+                {/* Stats badges */}
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+                    <Activity className="h-3 w-3 mr-1" />
+                    {activeUsersCount} active
+                  </Badge>
+                  <Badge variant="outline">
+                    {eligibleUsers?.length || 0} total
+                  </Badge>
+                </div>
+
                 <div className="text-sm text-muted-foreground">
                   <Mail className="h-4 w-4 inline mr-1" />
                   {eligibleToSendCount} can receive email
@@ -492,7 +646,7 @@ export function WinbackCampaignPanel() {
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send to All ({eligibleToSendCount})
+                      Send to {showActiveOnly ? 'Active' : 'All'} ({eligibleToSendCount})
                     </>
                   )}
                 </Button>
@@ -501,17 +655,26 @@ export function WinbackCampaignPanel() {
           </CardHeader>
           <CardContent>
             {loadingUsers ? (
-              <ResponsiveTableSkeleton columns={5} rows={5} />
+              <ResponsiveTableSkeleton columns={6} rows={5} />
             ) : (
               <ResponsiveTable
-                data={eligibleUsers || []}
+                data={displayedUsers}
                 columns={userColumns}
                 keyExtractor={(user) => user.id}
                 emptyState={
                   <div className="text-center py-8 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>No eligible users found</p>
-                    <p className="text-sm">Users will appear here after their trial ends</p>
+                    {showActiveOnly ? (
+                      <>
+                        <p>No active users found</p>
+                        <p className="text-sm">Try disabling the "Active users only" filter</p>
+                      </>
+                    ) : (
+                      <>
+                        <p>No eligible users found</p>
+                        <p className="text-sm">Users will appear here after their trial ends</p>
+                      </>
+                    )}
                   </div>
                 }
               />
@@ -527,12 +690,12 @@ export function WinbackCampaignPanel() {
               Campaign History
             </CardTitle>
             <CardDescription>
-              Recent win-back emails sent by admins
+              Recent win-back emails sent by admins (with activity score at time of send)
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loadingHistory ? (
-              <ResponsiveTableSkeleton columns={5} rows={5} />
+              <ResponsiveTableSkeleton columns={6} rows={5} />
             ) : (
               <ResponsiveTable
                 data={campaignHistory || []}
@@ -553,10 +716,20 @@ export function WinbackCampaignPanel() {
         <AlertDialog open={confirmBulkSend} onOpenChange={setConfirmBulkSend}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Send to all eligible users?</AlertDialogTitle>
+              <AlertDialogTitle>
+                Send to {showActiveOnly ? 'active' : 'all eligible'} users?
+              </AlertDialogTitle>
               <AlertDialogDescription>
                 This will send a win-back email with promo code <strong>{promoCode}</strong> ({discountPercent}% off) to{' '}
                 <strong>{eligibleToSendCount}</strong> users who haven't received an email in the last 30 days.
+                {showActiveOnly && (
+                  <>
+                    <br /><br />
+                    <span className="text-blue-600 dark:text-blue-400">
+                      ℹ️ Only sending to users who have used the app (filtered by activity)
+                    </span>
+                  </>
+                )}
                 <br /><br />
                 <span className="text-emerald-600 dark:text-emerald-400">
                   ✓ Discount will be automatically applied at checkout
