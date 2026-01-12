@@ -34,7 +34,7 @@ serve(async (req) => {
       return errorResponse('Unauthorized', 401);
     }
 
-    const { successUrl, cancelUrl, accountSlots = 1 } = await req.json();
+    const { successUrl, cancelUrl, accountSlots = 1, discountId } = await req.json();
     
     // Validate accountSlots
     const slots = Math.min(Math.max(1, accountSlots), 3);
@@ -48,7 +48,12 @@ serve(async (req) => {
     // Default success URL if not provided
     const finalSuccessUrl = successUrl || `${req.headers.get('origin')}/select-player?subscription=success`;
 
-    logger.info('Creating checkout', { userId: user.id, slots, productId: polarProductId });
+    logger.info('Creating checkout', { 
+      userId: user.id, 
+      slots, 
+      productId: polarProductId,
+      discountId: discountId || 'none'
+    });
 
     // Create checkout session via Polar API
     const checkoutResponse = await fetch('https://api.polar.sh/v1/checkouts/custom/', {
@@ -66,7 +71,9 @@ serve(async (req) => {
           user_id: user.id,
           account_slots: slots,
         },
-        allow_discount_codes: true,
+        // Pre-apply discount if provided, otherwise allow manual code entry
+        ...(discountId && { discount_id: discountId }),
+        allow_discount_codes: !discountId,
       }),
     });
 

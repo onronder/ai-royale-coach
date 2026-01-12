@@ -28,6 +28,10 @@ verify_jwt = false
 [functions.admin-fraud-action]
 verify_jwt = false
 
+# Discount lookup - no JWT (validates internally, needs to work pre-auth)
+[functions.lookup-discount]
+verify_jwt = false
+
 # Protected endpoints - JWT required for security
 [functions.track-deck-stats]
 verify_jwt = true

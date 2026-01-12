@@ -174,7 +174,7 @@ export const WinbackPromoEmail = ({
             </Section>
 
             <Section style={ctaSection}>
-              <Link style={ctaButton} href={`${appUrl}/auth`}>
+              <Link style={ctaButton} href={`${appUrl}/auth?promo=${promoCode}`}>
                 {t.cta}
               </Link>
             </Section>

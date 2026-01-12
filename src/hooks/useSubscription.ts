@@ -54,12 +54,13 @@ export function useSubscription() {
     accountSlots?: number;
     successUrl?: string;
     cancelUrl?: string;
+    discountId?: string; // Polar discount UUID for pre-applying promo codes
   }
 
   const createCheckoutMutation = useMutation({
-    mutationFn: async ({ accountSlots = 1, successUrl, cancelUrl }: CheckoutParams) => {
+    mutationFn: async ({ accountSlots = 1, successUrl, cancelUrl, discountId }: CheckoutParams) => {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { accountSlots, successUrl, cancelUrl },
+        body: { accountSlots, successUrl, cancelUrl, discountId },
       });
       
       if (error) throw error;
