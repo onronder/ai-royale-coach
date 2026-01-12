@@ -43,6 +43,15 @@ const Auth = () => {
   const [oauthTermsAccepted, setOauthTermsAccepted] = useState(false);
   const [pendingOAuthUser, setPendingOAuthUser] = useState<string | null>(null);
 
+  // Capture promo code from URL and store in localStorage
+  useEffect(() => {
+    const promoCode = searchParams.get('promo');
+    if (promoCode) {
+      localStorage.setItem('pending_promo_code', promoCode.toUpperCase());
+      console.log('[Auth] Promo code captured:', promoCode.toUpperCase());
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -256,10 +265,16 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
+      // Preserve promo code in OAuth redirect
+      const promoCode = searchParams.get('promo');
+      const redirectUrl = promoCode 
+        ? `${window.location.origin}/auth?promo=${promoCode}`
+        : `${window.location.origin}/auth`;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: redirectUrl,
         },
       });
       if (error) throw error;

@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, Brain, Shield, Zap, Users } from "lucide-react";
+import { Check, Crown, Brain, Shield, Zap, Users, Gift, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -33,18 +34,75 @@ const pricingTiers: PricingTier[] = [
   { slots: 3, price: '$8.97', pricePerAccount: '$2.99' },
 ];
 
+interface PendingPromo {
+  code: string;
+  discountId: string;
+  discountPercent: number;
+}
+
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
   const { t } = useTranslation();
   const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining } = useSubscription();
   const [selectedTier, setSelectedTier] = useState<number>(1);
   const [showTrialConfirm, setShowTrialConfirm] = useState(false);
+  
+  // Promo code state
+  const [pendingPromo, setPendingPromo] = useState<PendingPromo | null>(null);
+  const [isLoadingPromo, setIsLoadingPromo] = useState(false);
+
+  // Check for pending promo code when modal opens
+  useEffect(() => {
+    const checkPendingPromo = async () => {
+      const storedCode = localStorage.getItem('pending_promo_code');
+      if (!storedCode) return;
+
+      setIsLoadingPromo(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('lookup-discount', {
+          body: { promoCode: storedCode },
+        });
+
+        if (error) {
+          console.error('[PricingModal] Error looking up discount:', error);
+          localStorage.removeItem('pending_promo_code');
+          return;
+        }
+
+        if (data?.isValid && data?.discountId) {
+          setPendingPromo({
+            code: data.code,
+            discountId: data.discountId,
+            discountPercent: data.discountPercent,
+          });
+          console.log('[PricingModal] Promo validated:', data);
+        } else {
+          console.log('[PricingModal] Invalid promo code:', storedCode, data?.error);
+          localStorage.removeItem('pending_promo_code');
+        }
+      } catch (err) {
+        console.error('[PricingModal] Promo lookup error:', err);
+        localStorage.removeItem('pending_promo_code');
+      } finally {
+        setIsLoadingPromo(false);
+      }
+    };
+
+    if (open) {
+      checkPendingPromo();
+    }
+  }, [open]);
 
   const proceedToCheckout = async () => {
     try {
       const checkoutUrl = await createCheckout({
         accountSlots: selectedTier,
         successUrl: `${window.location.origin}/select-player?subscription=success`,
+        // Pass discount ID if we have a valid promo code
+        discountId: pendingPromo?.discountId,
       });
+      
+      // Clear the promo code after successful checkout redirect
+      localStorage.removeItem('pending_promo_code');
       window.location.href = checkoutUrl;
     } catch (error) {
       toast.error(t('subscription.checkoutError'));
@@ -58,6 +116,14 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
       return;
     }
     await proceedToCheckout();
+  };
+
+  // Calculate discounted price for display
+  const getDisplayPrice = (originalPrice: string) => {
+    if (!pendingPromo?.discountPercent) return originalPrice;
+    const price = parseFloat(originalPrice.replace('$', ''));
+    const discounted = price * (1 - pendingPromo.discountPercent / 100);
+    return `$${discounted.toFixed(2)}`;
   };
 
   return (
@@ -77,6 +143,31 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
+            {/* Promo code banner */}
+            {pendingPromo && (
+              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">
+                <Gift className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                    {pendingPromo.discountPercent}% discount with code{' '}
+                    <span className="font-mono font-bold">{pendingPromo.code}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Will be applied automatically at checkout
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {isLoadingPromo && (
+              <div className="p-3 rounded-lg bg-muted/50 flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Checking promo code...
+                </span>
+              </div>
+            )}
+
             {/* Tier Selection */}
             <div className="grid grid-cols-3 gap-3">
               {pricingTiers.map((tier) => (
@@ -104,8 +195,13 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                   </div>
                   
                   <div className="text-2xl font-bold font-rajdhani text-gold">
-                    {tier.price}
+                    {pendingPromo ? getDisplayPrice(tier.price) : tier.price}
                   </div>
+                  {pendingPromo && (
+                    <div className="text-sm text-muted-foreground line-through">
+                      {tier.price}
+                    </div>
+                  )}
                   <div className="text-xs text-muted-foreground">
                     /{t('subscription.month')}
                   </div>
@@ -152,13 +248,15 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
             <div className="space-y-3">
               <Button 
                 onClick={handleSubscribe}
-                disabled={isCreatingCheckout}
+                disabled={isCreatingCheckout || isLoadingPromo}
                 className="w-full bg-gradient-to-r from-gold to-yellow-500 text-black hover:from-gold/90 hover:to-yellow-500/90 font-semibold"
               >
                 <Crown className="mr-2 h-4 w-4" />
                 {isCreatingCheckout 
                   ? t('common.loading') 
-                  : t('subscription.subscribeTier', { price: pricingTiers.find(t => t.slots === selectedTier)?.price })
+                  : pendingPromo
+                    ? `${t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(t => t.slots === selectedTier)?.price || '$4.99') })} (${pendingPromo.discountPercent}% off)`
+                    : t('subscription.subscribeTier', { price: pricingTiers.find(t => t.slots === selectedTier)?.price })
                 }
               </Button>
             </div>

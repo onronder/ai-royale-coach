@@ -1542,6 +1542,7 @@ export type Database = {
           created_at: string
           discount_percent: number
           id: string
+          polar_discount_id: string | null
           promo_code: string
           sent_at: string
           target_email: string
@@ -1552,6 +1553,7 @@ export type Database = {
           created_at?: string
           discount_percent: number
           id?: string
+          polar_discount_id?: string | null
           promo_code: string
           sent_at?: string
           target_email: string
@@ -1562,6 +1564,7 @@ export type Database = {
           created_at?: string
           discount_percent?: number
           id?: string
+          polar_discount_id?: string | null
           promo_code?: string
           sent_at?: string
           target_email?: string
