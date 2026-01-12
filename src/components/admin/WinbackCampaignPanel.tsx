@@ -329,28 +329,31 @@ export function WinbackCampaignPanel() {
     {
       key: 'activity',
       header: 'Activity Score',
+      className: 'min-w-[160px] text-center',
       render: (user) => {
         const badge = getActivityBadge(user.activity_score);
         const Icon = badge.icon;
         return (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge variant="outline" className={`${badge.color} cursor-help`}>
-                <Icon className="h-3 w-3 mr-1" />
-                {badge.label} ({user.activity_score})
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <div className="space-y-1 text-xs">
-                <p className="font-medium mb-2">Activity Breakdown:</p>
-                <p>🤖 AI Requests: {user.ai_requests}</p>
-                <p>💬 Chat Messages: {user.chat_messages}</p>
-                <p>⚔️ Battles Tracked: {user.battles_tracked}</p>
-                <p>👤 Linked Accounts: {user.linked_accounts}</p>
-                <p>📅 Active Days: {user.ai_active_days}</p>
-              </div>
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex justify-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className={`${badge.color} cursor-help whitespace-nowrap`}>
+                  <Icon className="h-3 w-3 mr-1" />
+                  {badge.label} ({user.activity_score})
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <div className="space-y-1 text-xs">
+                  <p className="font-medium mb-2">Activity Breakdown:</p>
+                  <p>🤖 AI Requests: {user.ai_requests}</p>
+                  <p>💬 Chat Messages: {user.chat_messages}</p>
+                  <p>⚔️ Battles Tracked: {user.battles_tracked}</p>
+                  <p>👤 Linked Accounts: {user.linked_accounts}</p>
+                  <p>📅 Active Days: {user.ai_active_days}</p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         );
       },
     },
@@ -435,27 +438,30 @@ export function WinbackCampaignPanel() {
     {
       key: 'activity_at_send',
       header: 'Activity',
+      className: 'min-w-[80px] text-center',
       render: (item) => {
         const score = item.target_user_activity_score || 0;
         const badge = getActivityBadge(score);
         return (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge variant="outline" className={`${badge.color} cursor-help`}>
-                {score}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <div className="space-y-1 text-xs">
-                <p className="font-medium mb-2">Activity at time of send:</p>
-                <p>🤖 AI Requests: {item.target_user_ai_requests || 0}</p>
-                <p>💬 Chat Messages: {item.target_user_chat_messages || 0}</p>
-                <p>⚔️ Battles Tracked: {item.target_user_battles_tracked || 0}</p>
-                <p>👤 Linked Accounts: {item.target_user_linked_accounts || 0}</p>
-                <p>📅 Active Days: {item.target_user_active_days || 0}</p>
-              </div>
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex justify-center">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className={`${badge.color} cursor-help`}>
+                  {score}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <div className="space-y-1 text-xs">
+                  <p className="font-medium mb-2">Activity at time of send:</p>
+                  <p>🤖 AI Requests: {item.target_user_ai_requests || 0}</p>
+                  <p>💬 Chat Messages: {item.target_user_chat_messages || 0}</p>
+                  <p>⚔️ Battles Tracked: {item.target_user_battles_tracked || 0}</p>
+                  <p>👤 Linked Accounts: {item.target_user_linked_accounts || 0}</p>
+                  <p>📅 Active Days: {item.target_user_active_days || 0}</p>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         );
       },
     },
