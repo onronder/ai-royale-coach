@@ -284,7 +284,7 @@ export function BlockedUsersPanel() {
                       <p className="text-xs text-muted-foreground">
                         {user.account_slots} account slot{user.account_slots !== 1 ? 's' : ''}
                         {user.current_period_end && (
-                          <> • Renews {format(new Date(user.current_period_end), 'MMM d, yyyy')}</>
+                          <> • {user.subscription_status === 'cancelled' ? 'Ends' : 'Renews'} {format(new Date(user.current_period_end), 'MMM d, yyyy')}</>
                         )}
                       </p>
                     </div>
