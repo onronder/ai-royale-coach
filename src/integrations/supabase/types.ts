@@ -1005,6 +1005,7 @@ export type Database = {
           trial_started_at: string | null
           trial_used: boolean | null
           updated_at: string | null
+          winback_email_sent_at: string | null
         }
         Insert: {
           chat_retention_days?: number | null
@@ -1019,6 +1020,7 @@ export type Database = {
           trial_started_at?: string | null
           trial_used?: boolean | null
           updated_at?: string | null
+          winback_email_sent_at?: string | null
         }
         Update: {
           chat_retention_days?: number | null
@@ -1033,6 +1035,7 @@ export type Database = {
           trial_started_at?: string | null
           trial_used?: boolean | null
           updated_at?: string | null
+          winback_email_sent_at?: string | null
         }
         Relationships: []
       }
@@ -1530,6 +1533,39 @@ export type Database = {
           processed_at?: string
           status?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      winback_campaigns: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          discount_percent: number
+          id: string
+          promo_code: string
+          sent_at: string
+          target_email: string
+          target_user_id: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          discount_percent: number
+          id?: string
+          promo_code: string
+          sent_at?: string
+          target_email: string
+          target_user_id: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          discount_percent?: number
+          id?: string
+          promo_code?: string
+          sent_at?: string
+          target_email?: string
+          target_user_id?: string
         }
         Relationships: []
       }

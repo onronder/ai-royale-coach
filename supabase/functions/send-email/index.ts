@@ -8,12 +8,13 @@ import { WelcomeEmail } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
+import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
 interface EmailRequest {
   email: string
-  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired'
+  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo'
   name?: string
   language?: string
   subscriptionData?: {
@@ -21,6 +22,8 @@ interface EmailRequest {
     renewalDate?: string
   }
   resetUrl?: string
+  promoCode?: string
+  discountPercent?: number
 }
 
 Deno.serve(async (req) => {
@@ -34,7 +37,7 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en', subscriptionData, resetUrl } = body
+    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent } = body
 
     if (!email || !type) {
       return errorResponse('Missing required fields: email and type', 400)
@@ -126,6 +129,22 @@ Deno.serve(async (req) => {
         )
         break
 
+      case 'winback_promo':
+        if (!promoCode || !discountPercent) {
+          return errorResponse('Missing required fields: promoCode and discountPercent for winback_promo', 400)
+        }
+        subject = getWinbackPromoSubject(language, discountPercent)
+        html = await renderAsync(
+          React.createElement(WinbackPromoEmail, {
+            name,
+            language,
+            appUrl,
+            promoCode,
+            discountPercent,
+          })
+        )
+        break
+
       default:
         return errorResponse('Invalid email type', 400)
     }
@@ -204,6 +223,17 @@ function getTrialExpiredSubject(language: string): string {
     pt: 'Seu Teste do AI Royale Terminou - Assine Agora!',
     tr: 'AI Royale Denemeniz Sona Erdi - Şimdi Abone Olun!',
     fr: 'Votre Essai AI Royale a Expiré - Abonnez-vous Maintenant!',
+  }
+  return subjects[language] || subjects.en
+}
+
+function getWinbackPromoSubject(language: string, discountPercent: number): string {
+  const subjects: Record<string, string> = {
+    en: `We Miss You! Get ${discountPercent}% Off AI Royale PRO 💝`,
+    es: `¡Te Extrañamos! Obtén ${discountPercent}% de Descuento en AI Royale PRO 💝`,
+    pt: `Sentimos Sua Falta! Ganhe ${discountPercent}% de Desconto no AI Royale PRO 💝`,
+    tr: `Seni Özledik! AI Royale PRO'da %${discountPercent} İndirim 💝`,
+    fr: `Vous Nous Manquez! ${discountPercent}% de Réduction sur AI Royale PRO 💝`,
   }
   return subjects[language] || subjects.en
 }
