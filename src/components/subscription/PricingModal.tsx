@@ -120,11 +120,14 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
 
   // Calculate discounted price for display
   const getDisplayPrice = (originalPrice: string) => {
-    if (!pendingPromo?.discountPercent) return originalPrice;
+    if (!pendingPromo?.discountPercent || pendingPromo.discountPercent <= 0) return originalPrice;
     const price = parseFloat(originalPrice.replace('$', ''));
     const discounted = price * (1 - pendingPromo.discountPercent / 100);
     return `$${discounted.toFixed(2)}`;
   };
+
+  // Check if we should show discounted pricing
+  const hasPercentDiscount = pendingPromo && pendingPromo.discountPercent > 0;
 
   return (
     <>
@@ -149,11 +152,13 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                 <Gift className="h-5 w-5 text-emerald-500 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                    {pendingPromo.discountPercent}% discount with code{' '}
+                    {pendingPromo.discountPercent > 0 
+                      ? t('subscription.promo.discountApplied', { percent: pendingPromo.discountPercent })
+                      : t('subscription.promo.discountApplied', { percent: '' }).replace('% ', '')}{' '}
                     <span className="font-mono font-bold">{pendingPromo.code}</span>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Will be applied automatically at checkout
+                    {t('subscription.promo.autoApply')}
                   </p>
                 </div>
               </div>
@@ -163,7 +168,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
               <div className="p-3 rounded-lg bg-muted/50 flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 <span className="text-sm text-muted-foreground">
-                  Checking promo code...
+                  {t('subscription.promo.checkingPromo')}
                 </span>
               </div>
             )}
@@ -195,9 +200,9 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                   </div>
                   
                   <div className="text-2xl font-bold font-rajdhani text-gold">
-                    {pendingPromo ? getDisplayPrice(tier.price) : tier.price}
+                    {hasPercentDiscount ? getDisplayPrice(tier.price) : tier.price}
                   </div>
-                  {pendingPromo && (
+                  {hasPercentDiscount && (
                     <div className="text-sm text-muted-foreground line-through">
                       {tier.price}
                     </div>
@@ -254,9 +259,9 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                 <Crown className="mr-2 h-4 w-4" />
                 {isCreatingCheckout 
                   ? t('common.loading') 
-                  : pendingPromo
-                    ? `${t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(t => t.slots === selectedTier)?.price || '$4.99') })} (${pendingPromo.discountPercent}% off)`
-                    : t('subscription.subscribeTier', { price: pricingTiers.find(t => t.slots === selectedTier)?.price })
+                  : pendingPromo && pendingPromo.discountPercent > 0
+                    ? `${t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(tier => tier.slots === selectedTier)?.price || '$4.99') })} ${t('subscription.promo.discountOff', { percent: pendingPromo.discountPercent })}`
+                    : t('subscription.subscribeTier', { price: pricingTiers.find(tier => tier.slots === selectedTier)?.price })
                 }
               </Button>
             </div>

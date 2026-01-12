@@ -2038,6 +2038,12 @@
     "featureRequiresPro": "{{feature}} requiere AI Royale Pro",
     "subscribeNow": "Suscribirse Ahora",
     "cancelAnytime": "Cancela cuando quieras. Sin preguntas.",
+    "promo": {
+      "discountApplied": "{{percent}}% de descuento con código",
+      "autoApply": "Se aplicará automáticamente en el pago",
+      "checkingPromo": "Verificando código promocional...",
+      "discountOff": "({{percent}}% descuento)"
+    },
     "proPlan": "AI Royale Pro",
     "accountSlots": "{{count}} cuentas de jugador",
     "freeTrial": "Prueba Gratuita",

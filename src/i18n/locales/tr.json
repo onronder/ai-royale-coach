@@ -2027,6 +2027,12 @@
     "featureRequiresPro": "{{feature}} için AI Royale Pro gereklidir",
     "subscribeNow": "Şimdi Abone Ol",
     "cancelAnytime": "İstediğiniz zaman iptal edin. Soru sorulmaz.",
+    "promo": {
+      "discountApplied": "{{percent}}% indirim kodu ile",
+      "autoApply": "Ödeme sırasında otomatik olarak uygulanacak",
+      "checkingPromo": "Promosyon kodu kontrol ediliyor...",
+      "discountOff": "({{percent}}% indirim)"
+    },
     "proPlan": "AI Royale Pro",
     "accountSlots": "{{count}} oyuncu hesabı",
     "freeTrial": "Ücretsiz Deneme",

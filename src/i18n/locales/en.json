@@ -2008,6 +2008,12 @@
     "featureRequiresPro": "{{feature}} requires AI Royale Pro",
     "subscribeNow": "Subscribe Now",
     "cancelAnytime": "Cancel anytime. No questions asked.",
+    "promo": {
+      "discountApplied": "{{percent}}% discount with code",
+      "autoApply": "Will be applied automatically at checkout",
+      "checkingPromo": "Checking promo code...",
+      "discountOff": "({{percent}}% off)"
+    },
     "proPlan": "AI Royale Pro",
     "accountSlots": "{{count}} player accounts",
     "freeTrial": "Free Trial",
