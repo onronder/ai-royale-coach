@@ -84,6 +84,10 @@ export function BlockedUsersPanel() {
   // Categorize users
   const now = new Date();
   
+  // Helper to check if user has active grace period
+  const hasActiveGracePeriod = (u: UserSubscriptionStatus) => 
+    u.trial_ends_at && !u.trial_used && new Date(u.trial_ends_at) > now;
+  
   const activeSubscribers = users?.filter(u => 
     u.subscription_status === 'active' || 
     (u.subscription_status === 'cancelled' && u.current_period_end && new Date(u.current_period_end) > now)
@@ -93,12 +97,21 @@ export function BlockedUsersPanel() {
     u.subscription_status === 'trialing'
   ) || [];
   
+  // Grace period users (one-time migration fix)
+  const gracePeriodUsers = users?.filter(u => {
+    const hasActiveSubscription = u.subscription_status === 'active' || 
+      u.subscription_status === 'trialing' ||
+      (u.subscription_status === 'cancelled' && u.current_period_end && new Date(u.current_period_end) > now);
+    return !hasActiveSubscription && hasActiveGracePeriod(u);
+  }) || [];
+  
   const blockedUsers = users?.filter(u => {
     // No subscription or expired subscription
     const hasActiveSubscription = u.subscription_status === 'active' || 
       u.subscription_status === 'trialing' ||
       (u.subscription_status === 'cancelled' && u.current_period_end && new Date(u.current_period_end) > now);
-    return !hasActiveSubscription;
+    // Also exclude grace period users from blocked
+    return !hasActiveSubscription && !hasActiveGracePeriod(u);
   }) || [];
 
   const getStatusBadge = (user: UserSubscriptionStatus) => {
@@ -113,6 +126,14 @@ export function BlockedUsersPanel() {
         return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Cancelled (Active)</Badge>;
       }
       return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Expired</Badge>;
+    }
+    // Check for grace period users (one-time migration)
+    if (user.trial_ends_at && !user.trial_used) {
+      const trialEnd = new Date(user.trial_ends_at);
+      if (trialEnd > now) {
+        return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">Grace Period</Badge>;
+      }
+      return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">Grace Expired</Badge>;
     }
     if (user.trial_used) {
       return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Trial Used</Badge>;
@@ -140,7 +161,7 @@ export function BlockedUsersPanel() {
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -174,6 +195,18 @@ export function BlockedUsersPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-500">{trialingUsers.length}</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Grace Period
+            </CardTitle>
+            <Clock className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-500">{gracePeriodUsers.length}</div>
           </CardContent>
         </Card>
         
@@ -237,6 +270,11 @@ export function BlockedUsersPanel() {
                         <Calendar className="h-3 w-3" />
                         Joined {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : 'Unknown'}
                       </p>
+                      {user.trial_ends_at && !user.trial_used && (
+                        <p className="text-xs text-muted-foreground">
+                          Grace period {new Date(user.trial_ends_at) > now ? 'ends' : 'ended'} {format(new Date(user.trial_ends_at), 'MMM d, yyyy')}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -261,14 +299,14 @@ export function BlockedUsersPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {[...activeSubscribers, ...trialingUsers].length === 0 ? (
+          {[...activeSubscribers, ...trialingUsers, ...gracePeriodUsers].length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Crown className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>No active subscribers</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {[...activeSubscribers, ...trialingUsers].map((user) => (
+              {[...activeSubscribers, ...trialingUsers, ...gracePeriodUsers].map((user) => (
                 <div 
                   key={user.id} 
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/80 transition-colors"
@@ -282,9 +320,17 @@ export function BlockedUsersPanel() {
                         {user.email || 'No email'}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {user.account_slots} account slot{user.account_slots !== 1 ? 's' : ''}
-                        {user.current_period_end && (
-                          <> • {user.subscription_status === 'cancelled' ? 'Ends' : 'Renews'} {format(new Date(user.current_period_end), 'MMM d, yyyy')}</>
+                        {user.account_slots ? (
+                          <>
+                            {user.account_slots} account slot{user.account_slots !== 1 ? 's' : ''}
+                            {user.current_period_end && (
+                              <> • {user.subscription_status === 'cancelled' ? 'Ends' : 'Renews'} {format(new Date(user.current_period_end), 'MMM d, yyyy')}</>
+                            )}
+                          </>
+                        ) : user.trial_ends_at && !user.trial_used ? (
+                          <>Grace period ends {format(new Date(user.trial_ends_at), 'MMM d, yyyy')}</>
+                        ) : (
+                          'No subscription details'
                         )}
                       </p>
                     </div>
