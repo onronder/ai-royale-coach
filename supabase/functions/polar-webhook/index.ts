@@ -724,8 +724,43 @@ serve(async (req) => {
         break;
       }
 
-      case 'order.created': {
-        log('info', 'Order created', { orderId: event.data?.id });
+      case 'order.created':
+      case 'order.updated':
+      case 'order.paid':
+      case 'order.refunded': {
+        log('info', `Order event: ${event.type}`, { orderId: event.data?.id });
+        await logWebhookEvent(supabase, event.type, event.data?.id, null, 'processed', undefined, {
+          orderId: event.data?.id
+        });
+        break;
+      }
+
+      case 'subscription.past_due': {
+        const subscription = event.data;
+        const userId = extractUserId(subscription);
+
+        if (!userId) {
+          log('error', 'No user_id found in subscription.past_due');
+          break;
+        }
+
+        log('warn', 'Subscription past due', { userId, subscriptionId: subscription?.id });
+
+        const { error: pastDueError } = await supabase
+          .from('user_subscriptions')
+          .update({
+            status: 'past_due',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('user_id', userId);
+
+        if (pastDueError) {
+          log('error', 'Error updating past_due status', { error: pastDueError.message, userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', pastDueError.message);
+        } else {
+          log('info', 'Subscription marked as past_due', { userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
+        }
         break;
       }
 
