@@ -262,6 +262,7 @@ serve(async (req) => {
             hasMetadata: !!subscription?.metadata,
             subscriptionId: subscription?.id
           });
+          // Return 400 - this is a permanent error, don't retry
           return new Response(JSON.stringify({ 
             error: 'No user_id in subscription', 
             requestId,
@@ -279,6 +280,44 @@ serve(async (req) => {
           productId: subscription?.product_id
         });
 
+        // Check if user exists in profiles table - they should be created by auth trigger
+        const { data: userProfile, error: profileCheckError } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (profileCheckError) {
+          log('error', 'Error checking user profile', { error: profileCheckError.message, userId });
+          // Return 202 to signal Polar should retry later
+          return new Response(JSON.stringify({ 
+            received: true, 
+            status: 'pending',
+            message: 'User profile not ready, will process on retry',
+            requestId 
+          }), {
+            status: 202,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        if (!userProfile) {
+          log('warn', 'User profile not found, will retry later', { userId });
+          // Return 202 Accepted - Polar should retry this webhook later
+          // This handles the race condition where webhook arrives before user signup completes
+          return new Response(JSON.stringify({ 
+            received: true, 
+            status: 'pending',
+            message: 'User profile not found, awaiting user signup completion',
+            requestId 
+          }), {
+            status: 202,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        log('info', 'User profile verified', { userId, email: userProfile.email });
+
         const isTrialing = subscription?.status === 'trialing';
         const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
 
@@ -293,9 +332,11 @@ serve(async (req) => {
           log('warn', 'Error checking existing subscription', { error: existingError.message });
         }
 
-        // Skip if we already processed this exact subscription
-        if (existingSub?.polar_subscription_id === subscription?.id && existingSub?.status === 'active') {
-          log('info', 'Subscription already processed (idempotent skip)', { userId });
+        // Skip if we already processed this exact subscription with same status
+        const isSameStatus = (existingSub?.status === 'active' && !isTrialing) || 
+                             (existingSub?.status === 'trialing' && isTrialing);
+        if (existingSub?.polar_subscription_id === subscription?.id && isSameStatus) {
+          log('info', 'Subscription already processed (idempotent skip)', { userId, status: existingSub?.status });
           return new Response(JSON.stringify({ received: true, skipped: 'already_processed', requestId }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
