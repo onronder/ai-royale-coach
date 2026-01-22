@@ -11,7 +11,8 @@ import {
   AlertCircle,
   RefreshCw,
   Mail,
-  Calendar
+  Calendar,
+  CreditCard
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
@@ -97,10 +98,16 @@ export function BlockedUsersPanel() {
     u.subscription_status === 'trialing'
   ) || [];
   
+  // Past due users (payment failed)
+  const pastDueUsers = users?.filter(u => 
+    u.subscription_status === 'past_due'
+  ) || [];
+  
   // Grace period users (one-time migration fix)
   const gracePeriodUsers = users?.filter(u => {
     const hasActiveSubscription = u.subscription_status === 'active' || 
       u.subscription_status === 'trialing' ||
+      u.subscription_status === 'past_due' ||
       (u.subscription_status === 'cancelled' && u.current_period_end && new Date(u.current_period_end) > now);
     return !hasActiveSubscription && hasActiveGracePeriod(u);
   }) || [];
@@ -109,6 +116,7 @@ export function BlockedUsersPanel() {
     // No subscription or expired subscription
     const hasActiveSubscription = u.subscription_status === 'active' || 
       u.subscription_status === 'trialing' ||
+      u.subscription_status === 'past_due' ||
       (u.subscription_status === 'cancelled' && u.current_period_end && new Date(u.current_period_end) > now);
     // Also exclude grace period users from blocked
     return !hasActiveSubscription && !hasActiveGracePeriod(u);
@@ -120,6 +128,9 @@ export function BlockedUsersPanel() {
     }
     if (user.subscription_status === 'trialing') {
       return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Trialing</Badge>;
+    }
+    if (user.subscription_status === 'past_due') {
+      return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Past Due</Badge>;
     }
     if (user.subscription_status === 'cancelled') {
       if (user.current_period_end && new Date(user.current_period_end) > now) {
@@ -161,7 +172,7 @@ export function BlockedUsersPanel() {
   return (
     <div className="space-y-6">
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -195,6 +206,18 @@ export function BlockedUsersPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-500">{trialingUsers.length}</div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Past Due
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-500">{pastDueUsers.length}</div>
           </CardContent>
         </Card>
         
@@ -273,6 +296,59 @@ export function BlockedUsersPanel() {
                       {user.trial_ends_at && !user.trial_used && (
                         <p className="text-xs text-muted-foreground">
                           Grace period {new Date(user.trial_ends_at) > now ? 'ends' : 'ended'} {format(new Date(user.trial_ends_at), 'MMM d, yyyy')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {getStatusBadge(user)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Past Due Users List */}
+      <Card className="border-amber-500/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-amber-500" />
+            Past Due (Payment Failed)
+          </CardTitle>
+          <CardDescription>
+            Users whose payment failed - they received an email to update their payment method
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {pastDueUsers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <CreditCard className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No users with failed payments</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-[300px] overflow-y-auto">
+              {pastDueUsers.map((user) => (
+                <div 
+                  key={user.id} 
+                  className="flex items-center justify-between p-3 rounded-lg bg-amber-500/5 hover:bg-amber-500/10 transition-colors border border-amber-500/20"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                      <CreditCard className="h-4 w-4 text-amber-500" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.email || 'No email'}
+                      </p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        Joined {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : 'Unknown'}
+                      </p>
+                      {user.current_period_end && (
+                        <p className="text-xs text-amber-400">
+                          Period ends {format(new Date(user.current_period_end), 'MMM d, yyyy')}
                         </p>
                       )}
                     </div>
