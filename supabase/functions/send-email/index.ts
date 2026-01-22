@@ -9,12 +9,13 @@ import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
 import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
+import { PaymentFailedEmail } from './_templates/payment-failed-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
 interface EmailRequest {
   email: string
-  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo'
+  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo' | 'payment_failed'
   name?: string
   language?: string
   subscriptionData?: {
@@ -24,6 +25,7 @@ interface EmailRequest {
   resetUrl?: string
   promoCode?: string
   discountPercent?: number
+  updatePaymentUrl?: string
 }
 
 Deno.serve(async (req) => {
@@ -37,7 +39,7 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent } = body
+    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl } = body
 
     if (!email || !type) {
       return errorResponse('Missing required fields: email and type', 400)
@@ -145,6 +147,18 @@ Deno.serve(async (req) => {
         )
         break
 
+      case 'payment_failed':
+        subject = getPaymentFailedSubject(language)
+        html = await renderAsync(
+          React.createElement(PaymentFailedEmail, {
+            name,
+            language,
+            appUrl,
+            updatePaymentUrl: updatePaymentUrl || 'https://polar.sh/purchases/subscriptions',
+          })
+        )
+        break
+
       default:
         return errorResponse('Invalid email type', 400)
     }
@@ -234,6 +248,17 @@ function getWinbackPromoSubject(language: string, discountPercent: number): stri
     pt: `Sentimos Sua Falta! Ganhe ${discountPercent}% de Desconto no AI Royale PRO 💝`,
     tr: `Seni Özledik! AI Royale PRO'da %${discountPercent} İndirim 💝`,
     fr: `Vous Nous Manquez! ${discountPercent}% de Réduction sur AI Royale PRO 💝`,
+  }
+  return subjects[language] || subjects.en
+}
+
+function getPaymentFailedSubject(language: string): string {
+  const subjects: Record<string, string> = {
+    en: '⚠️ Payment Failed - Action Required',
+    es: '⚠️ Pago Fallido - Acción Requerida',
+    pt: '⚠️ Pagamento Falhou - Ação Necessária',
+    tr: '⚠️ Ödeme Başarısız - İşlem Gerekli',
+    fr: '⚠️ Paiement Échoué - Action Requise',
   }
   return subjects[language] || subjects.en
 }
