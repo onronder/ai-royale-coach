@@ -597,6 +597,50 @@ serve(async (req) => {
           }
         }
 
+        // Send payment failed email when status is past_due
+        if (status === 'past_due') {
+          // Check if we already sent a payment_failed email recently (within 24 hours)
+          const { data: recentEvent } = await supabase
+            .from('webhook_events')
+            .select('created_at')
+            .eq('user_id', userId)
+            .eq('event_type', 'payment_failed_email_sent')
+            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+            .maybeSingle();
+
+          if (!recentEvent) {
+            // Fetch user profile for email
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('email, preferred_language')
+              .eq('id', userId)
+              .single();
+
+            if (profile?.email) {
+              log('info', 'Sending payment failed email', { email: profile.email, userId });
+              
+              const { error: emailError } = await supabase.functions.invoke('send-email', {
+                body: {
+                  email: profile.email,
+                  type: 'payment_failed',
+                  language: profile.preferred_language || 'en',
+                  updatePaymentUrl: 'https://polar.sh/purchases/subscriptions',
+                }
+              });
+
+              if (emailError) {
+                log('warn', 'Failed to send payment failed email', { error: emailError.message });
+              } else {
+                log('info', 'Payment failed email sent');
+                // Log that we sent this email to prevent duplicates
+                await logWebhookEvent(supabase, 'payment_failed_email_sent', null, userId, 'processed');
+              }
+            }
+          } else {
+            log('info', 'Skipping payment failed email - already sent within 24 hours', { userId });
+          }
+        }
+
         log('info', 'Subscription updated/created', { userId, status, accountSlots });
         
         await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
