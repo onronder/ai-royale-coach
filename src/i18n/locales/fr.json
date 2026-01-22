@@ -2268,6 +2268,16 @@
       "cache": "cache",
       "slow": "Lent"
     },
+    "fraudOverview": {
+      "signalsToday": "Signaux Aujourd'hui",
+      "pendingReviews": "Examens en Attente",
+      "softBlocked": "Blocage Souple",
+      "warnedUsers": "Utilisateurs Avertis",
+      "signalsByType": "Signaux par Type (30 Derniers Jours)",
+      "noSignals": "Aucun signal de fraude détecté au cours des 30 derniers jours",
+      "summary30Days": "Résumé sur 30 Jours",
+      "totalSignals30Days": "Total des signaux de fraude au cours des 30 derniers jours"
+    },
     "fraudReview": {
       "backToCases": "Retour aux Cas",
       "caseReview": "Examen du Cas",
