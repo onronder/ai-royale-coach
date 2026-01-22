@@ -11,6 +11,7 @@ import {
   Clock
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PaymentRecoveryWidget } from './PaymentRecoveryWidget';
 
 interface FraudOverviewStats {
   total_signals: number;
@@ -148,6 +149,9 @@ export function FraudOverviewDashboard() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Payment Recovery Widget */}
+      <PaymentRecoveryWidget />
     </div>
   );
 }
