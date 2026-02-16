@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
 
     const { data: subscription, error: subError } = await adminClient
       .from('user_subscriptions')
-      .select('polar_subscription_id, status')
+      .select('polar_subscription_id, status, current_period_end')
       .eq('user_id', userId)
       .single();
 
@@ -49,6 +49,8 @@ Deno.serve(async (req) => {
     if (subscription.status === 'cancelled') {
       return errorResponse('Subscription is already cancelled', 400);
     }
+
+    const wasTrial = subscription.status === 'trialing';
 
     // Call Polar API to cancel the subscription
     const polarAccessToken = Deno.env.get('POLAR_ACCESS_TOKEN');
@@ -78,6 +80,35 @@ Deno.serve(async (req) => {
     // We don't update the database here to avoid race conditions with the webhook
 
     console.log(`Subscription cancelled for user ${userId}, polar_subscription_id: ${subscription.polar_subscription_id}`);
+
+    // Send cancellation confirmation email
+    try {
+      const { data: profile } = await adminClient
+        .from('profiles')
+        .select('email, preferred_language')
+        .eq('id', userId)
+        .single();
+
+      if (profile?.email) {
+        const { error: emailError } = await adminClient.functions.invoke('send-email', {
+          body: {
+            email: profile.email,
+            type: 'subscription_cancelled',
+            language: profile.preferred_language || 'en',
+            accessEndDate: subscription.current_period_end,
+            wasTrial,
+          }
+        });
+
+        if (emailError) {
+          console.warn('Failed to send cancellation email:', emailError.message);
+        } else {
+          console.log('Cancellation confirmation email sent to', profile.email);
+        }
+      }
+    } catch (emailErr) {
+      console.warn('Exception sending cancellation email:', emailErr instanceof Error ? emailErr.message : String(emailErr));
+    }
 
     return jsonResponse({ success: true, message: 'Subscription cancellation initiated' });
   } catch (err) {

@@ -10,12 +10,13 @@ import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
 import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
 import { PaymentFailedEmail } from './_templates/payment-failed-email.tsx'
+import { CancellationEmail } from './_templates/cancellation-email.tsx'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
 interface EmailRequest {
   email: string
-  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo' | 'payment_failed'
+  type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo' | 'payment_failed' | 'subscription_cancelled'
   name?: string
   language?: string
   subscriptionData?: {
@@ -26,6 +27,8 @@ interface EmailRequest {
   promoCode?: string
   discountPercent?: number
   updatePaymentUrl?: string
+  accessEndDate?: string
+  wasTrial?: boolean
 }
 
 Deno.serve(async (req) => {
@@ -39,7 +42,7 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl } = body
+    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl, accessEndDate, wasTrial } = body
 
     if (!email || !type) {
       return errorResponse('Missing required fields: email and type', 400)
@@ -159,6 +162,19 @@ Deno.serve(async (req) => {
         )
         break
 
+      case 'subscription_cancelled':
+        subject = getCancellationSubject(language)
+        html = await renderAsync(
+          React.createElement(CancellationEmail, {
+            name,
+            language,
+            appUrl,
+            accessEndDate,
+            wasTrial: wasTrial || false,
+          })
+        )
+        break
+
       default:
         return errorResponse('Invalid email type', 400)
     }
@@ -259,6 +275,17 @@ function getPaymentFailedSubject(language: string): string {
     pt: '⚠️ Pagamento Falhou - Ação Necessária',
     tr: '⚠️ Ödeme Başarısız - İşlem Gerekli',
     fr: '⚠️ Paiement Échoué - Action Requise',
+  }
+  return subjects[language] || subjects.en
+}
+
+function getCancellationSubject(language: string): string {
+  const subjects: Record<string, string> = {
+    en: 'Your AI Royale Subscription Has Been Cancelled',
+    es: 'Tu Suscripción a AI Royale Ha Sido Cancelada',
+    pt: 'Sua Assinatura do AI Royale Foi Cancelada',
+    tr: 'AI Royale Aboneliğiniz İptal Edildi',
+    fr: 'Votre Abonnement AI Royale a Été Annulé',
   }
   return subjects[language] || subjects.en
 }
