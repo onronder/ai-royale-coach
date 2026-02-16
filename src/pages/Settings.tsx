@@ -2,13 +2,24 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft, Globe, Megaphone } from "lucide-react";
+import { Crown, LogOut, Settings as SettingsIcon, Brain, CreditCard, User, ChevronRight, Sparkles, Check, AlertCircle, HelpCircle, ArrowLeft, Globe, Megaphone, XCircle } from "lucide-react";
 import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
 import { useWhatsNew } from "@/hooks/useWhatsNew";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
@@ -39,7 +50,9 @@ const Settings = () => {
     isTrialActive,
     trialDaysRemaining,
     status,
-    refetch: refetchSubscription 
+    refetch: refetchSubscription,
+    cancelSubscription,
+    isCancelling,
   } = useSubscription();
 
   const { profiles, isLoading: isLoadingProfiles, refetch: refetchProfiles } = useUserAIProfiles();
@@ -279,18 +292,98 @@ const Settings = () => {
                 </>
               )}
 
-              <div className="pt-2">
+              {/* Cancellation Pending Badge */}
+              {subscriptionStatus === 'cancelled' && status?.subscription?.currentPeriodEnd && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                  <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">
+                    {t('settings.subscription.cancellationPending', { 
+                      date: format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy') 
+                    })}
+                  </span>
+                </div>
+              )}
+
+              <div className="pt-2 space-y-2">
                 {hasAccess ? (
-                  accountSlots < 3 && (
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-gold/50 hover:bg-gold/10"
-                      onClick={() => setShowPricingModal(true)}
-                    >
-                      <Sparkles className="mr-2 h-4 w-4 text-gold" />
-                      {t('settings.subscription.upgrade')}
-                    </Button>
-                  )
+                  <>
+                    {accountSlots < 3 && (
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-gold/50 hover:bg-gold/10"
+                        onClick={() => setShowPricingModal(true)}
+                      >
+                        <Sparkles className="mr-2 h-4 w-4 text-gold" />
+                        {t('settings.subscription.upgrade')}
+                      </Button>
+                    )}
+
+                    {/* Cancel button - only for active/trialing, not already cancelled */}
+                    {subscriptionStatus !== 'cancelled' && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            disabled={isCancelling}
+                          >
+                            <XCircle className="mr-2 h-4 w-4" />
+                            {isCancelling 
+                              ? t('settings.subscription.cancelling')
+                              : isTrialActive 
+                                ? t('settings.subscription.cancelTrial') 
+                                : t('settings.subscription.cancelSubscription')
+                            }
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('settings.subscription.cancelConfirm.title')}</AlertDialogTitle>
+                            <AlertDialogDescription className="space-y-3">
+                              <span className="block">
+                                {isTrialActive 
+                                  ? t('settings.subscription.cancelConfirm.trialDescription', {
+                                      date: status?.subscription?.currentPeriodEnd 
+                                        ? format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy')
+                                        : status?.trial?.endsAt
+                                          ? format(new Date(status.trial.endsAt), 'MMM d, yyyy')
+                                          : ''
+                                    })
+                                  : t('settings.subscription.cancelConfirm.activeDescription', {
+                                      date: status?.subscription?.currentPeriodEnd 
+                                        ? format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy')
+                                        : ''
+                                    })
+                                }
+                              </span>
+                              <span className="block text-xs">
+                                {t('settings.subscription.cancelConfirm.gdprNotice')}{' '}
+                                <Link to="/privacy" className="underline text-primary hover:text-primary/80">
+                                  {t('nav.privacy')}
+                                </Link>
+                              </span>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{t('settings.subscription.cancelConfirm.keep')}</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={async () => {
+                                try {
+                                  await cancelSubscription();
+                                  toast.success(t('settings.subscription.cancelSuccess'));
+                                } catch (err) {
+                                  toast.error(t('settings.subscription.cancelError'));
+                                }
+                              }}
+                            >
+                              {t('settings.subscription.cancelConfirm.confirm')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </>
                 ) : (
                   <Button 
                     variant="golden" 

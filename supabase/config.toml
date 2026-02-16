@@ -21,6 +21,9 @@ verify_jwt = false
 [functions.get-subscription-status]
 verify_jwt = false
 
+[functions.cancel-subscription]
+verify_jwt = false
+
 [functions.manage-ai-accounts]
 verify_jwt = false
 

@@ -1371,7 +1371,21 @@
       "subscribe": "S'abonner à Pro",
       "active": "Actif",
       "inactive": "Pas d'Abonnement",
-      "trial": "Essai ({{days}} jours restants)"
+      "trial": "Essai ({{days}} jours restants)",
+      "cancelTrial": "Annuler l'Essai",
+      "cancelSubscription": "Annuler Mon Abonnement",
+      "cancelConfirm": {
+        "title": "Annuler l'Abonnement ?",
+        "trialDescription": "Si vous annulez maintenant, vous ne serez pas facturé à la fin de votre essai le {{date}}. Vous conserverez l'accès jusque-là.",
+        "activeDescription": "Votre abonnement restera actif jusqu'au {{date}}. Après cela, les fonctionnalités IA seront désactivées. Vous ne serez plus facturé.",
+        "gdprNotice": "Vos données seront conservées conformément à notre politique de confidentialité. Vous pouvez demander la suppression de vos données à tout moment.",
+        "confirm": "Oui, Annuler",
+        "keep": "Garder l'Abonnement"
+      },
+      "cancellationPending": "Annulé — accès jusqu'au {{date}}",
+      "cancelling": "Annulation en cours...",
+      "cancelSuccess": "Abonnement annulé avec succès",
+      "cancelError": "Échec de l'annulation de l'abonnement. Veuillez réessayer."
     },
     "aiAccounts": {
       "title": "Comptes avec IA Activée",
