@@ -1371,7 +1371,21 @@
       "subscribe": "Suscribirse a Pro",
       "active": "Activa",
       "inactive": "Sin Suscripción",
-      "trial": "Prueba ({{days}} días restantes)"
+      "trial": "Prueba ({{days}} días restantes)",
+      "cancelTrial": "Cancelar Prueba",
+      "cancelSubscription": "Cancelar Mi Suscripción",
+      "cancelConfirm": {
+        "title": "¿Cancelar Suscripción?",
+        "trialDescription": "Si cancelas ahora, no se te cobrará cuando tu prueba termine el {{date}}. Mantendrás el acceso hasta entonces.",
+        "activeDescription": "Tu suscripción permanecerá activa hasta el {{date}}. Después, las funciones de IA se desactivarán. No se te volverá a cobrar.",
+        "gdprNotice": "Tus datos se conservarán según nuestra política de privacidad. Puedes solicitar la eliminación de datos en cualquier momento.",
+        "confirm": "Sí, Cancelar",
+        "keep": "Mantener Suscripción"
+      },
+      "cancellationPending": "Cancelada — acceso hasta {{date}}",
+      "cancelling": "Cancelando...",
+      "cancelSuccess": "Suscripción cancelada exitosamente",
+      "cancelError": "Error al cancelar la suscripción. Inténtalo de nuevo."
     },
     "aiAccounts": {
       "title": "Cuentas con IA Habilitada",

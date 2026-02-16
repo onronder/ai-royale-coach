@@ -1371,7 +1371,21 @@
       "subscribe": "Assinar Pro",
       "active": "Ativa",
       "inactive": "Sem Assinatura",
-      "trial": "Teste ({{days}} dias restantes)"
+      "trial": "Teste ({{days}} dias restantes)",
+      "cancelTrial": "Cancelar Teste",
+      "cancelSubscription": "Cancelar Minha Assinatura",
+      "cancelConfirm": {
+        "title": "Cancelar Assinatura?",
+        "trialDescription": "Se você cancelar agora, não será cobrado quando seu teste terminar em {{date}}. Você manterá o acesso até lá.",
+        "activeDescription": "Sua assinatura permanecerá ativa até {{date}}. Depois disso, os recursos de IA serão desativados. Você não será cobrado novamente.",
+        "gdprNotice": "Seus dados serão retidos conforme nossa política de privacidade. Você pode solicitar a exclusão dos dados a qualquer momento.",
+        "confirm": "Sim, Cancelar",
+        "keep": "Manter Assinatura"
+      },
+      "cancellationPending": "Cancelada — acesso até {{date}}",
+      "cancelling": "Cancelando...",
+      "cancelSuccess": "Assinatura cancelada com sucesso",
+      "cancelError": "Falha ao cancelar a assinatura. Tente novamente."
     },
     "aiAccounts": {
       "title": "Contas com IA Ativada",

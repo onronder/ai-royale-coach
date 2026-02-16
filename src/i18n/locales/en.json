@@ -1341,7 +1341,21 @@
       "subscribe": "Subscribe to Pro",
       "active": "Active",
       "inactive": "No Subscription",
-      "trial": "Trial ({{days}} days left)"
+      "trial": "Trial ({{days}} days left)",
+      "cancelTrial": "Cancel Trial",
+      "cancelSubscription": "Cancel My Subscription",
+      "cancelConfirm": {
+        "title": "Cancel Subscription?",
+        "trialDescription": "If you cancel now, you won't be charged when your trial ends on {{date}}. You'll keep access until then.",
+        "activeDescription": "Your subscription will remain active until {{date}}. After that, AI features will be disabled. You won't be charged again.",
+        "gdprNotice": "Your data will be retained per our privacy policy. You can request data deletion at any time.",
+        "confirm": "Yes, Cancel",
+        "keep": "Keep Subscription"
+      },
+      "cancellationPending": "Cancelled — access until {{date}}",
+      "cancelling": "Cancelling...",
+      "cancelSuccess": "Subscription cancelled successfully",
+      "cancelError": "Failed to cancel subscription. Please try again."
     },
     "aiAccounts": {
       "title": "AI-Enabled Accounts",

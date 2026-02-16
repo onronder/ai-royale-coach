@@ -68,6 +68,17 @@ export function useSubscription() {
     },
   });
 
+  const cancelSubscriptionMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('cancel-subscription');
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-status'] });
+    },
+  });
+
   return {
     status: data,
     isLoading,
@@ -82,5 +93,7 @@ export function useSubscription() {
     needsAISelection: data?.subscription?.needsAISelection ?? false,
     createCheckout: createCheckoutMutation.mutateAsync,
     isCreatingCheckout: createCheckoutMutation.isPending,
+    cancelSubscription: cancelSubscriptionMutation.mutateAsync,
+    isCancelling: cancelSubscriptionMutation.isPending,
   };
 }
