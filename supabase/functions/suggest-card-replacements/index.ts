@@ -41,7 +41,8 @@ serve(async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const hasAccess = subscription?.status === 'active' || isTrialActive;
+    const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
+    const hasAccess = isAdminUser === true || subscription?.status === 'active' || isTrialActive;
 
     if (!hasAccess) {
       return errorResponse('Subscription required for AI suggestions', 403, { subscription_required: true });

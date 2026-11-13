@@ -262,7 +262,8 @@ serve(async (req) => {
     const now = new Date();
     const isTrialActive = userProfile?.trial_ends_at && 
       new Date(userProfile.trial_ends_at) > now;
-    const hasAccess = subscriptionData?.status === 'active' || isTrialActive;
+    const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
+    const hasAccess = isAdminUser === true || subscriptionData?.status === 'active' || isTrialActive;
 
     // Helper to normalize player tags (database stores without #)
     const normalizePlayerTag = (tag: string): string => {
