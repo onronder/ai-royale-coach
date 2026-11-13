@@ -85,10 +85,16 @@ serve(async (req) => {
       subscription.current_period_end && 
       new Date(subscription.current_period_end) > now;
 
-    const accountSlots = subscription?.account_slots || (isTrialActive ? 3 : 0);
+    // Admins always have full access (server-side check against admin_roles)
+    const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
+    const isAdmin = isAdminUser === true;
+
+    const accountSlots = isAdmin
+      ? Math.max(subscription?.account_slots || 0, 10)
+      : subscription?.account_slots || (isTrialActive ? 3 : 0);
 
     // Determine access level
-    const hasAccess = hasActiveSubscription || isTrialActive || cancelledButActive;
+    const hasAccess = isAdmin || hasActiveSubscription || isTrialActive || cancelledButActive;
 
     return jsonResponse({
       hasAccess,
