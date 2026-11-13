@@ -75,7 +75,7 @@ export function DreamArenaView({
   
   const logEndRef = useRef<HTMLDivElement>(null);
   const hasTriggeredConfetti = useRef(false);
-  const activeCardTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const activeCardTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Get current frame data
   const currentFrame = simulationResult.timeline[currentTick] ?? simulationResult.timeline[simulationResult.timeline.length - 1];

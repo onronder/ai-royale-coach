@@ -13,7 +13,7 @@ interface ApiRequestLog {
 class ApiMetricsLogger {
   private static instance: ApiMetricsLogger;
   private buffer: ApiRequestLog[] = [];
-  private flushInterval: NodeJS.Timeout | null = null;
+  private flushInterval: ReturnType<typeof setTimeout> | null = null;
   private isEnabled = false;
   private userId: string | null = null;
 
