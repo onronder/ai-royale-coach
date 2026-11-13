@@ -2,6 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
 
 interface MatchAnalysisRequest {
@@ -72,10 +73,16 @@ serve(async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
-    const hasAccess = isAdminUser === true || subscription?.status === 'active' || isTrialActive;
+    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-match');
+    const hasAccess = aiAccess.allowed;
 
     if (!hasAccess) {
+
+      if (aiAccess.trialLimitReached) {
+
+        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
+
+      }
       return errorResponse('Subscription required for AI match analysis', 403, { subscription_required: true });
     }
 

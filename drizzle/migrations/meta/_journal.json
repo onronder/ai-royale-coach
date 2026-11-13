@@ -8,6 +8,13 @@
       "when": 1794546514105,
       "tag": "0000_scope_logs_and_claims_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794547341359,
+      "tag": "0001_protect_ai_trial_usage_logs",
+      "breakpoints": true
     }
   ]
 }
