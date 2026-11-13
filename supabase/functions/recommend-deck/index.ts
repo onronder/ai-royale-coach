@@ -262,8 +262,8 @@ serve(async (req) => {
     const now = new Date();
     const isTrialActive = userProfile?.trial_ends_at && 
       new Date(userProfile.trial_ends_at) > now;
-    const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
-    const hasAccess = isAdminUser === true || subscriptionData?.status === 'active' || isTrialActive;
+    const aiAccess = await checkAiAccess(supabase, user.id, 'recommend-deck');
+    const hasAccess = aiAccess.allowed;
 
     // Helper to normalize player tags (database stores without #)
     const normalizePlayerTag = (tag: string): string => {
@@ -273,7 +273,7 @@ serve(async (req) => {
     const normalizedPlayerTag = normalizePlayerTag(playerTag);
 
     // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
-    if (!isTrialActive) {
+    if (!isTrialActive && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')
@@ -287,6 +287,12 @@ serve(async (req) => {
     }
 
     if (!hasAccess) {
+
+      if (aiAccess.trialLimitReached) {
+
+        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
+
+      }
       return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
