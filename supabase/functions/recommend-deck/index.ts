@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
 import { logger } from '../_shared/logger.ts';
+import { checkAiAccess } from '../_shared/ai-access.ts';
 
 // ============= Types =============
 
