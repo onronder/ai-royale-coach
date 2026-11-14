@@ -1,7 +1,8 @@
-# Phase 2 — First-session coaching
-- [x] Separate profile and battle cache freshness and verify match identity with rule tests.
-- [x] Exempt automatic profile summary from the trial choice; reserve/complete trial usage atomically.
-- [x] Persist one-card coaching task with one included follow-up and generation usage metrics.
-- [x] Match the first new battle for the correct tag and recommended deck; show result or waiting state.
-- [x] Localize task UI in five languages and verify desktop/tablet/mobile.
-- [ ] Finish live trial quota/expiry and completed-match verification — requires a chosen non-admin trial account and a newly played qualifying game; admin generation/follow-up/waiting flow verified, 34 rule tests passed.
+# Roadmap
+- [x] Returning visitors move to the latest version (old offline cache removed)
+- [x] Late "ended" notification cannot close a newer subscription
+- [x] Revenue card: net, paid-only; first payment tied to the trial's subscription
+- [x] Expired players read their saved summary
+- [x] Home-page tag carried through sign-up; trial wording fixed in 5 languages; clean install works
+- [ ] Polar upcoming-charge email setting — check in Polar dashboard (owner)
+- [ ] End-to-end trial test with a non-admin trial account and a real match (needs a test account + a match played)
