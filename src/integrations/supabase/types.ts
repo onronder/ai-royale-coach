@@ -180,6 +180,7 @@ export type Database = {
           feature: string
           id: string
           request_key: string
+          response_data: Json | null
           status: string
           user_id: string
         }
@@ -189,6 +190,7 @@ export type Database = {
           feature: string
           id?: string
           request_key: string
+          response_data?: Json | null
           status?: string
           user_id: string
         }
@@ -198,6 +200,7 @@ export type Database = {
           feature?: string
           id?: string
           request_key?: string
+          response_data?: Json | null
           status?: string
           user_id?: string
         }
@@ -1856,6 +1859,10 @@ export type Database = {
         Returns: Json
       }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
+      write_player_cache: {
+        Args: { p_data: Json; p_tag: string; p_type: string }
+        Returns: undefined
+      }
     }
     Enums: {
       admin_role: "admin" | "moderator" | "support"
