@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import { strict as assert } from 'node:assert';
-import { firstTrialAnalysisTag } from './automaticTrialAnalysis';
+import { firstTrialAnalysisTag } from '../src/lib/automaticTrialAnalysis';
 
 const trial = { status: 'trialing', isTrialActive: true, hasPreviousUsage: false, playerTags: ['ABC123'] };
 describe('automatic first trial analysis', () => {
