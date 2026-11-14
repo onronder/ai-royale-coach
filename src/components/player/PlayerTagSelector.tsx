@@ -286,9 +286,9 @@ function PlayerTagCard({
       style={{ animationDelay: `${index * 100}ms` }}
       onClick={onSelect}
     >
-      <CardContent className="p-4 sm:p-5">
-        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold/30 shadow-lg overflow-hidden">
+      <CardContent className="p-4 sm:p-5 lg:p-6">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 min-h-[88px] sm:min-h-[96px]">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] shrink-0 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold/30 shadow-lg overflow-hidden">
             {badgeUrl && !imageError ? (
               <img src={badgeUrl} alt="Clan badge" className="w-[70%] h-[70%] object-contain" onError={() => setImageError(true)} />
             ) : (
@@ -297,10 +297,10 @@ function PlayerTagCard({
           </div>
 
           <div className="min-w-0 space-y-1.5">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-              <h3 className="font-bold font-rajdhani text-lg sm:text-xl leading-tight truncate max-w-full">
-                {profile.player_name || `#${profile.player_tag}`}
-              </h3>
+            <h3 className="font-bold font-rajdhani text-lg sm:text-xl leading-tight truncate">
+              {profile.player_name || `#${profile.player_tag}`}
+            </h3>
+            <div className="flex flex-wrap items-center gap-1.5 min-w-0">
               {profile.player_name && (
                 <Badge variant="secondary" className="text-[11px] sm:text-xs font-mono bg-secondary/50 leading-none py-1">
                   #{profile.player_tag}
@@ -317,7 +317,7 @@ function PlayerTagCard({
               </Tooltip>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground min-w-0">
               {profile.trophies !== undefined && (
                 <span className="inline-flex items-center gap-1.5">
                   <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gold shrink-0" />
