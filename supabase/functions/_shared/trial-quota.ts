@@ -23,7 +23,10 @@ export async function withTrialQuota(req: Request, feature: string, handler: (re
   if (cached?.response_data) return jsonResponse(cached.response_data);
   const {data:r,error} = await db.rpc('reserve_trial_ai',{p_user_id:user.id,p_request_key:requestKey,p_feature:feature});
   if (error) return errorResponse('Unable to reserve trial allowance',503);
-  if (!r?.allowed) return errorResponse(r?.in_progress ? 'Analysis already in progress' : 'Trial limit: 1 AI analysis per 24 hours',r?.in_progress?409:429,{trial_limit:!r?.in_progress,next_available_at:r?.next_available_at});
+  if (!r?.allowed) {
+    if(!r?.in_progress)await db.from('product_events').insert({user_id:user.id,event_name:'trial_quota_denied',props:{feature,next_available_at:r?.next_available_at}});
+    return errorResponse(r?.in_progress ? 'Analysis already in progress' : 'Trial limit: 1 AI analysis per 24 hours',r?.in_progress?409:429,{trial_limit:!r?.in_progress,next_available_at:r?.next_available_at});
+  }
   try {
     const response = await handler(req);
     if (!response.ok) { await db.rpc('finish_trial_ai',{p_id:r.id,p_success:false}); return response; }

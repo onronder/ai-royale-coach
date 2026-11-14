@@ -18,7 +18,7 @@ export interface AiAccessResult {
  * - admin: unlimited
  * - active subscription: allowed (feature-specific quotas still apply)
  * - Polar trialing (or legacy grace trial): 1 AI request per 24h, shared across all AI features
- * Records the trial usage when a trial request is allowed.
+ * Checks entitlement; trial generation is reserved atomically by withTrialQuota.
  */
 export async function checkAiAccess(supabase: any, userId: string, feature: string, consumeTrialUsage = false): Promise<AiAccessResult> {
   const base = { allowed: false, isAdmin: false, isPaid: false, isTrial: false, trialLimitReached: false, nextAvailableAt: null };
