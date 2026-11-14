@@ -1,3 +1,4 @@
+import { isStaleEndEvent } from '../_shared/subscription-events.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
@@ -739,6 +740,20 @@ serve(async (req) => {
 
         log('info', `Processing ${event.type}`, { userId });
 
+        // A late end/revoke for an older subscription must not close a newer one.
+        const { data: currentSub } = await supabase
+          .from('user_subscriptions')
+          .select('polar_subscription_id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (isStaleEndEvent(currentSub?.polar_subscription_id, subscription?.id)) {
+          log('info', 'Ignoring end event for a non-current subscription', {
+            userId, eventSub: subscription?.id, currentSub: currentSub?.polar_subscription_id,
+          });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'ignored', 'stale: not the current subscription');
+          break;
+        }
+
         // Disable AI on all profiles
         const { error: disableError } = await supabase
           .from('player_profiles')
@@ -833,7 +848,9 @@ serve(async (req) => {
             user_id: orderUserId,
             customer_id: order.customer_id || order.customer?.id || null,
             subscription_id: order.subscription_id || null,
-            amount: order.total_amount ?? order.net_amount ?? order.amount ?? 0,
+            amount: order.net_amount ?? order.amount ?? order.total_amount ?? 0,
+            gross_amount: order.total_amount ?? null,
+            tax_amount: order.tax_amount ?? null,
             currency: order.currency || null,
             billing_reason: order.billing_reason || null,
             status: event.type === 'order.refunded' ? 'refunded' : (order.status || (order.paid ? 'paid' : null)),
@@ -842,7 +859,7 @@ serve(async (req) => {
           if (oErr) log('warn', 'Failed to record order', { error: oErr.message });
         }
         await logWebhookEvent(supabase, event.type, order?.id, orderUserId, 'processed', undefined, {
-          orderId: order?.id, amount: order?.total_amount ?? order?.amount, billingReason: order?.billing_reason,
+          orderId: order?.id, amount: order?.net_amount ?? order?.amount, billingReason: order?.billing_reason,
         });
         break;
       }
