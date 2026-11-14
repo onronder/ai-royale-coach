@@ -476,7 +476,7 @@ export default function DreamArena() {
         <AppSidebar
           activeTab="arena"
           activeSubTab=""
-          onTabChange={() => navigate(`/player/${playerTag}`)}
+          onTabChange={(tab) => navigate(`/player/${playerTag.replace(/^#/, '')}`, { state: { tab } })}
           onSubTabChange={() => navigate(`/player/${playerTag}`)}
           playerTag={playerTag}
           playerName={playerData?.name}

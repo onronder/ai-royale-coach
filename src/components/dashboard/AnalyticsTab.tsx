@@ -16,7 +16,7 @@ export function AnalyticsTab({ playerTag }: AnalyticsTabProps) {
   return (
     <PageTransition delay={100}>
       <Tabs defaultValue="deckstats" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-4 [&>button]:min-h-11">
           <TabsTrigger value="deckstats">{t('dashboard.analytics.deckStats')}</TabsTrigger>
           <TabsTrigger value="mastery">{t('dashboard.analytics.cardMastery')}</TabsTrigger>
           <TabsTrigger value="predictions">{t('dashboard.analytics.predictions')}</TabsTrigger>

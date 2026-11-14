@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
@@ -58,15 +58,19 @@ const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   
+  const { state: destination } = useLocation();
+
   // State for dialogs and interactions
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
-  const [dnaOpen, setDnaOpen] = useState(false);
-  const [achievementsOpen, setAchievementsOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [dnaOpen, setDnaOpen] = useState(destination?.panel === "dna");
+  const [achievementsOpen, setAchievementsOpen] = useState(destination?.panel === "achievements");
+  const [helpOpen, setHelpOpen] = useState(destination?.panel === "help");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState("coach");
+  const [activeTab, setActiveTab] = useState(
+    destination?.tab === "deck" || destination?.tab === "social" ? String(destination.tab) : "coach"
+  );
   const [activeSubTab, setActiveSubTab] = useState("overview");
   
   // Custom hooks for data management

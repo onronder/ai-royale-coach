@@ -191,7 +191,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
         {/* Rarity Filter Tabs */}
         <Tabs value={selectedRarity} onValueChange={setSelectedRarity}>
-          <TabsList className="w-full grid grid-cols-6">
+          <TabsList className="grid h-auto w-full grid-cols-3 gap-1 sm:grid-cols-6 [&>button]:min-h-11">
             <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
             <TabsTrigger value="common">
               {t('cardCollection.common')} ({rarityStats.common})

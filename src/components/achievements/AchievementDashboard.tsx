@@ -180,7 +180,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
 
       {/* Achievement Categories */}
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-card/50">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 bg-card/50 sm:grid-cols-5 [&>button]:min-h-11">
           <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
           <TabsTrigger value="skill">{t('achievements.skills')}</TabsTrigger>
           <TabsTrigger value="mastery">{t('achievements.mastery')}</TabsTrigger>
