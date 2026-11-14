@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock, Timer } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, type Locale } from "date-fns";
+import { tr, es, fr, pt, enUS } from "date-fns/locale";
+
+const dateLocales: Record<string, Locale> = { tr, es, fr, pt, en: enUS };
 import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePlayerProfiles";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -283,88 +286,76 @@ function PlayerTagCard({
       style={{ animationDelay: `${index * 100}ms` }}
       onClick={onSelect}
     >
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
-            {/* Avatar with Clan Badge */}
-            <div className="w-16 h-16 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold/30 shadow-lg flex-shrink-0 overflow-hidden">
-              {badgeUrl && !imageError ? (
-                <img 
-                  src={badgeUrl} 
-                  alt="Clan badge"
-                  className="w-12 h-12 object-contain"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <Crown className="h-8 w-8 text-gold-foreground" />
-              )}
-            </div>
-            
-            {/* Player Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold font-rajdhani text-xl truncate">
-                    {profile.player_name || `#${profile.player_tag}`}
-                  </h3>
-                  {profile.player_name && (
-                    <Badge variant="secondary" className="text-xs font-mono bg-secondary/50">
-                      #{profile.player_tag}
-                    </Badge>
-                  )}
-                  {/* AI Status Badge */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge 
-                        variant="outline"
-                        className={cn("text-xs gap-1", badgeConfig.className)}
-                      >
-                        <BadgeIcon className="h-3 w-3" />
-                        {badgeConfig.text}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      {badgeConfig.tooltip}
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              
-              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                {profile.trophies !== undefined && (
-                  <div className="flex items-center gap-1.5">
-                    <Trophy className="h-4 w-4 text-gold trophy-shimmer" />
-                    <span className="font-semibold text-foreground">{profile.trophies.toLocaleString()}</span>
-                  </div>
-                )}
-                {profile.arena_name && (
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-4 w-4 text-royal" />
-                    <span className="truncate">{profile.arena_name}</span>
-                  </div>
-                )}
-                {profile.clan_name && (
-                  <div className="flex items-center gap-1.5">
-                    <Users className="h-4 w-4 text-primary" />
-                    <span className="truncate">{profile.clan_name}</span>
-                  </div>
-                )}
-              </div>
-              
-              {profile.last_seen_at && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
-                  <Clock className="h-3 w-3" />
-                  <span>{t('selectPlayer.lastUsed')} {formatDistanceToNow(new Date(profile.last_seen_at), { addSuffix: true })}</span>
-                </div>
-              )}
-            </div>
+      <CardContent className="p-4 sm:p-5">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold/30 shadow-lg overflow-hidden">
+            {badgeUrl && !imageError ? (
+              <img src={badgeUrl} alt="Clan badge" className="w-[70%] h-[70%] object-contain" onError={() => setImageError(true)} />
+            ) : (
+              <Crown className="h-7 w-7 sm:h-8 sm:w-8 text-gold-foreground" />
+            )}
           </div>
-          
-          {/* Actions */}
+
+          <div className="min-w-0 space-y-1.5">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+              <h3 className="font-bold font-rajdhani text-lg sm:text-xl leading-tight truncate max-w-full">
+                {profile.player_name || `#${profile.player_tag}`}
+              </h3>
+              {profile.player_name && (
+                <Badge variant="secondary" className="text-[11px] sm:text-xs font-mono bg-secondary/50 leading-none py-1">
+                  #{profile.player_tag}
+                </Badge>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className={cn("text-[11px] sm:text-xs gap-1 leading-none py-1 whitespace-nowrap", badgeConfig.className)}>
+                    <BadgeIcon className="h-3 w-3" />
+                    {badgeConfig.text}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>{badgeConfig.tooltip}</TooltipContent>
+              </Tooltip>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+              {profile.trophies !== undefined && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gold shrink-0" />
+                  <span className="font-semibold text-foreground tabular-nums">{profile.trophies.toLocaleString()}</span>
+                </span>
+              )}
+              {profile.arena_name && (
+                <span className="inline-flex items-center gap-1.5 min-w-0 max-w-full">
+                  <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-royal shrink-0" />
+                  <span className="truncate">{profile.arena_name}</span>
+                </span>
+              )}
+              {profile.clan_name && (
+                <span className="inline-flex items-center gap-1.5 min-w-0 max-w-full">
+                  <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary shrink-0" />
+                  <span className="truncate">{profile.clan_name}</span>
+                </span>
+              )}
+            </div>
+
+            {profile.last_seen_at && (
+              <div className="flex items-center gap-1 text-[11px] sm:text-xs text-muted-foreground">
+                <Clock className="h-3 w-3 shrink-0" />
+                <span className="truncate">
+                  {t('selectPlayer.lastUsed')}{' '}
+                  {formatDistanceToNow(new Date(profile.last_seen_at), { addSuffix: true, locale: dateLocales[i18n.language?.slice(0, 2)] })}
+                </span>
+              </div>
+            )}
+          </div>
+
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="self-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={onRemove}
             disabled={isRemoving}
+            aria-label="Remove"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
