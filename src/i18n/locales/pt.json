@@ -1,6 +1,55 @@
 {
   "common": {
-    "dismiss": "Fechar"
+    "loading": "Carregando...",
+    "error": "Erro",
+    "retry": "Tentar Novamente",
+    "save": "Salvar",
+    "saving": "Salvando...",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "all": "Todos",
+    "none": "Nenhum",
+    "yes": "Sim",
+    "no": "Não",
+    "ok": "Ok",
+    "submit": "Enviar",
+    "reset": "Redefinir",
+    "refresh": "Atualizar",
+    "viewDetails": "Ver Detalhes",
+    "global": "Global",
+    "sending": "Enviando...",
+    "noData": "Dados não disponíveis",
+    "comingSoon": "Em Breve",
+    "unknown": "Desconhecido",
+    "viewMore": "Ver Mais",
+    "showLess": "Ver Menos",
+    "success": "Sucesso",
+    "aiPowered": "Com IA",
+    "elixir": "Elixir",
+    "trophies": "troféus",
+    "description": "Descrição",
+    "mayTakeMoment": "Isso pode levar um momento",
+    "pleaseWait": "Por favor aguarde enquanto processamos sua solicitação",
+    "pleaseWaitMoment": "Por favor aguarde um momento...",
+    "loadingDashboard": "Carregando seu painel",
+    "verifyingAuth": "Verificando autenticação",
+    "clickForHelp": "Clique para ajuda",
+    "vs": "vs",
+    "new": "NOVO",
+    "pro": "PRO",
+    "ai": "IA",
+    "searching": "Buscando...",
+    "locked": "Bloqueado",
+    "thisMayTakeMoment": "Isso pode levar um momento"
   },
   "announcement": {
     "new": "NOVO",
@@ -263,8 +312,16 @@
         "deckData": {
           "hogCycle": {
             "playstyle": "Pressão rápida com ciclo constante",
-            "strengths": ["Ciclo rápido", "Defesa versátil", "Dano chip"],
-            "weaknesses": ["Tropas de baixa vida", "Vulnerável a feitiços", "Requer habilidade"],
+            "strengths": [
+              "Ciclo rápido",
+              "Defesa versátil",
+              "Dano chip"
+            ],
+            "weaknesses": [
+              "Tropas de baixa vida",
+              "Vulnerável a feitiços",
+              "Requer habilidade"
+            ],
             "synergies": [
               "Ice Golem tanqueia e distrai defensores",
               "Sinergia defensiva perfeita vs tanques",
@@ -272,9 +329,21 @@
               "Incrível combo de ciclo e distração"
             ],
             "matchups": {
-              "golemBeatdown": ["Nunca dê valor para Lightning", "Pressione faixa oposta agressivamente", "Guarde Fireball para Night Witch"],
-              "logBait": ["Log na Princess, Fireball no Goblin Gang", "Mantenha pressão para prevenir ciclo de Rocket", "Preveja posicionamentos de Goblin Barrel"],
-              "xbowSiege": ["Pressione mesma faixa do X-Bow para prevenir locks", "Fireball nas construções defensivas", "Cicle mais rápido do que podem defender"]
+              "golemBeatdown": [
+                "Nunca dê valor para Lightning",
+                "Pressione faixa oposta agressivamente",
+                "Guarde Fireball para Night Witch"
+              ],
+              "logBait": [
+                "Log na Princess, Fireball no Goblin Gang",
+                "Mantenha pressão para prevenir ciclo de Rocket",
+                "Preveja posicionamentos de Goblin Barrel"
+              ],
+              "xbowSiege": [
+                "Pressione mesma faixa do X-Bow para prevenir locks",
+                "Fireball nas construções defensivas",
+                "Cicle mais rápido do que podem defender"
+              ]
             },
             "phase1": {
               "name": "Fundamentos (Semana 1-2)",
@@ -306,8 +375,16 @@
           },
           "golemBeatdown": {
             "playstyle": "Pushes pesados com força esmagadora",
-            "strengths": ["Alto dano", "Destruição de torres", "Sinergia de dano de morte"],
-            "weaknesses": ["Caro", "Ciclo lento", "Vulnerável a pressão"],
+            "strengths": [
+              "Alto dano",
+              "Destruição de torres",
+              "Sinergia de dano de morte"
+            ],
+            "weaknesses": [
+              "Caro",
+              "Ciclo lento",
+              "Vulnerável a pressão"
+            ],
             "synergies": [
               "Sinergia de spawn de morte cria push imparável",
               "Ativa Torre do Rei e limpa defesas",
@@ -315,9 +392,21 @@
               "Rage na morte acelera o push"
             ],
             "matchups": {
-              "hogCycle": ["Ignore o dano chip deles", "Construa grandes pushes no elixir duplo", "Lightning nas estruturas defensivas"],
-              "logBait": ["Baby Dragon countera os swarms deles", "Lightning na Inferno Tower", "Pushe através do chip de Rocket deles"],
-              "xbowSiege": ["Tanqueie dano do X-Bow com Golem", "Lightning no Tesla + Archers", "Eles não podem parar o dano de morte"]
+              "hogCycle": [
+                "Ignore o dano chip deles",
+                "Construa grandes pushes no elixir duplo",
+                "Lightning nas estruturas defensivas"
+              ],
+              "logBait": [
+                "Baby Dragon countera os swarms deles",
+                "Lightning na Inferno Tower",
+                "Pushe através do chip de Rocket deles"
+              ],
+              "xbowSiege": [
+                "Tanqueie dano do X-Bow com Golem",
+                "Lightning no Tesla + Archers",
+                "Eles não podem parar o dano de morte"
+              ]
             },
             "phase1": {
               "name": "Fundamentos (Semana 1-2)",
@@ -349,8 +438,16 @@
           },
           "logBait": {
             "playstyle": "Jogo reativo com táticas de bait de feitiços",
-            "strengths": ["Força trocas ruins", "Defesa forte", "Jogadas de previsão"],
-            "weaknesses": ["Timing de feitiços crucial", "Early game passivo", "Dependente de Princess"],
+            "strengths": [
+              "Força trocas ruins",
+              "Defesa forte",
+              "Jogadas de previsão"
+            ],
+            "weaknesses": [
+              "Timing de feitiços crucial",
+              "Early game passivo",
+              "Dependente de Princess"
+            ],
             "synergies": [
               "A combinação definitiva de Log bait",
               "Força o oponente a escolher o que logar",
@@ -358,9 +455,21 @@
               "Estratégia de acumulação de dano chip"
             ],
             "matchups": {
-              "hogCycle": ["Inferno Tower countera Hog perfeitamente", "Baite o Log deles antes do Goblin Barrel", "Ciclo de Rocket para vitórias no overtime"],
-              "golemBeatdown": ["Inferno Tower é sua única resposta", "Rocket nas tropas de suporte", "Barrel na faixa oposta para chip"],
-              "xbowSiege": ["Knight tanqueia tiros do X-Bow", "Rocket no setup defensivo deles", "Princess força reações"]
+              "hogCycle": [
+                "Inferno Tower countera Hog perfeitamente",
+                "Baite o Log deles antes do Goblin Barrel",
+                "Ciclo de Rocket para vitórias no overtime"
+              ],
+              "golemBeatdown": [
+                "Inferno Tower é sua única resposta",
+                "Rocket nas tropas de suporte",
+                "Barrel na faixa oposta para chip"
+              ],
+              "xbowSiege": [
+                "Knight tanqueia tiros do X-Bow",
+                "Rocket no setup defensivo deles",
+                "Princess força reações"
+              ]
             },
             "phase1": {
               "name": "Fundamentos (Semana 1-2)",
@@ -392,8 +501,16 @@
           },
           "xbowSiege": {
             "playstyle": "Locks de X-Bow defensivos com dano chip",
-            "strengths": ["Vantagem de alcance", "Defesa forte", "Força reações"],
-            "weaknesses": ["Dependente de matchup", "Alto skill cap", "Compromisso pesado"],
+            "strengths": [
+              "Vantagem de alcance",
+              "Defesa forte",
+              "Força reações"
+            ],
+            "weaknesses": [
+              "Dependente de matchup",
+              "Alto skill cap",
+              "Compromisso pesado"
+            ],
             "synergies": [
               "Tesla protege X-Bow de tanques",
               "Ice Golem tanqueia, Archers DPS",
@@ -401,9 +518,21 @@
               "Cartas de ciclo que distraem efetivamente"
             ],
             "matchups": {
-              "hogCycle": ["Defenda com Tesla, não comprometa X-Bow", "Fireball + Log para dano chip", "Out-cicle o Fireball deles"],
-              "golemBeatdown": ["Pressione faixa oposta constantemente", "Nunca deixe construir pushes", "Fireball nas tropas de suporte"],
-              "logBait": ["Archers para Princess", "Log nos swarms deles", "Fireball + Log no Goblin Gang"]
+              "hogCycle": [
+                "Defenda com Tesla, não comprometa X-Bow",
+                "Fireball + Log para dano chip",
+                "Out-cicle o Fireball deles"
+              ],
+              "golemBeatdown": [
+                "Pressione faixa oposta constantemente",
+                "Nunca deixe construir pushes",
+                "Fireball nas tropas de suporte"
+              ],
+              "logBait": [
+                "Archers para Princess",
+                "Log nos swarms deles",
+                "Fireball + Log no Goblin Gang"
+              ]
             },
             "phase1": {
               "name": "Fundamentos (Semana 1-2)",
@@ -751,27 +880,52 @@
             "yourBattles": {
               "title": "Suas Batalhas",
               "description": "Cada partida que você joga é uma fonte de dados. Analisamos suas batalhas recentes para entender seu estilo de jogo, pontos fortes e áreas de melhoria.",
-              "details": ["Rastreamento de vitórias/derrotas", "Padrões de uso de decks", "Progressão de troféus", "Desempenho em coroas"]
+              "details": [
+                "Rastreamento de vitórias/derrotas",
+                "Padrões de uso de decks",
+                "Progressão de troféus",
+                "Desempenho em coroas"
+              ]
             },
             "apiSync": {
               "title": "Sincronização API",
               "description": "Sincronizamos de forma segura com a API oficial do Clash Royale para buscar seus dados de batalha mais recentes, coleção de cartas e perfil do jogador em tempo real.",
-              "details": ["Atualizações em tempo real", "Conexão segura", "Sync de inventário", "Recuperação do histórico"]
+              "details": [
+                "Atualizações em tempo real",
+                "Conexão segura",
+                "Sync de inventário",
+                "Recuperação do histórico"
+              ]
             },
             "aiAnalysis": {
               "title": "Análise IA",
               "description": "Nossos modelos avançados de IA analisam seus dados, identificando padrões, calculando previsões de confrontos e gerando insights estratégicos.",
-              "details": ["Reconhecimento de padrões", "Cálculos de confrontos", "Comparações de meta", "Modelagem estratégica"]
+              "details": [
+                "Reconhecimento de padrões",
+                "Cálculos de confrontos",
+                "Comparações de meta",
+                "Modelagem estratégica"
+              ]
             },
             "playerProfile": {
               "title": "Perfil do Jogador",
               "description": "Construímos um perfil abrangente do seu gameplay, rastreando seus arquétipos preferidos, níveis de maestria de cartas e progressão de habilidades.",
-              "details": ["Preferências de arquétipos", "Avaliação de habilidades", "Rastreamento de maestria", "Histórico de progresso"]
+              "details": [
+                "Preferências de arquétipos",
+                "Avaliação de habilidades",
+                "Rastreamento de maestria",
+                "Histórico de progresso"
+              ]
             },
             "insights": {
               "title": "Insights Personalizados",
               "description": "Receba recomendações personalizadas, sugestões de decks e dicas de coaching especialmente projetadas para seu estilo de jogo e faixa de troféus.",
-              "details": ["Recomendações de decks", "Coaching direcionado", "Áreas de melhoria", "Dicas de adaptação ao meta"]
+              "details": [
+                "Recomendações de decks",
+                "Coaching direcionado",
+                "Áreas de melhoria",
+                "Dicas de adaptação ao meta"
+              ]
             }
           }
         },
@@ -1243,58 +1397,6 @@
     "globalRankingsFailed": "Erro ao carregar rankings globais de clãs",
     "enterSearchQuery": "Por favor insira uma busca",
     "searchFailed": "Erro ao buscar clãs"
-  },
-  "common": {
-    "loading": "Carregando...",
-    "error": "Erro",
-    "retry": "Tentar Novamente",
-    "save": "Salvar",
-    "saving": "Salvando...",
-    "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "delete": "Excluir",
-    "edit": "Editar",
-    "close": "Fechar",
-    "back": "Voltar",
-    "next": "Próximo",
-    "previous": "Anterior",
-    "search": "Buscar",
-    "filter": "Filtrar",
-    "sort": "Ordenar",
-    "all": "Todos",
-    "none": "Nenhum",
-    "yes": "Sim",
-    "no": "Não",
-    "ok": "Ok",
-    "submit": "Enviar",
-    "reset": "Redefinir",
-    "refresh": "Atualizar",
-    "viewDetails": "Ver Detalhes",
-    "global": "Global",
-    "sending": "Enviando...",
-    "noData": "Dados não disponíveis",
-    "comingSoon": "Em Breve",
-    "unknown": "Desconhecido",
-    "viewMore": "Ver Mais",
-    "showLess": "Ver Menos",
-    "success": "Sucesso",
-    "aiPowered": "Com IA",
-    "elixir": "Elixir",
-    "trophies": "troféus",
-    "description": "Descrição",
-    "mayTakeMoment": "Isso pode levar um momento",
-    "pleaseWait": "Por favor aguarde enquanto processamos sua solicitação",
-    "pleaseWaitMoment": "Por favor aguarde um momento...",
-    "loadingDashboard": "Carregando seu painel",
-    "verifyingAuth": "Verificando autenticação",
-    "clickForHelp": "Clique para ajuda",
-    "vs": "vs",
-    "new": "NOVO",
-    "pro": "PRO",
-    "ai": "IA",
-    "searching": "Buscando...",
-    "locked": "Bloqueado",
-    "thisMayTakeMoment": "Isso pode levar um momento"
   },
   "loadingMessages": {
     "playerData": "Carregando dados do jogador...",
@@ -1786,29 +1888,29 @@
     }
   },
   "achievements": {
-    "title": "Centro de Conquistas",
+    "title": "Conquistas",
+    "subtitle": "Suas conquistas de batalha",
     "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
     "syncProgress": "Sincronizar Progresso",
-    "unlocked": "Conquista Desbloqueada!",
-    "points": "pts",
+    "unlocked": "Desbloqueadas",
     "masteryPoints": "Pontos de Maestria",
     "learningPhase": "Fase de Aprendizado",
     "beginner": "Iniciante",
+    "intermediate": "Intermediário",
+    "advanced": "Avançado",
     "completion": "Conclusão",
     "skillBreakdown": "Detalhamento de Habilidades",
-    "skillBreakdownDescription": "Suas classificações de habilidades atuais por categoria",
+    "skillBreakdownDescription": "Seu desempenho em diferentes áreas de habilidade",
     "skills": "Habilidades",
     "mastery": "Maestria",
     "learning": "Aprendizado",
     "milestones": "Marcos",
-    "unlockedCount": "Desbloqueadas ({{count}})",
-    "inProgress": "Em Progresso ({{count}})",
+    "unlockedCount": "{{count}} Desbloqueadas",
+    "inProgress": "{{count}} Em Progresso",
     "progress": "Progresso",
     "pts": "pts",
-    "unlockedOn": "Desbloqueado {{date}}",
-    "unlockedNew": "Você desbloqueou uma nova conquista!",
-    "synced": "Conquistas Sincronizadas",
-    "syncedMessage": "Seu progresso de conquistas foi atualizado"
+    "points": "pontos",
+    "unlockedOn": "Desbloqueado em {{date}}"
   },
   "analytics": {
     "winRateTrends": "Tendências de Vitória",
@@ -2335,16 +2437,6 @@
     "proFeature": "Recurso PRO",
     "proUpgradeMessage": "Atualize para PRO para desbloquear Previsões de Partida ao Vivo."
   },
-  "achievements": {
-    "title": "Conquistas",
-    "subtitle": "Suas conquistas de batalha",
-    "share": "Compartilhar Vitrine de Troféus",
-    "shared": "Vitrine de Troféus compartilhada!",
-    "downloaded": "Vitrine de Troféus salva!",
-    "shareFailed": "Falha ao compartilhar",
-    "trophyCase": "Vitrine de Troféus",
-    "badgesEarned": "Distintivos Ganhos"
-  },
   "commonExtra": {
     "vs": "vs",
     "new": "NOVO",
@@ -2459,31 +2551,6 @@
     "fallbackNotice": "Rankings ao vivo indisponíveis. Mostrando Lendas de Todos os Tempos.",
     "usingSimDeck": "Usando deck simulado para esta lenda."
   },
-  "achievements": {
-    "title": "Conquistas",
-    "subtitle": "Suas conquistas de batalha",
-    "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
-    "syncProgress": "Sincronizar Progresso",
-    "unlocked": "Desbloqueadas",
-    "masteryPoints": "Pontos de Maestria",
-    "learningPhase": "Fase de Aprendizado",
-    "beginner": "Iniciante",
-    "intermediate": "Intermediário",
-    "advanced": "Avançado",
-    "completion": "Conclusão",
-    "skillBreakdown": "Detalhamento de Habilidades",
-    "skillBreakdownDescription": "Seu desempenho em diferentes áreas de habilidade",
-    "skills": "Habilidades",
-    "mastery": "Maestria",
-    "learning": "Aprendizado",
-    "milestones": "Marcos",
-    "unlockedCount": "{{count}} Desbloqueadas",
-    "inProgress": "{{count}} Em Progresso",
-    "progress": "Progresso",
-    "pts": "pts",
-    "points": "pontos",
-    "unlockedOn": "Desbloqueado em {{date}}"
-  },
   "proPlayers": {
     "mohamedLight": {
       "playstyle": "Especialista em isca agressivo que pune cada erro com Barris de Goblins perfeitos",
@@ -2578,5 +2645,10 @@
       "text": "Pronto para experimentar esses recursos?",
       "button": "Comece Seu Teste Grátis"
     }
+  },
+  "trialLimit": {
+    "title": "Limite do teste atingido",
+    "description": "Contas de teste têm 1 análise de IA a cada 24 horas. Próxima disponível: {{time}}. Assine para acesso completo.",
+    "cta": "Assinar"
   }
 }
