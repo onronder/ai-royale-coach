@@ -2686,5 +2686,10 @@
     "title": "Deneme limitine ulaşıldı",
     "description": "Deneme hesapları 24 saatte 1 AI analizi yapabilir. Bir sonraki: {{time}}. Tam erişim için abone ol.",
     "cta": "Abone Ol"
+  },
+  "trialEnded": {
+    "title": "Deneme süreniz sona erdi",
+    "description": "Son analizinizi görüntülemeye devam edebilirsiniz. Yeni AI analizleri için abone olun.",
+    "cta": "Yeniden abone ol"
   }
 }

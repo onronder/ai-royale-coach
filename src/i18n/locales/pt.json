@@ -2650,5 +2650,10 @@
     "title": "Limite do teste atingido",
     "description": "Contas de teste têm 1 análise de IA a cada 24 horas. Próxima disponível: {{time}}. Assine para acesso completo.",
     "cta": "Assinar"
+  },
+  "trialEnded": {
+    "title": "Seu teste terminou",
+    "description": "Você ainda pode ver sua última análise. Assine para executar novas análises com IA.",
+    "cta": "Assinar novamente"
   }
 }

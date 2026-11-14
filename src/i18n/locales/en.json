@@ -2673,5 +2673,10 @@
     "title": "Trial limit reached",
     "description": "Trial accounts get 1 AI analysis every 24 hours. Next one available: {{time}}. Subscribe for full access.",
     "cta": "Subscribe"
+  },
+  "trialEnded": {
+    "title": "Your trial has ended",
+    "description": "You can still view your last analysis. Subscribe to run new AI analyses.",
+    "cta": "Subscribe again"
   }
 }

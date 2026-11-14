@@ -88,9 +88,9 @@ const App = () => {
                       <Route path="/maintenance" element={<Maintenance />} />
                       
                       {/* PROTECTED ROUTES - Subscription required */}
-                      <Route path="/select-player" element={<RequireSubscription><SelectPlayer /></RequireSubscription>} />
+                      <Route path="/select-player" element={<RequireSubscription allowReadOnlyAfterTrial><SelectPlayer /></RequireSubscription>} />
                       <Route path="/settings" element={<RequireSubscription><Settings /></RequireSubscription>} />
-                      <Route path="/player/:playerTag" element={<RequireSubscription><Dashboard /></RequireSubscription>} />
+                      <Route path="/player/:playerTag" element={<RequireSubscription allowReadOnlyAfterTrial><Dashboard /></RequireSubscription>} />
                       <Route path="/oracle" element={<RequireSubscription><Oracle /></RequireSubscription>} />
                       <Route path="/admin" element={<RequireSubscription><Admin /></RequireSubscription>} />
                       <Route path="/arena" element={<RequireSubscription><DreamArena /></RequireSubscription>} />
