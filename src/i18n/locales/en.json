@@ -786,7 +786,7 @@
       "ctaSubtitle": "Create a free account to plug in your player tag and unlock personalized AI coaching based on your actual battles.",
       "startFree": "Start Free Now",
       "backToHome": "Back to Home",
-      "noCreditCard": "✓ No credit card required ✓ Free to use",
+      "noCreditCard": "✓ Demo: no credit card needed ✓ Your own deck: 3-day trial, then $4.99/month",
       "aiFeatures": {
         "badge": "Advanced AI Technology",
         "title": "Powered by Advanced AI",
@@ -956,7 +956,7 @@
       "subtitle": "Join thousands of players improving their game with AI-powered coaching. Get personalized insights from your very first battle.",
       "primaryButton": "Get Started Free",
       "secondaryButton": "Try Demo First",
-      "trustText": "✓ No credit card required ✓ Set up in 2 minutes ✓ Cancel anytime"
+      "trustText": "✓ Card-free demo ✓ 3-day trial with your deck, then $4.99/month ✓ Turn off renewal anytime"
     }
   },
   "auth": {
@@ -1454,8 +1454,11 @@
       },
       "cancellationPending": "Cancelled — access until {{date}}",
       "cancelling": "Cancelling...",
-      "cancelSuccess": "Subscription cancelled successfully",
-      "cancelError": "Failed to cancel subscription. Please try again."
+      "cancelSuccess": "Renewal turned off — you won't be charged",
+      "cancelError": "Failed to cancel subscription. Please try again.",
+      "renewalOff": "Renewal is off — you won't be charged. You can keep playing until {{date}}.",
+      "resumeRenewal": "Turn renewal back on",
+      "resumeSuccess": "Renewal turned back on"
     },
     "aiAccounts": {
       "title": "AI-Enabled Accounts",
@@ -2080,7 +2083,7 @@
     "unlockFeature": "Unlock {{feature}}",
     "premiumDescription": "Get full access to AI coaching, deck analysis, and personalized recommendations.",
     "trialExpiredDescription": "Your free trial has ended. Subscribe to continue using AI features.",
-    "startFreeTrial": "Start 3-Day Free Trial",
+    "startFreeTrial": "Start 3-Day Trial · then $4.99/mo",
     "subscribePro": "Subscribe to Pro",
     "priceInfo": "$4.99/month • Cancel anytime",
     "trialStarted": "Your 3-day free trial has started!",

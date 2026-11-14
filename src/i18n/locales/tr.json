@@ -789,7 +789,7 @@
       "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zeka koçluğunu açmak için ücretsiz hesap oluştur.",
       "startFree": "Ücretsiz Başla",
       "backToHome": "Ana Sayfaya Dön",
-      "noCreditCard": "✓ Kredi kartı gerekmez ✓ Ücretsiz kullanım",
+      "noCreditCard": "✓ Demo: kredi kartı gerekmez ✓ Kendi desten: 3 gün deneme, ardından 4,99 USD/ay",
       "aiFeatures": {
         "badge": "Gelişmiş Yapay Zeka Teknolojisi",
         "title": "Gelişmiş Yapay Zeka ile Güçlendirilmiş",
@@ -958,7 +958,7 @@
       "subtitle": "Yapay zeka destekli koçlukla oyunlarını geliştiren binlerce oyuncuya katıl. İlk savaşından itibaren kişiselleştirilmiş içgörüler al.",
       "primaryButton": "Ücretsiz Başla",
       "secondaryButton": "Önce Demoyu Dene",
-      "trustText": "✓ Kredi kartı gerekmez ✓ 2 dakikada kur ✓ İstediğin zaman iptal et"
+      "trustText": "✓ Kartsız demo ✓ Kendi destenle 3 gün dene, ardından 4,99 USD/ay ✓ Yenilemeyi istediğin zaman kapat"
     }
   },
   "auth": {
@@ -1484,8 +1484,11 @@
       },
       "cancellationPending": "İptal edildi — {{date}} tarihine kadar erişim",
       "cancelling": "İptal ediliyor...",
-      "cancelSuccess": "Abonelik başarıyla iptal edildi",
-      "cancelError": "Abonelik iptal edilemedi. Lütfen tekrar deneyin."
+      "cancelSuccess": "Yenileme kapatıldı — ücret alınmayacak",
+      "cancelError": "Abonelik iptal edilemedi. Lütfen tekrar deneyin.",
+      "renewalOff": "Yenileme kapalı — ücret alınmayacak. {{date}} tarihine kadar oynayabilirsin.",
+      "resumeRenewal": "Yenilemeyi tekrar aç",
+      "resumeSuccess": "Yenileme tekrar açıldı"
     },
     "aiAccounts": {
       "title": "Yapay Zeka Etkin Hesaplar",
@@ -2099,7 +2102,7 @@
     "unlockFeature": "{{feature}} Kilidi Aç",
     "premiumDescription": "Yapay zeka koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
     "trialExpiredDescription": "Ücretsiz denemeniz sona erdi. Yapay zeka özelliklerini kullanmaya devam etmek için abone olun.",
-    "startFreeTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
+    "startFreeTrial": "3 Gün Dene · ardından 4,99 USD/ay",
     "subscribePro": "Pro'ya Abone Ol",
     "priceInfo": "$4.99/ay • İstediğiniz zaman iptal edin",
     "trialStarted": "3 günlük ücretsiz denemeniz başladı!",

@@ -791,7 +791,7 @@
       "ctaSubtitle": "Crea una cuenta gratuita para vincular tu etiqueta de jugador y desbloquear coaching IA personalizado basado en tus batallas reales.",
       "startFree": "Comenzar Gratis",
       "backToHome": "Volver al Inicio",
-      "noCreditCard": "✓ Sin tarjeta de crédito ✓ Gratis",
+      "noCreditCard": "✓ Demo: sin tarjeta de crédito ✓ Tu propio mazo: prueba de 3 días, luego 4,99 USD/mes",
       "aiFeatures": {
         "badge": "Tecnología IA Avanzada",
         "title": "Impulsado por IA Avanzada",
@@ -960,7 +960,7 @@
       "subtitle": "Únete a miles de jugadores mejorando su juego con coaching impulsado por IA. Obtén insights personalizados desde tu primera batalla.",
       "primaryButton": "Comenzar Gratis",
       "secondaryButton": "Probar Demo Primero",
-      "trustText": "✓ Sin tarjeta de crédito ✓ Configura en 2 minutos ✓ Cancela cuando quieras"
+      "trustText": "✓ Demo sin tarjeta ✓ Prueba de 3 días con tu mazo, luego 4,99 USD/mes ✓ Desactiva la renovación cuando quieras"
     }
   },
   "auth": {
@@ -1486,8 +1486,11 @@
       },
       "cancellationPending": "Cancelada — acceso hasta {{date}}",
       "cancelling": "Cancelando...",
-      "cancelSuccess": "Suscripción cancelada exitosamente",
-      "cancelError": "Error al cancelar la suscripción. Inténtalo de nuevo."
+      "cancelSuccess": "Renovación desactivada: no se te cobrará",
+      "cancelError": "Error al cancelar la suscripción. Inténtalo de nuevo.",
+      "renewalOff": "Renovación desactivada: no se te cobrará. Puedes seguir jugando hasta el {{date}}.",
+      "resumeRenewal": "Reactivar la renovación",
+      "resumeSuccess": "Renovación reactivada"
     },
     "aiAccounts": {
       "title": "Cuentas con IA Habilitada",
@@ -2112,7 +2115,7 @@
     "unlockFeature": "Desbloquear {{feature}}",
     "premiumDescription": "Obtén acceso completo al coaching de IA, análisis de mazos y recomendaciones personalizadas.",
     "trialExpiredDescription": "Tu prueba gratuita ha terminado. Suscríbete para seguir usando las funciones de IA.",
-    "startFreeTrial": "Iniciar Prueba Gratuita de 3 Días",
+    "startFreeTrial": "Prueba 3 días · luego 4,99 USD/mes",
     "subscribePro": "Suscribirse a Pro",
     "priceInfo": "$4.99/mes • Cancela cuando quieras",
     "trialStarted": "¡Tu prueba gratuita de 3 días ha comenzado!",
