@@ -107,7 +107,11 @@ export function useClashRoyalePlayer(playerTag: string | null) {
   return {
     ...query,
     forceRefresh: () => refresh(),
-    refreshAfterMatch: (snapshot?: TrophySnapshot) => refresh(snapshot, true),
+    refreshAfterMatch: async (snapshot?: TrophySnapshot) => {
+      // The coaching check updated the server's battle log; discard the pre-match list.
+      await queryClient.invalidateQueries({ queryKey: ['clash-battles', playerTag], exact: true });
+      return refresh(snapshot, true);
+    },
     lastUpdated: query.dataUpdatedAt ? new Date(query.dataUpdatedAt) : null,
   };
 }

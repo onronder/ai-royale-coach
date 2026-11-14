@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { latestLadderTrophies } from '../supabase/functions/_shared/coaching-match';
-import { withBattleTrophies } from '../src/lib/battleTrophies';
+import { withBattleTrophies, withRecentLadderTrophies } from '../src/lib/battleTrophies';
 
 const ladder = (time: string, before?: number, change?: number) => ({
   type: 'PvP', gameMode: { name: 'Ladder' }, battleTime: time,
@@ -20,6 +20,16 @@ describe('trophies after a coaching match', () => {
   it('does not infer an absolute total from a delta or an older battle', () => {
     assert.equal(latestLadderTrophies('P0LY', [win, ladder(loss.battleTime, undefined, 30)]), null);
     assert.equal(latestLadderTrophies('P0LY', [ladder(loss.battleTime, 6629)]), null);
+  });
+  it('reconciles a newly opened dashboard with the recent ladder log and ignores outdated battles', () => {
+    const profile = { tag: '#P0LY', trophies: 666, bestTrophies: 666 };
+    const battle = ladder('20261114T232948.000Z', 666, 30);
+    const opened = Date.parse('2026-11-14T23:31:00Z');
+    const current = withRecentLadderTrophies(profile, [battle], opened);
+    assert.deepEqual(current, { ...profile, trophies: 696, bestTrophies: 696 });
+    assert.equal(withRecentLadderTrophies(current, [battle], opened), current);
+    assert.equal(withRecentLadderTrophies(profile, [battle], opened + 300_000), profile);
+    assert.equal(withRecentLadderTrophies(profile, [], opened), profile);
   });
   it('sets the absolute score once, preserves newer totals and updates the personal best', () => {
     const before = { trophies: 6629, bestTrophies: 6658 };
