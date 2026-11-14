@@ -8,7 +8,16 @@ import { Swords, Crown, ArrowLeft, Trophy, Sparkles, Lock, HelpCircle, ChevronDo
 import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
-import { Navbar } from '@/components/layout/Navbar';
+import { AppSidebar } from '@/components/layout/AppSidebar';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { HelpDialog } from '@/components/help/HelpDialog';
+import { ProDNAView } from '@/components/social/ProDNAView';
+import { AchievementsTab } from '@/components/gamification/AchievementsTab';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useClashRoyaleBattles } from '@/hooks/useClashRoyaleBattles';
+import { usePlayerAchievements } from '@/hooks/usePlayerAchievements';
+import { useWinRate } from '@/hooks/useWinRate';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -112,9 +121,20 @@ export default function DreamArena() {
   const [isLiveDeck, setIsLiveDeck] = useState<boolean>(true);
   const [connectionPhase, setConnectionPhase] = useState<ConnectionPhase>('connecting');
   const [isHallOfFame, setIsHallOfFame] = useState<boolean>(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [dnaOpen, setDnaOpen] = useState(false);
+  const [achievementsOpen, setAchievementsOpen] = useState(false);
 
   // Get player data
-  const { data: playerData, isLoading: isPlayerLoading } = useClashRoyalePlayer(playerTag);
+  const { data: playerData, isLoading: isPlayerLoading, refetch: refetchPlayer, isFetching: isRefreshing } = useClashRoyalePlayer(playerTag);
+  const { data: battles } = useClashRoyaleBattles(playerTag || null);
+  const { achievements } = usePlayerAchievements(battles || null);
+  const { winRate } = useWinRate(battles || [], playerTag);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
+  };
 
   // Fetch global top 10 leaderboard
   const {
@@ -451,10 +471,39 @@ export default function DreamArena() {
         <meta name="description" content="Challenge the world's best Clash Royale players in AI-powered dream matches" />
       </Helmet>
 
-      <div className="min-h-screen bg-background flex flex-col">
-        <Navbar user={user} />
+      <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen bg-background flex w-full">
+        <AppSidebar
+          activeTab="arena"
+          activeSubTab=""
+          onTabChange={() => navigate(`/player/${playerTag}`)}
+          onSubTabChange={() => navigate(`/player/${playerTag}`)}
+          playerTag={playerTag}
+          playerName={playerData?.name}
+          trophies={playerData?.trophies}
+          userId={user?.id}
+          onSignOut={handleSignOut}
+          onOpenDNA={() => setDnaOpen(true)}
+          onOpenAchievements={() => setAchievementsOpen(true)}
+          onOpenHelp={() => setHelpOpen(true)}
+        />
+        <SidebarInset className="min-w-0 flex-1 overflow-x-hidden">
+        <DashboardHeader
+          playerTag={playerTag}
+          player={playerData || null}
+          winRate={winRate}
+          userId={user?.id || null}
+          isRefreshing={isRefreshing}
+          onRefresh={() => { void refetchPlayer(); }}
+          onSignOut={handleSignOut}
+          onOpenHelp={() => setHelpOpen(true)}
+          onOpenSettings={() => navigate(`/settings?returnTo=/arena?player=${playerTag}`)}
+        />
 
         <main className="flex-1 container max-w-4xl mx-auto px-4 py-8">
+          <div className="hidden md:flex mb-4">
+            <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground" />
+          </div>
           {/* Header */}
           <div className="mb-8">
             <Button
@@ -708,7 +757,17 @@ export default function DreamArena() {
         </main>
 
         <Footer />
+        </SidebarInset>
       </div>
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} initialSection="dream-arena" />
+      {dnaOpen && <ProDNAView open={dnaOpen} onOpenChange={setDnaOpen} playerTag={playerTag} playerName={playerData?.name || ''} battles={battles} />}
+      <Dialog open={achievementsOpen} onOpenChange={setAchievementsOpen}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{t('sidebar.achievements', 'Achievements')}</DialogTitle></DialogHeader>
+          <AchievementsTab playerTag={playerTag} playerName={playerData?.name} battles={battles || null} unlockedAchievements={achievements} />
+        </DialogContent>
+      </Dialog>
+      </SidebarProvider>
     </>
   );
 }
