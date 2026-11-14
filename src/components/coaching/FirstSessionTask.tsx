@@ -30,14 +30,15 @@ export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:str
  const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt={c.name} className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{c.name}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:c.level+(16-(c.maxLevel??16))})}</p>}</div>;
  const removed=task?.source_deck?.find(c=>c.id===task.recommendation?.remove_id);
  const added=task?.recommended_deck?.find(c=>!task.source_deck.some(original=>original.id===c.id));
+ const changedByFollowUp=!!added&&added.id!==task?.recommendation?.add_id;
  const result=task?.battle_result;
  return <section aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-b border-border pb-6">
   <div className="mb-4 flex items-center gap-3"><Swords className="h-6 w-6 shrink-0 text-gold"/><div><p className="text-xs font-semibold text-muted-foreground">{t('coaching.intro')}</p><h2 className="font-rajdhani text-2xl font-bold">{t('coaching.title')}</h2></div></div>
   {(query.isLoading||accessLoading)?<p className="text-sm text-muted-foreground">{t('coaching.loading')}</p>:task?.recommendation?<>
    <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
     <div>{removed&&added&&<div className="mb-4 flex items-center justify-center gap-5"> <div className="w-24">{card(removed,t('coaching.remove'))}</div><ArrowRight className="h-5 w-5 shrink-0 text-primary"/><div className="w-24">{card(added,t('coaching.add'))}</div></div>}
-     <p className="break-words text-sm leading-relaxed">{task.recommendation.reason}</p><p className="mt-3 text-sm"><span className="font-semibold text-primary">{t('coaching.practice')}: </span>{task.recommendation.practice}</p>
-     <h3 className="mb-3 mt-5 text-sm font-semibold">{t('coaching.ready')}</h3><div className="grid grid-cols-4 gap-3 sm:grid-cols-8 lg:grid-cols-4">{task.recommended_deck.map(c=>card(c))}</div>
+     {!changedByFollowUp&&<><p className="break-words text-sm leading-relaxed">{task.recommendation.reason}</p><p className="mt-3 text-sm"><span className="font-semibold text-primary">{t('coaching.practice')}: </span>{task.recommendation.practice}</p></>}
+     <h3 className="mb-3 mt-5 text-sm font-semibold">{t('coaching.ready')}</h3><div className="grid grid-cols-4 gap-3">{task.recommended_deck.map(c=>card(c))}</div>
     </div>
     <div className="min-w-0">
      {task.follow_up_answer?<div className="border-l-2 border-primary pl-4"><h3 className="mb-2 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-2 break-words text-sm text-muted-foreground">{task.follow_up_question}</p><p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{task.follow_up_answer}</p></div>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}

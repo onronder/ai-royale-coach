@@ -8,7 +8,7 @@ import { firstTaskBattle, normalizeTag } from '../_shared/coaching-match.ts';
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayResponseHeaders } from '../_shared/run-id.ts';
 const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up']), language:z.enum(['en','tr','es','fr','pt']).default('en'), question:z.string().trim().min(1).max(500).optional() });
 const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
-const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable() });
+const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
 async function handleRequest(req: Request): Promise<Response> {
  if(req.method==='OPTIONS') return new Response('ok',{headers:corsHeaders});
@@ -77,16 +77,16 @@ async function handleRequest(req: Request): Promise<Response> {
      if(error) throw error; if(!locked) return reply({error:'Question already in progress'},409);
      task=locked;followUpOwned=true;
      const player=await gameData('player');
-     const generated=await ai(`One included follow-up about this recommendation only. If unrelated, redirect to the recommendation. If suggesting an alternative, choose one owned card outside the other seven cards. Set alternative_id to null unless changing the recommended swap. Recommendation: ${JSON.stringify(task.recommendation)}; original deck: ${JSON.stringify(task.source_deck)}; proposed deck: ${JSON.stringify(task.recommended_deck)}; collection: ${JSON.stringify(player.cards)}. Question: ${question}`,Answer);
+     const generated=await ai(`One included follow-up about this recommendation only. If unrelated, redirect to the recommendation. If suggesting an alternative, choose one owned card outside the other seven cards. Set alternative_id to null unless changing the recommended swap. When changing the swap supply a new reason and practice tip for that card; otherwise set reason and practice to null. Recommendation: ${JSON.stringify(task.recommendation)}; original deck: ${JSON.stringify(task.source_deck)}; proposed deck: ${JSON.stringify(task.recommended_deck)}; collection: ${JSON.stringify(player.cards)}. Question: ${question}`,Answer);
      const a=generated.output.alternative_id;
      let deck=task.recommended_deck as {id:number}[];
      if(a!==null) {
        const original=task.source_deck as {id:number}[]; const rec=task.recommendation as {remove_id:number;add_id:number};
        const alternative=player.cards?.find((c:{id:number})=>c.id===a);
-       if(!alternative||original.some(c=>c.id!==rec.remove_id&&c.id===a)||a===rec.remove_id) throw new Error('Invalid alternative returned');
+       if(!alternative||original.some(c=>c.id!==rec.remove_id&&c.id===a)||a===rec.remove_id||!generated.output.reason||!generated.output.practice) throw new Error('Invalid alternative returned');
        deck=original.map(c=>c.id===rec.remove_id?alternative:c);
      }
-     const {data:updated,error:saveError}=await db.from('coaching_tasks').update({follow_up_answer:generated.output.answer,recommended_deck:deck,...(a!==null?{shown_at:new Date().toISOString(),matched_battle_key:null,battle_result:null,status:'ready'}:{}),prompt_tokens:task.prompt_tokens+(generated.usage.inputTokens||0),completion_tokens:task.completion_tokens+(generated.usage.outputTokens||0),ai_calls:task.ai_calls+1}).eq('id',task.id).select('*').single();
+     const {data:updated,error:saveError}=await db.from('coaching_tasks').update({follow_up_answer:generated.output.answer,recommended_deck:deck,...(a!==null?{recommendation:{...(task.recommendation as Record<string,unknown>),add_id:a,reason:generated.output.reason,practice:generated.output.practice},shown_at:null,matched_battle_key:null,battle_result:null,status:'ready'}:{}),prompt_tokens:task.prompt_tokens+(generated.usage.inputTokens||0),completion_tokens:task.completion_tokens+(generated.usage.outputTokens||0),ai_calls:task.ai_calls+1}).eq('id',task.id).select('*').single();
      if(saveError) throw saveError;
      await event('coaching_follow_up',{task_id:task.id,gateway_run_id:generated.runId});
      return reply({task:updated},200,generated.headers);
