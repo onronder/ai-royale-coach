@@ -708,7 +708,7 @@
     "cta": {
       "title": "Prêt à Grimper?",
       "subtitle": "Rejoignez des milliers de joueurs qui s'améliorent avec AI Royale",
-      "button": "Commencer Gratuitement"
+      "button": "Essai de 3 jours"
     },
     "valueHighlights": {
       "aiCoach": {
@@ -789,7 +789,7 @@
       "readyBadge": "Prêt à Commencer?",
       "ctaTitle": "Imaginez ce conseil adapté à VOTRE gameplay",
       "ctaSubtitle": "Créez un compte gratuit pour relier votre tag de joueur et débloquer un coaching IA personnalisé basé sur vos vraies batailles.",
-      "startFree": "Commencer Gratuitement",
+      "startFree": "Essai de 3 jours",
       "backToHome": "Retour à l'Accueil",
       "noCreditCard": "✓ Démo : pas de carte bancaire ✓ Ton propre deck : essai de 3 jours, puis 4,99 USD/mois",
       "aiFeatures": {
@@ -958,7 +958,7 @@
       "badge": "Commencez à Gagner Aujourd'hui",
       "title": "Prêt à Libérer Votre Potentiel Clash Royale?",
       "subtitle": "Rejoignez des milliers de joueurs qui améliorent leur jeu avec un coaching propulsé par l'IA. Obtenez des insights personnalisés dès votre première bataille.",
-      "primaryButton": "Commencer Gratuitement",
+      "primaryButton": "Essai de 3 jours",
       "secondaryButton": "Essayer la Démo d'Abord",
       "trustText": "✓ Démo sans carte ✓ Essai de 3 jours avec ton deck, puis 4,99 USD/mois ✓ Désactive le renouvellement quand tu veux"
     }
@@ -989,7 +989,7 @@
     "signupSuccess": "Compte créé! Bienvenue sur AI Royale!",
     "welcomeBack": "Bon retour!",
     "secure": "Sécurisé",
-    "freeToUse": "Gratuit",
+    "freeToUse": "Essai de 3 jours, puis 4,99 USD/mois",
     "noSpam": "Pas de spam",
     "errors": {
       "invalidCredentials": "Email ou mot de passe invalide",

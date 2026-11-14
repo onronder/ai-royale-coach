@@ -703,7 +703,7 @@
     "cta": {
       "title": "Ready to Climb?",
       "subtitle": "Join thousands of players improving with AI Royale",
-      "button": "Start Free Now"
+      "button": "Start 3-day trial"
     },
     "valueHighlights": {
       "aiCoach": {
@@ -784,7 +784,7 @@
       "readyBadge": "Ready to Start?",
       "ctaTitle": "Imagine this insight tailored to YOUR gameplay",
       "ctaSubtitle": "Create a free account to plug in your player tag and unlock personalized AI coaching based on your actual battles.",
-      "startFree": "Start Free Now",
+      "startFree": "Start 3-day trial",
       "backToHome": "Back to Home",
       "noCreditCard": "✓ Demo: no credit card needed ✓ Your own deck: 3-day trial, then $4.99/month",
       "aiFeatures": {
@@ -954,7 +954,7 @@
       "badge": "Start Winning Today",
       "title": "Ready to Unleash Your Clash Royale Potential?",
       "subtitle": "Join thousands of players improving their game with AI-powered coaching. Get personalized insights from your very first battle.",
-      "primaryButton": "Get Started Free",
+      "primaryButton": "Start 3-day trial",
       "secondaryButton": "Try Demo First",
       "trustText": "✓ Card-free demo ✓ 3-day trial with your deck, then $4.99/month ✓ Turn off renewal anytime"
     }
@@ -985,7 +985,7 @@
     "signupSuccess": "Account created! Welcome to AI Royale!",
     "welcomeBack": "Welcome back!",
     "secure": "Secure",
-    "freeToUse": "Free to use",
+    "freeToUse": "3-day trial, then $4.99/mo",
     "noSpam": "No spam",
     "errors": {
       "invalidCredentials": "Invalid email or password",

@@ -706,7 +706,7 @@
     "cta": {
       "title": "Yükselmeye Hazır Mısın?",
       "subtitle": "AI Royale ile gelişen binlerce oyuncuya katıl",
-      "button": "Ücretsiz Başla"
+      "button": "3 Gün Dene"
     },
     "valueHighlights": {
       "aiCoach": {
@@ -787,7 +787,7 @@
       "readyBadge": "Başlamaya Hazır Mısın?",
       "ctaTitle": "Bu ipucunu SENİN oyununa uyarlanmış hayal et",
       "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zeka koçluğunu açmak için ücretsiz hesap oluştur.",
-      "startFree": "Ücretsiz Başla",
+      "startFree": "3 Gün Dene",
       "backToHome": "Ana Sayfaya Dön",
       "noCreditCard": "✓ Demo: kredi kartı gerekmez ✓ Kendi desten: 3 gün deneme, ardından 4,99 USD/ay",
       "aiFeatures": {
@@ -956,7 +956,7 @@
       "badge": "Bugün Kazanmaya Başla",
       "title": "Clash Royale Potansiyelini Serbest Bırakmaya Hazır Mısın?",
       "subtitle": "Yapay zeka destekli koçlukla oyunlarını geliştiren binlerce oyuncuya katıl. İlk savaşından itibaren kişiselleştirilmiş içgörüler al.",
-      "primaryButton": "Ücretsiz Başla",
+      "primaryButton": "3 Gün Dene",
       "secondaryButton": "Önce Demoyu Dene",
       "trustText": "✓ Kartsız demo ✓ Kendi destenle 3 gün dene, ardından 4,99 USD/ay ✓ Yenilemeyi istediğin zaman kapat"
     }
@@ -987,7 +987,7 @@
     "signupSuccess": "Hesap oluşturuldu! AI Royale'e hoş geldin!",
     "welcomeBack": "Tekrar hoş geldin!",
     "secure": "Güvenli",
-    "freeToUse": "Ücretsiz kullanım",
+    "freeToUse": "3 gün deneme, ardından 4,99 USD/ay",
     "noSpam": "Spam yok",
     "errors": {
       "invalidCredentials": "Geçersiz e-posta veya şifre",
