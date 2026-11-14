@@ -117,7 +117,8 @@ async function handleRequest(req: Request): Promise<Response> {
    if(followUpOwned&&task)await db.from('coaching_tasks').update({follow_up_started_at:null}).eq('id',task.id).is('follow_up_answer',null);
    await event('ai_generation_failed',{task_id:task?.id,action});
    const status=typeof e==='object'&&e!==null&&'statusCode'in e?Number(e.statusCode):500;
-   return reply({error:e instanceof Error?e.message:'Coaching unavailable'},[400,401,402,403,404,429].includes(status)?status:500);
+   const message=e instanceof Error?e.message:'Coaching unavailable';
+   return reply({error:message,deck_unavailable:message==='Current deck and collection required'},[400,401,402,403,404,429].includes(status)?status:500);
  }
 }
 
