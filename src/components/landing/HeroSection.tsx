@@ -49,7 +49,9 @@ export function HeroSection({ user }: HeroSectionProps) {
     
     if (!user) {
       toast.error(t("landing.hero.errors.signIn"));
-      navigate("/auth");
+      // Carry the typed tag through sign-up; the player page links it after login.
+      try { localStorage.setItem("pending_player_tag", playerTag.trim().replace("#", "").toUpperCase()); } catch { /* ignore */ }
+      navigate("/auth?mode=signup");
       return;
     }
 

@@ -40,6 +40,16 @@ const SelectPlayer = () => {
   });
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding(user?.id);
 
+  // Tag typed on the home page before sign-up: open it once (visiting links it to the account).
+  useEffect(() => {
+    if (!user?.id) return;
+    let pending: string | null = null;
+    try { pending = localStorage.getItem('pending_player_tag'); localStorage.removeItem('pending_player_tag'); } catch { /* ignore */ }
+    if (pending && /^[0-9A-Z]{3,15}$/.test(pending)) {
+      navigate(`/player/${encodeURIComponent(pending)}`, { replace: true });
+    }
+  }, [user?.id, navigate]);
+
   useEffect(() => {
     if (!user?.id || hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
     const key = autoTrialRedirectKey(user.id);
