@@ -1626,6 +1626,24 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      get_trial_funnel: {
+        Args: { p_days?: number }
+        Returns: {
+          active_days: number
+          ai_uses: number
+          canceled_at: string
+          chat_messages: number
+          converted: boolean
+          email: string
+          hours_to_cancel: number
+          last_seen: string
+          linked_tags: number
+          status: string
+          trial_end: string
+          trial_start: string
+          user_id: string
+        }[]
+      }
       get_user_activity_metrics: { Args: { p_user_id: string }; Returns: Json }
       has_admin_role: {
         Args: {
