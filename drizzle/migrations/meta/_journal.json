@@ -43,6 +43,13 @@
       "when": 1794655287037,
       "tag": "0005_trial_revenue_metrics",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794661702853,
+      "tag": "0006_first_session_coaching",
+      "breakpoints": true
     }
   ]
 }
