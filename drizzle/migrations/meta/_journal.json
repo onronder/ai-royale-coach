@@ -15,6 +15,13 @@
       "when": 1794547341359,
       "tag": "0001_protect_ai_trial_usage_logs",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794639111352,
+      "tag": "0002_trial_funnel_function",
+      "breakpoints": true
     }
   ]
 }
