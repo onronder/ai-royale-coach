@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       const items = body?.items || [];
       if (!items.length) break;
       const rows = items.map((o: any) => {
-        const amount = o.total_amount ?? o.net_amount ?? o.amount ?? 0;
+        const amount = o.net_amount ?? o.amount ?? o.total_amount ?? 0;
         if (amount > 0) positive++; else zero++;
         return {
           order_id: o.id,
@@ -39,6 +39,8 @@ Deno.serve(async (req) => {
           customer_id: o.customer_id || o.customer?.id || null,
           subscription_id: o.subscription_id || null,
           amount,
+          gross_amount: o.total_amount ?? null,
+          tax_amount: o.tax_amount ?? null,
           currency: o.currency || null,
           billing_reason: o.billing_reason || null,
           status: o.status || (o.paid ? 'paid' : null),
