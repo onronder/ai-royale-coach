@@ -96,7 +96,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if(task?.status==='generating'&&task.generation_started_at&&Date.now()-Date.parse(task.generation_started_at)<180000) return reply({error:'Task already in progress'},409);
    const stamp=new Date().toISOString();
    if(!task){const {data:created,error}=await db.from('coaching_tasks').insert({user_id:user.id,player_tag:tag,language,generation_started_at:stamp}).select('*').single();if(error)return reply({error:'Task already in progress'},409);task=created;}
-   else {const {data:locked,error}=await db.from('coaching_tasks').update({status:'generating',generation_started_at:stamp}).eq('id',task.id).eq('status',task.status).select('*').maybeSingle();if(error)throw error;if(!locked)return reply({error:'Task already in progress'},409);task=locked;}
+   else {let claim=db.from('coaching_tasks').update({status:'generating',generation_started_at:stamp}).eq('id',task.id).eq('status',task.status);claim=task.generation_started_at?claim.eq('generation_started_at',task.generation_started_at):claim.is('generation_started_at',null);const {data:locked,error}=await claim.select('*').maybeSingle();if(error)throw error;if(!locked)return reply({error:'Task already in progress'},409);task=locked;}
    generationOwned=true;
    const player=await gameData('player',true);
    if(!Array.isArray(player.currentDeck)||player.currentDeck.length!==8||!Array.isArray(player.cards)) throw new Error('Current deck and collection required');

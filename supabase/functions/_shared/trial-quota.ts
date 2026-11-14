@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { checkAiAccess } from './ai-access.ts';
 import { errorResponse, jsonResponse } from './cors.ts';
+import { successfulChatStream } from './trial-stream.ts';
 export async function withTrialQuota(req: Request, feature: string, handler: (req: Request) => Promise<Response>): Promise<Response> {
   if (req.method === 'OPTIONS') return handler(req);
   const url = Deno.env.get('SUPABASE_URL'); const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
@@ -18,6 +19,7 @@ export async function withTrialQuota(req: Request, feature: string, handler: (re
   const digest = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${feature}:${body}`));
   const requestKey = Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2,'0')).join('');
   const {data:cached} = await db.from('ai_trial_reservations').select('response_data').eq('user_id',user.id).eq('request_key',requestKey).eq('status','completed').maybeSingle();
+  if (cached?.response_data?.stream_text) return new Response(cached.response_data.stream_text,{headers:{...jsonResponse({}).headers,'Content-Type':'text/event-stream'}});
   if (cached?.response_data) return jsonResponse(cached.response_data);
   const {data:r,error} = await db.rpc('reserve_trial_ai',{p_user_id:user.id,p_request_key:requestKey,p_feature:feature});
   if (error) return errorResponse('Unable to reserve trial allowance',503);
@@ -29,9 +31,13 @@ export async function withTrialQuota(req: Request, feature: string, handler: (re
     if (response.headers.get('content-type')?.includes('text/event-stream')) {
       const reader = response.body?.getReader();
       if (!reader) throw new Error('Empty AI stream');
+      const decoder = new TextDecoder(); let text = '';
       const stream = new ReadableStream({async start(controller) {
-        try { while (true) { const chunk=await reader.read(); if(chunk.done) break; controller.enqueue(chunk.value); }
-          await db.rpc('finish_trial_ai',{p_id:r.id,p_success:true}); controller.close();
+        try { while (true) { const chunk=await reader.read(); if(chunk.done) break; text+=decoder.decode(chunk.value,{stream:true}); controller.enqueue(chunk.value); }
+          text+=decoder.decode();
+          const success=successfulChatStream(text);
+          if(success)await db.from('ai_trial_reservations').update({response_data:{stream_text:text}}).eq('id',r.id);
+          await db.rpc('finish_trial_ai',{p_id:r.id,p_success:success}); controller.close();
         } catch(e) { await db.rpc('finish_trial_ai',{p_id:r.id,p_success:false}); controller.error(e); }
       }, async cancel() { await reader.cancel(); await db.rpc('finish_trial_ai',{p_id:r.id,p_success:false}); }});
       return new Response(stream,{headers:response.headers,status:response.status});

@@ -25,7 +25,7 @@ export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:str
  };
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
  const run=async(action:string)=>{if(busy)return;setBusy(action);setError('');try{qc.setQueryData(key,await invoke(action));}catch(e){setError(e instanceof Error?e.message:t('coaching.error'));}finally{setBusy(null);}};
- useEffect(()=>{if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==task.id){shown.current=task.id;invoke('shown').then(data=>qc.setQueryData(key,data)).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,hasAccess]);
+ useEffect(()=>{const revision=task?`${task.id}:${task.recommendation?.add_id}`:null;if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==revision){shown.current=revision;invoke('shown').then(data=>qc.setQueryData(key,data)).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,task?.recommendation?.add_id,hasAccess]);
  const time=(value:string|null|undefined)=>value?new Date(value).toLocaleString(i18n.language):t('coaching.never');
  const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt={c.name} className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{c.name}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:c.level+(16-(c.maxLevel??16))})}</p>}</div>;
  const removed=task?.source_deck?.find(c=>c.id===task.recommendation?.remove_id);
