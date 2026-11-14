@@ -1005,6 +1005,7 @@ export type Database = {
           trial_started_at: string | null
           trial_used: boolean | null
           updated_at: string | null
+          whats_new_seen_version: string | null
           winback_email_sent_at: string | null
         }
         Insert: {
@@ -1020,6 +1021,7 @@ export type Database = {
           trial_started_at?: string | null
           trial_used?: boolean | null
           updated_at?: string | null
+          whats_new_seen_version?: string | null
           winback_email_sent_at?: string | null
         }
         Update: {
@@ -1035,6 +1037,7 @@ export type Database = {
           trial_started_at?: string | null
           trial_used?: boolean | null
           updated_at?: string | null
+          whats_new_seen_version?: string | null
           winback_email_sent_at?: string | null
         }
         Relationships: []

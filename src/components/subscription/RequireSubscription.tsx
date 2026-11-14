@@ -3,15 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { SplashScreen } from "@/components/ui/splash-screen";
 import { TrialExpiredPage } from "./TrialExpiredPage";
+import { TrialEndedBanner } from "./TrialEndedBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface RequireSubscriptionProps {
   children: ReactNode;
+  /** Let users whose Polar trial/subscription ended view saved results read-only. */
+  allowReadOnlyAfterTrial?: boolean;
 }
 
-export function RequireSubscription({ children }: RequireSubscriptionProps) {
+export function RequireSubscription({ children, allowReadOnlyAfterTrial = false }: RequireSubscriptionProps) {
   const navigate = useNavigate();
-  const { hasAccess, isLoading } = useSubscription();
+  const { hasAccess, isLoading, subscriptionStatus } = useSubscription();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   
   useEffect(() => {
@@ -54,6 +57,10 @@ export function RequireSubscription({ children }: RequireSubscriptionProps) {
     return <>{children}</>;
   }
   
+  if (allowReadOnlyAfterTrial && subscriptionStatus) {
+    return (<><TrialEndedBanner />{children}</>);
+  }
+
   // Authenticated but no access - show paywall
   return <TrialExpiredPage />;
 }

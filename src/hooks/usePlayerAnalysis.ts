@@ -5,6 +5,8 @@ import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi"
 
 interface PlayerAnalysisResult {
   analysis: string;
+  read_only?: boolean;
+  analyzed_at?: string;
   stats: {
     winRate: string;
     avgTrophyChange: string;

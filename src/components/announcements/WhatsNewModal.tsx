@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Radar, Sparkles, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Eye, Radar, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,8 @@ interface WhatsNewModalProps {
   onDismiss: () => void;
   playerTag?: string;
 }
+
+export const WHATS_NEW_VERSION = "2026-11-quickscan";
 
 const features = [
   {
@@ -67,14 +69,6 @@ export function WhatsNewModal({ open, onDismiss, playerTag }: WhatsNewModalProps
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onDismiss()}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden border-primary/20 bg-card/95 backdrop-blur-xl">
-        {/* Close button */}
-        <button
-          onClick={onDismiss}
-          className="absolute right-4 top-4 z-10 rounded-full p-1.5 bg-muted/50 hover:bg-muted transition-colors"
-        >
-          <X className="h-4 w-4 text-muted-foreground" />
-        </button>
-
         {/* Header */}
         <DialogHeader className="p-6 pb-2">
           <div className="flex items-center gap-2">

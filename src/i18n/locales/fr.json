@@ -2650,5 +2650,10 @@
     "title": "Limite d'essai atteinte",
     "description": "Les comptes d'essai ont droit à 1 analyse IA toutes les 24 heures. Prochaine disponible : {{time}}. Abonnez-vous pour un accès complet.",
     "cta": "S'abonner"
+  },
+  "trialEnded": {
+    "title": "Votre essai est terminé",
+    "description": "Vous pouvez toujours consulter votre dernière analyse. Abonnez-vous pour lancer de nouvelles analyses IA.",
+    "cta": "Se réabonner"
   }
 }
