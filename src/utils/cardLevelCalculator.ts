@@ -1,3 +1,5 @@
+import { cardDisplayLevel, GAME_MAX_DISPLAY_LEVEL } from '../../supabase/functions/_shared/card-display-level';
+
 /**
  * Clash Royale Card Level Calculator
  * 
@@ -56,7 +58,7 @@ export interface CardLevelResult {
 /**
  * The universal max display level in Clash Royale (after Level 16 update)
  */
-export const GAME_MAX_DISPLAY_LEVEL = 16;
+export { GAME_MAX_DISPLAY_LEVEL };
 
 /**
  * Champion cards have maxLevel = 6 in the API
@@ -72,8 +74,7 @@ export function calculateDisplayLevel(card: CardLevelInput): CardLevelResult {
   
   // Universal formula: level + (16 - maxLevel)
   // If maxLevel not provided, assume Common (maxLevel = 16, offset = 0)
-  const offset = maxLevel ? (GAME_MAX_DISPLAY_LEVEL - maxLevel) : 0;
-  const displayLevel = level + offset;
+  const displayLevel = cardDisplayLevel({ level, maxLevel });
   
   // Check if this is a champion (maxLevel = 6 in API)
   const isChampion = maxLevel === CHAMPION_MAX_LEVEL;

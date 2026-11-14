@@ -4,7 +4,9 @@ import { ClashRoyalePlayer } from "@/services/clashRoyaleApi";
 import { toast } from "@/hooks/use-toast";
 import i18n from "@/i18n";
 
-async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Promise<ClashRoyalePlayer> {
+import { withBattleTrophies, type TrophySnapshot } from '@/lib/battleTrophies';
+
+async function fetchPlayer(playerTag: string, forceRefresh: boolean = false, requireFresh = false): Promise<ClashRoyalePlayer> {
   const normalizedTag = playerTag.replace('#', '').toUpperCase();
   
   // Skip local cache check if forcing refresh - let the server handle it
@@ -38,6 +40,9 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
     },
   });
 
+  if (requireFresh && (!response.ok || response.headers.get('X-Cache-Stale') === 'true')) {
+    throw new Error('Fresh player profile unavailable');
+  }
   if (!response.ok) {
     // Try stale cache as fallback
     const { data: cached } = await supabase
@@ -88,16 +93,21 @@ export function useClashRoyalePlayer(playerTag: string | null) {
   });
 
   // Force refresh function that bypasses all caches
-  const forceRefresh = async () => {
+  const refresh = async (snapshot?: TrophySnapshot, requireFresh = false) => {
     if (!playerTag) return;
-    const freshData = await fetchPlayer(playerTag, true);
-    queryClient.setQueryData(['clash-player', playerTag], freshData);
+    const key = ['clash-player', playerTag];
+    await queryClient.cancelQueries({ queryKey: key, exact: true });
+    if (snapshot) queryClient.setQueryData<ClashRoyalePlayer>(key, previous =>
+      previous ? withBattleTrophies(previous, snapshot) : previous);
+    const freshData = withBattleTrophies(await fetchPlayer(playerTag, true, requireFresh), snapshot);
+    queryClient.setQueryData(key, freshData);
     return freshData;
   };
 
   return {
     ...query,
-    forceRefresh,
+    forceRefresh: () => refresh(),
+    refreshAfterMatch: (snapshot?: TrophySnapshot) => refresh(snapshot, true),
     lastUpdated: query.dataUpdatedAt ? new Date(query.dataUpdatedAt) : null,
   };
 }

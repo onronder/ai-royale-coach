@@ -1,5 +1,6 @@
 export const coachingTranslations = {
  en: {
+   profileRefreshError: "Your match is saved. Retry to refresh your trophy count.",
    partialDeck: "Your profile returned seven cards. This is the deck from your last Trophy Road match. Is it the deck you want to train with?",
    changedDeck: "Your deck has changed. Check these eight cards before continuing.",
    confirmDeck: "Use this deck",
@@ -12,6 +13,7 @@ export const coachingTranslations = {
    },
    title:'One change. One match.', intro:'Your first coaching task', start:'Get my card change', preparing:'Preparing your task…', remove:'Replace', add:'With', level:'Level {{level}}', practice:'Next match', followUp:'One included follow-up', placeholder:'This card is low level. What can I use instead?', ask:'Ask about this change', waiting:'Waiting for your new match', check:'Check match result', checked:'Last check: {{time}}', observed:'Battle data updated: {{time}}', never:'Not checked yet', win:'Victory', loss:'Defeat', draw:'Draw', trophies:'Trophy change', opponent:'Opponent deck', result:'First match result', next:'Next practice', nextWin:'Repeat the deck for another match; one win is not a trend.', nextLoss:'Keep the same deck for another practice match. The final score alone cannot explain individual plays.', nextDraw:'Try the same deck again and compare the next result.', error:'Could not complete this step.', loading:'Loading your task…', expired:'Your saved task remains available. Subscribe to continue.', generating:'Task already in progress. Check again shortly.', ready:'Play one new match with this deck', saved:'Your follow-up', unavailable:'We could not verify all eight cards. Play a Trophy Road match with the deck you want to use, then try again.' },
  tr: {
+   profileRefreshError: "Maçın kaydedildi. Güncel kupanı almak için tekrar dene.",
    partialDeck: "Profilinden yedi kart geldi. Son Kupa Yolu maçında kullandığın sekiz kart aşağıda. Bu desteyle çalışmak ister misin?",
    changedDeck: "Desten değişti. Devam etmeden önce bu sekiz kartı kontrol et.",
    confirmDeck: "Bu desteyle öneri al",
@@ -24,6 +26,7 @@ export const coachingTranslations = {
    },
    title:'Bir değişiklik. Bir maç.', intro:'İlk koçluk görevin', start:'Kart önerimi al', preparing:'Görevin hazırlanıyor…', remove:'Çıkar', add:'Ekle', level:'Seviye {{level}}', practice:'Sonraki maç', followUp:'Bir takip sorusu dahil', placeholder:'Bu kartın seviyesi düşük. Yerine ne kullanabilirim?', ask:'Bu öneri hakkında sor', waiting:'Yeni maçını bekliyoruz', check:'Maç sonucunu kontrol et', checked:'Son kontrol: {{time}}', observed:'Maç verisi güncellendi: {{time}}', never:'Henüz kontrol edilmedi', win:'Zafer', loss:'Mağlubiyet', draw:'Beraberlik', trophies:'Kupa değişimi', opponent:'Rakip deste', result:'İlk maç sonucu', next:'Sonraki antrenman', nextWin:'Aynı desteyle bir maç daha oyna; tek galibiyet bir eğilim göstermez.', nextLoss:'Bir sonraki antrenmanda aynı desteyi kullan. Yalnızca skor, tek tek hamleleri açıklamaz.', nextDraw:'Aynı desteyle tekrar oyna ve sonraki sonucu karşılaştır.', error:'Bu adım tamamlanamadı.', loading:'Görevin yükleniyor…', expired:'Kayıtlı görevin görünmeye devam eder. Devam etmek için abone ol.', generating:'Görev hazırlanıyor. Biraz sonra yeniden kontrol et.', ready:'Bu desteyle bir yeni maç oyna', saved:'Takip sorunun', unavailable:'Destendeki sekiz kartı doğrulayamadık. Kullanmak istediğin desteyle bir Kupa Yolu maçı oyna ve yeniden dene.' },
  es: {
+   profileRefreshError: "La partida está guardada. Vuelve a intentar actualizar tus trofeos.",
    partialDeck: "Tu perfil devolvió siete cartas. Este es el mazo de tu última partida del Camino de Trofeos. ¿Quieres entrenar con él?",
    changedDeck: "Tu mazo ha cambiado. Revisa estas ocho cartas antes de continuar.",
    confirmDeck: "Usar este mazo",
@@ -36,6 +39,7 @@ export const coachingTranslations = {
    },
    title:'Un cambio. Una partida.', intro:'Tu primera tarea de entrenamiento', start:'Obtener mi cambio de carta', preparing:'Preparando tu tarea…', remove:'Sustituir', add:'Por', level:'Nivel {{level}}', practice:'Próxima partida', followUp:'Una pregunta de seguimiento incluida', placeholder:'Esta carta tiene nivel bajo. ¿Qué puedo usar en su lugar?', ask:'Preguntar sobre este cambio', waiting:'Esperando tu nueva partida', check:'Comprobar resultado', checked:'Última consulta: {{time}}', observed:'Datos actualizados: {{time}}', never:'Sin consultar todavía', win:'Victoria', loss:'Derrota', draw:'Empate', trophies:'Cambio de trofeos', opponent:'Mazo rival', result:'Resultado de la primera partida', next:'Próxima práctica', nextWin:'Repite el mazo en otra partida; una victoria no marca una tendencia.', nextLoss:'Practica otra partida con el mismo mazo. El marcador no explica jugadas individuales.', nextDraw:'Prueba de nuevo el mismo mazo y compara el siguiente resultado.', error:'No se pudo completar este paso.', loading:'Cargando tu tarea…', expired:'Tu tarea guardada sigue disponible. Suscríbete para continuar.', generating:'La tarea está en curso. Consulta de nuevo más tarde.', ready:'Juega una nueva partida con este mazo', saved:'Tu pregunta', unavailable:'No pudimos verificar las ocho cartas. Juega una partida del Camino de Trofeos con tu mazo y vuelve a intentarlo.' },
  fr: {
+   profileRefreshError: "Ton match est enregistré. Réessaie pour actualiser tes trophées.",
    partialDeck: "Votre profil a renvoyé sept cartes. Voici le deck de votre dernier match sur la Voie des trophées. Voulez-vous utiliser ce deck ?",
    changedDeck: "Votre deck a changé. Vérifiez ces huit cartes avant de continuer.",
    confirmDeck: "Utiliser ce deck",
@@ -48,6 +52,7 @@ export const coachingTranslations = {
    },
    title:'Un changement. Un match.', intro:'Votre première mission', start:'Obtenir mon changement de carte', preparing:'Préparation de votre mission…', remove:'Remplacer', add:'Par', level:'Niveau {{level}}', practice:'Prochain match', followUp:'Une question de suivi incluse', placeholder:'Cette carte est de faible niveau. Que puis-je utiliser à la place ?', ask:'Poser une question sur ce changement', waiting:'En attente de votre nouveau match', check:'Vérifier le résultat', checked:'Dernière vérification : {{time}}', observed:'Données mises à jour : {{time}}', never:'Pas encore vérifié', win:'Victoire', loss:'Défaite', draw:'Égalité', trophies:'Variation des trophées', opponent:'Deck adverse', result:'Résultat du premier match', next:'Prochain entraînement', nextWin:'Rejouez ce deck ; une victoire ne constitue pas une tendance.', nextLoss:'Gardez le même deck pour un autre entraînement. Le score ne permet pas de décrire les actions individuelles.', nextDraw:'Réessayez ce deck et comparez le prochain résultat.', error:'Cette étape n’a pas pu être terminée.', loading:'Chargement de votre mission…', expired:'Votre mission reste consultable. Abonnez-vous pour continuer.', generating:'Mission en cours. Vérifiez à nouveau plus tard.', ready:'Jouez un nouveau match avec ce deck', saved:'Votre question de suivi', unavailable:'Nous ne pouvons pas vérifier les huit cartes. Jouez un match sur la Voie des trophées avec votre deck, puis réessayez.' },
  pt: {
+   profileRefreshError: "Sua partida foi salva. Tente novamente para atualizar os troféus.",
    partialDeck: "Seu perfil retornou sete cartas. Este é o deck da sua última partida no Caminho de Troféus. Quer treinar com ele?",
    changedDeck: "Seu deck mudou. Confira as oito cartas antes de continuar.",
    confirmDeck: "Usar este deck",

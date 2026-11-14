@@ -79,7 +79,7 @@ const Dashboard = () => {
   const { fraudStatus, isSoftBlocked, isWarned } = useFraudStatus(user?.id || null);
   
   // Data fetching hooks
-  const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer, lastUpdated } = useClashRoyalePlayer(playerTag || null);
+  const { data: player, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer, refreshAfterMatch, lastUpdated } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
   const { achievements: battleAchievements } = usePlayerAchievements(battles || null);
@@ -229,7 +229,7 @@ const Dashboard = () => {
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
-                      <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} />
+                      <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} collection={player?.cards ?? []} onMatchResult={refreshAfterMatch} />
                       <OverviewTab
                         playerTag={playerTag}
                         player={player || null}
