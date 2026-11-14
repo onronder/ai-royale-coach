@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useQuery } from "@tanstack/react-query";
 import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
-import { firstTrialAnalysisTag } from "@/lib/automaticTrialAnalysis";
+import { firstTrialAnalysisTag, autoTrialRedirectKey } from "@/lib/automaticTrialAnalysis";
 
 const SelectPlayer = () => {
   const { t } = useTranslation();
@@ -41,13 +41,18 @@ const SelectPlayer = () => {
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding(user?.id);
 
   useEffect(() => {
-    if (hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
+    if (!user?.id || hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
+    const key = autoTrialRedirectKey(user.id);
+    let alreadyRedirected = false;
+    try { alreadyRedirected = localStorage.getItem(key) === '1'; } catch { /* ignore */ }
     const tag = firstTrialAnalysisTag({
       status: subscriptionStatus, isTrialActive, hasPreviousUsage: hasPreviousTrialUsage,
-      playerTags: profiles.map(profile => profile.player_tag),
+      playerTags: profiles.map(profile => profile.player_tag), alreadyRedirected,
     });
-    if (tag) navigate(`/player/${encodeURIComponent(tag)}`, { replace: true });
-  }, [hasPreviousTrialUsage, subscriptionStatus, isTrialActive, profiles, navigate, searchParams]);
+    if (!tag) return;
+    try { localStorage.setItem(key, '1'); } catch { /* ignore */ }
+    navigate(`/player/${encodeURIComponent(tag)}`, { replace: true });
+  }, [user?.id, hasPreviousTrialUsage, subscriptionStatus, isTrialActive, profiles, navigate, searchParams]);
 
   // Check for subscription success and show AI selector if needed
   useEffect(() => {
