@@ -13,10 +13,15 @@ export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:str
  const qc=useQueryClient(); const key=['coaching-task',userId,playerTag];
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const invoke=async(action:string)=>{
-   const {data,error:err}=await supabase.functions.invoke('first-session-coaching',{body:{playerTag,action,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})}});
-   if(err){const detail=err.context instanceof Response?await err.context.json().catch(()=>null):null;
-     throw new Error(detail?.trial_limit?t('coaching.quota',{time:detail.next_available_at?new Date(detail.next_available_at).toLocaleString(i18n.language):'—'}):detail?.error||err.message);}
-   return data as {task:Task|null};
+   const {data:{session}}=await supabase.auth.getSession();
+   if(!session) throw new Error(t('coaching.error'));
+   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})})});
+   const reader=response.body?.getReader(); if(!reader)throw new Error(t('coaching.error'));
+   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;error?:string;trial_limit?:boolean;next_available_at?:string}}|undefined;
+   while(true){const chunk=await reader.read();buffer+=decoder.decode(chunk.value,{stream:!chunk.done});const lines=buffer.split('\n');buffer=lines.pop()||'';for(const line of lines){if(line.trim()){const item=JSON.parse(line);if(item.status)final=item;}}if(chunk.done)break;}
+   if(!final)throw new Error(t('coaching.error'));
+   if(final.status>=400){const detail=final.data;throw new Error(detail.trial_limit?t('coaching.quota',{time:detail.next_available_at?new Date(detail.next_available_at).toLocaleString(i18n.language):'—'}):detail.error||t('coaching.error'));}
+   return final.data;
  };
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
  const run=async(action:string)=>{if(busy)return;setBusy(action);setError('');try{qc.setQueryData(key,await invoke(action));}catch(e){setError(e instanceof Error?e.message:t('coaching.error'));}finally{setBusy(null);}};

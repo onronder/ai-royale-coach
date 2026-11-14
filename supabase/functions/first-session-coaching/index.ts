@@ -10,7 +10,7 @@ const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/
 const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
-Deno.serve(async req => {
+async function handleRequest(req: Request): Promise<Response> {
  if(req.method==='OPTIONS') return new Response('ok',{headers:corsHeaders});
  const url=Deno.env.get('SUPABASE_URL'), key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'), aiKey=Deno.env.get('LOVABLE_API_KEY');
  if(!url||!key||!aiKey) return reply({error:'Service configuration unavailable'},500);
@@ -119,4 +119,25 @@ Deno.serve(async req => {
    const status=typeof e==='object'&&e!==null&&'statusCode'in e?Number(e.statusCode):500;
    return reply({error:e instanceof Error?e.message:'Coaching unavailable'},[400,401,402,403,404,429].includes(status)?status:500);
  }
+}
+
+// Keep the browser connection alive while the upstream stream is consumed and the task is saved.
+// NDJSON carries the final status explicitly because headers are already sent.
+Deno.serve(async req => {
+ if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+ const encoder = new TextEncoder();
+ const stream = new ReadableStream({
+   async start(controller) {
+     const heartbeat = setInterval(() => controller.enqueue(encoder.encode('{"progress":true}\n')), 5000);
+     try {
+       controller.enqueue(encoder.encode('{"progress":true}\n'));
+       const response = await handleRequest(req);
+       const data = await response.json();
+       controller.enqueue(encoder.encode(JSON.stringify({ status: response.status, data }) + '\n'));
+     } catch (error) {
+       controller.enqueue(encoder.encode(JSON.stringify({ status: 500, data: { error: error instanceof Error ? error.message : 'Coaching unavailable' } }) + '\n'));
+     } finally { clearInterval(heartbeat); controller.close(); }
+   },
+ });
+ return new Response(stream, { headers: { ...corsHeaders, 'Content-Type': 'application/x-ndjson' } });
 });
