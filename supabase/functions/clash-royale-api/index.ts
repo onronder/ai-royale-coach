@@ -117,14 +117,6 @@ async function getCachedOrFetch(
   try {
     const freshData = await fetchFn();
 
-    const cacheUpdate: any = {
-      player_tag: normalizedTag,
-      [type === 'player' ? 'player_data' : 'battles_data']: freshData,
-      [type === 'player' ? 'player_fetched_at' : 'battles_fetched_at']: new Date().toISOString(),
-      updated_at: now.toISOString(),
-      cached_at: now.toISOString(),
-    };
-
     // Update only this endpoint's fields; simultaneous profile/battle fetches cannot overwrite each other.
     const { error: upsertError } = await supabase.rpc('write_player_cache', {
       p_tag: normalizedTag, p_type: type, p_data: freshData,
