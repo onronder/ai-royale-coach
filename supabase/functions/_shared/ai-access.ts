@@ -1,3 +1,4 @@
+import { subscriptionAccess } from './subscription-access.ts';
 // deno-lint-ignore-file no-explicit-any
 export const TRIAL_AI_WINDOW_HOURS = 24;
 export const TRIAL_AI_LIMIT_PER_WINDOW = 1;
@@ -28,13 +29,14 @@ export async function checkAiAccess(supabase: any, userId: string, feature: stri
 
   const { data: sub } = await supabase
     .from('user_subscriptions')
-    .select('status, current_period_end')
+    .select('status, current_period_end, cancel_at_period_end, ends_at')
     .eq('user_id', userId)
     .maybeSingle();
 
-  if (sub?.status === 'active') return { ...base, allowed: true, isPaid: true };
+  const kind = subscriptionAccess(sub, now);
+  if (kind === 'paid') return { ...base, allowed: true, isPaid: true };
 
-  let isTrial = sub?.status === 'trialing' && !!sub.current_period_end && new Date(sub.current_period_end) > now;
+  let isTrial = kind === 'trial';
   if (!isTrial) {
     const { data: profile } = await supabase
       .from('profiles')
