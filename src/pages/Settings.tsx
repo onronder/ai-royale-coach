@@ -56,7 +56,7 @@ const Settings = () => {
   } = useSubscription();
 
   const { profiles, isLoading: isLoadingProfiles, refetch: refetchProfiles } = useUserAIProfiles();
-  const { showWhatsNew, dismissWhatsNew, openWhatsNew } = useWhatsNew();
+  const { showWhatsNew, dismissWhatsNew, openWhatsNew } = useWhatsNew({ autoOpen: false });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
