@@ -1,6 +1,55 @@
 {
   "common": {
-    "dismiss": "Kapat"
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "retry": "Tekrar Dene",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "all": "Tümü",
+    "none": "Hiçbiri",
+    "yes": "Evet",
+    "no": "Hayır",
+    "ok": "Tamam",
+    "submit": "Gönder",
+    "reset": "Sıfırla",
+    "refresh": "Yenile",
+    "viewDetails": "Detayları Gör",
+    "global": "Global",
+    "sending": "Gönderiliyor...",
+    "noData": "Veri mevcut değil",
+    "comingSoon": "Yakında",
+    "unknown": "Bilinmiyor",
+    "viewMore": "Daha Fazla",
+    "showLess": "Daha Az",
+    "success": "Başarılı",
+    "aiPowered": "AI Destekli",
+    "elixir": "İksir",
+    "trophies": "kupa",
+    "description": "Açıklama",
+    "mayTakeMoment": "Bu biraz zaman alabilir",
+    "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
+    "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
+    "loadingDashboard": "Panelonuz yükleniyor",
+    "verifyingAuth": "Kimlik doğrulanıyor",
+    "clickForHelp": "Yardım için tıklayın",
+    "vs": "vs",
+    "new": "YENİ",
+    "pro": "PRO",
+    "ai": "AI",
+    "searching": "Aranıyor...",
+    "locked": "Kilitli",
+    "thisMayTakeMoment": "Bu biraz zaman alabilir"
   },
   "announcement": {
     "new": "YENİ",
@@ -28,11 +77,9 @@
   "sidebar": {
     "navigation": "Navigasyon",
     "quickActions": "Hızlı Eylemler",
-    "toolbox": "Araç Kutusu",
     "achievements": "Başarılar",
     "proDna": "Pro DNA",
-    "theOracle": "Kahin",
-    "dreamArena": "Rüya Arenası"
+    "theOracle": "Kahin"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",
@@ -263,8 +310,16 @@
         "deckData": {
           "hogCycle": {
             "playstyle": "Sürekli döngü ile hızlı tempolu baskı",
-            "strengths": ["Hızlı döngü", "Çok yönlü savunma", "Chip hasarı"],
-            "weaknesses": ["Düşük can birlikler", "Büyüye karşı savunmasız", "Beceri gerektirir"],
+            "strengths": [
+              "Hızlı döngü",
+              "Çok yönlü savunma",
+              "Chip hasarı"
+            ],
+            "weaknesses": [
+              "Düşük can birlikler",
+              "Büyüye karşı savunmasız",
+              "Beceri gerektirir"
+            ],
             "synergies": [
               "Ice Golem tank yapar ve savunucuları oyalar",
               "Tanklara karşı mükemmel savunma sinerjisi",
@@ -272,9 +327,21 @@
               "İnanılmaz döngü ve dikkat dağıtma kombosu"
             ],
             "matchups": {
-              "golemBeatdown": ["Onlara Lightning için değer verme", "Karşı şerite agresif baskı yap", "Fireball'ı Night Witch için sakla"],
-              "logBait": ["Princess'a Log, Goblin Gang'e Fireball at", "Rocket döngüsünü önlemek için baskı yap", "Goblin Barrel yerleşimlerini tahmin et"],
-              "xbowSiege": ["Kilitleri önlemek için X-Bow ile aynı şeride baskı yap", "Savunma binalarına Fireball at", "Savunabileceklerinden daha hızlı döngü yap"]
+              "golemBeatdown": [
+                "Onlara Lightning için değer verme",
+                "Karşı şerite agresif baskı yap",
+                "Fireball'ı Night Witch için sakla"
+              ],
+              "logBait": [
+                "Princess'a Log, Goblin Gang'e Fireball at",
+                "Rocket döngüsünü önlemek için baskı yap",
+                "Goblin Barrel yerleşimlerini tahmin et"
+              ],
+              "xbowSiege": [
+                "Kilitleri önlemek için X-Bow ile aynı şeride baskı yap",
+                "Savunma binalarına Fireball at",
+                "Savunabileceklerinden daha hızlı döngü yap"
+              ]
             },
             "phase1": {
               "name": "Temel (Hafta 1-2)",
@@ -306,8 +373,16 @@
           },
           "golemBeatdown": {
             "playstyle": "Ezici güçle ağır saldırılar",
-            "strengths": ["Yüksek hasar", "Kule yıkımı", "Ölüm hasarı sinerjisi"],
-            "weaknesses": ["Pahalı", "Yavaş döngü", "Baskıya karşı savunmasız"],
+            "strengths": [
+              "Yüksek hasar",
+              "Kule yıkımı",
+              "Ölüm hasarı sinerjisi"
+            ],
+            "weaknesses": [
+              "Pahalı",
+              "Yavaş döngü",
+              "Baskıya karşı savunmasız"
+            ],
             "synergies": [
               "Ölüm spawn sinerjisi durdurulamaz saldırı oluşturur",
               "Kral Kulesi'ni aktive eder ve savunmaları temizler",
@@ -315,9 +390,21 @@
               "Ölümde öfke saldırıyı hızlandırır"
             ],
             "matchups": {
-              "hogCycle": ["Chip hasarlarını görmezden gel", "Çift eliksirde büyük saldırılar oluştur", "Savunma yapılarına Lightning at"],
-              "logBait": ["Baby Dragon sürülerini counter'lar", "Inferno Tower'a Lightning at", "Rocket chip'lerine rağmen saldır"],
-              "xbowSiege": ["Golem ile X-Bow hasarını tankla", "Tesla + Archers'a Lightning at", "Ölüm hasarını durduramıyorlar"]
+              "hogCycle": [
+                "Chip hasarlarını görmezden gel",
+                "Çift eliksirde büyük saldırılar oluştur",
+                "Savunma yapılarına Lightning at"
+              ],
+              "logBait": [
+                "Baby Dragon sürülerini counter'lar",
+                "Inferno Tower'a Lightning at",
+                "Rocket chip'lerine rağmen saldır"
+              ],
+              "xbowSiege": [
+                "Golem ile X-Bow hasarını tankla",
+                "Tesla + Archers'a Lightning at",
+                "Ölüm hasarını durduramıyorlar"
+              ]
             },
             "phase1": {
               "name": "Temel (Hafta 1-2)",
@@ -349,8 +436,16 @@
           },
           "logBait": {
             "playstyle": "Büyü tuzağı taktikleriyle reaktif oyun",
-            "strengths": ["Kötü takasları zorlar", "Güçlü savunma", "Tahmin hamleleri"],
-            "weaknesses": ["Büyü zamanlaması kritik", "Pasif erken oyun", "Princess'a bağımlı"],
+            "strengths": [
+              "Kötü takasları zorlar",
+              "Güçlü savunma",
+              "Tahmin hamleleri"
+            ],
+            "weaknesses": [
+              "Büyü zamanlaması kritik",
+              "Pasif erken oyun",
+              "Princess'a bağımlı"
+            ],
             "synergies": [
               "En iyi Log tuzağı kombinasyonu",
               "Rakibi neye Log atacağını seçmeye zorlar",
@@ -358,9 +453,21 @@
               "Chip hasarı biriktirme stratejisi"
             ],
             "matchups": {
-              "hogCycle": ["Inferno Tower Hog'u mükemmel counter'lar", "Goblin Barrel'dan önce Log'larını tuzağa düşür", "Uzatma galibiyetleri için Rocket döngüsü"],
-              "golemBeatdown": ["Inferno Tower tek cevabınız", "Destek birliklerine Rocket at", "Chip için karşı şerite Barrel at"],
-              "xbowSiege": ["Knight X-Bow atışlarını tanklar", "Savunma düzenlerine Rocket at", "Princess tepkileri zorlar"]
+              "hogCycle": [
+                "Inferno Tower Hog'u mükemmel counter'lar",
+                "Goblin Barrel'dan önce Log'larını tuzağa düşür",
+                "Uzatma galibiyetleri için Rocket döngüsü"
+              ],
+              "golemBeatdown": [
+                "Inferno Tower tek cevabınız",
+                "Destek birliklerine Rocket at",
+                "Chip için karşı şerite Barrel at"
+              ],
+              "xbowSiege": [
+                "Knight X-Bow atışlarını tanklar",
+                "Savunma düzenlerine Rocket at",
+                "Princess tepkileri zorlar"
+              ]
             },
             "phase1": {
               "name": "Temel (Hafta 1-2)",
@@ -392,8 +499,16 @@
           },
           "xbowSiege": {
             "playstyle": "Chip hasarı ile savunma X-Bow kilitleri",
-            "strengths": ["Menzil avantajı", "Güçlü savunma", "Tepkileri zorlar"],
-            "weaknesses": ["Eşleşmeye bağlı", "Yüksek beceri tavanı", "Ağır taahhüt"],
+            "strengths": [
+              "Menzil avantajı",
+              "Güçlü savunma",
+              "Tepkileri zorlar"
+            ],
+            "weaknesses": [
+              "Eşleşmeye bağlı",
+              "Yüksek beceri tavanı",
+              "Ağır taahhüt"
+            ],
             "synergies": [
               "Tesla X-Bow'u tanklardan korur",
               "Ice Golem tanklar, Archers DPS verir",
@@ -401,9 +516,21 @@
               "Etkili şekilde dikkat dağıtan döngü kartları"
             ],
             "matchups": {
-              "hogCycle": ["Tesla ile savun, X-Bow taahhüt etme", "Chip hasarı için Fireball + Log", "Fireball'larını döngüyle geç"],
-              "golemBeatdown": ["Sürekli karşı şeride baskı yap", "Saldırı oluşturmalarına izin verme", "Destek birliklerine Fireball at"],
-              "logBait": ["Princess için Archers", "Sürülerine Log at", "Goblin Gang'e Fireball + Log"]
+              "hogCycle": [
+                "Tesla ile savun, X-Bow taahhüt etme",
+                "Chip hasarı için Fireball + Log",
+                "Fireball'larını döngüyle geç"
+              ],
+              "golemBeatdown": [
+                "Sürekli karşı şeride baskı yap",
+                "Saldırı oluşturmalarına izin verme",
+                "Destek birliklerine Fireball at"
+              ],
+              "logBait": [
+                "Princess için Archers",
+                "Sürülerine Log at",
+                "Goblin Gang'e Fireball + Log"
+              ]
             },
             "phase1": {
               "name": "Temel (Hafta 1-2)",
@@ -751,27 +878,52 @@
             "yourBattles": {
               "title": "Savaşlarınız",
               "description": "Oynadığınız her maç bir veri kaynağıdır. Oyun tarzınızı, güçlü yanlarınızı ve gelişim alanlarınızı anlamak için son savaşlarınızı analiz ediyoruz.",
-              "details": ["Galibiyet/mağlubiyet takibi", "Deste kullanım kalıpları", "Kupa ilerlemesi", "Taç performansı"]
+              "details": [
+                "Galibiyet/mağlubiyet takibi",
+                "Deste kullanım kalıpları",
+                "Kupa ilerlemesi",
+                "Taç performansı"
+              ]
             },
             "apiSync": {
               "title": "API Senkronizasyonu",
               "description": "En son savaş verilerinizi, kart koleksiyonunuzu ve oyuncu profilinizi gerçek zamanlı olarak almak için Clash Royale'in resmi API'si ile güvenli bir şekilde senkronize ediyoruz.",
-              "details": ["Gerçek zamanlı güncellemeler", "Güvenli bağlantı", "Envanter senkronizasyonu", "Geçmiş kaydı alma"]
+              "details": [
+                "Gerçek zamanlı güncellemeler",
+                "Güvenli bağlantı",
+                "Envanter senkronizasyonu",
+                "Geçmiş kaydı alma"
+              ]
             },
             "aiAnalysis": {
               "title": "Yapay Zeka Analizi",
               "description": "Gelişmiş yapay zeka modellerimiz verilerinizi analiz eder, kalıpları belirler, eşleşme tahminlerini hesaplar ve stratejik içgörüler üretir.",
-              "details": ["Kalıp tanıma", "Eşleşme hesaplamaları", "Meta karşılaştırmaları", "Stratejik modelleme"]
+              "details": [
+                "Kalıp tanıma",
+                "Eşleşme hesaplamaları",
+                "Meta karşılaştırmaları",
+                "Stratejik modelleme"
+              ]
             },
             "playerProfile": {
               "title": "Oyuncu Profili",
               "description": "Tercih ettiğiniz arketipleri, kart ustalık seviyelerinizi ve beceri gelişiminizi takip ederek oyununuzun kapsamlı bir profilini oluşturuyoruz.",
-              "details": ["Arketip tercihleri", "Beceri değerlendirmesi", "Ustalık takibi", "İlerleme geçmişi"]
+              "details": [
+                "Arketip tercihleri",
+                "Beceri değerlendirmesi",
+                "Ustalık takibi",
+                "İlerleme geçmişi"
+              ]
             },
             "insights": {
               "title": "Kişisel İçgörüler",
               "description": "Oyun tarzınıza ve kupa aralığınıza özel olarak tasarlanmış kişiselleştirilmiş öneriler, deste önerileri ve koçluk ipuçları alın.",
-              "details": ["Özel deste önerileri", "Hedefli koçluk", "Gelişim alanları", "Meta uyum ipuçları"]
+              "details": [
+                "Özel deste önerileri",
+                "Hedefli koçluk",
+                "Gelişim alanları",
+                "Meta uyum ipuçları"
+              ]
             }
           }
         },
@@ -1243,58 +1395,6 @@
     "globalRankingsFailed": "Dünya klan sıralaması yüklenemedi",
     "enterSearchQuery": "Lütfen bir arama sorgusu girin",
     "searchFailed": "Klan araması başarısız"
-  },
-  "common": {
-    "loading": "Yükleniyor...",
-    "error": "Hata",
-    "retry": "Tekrar Dene",
-    "save": "Kaydet",
-    "saving": "Kaydediliyor...",
-    "cancel": "İptal",
-    "confirm": "Onayla",
-    "delete": "Sil",
-    "edit": "Düzenle",
-    "close": "Kapat",
-    "back": "Geri",
-    "next": "İleri",
-    "previous": "Önceki",
-    "search": "Ara",
-    "filter": "Filtrele",
-    "sort": "Sırala",
-    "all": "Tümü",
-    "none": "Hiçbiri",
-    "yes": "Evet",
-    "no": "Hayır",
-    "ok": "Tamam",
-    "submit": "Gönder",
-    "reset": "Sıfırla",
-    "refresh": "Yenile",
-    "viewDetails": "Detayları Gör",
-    "global": "Global",
-    "sending": "Gönderiliyor...",
-    "noData": "Veri mevcut değil",
-    "comingSoon": "Yakında",
-    "unknown": "Bilinmiyor",
-    "viewMore": "Daha Fazla",
-    "showLess": "Daha Az",
-    "success": "Başarılı",
-    "aiPowered": "AI Destekli",
-    "elixir": "İksir",
-    "trophies": "kupa",
-    "description": "Açıklama",
-    "mayTakeMoment": "Bu biraz zaman alabilir",
-    "pleaseWait": "İsteğinizi işlerken lütfen bekleyin",
-    "pleaseWaitMoment": "Lütfen bir dakika bekleyin...",
-    "loadingDashboard": "Panelonuz yükleniyor",
-    "verifyingAuth": "Kimlik doğrulanıyor",
-    "clickForHelp": "Yardım için tıklayın",
-    "vs": "vs",
-    "new": "YENİ",
-    "pro": "PRO",
-    "ai": "AI",
-    "searching": "Aranıyor...",
-    "locked": "Kilitli",
-    "thisMayTakeMoment": "Bu biraz zaman alabilir"
   },
   "loadingMessages": {
     "playerData": "Oyuncu verileri yükleniyor...",
@@ -1786,29 +1886,29 @@
     }
   },
   "achievements": {
-    "title": "Başarı Merkezi",
+    "title": "Başarılar",
+    "subtitle": "Savaş başarıların",
     "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
-    "syncProgress": "İlerleme Senkronize Et",
-    "unlocked": "Başarı Açıldı!",
-    "points": "puan",
+    "syncProgress": "İlerlemeyi Senkronize Et",
+    "unlocked": "Açıldı",
     "masteryPoints": "Ustalık Puanları",
     "learningPhase": "Öğrenme Aşaması",
     "beginner": "Başlangıç",
-    "completion": "Tamamlanma",
-    "skillBreakdown": "Yetenek Dağılımı",
-    "skillBreakdownDescription": "Kategoriler genelinde mevcut yetenek puanlarınız",
-    "skills": "Yetenekler",
+    "intermediate": "Orta",
+    "advanced": "İleri",
+    "completion": "Tamamlama",
+    "skillBreakdown": "Beceri Dağılımı",
+    "skillBreakdownDescription": "Farklı beceri alanlarındaki performansınız",
+    "skills": "Beceriler",
     "mastery": "Ustalık",
     "learning": "Öğrenme",
     "milestones": "Kilometre Taşları",
-    "unlockedCount": "Açılan ({{count}})",
-    "inProgress": "Devam Eden ({{count}})",
+    "unlockedCount": "{{count}} Açıldı",
+    "inProgress": "{{count}} Devam Ediyor",
     "progress": "İlerleme",
     "pts": "puan",
-    "unlockedOn": "{{date}} tarihinde açıldı",
-    "unlockedNew": "Yeni bir başarım kazandınız!",
-    "synced": "Başarımlar Senkronize Edildi",
-    "syncedMessage": "Başarım ilerlemeniz güncellendi"
+    "points": "puan",
+    "unlockedOn": "{{date}} tarihinde açıldı"
   },
   "analytics": {
     "winRateTrends": "Kazanma Oranı Trendleri",
@@ -2269,13 +2369,6 @@
     "confidence": "Güven",
     "betterDefensiveValue": "Bu kart daha iyi savunma değeri sağlar ve döngü kartlarınızla iyi sinerji yapar..."
   },
-  "sidebar": {
-    "navigation": "Navigasyon",
-    "quickActions": "Hızlı Eylemler",
-    "achievements": "Başarılar",
-    "proDna": "Pro DNA",
-    "theOracle": "Kahin"
-  },
   "admin": {
     "apiMetrics": {
       "title": "API Metrikleri",
@@ -2386,16 +2479,6 @@
     "proFeature": "PRO Özellik",
     "proUpgradeMessage": "Canlı Maç Tahminlerinin kilidini açmak için PRO'ya yükseltin."
   },
-  "achievements": {
-    "title": "Başarılar",
-    "subtitle": "Savaş başarılarınız",
-    "share": "Kupa Dolabını Paylaş",
-    "shared": "Kupa Dolabı paylaşıldı!",
-    "downloaded": "Kupa Dolabı kaydedildi!",
-    "shareFailed": "Paylaşım başarısız",
-    "trophyCase": "Kupa Dolabı",
-    "badgesEarned": "Kazanılan Rozetler"
-  },
   "commonExtra": {
     "note": "This section contains duplicate keys that were previously causing issues"
   },
@@ -2504,31 +2587,6 @@
     "fallbackNotice": "Canlı sıralama mevcut değil. Tüm Zamanların Efsaneleri gösteriliyor.",
     "usingSimDeck": "Bu efsane için simüle edilmiş deste kullanılıyor."
   },
-  "achievements": {
-    "title": "Başarılar",
-    "subtitle": "Savaş başarıların",
-    "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
-    "syncProgress": "İlerlemeyi Senkronize Et",
-    "unlocked": "Açıldı",
-    "masteryPoints": "Ustalık Puanları",
-    "learningPhase": "Öğrenme Aşaması",
-    "beginner": "Başlangıç",
-    "intermediate": "Orta",
-    "advanced": "İleri",
-    "completion": "Tamamlama",
-    "skillBreakdown": "Beceri Dağılımı",
-    "skillBreakdownDescription": "Farklı beceri alanlarındaki performansınız",
-    "skills": "Beceriler",
-    "mastery": "Ustalık",
-    "learning": "Öğrenme",
-    "milestones": "Kilometre Taşları",
-    "unlockedCount": "{{count}} Açıldı",
-    "inProgress": "{{count}} Devam Ediyor",
-    "progress": "İlerleme",
-    "pts": "puan",
-    "points": "puan",
-    "unlockedOn": "{{date}} tarihinde açıldı"
-  },
   "proPlayers": {
     "mohamedLight": {
       "playstyle": "Her hatayı piksel hassasiyetindeki Goblin Barrelleriyle cezalandıran agresif tuzak uzmanı",
@@ -2623,5 +2681,10 @@
       "text": "Bu özellikleri denemeye hazır mısınız?",
       "button": "Ücretsiz Denemenizi Başlatın"
     }
+  },
+  "trialLimit": {
+    "title": "Deneme limitine ulaşıldı",
+    "description": "Deneme hesapları 24 saatte 1 AI analizi yapabilir. Bir sonraki: {{time}}. Tam erişim için abone ol.",
+    "cta": "Abone Ol"
   }
 }

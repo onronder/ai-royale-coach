@@ -1,6 +1,52 @@
 {
   "common": {
-    "dismiss": "Dismiss"
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "submit": "Submit",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "viewDetails": "View Details",
+    "global": "Global",
+    "sending": "Sending...",
+    "noData": "No data available",
+    "comingSoon": "Coming Soon",
+    "unknown": "Unknown",
+    "aiPowered": "AI Powered",
+    "elixir": "Elixir",
+    "trophies": "trophies",
+    "description": "Description",
+    "mayTakeMoment": "This may take a moment",
+    "pleaseWait": "Please wait while we process your request",
+    "pleaseWaitMoment": "Please wait a moment...",
+    "loadingDashboard": "Loading your dashboard",
+    "verifyingAuth": "Verifying authentication",
+    "clickForHelp": "Click for help",
+    "vs": "vs",
+    "new": "NEW",
+    "pro": "PRO",
+    "ai": "AI",
+    "searching": "Searching...",
+    "locked": "Locked",
+    "thisMayTakeMoment": "This may take a moment"
   },
   "announcement": {
     "new": "NEW",
@@ -28,11 +74,9 @@
   "sidebar": {
     "navigation": "Navigation",
     "quickActions": "Quick Actions",
-    "toolbox": "Toolbox",
     "achievements": "Achievements",
     "proDna": "Pro DNA",
-    "theOracle": "The Oracle",
-    "dreamArena": "Dream Arena"
+    "theOracle": "The Oracle"
   },
   "feedback": {
     "thankYou": "Thanks for your feedback!",
@@ -255,8 +299,16 @@
         "deckData": {
           "hogCycle": {
             "playstyle": "Fast-paced pressure with constant cycling",
-            "strengths": ["Fast cycle", "Versatile defense", "Chip damage"],
-            "weaknesses": ["Low HP troops", "Spell vulnerable", "Requires skill"],
+            "strengths": [
+              "Fast cycle",
+              "Versatile defense",
+              "Chip damage"
+            ],
+            "weaknesses": [
+              "Low HP troops",
+              "Spell vulnerable",
+              "Requires skill"
+            ],
             "synergies": [
               "Ice Golem tanks and kites defenders",
               "Perfect defensive synergy vs tanks",
@@ -264,9 +316,21 @@
               "Incredible cycle and distraction combo"
             ],
             "matchups": {
-              "golemBeatdown": ["Never give them value for Lightning", "Pressure opposite lane aggressively", "Save Fireball for Night Witch"],
-              "logBait": ["Log their Princess, Fireball their Goblin Gang", "Keep pressure to prevent Rocket cycling", "Predict Goblin Barrel placements"],
-              "xbowSiege": ["Pressure same lane as X-Bow to prevent locks", "Fireball their defensive buildings", "Cycle faster than they can defend"]
+              "golemBeatdown": [
+                "Never give them value for Lightning",
+                "Pressure opposite lane aggressively",
+                "Save Fireball for Night Witch"
+              ],
+              "logBait": [
+                "Log their Princess, Fireball their Goblin Gang",
+                "Keep pressure to prevent Rocket cycling",
+                "Predict Goblin Barrel placements"
+              ],
+              "xbowSiege": [
+                "Pressure same lane as X-Bow to prevent locks",
+                "Fireball their defensive buildings",
+                "Cycle faster than they can defend"
+              ]
             },
             "phase1": {
               "name": "Foundation (Week 1-2)",
@@ -298,8 +362,16 @@
           },
           "golemBeatdown": {
             "playstyle": "Heavy pushes with overwhelming force",
-            "strengths": ["High damage", "Tower destruction", "Death damage synergy"],
-            "weaknesses": ["Expensive", "Slow cycle", "Vulnerable to pressure"],
+            "strengths": [
+              "High damage",
+              "Tower destruction",
+              "Death damage synergy"
+            ],
+            "weaknesses": [
+              "Expensive",
+              "Slow cycle",
+              "Vulnerable to pressure"
+            ],
             "synergies": [
               "Death spawn synergy creates unstoppable push",
               "Activates King Tower and clears defenses",
@@ -307,9 +379,21 @@
               "Rage on death accelerates push"
             ],
             "matchups": {
-              "hogCycle": ["Ignore their chip damage", "Build big pushes in double elixir", "Lightning their defensive structures"],
-              "logBait": ["Baby Dragon counters their swarms", "Lightning Inferno Tower", "Push through their Rocket chip"],
-              "xbowSiege": ["Tank X-Bow damage with Golem", "Lightning their Tesla + Archers", "They can't stop death damage"]
+              "hogCycle": [
+                "Ignore their chip damage",
+                "Build big pushes in double elixir",
+                "Lightning their defensive structures"
+              ],
+              "logBait": [
+                "Baby Dragon counters their swarms",
+                "Lightning Inferno Tower",
+                "Push through their Rocket chip"
+              ],
+              "xbowSiege": [
+                "Tank X-Bow damage with Golem",
+                "Lightning their Tesla + Archers",
+                "They can't stop death damage"
+              ]
             },
             "phase1": {
               "name": "Foundation (Week 1-2)",
@@ -341,8 +425,16 @@
           },
           "logBait": {
             "playstyle": "Reactive play with spell baiting tactics",
-            "strengths": ["Forces bad trades", "Strong defense", "Prediction plays"],
-            "weaknesses": ["Spell timing crucial", "Passive early game", "Princess reliant"],
+            "strengths": [
+              "Forces bad trades",
+              "Strong defense",
+              "Prediction plays"
+            ],
+            "weaknesses": [
+              "Spell timing crucial",
+              "Passive early game",
+              "Princess reliant"
+            ],
             "synergies": [
               "Ultimate Log bait combination",
               "Forces opponent to choose what to Log",
@@ -350,9 +442,21 @@
               "Chip damage accumulation strategy"
             ],
             "matchups": {
-              "hogCycle": ["Inferno Tower counters Hog perfectly", "Bait their Log before Goblin Barrel", "Rocket cycle for overtime wins"],
-              "golemBeatdown": ["Inferno Tower is your only answer", "Rocket their support troops", "Barrel opposite lane for chip"],
-              "xbowSiege": ["Knight tanks X-Bow shots", "Rocket their defensive setup", "Princess forces reactions"]
+              "hogCycle": [
+                "Inferno Tower counters Hog perfectly",
+                "Bait their Log before Goblin Barrel",
+                "Rocket cycle for overtime wins"
+              ],
+              "golemBeatdown": [
+                "Inferno Tower is your only answer",
+                "Rocket their support troops",
+                "Barrel opposite lane for chip"
+              ],
+              "xbowSiege": [
+                "Knight tanks X-Bow shots",
+                "Rocket their defensive setup",
+                "Princess forces reactions"
+              ]
             },
             "phase1": {
               "name": "Foundation (Week 1-2)",
@@ -384,8 +488,16 @@
           },
           "xbowSiege": {
             "playstyle": "Defensive X-Bow locks with chip damage",
-            "strengths": ["Range advantage", "Strong defense", "Forces reactions"],
-            "weaknesses": ["Matchup dependent", "High skill cap", "Commitment heavy"],
+            "strengths": [
+              "Range advantage",
+              "Strong defense",
+              "Forces reactions"
+            ],
+            "weaknesses": [
+              "Matchup dependent",
+              "High skill cap",
+              "Commitment heavy"
+            ],
             "synergies": [
               "Tesla protects X-Bow from tanks",
               "Ice Golem tanks, Archers DPS",
@@ -393,9 +505,21 @@
               "Cycle cards that distract effectively"
             ],
             "matchups": {
-              "hogCycle": ["Defend with Tesla, don't commit X-Bow", "Fireball + Log for chip damage", "Out-cycle their Fireball"],
-              "golemBeatdown": ["Pressure opposite lane constantly", "Never let them build pushes", "Fireball their support troops"],
-              "logBait": ["Archers for Princess", "Log their swarms", "Fireball + Log Goblin Gang"]
+              "hogCycle": [
+                "Defend with Tesla, don't commit X-Bow",
+                "Fireball + Log for chip damage",
+                "Out-cycle their Fireball"
+              ],
+              "golemBeatdown": [
+                "Pressure opposite lane constantly",
+                "Never let them build pushes",
+                "Fireball their support troops"
+              ],
+              "logBait": [
+                "Archers for Princess",
+                "Log their swarms",
+                "Fireball + Log Goblin Gang"
+              ]
             },
             "phase1": {
               "name": "Foundation (Week 1-2)",
@@ -752,27 +876,52 @@
             "yourBattles": {
               "title": "Your Battles",
               "description": "Every match you play is a data source. We analyze your recent battles to understand your playstyle, strengths, and areas for improvement.",
-              "details": ["Win/Loss tracking", "Deck usage patterns", "Trophy progression", "Crown performance"]
+              "details": [
+                "Win/Loss tracking",
+                "Deck usage patterns",
+                "Trophy progression",
+                "Crown performance"
+              ]
             },
             "apiSync": {
               "title": "API Sync",
               "description": "We securely sync with Clash Royale's official API to fetch your latest battle data, card collection, and player profile in real-time.",
-              "details": ["Real-time updates", "Secure connection", "Card inventory sync", "Battle log retrieval"]
+              "details": [
+                "Real-time updates",
+                "Secure connection",
+                "Card inventory sync",
+                "Battle log retrieval"
+              ]
             },
             "aiAnalysis": {
               "title": "AI Analysis",
               "description": "Our advanced AI models analyze your data, identifying patterns, calculating matchup predictions, and generating strategic insights.",
-              "details": ["Pattern recognition", "Matchup calculations", "Meta comparisons", "Strategic modeling"]
+              "details": [
+                "Pattern recognition",
+                "Matchup calculations",
+                "Meta comparisons",
+                "Strategic modeling"
+              ]
             },
             "playerProfile": {
               "title": "Player Profile",
               "description": "We build a comprehensive profile of your gameplay, tracking your preferred archetypes, card mastery levels, and skill progression.",
-              "details": ["Archetype preferences", "Skill assessment", "Card mastery tracking", "Progress history"]
+              "details": [
+                "Archetype preferences",
+                "Skill assessment",
+                "Card mastery tracking",
+                "Progress history"
+              ]
             },
             "insights": {
               "title": "Personalized Insights",
               "description": "Receive tailored recommendations, deck suggestions, and coaching tips specifically designed for your playstyle and trophy range.",
-              "details": ["Custom deck recommendations", "Targeted coaching", "Improvement areas", "Meta adaptation tips"]
+              "details": [
+                "Custom deck recommendations",
+                "Targeted coaching",
+                "Improvement areas",
+                "Meta adaptation tips"
+              ]
             }
           }
         },
@@ -1224,55 +1373,6 @@
     "enterSearchQuery": "Please enter a search query",
     "searchFailed": "Failed to search clans"
   },
-  "common": {
-    "loading": "Loading...",
-    "error": "Something went wrong",
-    "retry": "Try Again",
-    "save": "Save",
-    "saving": "Saving...",
-    "cancel": "Cancel",
-    "confirm": "Confirm",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "search": "Search",
-    "filter": "Filter",
-    "sort": "Sort",
-    "all": "All",
-    "none": "None",
-    "yes": "Yes",
-    "no": "No",
-    "ok": "OK",
-    "submit": "Submit",
-    "reset": "Reset",
-    "refresh": "Refresh",
-    "viewDetails": "View Details",
-    "global": "Global",
-    "sending": "Sending...",
-    "noData": "No data available",
-    "comingSoon": "Coming Soon",
-    "unknown": "Unknown",
-    "aiPowered": "AI Powered",
-    "elixir": "Elixir",
-    "trophies": "trophies",
-    "description": "Description",
-    "mayTakeMoment": "This may take a moment",
-    "pleaseWait": "Please wait while we process your request",
-    "pleaseWaitMoment": "Please wait a moment...",
-    "loadingDashboard": "Loading your dashboard",
-    "verifyingAuth": "Verifying authentication",
-    "clickForHelp": "Click for help",
-    "vs": "vs",
-    "new": "NEW",
-    "pro": "PRO",
-    "ai": "AI",
-    "searching": "Searching...",
-    "locked": "Locked",
-    "thisMayTakeMoment": "This may take a moment"
-  },
   "loading": {
     "playerData": "Fetching player data...",
     "battles": "Loading battle history...",
@@ -1593,29 +1693,29 @@
     "languageChanged": "Language changed. Click predict to get analysis in your new language."
   },
   "achievements": {
-    "title": "Achievement Center",
+    "title": "Achievements",
+    "subtitle": "Your battle accomplishments",
     "description": "Track your mastery journey and unlock rewards",
     "syncProgress": "Sync Progress",
-    "unlocked": "Achievement Unlocked!",
-    "points": "pts",
+    "unlocked": "Unlocked",
     "masteryPoints": "Mastery Points",
     "learningPhase": "Learning Phase",
     "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
     "completion": "Completion",
     "skillBreakdown": "Skill Breakdown",
-    "skillBreakdownDescription": "Your current skill ratings across categories",
+    "skillBreakdownDescription": "Your performance across different skill areas",
     "skills": "Skills",
     "mastery": "Mastery",
     "learning": "Learning",
     "milestones": "Milestones",
-    "unlockedCount": "Unlocked ({{count}})",
-    "inProgress": "In Progress ({{count}})",
+    "unlockedCount": "{{count}} Unlocked",
+    "inProgress": "{{count}} In Progress",
     "progress": "Progress",
     "pts": "pts",
-    "unlockedOn": "Unlocked {{date}}",
-    "unlockedNew": "You've unlocked a new achievement!",
-    "synced": "Achievements Synced",
-    "syncedMessage": "Your achievement progress has been updated"
+    "points": "points",
+    "unlockedOn": "Unlocked on {{date}}"
   },
   "deckStats": {
     "title": "Deck Statistics",
@@ -2250,111 +2350,6 @@
     "confidence": "Confidence",
     "betterDefensiveValue": "This card provides better defensive value and synergizes well with your cycle cards..."
   },
-  "sidebar": {
-    "navigation": "Navigation",
-    "quickActions": "Quick Actions",
-    "achievements": "Achievements",
-    "proDna": "Pro DNA",
-    "theOracle": "The Oracle"
-  },
-  "admin": {
-    "apiMetrics": {
-      "title": "API Metrics",
-      "subtitle": "Monitor query frequency and identify redundant calls",
-      "totalRequests": "Total Requests",
-      "requestsPerMin": "Requests/min",
-      "cacheHitRate": "Cache Hit Rate",
-      "avgDuration": "Avg Duration",
-      "slowQueries": "Slow Queries",
-      "requestTimeline": "Request Timeline",
-      "recentRequests": "Recent Requests",
-      "endpointsByCategory": "Endpoints by Category",
-      "grouped": "Grouped",
-      "flat": "Flat",
-      "loading": "Loading...",
-      "noData": "No data yet",
-      "endpoints": "endpoints",
-      "calls": "calls",
-      "cache": "cache",
-      "slow": "Slow"
-    },
-    "fraudReview": {
-      "backToCases": "Back to Cases",
-      "caseReview": "Case Review",
-      "userDetails": "User Details",
-      "userId": "User ID",
-      "status": "Status",
-      "fraudScore": "Fraud Score",
-      "totalSignals": "Total Signals",
-      "softBlocked": "Soft Blocked",
-      "warning": "Warning",
-      "clean": "Clean",
-      "playerTags": "Player Tags",
-      "noPlayerTags": "No player tags linked",
-      "deviceFingerprints": "Device Fingerprints",
-      "noFingerprints": "No fingerprints recorded",
-      "lastSeen": "Last seen",
-      "seenCount": "Seen {{count}} times",
-      "fraudSignals": "Fraud Signals",
-      "noSignals": "No signals recorded",
-      "adminActions": "Admin Actions",
-      "reviewNotes": "Review notes (optional)...",
-      "clearMarkClean": "Clear (Mark Clean)",
-      "setWarning": "Set Warning",
-      "softBlock": "Soft Block",
-      "lastReviewed": "Last reviewed",
-      "notes": "Notes",
-      "loadingCaseDetails": "Loading case details...",
-      "statusUpdated": "Status updated successfully",
-      "updateFailed": "Failed to update status",
-      "severity": {
-        "critical": "Critical",
-        "high": "High",
-        "medium": "Medium",
-        "low": "Low"
-      }
-    }
-  },
-  "oraclePage": {
-    "title": "The Oracle",
-    "subtitle": "Predict your opponent's deck before the match begins",
-    "proFeature": "PRO Feature",
-    "proUpgradeMessage": "Upgrade to PRO to unlock Live Match Predictions."
-  },
-  "achievements": {
-    "title": "Achievements",
-    "subtitle": "Your battle accomplishments",
-    "share": "Share Trophy Case",
-    "shared": "Trophy Case shared!",
-    "downloaded": "Trophy Case saved!",
-    "shareFailed": "Failed to share",
-    "trophyCase": "Trophy Case",
-    "badgesEarned": "Badges Earned"
-  },
-  "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "morePages": "More pages",
-    "previousPage": "Go to previous page",
-    "nextPage": "Go to next page"
-  },
-  "commonExtra": {
-    "vs": "vs",
-    "new": "NEW",
-    "pro": "PRO",
-    "ai": "AI",
-    "searching": "Searching...",
-    "locked": "Locked",
-    "thisMayTakeMoment": "This may take a moment"
-  },
-  "pagination": {
-    "previous": "Previous",
-    "next": "Next",
-    "morePages": "More pages",
-    "previousPage": "Go to previous page",
-    "nextPage": "Go to next page",
-    "showing": "Showing {{start}}-{{end}} of {{total}}"
-  },
   "admin": {
     "apiMetrics": {
       "title": "API Metrics",
@@ -2459,6 +2454,29 @@
       }
     }
   },
+  "oraclePage": {
+    "title": "The Oracle",
+    "subtitle": "Predict your opponent's deck before the match begins",
+    "proFeature": "PRO Feature",
+    "proUpgradeMessage": "Upgrade to PRO to unlock Live Match Predictions."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "showing": "Showing {{start}}-{{end}} of {{total}}"
+  },
+  "commonExtra": {
+    "vs": "vs",
+    "new": "NEW",
+    "pro": "PRO",
+    "ai": "AI",
+    "searching": "Searching...",
+    "locked": "Locked",
+    "thisMayTakeMoment": "This may take a moment"
+  },
   "whatsNew": {
     "title": "What's New",
     "gotIt": "Got it, thanks!",
@@ -2556,31 +2574,6 @@
     "fallbackNotice": "Live rankings unavailable. Showing All-Time Legends.",
     "usingSimDeck": "Using simulated deck for this legend."
   },
-  "achievements": {
-    "title": "Achievements",
-    "subtitle": "Your battle accomplishments",
-    "description": "Track your mastery journey and unlock rewards",
-    "syncProgress": "Sync Progress",
-    "unlocked": "Unlocked",
-    "masteryPoints": "Mastery Points",
-    "learningPhase": "Learning Phase",
-    "beginner": "Beginner",
-    "intermediate": "Intermediate",
-    "advanced": "Advanced",
-    "completion": "Completion",
-    "skillBreakdown": "Skill Breakdown",
-    "skillBreakdownDescription": "Your performance across different skill areas",
-    "skills": "Skills",
-    "mastery": "Mastery",
-    "learning": "Learning",
-    "milestones": "Milestones",
-    "unlockedCount": "{{count}} Unlocked",
-    "inProgress": "{{count}} In Progress",
-    "progress": "Progress",
-    "pts": "pts",
-    "points": "points",
-    "unlockedOn": "Unlocked on {{date}}"
-  },
   "proPlayers": {
     "mohamedLight": {
       "playstyle": "Aggressive bait specialist who punishes every mistake with pixel-perfect Goblin Barrels",
@@ -2675,5 +2668,10 @@
       "text": "Ready to experience these features?",
       "button": "Start Your Free Trial"
     }
+  },
+  "trialLimit": {
+    "title": "Trial limit reached",
+    "description": "Trial accounts get 1 AI analysis every 24 hours. Next one available: {{time}}. Subscribe for full access.",
+    "cta": "Subscribe"
   }
 }
