@@ -94,13 +94,18 @@ export function OverviewTab({
         />
 
         {/* AI Analysis Card - Subscription Gated */}
-        <SubscriptionGate feature={t('subscription.features.aiAnalysis')}>
-          <AIAnalysisCard
-            analysis={analysis}
-            analysisLoading={analysisLoading}
-            analysisError={analysisError}
-          />
-        </SubscriptionGate>
+        {/* Saved summary stays readable after access ends; new generation remains server-blocked. */}
+        {(analysis as { read_only?: boolean } | null)?.read_only ? (
+          <AIAnalysisCard analysis={analysis} analysisLoading={false} analysisError={null} />
+        ) : (
+          <SubscriptionGate feature={t('subscription.features.aiAnalysis')}>
+            <AIAnalysisCard
+              analysis={analysis}
+              analysisLoading={analysisLoading}
+              analysisError={analysisError}
+            />
+          </SubscriptionGate>
+        )}
 
         {/* Achievement Badge Widget */}
         <AchievementBadgeWidget playerTag={playerTag} />

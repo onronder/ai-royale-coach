@@ -7,3 +7,6 @@
 - Profile and battle cache freshness use independent timestamps and endpoint-specific atomic writes so concurrent refreshes cannot hide stale battle data.
 - Coaching requests stream NDJSON progress and an explicit final status to keep the browser connection alive during generation; consumers must inspect the final status, not HTTP 200 alone.
 - Alternative-card follow-ups replace the rationale and practice tip along with the deck and reset its seen timestamp, so obsolete coaching cannot qualify a match.
+- No app-shell service worker: `public/sw.js` is a one-release kill-switch that clears the old Workbox caches; stale cached HTML kept users on old builds.
+- Polar subscription end/revoke events apply only when they match the stored `polar_subscription_id` (`_shared/subscription-events.ts`), so late deliveries cannot close a newer subscription.
+- Revenue counts only `paid` orders with net amount > 0; a first payment must belong to the same subscription and come after the trial ended.

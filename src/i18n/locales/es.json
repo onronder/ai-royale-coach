@@ -708,7 +708,7 @@
     "cta": {
       "title": "¿Listo para Subir?",
       "subtitle": "Únete a miles de jugadores mejorando con AI Royale",
-      "button": "Comenzar Gratis"
+      "button": "Prueba 3 días"
     },
     "valueHighlights": {
       "aiCoach": {
@@ -789,7 +789,7 @@
       "readyBadge": "¿Listo para Empezar?",
       "ctaTitle": "Imagina este consejo adaptado a TU juego",
       "ctaSubtitle": "Crea una cuenta gratuita para vincular tu etiqueta de jugador y desbloquear coaching IA personalizado basado en tus batallas reales.",
-      "startFree": "Comenzar Gratis",
+      "startFree": "Prueba 3 días",
       "backToHome": "Volver al Inicio",
       "noCreditCard": "✓ Demo: sin tarjeta de crédito ✓ Tu propio mazo: prueba de 3 días, luego 4,99 USD/mes",
       "aiFeatures": {
@@ -958,7 +958,7 @@
       "badge": "Empieza a Ganar Hoy",
       "title": "¿Listo para Desatar Tu Potencial en Clash Royale?",
       "subtitle": "Únete a miles de jugadores mejorando su juego con coaching impulsado por IA. Obtén insights personalizados desde tu primera batalla.",
-      "primaryButton": "Comenzar Gratis",
+      "primaryButton": "Prueba 3 días",
       "secondaryButton": "Probar Demo Primero",
       "trustText": "✓ Demo sin tarjeta ✓ Prueba de 3 días con tu mazo, luego 4,99 USD/mes ✓ Desactiva la renovación cuando quieras"
     }
@@ -989,7 +989,7 @@
     "signupSuccess": "¡Cuenta creada! ¡Bienvenido a AI Royale!",
     "welcomeBack": "¡Bienvenido de nuevo!",
     "secure": "Seguro",
-    "freeToUse": "Gratis",
+    "freeToUse": "3 días de prueba, luego 4,99 USD/mes",
     "noSpam": "Sin spam",
     "errors": {
       "invalidCredentials": "Correo o contraseña inválidos",
