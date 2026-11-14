@@ -12,6 +12,9 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
+import { firstTrialAnalysisTag } from "@/lib/automaticTrialAnalysis";
 
 const SelectPlayer = () => {
   const { t } = useTranslation();
@@ -21,8 +24,30 @@ const SelectPlayer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAISelector, setShowAISelector] = useState(false);
   
-  const { needsAISelection, accountSlots, isTrialActive, trialDaysRemaining, refetch: refetchSubscription } = useSubscription();
+  const { needsAISelection, accountSlots, isTrialActive, subscriptionStatus, trialDaysRemaining, refetch: refetchSubscription } = useSubscription();
+  const { profiles } = usePlayerProfiles(user?.id ?? null);
+  const { data: hasPreviousTrialUsage } = useQuery({
+    queryKey: ['first-trial-ai-usage', user?.id],
+    enabled: !!user?.id && isTrialActive && subscriptionStatus === 'trialing',
+    queryFn: async () => {
+      if (!user?.id) throw new Error('Authentication required');
+      const { data, error } = await supabase.from('daily_usage_logs')
+        .select('id').eq('user_id', user.id).eq('feature_name', 'ai_trial').limit(1);
+      if (error) throw error;
+      return (data?.length ?? 0) > 0;
+    },
+    staleTime: 0,
+  });
   const { showOnboarding, completeOnboarding, skipOnboarding } = useOnboarding(user?.id);
+
+  useEffect(() => {
+    if (hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
+    const tag = firstTrialAnalysisTag({
+      status: subscriptionStatus, isTrialActive, hasPreviousUsage: hasPreviousTrialUsage,
+      playerTags: profiles.map(profile => profile.player_tag),
+    });
+    if (tag) navigate(`/player/${encodeURIComponent(tag)}`, { replace: true });
+  }, [hasPreviousTrialUsage, subscriptionStatus, isTrialActive, profiles, navigate, searchParams]);
 
   // Check for subscription success and show AI selector if needed
   useEffect(() => {
