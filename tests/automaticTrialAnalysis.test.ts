@@ -19,4 +19,10 @@ describe('automatic first trial analysis', () => {
   it('never starts for a non-Polar subscription', () => {
     assert.equal(firstTrialAnalysisTag({ ...trial, status: null }), null);
   });
+  it('lets the player choose when several tags are linked', () => {
+    assert.equal(firstTrialAnalysisTag({ ...trial, playerTags: ['A', 'B'] }), null);
+  });
+  it('redirects only once per account', () => {
+    assert.equal(firstTrialAnalysisTag({ ...trial, alreadyRedirected: true }), null);
+  });
 });
