@@ -53,6 +53,7 @@ import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
 import { AchievementsTab } from "@/components/gamification/AchievementsTab";
 import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
 import { HelpDialog } from "@/components/help/HelpDialog";
+import { FirstSessionTask } from "@/components/coaching/FirstSessionTask";
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -228,6 +229,7 @@ const Dashboard = () => {
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
+                      <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} />
                       <OverviewTab
                         playerTag={playerTag}
                         player={player || null}

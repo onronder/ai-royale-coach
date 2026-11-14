@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, errorResponse } from "../_shared/cors.ts";
@@ -6,7 +7,7 @@ import { logger } from "../_shared/logger.ts";
 
 const DAILY_AI_LIMIT = 10;
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'coach-chat', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -127,7 +128,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -226,4 +227,4 @@ Guidelines:
     logger.error("Coach chat error", { error: e instanceof Error ? e.message : "Unknown error" });
     return errorResponse(e instanceof Error ? e.message : "Unknown error", 500);
   }
-});
+}));

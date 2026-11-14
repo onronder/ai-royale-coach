@@ -59,7 +59,7 @@ serve(async (req) => {
     const requestBody = await req.json().catch(() => ({}));
     const { playerTag } = requestBody;
     
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')

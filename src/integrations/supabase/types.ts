@@ -173,6 +173,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_trial_reservations: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          feature: string
+          id: string
+          request_key: string
+          response_data: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          feature: string
+          id?: string
+          request_key: string
+          response_data?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          feature?: string
+          id?: string
+          request_key?: string
+          response_data?: Json | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       analyses: {
         Row: {
           analysis_type: string
@@ -490,6 +523,78 @@ export type Database = {
           type?: string | null
           updated_at?: string | null
           war_trophies?: number | null
+        }
+        Relationships: []
+      }
+      coaching_tasks: {
+        Row: {
+          ai_calls: number
+          battle_result: Json | null
+          battles_fetched_at: string | null
+          completion_tokens: number
+          created_at: string
+          follow_up_answer: string | null
+          follow_up_question: string | null
+          follow_up_started_at: string | null
+          generation_started_at: string | null
+          id: string
+          language: string
+          last_checked_at: string | null
+          matched_battle_key: string | null
+          player_tag: string
+          prompt_tokens: number
+          recommendation: Json | null
+          recommended_deck: Json | null
+          shown_at: string | null
+          source_deck: Json | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ai_calls?: number
+          battle_result?: Json | null
+          battles_fetched_at?: string | null
+          completion_tokens?: number
+          created_at?: string
+          follow_up_answer?: string | null
+          follow_up_question?: string | null
+          follow_up_started_at?: string | null
+          generation_started_at?: string | null
+          id?: string
+          language?: string
+          last_checked_at?: string | null
+          matched_battle_key?: string | null
+          player_tag: string
+          prompt_tokens?: number
+          recommendation?: Json | null
+          recommended_deck?: Json | null
+          shown_at?: string | null
+          source_deck?: Json | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ai_calls?: number
+          battle_result?: Json | null
+          battles_fetched_at?: string | null
+          completion_tokens?: number
+          created_at?: string
+          follow_up_answer?: string | null
+          follow_up_question?: string | null
+          follow_up_started_at?: string | null
+          generation_started_at?: string | null
+          id?: string
+          language?: string
+          last_checked_at?: string | null
+          matched_battle_key?: string | null
+          player_tag?: string
+          prompt_tokens?: number
+          recommendation?: Json | null
+          recommended_deck?: Json | null
+          shown_at?: string | null
+          source_deck?: Json | null
+          status?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -922,22 +1027,28 @@ export type Database = {
       player_cache: {
         Row: {
           battles_data: Json | null
+          battles_fetched_at: string | null
           cached_at: string | null
           player_data: Json
+          player_fetched_at: string | null
           player_tag: string
           updated_at: string | null
         }
         Insert: {
           battles_data?: Json | null
+          battles_fetched_at?: string | null
           cached_at?: string | null
           player_data: Json
+          player_fetched_at?: string | null
           player_tag: string
           updated_at?: string | null
         }
         Update: {
           battles_data?: Json | null
+          battles_fetched_at?: string | null
           cached_at?: string | null
           player_data?: Json
+          player_fetched_at?: string | null
           player_tag?: string
           updated_at?: string | null
         }
@@ -1702,6 +1813,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      finish_trial_ai: {
+        Args: { p_id: string; p_success: boolean }
+        Returns: undefined
+      }
       get_daily_feature_usage: {
         Args: { p_date?: string; p_feature_name: string; p_user_id: string }
         Returns: number
@@ -1739,7 +1854,15 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      reserve_trial_ai: {
+        Args: { p_feature: string; p_request_key: string; p_user_id: string }
+        Returns: Json
+      }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
+      write_player_cache: {
+        Args: { p_data: Json; p_tag: string; p_type: string }
+        Returns: undefined
+      }
     }
     Enums: {
       admin_role: "admin" | "moderator" | "support"

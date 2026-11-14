@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
@@ -11,7 +12,7 @@ interface Card {
   rarity: string;
 }
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'analyze-deck-advanced', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -70,7 +71,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -235,4 +236,4 @@ Respond with structured data only.`;
     logger.error('Error in analyze-deck-advanced', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-});
+}));

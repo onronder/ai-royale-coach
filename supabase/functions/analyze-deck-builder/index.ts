@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -5,7 +6,7 @@ import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'analyze-deck-builder', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -68,7 +69,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -190,4 +191,4 @@ Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
     logger.error('Error in analyze-deck-builder', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-});
+}));

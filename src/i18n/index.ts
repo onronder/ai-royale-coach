@@ -7,6 +7,7 @@ import es from './locales/es.json';
 import pt from './locales/pt.json';
 import tr from './locales/tr.json';
 import fr from './locales/fr.json';
+import { coachingTranslations } from './coaching';
 
 import enHelp from './locales/en.help.json';
 import esHelp from './locales/es.help.json';
@@ -28,11 +29,11 @@ const i18nInit = i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: { ...en, ...enHelp } },
-      es: { translation: { ...es, ...esHelp } },
-      pt: { translation: { ...pt, ...ptHelp } },
-      tr: { translation: { ...tr, ...trHelp } },
-      fr: { translation: { ...fr, ...frHelp } },
+      en: { translation: { ...en, ...enHelp, coaching: coachingTranslations.en } },
+      es: { translation: { ...es, ...esHelp, coaching: coachingTranslations.es } },
+      pt: { translation: { ...pt, ...ptHelp, coaching: coachingTranslations.pt } },
+      tr: { translation: { ...tr, ...trHelp, coaching: coachingTranslations.tr } },
+      fr: { translation: { ...fr, ...frHelp, coaching: coachingTranslations.fr } },
     },
     fallbackLng: 'en',
     debug: false, // Set to true for debugging

@@ -1,10 +1,11 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'suggest-card-replacements', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -63,7 +64,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -174,4 +175,4 @@ Focus on practical, viable replacements that improve the deck.`;
     logger.error('Error in suggest-card-replacements', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-});
+}));
