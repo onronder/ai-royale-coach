@@ -58,6 +58,10 @@ export async function checkAiAccess(supabase: any, userId: string, feature: stri
 
   if ((recent?.length || 0) >= TRIAL_AI_LIMIT_PER_WINDOW) {
     const next = new Date(new Date(recent[0].used_at).getTime() + TRIAL_AI_WINDOW_HOURS * 3600_000).toISOString();
+    // Measure quota denials so funnel analysis can see "saw report -> denied -> cancelled".
+    await supabase.from('product_events').insert({
+      user_id: userId, event_name: 'trial_quota_denied', props: { feature, next_available_at: next },
+    }).then(() => {}, () => {});
     return { ...base, isTrial: true, trialLimitReached: true, nextAvailableAt: next };
   }
 
