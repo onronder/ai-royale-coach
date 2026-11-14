@@ -1,11 +1,11 @@
-import { withTrialQuota } from '../_shared/trial-quota.ts';
+import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
 
-serve((req) => withTrialQuota(req, 'predict-deck-performance', async (req) => {
+serve(async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -43,16 +43,10 @@ serve((req) => withTrialQuota(req, 'predict-deck-performance', async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'predict-deck-performance');
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
     if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
       return errorResponse('Subscription required for AI predictions', 403, { subscription_required: true });
     }
 
@@ -185,10 +179,11 @@ Provide predictions for 3-4 trophy ranges including the target range.`;
 
     const result = JSON.parse(toolCall.function.arguments);
 
+    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'predict-deck-performance');
     return jsonResponse(result);
 
   } catch (error) {
     logger.error('Error in predict-deck-performance', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-}));
+});

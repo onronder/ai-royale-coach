@@ -9,23 +9,37 @@ import { Textarea } from '@/components/ui/textarea';
 import { DeckTransfer } from './DeckTransfer';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 interface Task { id:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:{outcome:'win'|'loss'|'draw';score:number[];trophy_change:number|null;opponent_deck:ClashRoyaleCard[]}|null; }
+interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:string}) {
  const {t,i18n}=useTranslation(); const {hasAccess,isLoading:accessLoading}=useSubscription();
  const qc=useQueryClient(); const key=['coaching-task',userId,playerTag];
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
- const invoke=async(action:string)=>{
+ const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
+ const invoke=async(action:string,confirmedDeckIds?:number[])=>{
    const {data:{session}}=await supabase.auth.getSession();
    if(!session) throw new Error(t('coaching.error'));
-   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})})});
+   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,confirmedDeckIds,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})})});
    const reader=response.body?.getReader(); if(!reader)throw new Error(t('coaching.error'));
-   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;error?:string;deck_unavailable?:boolean;trial_limit?:boolean;next_available_at?:string}}|undefined;
+   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;deck_confirmation?:DeckConfirmation;error?:string;deck_unavailable?:boolean}}|undefined;
    while(true){const chunk=await reader.read();buffer+=decoder.decode(chunk.value,{stream:!chunk.done});const lines=buffer.split('\n');buffer=lines.pop()||'';for(const line of lines){if(line.trim()){const item=JSON.parse(line);if(item.status)final=item;}}if(chunk.done)break;}
    if(!final)throw new Error(t('coaching.error'));
-   if(final.status>=400){const detail=final.data;throw new Error(detail.deck_unavailable?t('coaching.unavailable'):detail.trial_limit?t('coaching.quota',{time:detail.next_available_at?new Date(detail.next_available_at).toLocaleString(i18n.language):'—'}):detail.error||t('coaching.error'));}
+   if(final.status>=400){const detail=final.data;throw new Error(detail.deck_unavailable?t('coaching.unavailable'):detail.error||t('coaching.error'));}
    return final.data;
  };
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
- const run=async(action:string)=>{if(busy)return;setBusy(action);setError('');try{qc.setQueryData(key,await invoke(action));}catch(e){setError(e instanceof Error?e.message:t('coaching.error'));}finally{setBusy(null);}};
+ const run=async(action:string,confirmedDeckIds?:number[])=>{
+   if(busy)return;
+   setBusy(action);
+   setError('');
+   try{
+     const data=await invoke(action,confirmedDeckIds);
+     setConfirmation(data.deck_confirmation??null);
+     qc.setQueryData(key,data);
+   }catch(e){
+     setConfirmation(null);
+     setError(e instanceof Error?e.message:t('coaching.error'));
+   }finally{setBusy(null);}
+ };
  useEffect(()=>{const revision=task?`${task.id}:${task.recommendation?.add_id}`:null;if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==revision){shown.current=revision;invoke('shown').then(data=>qc.setQueryData(key,data)).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,task?.recommendation?.add_id,hasAccess]);
  const time=(value:string|null|undefined)=>value?new Date(value).toLocaleString(i18n.language):t('coaching.never');
  const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt={c.name} className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{c.name}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:c.level+(16-(c.maxLevel??16))})}</p>}</div>;
@@ -49,7 +63,14 @@ export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:str
      </div>
     </div>
    </div>
-  </>:hasAccess?<Button onClick={()=>void run('start')} disabled={!!busy} className="h-auto min-h-11 whitespace-normal py-2">{busy?<Loader2 className="animate-spin"/>:<Swords/>}{busy?t('coaching.preparing'):t('coaching.start')}</Button>:null}
+  </>:hasAccess&&confirmation?<div className="space-y-3" aria-live="polite">
+    <p className="text-sm">{t(confirmation.from_battle?'coaching.partialDeck':'coaching.changedDeck')}</p>
+    <div className="grid max-w-lg grid-cols-4 gap-3">{confirmation.cards.map(c=>card(c))}</div>
+    <div className="flex flex-wrap gap-2">
+      <Button disabled={!!busy} onClick={()=>void run('start',confirmation.cards.map(c=>c.id))}>{busy?t('coaching.preparing'):t('coaching.confirmDeck')}</Button>
+      <Button variant="outline" disabled={!!busy} onClick={()=>setConfirmation(null)}>{t('common.cancel')}</Button>
+    </div>
+  </div>:hasAccess?<Button onClick={()=>void run('start')} disabled={!!busy} className="h-auto min-h-11 whitespace-normal py-2">{busy?<Loader2 className="animate-spin"/>:<Swords/>}{busy?t('coaching.preparing'):t('coaching.start')}</Button>:null}
   {!accessLoading&&!hasAccess&&<p className="mt-4 text-sm text-muted-foreground">{t('coaching.expired')}</p>}
   {(error||query.error)&&<div role="alert" className="mt-4 flex flex-wrap items-center gap-3"><p className="min-w-0 break-words text-sm text-destructive">{error||t('coaching.error')}</p><Button size="icon" variant="ghost" aria-label={t('common.retry')} onClick={()=>void query.refetch()}><RefreshCw/></Button></div>}
  </section>;

@@ -1,12 +1,14 @@
+import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { z } from 'npm:zod@3';
 import { Output, streamText } from 'npm:ai@6';
 import { createOpenAI } from 'npm:@ai-sdk/openai@3';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { checkAiAccess } from '../_shared/ai-access.ts';
+import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, normalizeTag } from '../_shared/coaching-match.ts';
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayResponseHeaders } from '../_shared/run-id.ts';
-const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up']), language:z.enum(['en','tr','es','fr','pt']).default('en'), question:z.string().trim().min(1).max(500).optional() });
+const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up']), language:z.enum(['en','tr','es','fr','pt']).default('en'), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
 const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
@@ -22,17 +24,18 @@ async function handleRequest(req: Request): Promise<Response> {
  const {action,language,question}=parsed.data; const tag=normalizeTag(parsed.data.playerTag);
  const {data:owner,error:ownerError}=await db.from('player_profiles').select('id,ai_enabled').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
  if(ownerError||!owner) return reply({error:'Linked player required'},403);
- const access=await checkAiAccess(db,user.id,'first-session-coaching',false);
+ const access=await checkAiAccess(db, user.id);
  let {data:task,error:readError}=await db.from('coaching_tasks').select('*').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
  if(readError) return reply({error:'Unable to load task'},503);
  if(action==='get') return reply({task,read_only:!access.allowed});
  if(!access.allowed) return reply({error:'Subscription required',subscription_required:true},403);
  if(!access.isTrial&&!access.isAdmin&&!owner.ai_enabled) return reply({error:'AI not enabled for this player'},403);
- let reservationId:string|undefined; let generationOwned=false; let followUpOwned=false;
+ let generationOwned=false; let followUpOwned=false;
  const event=async(name:string,props:Record<string,unknown>)=>{await db.from('product_events').insert({user_id:user.id,event_name:name,props:{player_tag:tag,...props}});};
  const gameData=async(type:'player'|'battles',force=false)=>{
-   const {data,error}=await db.functions.invoke('clash-royale-api',{body:{endpoint:type,playerTag:tag,forceRefresh:force}});
+   const {data,error,response}=await db.functions.invoke('clash-royale-api',{body:{endpoint:type,playerTag:tag,forceRefresh:force}});
    if(error) throw new Error('Game data unavailable');
+   if(action==='start' && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;
  };
  const ai=async<T>(prompt:string,schema:z.ZodType<T>)=>{
@@ -94,25 +97,26 @@ async function handleRequest(req: Request): Promise<Response> {
    // The initial task is persistent: repeat start, reload and double taps return it rather than generating again.
    if(task?.recommendation) return reply({task});
    if(task?.status==='generating'&&task.generation_started_at&&Date.now()-Date.parse(task.generation_started_at)<180000) return reply({error:'Task already in progress'},409);
+   const player=await gameData('player',true);
+   const source=await resolveCoachingDeck(player,tag,()=>gameData('battles',true),parsed.data.confirmedDeckIds);
+   if(source.kind==='unavailable') return reply({error:'Current deck and collection required',deck_unavailable:true},422);
+   if(source.kind==='confirm') return reply({task,deck_confirmation:{cards:source.cards,from_battle:player.currentDeck.length===7}});
+   const sourceDeck=source.cards;
    const stamp=new Date().toISOString();
    if(!task){const {data:created,error}=await db.from('coaching_tasks').insert({user_id:user.id,player_tag:tag,language,generation_started_at:stamp}).select('*').single();if(error)return reply({error:'Task already in progress'},409);task=created;}
    else {let claim=db.from('coaching_tasks').update({status:'generating',generation_started_at:stamp}).eq('id',task.id).eq('status',task.status);claim=task.generation_started_at?claim.eq('generation_started_at',task.generation_started_at):claim.is('generation_started_at',null);const {data:locked,error}=await claim.select('*').maybeSingle();if(error)throw error;if(!locked)return reply({error:'Task already in progress'},409);task=locked;}
    generationOwned=true;
-   const player=await gameData('player',true);
-   if(!Array.isArray(player.currentDeck)||player.currentDeck.length!==8||!Array.isArray(player.cards)) throw new Error('Current deck and collection required');
-   if(access.isTrial){const {data:r,error}=await db.rpc('reserve_trial_ai',{p_user_id:user.id,p_request_key:`coaching:${task.id}`,p_feature:'first-session-coaching'});if(error)throw error;if(!r?.allowed){await db.from('coaching_tasks').update({status:'failed'}).eq('id',task.id);await event('trial_quota_denied',{task_id:task.id,next_available_at:r?.next_available_at});return reply({error:r?.in_progress?'Analysis already in progress':'Trial limit: 1 AI analysis per 24 hours',trial_limit:!r?.in_progress,next_available_at:r?.next_available_at},r?.in_progress?409:429);}reservationId=r.id;}
-   const generated=await ai(`Choose exactly one card change for a one-match practice task using current deck and available collection, considering real levels. Return remove_id from deck and add_id from owned collection outside deck, concise reason, and one practice tip. Current deck: ${JSON.stringify(player.currentDeck)}. Collection: ${JSON.stringify(player.cards)}.`,Suggestion);
+   const generated=await ai(`Choose exactly one card change for a one-match practice task using current deck and available collection, considering real levels. Return remove_id from deck and add_id from owned collection outside deck, concise reason, and one practice tip. Current deck: ${JSON.stringify(sourceDeck)}. Collection: ${JSON.stringify(player.cards)}.`,Suggestion);
    const suggestion=generated.output;
-   const removed=player.currentDeck.find((c:{id:number})=>c.id===suggestion.remove_id);const added=player.cards.find((c:{id:number})=>c.id===suggestion.add_id);
-   if(!removed||!added||player.currentDeck.some((c:{id:number})=>c.id===added.id)) throw new Error('AI suggested an invalid card swap');
-   const deck=player.currentDeck.map((c:{id:number})=>c.id===removed.id?added:c);
-   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:player.currentDeck,recommended_deck:deck,recommendation:suggestion,prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
+   const removed=sourceDeck.find((c:{id:number})=>c.id===suggestion.remove_id);const added=player.cards.find((c:{id:number})=>c.id===suggestion.add_id);
+   if(!removed||!added||sourceDeck.some((c:{id:number})=>c.id===added.id)) throw new Error('AI suggested an invalid card swap');
+   const deck=sourceDeck.map((c:{id:number})=>c.id===removed.id?added:c);
+   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:sourceDeck,recommended_deck:deck,recommendation:suggestion,prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
    if(error) throw error;
-   if(reservationId){const {error:finishError}=await db.rpc('finish_trial_ai',{p_id:reservationId,p_success:true});if(finishError)throw finishError;}
+   if(access.isTrial) await recordTrialUsage(db,user.id,'first-session-coaching');
    await event('coaching_generated',{task_id:task.id,gateway_run_id:generated.runId,model:'openai/gpt-6-astra',input_tokens:generated.usage.inputTokens,output_tokens:generated.usage.outputTokens});
    return reply({task:updated},200,generated.headers);
  }catch(e){
-   if(reservationId) await db.rpc('finish_trial_ai',{p_id:reservationId,p_success:false});
    if(generationOwned&&task)await db.from('coaching_tasks').update({status:'failed'}).eq('id',task.id).is('recommendation',null);
    if(followUpOwned&&task)await db.from('coaching_tasks').update({follow_up_started_at:null}).eq('id',task.id).is('follow_up_answer',null);
    await event('ai_generation_failed',{task_id:task?.id,action});

@@ -1,83 +1,33 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSubscription } from "./useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 
-interface AIAccessStatus {
-  hasAIAccess: boolean;
-  profileId: string | null;
-  isTrialActive: boolean;
-}
-
 export function usePlayerAIAccess(playerTag: string | null) {
-  const { data, isLoading, error } = useQuery({
+  const { hasAccess, isTrialActive, isLoading: subscriptionLoading } = useSubscription();
+  const { data: profile, isLoading, error } = useQuery({
     queryKey: ['player-ai-access', playerTag],
-    queryFn: async (): Promise<AIAccessStatus> => {
-      if (!playerTag) {
-        return { hasAIAccess: false, profileId: null, isTrialActive: false };
-      }
-
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        return { hasAIAccess: false, profileId: null, isTrialActive: false };
-      }
+      if (!user || !playerTag) return null;
 
-      // Normalize player tag - remove # prefix and uppercase
-      const normalizedTag = playerTag.replace(/^#/, '').toUpperCase();
-
-      // Check trial status from profiles table
-      const { data: userProfile } = await supabase
-        .from('profiles')
-        .select('trial_ends_at')
-        .eq('id', user.id)
-        .single();
-
-      const isTrialActive = userProfile?.trial_ends_at 
-        ? new Date(userProfile.trial_ends_at) > new Date() 
-        : false;
-
-      // If trial is active, user has full AI access for ALL accounts
-      if (isTrialActive) {
-        // Still get profile ID for reference
-        const { data: profile } = await supabase
-          .from('player_profiles')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('player_tag', normalizedTag)
-          .maybeSingle();
-
-        return { 
-          hasAIAccess: true, // Trial users get full access
-          profileId: profile?.id || null,
-          isTrialActive: true
-        };
-      }
-
-      // For non-trial users, check ai_enabled flag
-      const { data: profile, error } = await supabase
+      const { data, error } = await supabase
         .from('player_profiles')
         .select('id, ai_enabled')
         .eq('user_id', user.id)
-        .eq('player_tag', normalizedTag)
+        .eq('player_tag', playerTag.replace(/^#/, '').toUpperCase())
         .maybeSingle();
-
-      if (error || !profile) {
-        return { hasAIAccess: false, profileId: null, isTrialActive: false };
-      }
-
-      return { 
-        hasAIAccess: profile.ai_enabled || false,
-        profileId: profile.id,
-        isTrialActive: false
-      };
+      if (error) throw error;
+      return data;
     },
-    enabled: !!playerTag,
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    enabled: !!playerTag && hasAccess,
+    staleTime: 1000 * 60 * 2,
   });
 
   return {
-    hasAIAccess: data?.hasAIAccess ?? false,
-    profileId: data?.profileId ?? null,
-    isTrialActive: data?.isTrialActive ?? false,
-    isLoading,
+    hasAIAccess: !!playerTag && hasAccess && (isTrialActive || !!profile?.ai_enabled),
+    profileId: profile?.id ?? null,
+    isTrialActive,
+    isLoading: subscriptionLoading || isLoading,
     error,
   };
 }

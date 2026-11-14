@@ -1,5 +1,7 @@
 # Trial users get 1 AI analysis per 24 hours
 
+> Superseded on 2026-11-14. Active trials use the paid plan’s AI features and shared service limits. Successful trial usage is recorded for analytics. The original plan follows for historical reference.
+
 ## Goal
 Users on Polar's 3-day trial can use AI, but at most **1 AI request per 24 hours**, shared across every AI feature (coach chat, deck analysis, match analysis, recommendations and so on). That adds up to about 3 analyses over the whole trial.
 
