@@ -750,7 +750,7 @@ serve(async (req) => {
           log('info', 'Ignoring end event for a non-current subscription', {
             userId, eventSub: subscription?.id, currentSub: currentSub?.polar_subscription_id,
           });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'ignored', 'stale: not the current subscription');
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale: not the current subscription');
           break;
         }
 
