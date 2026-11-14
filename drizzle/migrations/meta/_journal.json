@@ -57,6 +57,13 @@
       "when": 1794661796093,
       "tag": "0007_coaching_atomic_cache",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794669534286,
+      "tag": "0008_revenue_net_paid_only",
+      "breakpoints": true
     }
   ]
 }

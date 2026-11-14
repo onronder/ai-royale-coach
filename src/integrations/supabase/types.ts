@@ -1109,10 +1109,12 @@ export type Database = {
           created_at: string
           currency: string | null
           customer_id: string | null
+          gross_amount: number | null
           order_id: string
           recorded_at: string
           status: string | null
           subscription_id: string | null
+          tax_amount: number | null
           user_id: string | null
         }
         Insert: {
@@ -1121,10 +1123,12 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_id?: string | null
+          gross_amount?: number | null
           order_id: string
           recorded_at?: string
           status?: string | null
           subscription_id?: string | null
+          tax_amount?: number | null
           user_id?: string | null
         }
         Update: {
@@ -1133,10 +1137,12 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_id?: string | null
+          gross_amount?: number | null
           order_id?: string
           recorded_at?: string
           status?: string | null
           subscription_id?: string | null
+          tax_amount?: number | null
           user_id?: string | null
         }
         Relationships: []
