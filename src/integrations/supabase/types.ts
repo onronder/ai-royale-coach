@@ -1725,6 +1725,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_trial_revenue_metrics: { Args: { p_days?: number }; Returns: Json }
       get_user_activity_metrics: { Args: { p_user_id: string }; Returns: Json }
       has_admin_role: {
         Args: {
