@@ -1,21 +1,22 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it } from 'node:test';
+import { strict as assert } from 'node:assert';
 import { firstTrialAnalysisTag } from './automaticTrialAnalysis';
 
 const trial = { status: 'trialing', isTrialActive: true, hasPreviousUsage: false, playerTags: ['ABC123'] };
 describe('automatic first trial analysis', () => {
   it('starts immediately for a live Polar trial with a linked player', () => {
-    expect(firstTrialAnalysisTag(trial)).toBe('ABC123');
+    assert.equal(firstTrialAnalysisTag(trial), 'ABC123');
   });
   it('does not automatically use another allowance after any previous AI usage', () => {
-    expect(firstTrialAnalysisTag({ ...trial, hasPreviousUsage: true })).toBeNull();
+    assert.equal(firstTrialAnalysisTag({ ...trial, hasPreviousUsage: true }), null);
   });
   it('waits until the player links an account', () => {
-    expect(firstTrialAnalysisTag({ ...trial, playerTags: [] })).toBeNull();
+    assert.equal(firstTrialAnalysisTag({ ...trial, playerTags: [] }), null);
   });
   it('never starts for an expired trial', () => {
-    expect(firstTrialAnalysisTag({ ...trial, isTrialActive: false })).toBeNull();
+    assert.equal(firstTrialAnalysisTag({ ...trial, isTrialActive: false }), null);
   });
   it('never starts for a non-Polar subscription', () => {
-    expect(firstTrialAnalysisTag({ ...trial, status: null })).toBeNull();
+    assert.equal(firstTrialAnalysisTag({ ...trial, status: null }), null);
   });
 });
