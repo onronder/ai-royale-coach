@@ -67,7 +67,25 @@ serve(async (req) => {
     const hasAccess = aiAccess.allowed;
 
     if (!hasAccess && !aiAccess.trialLimitReached) {
-      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
+      // Ended trial / lapsed subscription: return the last saved analysis read-only, never generate a new one.
+      const { data: pastSub } = await supabase
+        .from('user_subscriptions').select('id').eq('user_id', user.id).maybeSingle();
+      const tagKey = String(playerData.tag).replace(/^#/, '').toUpperCase();
+      if (pastSub) {
+        const { data: owned } = await supabase
+          .from('player_profiles').select('id').eq('user_id', user.id).eq('player_tag', tagKey).maybeSingle();
+        if (owned) {
+          const { data: last } = await supabase
+            .from('analyses').select('output, created_at')
+            .in('player_tag', [playerData.tag, `#${tagKey}`, tagKey])
+            .eq('analysis_type', 'profile_summary')
+            .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          if (last) {
+            return jsonResponse({ ...(last.output as Record<string, unknown>), read_only: true, analyzed_at: last.created_at });
+          }
+        }
+      }
+      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true, trial_ended: !!pastSub });
     }
 
     // Helper to normalize player tags
