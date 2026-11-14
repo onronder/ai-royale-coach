@@ -1,0 +1,1 @@
+import "https://raw.githubusercontent.com/onronder/ai-royale-coach/b951d2ed62ddc0f2a37c38ea61b20b549dabba58/supabase/functions/clash-royale-api/index.ts";
