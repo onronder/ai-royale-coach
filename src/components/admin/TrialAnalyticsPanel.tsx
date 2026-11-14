@@ -34,6 +34,26 @@ export function TrialAnalyticsPanel() {
     },
   });
 
+  const { data: rev, refetch: refetchRev } = useQuery({
+    queryKey: ['trial-revenue', days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_trial_revenue_metrics', { p_days: days });
+      if (error) throw error;
+      return data as Record<string, number>;
+    },
+  });
+  const [syncing, setSyncing] = useState(false);
+  const syncOrders = async () => {
+    setSyncing(true);
+    try {
+      const { error } = await supabase.functions.invoke('backfill-polar-orders');
+      if (error) throw error;
+      await refetchRev();
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const total = data.length;
   const steps = [
     { label: 'Started trial', n: total },
@@ -66,6 +86,30 @@ export function TrialAnalyticsPanel() {
                   <div className="text-xs text-muted-foreground">{s.label}</div>
                   <div className="text-2xl font-bold">{s.n}</div>
                   <div className="text-xs text-muted-foreground">{total ? Math.round((s.n / total) * 100) : 0}%</div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle>Revenue &amp; trial quota</CardTitle>
+              <Button size="sm" variant="outline" onClick={syncOrders} disabled={syncing}>
+                {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sync orders from Polar'}
+              </Button>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { label: 'First paid rate (trial end + 7d)', v: rev ? `${rev.eligible_paid}/${rev.eligible_trials}` : '–',
+                  sub: rev && rev.eligible_trials ? `${Math.round((rev.eligible_paid / rev.eligible_trials) * 100)}%` : '' },
+                { label: 'Positive orders', v: rev?.positive_orders ?? '–', sub: rev ? `$${(rev.positive_amount_cents / 100).toFixed(2)}` : '' },
+                { label: '$0 trial orders', v: rev?.zero_orders ?? '–', sub: '' },
+                { label: 'Trial quota denials', v: rev?.quota_denials ?? '–', sub: rev ? `${rev.quota_denied_users} users · ${rev.denied_then_cancelled} then cancelled` : '' },
+                { label: 'Renewal off, still trialing', v: rev?.renewal_off_while_trialing ?? '–', sub: '' },
+              ].map(c => (
+                <div key={c.label} className="rounded-lg border p-3">
+                  <div className="text-xs text-muted-foreground">{c.label}</div>
+                  <div className="text-2xl font-bold">{c.v}</div>
+                  <div className="text-xs text-muted-foreground">{c.sub}</div>
                 </div>
               ))}
             </CardContent>

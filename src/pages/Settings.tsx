@@ -52,6 +52,9 @@ const Settings = () => {
     status,
     refetch: refetchSubscription,
     cancelSubscription,
+    resumeSubscription,
+    cancelAtPeriodEnd,
+    accessEndsAt,
     isCancelling,
   } = useSubscription();
 
@@ -293,14 +296,31 @@ const Settings = () => {
               )}
 
               {/* Cancellation Pending Badge */}
-              {subscriptionStatus === 'cancelled' && status?.subscription?.currentPeriodEnd && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
-                  <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm text-muted-foreground">
-                    {t('settings.subscription.cancellationPending', { 
-                      date: format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy') 
-                    })}
-                  </span>
+              {cancelAtPeriodEnd && hasAccess && accessEndsAt && (
+                <div className="flex flex-col gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <span className="text-sm text-muted-foreground">
+                      {t('settings.subscription.renewalOff', {
+                        date: format(new Date(accessEndsAt), 'MMM d, yyyy HH:mm'),
+                      })}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isCancelling}
+                    onClick={async () => {
+                      try {
+                        await resumeSubscription();
+                        toast.success(t('settings.subscription.resumeSuccess'));
+                      } catch {
+                        toast.error(t('settings.subscription.cancelError'));
+                      }
+                    }}
+                  >
+                    {t('settings.subscription.resumeRenewal')}
+                  </Button>
                 </div>
               )}
 
@@ -319,7 +339,7 @@ const Settings = () => {
                     )}
 
                     {/* Cancel button - only for active/trialing, not already cancelled */}
-                    {subscriptionStatus !== 'cancelled' && (
+                    {!cancelAtPeriodEnd && (subscriptionStatus === 'active' || subscriptionStatus === 'trialing') && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button 

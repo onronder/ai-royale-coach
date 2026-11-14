@@ -85,6 +85,42 @@ function validateEnv(): { valid: boolean; missing: string[] } {
 type SupabaseAdminClient = ReturnType<typeof createClient>;
 
 // Log webhook event to database for monitoring
+
+// Map Polar status to our status. A subscription with cancel_at_period_end keeps
+// its real status (trialing/active) until Polar revokes it.
+function mapPolarStatus(s: string | undefined | null): string {
+  if (s === 'trialing') return 'trialing';
+  if (s === 'past_due') return 'past_due';
+  if (s === 'canceled' || s === 'cancelled') return 'cancelled';
+  if (s === 'revoked' || s === 'ended' || s === 'incomplete_expired' || s === 'unpaid') return 'expired';
+  return 'active';
+}
+
+// Fields describing renewal/cancellation state, plus an event timestamp used to
+// ignore late or duplicate deliveries.
+// deno-lint-ignore no-explicit-any
+function cancelFields(sub: any) {
+  return {
+    cancel_at_period_end: !!sub?.cancel_at_period_end,
+    canceled_at: sub?.canceled_at || null,
+    ends_at: sub?.ends_at || (sub?.cancel_at_period_end ? sub?.current_period_end : null) || null,
+    last_event_at: sub?.modified_at || sub?.created_at || new Date().toISOString(),
+  };
+}
+
+// True when the stored row already reflects a newer event for the same subscription.
+// deno-lint-ignore no-explicit-any
+async function isStaleEvent(supabase: any, userId: string, sub: any): Promise<boolean> {
+  const { data } = await supabase.from('user_subscriptions')
+    .select('polar_subscription_id, last_event_at').eq('user_id', userId).maybeSingle();
+  if (!data?.last_event_at || !sub?.modified_at) return false;
+  if (data.polar_subscription_id && sub?.id && data.polar_subscription_id !== sub.id) {
+    // Event for an older/different subscription: ignore if stored row is newer.
+    return new Date(sub.modified_at) < new Date(data.last_event_at);
+  }
+  return new Date(sub.modified_at) < new Date(data.last_event_at);
+}
+
 async function logWebhookEvent(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
@@ -390,6 +426,7 @@ serve(async (req) => {
             needs_ai_selection: needsAISelection,
             pending_account_slots: null,
             pending_change_effective_at: null,
+            ...cancelFields(subscription),
             updated_at: new Date().toISOString(),
           }, {
             onConflict: 'user_id',
@@ -529,14 +566,12 @@ serve(async (req) => {
         }
 
         // Determine status - handle various Polar status values
-        let status = 'active';
-        if (subscription?.status === 'trialing') {
-          status = 'trialing';
-        } else if (subscription?.status === 'canceled' || subscription?.status === 'cancelled') {
-          status = 'cancelled';
-        } else if (subscription?.status === 'past_due') {
-          status = 'past_due';
+        if (await isStaleEvent(supabase, userId, subscription)) {
+          log('info', 'Ignoring stale subscription.updated', { userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
+          break;
         }
+        const status = mapPolarStatus(subscription?.status);
 
         // Use UPSERT to handle case where subscription.created wasn't received (common for trials)
         const { error: upsertError } = await supabase
@@ -554,6 +589,7 @@ serve(async (req) => {
             pending_account_slots: null,
             pending_change_effective_at: null,
             needs_ai_selection: false,
+            ...cancelFields(subscription),
             updated_at: new Date().toISOString(),
           }, {
             onConflict: 'user_id',
@@ -650,68 +686,44 @@ serve(async (req) => {
         break;
       }
 
-      case 'subscription.canceled': {
+      case 'subscription.canceled':
+      case 'subscription.uncanceled': {
+        // canceled = renewal turned off (access continues until period end);
+        // uncanceled = renewal turned back on. Keep Polar's real status.
         const subscription = event.data;
         const userId = extractUserId(subscription);
-
         if (!userId) {
-          log('error', 'No user_id found in subscription cancel');
+          log('error', `No user_id found in ${event.type}`);
           break;
         }
-
-        log('info', 'Processing subscription cancellation', { userId });
-
-        // Use UPSERT to handle case where no subscription record exists
-        const { error: cancelError } = await supabase
+        if (await isStaleEvent(supabase, userId, subscription)) {
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
+          break;
+        }
+        const { error: cErr } = await supabase
           .from('user_subscriptions')
           .upsert({
             user_id: userId,
             polar_subscription_id: subscription?.id || null,
             polar_customer_id: subscription?.customer?.id || null,
             polar_customer_external_id: userId,
-            status: 'cancelled',
+            status: mapPolarStatus(subscription?.status),
+            current_period_start: subscription?.current_period_start,
             current_period_end: subscription?.current_period_end,
+            ...cancelFields(subscription),
+            ...(event.type === 'subscription.uncanceled' ? { cancel_at_period_end: false, canceled_at: null, ends_at: null } : {}),
             updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'user_id',
+          }, { onConflict: 'user_id' });
+        if (cErr) {
+          log('error', `Error processing ${event.type}`, { error: cErr.message, userId });
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', cErr.message);
+          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
+            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
-
-        if (cancelError) {
-          log('error', 'Error cancelling subscription', { error: cancelError.message, userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', cancelError.message);
-        } else {
-          log('info', 'Subscription cancelled (access until period end)', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
         }
-        break;
-      }
-
-      case 'subscription.uncanceled': {
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-
-        if (!userId) {
-          log('error', 'No user_id found in subscription uncancel');
-          break;
-        }
-
-        log('info', 'Processing subscription uncancellation', { userId });
-
-        const { error: uncancelError } = await supabase
-          .from('user_subscriptions')
-          .update({
-            status: 'active',
-            updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', userId);
-
-        if (uncancelError) {
-          log('error', 'Error uncancelling subscription', { error: uncancelError.message });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', uncancelError.message);
-        } else {
-          log('info', 'Subscription reactivated', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
-        }
+        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
+          status: subscription?.status, cancelAtPeriodEnd: !!subscription?.cancel_at_period_end,
+        });
         break;
       }
 
@@ -811,9 +823,26 @@ serve(async (req) => {
       case 'order.updated':
       case 'order.paid':
       case 'order.refunded': {
-        log('info', `Order event: ${event.type}`, { orderId: event.data?.id });
-        await logWebhookEvent(supabase, event.type, event.data?.id, null, 'processed', undefined, {
-          orderId: event.data?.id
+        const order = event.data;
+        log('info', `Order event: ${event.type}`, { orderId: order?.id });
+        const orderUserId = order?.customer?.external_id || order?.metadata?.user_id || null;
+        if (order?.id) {
+          // Idempotent: one row per Polar order id, latest state wins.
+          const { error: oErr } = await supabase.from('polar_orders').upsert({
+            order_id: order.id,
+            user_id: orderUserId,
+            customer_id: order.customer_id || order.customer?.id || null,
+            subscription_id: order.subscription_id || null,
+            amount: order.total_amount ?? order.net_amount ?? order.amount ?? 0,
+            currency: order.currency || null,
+            billing_reason: order.billing_reason || null,
+            status: event.type === 'order.refunded' ? 'refunded' : (order.status || (order.paid ? 'paid' : null)),
+            created_at: order.created_at || new Date().toISOString(),
+          }, { onConflict: 'order_id' });
+          if (oErr) log('warn', 'Failed to record order', { error: oErr.message });
+        }
+        await logWebhookEvent(supabase, event.type, order?.id, orderUserId, 'processed', undefined, {
+          orderId: order?.id, amount: order?.total_amount ?? order?.amount, billingReason: order?.billing_reason,
         });
         break;
       }

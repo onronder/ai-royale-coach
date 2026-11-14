@@ -991,8 +991,72 @@ export type Database = {
         }
         Relationships: []
       }
+      polar_orders: {
+        Row: {
+          amount: number
+          billing_reason: string | null
+          created_at: string
+          currency: string | null
+          customer_id: string | null
+          order_id: string
+          recorded_at: string
+          status: string | null
+          subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number
+          billing_reason?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_id?: string | null
+          order_id: string
+          recorded_at?: string
+          status?: string | null
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          billing_reason?: string | null
+          created_at?: string
+          currency?: string | null
+          customer_id?: string | null
+          order_id?: string
+          recorded_at?: string
+          status?: string | null
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      product_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          props: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          props?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          props?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          acquisition_source: Json | null
           chat_retention_days: number | null
           created_at: string | null
           email: string | null
@@ -1009,6 +1073,7 @@ export type Database = {
           winback_email_sent_at: string | null
         }
         Insert: {
+          acquisition_source?: Json | null
           chat_retention_days?: number | null
           created_at?: string | null
           email?: string | null
@@ -1025,6 +1090,7 @@ export type Database = {
           winback_email_sent_at?: string | null
         }
         Update: {
+          acquisition_source?: Json | null
           chat_retention_days?: number | null
           created_at?: string | null
           email?: string | null
@@ -1452,10 +1518,14 @@ export type Database = {
       user_subscriptions: {
         Row: {
           account_slots: number | null
+          cancel_at_period_end: boolean
+          canceled_at: string | null
           created_at: string | null
           current_period_end: string | null
           current_period_start: string | null
+          ends_at: string | null
           id: string
+          last_event_at: string | null
           needs_ai_selection: boolean | null
           pending_account_slots: number | null
           pending_change_effective_at: string | null
@@ -1469,10 +1539,14 @@ export type Database = {
         }
         Insert: {
           account_slots?: number | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
+          ends_at?: string | null
           id?: string
+          last_event_at?: string | null
           needs_ai_selection?: boolean | null
           pending_account_slots?: number | null
           pending_change_effective_at?: string | null
@@ -1486,10 +1560,14 @@ export type Database = {
         }
         Update: {
           account_slots?: number | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string | null
           current_period_end?: string | null
           current_period_start?: string | null
+          ends_at?: string | null
           id?: string
+          last_event_at?: string | null
           needs_ai_selection?: boolean | null
           pending_account_slots?: number | null
           pending_change_effective_at?: string | null
@@ -1647,6 +1725,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_trial_revenue_metrics: { Args: { p_days?: number }; Returns: Json }
       get_user_activity_metrics: { Args: { p_user_id: string }; Returns: Json }
       has_admin_role: {
         Args: {

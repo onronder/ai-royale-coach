@@ -8,6 +8,8 @@ interface SubscriptionStatus {
     accountSlots: number;
     currentPeriodEnd: string | null;
     needsAISelection: boolean;
+    cancelAtPeriodEnd?: boolean;
+    endsAt?: string | null;
   } | null;
   trial: {
     isActive: boolean;
@@ -69,8 +71,8 @@ export function useSubscription() {
   });
 
   const cancelSubscriptionMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('cancel-subscription');
+    mutationFn: async (action: 'cancel' | 'resume' = 'cancel') => {
+      const { data, error } = await supabase.functions.invoke('cancel-subscription', { body: { action } });
       if (error) throw error;
       return data;
     },
@@ -93,7 +95,10 @@ export function useSubscription() {
     needsAISelection: data?.subscription?.needsAISelection ?? false,
     createCheckout: createCheckoutMutation.mutateAsync,
     isCreatingCheckout: createCheckoutMutation.isPending,
-    cancelSubscription: cancelSubscriptionMutation.mutateAsync,
+    cancelSubscription: () => cancelSubscriptionMutation.mutateAsync('cancel'),
+    resumeSubscription: () => cancelSubscriptionMutation.mutateAsync('resume'),
+    cancelAtPeriodEnd: data?.subscription?.cancelAtPeriodEnd ?? false,
+    accessEndsAt: data?.subscription?.endsAt ?? data?.subscription?.currentPeriodEnd ?? null,
     isCancelling: cancelSubscriptionMutation.isPending,
   };
 }

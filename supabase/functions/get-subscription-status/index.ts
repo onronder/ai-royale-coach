@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 import { logger } from '../_shared/logger.ts';
+import { subscriptionAccess } from '../_shared/subscription-access.ts';
 
 const defaultResponse = {
   hasAccess: false,
@@ -54,14 +55,13 @@ serve(async (req) => {
     let trialDaysRemaining = 0;
     let trialEndsAt: string | null = null;
 
-    // Check Polar-managed trial first (from subscription status)
-    if (subscription?.status === 'trialing' && subscription.current_period_end) {
-      const trialEnd = new Date(subscription.current_period_end);
-      if (trialEnd > now) {
-        isTrialActive = true;
-        trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        trialEndsAt = subscription.current_period_end;
-      }
+    // Shared access rule (same as AI features)
+    const accessKind = subscriptionAccess(subscription, now);
+    if (accessKind === 'trial') {
+      const trialEnd = new Date(subscription!.ends_at || subscription!.current_period_end);
+      isTrialActive = true;
+      trialDaysRemaining = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      trialEndsAt = trialEnd.toISOString();
     }
 
     // ONE-TIME GRACE PERIOD: Check profile-based trial for existing users only
@@ -77,14 +77,6 @@ serve(async (req) => {
       }
     }
 
-    // Active subscription includes: active, trialing, cancelled (still has access until period end)
-    const hasActiveSubscription = ['active', 'trialing'].includes(subscription?.status || '');
-    
-    // Check if cancelled but still within period
-    const cancelledButActive = subscription?.status === 'cancelled' && 
-      subscription.current_period_end && 
-      new Date(subscription.current_period_end) > now;
-
     // Admins always have full access (server-side check against admin_roles)
     const { data: isAdminUser } = await supabase.rpc('is_admin', { p_user_id: user.id });
     const isAdmin = isAdminUser === true;
@@ -94,7 +86,7 @@ serve(async (req) => {
       : subscription?.account_slots || (isTrialActive ? 3 : 0);
 
     // Determine access level
-    const hasAccess = isAdmin || hasActiveSubscription || isTrialActive || cancelledButActive;
+    const hasAccess = isAdmin || accessKind === 'paid' || isTrialActive;
 
     return jsonResponse({
       hasAccess,
@@ -105,6 +97,8 @@ serve(async (req) => {
         polarSubscriptionId: subscription.polar_subscription_id,
         polarCustomerId: subscription.polar_customer_id,
         needsAISelection: subscription.needs_ai_selection || false,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+        endsAt: subscription.ends_at || (subscription.cancel_at_period_end ? subscription.current_period_end : null),
       } : null,
       trial: {
         isActive: isTrialActive,

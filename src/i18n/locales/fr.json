@@ -791,7 +791,7 @@
       "ctaSubtitle": "Créez un compte gratuit pour relier votre tag de joueur et débloquer un coaching IA personnalisé basé sur vos vraies batailles.",
       "startFree": "Commencer Gratuitement",
       "backToHome": "Retour à l'Accueil",
-      "noCreditCard": "✓ Pas de carte de crédit ✓ Gratuit",
+      "noCreditCard": "✓ Démo : pas de carte bancaire ✓ Ton propre deck : essai de 3 jours, puis 4,99 USD/mois",
       "aiFeatures": {
         "badge": "Technologie IA Avancée",
         "title": "Propulsé par l'IA Avancée",
@@ -960,7 +960,7 @@
       "subtitle": "Rejoignez des milliers de joueurs qui améliorent leur jeu avec un coaching propulsé par l'IA. Obtenez des insights personnalisés dès votre première bataille.",
       "primaryButton": "Commencer Gratuitement",
       "secondaryButton": "Essayer la Démo d'Abord",
-      "trustText": "✓ Pas de carte de crédit ✓ Configuration en 2 minutes ✓ Annulez quand vous voulez"
+      "trustText": "✓ Démo sans carte ✓ Essai de 3 jours avec ton deck, puis 4,99 USD/mois ✓ Désactive le renouvellement quand tu veux"
     }
   },
   "auth": {
@@ -1486,8 +1486,11 @@
       },
       "cancellationPending": "Annulé — accès jusqu'au {{date}}",
       "cancelling": "Annulation en cours...",
-      "cancelSuccess": "Abonnement annulé avec succès",
-      "cancelError": "Échec de l'annulation de l'abonnement. Veuillez réessayer."
+      "cancelSuccess": "Renouvellement désactivé — aucun prélèvement",
+      "cancelError": "Échec de l'annulation de l'abonnement. Veuillez réessayer.",
+      "renewalOff": "Renouvellement désactivé — aucun prélèvement. Tu peux continuer jusqu'au {{date}}.",
+      "resumeRenewal": "Réactiver le renouvellement",
+      "resumeSuccess": "Renouvellement réactivé"
     },
     "aiAccounts": {
       "title": "Comptes avec IA Activée",
@@ -2101,7 +2104,7 @@
     "unlockFeature": "Débloquer {{feature}}",
     "premiumDescription": "Obtenez un accès complet au coaching IA, à l'analyse de decks et aux recommandations personnalisées.",
     "trialExpiredDescription": "Votre essai gratuit est terminé. Abonnez-vous pour continuer à utiliser les fonctionnalités IA.",
-    "startFreeTrial": "Commencer l'Essai Gratuit de 3 Jours",
+    "startFreeTrial": "Essai 3 jours · puis 4,99 USD/mois",
     "subscribePro": "S'abonner à Pro",
     "priceInfo": "$4.99/mois • Annulez à tout moment",
     "trialStarted": "Votre essai gratuit de 3 jours a commencé!",
