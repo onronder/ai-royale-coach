@@ -234,7 +234,7 @@ function PlayerTagCard({
   hasSubscription,
   trialExpired
 }: PlayerTagCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const badgeUrl = getClanBadgeUrl(profile.clan_badge_id);
 
