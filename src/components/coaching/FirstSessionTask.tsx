@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { DeckTransfer } from './DeckTransfer';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 interface Task { id:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:{outcome:'win'|'loss'|'draw';score:number[];trophy_change:number|null;opponent_deck:ClashRoyaleCard[]}|null; }
 export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:string}) {
@@ -39,6 +40,7 @@ export function FirstSessionTask({userId,playerTag}:{userId:string;playerTag:str
     <div>{removed&&added&&<div className="mb-4 flex items-center justify-center gap-5"> <div className="w-24">{card(removed,t('coaching.remove'))}</div><ArrowRight className="h-5 w-5 shrink-0 text-primary"/><div className="w-24">{card(added,t('coaching.add'))}</div></div>}
      {!changedByFollowUp&&<><p className="break-words text-sm leading-relaxed">{task.recommendation.reason}</p><p className="mt-3 text-sm"><span className="font-semibold text-primary">{t('coaching.practice')}: </span>{task.recommendation.practice}</p></>}
      <h3 className="mb-3 mt-5 text-sm font-semibold">{t('coaching.ready')}</h3><div className="grid grid-cols-4 gap-3">{task.recommended_deck.map(c=>card(c))}</div>
+     <DeckTransfer cards={task.recommended_deck} playerTag={playerTag} />
     </div>
     <div className="min-w-0">
      {task.follow_up_answer?<div className="border-l-2 border-primary pl-4"><h3 className="mb-2 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-2 break-words text-sm text-muted-foreground">{task.follow_up_question}</p><p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{task.follow_up_answer}</p></div>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}
