@@ -567,7 +567,7 @@ serve(async (req) => {
         // Determine status - handle various Polar status values
         if (await isStaleEvent(supabase, userId, subscription)) {
           log('info', 'Ignoring stale subscription.updated', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', 'stale_ignored');
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
           break;
         }
         const status = mapPolarStatus(subscription?.status);
@@ -696,7 +696,7 @@ serve(async (req) => {
           break;
         }
         if (await isStaleEvent(supabase, userId, subscription)) {
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', 'stale_ignored');
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
           break;
         }
         const { error: cErr } = await supabase
