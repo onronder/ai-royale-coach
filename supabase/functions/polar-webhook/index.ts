@@ -426,6 +426,7 @@ serve(async (req) => {
             needs_ai_selection: needsAISelection,
             pending_account_slots: null,
             pending_change_effective_at: null,
+            ...cancelFields(subscription),
             updated_at: new Date().toISOString(),
           }, {
             onConflict: 'user_id',
