@@ -137,7 +137,8 @@ serve(async (req) => {
       return jsonResponse(cached.output);
     }
 
-    const reservation = await checkAiAccess(supabase, user.id, 'analyze-player');
+    // Automatic profile summaries are not the player's daily trial choice.
+    const reservation = await checkAiAccess(supabase, user.id, 'analyze-player', false);
     if (!reservation.allowed) {
       if (reservation.trialLimitReached) {
         return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, {

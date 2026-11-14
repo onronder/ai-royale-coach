@@ -11,13 +11,13 @@ async function fetchPlayer(playerTag: string, forceRefresh: boolean = false): Pr
   if (!forceRefresh) {
     const { data: cached } = await supabase
       .from("player_cache")
-      .select("player_data, updated_at")
+      .select("player_data, player_fetched_at")
       .eq("player_tag", normalizedTag)
       .maybeSingle();
 
     // If cache exists and is fresh (< 5 minutes), return it immediately
     if (cached && cached.player_data) {
-      const cacheAge = Date.now() - new Date(cached.updated_at).getTime();
+      const cacheAge = cached.player_fetched_at ? Date.now() - new Date(cached.player_fetched_at).getTime() : Infinity;
       if (cacheAge < 5 * 60 * 1000) {
         return cached.player_data as unknown as ClashRoyalePlayer;
       }
@@ -76,7 +76,10 @@ export function useClashRoyalePlayer(playerTag: string | null) {
   
   const query = useQuery<ClashRoyalePlayer>({
     queryKey: ['clash-player', playerTag],
-    queryFn: () => fetchPlayer(playerTag!, false),
+    queryFn: () => {
+      if (!playerTag) throw new Error('Player tag required');
+      return fetchPlayer(playerTag, false);
+    },
     enabled: !!playerTag,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,

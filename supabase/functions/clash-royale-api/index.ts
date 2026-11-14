@@ -94,7 +94,8 @@ async function getCachedOrFetch(
   let staleCache = false;
 
   if (cached && !cacheError && !forceRefresh) {
-    const cacheAge = (now.getTime() - new Date(cached.updated_at).getTime()) / 1000;
+    const fetchedAt = type === 'player' ? cached.player_fetched_at : cached.battles_fetched_at;
+    const cacheAge = fetchedAt ? (now.getTime() - new Date(fetchedAt).getTime()) / 1000 : Infinity;
     cachedData = type === 'player' ? cached.player_data : cached.battles_data;
     
     if (cachedData && cacheAge < cacheTTL) {
@@ -116,24 +117,18 @@ async function getCachedOrFetch(
   try {
     const freshData = await fetchFn();
 
-    const { data: existingCache } = await supabase
-      .from('player_cache')
-      .select('player_data, battles_data')
-      .eq('player_tag', normalizedTag)
-      .maybeSingle();
-
     const cacheUpdate: any = {
       player_tag: normalizedTag,
-      player_data: type === 'player' ? freshData : (existingCache?.player_data || null),
-      battles_data: type === 'battles' ? freshData : (existingCache?.battles_data || null),
+      [type === 'player' ? 'player_data' : 'battles_data']: freshData,
+      [type === 'player' ? 'player_fetched_at' : 'battles_fetched_at']: new Date().toISOString(),
       updated_at: now.toISOString(),
       cached_at: now.toISOString(),
     };
 
-    const { error: upsertError } = await supabase
-      .from('player_cache')
-      .upsert(cacheUpdate, { onConflict: 'player_tag' })
-      .select();
+    // Update only this endpoint's fields; simultaneous profile/battle fetches cannot overwrite each other.
+    const { error: upsertError } = await supabase.rpc('write_player_cache', {
+      p_tag: normalizedTag, p_type: type, p_data: freshData,
+    });
     
     if (upsertError) {
       logger.error('Failed to cache data', { error: upsertError.message, type, playerTag: normalizedTag });

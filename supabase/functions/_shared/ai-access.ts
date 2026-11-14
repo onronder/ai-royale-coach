@@ -20,7 +20,7 @@ export interface AiAccessResult {
  * - Polar trialing (or legacy grace trial): 1 AI request per 24h, shared across all AI features
  * Records the trial usage when a trial request is allowed.
  */
-export async function checkAiAccess(supabase: any, userId: string, feature: string, consumeTrialUsage = true): Promise<AiAccessResult> {
+export async function checkAiAccess(supabase: any, userId: string, feature: string, consumeTrialUsage = false): Promise<AiAccessResult> {
   const base = { allowed: false, isAdmin: false, isPaid: false, isTrial: false, trialLimitReached: false, nextAvailableAt: null };
   const now = new Date();
 
@@ -46,6 +46,10 @@ export async function checkAiAccess(supabase: any, userId: string, feature: stri
     isTrial = !!profile?.trial_ends_at && !profile.trial_used && new Date(profile.trial_ends_at) > now;
   }
   if (!isTrial) return base;
+
+  // Reading cached output and validating entitlement never consume or reject a daily choice.
+  // Generation reserves the shared allowance atomically through withTrialQuota.
+  if (!consumeTrialUsage) return { ...base, allowed: true, isTrial: true };
 
   const windowStart = new Date(now.getTime() - TRIAL_AI_WINDOW_HOURS * 3600_000).toISOString();
   const { data: recent } = await supabase
