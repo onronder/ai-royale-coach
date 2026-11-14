@@ -1,1 +1,0 @@
-import "https://raw.githubusercontent.com/onronder/ai-royale-coach/c828861ac63b3723c88a307a92a9f76814513710/supabase/functions/first-session-coaching/index.ts";
