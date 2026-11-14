@@ -286,6 +286,7 @@ serve(async (req) => {
       headers: { 
         ...corsHeaders, 
         'Content-Type': 'application/json',
+        'Access-Control-Expose-Headers': 'X-Cache-Hit, X-Cache-Stale',
         'X-Cache-Hit': result.cacheHit.toString(),
         'X-Cache-Stale': result.stale.toString(),
       },
