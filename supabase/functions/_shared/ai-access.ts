@@ -19,7 +19,7 @@ export interface AiAccessResult {
  * - Polar trialing (or legacy grace trial): 1 AI request per 24h, shared across all AI features
  * Records the trial usage when a trial request is allowed.
  */
-export async function checkAiAccess(supabase: any, userId: string, feature: string): Promise<AiAccessResult> {
+export async function checkAiAccess(supabase: any, userId: string, feature: string, consumeTrialUsage = true): Promise<AiAccessResult> {
   const base = { allowed: false, isAdmin: false, isPaid: false, isTrial: false, trialLimitReached: false, nextAvailableAt: null };
   const now = new Date();
 
@@ -59,11 +59,14 @@ export async function checkAiAccess(supabase: any, userId: string, feature: stri
     return { ...base, isTrial: true, trialLimitReached: true, nextAvailableAt: next };
   }
 
-  await supabase.from('daily_usage_logs').insert({
+  if (!consumeTrialUsage) return { ...base, allowed: true, isTrial: true };
+
+  const { error: usageError } = await supabase.from('daily_usage_logs').insert({
     user_id: userId,
     player_tag: '',
     feature_name: TRIAL_FEATURE,
     metadata: { feature },
   });
+  if (usageError) throw new Error('Unable to record trial AI usage');
   return { ...base, allowed: true, isTrial: true };
 }

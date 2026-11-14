@@ -48,11 +48,12 @@ export function usePlayerAnalysis(
 
       return data;
     },
-    enabled: !!player && !!battles && battles.length > 0,
+    enabled: !!player && !!battles,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     retry: (failureCount, err) => {
       if (err instanceof Error && (err.message === 'AUTH_REQUIRED' || err.message === 'SUBSCRIPTION_REQUIRED')) return false;
-      return failureCount < 1;
+      // An automatic analysis must not silently consume another trial attempt on failure.
+      return false;
     },
   });
 }

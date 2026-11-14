@@ -57,39 +57,17 @@ serve(async (req) => {
       return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    // Check subscription status
-    const { data: subscription } = await supabase
-      .from('user_subscriptions')
-      .select('status')
-      .eq('user_id', user.id)
-      .single();
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('trial_ends_at, trial_used')
-      .eq('id', user.id)
-      .single();
-
-    const now = new Date();
-    const isTrialActive = profile?.trial_ends_at && 
-      new Date(profile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-player');
-    const hasAccess = aiAccess.allowed;
-
-    if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
-      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
+    const { playerData, battles, language = 'en' } = await req.json();
+    if (!playerData || typeof playerData.tag !== 'string' || !Array.isArray(battles)) {
+      return errorResponse('Player data and battles are required', 400);
     }
 
-    const { playerData, battles, language = 'en' } = await req.json();
-    
-    if (!playerData || !battles) {
-      return errorResponse('Player data and battles are required', 400);
+    // Validate access before reading a saved result, without consuming another analysis.
+    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-player', false);
+    const hasAccess = aiAccess.allowed;
+
+    if (!hasAccess && !aiAccess.trialLimitReached) {
+      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
     }
 
     // Helper to normalize player tags
@@ -98,7 +76,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerData.tag && !isTrialActive) {
+    if (playerData.tag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerData.tag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -141,16 +119,26 @@ serve(async (req) => {
       return jsonResponse(cached.output);
     }
 
+    const reservation = await checkAiAccess(supabase, user.id, 'analyze-player');
+    if (!reservation.allowed) {
+      if (reservation.trialLimitReached) {
+        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, {
+          trial_limit: true, next_available_at: reservation.nextAvailableAt,
+        });
+      }
+      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
+    }
+
     // Calculate stats
     const recentBattles = battles.slice(0, 20);
     const wins = recentBattles.filter((b: any) => 
       (b.team[0]?.crowns || 0) > (b.opponent[0]?.crowns || 0)
     ).length;
-    const winRate = (wins / recentBattles.length) * 100;
+    const winRate = recentBattles.length ? (wins / recentBattles.length) * 100 : 0;
     
     const avgTrophyChange = recentBattles.reduce((sum: number, b: any) => 
       sum + (b.team[0]?.trophyChange || 0), 0
-    ) / recentBattles.length;
+    ) / (recentBattles.length || 1);
 
     // Prepare prompt
     const prompt = `Analyze this Clash Royale player's profile and provide insights:
