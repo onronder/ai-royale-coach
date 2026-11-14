@@ -23,15 +23,12 @@ export function AIFeatureGate({
 }: AIFeatureGateProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { hasAccess: hasSubscriptionAccess, isTrialActive: subscriptionTrialActive, isLoading: isSubLoading } = useSubscription();
-  const { hasAIAccess, isTrialActive: playerTrialActive, isLoading: isAILoading } = usePlayerAIAccess(playerTag);
+  const { hasAccess: hasSubscriptionAccess, isTrialActive, isLoading: isSubLoading } = useSubscription();
+  const { hasAIAccess, isLoading: isAILoading } = usePlayerAIAccess(playerTag);
   const [showPricingModal, setShowPricingModal] = useState(false);
 
   const isLoading = isSubLoading || isAILoading;
   
-  // Trial is active from either source
-  const isTrialActive = subscriptionTrialActive || playerTrialActive;
-
   if (isLoading && showLoadingState) {
     return (
       <div className="flex items-center justify-center p-8">

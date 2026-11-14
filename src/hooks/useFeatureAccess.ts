@@ -115,7 +115,9 @@ export function useFeatureAccess(
   const effectiveLimit = getFeatureLimit(featureName, dailyLimit);
   
   // Calculate remaining uses based on effective limit
-  const remainingUses = Math.max(0, effectiveLimit - usageCount);
+  const remainingUses = (hasPaidAccess || isTrialActive) && !isSoftBlocked
+    ? Infinity
+    : Math.max(0, effectiveLimit - usageCount);
 
   // Determine current access status without async checks
   const getStaticAccessResult = (): AccessResult | null => {

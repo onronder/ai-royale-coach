@@ -42,16 +42,10 @@ serve(async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-meta-trends');
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
     if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
       return errorResponse('Subscription required for meta analysis', 403, { subscription_required: true });
     }
 

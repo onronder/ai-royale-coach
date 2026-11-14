@@ -63,10 +63,10 @@ serve(async (req) => {
     }
 
     // Validate access before reading a saved result, without consuming another analysis.
-    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-player', false);
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
-    if (!hasAccess && !aiAccess.trialLimitReached) {
+    if (!hasAccess) {
       // Ended trial / lapsed subscription: return the last saved analysis read-only, never generate a new one.
       const { data: pastSub } = await supabase
         .from('user_subscriptions').select('id').eq('user_id', user.id).maybeSingle();
@@ -135,17 +135,6 @@ serve(async (req) => {
     if (cached) {
       logger.info('Returning cached analysis');
       return jsonResponse(cached.output);
-    }
-
-    // Automatic profile summaries are not the player's daily trial choice.
-    const reservation = await checkAiAccess(supabase, user.id, 'analyze-player', false);
-    if (!reservation.allowed) {
-      if (reservation.trialLimitReached) {
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, {
-          trial_limit: true, next_available_at: reservation.nextAvailableAt,
-        });
-      }
-      return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true });
     }
 
     // Calculate stats

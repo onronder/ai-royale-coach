@@ -2696,11 +2696,6 @@
       "button": "Comienza Tu Prueba Gratis"
     }
   },
-  "trialLimit": {
-    "title": "Límite de prueba alcanzado",
-    "description": "Las cuentas de prueba tienen 1 análisis de IA cada 24 horas. Próximo disponible: {{time}}. Suscríbete para acceso completo.",
-    "cta": "Suscribirse"
-  },
   "trialEnded": {
     "title": "Tu prueba ha terminado",
     "description": "Aún puedes ver tu último análisis. Suscríbete para ejecutar nuevos análisis con IA.",

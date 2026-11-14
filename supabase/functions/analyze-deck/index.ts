@@ -1,4 +1,4 @@
-import { withTrialQuota } from '../_shared/trial-quota.ts';
+import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -11,7 +11,7 @@ interface DeckAnalysisRequest {
   battles: any[];
 }
 
-serve((req) => withTrialQuota(req, 'analyze-deck', async (req) => {
+serve(async (req) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
@@ -74,16 +74,10 @@ serve((req) => withTrialQuota(req, 'analyze-deck', async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'analyze-deck');
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
     if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
       return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
@@ -279,6 +273,7 @@ ${languageInstruction}`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
+    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'analyze-deck');
     return jsonResponse({
       archetype: {
         name: detectedArchetype.name,
@@ -295,4 +290,4 @@ ${languageInstruction}`;
     logger.error('Error in analyze-deck', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-}));
+});

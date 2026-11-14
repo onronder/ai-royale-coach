@@ -92,7 +92,7 @@ export function TrialAnalyticsPanel() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Revenue &amp; trial quota</CardTitle>
+              <CardTitle>Revenue &amp; trial activity</CardTitle>
               <Button size="sm" variant="outline" onClick={syncOrders} disabled={syncing}>
                 {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sync orders from Polar'}
               </Button>
@@ -103,7 +103,7 @@ export function TrialAnalyticsPanel() {
                   sub: rev && rev.eligible_trials ? `${Math.round((rev.eligible_paid / rev.eligible_trials) * 100)}%` : '' },
                 { label: 'Positive orders', v: rev?.positive_orders ?? '–', sub: rev ? `$${(rev.positive_amount_cents / 100).toFixed(2)}` : '' },
                 { label: '$0 trial orders', v: rev?.zero_orders ?? '–', sub: '' },
-                { label: 'Trial quota denials', v: rev?.quota_denials ?? '–', sub: rev ? `${rev.quota_denied_users} users · ${rev.denied_then_cancelled} then cancelled` : '' },
+                { label: 'Historical trial quota denials', v: rev?.quota_denials ?? '–', sub: rev ? `${rev.quota_denied_users} users · ${rev.denied_then_cancelled} then cancelled` : '' },
                 { label: 'Renewal off, still trialing', v: rev?.renewal_off_while_trialing ?? '–', sub: '' },
               ].map(c => (
                 <div key={c.label} className="rounded-lg border p-3">

@@ -1,4 +1,4 @@
-import { withTrialQuota } from '../_shared/trial-quota.ts';
+import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
@@ -220,7 +220,7 @@ function generateReason(candidate: CandidateScore, profile: PlayerProfile): stri
 
 // ============= Main Handler =============
 
-serve((req) => withTrialQuota(req, 'recommend-deck', async (req) => {
+serve(async (req) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
@@ -264,7 +264,7 @@ serve((req) => withTrialQuota(req, 'recommend-deck', async (req) => {
     const now = new Date();
     const isTrialActive = userProfile?.trial_ends_at && 
       new Date(userProfile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'recommend-deck');
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
     // Helper to normalize player tags (database stores without #)
@@ -289,12 +289,6 @@ serve((req) => withTrialQuota(req, 'recommend-deck', async (req) => {
     }
 
     if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
       return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
@@ -668,6 +662,7 @@ Rank these decks for this player and provide personalized explanations. Consider
 
     logger.info('Returning recommendations', { count: recommendations.length, aiEnhanced });
 
+    if (aiAccess.isTrial && aiEnhanced) await recordTrialUsage(supabase, user.id, 'recommend-deck');
     return jsonResponse({
       recommendations,
       profile: {
@@ -684,4 +679,4 @@ Rank these decks for this player and provide personalized explanations. Consider
     logger.error('Error in recommend-deck', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error');
   }
-}));
+});

@@ -1,4 +1,5 @@
-import { withTrialQuota } from '../_shared/trial-quota.ts';
+import { successfulChatStream } from '../_shared/trial-stream.ts';
+import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, errorResponse } from "../_shared/cors.ts";
@@ -7,7 +8,7 @@ import { logger } from "../_shared/logger.ts";
 
 const DAILY_AI_LIMIT = 10;
 
-serve((req) => withTrialQuota(req, 'coach-chat', async (req) => {
+serve(async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -70,16 +71,10 @@ serve((req) => withTrialQuota(req, 'coach-chat', async (req) => {
     const now = new Date();
     const isTrialActive = profile?.trial_ends_at && 
       new Date(profile.trial_ends_at) > now;
-    const aiAccess = await checkAiAccess(supabase, user.id, 'coach-chat');
+    const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
 
     if (!hasAccess) {
-
-      if (aiAccess.trialLimitReached) {
-
-        return errorResponse('Trial limit: 1 AI analysis per 24 hours', 429, { trial_limit: true, next_available_at: aiAccess.nextAvailableAt });
-
-      }
       return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
 
@@ -220,11 +215,25 @@ Guidelines:
       return errorResponse("AI gateway error", 500);
     }
 
-    return new Response(response.body, {
+    let body = response.body;
+    if (aiAccess.isTrial && body) {
+      const decoder = new TextDecoder();
+      let text = '';
+      body = body.pipeThrough(new TransformStream({
+        transform(chunk, controller) {
+          text += decoder.decode(chunk, { stream: true });
+          controller.enqueue(chunk);
+        },
+        async flush() {
+          if (successfulChatStream(text + decoder.decode())) await recordTrialUsage(supabase, user.id, 'coach-chat');
+        },
+      }));
+    }
+    return new Response(body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (e) {
     logger.error("Coach chat error", { error: e instanceof Error ? e.message : "Unknown error" });
     return errorResponse(e instanceof Error ? e.message : "Unknown error", 500);
   }
-}));
+});
