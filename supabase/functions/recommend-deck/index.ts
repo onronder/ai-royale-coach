@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
@@ -219,7 +220,7 @@ function generateReason(candidate: CandidateScore, profile: PlayerProfile): stri
 
 // ============= Main Handler =============
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'recommend-deck', async (req) => {
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
 
@@ -683,4 +684,4 @@ Rank these decks for this player and provide personalized explanations. Consider
     logger.error('Error in recommend-deck', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error');
   }
-});
+}));

@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -10,7 +11,7 @@ interface MatchAnalysisRequest {
   playerTag: string;
 }
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'analyze-match', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -94,7 +95,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -145,7 +146,7 @@ serve(async (req) => {
 Provide your analysis in the following JSON format:
 {
   "deckMatchup": "2-3 sentences about how these decks match up and key interactions",
-  "analysis": "2-3 sentences about what likely happened based on outcome",
+  "analysis": "2-3 sentences about deck-level conclusions supported by outcome; do not claim observed placements, timings, or actions",
   "recommendations": ["tip 1", "tip 2", "tip 3"],
   "pivotalInteractions": [
     {
@@ -176,7 +177,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
         messages: [
           { 
             role: 'system', 
-            content: `You are an expert Clash Royale coach and analyst. Provide analysis in valid JSON format only. Be practical and actionable. ${languageInstruction}` 
+            content: `You are an expert Clash Royale coach and analyst. Provide analysis in valid JSON format only. Battle logs contain no replay: never present placements, timing or pivotal interactions as observed facts. Discuss possible interactions only as hypothetical training advice. Be practical and actionable. ${languageInstruction}` 
           },
           { role: 'user', content: prompt }
         ],
@@ -242,4 +243,4 @@ Return ONLY valid JSON, no markdown or extra text.`;
     logger.error('Error in analyze-match', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-});
+}));

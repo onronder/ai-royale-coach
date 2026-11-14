@@ -1,3 +1,4 @@
+import { withTrialQuota } from '../_shared/trial-quota.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -35,7 +36,7 @@ function generateDeckHash(deckA: string[], deckB: string[]): string {
 
 const CACHE_DURATION_DAYS = 7;
 
-serve(async (req) => {
+serve((req) => withTrialQuota(req, 'predict-deck-matchup', async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
 
@@ -100,7 +101,7 @@ serve(async (req) => {
     };
 
     // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !isTrialActive) {
+    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
       const normalizedTag = normalizePlayerTag(playerTag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
@@ -319,4 +320,4 @@ Return ONLY valid JSON, no markdown or extra text.`;
     logger.error('Error in predict-deck-matchup', { error: error instanceof Error ? error.message : 'Unknown error' });
     return errorResponse(error instanceof Error ? error.message : 'Unknown error', 500);
   }
-});
+}));
