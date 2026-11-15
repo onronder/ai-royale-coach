@@ -1,24 +1,33 @@
-# AI Royale: day-two reminder check, Coach history, and pre-expiry summary email
+# AI Royale: day-two reminder, Coach history, pre-expiry summary email
 
-The planning brief only. Nothing gets built, sent, scheduled or published until you approve.
+This is the plan only. Nothing gets built, sent, scheduled or published until you approve it. Languages in all tests: **EN, TR, ES, FR, PT**.
 
-## Checked live today (read-only)
-- The `trial-coaching-day-two` timer is active on `*/10 * * * *`. It has run 41 times. Its last run, at 14:00 UTC, succeeded.
-- The sender sends through Resend and checks that Resend returned an `id`. It does not save that id. It saves only `sent_at`.
-- The Coach task card (`FirstSessionTask.tsx`) is the only screen that reads `previous_match` and the follow-up fields.
-- Still open (not verified live): the per-run sender logs, Resend delivery status, and any real inbox delivery.
+## Checked live (read-only, observed 2026-11-15 14:12 UTC)
+- The `trial-coaching-day-two` timer is active on `*/10 * * * *` with **42 runs** so far (as of 14:12 UTC). The 09:50:00 UTC run **succeeded**.
+- UY02YVY9G (correct trial subscription): the opt-in points at UY's task. That task's status is **completed** (1–3). `attempted_at`, `sent_at` and `returned_at` are all **NULL**.
+- So the 09:50 run left no attempt or send record for this subscription. The queue function only picks up pending tasks, so a completed task is never queued, and the sender writes no log line for it. The conclusion "not eligible because the task is completed" comes from: run succeeded + task completed + attempt/send empty.
+- The sender checks that Resend returned an id but does **not** store it.
 
 ## Work order
 
-| # | Work | Screen / data changes | Acceptance (EN, TR, ES, PT, DE) | After release |
-|---|---|---|---|---|
-| 1 | Check the day-two flow for UY02YVY9G (read-only) | None | Correct trial subscription, opt-in pointing at UY's task, inside the 24–48h window, task already completed at 1–3, no sent or attempted record → **expected: 0 emails**, skip reason "task not pending". Report the scheduler run and the sender log for the same tick. | Confirm `sent_at` stays empty after the 09:50 UTC tick and the ticks after it |
-| 2 | Make each send traceable (smallest change) | Add a nullable `resend_message_id` column to `trial_coaching_followup`. Store it in the same update as `sent_at`. The Resend idempotency key stays as it is. | Unit test: the id is stored. A second run sends nothing. | Use it only when a real delivery happens |
-| 3 | Real delivery test | No changes; wait for one of our own accounts to become eligible naturally | Four pieces of evidence: timer run, `sent_at` + message id, Resend shows "delivered", exactly one message in the Fittechs inbox. The next tick sends nothing. | **Stays open until a real trial is eligible** |
-| 4 | Coach history (can be accepted separately) | A "What was suggested / Did I try it / Result" panel in the existing Coach task card. It shows the swap, the follow-up question and answer, the current result, and `previous_match` when it exists. It reads only through the existing task access for your own linked tag. Nothing is guessed from older battles or free chat. | Desktop + mobile, all five languages; a second account cannot see the data | Screenshot check of one real task |
-| 5 | Pre-expiry summary email (can be accepted separately) | Separate consent (`summary_opted_in_at` and related fields). One send per subscription (`summary_sent_at` + message id), only in the last 12h before the real trial end. The email is built from saved data only: the swap, the follow-up answer, the match score, and the trophy change if saved. "No match yet" if there is none. If there is no task, it is skipped. The link goes to sign-in, then that player's Coach screen. Existing translations are reused; nothing is generated again by AI. The ten-minute timer gets one extra check (no new duplicate job). | Cases: trial with renewal off → sends; paid → skip; consent withdrawn → skip; no task → skip; no match → "no match" wording; five languages | Watch the first natural send; Polar's upcoming-charge notice stays separate |
+| # | Work | Changes | Acceptance |
+|---|---|---|---|
+| 1 | Day-two zero-send proof (done above, read-only) | None | 09:50 run succeeded; task completed; no attempt/send → 0 emails |
+| 2 | Make sends traceable | Nullable `resend_message_id` on `trial_coaching_followup`, written with `sent_at`; the Resend idempotency key stays | Unit test: id stored. If Resend accepts but the database write fails, a retry after the retry window creates no second email |
+| 3 | Real day-two delivery | No changes; wait for one of our own trials to become eligible naturally. Watch from server records only, **without opening that player's Coach screen** before the send | Timer run + `sent_at` + message id + Resend "delivered" + exactly one email in the Fittechs inbox; the next tick sends nothing. **Only open item; waits for an eligible real trial** |
+| 4 | Coach history | See below | See below |
+| 5 | Pre-expiry summary email | See below | See below |
 
-## Technical notes
-- History from item 4 is reliable only from the `0011` release onward (the `previous_match` trigger). Matches before that are not rebuilt.
-- The summary email has its own consent. The day-two consent covers only the unfinished-task reminder.
-- No manual bulk sends and no edits to existing scores, consent or trial dates at any step.
+## Coach screen (accepted on its own)
+- Today's card already shows the swap, the follow-up answer and the result. The new view makes clear, in order, **what was suggested → did I play it → what happened**.
+- The current match and `previous_match` (at most one earlier match, kept when the recommendation changed) each appear with their own deck.
+- With no match yet, it says "No matching match found". It never assumes the player hasn't played.
+- Players see only tasks for their own linked tags. Nothing is rebuilt from older battles or free chat. Earlier-match history is reliable only from the 0011 release onward.
+- Acceptance: desktop + mobile in five languages; a second account cannot see the data.
+
+## Pre-expiry summary email (accepted on its own)
+- **Consent:** separate from the day-two consent, **off by default**. It can be turned on for a completed or a pending task, and it can be withdrawn. It records the chosen task and player (when a subscription has two players).
+- **Timing:** the same ten-minute timer, with its own one-send key per subscription (`summary_sent_at` + message id).
+- **Checks right before sending:** correct subscription, linked player, consent still on, and `0 < time left ≤ 12h`.
+- **Content:** from saved data only. It shows the swap, the score and the trophy change if saved, otherwise "No matching match found", plus the Coach link (sign-in, then the right player). The saved coach answer or its current translation is used only if it exists in the chosen language. Otherwise that paragraph is left out, so the email never contains text in another language. No new AI call.
+- **Acceptance:** five languages; trial with renewal off → sends; paid → skip; consent withdrawn → skip; no task → skip; no match → "no match" wording; link opened signed out and after trial end; no second send on the next tick; Polar's upcoming-charge notice is unchanged.
