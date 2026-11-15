@@ -2,7 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import * as React from "https://esm.sh/react@18.3.1";
 import { renderAsync } from "https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1";
 import { productLanguage } from "../_shared/language.ts";
-import { WelcomeEmail, getWelcomeSubject } from "../send-email/_templates/welcome-email.tsx";
+import { WelcomeEmail, getWelcomeSubject } from "../_shared/welcome-email.tsx";
 import { deliverWelcome } from "./delivery.ts";
 
 Deno.serve(async (req) => {
