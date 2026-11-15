@@ -14,6 +14,10 @@
     "admin": "Motivos de cancelamento informados pelos jogadores",
     "empty": "Nenhuma resposta neste período."
   },
+  "gameLabels": {
+    "trophyRoad": "Caminho de Troféus",
+    "legendaryArena": "Arena Lendária"
+  },
   "common": {
     "loading": "Carregando...",
     "error": "Erro",
@@ -1948,6 +1952,7 @@
     "legendary": "Lend",
     "champion": "Camp",
     "toLevel": "para nível",
+    "cardsUntilLevel": "Faltam {{count}} para o nível {{level}}",
     "max": "MÁX",
     "noCardsFound": "Nenhuma carta encontrada para esta raridade"
   },

@@ -236,7 +236,7 @@ const Dashboard = () => {
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
-                      <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} collection={player?.cards ?? []} onMatchResult={refreshAfterMatch} />
+                      <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} onMatchResult={refreshAfterMatch} />
                       <OverviewTab
                         playerTag={playerTag}
                         player={player || null}

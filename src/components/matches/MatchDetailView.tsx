@@ -1,3 +1,4 @@
+import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -425,7 +426,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               <Badge variant={isWin ? "default" : "destructive"} className="text-base">
                 {isWin ? t('matchDetail.victory') : t('matchDetail.defeat')}
               </Badge>
-              <span className="text-muted-foreground">{battle.gameMode.name}</span>
+              <span className="text-muted-foreground">{gameLabel(battle.gameMode.name, t)}</span>
             </DialogTitle>
             <DialogDescription>
               {t('matchDetail.description', { opponent: opponent.name })}
@@ -460,7 +461,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               )}
               <div className="text-center">
                 <Swords className="w-6 h-6 mx-auto mb-1 text-primary" />
-                <p className="text-sm font-medium">{battle.arena.name}</p>
+                <p className="text-sm font-medium">{gameLabel(battle.arena.name, t)}</p>
                 <p className="text-xs text-muted-foreground">{t('matchDetail.arena')}</p>
               </div>
             </div>

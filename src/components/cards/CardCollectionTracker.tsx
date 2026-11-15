@@ -265,7 +265,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                       <div className="space-y-1">
                         <Progress value={progress} className="h-1.5" />
                         <p className="text-xs text-center text-muted-foreground">
-                          {nextLevelReq! - card.card_count} {t('cardCollection.toLevel')} {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
+                          {t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
                         </p>
                       </div>
                     ) : (

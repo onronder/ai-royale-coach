@@ -14,6 +14,10 @@
     "admin": "Motifs d’annulation indiqués par les joueurs",
     "empty": "Aucune réponse sur cette période."
   },
+  "gameLabels": {
+    "trophyRoad": "Voie des trophées",
+    "legendaryArena": "Arène légendaire"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Erreur",
@@ -1948,6 +1952,7 @@
     "legendary": "Lég",
     "champion": "Champ",
     "toLevel": "au niveau",
+    "cardsUntilLevel": "Encore {{count}} pour atteindre le niveau {{level}}",
     "max": "MAX",
     "noCardsFound": "Aucune carte trouvée pour cette rareté"
   },

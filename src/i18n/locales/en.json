@@ -14,6 +14,10 @@
     "admin": "Cancellation reasons reported by players",
     "empty": "No responses in this period."
   },
+  "gameLabels": {
+    "trophyRoad": "Trophy Road",
+    "legendaryArena": "Legendary Arena"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
@@ -2119,6 +2123,7 @@
     "legendary": "Leg",
     "champion": "Champ",
     "toLevel": "to level",
+    "cardsUntilLevel": "{{count}} more for level {{level}}",
     "max": "MAX",
     "noCardsFound": "No cards found for this rarity"
   },

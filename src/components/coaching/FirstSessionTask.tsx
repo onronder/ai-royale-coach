@@ -15,13 +15,14 @@ import { DeckTransfer } from './DeckTransfer';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { getDisplayLevel } from '@/utils/cardLevelCalculator';
 import type { TrophySnapshot } from '@/lib/battleTrophies';
-import { coachingSwap, swapStatement, tacticalText } from '../../../supabase/functions/_shared/coaching-advice';
+import { coachingReading, readingText, type ReadingText } from '../../../supabase/functions/_shared/coaching-reading';
+import { coachingSwap } from '../../../supabase/functions/_shared/coaching-advice';
 
 interface MatchResult { outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
 interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
 interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
-export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
- userId:string;playerTag:string;collection:ClashRoyaleCard[];onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
+export function FirstSessionTask({userId,playerTag,onMatchResult}:{
+ userId:string;playerTag:string;onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
 }) {
   const cardLabel = useCardName();
  const {t,i18n}=useTranslation(); const {hasAccess,isTrialActive,isLoading:accessLoading}=useSubscription();
@@ -29,12 +30,12 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
  const [detailsOpen,setDetailsOpen]=useState(false);
- const invoke=async(action:string,confirmedDeckIds?:number[])=>{
+ const invoke=async(action:string,confirmedDeckIds?:number[],requestLanguage=i18n.resolvedLanguage ?? 'en')=>{
    const {data:{session}}=await supabase.auth.getSession();
    if(!session) throw new Error('auth.signInRequired');
-   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,confirmedDeckIds,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})})});
+   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,confirmedDeckIds,language:requestLanguage,...(action==='follow-up'?{question}: {})})});
    const reader=response.body?.getReader(); if(!reader)throw new Error('coaching.error');
-   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;trophy_snapshot?:TrophySnapshot;deck_confirmation?:DeckConfirmation;error?:string;deck_unavailable?:boolean}}|undefined;
+   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;trophy_snapshot?:TrophySnapshot;deck_confirmation?:DeckConfirmation;translation?:Partial<ReadingText>;error?:string;deck_unavailable?:boolean}}|undefined;
    while(true){const chunk=await reader.read();buffer+=decoder.decode(chunk.value,{stream:!chunk.done});const lines=buffer.split('\n');buffer=lines.pop()||'';for(const line of lines){if(line.trim()){const item=JSON.parse(line);if(item.status)final=item;}}if(chunk.done)break;}
    if(!final)throw new Error('coaching.error');
    if (final.status >= 400) {
@@ -70,19 +71,26 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  const swap = task?.recommendation && coachingSwap(task.source_deck, task.recommended_deck, task.recommendation.remove_id);
  const removed = swap?.removed;
  const added = swap?.added;
- const rec = task?.recommendation;
- const verified = !!rec?.verified_swap && rec.add_id === added?.id;
- const facts = swap ? swapStatement(swap.removed, swap.added, i18n.language) : '';
- const adviceLanguage = rec?.language ?? task?.language;
- const answerLanguage = rec?.follow_up_language ?? task?.language;
- const savedLanguageLabel = (language?: string) => language && language !== i18n.resolvedLanguage &&
-   <p className="mb-1 text-xs text-muted-foreground">{t('coachingHistory.language', { language: new Intl.DisplayNames([i18n.language], { type: 'language' }).of(language) })}</p>;
- const knownCards = [...collection, ...(task?.source_deck ?? []), ...(task?.recommended_deck ?? [])];
- const legacyTip = (text:string) => added ? tacticalText(text, added, knownCards, adviceLanguage ?? i18n.language) : '';
- const reason = rec && (verified ? rec.reason : [facts, legacyTip(rec.reason)].filter(Boolean).join(' '));
- const practice = rec && (verified ? rec.practice : legacyTip(rec.practice));
- const answer = task?.follow_up_answer && (rec?.follow_up_verified ? task.follow_up_answer :
-   legacyTip(task.follow_up_answer) || facts);
+ const language = i18n.resolvedLanguage ?? 'en';
+ const reading = task && coachingReading(task, language);
+ const needsTranslation = !!reading && Object.keys(reading.needed).length > 0;
+ const localized = useQuery({
+   queryKey: [...key, 'translation', task?.id, language, reading?.needed, reading?.facts, reading?.adviceLanguage, reading?.followUpLanguage],
+   enabled: needsTranslation,
+   queryFn: async () => {
+     const data = await invoke('translate', undefined, language);
+     if (!data.translation || Object.keys(reading!.needed).some(k => !data.translation![k as keyof ReadingText])) {
+       throw new Error('Incomplete coaching translation');
+     }
+     return data.translation;
+   },
+   staleTime: Infinity,
+   retry: 1,
+ });
+ const text = reading && readingText(reading, localized.data);
+ const reason = reading && [reading.facts, text?.reason].filter(Boolean).join(' ');
+ const practice = text?.practice;
+ const answer = reading && (!reading.needed.answer || text?.answer) ? [reading.facts, text?.answer].filter(Boolean).join(' ') : '';
  const result=task?.battle_result;
  const previous=task?.previous_match;
  const done=!!result;
@@ -101,7 +109,7 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
   <div className="min-w-0 space-y-4">
    {removed&&added&&<div className="flex items-center gap-4 rounded-lg border border-border bg-muted/20 p-3">
     <div className="w-16 shrink-0">{card(removed,t('coaching.remove'))}</div><ArrowRight className="h-5 w-5 shrink-0 text-primary"/><div className="w-16 shrink-0">{card(added,t('coaching.add'))}</div>
-    <div className="min-w-0 flex-1 border-l border-border pl-4">{adviceLanguage && adviceLanguage !== i18n.resolvedLanguage && <p className="mb-2 text-sm font-medium">{facts}</p>}{savedLanguageLabel(adviceLanguage)}{reason&&<p lang={adviceLanguage} className="break-words text-sm leading-relaxed">{reason}</p>}{practice&&<p className="mt-2 text-sm"><span className="font-semibold text-primary">{t(done ? 'coaching.practiceTip' : 'coaching.practice')}: </span><span lang={adviceLanguage}>{practice}</span></p>}</div>
+    <div className="min-w-0 flex-1 border-l border-border pl-4">{reason&&<p lang={language} className="break-words text-sm leading-relaxed">{reason}</p>}{practice&&<p className="mt-2 text-sm"><span className="font-semibold text-primary">{t(done ? 'coaching.practiceTip' : 'coaching.practice')}: </span><span lang={language}>{practice}</span></p>}</div>
    </div>}
    <div className="rounded-lg border border-border p-3"><h3 className="mb-3 text-sm font-semibold">{t(done ? 'coaching.playedDeck' : 'coaching.ready')}</h3><div className="grid grid-cols-4 gap-2 sm:grid-cols-8">{task.recommended_deck.map(c=>mini(c,c.id===added?.id))}</div><DeckTransfer cards={task.recommended_deck} playerTag={playerTag} /></div>
   </div>
@@ -119,12 +127,16 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
     <p className="mt-3 text-xs text-muted-foreground">{t('coaching.checked',{time:time(task.last_checked_at)})}{task.battles_fetched_at&&<> · {t('coaching.observed',{time:time(task.battles_fetched_at)})}</>}</p>
    </div>
    {!done && isTrialActive && <TrialFollowup userId={userId} playerTag={playerTag.replace(/^#/,'').toUpperCase()} />}
-   <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground"><span className="font-semibold">{t('coaching.you')}: </span>{task.follow_up_question}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><div>{savedLanguageLabel(answerLanguage)}</div><p lang={answerLanguage} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}</div>
+   <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground">{text?.question && <><span className="font-semibold">{t('coaching.you')}: </span>{text.question}</>}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p lang={language} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}</div>
   </div>
  </div>;
  const summary=done&&removed&&added&&<div className="mt-4 flex flex-wrap items-center gap-3 text-sm"><img src={removed.iconUrls?.medium} alt={cardLabel(removed.name)} className="h-10 w-auto"/><ArrowRight className="h-4 w-4 text-primary"/><img src={added.iconUrls?.medium} alt={cardLabel(added.name)} className="h-10 w-auto"/><span className="font-rajdhani text-2xl font-bold">{result!.score.join(' – ')}</span><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result!.outcome}`)}</span></div>;
  return <Card aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
   {header}
+  {needsTranslation && !localized.data && <div role="status" className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+    {localized.isError ? <>{t('coaching.translationError')} <Button variant="outline" size="sm" onClick={() => void localized.refetch()}>{t('common.retry')}</Button></> :
+      <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true"/>{t('coaching.translating')}</>}
+  </div>}
   {(query.isLoading||accessLoading)?<p className="mt-4 text-sm text-muted-foreground">{t('coaching.loading')}</p>:task?.recommendation?<>
    {previous && <details className="mt-4 rounded-lg border border-border px-3">
      <summary className="cursor-pointer py-3 text-sm font-semibold focus-visible:outline-primary">

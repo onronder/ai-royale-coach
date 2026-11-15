@@ -1,3 +1,4 @@
+import { gameLabel } from '@/i18n/gameLabel';
 import { getDateLocale } from "@/i18n/dateLocale";
 import { useTranslation } from "react-i18next";
 import { memo } from "react";
@@ -63,7 +64,7 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
               <Swords className="w-3 h-3 mr-1" />
               {t(isWin ? 'dashboard.victory' : playerTeam.crowns === opponent.crowns ? 'dashboard.draw' : 'dashboard.defeat')}
             </Badge>
-            <span className="text-xs md:text-sm text-muted-foreground font-medium truncate">{battle.gameMode.name}</span>
+            <span className="text-xs md:text-sm text-muted-foreground font-medium truncate">{gameLabel(battle.gameMode.name, t)}</span>
           </div>
           
           <div className="space-y-1.5">

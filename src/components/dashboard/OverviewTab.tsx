@@ -1,3 +1,4 @@
+import { gameLabel } from '@/i18n/gameLabel';
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Crown, Swords, Users, Sparkles } from "lucide-react";
@@ -62,7 +63,7 @@ export function OverviewTab({
               />
               <StatCard
                 title={t('dashboard.arena')}
-                value={player.arena?.name || t('common.unknown')}
+                value={player.arena?.name ? gameLabel(player.arena.name, t) : t('common.unknown')}
                 icon={Crown}
                 tooltip={statTooltips.arena}
               />
