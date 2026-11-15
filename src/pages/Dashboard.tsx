@@ -187,7 +187,7 @@ const Dashboard = () => {
           />
           
           {/* Main Content Area - Full width on mobile, flex on desktop */}
-          <SidebarInset className="flex-1 w-full max-w-full overflow-x-hidden">
+          <SidebarInset className="flex-1 w-full max-w-full overflow-x-clip">
             <DashboardHeader
               playerTag={playerTag}
               player={player || null}
