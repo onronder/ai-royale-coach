@@ -1579,9 +1579,18 @@ export type Database = {
           opted_in_at: string | null
           opted_task: string | null
           reason: string | null
+          resend_message_id: string | null
           returned_at: string | null
           sent_at: string | null
           subscription_id: string
+          summary_attempted_at: string | null
+          summary_first_attempted_at: string | null
+          summary_message_id: string | null
+          summary_opted_in_at: string | null
+          summary_player_tag: string | null
+          summary_sent_at: string | null
+          summary_task: string | null
+          summary_ticket: string | null
           ticket: string | null
           user_id: string
         }
@@ -1593,9 +1602,18 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
           subscription_id: string
+          summary_attempted_at?: string | null
+          summary_first_attempted_at?: string | null
+          summary_message_id?: string | null
+          summary_opted_in_at?: string | null
+          summary_player_tag?: string | null
+          summary_sent_at?: string | null
+          summary_task?: string | null
+          summary_ticket?: string | null
           ticket?: string | null
           user_id: string
         }
@@ -1607,9 +1625,18 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
           subscription_id?: string
+          summary_attempted_at?: string | null
+          summary_first_attempted_at?: string | null
+          summary_message_id?: string | null
+          summary_opted_in_at?: string | null
+          summary_player_tag?: string | null
+          summary_sent_at?: string | null
+          summary_task?: string | null
+          summary_ticket?: string | null
           ticket?: string | null
           user_id?: string
         }
@@ -1624,6 +1651,20 @@ export type Database = {
           {
             foreignKeyName: "trial_coaching_followup_opted_task_fkey"
             columns: ["opted_task"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+          {
+            foreignKeyName: "trial_coaching_followup_summary_task_fkey"
+            columns: ["summary_task"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trial_coaching_followup_summary_task_fkey"
+            columns: ["summary_task"]
             isOneToOne: false
             referencedRelation: "current_trial_coaching"
             referencedColumns: ["task_id"]
@@ -1940,6 +1981,33 @@ export type Database = {
         }
         Relationships: []
       }
+      due_trial_summary: {
+        Row: {
+          email: string | null
+          language: string | null
+          player_tag: string | null
+          subscription_id: string | null
+          task_id: string | null
+          trial_ends_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_coaching_followup_summary_task_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trial_coaching_followup_summary_task_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
+      }
     }
     Functions: {
       check_rate_limit: {
@@ -2027,6 +2095,18 @@ export type Database = {
           user_id: string
         }[]
       }
+      take_trial_summary: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          player_tag: string
+          subscription_id: string
+          task_id: string
+          trial_ends_at: string
+          user_id: string
+        }[]
+      }
       trial_cancel_answers: {
         Args: { p_days: number }
         Returns: {
@@ -2035,8 +2115,13 @@ export type Database = {
         }[]
       }
       trial_coaching_state: { Args: never; Returns: Json }
+      trial_summary_state: { Args: never; Returns: Json }
       update_trial_coaching: {
         Args: { p_action: string; p_subscription: string; p_value?: string }
+        Returns: Json
+      }
+      update_trial_summary: {
+        Args: { p_on: boolean; p_player_tag: string }
         Returns: Json
       }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
