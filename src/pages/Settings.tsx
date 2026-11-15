@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
+import { TrialFollowup } from "@/components/coaching/TrialFollowup";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { ChatRetentionSettings } from "@/components/settings/ChatRetentionSettings";
 import { DataLoader } from "@/components/ui/data-loader";
@@ -139,23 +140,23 @@ const Settings = () => {
               <Crown className="h-7 w-7 text-gold transition-transform group-hover:scale-110" />
               <div className="absolute inset-0 bg-gold/20 blur-lg -z-10 group-hover:bg-gold/30 transition-colors" />
             </div>
-            <span className="text-xl font-bold font-rajdhani text-foreground">
+            <span className="whitespace-nowrap text-xl font-bold font-rajdhani text-foreground">
               AI ROYALE
             </span>
           </Link>
           
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={() => navigate('/help')} className="border-border/50">
-              <HelpCircle className="mr-2 h-4 w-4" />
-              {t('nav.help')}
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Button variant="outline" size="sm" onClick={() => navigate('/help')} className="h-11 w-11 border-border/50 p-0 sm:h-9 sm:w-auto sm:px-3">
+              <HelpCircle aria-hidden className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t('nav.help')}</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate(returnTo)} className="border-border/50">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('settings.back', 'Back')}
+            <Button variant="outline" size="sm" onClick={() => navigate(returnTo)} className="h-11 w-11 border-border/50 p-0 sm:h-9 sm:w-auto sm:px-3">
+              <ArrowLeft aria-hidden className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t('settings.back', 'Back')}</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              {t('nav.signOut')}
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="h-11 w-11 border-border/50 p-0 sm:h-9 sm:w-auto sm:px-3 hover:border-destructive/50 hover:text-destructive">
+              <LogOut aria-hidden className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t('nav.signOut')}</span>
             </Button>
           </div>
         </div>
@@ -326,6 +327,8 @@ const Settings = () => {
                   </Button>
                 </div>
               )}
+
+              {isTrialActive && user && <TrialFollowup userId={user.id} renewalOff={cancelAtPeriodEnd} />}
 
               <div className="pt-2 space-y-2">
                 {hasAccess ? (

@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Por que você desativou a renovação? (Opcional)",
+    "avoid_charge": "Evitar uma cobrança enquanto continuo testando",
+    "value": "O treino ajudou menos do que eu esperava",
+    "price": "O preço não cabe no meu orçamento",
+    "technical": "Tive um problema técnico",
+    "other": "Outro motivo",
+    "skip": "Pular",
+    "consent": "Envie um único e-mail no segundo dia do teste se a minha tarefa ainda estiver pendente.",
+    "resume": "Voltar à minha tarefa",
+    "retry": "Recarregar preferências",
+    "error": "Não foi possível salvar sua escolha. Tente de novo.",
+    "admin": "Motivos de cancelamento informados pelos jogadores",
+    "empty": "Nenhuma resposta neste período."
+  },
   "common": {
     "loading": "Carregando...",
     "error": "Erro",

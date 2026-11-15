@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Why did you turn renewal off? (Optional)",
+    "avoid_charge": "Avoid a charge while I keep trying it",
+    "value": "Coaching was less useful than I expected",
+    "price": "The price does not work for me",
+    "technical": "I ran into a technical issue",
+    "other": "Another reason",
+    "skip": "Skip",
+    "consent": "Email me once on day two of my trial if my task is still unfinished.",
+    "resume": "Return to my coaching task",
+    "retry": "Reload coaching preferences",
+    "error": "Your choice could not be saved. Please try again.",
+    "admin": "Cancellation reasons reported by players",
+    "empty": "No responses in this period."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",

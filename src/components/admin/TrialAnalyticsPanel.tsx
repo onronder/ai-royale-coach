@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +25,16 @@ function reason(r: Row): string {
 const fmt = (d: string | null) => (d ? new Date(d).toLocaleString() : '—');
 
 export function TrialAnalyticsPanel() {
+  const { t } = useTranslation();
   const [days, setDays] = useState(30);
+  const answers = useQuery({
+    queryKey: ['trial-cancel-answers', days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('trial_cancel_answers', { p_days: days });
+      if (error) throw error;
+      return data;
+    },
+  });
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['trial-funnel', days],
     queryFn: async () => {
@@ -124,18 +134,27 @@ export function TrialAnalyticsPanel() {
               </CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle>Why they left</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Observed trial activity</CardTitle></CardHeader>
               <CardContent className="flex flex-wrap gap-2">
                 {Object.entries(reasons).map(([k, v]) => <Badge key={k} variant="secondary">{k}: {v}</Badge>)}
               </CardContent>
             </Card>
           </div>
           <Card>
+            <CardHeader><CardTitle>{t('trialFollowup.admin')}</CardTitle></CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              {answers.isError ? <Button variant="outline" onClick={() => void answers.refetch()}>{t('common.retry')}</Button>
+                : answers.isLoading ? <Loader2 className="h-4 w-4 animate-spin" />
+                : answers.data?.length ? answers.data.map(row => <Badge key={row.reason} variant="secondary">{t('trialFollowup.' + row.reason)} · {row.total}</Badge>)
+                : <p className="text-sm text-muted-foreground">{t('trialFollowup.empty')}</p>}
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader><CardTitle>Trial users</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
-                  <tr>{['Email','Status','Started','Ends','Canceled','Hrs','Tags','AI','Chat','Days','Last seen','Reason'].map(h => <th key={h} className="p-2 whitespace-nowrap">{h}</th>)}</tr>
+                  <tr>{['Email','Status','Started','Ends','Canceled','Hrs','Tags','AI','Chat','Days','Last seen','Activity'].map(h => <th key={h} className="p-2 whitespace-nowrap">{h}</th>)}</tr>
                 </thead>
                 <tbody>
                   {data.map(r => (

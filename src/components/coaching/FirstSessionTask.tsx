@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { TrialFollowup } from './TrialFollowup';
 import { DeckTransfer } from './DeckTransfer';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { getDisplayLevel } from '@/utils/cardLevelCalculator';
@@ -17,7 +18,7 @@ interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  userId:string;playerTag:string;collection:ClashRoyaleCard[];onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
 }) {
- const {t,i18n}=useTranslation(); const {hasAccess,isLoading:accessLoading}=useSubscription();
+ const {t,i18n}=useTranslation(); const {hasAccess,isTrialActive,isLoading:accessLoading}=useSubscription();
  const qc=useQueryClient(); const key=['coaching-task',userId,playerTag];
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
@@ -139,6 +140,7 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
        </div>}
      </div>
    </div>
+   {!result && isTrialActive && <TrialFollowup userId={userId} playerTag={playerTag.replace(/^#/,'').toUpperCase()} />}
    <div className="grid items-start gap-3 border-t border-border pt-4 lg:grid-cols-2">
      {result && result.opponent_deck.length>0 && <details className={disclosure}>
        <summary className={summary}>{t('coaching.opponent')}{chevron}</summary>

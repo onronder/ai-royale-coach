@@ -96,3 +96,6 @@ verify_jwt = false
 
 [functions.check-grace-period-expiry]
 verify_jwt = false
+
+[functions.trial-coaching-reminder]
+verify_jwt = true

@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,18 +28,25 @@ const defaultStatus: SubscriptionStatus = {
   accountSlots: 0,
 };
 
+// Undefined until Supabase has restored the initial session; null is a guest.
+export const SubscriptionUserContext = createContext<string | null | undefined>(undefined);
+
 export function useSubscription() {
+  const accountId = useContext(SubscriptionUserContext);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['subscription-status'],
+    queryKey: ['subscription-status', accountId],
+    enabled: !!accountId,
     queryFn: async (): Promise<SubscriptionStatus> => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      if (!session || session.user.id !== accountId) {
         return defaultStatus;
       }
 
-      const { data, error } = await supabase.functions.invoke('get-subscription-status');
+      const { data, error } = await supabase.functions.invoke('get-subscription-status', {
+        headers: { Authorization: 'Bearer ' + session.access_token },
+      });
       
       if (error) {
         console.error('Error fetching subscription status:', error);
@@ -83,7 +91,7 @@ export function useSubscription() {
 
   return {
     status: data,
-    isLoading,
+    isLoading: accountId === undefined || isLoading,
     error,
     refetch,
     hasAccess: data?.hasAccess ?? false,

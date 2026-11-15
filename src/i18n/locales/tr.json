@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Yenilemeyi neden kapattın? (İsteğe bağlı)",
+    "avoid_charge": "Kartımdan çekilmesin, denemeye devam edeceğim",
+    "value": "Koçluk beklediğim kadar faydalı olmadı",
+    "price": "Fiyatı bana uygun değil",
+    "technical": "Teknik sorun yaşadım",
+    "other": "Başka bir neden",
+    "skip": "Atla",
+    "consent": "Görevim yarım kalırsa denememin ikinci gününde bana bir kez e-posta gönder.",
+    "resume": "Koçluk görevine dön",
+    "retry": "Görev tercihlerini tekrar yükle",
+    "error": "Tercihin kaydedilemedi. Tekrar dene.",
+    "admin": "Oyuncuların belirttiği iptal nedenleri",
+    "empty": "Bu dönemde yanıt yok."
+  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",

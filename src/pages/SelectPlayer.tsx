@@ -1,3 +1,4 @@
+import { coachingReturnTag } from '@/lib/coachingReturnTag';
 import { useEffect, useState } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useQuery } from "@tanstack/react-query";
 import { usePlayerProfiles } from "@/hooks/usePlayerProfiles";
+import { useTrialCoaching } from "@/hooks/useTrialCoaching";
 import { firstTrialAnalysisTag, autoTrialRedirectKey } from "@/lib/automaticTrialAnalysis";
 
 const SelectPlayer = () => {
@@ -25,7 +27,15 @@ const SelectPlayer = () => {
   const [showAISelector, setShowAISelector] = useState(false);
   
   const { needsAISelection, accountSlots, isTrialActive, subscriptionStatus, trialDaysRemaining, refetch: refetchSubscription } = useSubscription();
+  const fromReminder = coachingReturnTag(searchParams.get('coaching'));
+  const coaching = useTrialCoaching(user?.id, isTrialActive && subscriptionStatus === 'trialing');
+  const resumeTag = coaching.data?.dayTwo ? coaching.data.playerTag : null;
   const { profiles } = usePlayerProfiles(user?.id ?? null);
+  useEffect(() => {
+    if (fromReminder && profiles.some(p => p.player_tag.replace(/^#/, '').toUpperCase() === fromReminder)) {
+      navigate('/player/' + fromReminder, { replace: true });
+    }
+  }, [fromReminder, profiles, navigate]);
   const { data: hasPreviousTrialUsage } = useQuery({
     queryKey: ['first-trial-ai-usage', user?.id],
     enabled: !!user?.id && isTrialActive && subscriptionStatus === 'trialing',
@@ -42,16 +52,16 @@ const SelectPlayer = () => {
 
   // Tag typed on the home page before sign-up: open it once (visiting links it to the account).
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || fromReminder) return;
     let pending: string | null = null;
     try { pending = localStorage.getItem('pending_player_tag'); localStorage.removeItem('pending_player_tag'); } catch { /* ignore */ }
     if (pending && /^[0-9A-Z]{3,15}$/.test(pending)) {
       navigate(`/player/${encodeURIComponent(pending)}`, { replace: true });
     }
-  }, [user?.id, navigate]);
+  }, [user?.id, navigate, fromReminder]);
 
   useEffect(() => {
-    if (!user?.id || hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
+    if (fromReminder || !user?.id || hasPreviousTrialUsage === undefined || searchParams.get('subscription') === 'success') return;
     const key = autoTrialRedirectKey(user.id);
     let alreadyRedirected = false;
     try { alreadyRedirected = localStorage.getItem(key) === '1'; } catch { /* ignore */ }
@@ -62,7 +72,7 @@ const SelectPlayer = () => {
     if (!tag) return;
     try { localStorage.setItem(key, '1'); } catch { /* ignore */ }
     navigate(`/player/${encodeURIComponent(tag)}`, { replace: true });
-  }, [user?.id, hasPreviousTrialUsage, subscriptionStatus, isTrialActive, profiles, navigate, searchParams]);
+  }, [user?.id, hasPreviousTrialUsage, subscriptionStatus, isTrialActive, profiles, navigate, searchParams, fromReminder]);
 
   // Check for subscription success and show AI selector if needed
   useEffect(() => {
@@ -171,13 +181,13 @@ const SelectPlayer = () => {
               <Crown className="h-7 w-7 text-gold transition-transform group-hover:scale-110" />
               <div className="absolute inset-0 bg-gold/20 blur-lg -z-10 group-hover:bg-gold/30 transition-colors" />
             </div>
-            <span className="text-xl font-bold font-rajdhani text-foreground">
+            <span className="whitespace-nowrap text-xl font-bold font-rajdhani text-foreground">
               AI ROYALE
             </span>
           </Link>
           
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground hidden sm:inline px-3 py-1.5 rounded-full bg-card border border-border/50">
+          <div className="flex items-center gap-1 sm:gap-3">
+            <span className="max-w-44 truncate text-sm text-muted-foreground hidden sm:inline px-3 py-1.5 rounded-full bg-card border border-border/50">
               {user.email}
             </span>
             <Tooltip>
@@ -185,8 +195,8 @@ const SelectPlayer = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={() => navigate('/help')}
-                  className="text-muted-foreground hover:text-foreground"
+                  aria-label={t('nav.help')} onClick={() => navigate('/help')}
+                  className="h-11 w-11 text-muted-foreground hover:text-foreground"
                 >
                   <HelpCircle className="h-5 w-5" />
                 </Button>
@@ -198,17 +208,17 @@ const SelectPlayer = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  onClick={() => navigate('/settings')}
-                  className="text-muted-foreground hover:text-foreground"
+                  aria-label={t('settings.title')} onClick={() => navigate('/settings')}
+                  className="h-11 w-11 text-muted-foreground hover:text-foreground"
                 >
                   <Settings className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>{t('settings.title')}</TooltipContent>
             </Tooltip>
-            <Button variant="outline" size="sm" onClick={handleSignOut} className="border-border/50 hover:border-destructive/50 hover:text-destructive">
-              <LogOut className="mr-2 h-4 w-4" />
-              {t('nav.signOut')}
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="h-11 w-11 border-border/50 p-0 sm:h-9 sm:w-auto sm:px-3 hover:border-destructive/50 hover:text-destructive">
+              <LogOut aria-hidden className="h-4 w-4" />
+              <span className="sr-only sm:not-sr-only">{t('nav.signOut')}</span>
             </Button>
           </div>
         </div>
@@ -233,6 +243,9 @@ const SelectPlayer = () => {
             <p className="text-muted-foreground">{t('selectPlayer.subtitle')}</p>
           </div>
 
+          {resumeTag && <Button asChild variant="golden" className="mb-4 min-h-11 w-full">
+            <Link to={'/player/' + resumeTag}>{t('trialFollowup.resume')}</Link>
+          </Button>}
           <PlayerTagSelector
             userId={user.id} 
             onSelect={handleSelectPlayer}

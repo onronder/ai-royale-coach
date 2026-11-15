@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Pourquoi as-tu désactivé le renouvellement ? (Facultatif)",
+    "avoid_charge": "Éviter un prélèvement tout en continuant l’essai",
+    "value": "Le coaching m’a moins aidé que prévu",
+    "price": "Le prix ne me convient pas",
+    "technical": "J’ai rencontré un problème technique",
+    "other": "Autre raison",
+    "skip": "Passer",
+    "consent": "Envoyez-moi un seul e-mail le deuxième jour de mon essai si ma mission est encore en cours.",
+    "resume": "Reprendre ma mission",
+    "retry": "Recharger les préférences",
+    "error": "Ton choix n’a pas été enregistré. Réessaie.",
+    "admin": "Motifs d’annulation indiqués par les joueurs",
+    "empty": "Aucune réponse sur cette période."
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Erreur",
