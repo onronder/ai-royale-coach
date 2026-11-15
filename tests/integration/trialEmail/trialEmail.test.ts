@@ -55,8 +55,9 @@ const age = (minutes: number) => psql(`UPDATE trial_coaching_followup SET attemp
   summary_send_started_at = summary_send_started_at - interval '${minutes} minutes'`);
 const post = (ticket: string) => new Request('https://w.invalid', { method: 'POST', body: JSON.stringify({ ticket }) });
 const row = () => JSON.parse(psql(`SELECT row_to_json(f) FROM trial_coaching_followup f`) || 'null');
-const summaryTask = (id: string): SummaryTask => ({ id, language: 'en', source_deck: [], recommended_deck: [], battle_result: null, previous_match: null,
-  recommendation: { remove_id: 1, add_id: 2, reason: 'R', practice: 'P', language: 'en', follow_up_language: 'en' },
+const deck = (ids: number[]) => ids.map(id => ({ id, name: 'Card' + id, level: 11, maxLevel: 14, iconUrls: { medium: '' } }));
+const summaryTask = (id: string): SummaryTask => ({ id, language: 'en', source_deck: deck([1,2,3,4,5,6,7,8]), recommended_deck: deck([9,2,3,4,5,6,7,8]), battle_result: null, previous_match: null,
+  recommendation: { remove_id: 1, add_id: 9, reason: 'R', practice: 'P', language: 'en', follow_up_language: 'en' },
   follow_up_question: null, follow_up_answer: null } as never);
 const reads = { task: async (id: string) => summaryTask(id), translation: async () => undefined };
 
