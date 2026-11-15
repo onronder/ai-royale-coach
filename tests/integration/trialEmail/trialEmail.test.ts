@@ -37,7 +37,7 @@ function fakeProvider() {
       const id = 're_' + (accepted.length + 1); accepted.push({ id, key, mail, at: Date.now() }); return id;
     },
     async findAccepted(mail, since) {
-      return accepted.find(a => a.at >= since.getTime() && a.mail.subject === mail.subject && a.mail.to[0] === mail.to[0])?.id ?? null;
+      return accepted.find(a => a.at >= since.getTime() && a.mail.tags?.[0]?.value === mail.tags?.[0]?.value)?.id ?? null;
     },
   };
   return p;
@@ -102,7 +102,7 @@ describe('trial emails against the real SQL functions', { skip: !ready && 'set T
     report.reminderSwitch = { link: p.accepted[0].mail.text.match(/coaching=\w+/)![0], accepted: p.accepted.length, recorded: r.resend_message_id, nextTick: next.length };
   });
 
-  it('reminder: provider never got A, player picks B → A released, B sent with a new key', async () => {
+  it('reminder: provider timeout and changed choice stay unresolved without sending B', async () => {
     const p = fakeProvider();
     asUser(U, `SELECT update_trial_coaching('sub-1', 'on', 'AAA')`);
     p.failNextSend();
@@ -112,13 +112,54 @@ describe('trial emails against the real SQL functions', { skip: !ready && 'set T
     asUser(U, `SELECT update_trial_coaching('sub-1', 'on', 'BBB')`);
     age(20);
     await deliverReminder(post(tickets('trial-coaching-reminder')[0]), sqlStore(rpc, 'reminder'), p);
-    assert.equal(p.accepted.length, 1);
-    assert.match(p.accepted[0].mail.text, /coaching=BBB/);
-    assert.equal(row().resend_message_id, 're_1');
+    assert.equal(p.accepted.length, 0);
+    assert.equal(row().resend_message_id,null);
+    assert.ok(row().reminder_send_started_at);
     age(20);
-    assert.deepEqual(tickets('trial-coaching-reminder'), []);
-    report.reminderNeverAccepted = { link: 'coaching=BBB', accepted: 1, recorded: 're_1', nextTick: 0 };
+    assert.equal(tickets('trial-coaching-reminder').length,1);
   });
+
+  for (const kind of ['reminder', 'summary'] as const) {
+    it(kind + ': delayed listing after a player switch cannot cause another send', async () => {
+      const p = fakeProvider();
+      const choose = (tag: string, id: string) => kind === 'summary'
+        ? asUser(U, `SELECT update_trial_summary('${tag}','${id}',true)`)
+        : asUser(U, `SELECT update_trial_coaching('sub-1','on','${tag}')`);
+      const run = (s: AttemptStore, provider: Provider) => {
+        const req = post(tickets('trial-coaching-' + kind)[0]);
+        return kind === 'reminder' ? deliverReminder(req, s, provider) : deliverSummary(req, s, provider, reads);
+      };
+      const store = sqlStore(rpc, kind);
+      choose('AAA', A);
+      await assert.rejects(run(failRecordOnce(store), p), /database write failed/);
+      if (kind === 'reminder') asUser(U, "SELECT update_trial_coaching('sub-1','off','AAA')");
+      psql(`UPDATE coaching_tasks SET shown_at=now() WHERE id='${B}'`);
+      choose('BBB', B);
+      age(20);
+      assert.equal((await run(store, { ...p, findAccepted: async () => null })).status,202);
+      assert.equal(p.accepted.length, 1);
+      const field = kind === 'summary' ? 'summary_message_id' : 'resend_message_id';
+      assert.equal(row()[field], null);
+      age(20);
+      await run(store, p);
+      assert.equal(row()[field], 're_1');
+      assert.equal(p.accepted.length, 1);
+    });
+    it(kind + ': an eligible attempt older than the provider replay window is lookup-only', async () => {
+      if (kind === 'summary') asUser(U, `SELECT update_trial_summary('AAA','${A}',true)`);
+      else asUser(U, "SELECT update_trial_coaching('sub-1','on','AAA')");
+      const run = (s: AttemptStore, provider: Provider) => {
+        const req = post(tickets('trial-coaching-' + kind)[0]);
+        return kind === 'reminder' ? deliverReminder(req,s,provider) : deliverSummary(req,s,provider,reads);
+      };
+      const p = fakeProvider(), store = sqlStore(rpc,kind);
+      await assert.rejects(run(failRecordOnce(store), p));
+      age(1500);
+      await run(store, { ...p, send: async () => assert.fail('expired key reused'), findAccepted: async () => null });
+      assert.equal(p.accepted.length,1);
+      assert.equal(row()[kind === 'summary' ? 'summary_message_id' : 'resend_message_id'],null);
+    });
+  }
 
   it("reminder: A's match finishes while the email is prepared → nothing sent", async () => {
     const p = fakeProvider();

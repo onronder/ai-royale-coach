@@ -51,7 +51,7 @@ export async function deliverSummary(req: Request, store: AttemptStore, provider
   if (req.method !== 'POST') return new Response(null, { status: 405 });
   const input = await req.json().catch(() => null);
   if (!isTicket(input?.ticket)) return new Response(null, { status: 400 });
-  await runAttempt(input.ticket, 'trial-summary', store, provider, async (c): Promise<Mail | null> => {
+  const outcome = await runAttempt(input.ticket, 'trial-summary', store, provider, async (c): Promise<Mail | null> => {
     const task = c.due_task && c.email && c.player_tag ? await reads.task(c.due_task, c.user_id) : null;
     if (!task) return null;
     const language = productLanguage(c.language ?? 'en');
@@ -59,5 +59,5 @@ export async function deliverSummary(req: Request, store: AttemptStore, provider
     const email = summaryEmail(task, c.player_tag!, language, hash ? await reads.translation(task.id, language, hash) : undefined);
     return email && { from: 'AI Royale <noreply@notification.ai-royale.com>', to: [c.email!], ...email };
   }, now);
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: outcome === 'pending' ? 202 : 204 });
 }

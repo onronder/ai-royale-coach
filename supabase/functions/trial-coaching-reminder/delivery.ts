@@ -16,7 +16,7 @@ export async function deliverReminder(req: Request, store: AttemptStore, provide
   if (req.method !== 'POST') return new Response(null, { status: 405 });
   const input = await req.json().catch(() => null);
   if (!isTicket(input?.ticket)) return new Response(null, { status: 400 });
-  await runAttempt(input.ticket, 'trial-coaching', store, provider,
+  const outcome = await runAttempt(input.ticket, 'trial-coaching', store, provider,
     async c => c.email && c.player_tag ? reminderMail(c.email, c.language, c.player_tag) : null, now);
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: outcome === 'pending' ? 202 : 204 });
 }
