@@ -122,7 +122,7 @@ export function VirtualCardGrid({
                             variant="outline" 
                             className={`text-xs ${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/10 border-${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/20`}
                           >
-                            {card.rarity}
+                            {t(`landing.demo.cards.rarities.${card.rarity.toLowerCase()}`, { defaultValue: card.rarity })}
                           </Badge>
                           {!isMaxLevel && nextLevelReq && (
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -136,7 +136,7 @@ export function VirtualCardGrid({
                           <div className="space-y-1">
                             <Progress value={progress} className="h-1.5" />
                             <p className="text-xs text-center text-muted-foreground">
-                              {nextLevelReq! - card.card_count} {t('cardCollection.toLevel')} {getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity })}
+                              {t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
                             </p>
                           </div>
                         ) : (

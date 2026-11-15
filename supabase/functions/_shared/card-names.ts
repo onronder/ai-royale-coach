@@ -150,3 +150,8 @@ export function localizedCardName(name: string, language: string): string {
   const key = name.trim().toLowerCase().replace(/\.+$/, '');
   return names[key]?.[locale] ?? name;
 }
+
+export function containsCardName(text: string, language: string) {
+  const words = text.toLowerCase();
+  return Object.keys(names).some(name => words.includes(name) || words.includes(localizedCardName(name, language).toLowerCase()));
+}

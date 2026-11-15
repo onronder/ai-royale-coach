@@ -203,7 +203,7 @@ export function DeckBuilder({
     }
   };
 
-  const avgElixir = selectedCards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / selectedCards.length;
+  const avgElixir = selectedCards.length === 0 ? null : selectedCards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / selectedCards.length;
 
   return (
     <div className="space-y-6">
@@ -228,7 +228,7 @@ export function DeckBuilder({
                 <span>{t('deck.yourDeck')} ({selectedCards.length}/8)</span>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Zap className="w-4 h-4" />
-                  {t('deck.avgElixir')}: {avgElixir.toFixed(1)}
+                  {t('deck.avgElixir')}: {avgElixir?.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) ?? '—'}
                 </div>
               </CardTitle>
             </CardHeader>

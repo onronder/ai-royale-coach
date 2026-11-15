@@ -201,7 +201,7 @@ RecommendationCard.displayName = "RecommendationCard";
 const PlayerProfileCard = memo(({ profile }: { 
   profile: { skillLevel: string; bestArchetypes: string[]; recentWinRate: number; totalBattles: number } 
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   return (
     <Card className="bg-primary/5 border-primary/20">
@@ -215,15 +215,15 @@ const PlayerProfileCard = memo(({ profile }: {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.skillLevel")}</div>
-            <div className="font-medium capitalize">{profile.skillLevel}</div>
+            <div className="font-medium capitalize">{t(`templates.difficulty.${profile.skillLevel.toLowerCase()}`, { defaultValue: profile.skillLevel })}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.bestArchetypes")}</div>
-            <div className="font-medium">{profile.bestArchetypes.slice(0, 2).join(", ") || "-"}</div>
+            <div className="font-medium">{profile.bestArchetypes.slice(0, 2).map(name => t(`landing.demo.cards.archetypes.${name}`, { defaultValue: name })).join(", ") || "-"}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.recentWinRate")}</div>
-            <div className="font-medium">{profile.recentWinRate.toFixed(1)}%</div>
+            <div className="font-medium">{(profile.recentWinRate / 100).toLocaleString(i18n.language, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.battlesAnalyzed")}</div>

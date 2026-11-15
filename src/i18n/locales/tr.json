@@ -14,6 +14,10 @@
     "admin": "Oyuncuların belirttiği iptal nedenleri",
     "empty": "Bu dönemde yanıt yok."
   },
+  "gameLabels": {
+    "trophyRoad": "Kupa Yolu",
+    "legendaryArena": "Efsanevi Arena"
+  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
@@ -1948,6 +1952,7 @@
     "legendary": "Efsan",
     "champion": "Şamp",
     "toLevel": "seviyeye",
+    "cardsUntilLevel": "{{level}}. seviye için {{count}} kart eksik",
     "max": "MAKS",
     "noCardsFound": "Bu nadirlik için kart bulunamadı"
   },

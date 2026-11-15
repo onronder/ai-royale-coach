@@ -1,3 +1,4 @@
+import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -153,7 +154,7 @@ export function CoachChatPanel({
         `${t('matchDetail.opponentDeck')}: ${opponentCards.map(c => cardLabel(c.name)).join(', ')}`,
         `${t('matchDetail.crowns')}: ${matchContext.playerCrowns} – ${matchContext.opponentCrowns}`,
         `${t('coaching.trophies')}: ${matchContext.trophyChange > 0 ? '+' : ''}${matchContext.trophyChange}`,
-        `${t('coach.gameMode')}: ${matchContext.battle.gameMode.name}`,
+        `${t('coach.gameMode')}: ${gameLabel(matchContext.battle.gameMode.name, t)}`,
         ...(matchContext.analysis ? [matchContext.analysis.deckMatchup, ...matchContext.analysis.recommendations] : []),
         t('coach.reviewQuestion'),
       ].join('\n\n');
@@ -766,7 +767,7 @@ export function CoachChatPanel({
                               <Crown className="h-3 w-3" />
                               {matchContext.playerCrowns} - {matchContext.opponentCrowns}
                             </span>
-                            <span>{matchContext.battle.gameMode.name}</span>
+                            <span>{gameLabel(matchContext.battle.gameMode.name, t)}</span>
                           </div>
                         </div>
                       )}

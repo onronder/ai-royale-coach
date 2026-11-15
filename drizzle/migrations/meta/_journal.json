@@ -99,6 +99,13 @@
       "when": 1794741540687,
       "tag": "0013_recommendation_language",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794748538791,
+      "tag": "0014_coaching_translations",
+      "breakpoints": true
     }
   ]
 }
