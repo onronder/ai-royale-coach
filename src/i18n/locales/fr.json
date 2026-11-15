@@ -12,7 +12,10 @@
     "retry": "Recharger les préférences",
     "error": "Ton choix n’a pas été enregistré. Réessaie.",
     "admin": "Motifs d’annulation indiqués par les joueurs",
-    "empty": "Aucune réponse sur cette période."
+    "empty": "Aucune réponse sur cette période.",
+    "loadError": "Impossible de charger votre choix de rappel.",
+    "stillOn": "La désactivation a échoué — le rappel du deuxième jour est toujours activé.",
+    "tryAgain": "Réessayer"
   },
   "gameLabels": {
     "trophyRoad": "Voie des trophées",

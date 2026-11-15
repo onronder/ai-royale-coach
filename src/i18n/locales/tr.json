@@ -12,7 +12,10 @@
     "retry": "Görev tercihlerini tekrar yükle",
     "error": "Tercihin kaydedilemedi. Tekrar dene.",
     "admin": "Oyuncuların belirttiği iptal nedenleri",
-    "empty": "Bu dönemde yanıt yok."
+    "empty": "Bu dönemde yanıt yok.",
+    "loadError": "Hatırlatma tercihin yüklenemedi.",
+    "stillOn": "Kapatılamadı — ikinci gün hatırlatması hâlâ açık.",
+    "tryAgain": "Tekrar dene"
   },
   "gameLabels": {
     "trophyRoad": "Kupa Yolu",

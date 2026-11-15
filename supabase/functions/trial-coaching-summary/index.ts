@@ -1,12 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
-import { deliverSummary, type Summary, type SummaryTask } from './summary.ts';
+import { deliverSummary, type Payload, type Summary, type SummaryTask } from './summary.ts';
 
 Deno.serve(async req => {
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   try {
     return await deliverSummary(req, {
       async take(ticket) {
-        const { data, error } = await db.rpc('take_trial_summary', { p_ticket: ticket }).maybeSingle();
+        const { data, error } = await db.rpc('claim_trial_summary', { p_ticket: ticket }).maybeSingle();
         if (error) throw error;
         return data as Summary | null;
       },
@@ -23,6 +23,11 @@ Deno.serve(async req => {
         if (error) throw error;
         return (data?.translation ?? undefined) as Record<string, string> | undefined;
       },
+      async freeze({ user_id, subscription_id, task_id }, payload) {
+        const { data, error } = await db.rpc('freeze_trial_summary', { p_user: user_id, p_subscription: subscription_id, p_task: task_id, p_payload: payload as never });
+        if (error) throw error;
+        return (data ?? null) as Payload | null;
+      },
       async send(payload, key) {
         const response = await fetch('https://api.resend.com/emails', {
           method: 'POST', headers: { Authorization: 'Bearer ' + Deno.env.get('RESEND_API_KEY'),
@@ -36,7 +41,7 @@ Deno.serve(async req => {
       async markSent({ user_id, subscription_id }, messageId) {
         const { error } = await db.from('trial_coaching_followup')
           .update({ summary_sent_at: new Date().toISOString(), summary_message_id: messageId })
-          .eq('user_id', user_id).eq('subscription_id', subscription_id);
+          .eq('user_id', user_id).eq('subscription_id', subscription_id).is('summary_sent_at', null);
         if (error) throw error;
       },
     });

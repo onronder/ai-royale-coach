@@ -12,7 +12,10 @@
     "retry": "Volver a cargar las preferencias",
     "error": "No se pudo guardar tu elección. Inténtalo de nuevo.",
     "admin": "Motivos de cancelación indicados por los jugadores",
-    "empty": "No hay respuestas en este período."
+    "empty": "No hay respuestas en este período.",
+    "loadError": "No pudimos cargar tu preferencia de recordatorio.",
+    "stillOn": "No se pudo desactivar: el recordatorio del segundo día sigue activado.",
+    "tryAgain": "Reintentar"
   },
   "gameLabels": {
     "trophyRoad": "Camino de trofeos",

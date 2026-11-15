@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { deliverSummary, summaryEmail, type Summary, type SummaryTask } from '../supabase/functions/trial-coaching-summary/summary';
+import { deliverSummary, summaryEmail, type Payload, type Summary, type SummaryTask } from '../supabase/functions/trial-coaching-summary/summary';
 
 const deck = (ids: number[]) => ids.map(id => ({ id, name: 'Card' + id, level: 11, maxLevel: 14, iconUrls: { medium: '' } }));
 const base: SummaryTask = {
@@ -28,19 +28,32 @@ describe('end-of-trial coaching summary', () => {
     assert.ok(!summaryEmail(base, 'P', 'tr')!.text.includes('Because it works.'));
     assert.ok(summaryEmail(base, 'P', 'en')!.text.includes('Because it works.'));
   });
-  it('sends once, stores the message id and reuses the subscription key on retry', async () => {
-    const keys: string[] = []; const ids: string[] = [];
-    const d = { take: async () => row, task: async () => base, translation: async () => undefined,
-      send: async (_: unknown, k: string) => { keys.push(k); return 're_1'; },
-      markSent: async (_: Summary, id: string) => { ids.push(id); if (ids.length === 1) throw Error('write failed'); } };
+  it('retries after a failed record with the same key, recipient, subject and text even if score and language change', async () => {
+    let stored: Payload | null = null; let current = { ...row }; let task = base;
+    const sends: { key: string; body: string }[] = []; const records: string[] = []; let fail = true;
+    const d = { take: async () => ({ ...current, payload: stored }), task: async () => task, translation: async () => undefined,
+      freeze: async (_: Summary, p: Payload) => (stored ??= p),
+      send: async (p: unknown, k: string) => { sends.push({ key: k, body: JSON.stringify(p) }); return 're_1'; },
+      markSent: async (_: Summary, id: string) => { if (fail) { fail = false; throw Error('write failed'); } records.push(id); } };
     await assert.rejects(deliverSummary(req(), d), /write failed/);
+    task = { ...base, battle_result: { outcome: 'win', score: [3, 0], trophy_change: 30 } }; current = { ...row, language: 'tr' };
     await deliverSummary(req(), d);
-    assert.deepEqual(keys, ['trial-summary/sub-1', 'trial-summary/sub-1']);
-    assert.deepEqual(ids, ['re_1', 're_1']);
+    assert.equal(sends.length, 2);
+    assert.equal(sends[0].body, sends[1].body);
+    assert.deepEqual(sends.map(s => s.key), ['trial-summary/sub-1', 'trial-summary/sub-1']);
+    assert.ok(sends[0].body.includes('x@example.invalid') && sends[0].body.includes('No matching match found.'));
+    assert.deepEqual(records, ['re_1']);
+  });
+  it('does not resend once consent or the trial is no longer valid', async () => {
+    const fail = async () => assert.fail();
+    const r = await deliverSummary(req(), { take: async () => null, task: fail, translation: fail, freeze: fail, send: fail, markSent: fail });
+    assert.equal(r.status, 204);
+    const gone = await deliverSummary(req(), { take: async () => row, task: async () => base, translation: async () => undefined, freeze: async () => null, send: fail, markSent: fail });
+    assert.equal(gone.status, 204);
   });
   it('skips when the ticket is not eligible or the task is gone', async () => {
     const fail = async () => assert.fail();
-    assert.equal((await deliverSummary(req(), { take: async () => null, task: fail, translation: fail, send: fail, markSent: fail })).status, 204);
-    assert.equal((await deliverSummary(req(), { take: async () => row, task: async () => null, translation: fail, send: fail, markSent: fail })).status, 204);
+    assert.equal((await deliverSummary(req(), { take: async () => null, task: fail, translation: fail, freeze: fail, send: fail, markSent: fail })).status, 204);
+    assert.equal((await deliverSummary(req(), { take: async () => row, task: async () => null, translation: fail, freeze: fail, send: fail, markSent: fail })).status, 204);
   });
 });

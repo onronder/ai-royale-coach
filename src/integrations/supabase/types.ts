@@ -1579,6 +1579,7 @@ export type Database = {
           opted_in_at: string | null
           opted_task: string | null
           reason: string | null
+          reminder_payload: Json | null
           resend_message_id: string | null
           returned_at: string | null
           sent_at: string | null
@@ -1587,6 +1588,7 @@ export type Database = {
           summary_first_attempted_at: string | null
           summary_message_id: string | null
           summary_opted_in_at: string | null
+          summary_payload: Json | null
           summary_player_tag: string | null
           summary_sent_at: string | null
           summary_task: string | null
@@ -1602,6 +1604,7 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_payload?: Json | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
@@ -1610,6 +1613,7 @@ export type Database = {
           summary_first_attempted_at?: string | null
           summary_message_id?: string | null
           summary_opted_in_at?: string | null
+          summary_payload?: Json | null
           summary_player_tag?: string | null
           summary_sent_at?: string | null
           summary_task?: string | null
@@ -1625,6 +1629,7 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_payload?: Json | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
@@ -1633,6 +1638,7 @@ export type Database = {
           summary_first_attempted_at?: string | null
           summary_message_id?: string | null
           summary_opted_in_at?: string | null
+          summary_payload?: Json | null
           summary_player_tag?: string | null
           summary_sent_at?: string | null
           summary_task?: string | null
@@ -2022,6 +2028,30 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      claim_trial_coaching_reminder: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          payload: Json
+          player_tag: string
+          subscription_id: string
+          user_id: string
+        }[]
+      }
+      claim_trial_summary: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          payload: Json
+          player_tag: string
+          subscription_id: string
+          task_id: string
+          trial_ends_at: string
+          user_id: string
+        }[]
+      }
       cleanup_old_api_logs: { Args: never; Returns: undefined }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }
@@ -2039,6 +2069,19 @@ export type Database = {
       finish_trial_ai: {
         Args: { p_id: string; p_success: boolean }
         Returns: undefined
+      }
+      freeze_trial_coaching_reminder: {
+        Args: { p_payload: Json; p_subscription: string; p_user: string }
+        Returns: Json
+      }
+      freeze_trial_summary: {
+        Args: {
+          p_payload: Json
+          p_subscription: string
+          p_task: string
+          p_user: string
+        }
+        Returns: Json
       }
       get_daily_feature_usage: {
         Args: { p_date?: string; p_feature_name: string; p_user_id: string }
@@ -2120,10 +2163,12 @@ export type Database = {
         Args: { p_action: string; p_subscription: string; p_value?: string }
         Returns: Json
       }
-      update_trial_summary: {
-        Args: { p_on: boolean; p_player_tag: string }
-        Returns: Json
-      }
+      update_trial_summary:
+        | { Args: { p_on: boolean; p_player_tag: string }; Returns: Json }
+        | {
+            Args: { p_on: boolean; p_player_tag: string; p_task: string }
+            Returns: Json
+          }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
       write_player_cache: {
         Args: { p_data: Json; p_tag: string; p_type: string }
