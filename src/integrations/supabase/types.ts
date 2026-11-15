@@ -542,6 +542,7 @@ export type Database = {
           last_checked_at: string | null
           matched_battle_key: string | null
           player_tag: string
+          previous_match: Json | null
           prompt_tokens: number
           recommendation: Json | null
           recommended_deck: Json | null
@@ -565,6 +566,7 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag: string
+          previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
           recommended_deck?: Json | null
@@ -588,6 +590,7 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag?: string
+          previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
           recommended_deck?: Json | null

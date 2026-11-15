@@ -19,7 +19,8 @@ await db.exec(`
   create table user_subscriptions(user_id uuid unique,polar_subscription_id text,status text,current_period_start timestamptz,
     current_period_end timestamptz,ends_at timestamptz,created_at timestamptz,cancel_at_period_end boolean);
   create table coaching_tasks(id uuid primary key default gen_random_uuid(),user_id uuid,player_tag text,language text,
-    recommendation jsonb,battle_result jsonb,shown_at timestamptz,created_at timestamptz);
+    recommendation jsonb,battle_result jsonb,shown_at timestamptz,created_at timestamptz,matched_battle_key text,
+    source_deck jsonb,recommended_deck jsonb,last_checked_at timestamptz,battles_fetched_at timestamptz);
   create table player_profiles(user_id uuid,player_tag text);
   create table net.calls(ticket uuid, destination text, request_headers jsonb);
   create function net.http_post(url text,headers jsonb,body jsonb) returns bigint language plpgsql as $$
@@ -135,6 +136,31 @@ try {
   assert.deepEqual(await queue(),[]); await assert.rejects(act('on',null,'third'), /unavailable/);
   await age(25); await q("update user_subscriptions set ends_at=now()-interval '1 second'");
   assert.equal(await state(),null); assert.deepEqual(await queue(),[]);
+  // Install over an existing completed task, then exercise the production follow-up write.
+  await q("update user_subscriptions set ends_at=null,polar_subscription_id='history'");
+  await act('on', 'P28', 'history');
+  const score = { score: [3,1], outcome: 'win', trophy_change: 30, opponent_deck: [{ id: 11 }] };
+  const played = Array.from({length: 8}, (_, i) => ({id:i+1}));
+  await q("update coaching_tasks set matched_battle_key='original', battle_result=$1, recommended_deck=$2 where player_tag='P28'", [JSON.stringify(score),JSON.stringify(played)]);
+  await db.exec(await readFile(new URL('../../drizzle/migrations/0011_retain_completed_coaching_match.sql', import.meta.url), 'utf8'));
+  assert.deepEqual((await q("select battle_result from coaching_tasks where player_tag='P28'"))[0].battle_result, score);
+  assert.deepEqual(await queue(), []);
+  await q("update coaching_tasks set battle_result=null,matched_battle_key=null,recommended_deck='[9]' where player_tag='P28'");
+  const archived = (await q("select previous_match from coaching_tasks where player_tag='P28'"))[0].previous_match;
+  assert.deepEqual(archived.battle_result, score);
+  assert.deepEqual(archived.recommended_deck, played);
+  assert.equal(archived.matched_battle_key, 'original');
+  assert.equal((await state()).optedIn, false);
+  assert.deepEqual(await queue(), []);
+  await act('on', 'P28', 'history');
+  const [nextTicket] = await queue();
+  assert.equal((await take(nextTicket))[0].player_tag, 'P28');
+  assert.deepEqual(await take(nextTicket), []);
+  await q("update trial_coaching_followup set sent_at=now() where subscription_id='history'");
+  assert.deepEqual(await queue(), []);
+  await q("update coaching_tasks set battle_result=$1 where player_tag='P28'",[JSON.stringify({...score,score:[1,0]})]);
+  assert.deepEqual((await q("select previous_match from coaching_tasks where player_tag='P28'"))[0].previous_match, archived);
+  await assert.rejects(q("update coaching_tasks set battle_result=null where player_tag='P28'"), /already has a saved/);
   await q('set role anon'); await assert.rejects(state(), /permission/);
   console.log('Passed: migration, schedule, permissions, survey, opt-in, trial boundaries, return, handoff and retry.');
 } finally { await db.close(); }
