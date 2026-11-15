@@ -63,7 +63,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
     } else if (data) {
       setTournament({
         ...data,
-        _count: { registrations: data.tournament_registrations?.length || 0 }
+        _count: { registrations: data.tournament_registrations?.[0]?.count ?? 0 }
       });
     }
     setIsLoading(false);

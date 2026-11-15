@@ -1,3 +1,5 @@
+import { formatDistanceToNow } from 'date-fns';
+import { getDateLocale } from '@/i18n/dateLocale';
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Clipboard, AlertTriangle, Target, Zap, Shield, Swords, Loader2, HelpCircle } from 'lucide-react';
@@ -158,7 +160,7 @@ export function OracleScanner({
   userPlayerTag = '',
   userCurrentDeck 
 }: OracleScannerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [opponentTag, setOpponentTag] = useState(initialOpponentTag);
   const [searchTag, setSearchTag] = useState<string | null>(null);
   const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
@@ -458,7 +460,7 @@ export function OracleScanner({
                   <div className="flex items-center gap-2 text-xs">
                     <Shield className="w-3 h-3 text-emerald-400" />
                     <span className="text-muted-foreground">{t('oracle.lastSeen')}:</span>
-                    <span className="font-mono text-foreground">{prediction.lastPlayedAgo}</span>
+                    <span className="font-mono text-foreground">{formatDistanceToNow(new Date(prediction.lastPlayedAt), { addSuffix: true, locale: getDateLocale(i18n.language) })}</span>
                   </div>
                   <div className="text-[10px] text-muted-foreground">
                     {t('oracle.matchesAnalyzed', { count: prediction.matchCount, total: prediction.totalMatches })}

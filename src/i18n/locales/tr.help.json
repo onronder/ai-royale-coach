@@ -16,6 +16,7 @@
       "needMoreHelp": "Oyunla ilgili strateji tavsiyeleri veya kişiselleştirilmiş koçluk istiyorsanız, sormaktan çekinmeyin!",
       "answeredFromHelp": "Yardım Merkezinden yanıtlandı (AI kotası kullanılmadı)"
     },
+    "statsChartDescription": "Son maçlarındaki kupa sayısını karşılaştır.",
     "sections": {
       "gettingStarted": "Başlarken",
       "dashboard": "Panel",
@@ -91,7 +92,7 @@
       "sync": {
         "title": "Veri Senkronizasyonu ve Yenileme",
         "intro": "Paneli açtığınızda verileriniz otomatik olarak senkronize olur. Başlıktaki senkronizasyon göstergesini kullanarak manuel olarak yenileyebilirsiniz.",
-        "note": "Not: Clash Royale API'sinin 5-15 dakikalık bir gecikmesi var. Son oyun içi değişiklikler hemen görünmeyebilir."
+        "note": "Yeni maçların görünmesi biraz zaman alabilir. Maç bittikten sonra verileri yenile."
       }
     },
     "matches": {
@@ -341,11 +342,6 @@
         "title": "Proaktif Öneriler",
         "intro": "Kazanma oranınız %55'in altına düştüğünde, AI Koç proaktif olarak deste değişiklikleri önerir. Sohbet düğmesinde titreyen kehribar rozetine bakın."
       },
-      "quota": {
-        "title": "Günlük AI Kotası",
-        "intro": "AI koçluğu, tüm oyuncular için adil kullanımı sağlamak amacıyla günlük kota sistemi kullanır.",
-        "limit": "Ücretsiz limit: Günde 10 AI isteği. Kota UTC gece yarısında sıfırlanır."
-      },
       "tips": {
         "title": "Daha İyi Yanıtlar İçin İpuçları",
         "tip1": "Ne konuda yardım istediğiniz hakkında spesifik olun",
@@ -378,9 +374,9 @@
       "title": "Sıkça Sorulan Sorular",
       "badge": "SSS",
       "q1": "Son destem neden görünmüyor?",
-      "a1": "Clash Royale API'sinin 5-15 dakikalık bir gecikmesi var. Son oyun içi değişiklikleriniz bu gecikmeden sonra görünecek. Birkaç dakika içinde yenilemeyi deneyin.",
+      "a1": "Yeni maçların görünmesi biraz zaman alabilir. Maç bittikten sonra verileri yenile.",
       "q2": "Kazanma oranım nasıl hesaplanıyor?",
-      "a2": "Kazanma oranı, API'den alınan son 25 maçınızdan hesaplanır. Sadece merdiven ve meydan okuma maçlarını içerir, arkadaşlık maçları veya 2v2'yi içermez.",
+      "a2": "Galibiyet sayısı, maç geçmişindeki toplam maç sayısına bölünür.",
       "q3": "Bazı özellikler neden giriş gerektiriyor?",
       "a3": "Deste kaydetme, AI koçluğu ve kişiselleştirilmiş öneriler gibi özellikler tercihlerinizi ve geçmişinizi saklamak için hesap gerektirir.",
       "q4": "AI Royale'i mobilde kullanabilir miyim?",

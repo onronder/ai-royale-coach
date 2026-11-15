@@ -1,3 +1,5 @@
+import { getDateLocale } from '@/i18n/dateLocale';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,7 +27,7 @@ import {
   ArrowUpDown
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -89,10 +91,10 @@ type SortOption = 'activity_score' | 'ai_requests' | 'battles_tracked' | 'chat_m
 
 // Activity badge based on score
 const getActivityBadge = (score: number) => {
-  if (score >= 70) return { label: 'Highly Active', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30', icon: TrendingUp };
-  if (score >= 40) return { label: 'Active', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30', icon: Activity };
-  if (score > 0) return { label: 'Low Activity', color: 'bg-amber-500/10 text-amber-600 border-amber-500/30', icon: Activity };
-  return { label: 'No Activity', color: 'bg-red-500/10 text-red-600 border-red-500/30', icon: AlertCircle };
+  if (score >= 70) return { label: 'admin.winback.high', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30', icon: TrendingUp };
+  if (score >= 40) return { label: 'admin.blocked.active', color: 'bg-blue-500/10 text-blue-600 border-blue-500/30', icon: Activity };
+  if (score > 0) return { label: 'admin.winback.low', color: 'bg-amber-500/10 text-amber-600 border-amber-500/30', icon: Activity };
+  return { label: 'admin.winback.noActivity', color: 'bg-red-500/10 text-red-600 border-red-500/30', icon: AlertCircle };
 };
 
 // Calculate individual point contributions based on the rebalanced formula
@@ -131,6 +133,7 @@ const calculatePointBreakdown = (metrics: {
  * Shows real user activity metrics to help target engaged users.
  */
 export function WinbackCampaignPanel() {
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [promoCode, setPromoCode] = useState('');
   const [polarDiscountId, setPolarDiscountId] = useState('');
@@ -226,16 +229,16 @@ export function WinbackCampaignPanel() {
   const sendEmailMutation = useMutation({
     mutationFn: async (user: EligibleUser) => {
       if (!promoCode.trim()) {
-        throw new Error('Promo code is required');
+        throw new Error(t('admin.winback.needCode'));
       }
       if (!polarDiscountId.trim()) {
-        throw new Error('Polar Discount ID is required');
+        throw new Error(t('admin.winback.needId'));
       }
       if (!isValidUUID(polarDiscountId.trim())) {
-        throw new Error('Polar Discount ID must be a valid UUID');
+        throw new Error(t('admin.winback.invalidId'));
       }
       if (discountPercent < 1 || discountPercent > 100) {
-        throw new Error('Discount must be between 1 and 100');
+        throw new Error(t('admin.winback.invalidPercent'));
       }
 
       // Send the email
@@ -285,12 +288,12 @@ export function WinbackCampaignPanel() {
       return user;
     },
     onSuccess: (user) => {
-      toast.success(`Email sent to ${user.email}`);
+      toast.success(t('admin.winback.sentOne', { email: user.email }));
       queryClient.invalidateQueries({ queryKey: ['winback-eligible-users'] });
       queryClient.invalidateQueries({ queryKey: ['winback-campaign-history'] });
     },
     onError: (error: Error) => {
-      toast.error(`Failed to send email: ${error.message}`);
+      toast.error(t('admin.winback.failedOne', { error: error.message }));
     },
   });
 
@@ -327,9 +330,9 @@ export function WinbackCampaignPanel() {
     setSendingToAll(false);
     
     if (successCount > 0) {
-      toast.success(`Sent ${successCount} emails${failCount > 0 ? `, ${failCount} failed` : ''}`);
+      toast.success(t('admin.winback.sentSummary', { sent: successCount, failed: failCount }));
     } else if (failCount > 0) {
-      toast.error(`Failed to send ${failCount} emails`);
+      toast.error(t('admin.winback.sentSummary', { sent: 0, failed: failCount }));
     }
   };
 
@@ -355,7 +358,7 @@ export function WinbackCampaignPanel() {
   const userColumns: ColumnDef<EligibleUser>[] = [
     {
       key: 'email',
-      header: 'Email',
+      header: t('auth.email'),
       mobilePrimary: true,
       render: (user) => (
         <span className="font-mono text-sm">{user.email}</span>
@@ -363,7 +366,7 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'activity',
-      header: 'Activity Score',
+      header: t('admin.winback.activityScore'),
       className: 'min-w-[160px] text-center',
       render: (user) => {
         const badge = getActivityBadge(user.activity_score);
@@ -375,35 +378,35 @@ export function WinbackCampaignPanel() {
               <TooltipTrigger asChild>
                 <Badge variant="outline" className={`${badge.color} cursor-help whitespace-nowrap`}>
                   <Icon className="h-3 w-3 mr-1" />
-                  {badge.label} ({user.activity_score})
+                  {t(badge.label)} ({user.activity_score})
                 </Badge>
               </TooltipTrigger>
               <TooltipContent className="max-w-sm">
                 <div className="space-y-2 text-xs">
-                  <p className="font-medium border-b pb-1 mb-2">Activity Breakdown:</p>
+                  <p className="font-medium border-b pb-1 mb-2">{t('admin.winback.breakdown')}</p>
                   <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 gap-y-1 items-center">
-                    <span>🤖 AI Requests</span>
+                    <span>🤖 {t('admin.winback.ai')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.aiRequests}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}{t('achievements.pts')}</span>
                     
-                    <span>⚔️ Battles Tracked</span>
+                    <span>⚔️ {t('admin.winback.battles')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.battlesTracked}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}{t('achievements.pts')}</span>
                     
-                    <span>💬 Chat Messages</span>
+                    <span>💬 {t('admin.winback.messages')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.chatMessages}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}{t('achievements.pts')}</span>
                     
-                    <span>👤 Linked Accounts</span>
+                    <span>👤 {t('admin.winback.linked')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.linkedAccounts}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}{t('achievements.pts')}</span>
                     
-                    <span>📅 Active Days</span>
+                    <span>📅 {t('admin.winback.days')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.activeDays}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}{t('achievements.pts')}</span>
                   </div>
                   <div className="border-t pt-1 mt-1 flex justify-between font-medium">
-                    <span>Total Score</span>
+                    <span>{t('admin.winback.totalScore')}</span>
                     <span className="text-primary">{user.activity_score}/100</span>
                   </div>
                 </div>
@@ -415,7 +418,7 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'language',
-      header: 'Language',
+      header: t('settings.preferences.language'),
       mobileHidden: true,
       render: (user) => (
         <Badge variant="outline" className="uppercase">
@@ -425,37 +428,37 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'trial_ended',
-      header: 'Trial Ended',
+      header: t('admin.winback.trialEnded'),
       mobileSecondary: true,
       render: (user) => (
         user.trial_ends_at ? (
           <span className="text-muted-foreground text-sm">
-            {formatDistanceToNow(new Date(user.trial_ends_at), { addSuffix: true })}
+            {formatDistanceToNow(new Date(user.trial_ends_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
           </span>
         ) : (
-          <span className="text-muted-foreground text-sm">N/A</span>
+          <span className="text-muted-foreground text-sm">—</span>
         )
       ),
     },
     {
       key: 'last_sent',
-      header: 'Last Email Sent',
+      header: t('admin.winback.lastSent'),
       render: (user) => (
         user.winback_email_sent_at ? (
           <div className="flex items-center gap-1">
             <CheckCircle2 className="h-4 w-4 text-green-500" />
             <span className="text-muted-foreground text-sm">
-              {formatDistanceToNow(new Date(user.winback_email_sent_at), { addSuffix: true })}
+              {formatDistanceToNow(new Date(user.winback_email_sent_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
             </span>
           </div>
         ) : (
-          <span className="text-muted-foreground text-sm">Never</span>
+          <span className="text-muted-foreground text-sm">{t('admin.winback.never')}</span>
         )
       ),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('admin.winback.actions'),
       isAction: true,
       render: (user) => (
         <Button
@@ -465,7 +468,7 @@ export function WinbackCampaignPanel() {
           onClick={() => sendEmailMutation.mutate(user)}
         >
           <Send className="h-4 w-4 mr-1" />
-          {sendEmailMutation.isPending ? 'Sending...' : 'Send'}
+          {sendEmailMutation.isPending ? t('admin.winback.sending') : t('admin.winback.send')}
         </Button>
       ),
     },
@@ -475,17 +478,17 @@ export function WinbackCampaignPanel() {
   const historyColumns: ColumnDef<CampaignHistory>[] = [
     {
       key: 'sent_at',
-      header: 'Date',
+      header: t('admin.winback.date'),
       mobilePrimary: true,
       render: (item) => (
         <span className="text-sm">
-          {format(new Date(item.sent_at), 'MMM d, yyyy HH:mm')}
+          {new Date(item.sent_at).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short' })}
         </span>
       ),
     },
     {
       key: 'target_email',
-      header: 'Recipient',
+      header: t('admin.winback.recipient'),
       mobileSecondary: true,
       render: (item) => (
         <span className="font-mono text-sm">{item.target_email}</span>
@@ -493,7 +496,7 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'activity_at_send',
-      header: 'Activity',
+      header: t('admin.trials.activity'),
       className: 'min-w-[80px] text-center',
       render: (item) => {
         const score = item.target_user_activity_score || 0;
@@ -509,30 +512,30 @@ export function WinbackCampaignPanel() {
               </TooltipTrigger>
               <TooltipContent className="max-w-sm">
                 <div className="space-y-2 text-xs">
-                  <p className="font-medium border-b pb-1 mb-2">Activity at time of send:</p>
+                  <p className="font-medium border-b pb-1 mb-2">{t('admin.winback.whenSent')}</p>
                   <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 gap-y-1 items-center">
-                    <span>🤖 AI Requests</span>
+                    <span>🤖 {t('admin.winback.ai')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.aiRequests}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.aiPoints}{t('achievements.pts')}</span>
                     
-                    <span>⚔️ Battles Tracked</span>
+                    <span>⚔️ {t('admin.winback.battles')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.battlesTracked}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.battlePoints}{t('achievements.pts')}</span>
                     
-                    <span>💬 Chat Messages</span>
+                    <span>💬 {t('admin.winback.messages')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.chatMessages}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.chatPoints}{t('achievements.pts')}</span>
                     
-                    <span>👤 Linked Accounts</span>
+                    <span>👤 {t('admin.winback.linked')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.linkedAccounts}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.accountPoints}{t('achievements.pts')}</span>
                     
-                    <span>📅 Active Days</span>
+                    <span>📅 {t('admin.winback.days')}</span>
                     <span className="text-muted-foreground text-right">{breakdown.raw.activeDays}</span>
-                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}pts</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400 text-right">+{breakdown.dayPoints}{t('achievements.pts')}</span>
                   </div>
                   <div className="border-t pt-1 mt-1 flex justify-between font-medium">
-                    <span>Total Score</span>
+                    <span>{t('admin.winback.totalScore')}</span>
                     <span className="text-primary">{score}/100</span>
                   </div>
                 </div>
@@ -544,7 +547,7 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'promo_code',
-      header: 'Promo Code',
+      header: t('admin.winback.code'),
       render: (item) => (
         <Badge variant="secondary" className="font-mono">
           {item.promo_code}
@@ -553,23 +556,23 @@ export function WinbackCampaignPanel() {
     },
     {
       key: 'discount',
-      header: 'Discount',
+      header: t('admin.winback.discount'),
       render: (item) => (
-        <span className="text-green-600 font-medium">{item.discount_percent}% off</span>
+        <span className="text-green-600 font-medium">{t('admin.winback.off', { percent: item.discount_percent })}</span>
       ),
     },
     {
       key: 'auto_apply',
-      header: 'Auto-Apply',
+      header: t('admin.winback.autoApply'),
       render: (item) => (
         item.polar_discount_id ? (
           <Badge variant="default" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
             <CheckCircle2 className="h-3 w-3 mr-1" />
-            Yes
+            {t('common.yes')}
           </Badge>
         ) : (
           <Badge variant="outline" className="text-muted-foreground">
-            Manual
+            {t('admin.winback.manual')}
           </Badge>
         )
       ),
@@ -584,61 +587,60 @@ export function WinbackCampaignPanel() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Gift className="h-5 w-5" />
-              Campaign Configuration
+              {t('admin.winback.configuration')}
             </CardTitle>
             <CardDescription>
-              Configure the promo code and discount for win-back emails.
-              Create promo codes in{' '}
+              {t('admin.winback.setup')}{' '}
               <a 
                 href="https://polar.sh/settings/discounts" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline inline-flex items-center gap-1"
               >
-                Polar Dashboard <ExternalLink className="h-3 w-3" />
+                {t('admin.winback.polar')} <ExternalLink className="h-3 w-3" />
               </a>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="promo-code">Promo Code</Label>
+                <Label htmlFor="promo-code">{t('admin.winback.code')}</Label>
                 <Input
                   id="promo-code"
-                  placeholder="e.g., COMEBACK20"
+                  placeholder="COMEBACK20"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                   className="font-mono uppercase"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Enter the exact code you created in Polar
+                  {t('admin.winback.codeHint')}
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="flex items-center gap-1">
-                  <Label htmlFor="polar-discount-id">Polar Discount ID</Label>
+                  <Label htmlFor="polar-discount-id">{t('admin.winback.discountId')}</Label>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">
-                      <p>The UUID from Polar Dashboard → Discounts → Click on discount → Copy the ID from the URL or details panel</p>
+                      <p>{t('admin.winback.idHint')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
                 <Input
                   id="polar-discount-id"
-                  placeholder="e.g., 12345678-abcd-1234-efgh-123456789abc"
+                  placeholder="12345678-abcd-1234-efgh-123456789abc"
                   value={polarDiscountId}
                   onChange={(e) => setPolarDiscountId(e.target.value.trim())}
                   className={`font-mono ${polarDiscountId && !isValidUUID(polarDiscountId) ? 'border-destructive' : ''}`}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Required for automatic checkout discount
+                  {t('admin.winback.required')}
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="discount">Discount Percentage</Label>
+                <Label htmlFor="discount">{t('admin.winback.percent')}</Label>
                 <Input
                   id="discount"
                   type="number"
@@ -648,7 +650,7 @@ export function WinbackCampaignPanel() {
                   onChange={(e) => setDiscountPercent(parseInt(e.target.value) || 0)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Shown in the email (must match Polar)
+                  {t('admin.winback.shown')}
                 </p>
               </div>
             </div>
@@ -657,19 +659,19 @@ export function WinbackCampaignPanel() {
               <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-sm text-amber-600 dark:text-amber-400">
                 <AlertCircle className="h-4 w-4 flex-shrink-0" />
                 {!promoCode.trim() 
-                  ? 'Enter a promo code to enable sending emails'
+                  ? t('admin.winback.needCode')
                   : !polarDiscountId.trim()
-                  ? 'Enter the Polar Discount ID (UUID) for automatic checkout application'
+                  ? t('admin.winback.needId')
                   : !isValidUUID(polarDiscountId.trim())
-                  ? 'Polar Discount ID must be a valid UUID format (e.g., 12345678-abcd-1234-efgh-123456789abc)'
-                  : 'Discount must be between 1 and 100'}
+                  ? t('admin.winback.invalidId')
+                  : t('admin.winback.invalidPercent')}
               </div>
             )}
 
             {isConfigValid && (
               <div className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-sm text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="h-4 w-4 flex-shrink-0" />
-                Configuration complete! Discount will be automatically applied at checkout when users click the email CTA.
+                {t('admin.winback.configured')}
               </div>
             )}
           </CardContent>
@@ -682,28 +684,28 @@ export function WinbackCampaignPanel() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  Eligible Users
+                  {t('admin.winback.eligible')}
                 </CardTitle>
                 <CardDescription>
-                  Users who cancelled their trial and can receive a win-back email
+                  {t('admin.winback.eligibleHint')}
                 </CardDescription>
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 {/* Sort by dropdown */}
                 <div className="flex items-center gap-2">
                   <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                  <Label htmlFor="sort-by" className="text-sm whitespace-nowrap">Sort by:</Label>
+                  <Label htmlFor="sort-by" className="text-sm whitespace-nowrap">{t('admin.winback.sort')}</Label>
                   <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
                     <SelectTrigger id="sort-by" className="w-[160px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="activity_score">Activity Score</SelectItem>
-                      <SelectItem value="battles_tracked">Battles Tracked</SelectItem>
-                      <SelectItem value="ai_requests">AI Requests</SelectItem>
-                      <SelectItem value="chat_messages">Chat Messages</SelectItem>
-                      <SelectItem value="linked_accounts">Linked Accounts</SelectItem>
-                      <SelectItem value="ai_active_days">Active Days</SelectItem>
+                      <SelectItem value="activity_score">{t('admin.winback.activityScore')}</SelectItem>
+                      <SelectItem value="battles_tracked">{t('admin.winback.battles')}</SelectItem>
+                      <SelectItem value="ai_requests">{t('admin.winback.ai')}</SelectItem>
+                      <SelectItem value="chat_messages">{t('admin.winback.messages')}</SelectItem>
+                      <SelectItem value="linked_accounts">{t('admin.winback.linked')}</SelectItem>
+                      <SelectItem value="ai_active_days">{t('admin.winback.days')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -716,7 +718,7 @@ export function WinbackCampaignPanel() {
                     onCheckedChange={setShowActiveOnly}
                   />
                   <Label htmlFor="active-only" className="text-sm cursor-pointer">
-                    Active users only
+                    {t('admin.winback.activeOnly')}
                   </Label>
                 </div>
                 
@@ -724,16 +726,16 @@ export function WinbackCampaignPanel() {
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
                     <Activity className="h-3 w-3 mr-1" />
-                    {activeUsersCount} active
+                    {t('admin.blocked.active')}: {activeUsersCount}
                   </Badge>
                   <Badge variant="outline">
-                    {eligibleUsers?.length || 0} total
+                    {t('admin.blocked.total')}: {eligibleUsers?.length || 0}
                   </Badge>
                 </div>
 
                 <div className="text-sm text-muted-foreground">
                   <Mail className="h-4 w-4 inline mr-1" />
-                  {eligibleToSendCount} can receive email
+                  {t('admin.winback.canReceive', { count: eligibleToSendCount })}
                 </div>
                 <Button
                   variant="default"
@@ -743,12 +745,12 @@ export function WinbackCampaignPanel() {
                   {sendingToAll ? (
                     <>
                       <Clock className="h-4 w-4 mr-2 animate-spin" />
-                      Sending...
+                      {t('admin.winback.sending')}
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send to {showActiveOnly ? 'Active' : 'All'} ({eligibleToSendCount})
+                      {t(showActiveOnly ? 'admin.winback.sendActive' : 'admin.winback.sendAll', { count: eligibleToSendCount })}
                     </>
                   )}
                 </Button>
@@ -768,13 +770,13 @@ export function WinbackCampaignPanel() {
                     <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     {showActiveOnly ? (
                       <>
-                        <p>No active users found</p>
-                        <p className="text-sm">Try disabling the "Active users only" filter</p>
+                        <p>{t('admin.winback.noActive')}</p>
+                        <p className="text-sm">{t('admin.winback.noActiveHint')}</p>
                       </>
                     ) : (
                       <>
-                        <p>No eligible users found</p>
-                        <p className="text-sm">Users will appear here after their trial ends</p>
+                        <p>{t('admin.winback.noEligible')}</p>
+                        <p className="text-sm">{t('admin.winback.noEligibleHint')}</p>
                       </>
                     )}
                   </div>
@@ -789,10 +791,10 @@ export function WinbackCampaignPanel() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
-              Campaign History
+              {t('admin.winback.history')}
             </CardTitle>
             <CardDescription>
-              Recent win-back emails sent by admins (with activity score at time of send)
+              {t('admin.winback.historyHint')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -806,7 +808,7 @@ export function WinbackCampaignPanel() {
                 emptyState={
                   <div className="text-center py-8 text-muted-foreground">
                     <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>No campaigns sent yet</p>
+                    <p>{t('admin.winback.emptyHistory')}</p>
                   </div>
                 }
               />
@@ -819,29 +821,28 @@ export function WinbackCampaignPanel() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Send to {showActiveOnly ? 'active' : 'all eligible'} users?
+                {t('admin.winback.confirm', { count: eligibleToSendCount })}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                This will send a win-back email with promo code <strong>{promoCode}</strong> ({discountPercent}% off) to{' '}
-                <strong>{eligibleToSendCount}</strong> users who haven't received an email in the last 30 days.
+                {t('admin.winback.bulkDetails', { count: eligibleToSendCount, code: promoCode, percent: discountPercent })}
                 {showActiveOnly && (
                   <>
                     <br /><br />
                     <span className="text-blue-600 dark:text-blue-400">
-                      ℹ️ Only sending to users who have used the app (filtered by activity)
+                      ℹ️ {t('admin.winback.onlyActivity')}
                     </span>
                   </>
                 )}
                 <br /><br />
                 <span className="text-emerald-600 dark:text-emerald-400">
-                  ✓ Discount will be automatically applied at checkout
+                  ✓ {t('admin.winback.autoDiscount')}
                 </span>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleBulkSend}>
-                Send Emails
+                {t('admin.winback.sendEmails')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

@@ -34,13 +34,13 @@ export interface TimelinePoint {
 
 // Define endpoint grouping patterns
 const ENDPOINT_GROUPS: { name: string; pattern: RegExp; priority: number }[] = [
-  { name: 'Player Data', pattern: /^(player|clash-royale|battles)/, priority: 1 },
-  { name: 'Deck & Cards', pattern: /^(deck|card|saved_decks|card_mastery|card_collection)/, priority: 2 },
-  { name: 'Analytics', pattern: /^(api-metrics|cache-status|deck_usage)/, priority: 3 },
-  { name: 'Achievements', pattern: /^(achievement|user_achievements)/, priority: 4 },
-  { name: 'Auth & Profiles', pattern: /^(admin|profile|fraud|subscription)/, priority: 5 },
-  { name: 'Operations', pattern: /^(operation|notification)/, priority: 6 },
-  { name: 'Other', pattern: /.*/, priority: 99 },
+  { name: 'admin.apiMetrics.playerGroup', pattern: /^(player|clash-royale|battles)/, priority: 1 },
+  { name: 'admin.apiMetrics.deckGroup', pattern: /^(deck|card|saved_decks|card_mastery|card_collection)/, priority: 2 },
+  { name: 'dashboard.subtabs.analytics', pattern: /^(api-metrics|cache-status|deck_usage)/, priority: 3 },
+  { name: 'achievements.title', pattern: /^(achievement|user_achievements)/, priority: 4 },
+  { name: 'admin.apiMetrics.profileGroup', pattern: /^(admin|profile|fraud|subscription)/, priority: 5 },
+  { name: 'admin.apiMetrics.operationGroup', pattern: /^(operation|notification)/, priority: 6 },
+  { name: 'trialFollowup.other', pattern: /.*/, priority: 99 },
 ];
 
 function groupEndpoints(endpoints: EndpointStats[]): EndpointGroup[] {

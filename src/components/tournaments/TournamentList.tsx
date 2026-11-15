@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,27 +29,10 @@ interface Tournament {
 /**
  * TournamentList - realtime handled by useUnifiedRealtime
  */
-export function TournamentList({ onSelectTournament }: { onSelectTournament: (id: string) => void }) {
+export function TournamentList({ playerTag, playerName }: { playerTag: string; playerName: string }) {
   const { t } = useTranslation();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
-  const [playerTag, setPlayerTag] = useState<string>("");
-  const [playerName, setPlayerName] = useState<string>("");
-
-  useEffect(() => {
-    // Get player info from session or localStorage
-    const getPlayerInfo = async () => {
-      const { data: session } = await supabase.auth.getSession();
-      if (session.session?.user) {
-        const tag = localStorage.getItem('player_tag') || '';
-        const name = localStorage.getItem('player_name') || 'Player';
-        setPlayerTag(tag);
-        setPlayerName(name);
-      }
-    };
-    getPlayerInfo();
-  }, []);
-
   // Use React Query - realtime invalidation handled by useUnifiedRealtime
   const { data: tournaments = [], isLoading, refetch } = useQuery({
     queryKey: ['tournaments'],
@@ -70,7 +53,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
       
       return (data || []).map(t => ({
         ...t,
-        _count: { registrations: t.tournament_registrations?.length || 0 }
+        _count: { registrations: t.tournament_registrations?.[0]?.count ?? 0 }
       })) as Tournament[];
     },
   });
@@ -92,7 +75,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
   return (
     <div className="space-y-4">
       {showCreateForm && (
-        <CreateTournamentForm 
+        <CreateTournamentForm onCancel={() => setShowCreateForm(false)}
           onSuccess={() => {
             setShowCreateForm(false);
             refetch();
@@ -109,7 +92,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
         />
       )}
 
-      {!showCreateForm && tournaments.length === 0 && !isLoading && (
+      {!showCreateForm && (
         <Button 
           onClick={() => setShowCreateForm(true)}
           className="w-full"
@@ -148,7 +131,7 @@ export function TournamentList({ onSelectTournament }: { onSelectTournament: (id
               <p className="text-sm text-muted-foreground line-clamp-2">{tournament.description}</p>
             )}
             
-            <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-muted-foreground" />
                 <span>{tournament._count?.registrations || 0} / {tournament.max_participants}</span>

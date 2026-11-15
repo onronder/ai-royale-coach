@@ -149,7 +149,7 @@ export function DemoSection() {
           const deck = sampleDecks.find(d => d.id === value);
           if (deck) setSelectedDeck(deck);
         }}>
-        <TabsList className="grid w-full grid-cols-4 md:grid-cols-9 gap-1 bg-card/50 backdrop-blur p-1">
+        <TabsList className="grid h-auto w-full grid-cols-3 gap-1 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 bg-card/50 backdrop-blur p-1 [&>button]:min-h-11">
           {sampleDecks.map((deck, idx) => (
             <TabsTrigger 
               key={deck.id} 

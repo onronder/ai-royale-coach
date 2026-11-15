@@ -97,7 +97,7 @@ function getDismissedIds(): Set<string> {
 function getNextAnnouncementIndex(validAnnouncements: Announcement[], dismissedIds: Set<string>): number {
   try {
     const storedIndex = localStorage.getItem(ROTATION_KEY);
-    let startIndex = storedIndex ? parseInt(storedIndex, 10) : 0;
+    const startIndex = storedIndex ? parseInt(storedIndex, 10) : 0;
     
     // Find next non-dismissed announcement
     for (let i = 0; i < validAnnouncements.length; i++) {

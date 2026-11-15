@@ -309,7 +309,7 @@ export function AppSidebar({
                       <Gamepad2 className="h-5 w-5 text-crimson" />
                       {!isCollapsed && (
                         <>
-                          <span className="flex-1">{t('sidebar.dreamArena', 'Dream Arena')}</span>
+                          <span className="flex-1">{t('dreamArena.title', 'Dream Arena')}</span>
                           <Badge 
                             variant="outline" 
                             className="ml-1 px-1 py-0 text-[9px] text-muted-foreground border-muted-foreground/30"
@@ -321,7 +321,7 @@ export function AppSidebar({
                     </SidebarMenuButton>
                   </TooltipTrigger>
                   {isCollapsed && (
-                    <TooltipContent side="right">{t('sidebar.dreamArena', 'Dream Arena')}</TooltipContent>
+                    <TooltipContent side="right">{t('dreamArena.title', 'Dream Arena')}</TooltipContent>
                   )}
                 </Tooltip>
               </SidebarMenuItem>

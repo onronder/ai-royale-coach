@@ -204,7 +204,7 @@ export function DeckBuilder({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid h-auto w-full grid-cols-3 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:px-1">
           <TabsTrigger value="builder">{t('deck.builder')}</TabsTrigger>
           <TabsTrigger value="templates">
             <Library className="w-4 h-4 mr-2" />
@@ -236,18 +236,19 @@ export function DeckBuilder({
                     <div key={idx} className="relative">
                       {card ? (
                         <>
-                          <CardImage card={card} size="md" showLevel showElixir />
+                          <CardImage card={card} size="md" className="aspect-[5/7] h-auto max-w-full" showLevel showElixir />
                           <Button
                             size="sm"
                             variant="destructive"
                             className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                            aria-label={t('common.delete') + " · " + card.name}
                             onClick={() => removeCard(card.id)}
                           >
                             <X className="w-3 h-3" />
                           </Button>
                         </>
                       ) : (
-                        <div className="w-20 h-28 border-2 border-dashed border-muted rounded-lg flex items-center justify-center text-muted-foreground">
+                        <div className="aspect-[5/7] w-full max-w-20 border-2 border-dashed border-muted rounded-lg flex items-center justify-center text-muted-foreground">
                           +
                         </div>
                       )}
@@ -265,7 +266,7 @@ export function DeckBuilder({
                   {!hasAccess && <Lock className="w-4 h-4 mr-2" />}
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAnalyzing ? t('deck.analyzing') : t('deck.aiAnalyze')}
-                  {!hasAccess && <Badge variant="secondary" className="ml-2 text-xs">PRO</Badge>}
+                  {!hasAccess && <Badge variant="secondary" className="ml-2 text-xs">{t('commonExtra.pro')}</Badge>}
                 </Button>
                 <Button 
                   onClick={saveDeck} 
@@ -337,13 +338,15 @@ export function DeckBuilder({
             <CardContent>
               <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 max-h-96 overflow-y-auto">
                 {availableCards.map((card) => (
-                  <div 
-                    key={card.id} 
-                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                  <button type="button"
+                    key={card.id}
+                    aria-label={card.name}
+                    aria-pressed={selectedCards.some(selected => selected.id === card.id)}
+                    className="min-w-0 rounded-lg transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary"
                     onClick={() => addCard(card)}
                   >
-                    <CardImage card={card} size="sm" showElixir />
-                  </div>
+                    <CardImage card={card} size="sm" className="aspect-[4/5] h-auto max-w-full" showElixir />
+                  </button>
                 ))}
               </div>
             </CardContent>

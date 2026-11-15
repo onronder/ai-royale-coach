@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Yenilemeyi neden kapattın? (İsteğe bağlı)",
+    "avoid_charge": "Kartımdan çekilmesin, denemeye devam edeceğim",
+    "value": "Koçluk beklediğim kadar faydalı olmadı",
+    "price": "Fiyatı bana uygun değil",
+    "technical": "Teknik sorun yaşadım",
+    "other": "Başka bir neden",
+    "skip": "Atla",
+    "consent": "Görevim yarım kalırsa denememin ikinci gününde bana bir kez e-posta gönder.",
+    "resume": "Koçluk görevine dön",
+    "retry": "Görev tercihlerini tekrar yükle",
+    "error": "Tercihin kaydedilemedi. Tekrar dene.",
+    "admin": "Oyuncuların belirttiği iptal nedenleri",
+    "empty": "Bu dönemde yanıt yok."
+  },
   "common": {
     "loading": "Yükleniyor...",
     "error": "Hata",
@@ -49,7 +64,9 @@
     "ai": "AI",
     "searching": "Aranıyor...",
     "locked": "Kilitli",
-    "thisMayTakeMoment": "Bu biraz zaman alabilir"
+    "thisMayTakeMoment": "Bu biraz zaman alabilir",
+    "dismiss": "Kapat",
+    "today": "Bugün"
   },
   "announcement": {
     "new": "YENİ",
@@ -79,7 +96,9 @@
     "quickActions": "Hızlı Eylemler",
     "achievements": "Başarılar",
     "proDna": "Pro DNA",
-    "theOracle": "Kahin"
+    "theOracle": "Kahin",
+    "toggle": "Gezinme menüsünü aç veya kapat",
+    "toolbox": "Araçlar"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",
@@ -102,6 +121,8 @@
     "notHelpful": "Yardımcı değil"
   },
   "nav": {
+    "lightTheme": "Açık temaya geç",
+    "darkTheme": "Koyu temaya geç",
     "signIn": "Giriş Yap",
     "getStarted": "Başla",
     "signOut": "Çıkış Yap",
@@ -931,7 +952,8 @@
           "aiFeatures": "yapay zeka özelliği",
           "battlesAnalyzed": "analiz edilen savaş",
           "accuracy": "tahmin doğruluğu"
-        }
+        },
+        "subtitle": "Koçun maçlarını analiz eder ve gelişmen için sana özel öneriler sunar."
       },
       "explainer": {
         "badge": "Az Önce Deneyimlediğiniz",
@@ -1185,7 +1207,16 @@
       "tournaments": "Turnuvalar"
     },
     "header": {
-      "winRate": "KO"
+      "controlPanel": "Kontrol paneli",
+      "winRate": "KO",
+      "justNow": "Az önce",
+      "minsAgo": "{{count}} dk. önce",
+      "hoursAgo": "{{count}} sa. önce",
+      "dashboardControls": "Panel denetimleri",
+      "lastUpdated": "Son güncelleme",
+      "forceRefresh": "Şimdi güncelle",
+      "activeTasks": "Devam eden görevler",
+      "noTasks": "Devam eden veya yeni görev yok"
     },
     "aiCoach": {
       "title": "AI Koç Özeti",
@@ -1221,14 +1252,18 @@
       "win": "Galibiyet",
       "loss": "Yenilgi",
       "draw": "Beraberlik",
-      "crowns": "Taçlar"
+      "crowns": "Taçlar",
+      "playToSee": "Kupa değişimini görmek için maç oyna."
     },
     "achievementWidget": {
       "loading": "Başarımlar yükleniyor...",
       "achievement": "{{count}} Başarım",
       "achievements": "{{count}} Başarım",
       "phase": "{{phase}} Aşaması"
-    }
+    },
+    "victory": "Zafer",
+    "defeat": "Yenilgi",
+    "draw": "Beraberlik"
   },
   "deck": {
     "builder": "Deste Oluşturucu",
@@ -1266,7 +1301,11 @@
     "aiDeckAnalysis": "AI Deste Analizi",
     "analyzingStrategy": "AI deste stratejini analiz ediyor...",
     "languageChangedReanalyze": "Dil değişti. Yeni dilinizde analiz almak için 'AI Analiz' düğmesine tıklayın.",
-    "templates": "Şablonlar"
+    "templates": "Şablonlar",
+    "cards": "Kartlar",
+    "synergy": "Uyum",
+    "matchups": "Eşleşmeler",
+    "noCards": "Seçili kart yok"
   },
   "coach": {
     "title": "AI KOÇ",
@@ -1337,7 +1376,8 @@
     "upgradeable": "Yükseltilebilir",
     "updateSuccess": "Kart ustalığı başarıyla güncellendi",
     "updateFailed": "Kart ustalığı güncellenemedi",
-    "suggestionsFailed": "Kart önerileri alınamadı"
+    "suggestionsFailed": "Kart önerileri alınamadı",
+    "progress": "İlerleme"
   },
   "leaderboard": {
     "title": "Liderlik Tablosu",
@@ -1364,7 +1404,9 @@
     "top100": "Top 100",
     "myClan": "Klanım",
     "noClan": "Klan Yok",
-    "rankTop200": "Top 200"
+    "rankTop200": "Top 200",
+    "sync": "Sıralamayı güncelle",
+    "lastSync": "Son eşitleme"
   },
   "clan": {
     "details": "Klan Detayları",
@@ -1450,6 +1492,10 @@
     "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zeka erişimine sahip"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Son özellikleri ve güncellemeleri görüntüle.",
+      "button": "Yenilikleri göster"
+    },
     "title": "Hesap Ayarları",
     "subtitle": "Hesabınızı ve aboneliğinizi yönetin",
     "back": "Geri",
@@ -1566,7 +1612,7 @@
     "stats": {
       "trophies": "Mevcut kupa sayınız. Maç kazanarak kupalar kazanın ve sıralamalarda yükselin!",
       "bestTrophies": "Şimdiye kadar ulaştığınız en yüksek kupa sayısı. En iyi performansınızı gösterir.",
-      "winRate": "Son 25 maçtan kazandıklarınızın yüzdesi. %50 veya üzerini hedefleyin!",
+      "winRate": "Galibiyet sayısı, maç geçmişindeki toplam maç sayısına bölünür.",
       "arena": "Kupa sayınıza göre mevcut rekabet arenanız. Daha yüksek arenalar daha iyi ödüller açar.",
       "avgElixir": "Destenizin ortalama iksir maliyeti. Düşük daha hızlı, yüksek daha güçlüdür. 3.0-4.0 hedefleyin.",
       "crowns": "Bir maçta yıkılan kule kuleleri. 3 taç alarak tam hakimiyet sağlayın!",
@@ -1849,7 +1895,9 @@
     "matches": "maç",
     "strong": "Güçlü (>%60)",
     "even": "Dengeli (%50-60)",
-    "weak": "Zayıf (<%50)"
+    "weak": "Zayıf (<%50)",
+    "noData": "Henüz kazanma oranı verisi yok",
+    "noDataDesc": "Kazanma oranını görmek için maç oyna."
   },
   "cardCollection": {
     "title": "Kart Koleksiyonu",
@@ -1889,6 +1937,10 @@
     }
   },
   "achievements": {
+    "share": "Kupa vitrinini paylaş",
+    "shared": "Kupa vitrini paylaşıldı",
+    "downloaded": "Kupa vitrini kaydedildi",
+    "shareFailed": "Kupa vitrini paylaşılamadı",
     "title": "Başarılar",
     "subtitle": "Savaş başarıların",
     "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",
@@ -1911,7 +1963,160 @@
     "progress": "İlerleme",
     "pts": "puan",
     "points": "puan",
-    "unlockedOn": "{{date}} tarihinde açıldı"
+    "unlockedOn": "{{date}} tarihinde açıldı",
+    "trophyCase": "Kupa vitrini",
+    "playerTrophyCase": "{{name}} · Kupa vitrini",
+    "badgesEarned": "Kazanılan rozetler",
+    "master": "Usta",
+    "catalog": {
+      "Placement Novice": {
+        "title": "Kart yerleşimi · Acemi",
+        "description": "Kart yerleşimi becerisinde 3. seviyeye ulaş."
+      },
+      "Placement Adept": {
+        "title": "Kart yerleşimi · Yetenekli",
+        "description": "Kart yerleşimi becerisinde 5. seviyeye ulaş."
+      },
+      "Placement Expert": {
+        "title": "Kart yerleşimi · Uzman",
+        "description": "Kart yerleşimi becerisinde 7. seviyeye ulaş."
+      },
+      "Placement Master": {
+        "title": "Kart yerleşimi · Usta",
+        "description": "Kart yerleşimi becerisinde 9. seviyeye ulaş."
+      },
+      "Placement Legend": {
+        "title": "Kart yerleşimi · Efsane",
+        "description": "Kart yerleşimi becerisinde 10. seviyeye ulaş."
+      },
+      "Timing Novice": {
+        "title": "Zamanlama · Acemi",
+        "description": "Zamanlama becerisinde 3. seviyeye ulaş."
+      },
+      "Timing Adept": {
+        "title": "Zamanlama · Yetenekli",
+        "description": "Zamanlama becerisinde 5. seviyeye ulaş."
+      },
+      "Timing Expert": {
+        "title": "Zamanlama · Uzman",
+        "description": "Zamanlama becerisinde 7. seviyeye ulaş."
+      },
+      "Timing Master": {
+        "title": "Zamanlama · Usta",
+        "description": "Zamanlama becerisinde 9. seviyeye ulaş."
+      },
+      "Timing Legend": {
+        "title": "Zamanlama · Efsane",
+        "description": "Zamanlama becerisinde 10. seviyeye ulaş."
+      },
+      "Elixir Novice": {
+        "title": "İksir yönetimi · Acemi",
+        "description": "İksir yönetimi becerisinde 3. seviyeye ulaş."
+      },
+      "Elixir Adept": {
+        "title": "İksir yönetimi · Yetenekli",
+        "description": "İksir yönetimi becerisinde 5. seviyeye ulaş."
+      },
+      "Elixir Expert": {
+        "title": "İksir yönetimi · Uzman",
+        "description": "İksir yönetimi becerisinde 7. seviyeye ulaş."
+      },
+      "Elixir Master": {
+        "title": "İksir yönetimi · Usta",
+        "description": "İksir yönetimi becerisinde 9. seviyeye ulaş."
+      },
+      "Elixir Legend": {
+        "title": "İksir yönetimi · Efsane",
+        "description": "İksir yönetimi becerisinde 10. seviyeye ulaş."
+      },
+      "Prediction Novice": {
+        "title": "Tahmin · Acemi",
+        "description": "Tahmin becerisinde 3. seviyeye ulaş."
+      },
+      "Prediction Adept": {
+        "title": "Tahmin · Yetenekli",
+        "description": "Tahmin becerisinde 5. seviyeye ulaş."
+      },
+      "Prediction Expert": {
+        "title": "Tahmin · Uzman",
+        "description": "Tahmin becerisinde 7. seviyeye ulaş."
+      },
+      "Prediction Master": {
+        "title": "Tahmin · Usta",
+        "description": "Tahmin becerisinde 9. seviyeye ulaş."
+      },
+      "Prediction Legend": {
+        "title": "Tahmin · Efsane",
+        "description": "Tahmin becerisinde 10. seviyeye ulaş."
+      },
+      "Adaptation Novice": {
+        "title": "Uyum · Acemi",
+        "description": "Uyum becerisinde 3. seviyeye ulaş."
+      },
+      "Adaptation Adept": {
+        "title": "Uyum · Yetenekli",
+        "description": "Uyum becerisinde 5. seviyeye ulaş."
+      },
+      "Adaptation Expert": {
+        "title": "Uyum · Uzman",
+        "description": "Uyum becerisinde 7. seviyeye ulaş."
+      },
+      "Adaptation Master": {
+        "title": "Uyum · Usta",
+        "description": "Uyum becerisinde 9. seviyeye ulaş."
+      },
+      "Adaptation Legend": {
+        "title": "Uyum · Efsane",
+        "description": "Uyum becerisinde 10. seviyeye ulaş."
+      },
+      "Beginner Graduate": {
+        "title": "Başlangıç mezunu",
+        "description": "Başlangıç aşamasını tamamla."
+      },
+      "Intermediate Graduate": {
+        "title": "Orta seviye mezunu",
+        "description": "Orta aşamasını tamamla."
+      },
+      "Advanced Graduate": {
+        "title": "İleri seviye mezunu",
+        "description": "İleri aşamasını tamamla."
+      },
+      "Master Graduate": {
+        "title": "Ustalık mezunu",
+        "description": "Usta aşamasını tamamla."
+      },
+      "Card Master": {
+        "title": "Kart ustası",
+        "description": "5 farklı kartta en az 9. ustalık seviyesine ulaş."
+      },
+      "Card Legend": {
+        "title": "Kart efsanesi",
+        "description": "20 farklı kartta en az 9. ustalık seviyesine ulaş."
+      },
+      "Ultimate Master": {
+        "title": "Büyük usta",
+        "description": "10 farklı kartta en az 10. ustalık seviyesine ulaş."
+      },
+      "First Steps": {
+        "title": "İlk adımlar",
+        "description": "1 başarım kazan."
+      },
+      "Achievement Hunter": {
+        "title": "Başarım avcısı",
+        "description": "10 başarım kazan."
+      },
+      "Achievement Master": {
+        "title": "Başarım ustası",
+        "description": "25 başarım kazan."
+      },
+      "Achievement Legend": {
+        "title": "Başarım efsanesi",
+        "description": "50 başarım kazan."
+      }
+    },
+    "synced": "Başarımlar eşitlendi",
+    "syncedMessage": "Başarım ilerlemen güncel.",
+    "unlockedNew": "Yeni bir başarım kazandın."
   },
   "analytics": {
     "winRateTrends": "Kazanma Oranı Trendleri",
@@ -1922,7 +2127,22 @@
     "wr": "KO",
     "battlesCount": "{{count}} savaş",
     "mostUsedCards": "En Çok Kullanılan Kartlar",
-    "usedTimes": "{{count}} kez kullanıldı"
+    "usedTimes": "{{count}} kez kullanıldı",
+    "predictions": {
+      "total": "Toplam tahmin",
+      "battlesTracked": "Takip edilen maç",
+      "avgError": "Ortalama hata",
+      "accuracyRate": "Yüksek isabet oranı",
+      "mostAccurate": "En isabetli tahmin",
+      "leastAccurate": "En az isabetli tahmin",
+      "predicted": "Tahmin",
+      "actual": "Gerçekleşen",
+      "error": "Hata"
+    },
+    "noDecks": "Henüz deste verisi yok",
+    "noDecksDesc": "Kullandığın desteleri görmek için maç oyna.",
+    "noTrendData": "Henüz eğilim verisi yok",
+    "noTrendDataDesc": "Kazanma oranının değişimini görmek için daha fazla maç oyna."
   },
   "templates": {
     "title": "Meta Deste Şablonları",
@@ -2205,7 +2425,23 @@
       "startTrial": "3 Günlük Ücretsiz Denemeyi Başlat",
       "subscribe": "Şimdi Abone Ol",
       "signOut": "Çıkış Yap"
-    }
+    },
+    "dailyLimitReached": "Günlük sınıra ulaşıldı",
+    "tagClaimedMessage": "Bu oyuncu etiketi başka bir hesaba bağlı.",
+    "trialConfirm": {
+      "title": "Şimdi abone olmak istiyor musun?",
+      "description": "Denemende kalan gün: {{days}}. Devam edersen ücretli aboneliğin hemen başlar."
+    },
+    "tagClaimedTitle": "Oyuncu etiketi zaten bağlı",
+    "featureLocked": "Özellik kilitli",
+    "dailyLimitMessage": "Bugünkü kullanım sınırına ulaştın.",
+    "upgradeToUnlock": "Açmak için yükselt",
+    "upgradeForUnlimited": "Sınırsız erişim için yükselt",
+    "unlimitedAccess": "Sınırsız erişim",
+    "unlimited": "Sınırsız",
+    "trial": "Deneme",
+    "quotaExhaustedTooltip": "Bugünkü kullanım hakkı doldu.",
+    "usesToday": "Bugün kalan kullanım: {{remaining}}"
   },
   "onboarding": {
     "stepOf": "Adım {{current}} / {{total}}",
@@ -2323,15 +2559,18 @@
     "achievements": {
       "elixirMaster": {
         "title": "İksir Ustası",
-        "hint": "Kule kaybetmeden ağır deste (4.0+ iksir) ile kazan"
+        "hint": "Kule kaybetmeden ağır deste (4.0+ iksir) ile kazan",
+        "earned": "Ağır desteyle kazandın ve tüm kulelerini korudun."
       },
       "comebackKing": {
         "title": "Geri Dönüş Kralı",
-        "hint": "Önce kule kaybettikten sonra maçı kazan"
+        "hint": "Önce kule kaybettikten sonra maçı kazan",
+        "earned": "Maçı geriden gelerek kazandın."
       },
       "perfectDefense": {
         "title": "Mükemmel Savunma",
-        "hint": "Hiç kule kaybetmeden maç kazan"
+        "hint": "Hiç kule kaybetmeden maç kazan",
+        "earned": "Tek bir taç vermeden kulelerini savundun."
       },
       "winStreakWarrior": {
         "title": "Seri Galip",
@@ -2343,9 +2582,13 @@
       },
       "threeCrownMaster": {
         "title": "Üç Taç Ustası",
-        "hint": "3 taçla maç kazan"
+        "hint": "3 taçla maç kazan",
+        "earned": "Üç tacın hepsini aldın!"
       }
-    }
+    },
+    "giantSlayer": "Dev avcısı",
+    "wonStreak": "Üst üste {{count}} maç kazandın.",
+    "wonAgainstOdds": "Senden {{count}} kupa ilerideki rakibi yendin."
   },
   "aiPreview": {
     "deckArchetype": "Deste Arketipi",
@@ -2391,7 +2634,21 @@
       "endpoints": "uç nokta",
       "calls": "çağrı",
       "cache": "önbellek",
-      "slow": "Yavaş"
+      "slow": "Yavaş",
+      "groupTitle": "Kategoriye göre uç noktalar",
+      "noRequests": "İstek verisi yok",
+      "recent": "Son istekler",
+      "loadingLogs": "Kayıtlar yükleniyor…",
+      "dupeWarning": "{{count}} yinelenen istek (1 saniyede aynı uç nokta)",
+      "filter": "Uç noktaya göre filtrele…",
+      "dupes": "Yinelenenler",
+      "noDupes": "Yinelenen istek yok",
+      "emptyLog": "Henüz kaydedilmiş istek yok",
+      "hits": "Önbellek isabetleri",
+      "playerGroup": "Oyuncu verileri",
+      "deckGroup": "Desteler ve kartlar",
+      "profileGroup": "Hesaplar ve profiller",
+      "operationGroup": "İşlemler"
     },
     "fraudOverview": {
       "signalsToday": "Bugünkü Sinyaller",
@@ -2474,6 +2731,186 @@
         "medium": "Orta",
         "low": "Düşük"
       }
+    },
+    "navigation": {
+      "checking": "Yönetici erişimi kontrol ediliyor…",
+      "title": "Yönetim paneli",
+      "subtitle": "Şüpheli işlemler ve kullanıcı yönetimi",
+      "users": "Kullanıcılar",
+      "trials": "Denemeler",
+      "winback": "Geri kazanım",
+      "webhooks": "Webhook’lar",
+      "admin": "Yönetim"
+    },
+    "trials": {
+      "paid": "Ödeme yaptı",
+      "canceledImmediately": "Hemen iptal etti",
+      "neverUsed": "Hiç kullanmadı",
+      "onceCanceled": "Bir analizden sonra iptal etti",
+      "inTrial": "Deneme sürüyor",
+      "noPayment": "Kullandı, ödeme yapmadı",
+      "startedTrial": "Denemeyi başlattı",
+      "linkedTag": "Oyuncu etiketi bağladı",
+      "firstAnalysis": "İlk yapay zekâ analizini aldı",
+      "returned": "En az iki gün kullandı",
+      "converted": "Ücretli aboneliğe geçti",
+      "daysRange": "{{days}} gün",
+      "funnel": "Deneme dönüşüm hunisi",
+      "revenue": "Gelir ve deneme etkinliği",
+      "sync": "Polar siparişlerini eşitle",
+      "rate": "İlk ödeme oranı (deneme sonu + 7 gün)",
+      "positive": "Pozitif tutarlı siparişler",
+      "zero": "Sıfır tutarlı deneme siparişleri",
+      "quota": "Geçmiş deneme kotası retleri",
+      "quotaUsers": "{{users}} kullanıcı · {{canceled}} sonradan iptal etti",
+      "renewalOff": "Yenilemesi kapalı, denemesi sürüyor",
+      "timing": "İptale kadar geçen süre",
+      "during": "Denemede iptal edenler",
+      "withinHour": "İlk saatte iptal edenler",
+      "hoursToCancel": "İptale kadar ortalama saat",
+      "observed": "Gözlenen deneme etkinliği",
+      "users": "Deneme kullanıcıları",
+      "started": "Başlangıç",
+      "ends": "Bitiş",
+      "canceled": "İptal",
+      "hours": "Saat",
+      "tags": "Etiketler",
+      "chat": "Sohbet",
+      "days": "Gün",
+      "lastSeen": "Son görülme",
+      "activity": "Etkinlik",
+      "status": {
+        "active": "Aktif",
+        "trialing": "Denemede",
+        "past_due": "Ödeme gecikti",
+        "cancelled": "İptal edildi",
+        "expired": "Süresi doldu"
+      }
+    },
+    "blocked": {
+      "trialing": "Denemede",
+      "active": "Aktif",
+      "cancelActive": "İptal edildi (erişim sürüyor)",
+      "grace": "Ek süre",
+      "graceExpired": "Ek süre doldu",
+      "trialUsed": "Deneme kullanıldı",
+      "none": "Abonelik yok",
+      "total": "Toplam kullanıcı",
+      "subscribers": "Aktif aboneler",
+      "onTrial": "Denemede",
+      "users": "Erişimi kapalı kullanıcılar",
+      "withoutSub": "Aktif aboneliği olmayan kullanıcılar",
+      "withoutAccess": "Abonelik gerektiren sayfalara erişemeyenler",
+      "empty": "Engelli kullanıcı yok",
+      "joined": "Kayıt tarihi",
+      "paymentFailed": "Ödeme gecikti (tahsil edilemedi)",
+      "paymentNotice": "Ödemesi alınamayan ve ödeme yöntemini güncellemesi için e-posta gönderilen kullanıcılar",
+      "noFailures": "Ödemesi başarısız kullanıcı yok",
+      "periodEnds": "Dönem bitişi",
+      "activeTrials": "Aktif aboneler ve denemedeki kullanıcılar",
+      "withAccess": "Abonelik gerektiren sayfalara erişebilenler",
+      "noActive": "Aktif abone yok",
+      "slots": "Hesap yuvası: {{count}}",
+      "graceEnds": "Ek süre bitişi",
+      "graceEnded": "Ek süre sona erdi",
+      "noEmail": "E-posta yok",
+      "noDetails": "Abonelik bilgisi yok",
+      "renews": "Yenilenme"
+    },
+    "recovery": {
+      "title": "Ödeme kurtarma",
+      "description": "Başarısız tahsilatların kurtarılma oranını ve süresini izle",
+      "rate": "Kurtarma oranı",
+      "summary": "{{total}} kullanıcıdan {{recovered}} tanesi aboneliğini geri kazandı",
+      "last30": "Son 30 gün",
+      "recovered": "Kurtarıldı",
+      "pending": "Beklemede",
+      "total": "Toplam geciken",
+      "stillDue": "Gecikme sürüyor",
+      "mean": "Ortalama kurtarma süresi"
+    },
+    "events": {
+      "processed": "İşlendi",
+      "failed": "Başarısız",
+      "skipped": "Atlandı",
+      "total24": "Toplam (24 sa.)",
+      "processed24": "İşlenen (24 sa.)",
+      "failed24": "Başarısız (24 sa.)",
+      "skipped24": "Atlanan (24 sa.)",
+      "title": "Webhook olayları",
+      "description": "Son Polar bildirimleri ve işlenme durumları",
+      "empty": "Webhook olayı bulunamadı",
+      "user": "• Kullanıcı:",
+      "id": "Olay kimliği:",
+      "time": "İşlenme zamanı:",
+      "error": "Hata:",
+      "payload": "Bildirim içeriği:",
+      "week": "7 günlük özet",
+      "total": "Toplam olay"
+    },
+    "winback": {
+      "breakdown": "Etkinlik dağılımı",
+      "ai": "Yapay zekâ istekleri",
+      "battles": "Takip edilen maçlar",
+      "messages": "Sohbet mesajları",
+      "linked": "Bağlı hesaplar",
+      "days": "Aktif günler",
+      "totalScore": "Toplam puan",
+      "never": "Hiçbir zaman",
+      "whenSent": "Gönderim sırasındaki etkinlik",
+      "off": "%{{percent}} indirim",
+      "manual": "Elle",
+      "configuration": "Kampanya ayarları",
+      "setup": "Geri kazanım e-postasının indirim oranını ve kodunu ayarla. Kod oluşturabileceğin yer:",
+      "polar": "Polar paneli",
+      "code": "İndirim kodu",
+      "codeHint": "Polar’da oluşturduğun kodu aynen gir",
+      "discountId": "Polar indirim kimliği",
+      "idHint": "Polar panelinde İndirimler’i aç, indirimi seç ve kimliği adres çubuğundan veya ayrıntılardan kopyala.",
+      "required": "Ödeme sırasında otomatik indirim için gerekli",
+      "percent": "İndirim yüzdesi",
+      "shown": "E-postada gösterilir. Polar ile aynı olmalı.",
+      "configured": "Ayarlar hazır. E-postadaki bağlantıdan gelenlere ödeme sırasında indirim uygulanacak.",
+      "eligible": "Uygun kullanıcılar",
+      "eligibleHint": "Denemesini iptal etmiş ve geri kazanım e-postası alabilecek kullanıcılar",
+      "sort": "Sıralama ölçütü",
+      "activityScore": "Etkinlik puanı",
+      "activeOnly": "Yalnızca aktif kullanıcılar",
+      "counts": "Aktif kullanıcı: {{active}} / {{total}}",
+      "canReceive": "Uygun alıcı: {{count}}",
+      "sending": "Gönderiliyor…",
+      "sendActive": "Aktif kullanıcılara gönder ({{count}})",
+      "sendAll": "Uygun kullanıcılara gönder ({{count}})",
+      "noActive": "Aktif kullanıcı bulunamadı",
+      "noActiveHint": "Yalnızca aktif kullanıcılar filtresini kapatmayı dene.",
+      "noEligible": "Uygun kullanıcı bulunamadı",
+      "noEligibleHint": "Denemesi biten kullanıcılar burada görünür.",
+      "history": "Kampanya geçmişi",
+      "historyHint": "Yöneticilerin gönderdiği son geri kazanım e-postaları ve gönderim anındaki etkinlik puanları",
+      "emptyHistory": "Henüz kampanya gönderilmedi",
+      "confirm": "{{count}} geri kazanım e-postası gönderilsin mi?",
+      "bulkDetails": "Son 30 günde geri kazanım e-postası almamış {{count}} uygun kullanıcıya %{{percent}} indirim için {{code}} kodu gönderilecek.",
+      "onlyActivity": "Bu e-posta yalnızca kayıtlı etkinliği olan kullanıcılara gider.",
+      "autoDiscount": "İndirim ödeme sırasında otomatik uygulanır",
+      "sendEmails": "E-postaları gönder",
+      "high": "Çok aktif",
+      "low": "Düşük etkinlik",
+      "noActivity": "Etkinlik yok",
+      "trialEnded": "Deneme bitişi",
+      "lastSent": "Son gönderim",
+      "actions": "İşlemler",
+      "date": "Tarih",
+      "recipient": "Alıcı",
+      "discount": "İndirim",
+      "autoApply": "Otomatik uygula",
+      "needCode": "E-posta göndermek için indirim kodu gir.",
+      "needId": "Ödeme sırasında otomatik uygulamak için Polar indirim kimliğini (UUID) gir.",
+      "invalidId": "Polar indirim kimliği geçerli bir UUID olmalı.",
+      "invalidPercent": "İndirim 1 ile 100 arasında olmalı.",
+      "sentOne": "E-posta gönderildi: {{email}}",
+      "failedOne": "E-posta gönderilemedi: {{error}}",
+      "sentSummary": "Gönderilen: {{sent}} · Başarısız: {{failed}}",
+      "send": "Gönder"
     }
   },
   "oraclePage": {
@@ -2483,7 +2920,14 @@
     "proUpgradeMessage": "Canlı Maç Tahminlerinin kilidini açmak için PRO'ya yükseltin."
   },
   "commonExtra": {
-    "note": "This section contains duplicate keys that were previously causing issues"
+    "note": "This section contains duplicate keys that were previously causing issues",
+    "vs": "karşı",
+    "new": "YENİ",
+    "pro": "PRO",
+    "ai": "YZ",
+    "searching": "Aranıyor…",
+    "locked": "Kilitli",
+    "thisMayTakeMoment": "Bu biraz sürebilir"
   },
   "pagination": {
     "previous": "Önceki",
@@ -2689,5 +3133,31 @@
     "title": "Deneme süreniz sona erdi",
     "description": "Son analizinizi görüntülemeye devam edebilirsiniz. Yeni AI analizleri için abone olun.",
     "cta": "Yeniden abone ol"
+  },
+  "loading": {
+    "playerData": "Oyuncu verileri alınıyor…",
+    "battles": "Maç geçmişi yükleniyor…",
+    "deckAnalysis": "Deste uyumu inceleniyor…",
+    "matchAnalysis": "Maç ayrıntıları inceleniyor…",
+    "cardCollection": "Kart koleksiyonu yükleniyor…",
+    "leaderboard": "Sıralama alınıyor…",
+    "aiThinking": "Koç düşünüyor…",
+    "calculating": "İstatistikler hesaplanıyor…"
+  },
+  "empty": {
+    "matches": "Maç bulunamadı",
+    "matchesDesc": "Maç geçmişini burada görmek için birkaç maç oyna.",
+    "decks": "Kayıtlı deste yok",
+    "decksDesc": "İlk desteni oluştur ve kaydet.",
+    "cards": "Takip edilen kart yok",
+    "cardsDesc": "Kartlarını görmek için koleksiyonunu eşitle."
+  },
+  "charts": {
+    "noData": "Veri yok",
+    "noDataDescription": "İstatistiklerini burada görmek için bir maç oyna."
+  },
+  "playerSelector": {
+    "addAccount": "Hesap ekle",
+    "accounts": "Hesaplar"
   }
 }

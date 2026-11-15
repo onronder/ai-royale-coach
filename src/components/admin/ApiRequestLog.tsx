@@ -1,3 +1,5 @@
+import { getDateLocale } from '@/i18n/dateLocale';
+import { useTranslation } from 'react-i18next';
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -57,6 +59,7 @@ function detectDuplicates(logs: ApiLog[]): Map<string, DuplicateInfo> {
 }
 
 export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
+  const { t, i18n } = useTranslation();
   const [isPaused, setIsPaused] = useState(false);
   const [filter, setFilter] = useState('');
   const [showDuplicatesOnly, setShowDuplicatesOnly] = useState(false);
@@ -103,7 +106,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
   };
 
   if (isLoading) {
-    return <div className="text-muted-foreground text-sm">Loading logs...</div>;
+    return <div className="text-muted-foreground text-sm">{t('admin.apiMetrics.loadingLogs')}</div>;
   }
 
   return (
@@ -112,7 +115,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
       {duplicateCount > 0 && (
         <div className="flex items-center gap-2 p-2 rounded bg-destructive/10 text-destructive text-sm">
           <AlertTriangle className="h-4 w-4" />
-          <span>{duplicateCount} duplicate calls detected (same endpoint within 1s)</span>
+          <span>{t('admin.apiMetrics.dupeWarning', { count: duplicateCount })}</span>
         </div>
       )}
 
@@ -121,7 +124,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
         <div className="relative flex-1">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Filter by endpoint..."
+            placeholder={t('admin.apiMetrics.filter')}
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-8 h-8 text-sm"
@@ -134,7 +137,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
           className="h-8 text-xs"
         >
           <AlertTriangle className="h-3 w-3 mr-1" />
-          Dupes
+          {t('admin.apiMetrics.dupes')}
         </Button>
         <Button
           variant="outline"
@@ -151,7 +154,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
         <div className="space-y-1">
           {displayLogs.length === 0 ? (
             <p className="text-muted-foreground text-sm text-center py-4">
-              {showDuplicatesOnly ? 'No duplicate calls detected' : 'No requests logged yet'}
+              {showDuplicatesOnly ? t('admin.apiMetrics.noDupes') : t('admin.apiMetrics.emptyLog')}
             </p>
           ) : (
             displayLogs.map((log) => {
@@ -166,7 +169,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
                   }`}
                 >
                   <span className="text-muted-foreground w-[50px] shrink-0">
-                    {formatDistanceToNow(new Date(log.created_at), { addSuffix: false })}
+                    {formatDistanceToNow(new Date(log.created_at), { addSuffix: false, locale: getDateLocale(i18n.language) })}
                   </span>
                   <Badge variant="outline" className={`${getMethodColor(log.method)} text-[10px] px-1`}>
                     {log.method}
@@ -177,7 +180,7 @@ export function ApiRequestLog({ logs, isLoading }: ApiRequestLogProps) {
                   </span>
                   {log.cache_hit && (
                     <Badge variant="secondary" className="text-[10px] px-1">
-                      CACHE
+                      {t('admin.apiMetrics.cache')}
                     </Badge>
                   )}
                   {isDupe && (

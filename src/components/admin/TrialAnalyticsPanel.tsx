@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,18 +14,26 @@ type Row = {
 };
 
 function reason(r: Row): string {
-  if (r.converted) return 'Paid';
-  if (r.hours_to_cancel !== null && r.hours_to_cancel <= 1) return 'Canceled immediately';
-  if (r.ai_uses === 0 && r.chat_messages === 0) return 'Never used';
-  if (r.ai_uses <= 1 && r.canceled_at) return 'One analysis, then canceled';
-  if (r.status === 'trialing') return 'In trial';
-  return 'Used but did not pay';
+  if (r.converted) return 'admin.trials.paid';
+  if (r.hours_to_cancel !== null && r.hours_to_cancel <= 1) return 'admin.trials.canceledImmediately';
+  if (r.ai_uses === 0 && r.chat_messages === 0) return 'admin.trials.neverUsed';
+  if (r.ai_uses <= 1 && r.canceled_at) return 'admin.trials.onceCanceled';
+  if (r.status === 'trialing') return 'admin.trials.inTrial';
+  return 'admin.trials.noPayment';
 }
 
-const fmt = (d: string | null) => (d ? new Date(d).toLocaleString() : '—');
-
 export function TrialAnalyticsPanel() {
+  const { t, i18n } = useTranslation();
+  const fmt = (date: string | null) => date ? new Date(date).toLocaleString(i18n.language) : '—';
   const [days, setDays] = useState(30);
+  const answers = useQuery({
+    queryKey: ['trial-cancel-answers', days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('trial_cancel_answers', { p_days: days });
+      if (error) throw error;
+      return data;
+    },
+  });
   const { data = [], isLoading, error } = useQuery({
     queryKey: ['trial-funnel', days],
     queryFn: async () => {
@@ -56,11 +65,11 @@ export function TrialAnalyticsPanel() {
 
   const total = data.length;
   const steps = [
-    { label: 'Started trial', n: total },
-    { label: 'Linked player tag', n: data.filter(r => r.linked_tags > 0).length },
-    { label: 'Ran first AI analysis', n: data.filter(r => r.ai_uses > 0).length },
-    { label: 'Came back 2+ days', n: data.filter(r => r.active_days >= 2).length },
-    { label: 'Converted to paid', n: data.filter(r => r.converted).length },
+    { label: t('admin.trials.startedTrial'), n: total },
+    { label: t('admin.trials.linkedTag'), n: data.filter(r => r.linked_tags > 0).length },
+    { label: t('admin.trials.firstAnalysis'), n: data.filter(r => r.ai_uses > 0).length },
+    { label: t('admin.trials.returned'), n: data.filter(r => r.active_days >= 2).length },
+    { label: t('admin.trials.converted'), n: data.filter(r => r.converted).length },
   ];
   const canceled = data.filter(r => r.hours_to_cancel !== null);
   const within1h = canceled.filter(r => (r.hours_to_cancel ?? 99) <= 1).length;
@@ -71,7 +80,7 @@ export function TrialAnalyticsPanel() {
     <div className="space-y-6">
       <div className="flex gap-2">
         {[7, 30, 90].map(d => (
-          <Button key={d} size="sm" variant={d === days ? 'default' : 'outline'} onClick={() => setDays(d)}>{d} days</Button>
+          <Button key={d} size="sm" variant={d === days ? 'default' : 'outline'} onClick={() => setDays(d)}>{t('admin.trials.daysRange', { days: d })}</Button>
         ))}
       </div>
       {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : error ? (
@@ -79,7 +88,7 @@ export function TrialAnalyticsPanel() {
       ) : (
         <>
           <Card>
-            <CardHeader><CardTitle>Trial funnel</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('admin.trials.funnel')}</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {steps.map(s => (
                 <div key={s.label} className="rounded-lg border p-3">
@@ -92,19 +101,19 @@ export function TrialAnalyticsPanel() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
-              <CardTitle>Revenue &amp; trial activity</CardTitle>
+              <CardTitle>{t('admin.trials.revenue')}</CardTitle>
               <Button size="sm" variant="outline" onClick={syncOrders} disabled={syncing}>
-                {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sync orders from Polar'}
+                {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : t('admin.trials.sync')}
               </Button>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'First paid rate (trial end + 7d)', v: rev ? `${rev.eligible_paid}/${rev.eligible_trials}` : '–',
+                { label: t('admin.trials.rate'), v: rev ? `${rev.eligible_paid}/${rev.eligible_trials}` : '–',
                   sub: rev && rev.eligible_trials ? `${Math.round((rev.eligible_paid / rev.eligible_trials) * 100)}%` : '' },
-                { label: 'Positive orders', v: rev?.positive_orders ?? '–', sub: rev ? `$${(rev.positive_amount_cents / 100).toFixed(2)}` : '' },
-                { label: '$0 trial orders', v: rev?.zero_orders ?? '–', sub: '' },
-                { label: 'Historical trial quota denials', v: rev?.quota_denials ?? '–', sub: rev ? `${rev.quota_denied_users} users · ${rev.denied_then_cancelled} then cancelled` : '' },
-                { label: 'Renewal off, still trialing', v: rev?.renewal_off_while_trialing ?? '–', sub: '' },
+                { label: t('admin.trials.positive'), v: rev?.positive_orders ?? '–', sub: rev ? new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' }).format(rev.positive_amount_cents / 100) : '' },
+                { label: t('admin.trials.zero'), v: rev?.zero_orders ?? '–', sub: '' },
+                { label: t('admin.trials.quota'), v: rev?.quota_denials ?? '–', sub: rev ? t('admin.trials.quotaUsers', { users: rev.quota_denied_users, canceled: rev.denied_then_cancelled }) : '' },
+                { label: t('admin.trials.renewalOff'), v: rev?.renewal_off_while_trialing ?? '–', sub: '' },
               ].map(c => (
                 <div key={c.label} className="rounded-lg border p-3">
                   <div className="text-xs text-muted-foreground">{c.label}</div>
@@ -116,32 +125,41 @@ export function TrialAnalyticsPanel() {
           </Card>
           <div className="grid md:grid-cols-2 gap-4">
             <Card>
-              <CardHeader><CardTitle>Cancellation timing</CardTitle></CardHeader>
+              <CardHeader><CardTitle>{t('admin.trials.timing')}</CardTitle></CardHeader>
               <CardContent className="space-y-1 text-sm">
-                <div>Canceled during trial: <b>{canceled.length}</b> / {total}</div>
-                <div>Canceled within 1 hour: <b>{within1h}</b></div>
-                <div>Average hours to cancel: <b>{avgCancel === null ? '—' : avgCancel.toFixed(1)}</b></div>
+                <div>{t('admin.trials.during')}: <b>{canceled.length}</b> / {total}</div>
+                <div>{t('admin.trials.withinHour')}: <b>{within1h}</b></div>
+                <div>{t('admin.trials.hoursToCancel')}: <b>{avgCancel === null ? '—' : avgCancel.toLocaleString(i18n.language, { maximumFractionDigits: 1 })}</b></div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader><CardTitle>Why they left</CardTitle></CardHeader>
+              <CardHeader><CardTitle>{t('admin.trials.observed')}</CardTitle></CardHeader>
               <CardContent className="flex flex-wrap gap-2">
-                {Object.entries(reasons).map(([k, v]) => <Badge key={k} variant="secondary">{k}: {v}</Badge>)}
+                {Object.entries(reasons).map(([k, v]) => <Badge key={k} variant="secondary">{t(k)}: {v}</Badge>)}
               </CardContent>
             </Card>
           </div>
           <Card>
-            <CardHeader><CardTitle>Trial users</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t('trialFollowup.admin')}</CardTitle></CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              {answers.isError ? <Button variant="outline" onClick={() => void answers.refetch()}>{t('common.retry')}</Button>
+                : answers.isLoading ? <Loader2 className="h-4 w-4 animate-spin" />
+                : answers.data?.length ? answers.data.map(row => <Badge key={row.reason} variant="secondary">{t('trialFollowup.' + row.reason)} · {row.total}</Badge>)
+                : <p className="text-sm text-muted-foreground">{t('trialFollowup.empty')}</p>}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>{t('admin.trials.users')}</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
-                  <tr>{['Email','Status','Started','Ends','Canceled','Hrs','Tags','AI','Chat','Days','Last seen','Reason'].map(h => <th key={h} className="p-2 whitespace-nowrap">{h}</th>)}</tr>
+                  <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
                 </thead>
                 <tbody>
                   {data.map(r => (
                     <tr key={r.user_id + r.trial_start} className="border-t">
                       <td className="p-2">{r.email}</td>
-                      <td className="p-2"><Badge variant="outline">{r.status}</Badge></td>
+                      <td className="p-2"><Badge variant="outline">{t('admin.trials.status.' + r.status, { defaultValue: r.status })}</Badge></td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.trial_start)}</td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.trial_end)}</td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.canceled_at)}</td>
@@ -151,7 +169,7 @@ export function TrialAnalyticsPanel() {
                       <td className="p-2">{r.chat_messages}</td>
                       <td className="p-2">{r.active_days}</td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.last_seen)}</td>
-                      <td className="p-2 whitespace-nowrap">{reason(r)}</td>
+                      <td className="p-2 whitespace-nowrap">{t(reason(r))}</td>
                     </tr>
                   ))}
                 </tbody>

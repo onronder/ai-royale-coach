@@ -1,4 +1,4 @@
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Navigate, useSearchParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, Lock } from 'lucide-react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -29,12 +29,17 @@ export default function Oracle() {
   const { winRate } = useWinRate(battles || [], playerTag);
 
   // Show loader while checking auth
-  if (!user || !playerTag) {
+  if (!playerTag) return <Navigate to="/select-player" replace />;
+  if (!user) {
     return <DashboardLoader />;
   }
 
   const handleTabChange = (tab: string) => {
-    navigate(`/player/${playerTag}`);
+    navigate(`/player/${playerTag.replace(/^#/, '')}`, { state: { tab } });
+  };
+
+  const openPlayerPanel = (panel: "dna" | "achievements" | "help") => {
+    navigate(`/player/${playerTag.replace(/^#/, '')}`, { state: { panel } });
   };
 
   return (
@@ -49,7 +54,11 @@ export default function Oracle() {
           playerTag={playerTag}
           playerName={userPlayer?.name}
           trophies={userPlayer?.trophies}
+          userId={user.id}
           onSignOut={handleSignOut}
+          onOpenDNA={() => openPlayerPanel("dna")}
+          onOpenAchievements={() => openPlayerPanel("achievements")}
+          onOpenHelp={() => openPlayerPanel("help")}
         />
         
         {/* Main Content */}
@@ -61,6 +70,7 @@ export default function Oracle() {
             userId={user?.id || null}
             isRefreshing={false}
             onRefresh={() => refetchPlayer()}
+            onOpenHelp={() => openPlayerPanel("help")}
             onSignOut={handleSignOut}
           />
           
@@ -123,6 +133,7 @@ export default function Oracle() {
         <MobileBottomNav
           activeTab="oracle"
           onTabChange={handleTabChange}
+          onDnaClick={() => openPlayerPanel("dna")}
         />
       </div>
     </SidebarProvider>

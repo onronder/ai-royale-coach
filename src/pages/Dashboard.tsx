@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,8 +33,7 @@ import {
   SwipeableTabsWrapper,
   OverviewTab, 
   MatchesTab, 
-  DeckTab, 
-  AnalyticsTab 
+  DeckTab
 } from "@/components/dashboard";
 
 // Layout components
@@ -44,9 +43,7 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MatchDetailView } from "@/components/matches/MatchDetailView";
 import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
 import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
-import { TournamentList } from "@/components/tournaments/TournamentList";
 import { ClanSearch } from "@/components/clans/ClanSearch";
-import { DeckBuilder } from "@/components/deck/DeckBuilder";
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { ProDNAView } from "@/components/social/ProDNAView";
@@ -55,19 +52,27 @@ import { AchievementsTab } from "@/components/gamification/AchievementsTab";
 import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
 import { HelpDialog } from "@/components/help/HelpDialog";
 import { FirstSessionTask } from "@/components/coaching/FirstSessionTask";
+const AnalyticsTab = lazy(() => import("@/components/dashboard/AnalyticsTab").then(m => ({ default: m.AnalyticsTab })));
+const DeckBuilder = lazy(() => import("@/components/deck/DeckBuilder").then(m => ({ default: m.DeckBuilder })));
+const TournamentList = lazy(() => import("@/components/tournaments/TournamentList").then(m => ({ default: m.TournamentList })));
+
 const Dashboard = () => {
   const { t, ready: translationsReady } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   
+  const { state: destination } = useLocation();
+
   // State for dialogs and interactions
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
-  const [dnaOpen, setDnaOpen] = useState(false);
-  const [achievementsOpen, setAchievementsOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [dnaOpen, setDnaOpen] = useState(destination?.panel === "dna");
+  const [achievementsOpen, setAchievementsOpen] = useState(destination?.panel === "achievements");
+  const [helpOpen, setHelpOpen] = useState(destination?.panel === "help");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState("coach");
+  const [activeTab, setActiveTab] = useState(
+    destination?.tab === "deck" || destination?.tab === "social" ? String(destination.tab) : "coach"
+  );
   const [activeSubTab, setActiveSubTab] = useState("overview");
   
   // Custom hooks for data management
@@ -163,8 +168,8 @@ const Dashboard = () => {
   return (
     <>
       <Helmet>
-        <title>{player?.name || 'Dashboard'} - AI Royale</title>
-        <meta name="description" content={`AI-powered analytics and coaching for ${player?.name || 'Clash Royale player'}. View stats, deck analysis, and personalized recommendations.`} />
+        <title>{player?.name || t('dashboard.subtabs.overview')} - AI Royale</title>
+        <meta name="description" content={t('dashboard.aiCoach.title')} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       
@@ -254,7 +259,9 @@ const Dashboard = () => {
                       />
                     </TabsContent>
                     <TabsContent value="analytics" className="mt-4">
-                      <AnalyticsTab playerTag={playerTag} />
+                      <Suspense fallback={<DataLoader context="analytics" variant="inline" />}>
+                        <AnalyticsTab playerTag={playerTag} />
+                      </Suspense>
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-4">
                       <PageTransition delay={100}>
@@ -286,33 +293,35 @@ const Dashboard = () => {
                       />
                     </TabsContent>
                     <TabsContent value="builder" className="mt-4">
-                      <PageTransition delay={100}>
-                        {playerLoading ? (
-                          <DataLoader context="deck" variant="inline" />
-                        ) : player?.cards && user ? (
-                          <DeckBuilder 
-                            availableCards={player.cards} 
-                            userId={user.id}
-                            savedDecks={playerContext.savedDecks?.map(d => {
-                              const cardNames = Array.isArray(d.cards) ? d.cards.filter((c): c is string => typeof c === 'string') : [];
-                              return {
-                                id: d.id,
-                                name: d.name,
-                                cards: cardNames.map(name => player.cards.find(c => c.name === name)).filter((c): c is NonNullable<typeof c> => c !== undefined),
-                                avg_elixir: d.avg_elixir || undefined,
-                                archetype: d.archetype || undefined
-                              };
-                            }) || []}
-                            currentDeck={player.currentDeck || null}
-                            userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
-                            playerTrophies={player.trophies || 0}
-                          />
-                        ) : (
-                          <div className="text-center py-12 text-muted-foreground">
-                            <p>{t('common.noData')}</p>
-                          </div>
-                        )}
-                      </PageTransition>
+                      <Suspense fallback={<DataLoader context="deck" variant="inline" />}>
+                        <PageTransition delay={100}>
+                          {playerLoading ? (
+                            <DataLoader context="deck" variant="inline" />
+                          ) : player?.cards && user ? (
+                            <DeckBuilder
+                              availableCards={player.cards}
+                              userId={user.id}
+                              savedDecks={playerContext.savedDecks?.map(d => {
+                                const cardNames = Array.isArray(d.cards) ? d.cards.filter((c): c is string => typeof c === 'string') : [];
+                                return {
+                                  id: d.id,
+                                  name: d.name,
+                                  cards: cardNames.map(name => player.cards.find(c => c.name === name)).filter((c): c is NonNullable<typeof c> => c !== undefined),
+                                  avg_elixir: d.avg_elixir || undefined,
+                                  archetype: d.archetype || undefined
+                                };
+                              }) || []}
+                              currentDeck={player.currentDeck || null}
+                              userCollection={playerContext.cardCollection?.map(c => c.card_name) || []}
+                              playerTrophies={player.trophies || 0}
+                            />
+                          ) : (
+                            <div className="text-center py-12 text-muted-foreground">
+                              <p>{t('common.noData')}</p>
+                            </div>
+                          )}
+                        </PageTransition>
+                      </Suspense>
                     </TabsContent>
                     <TabsContent value="collection" className="mt-4">
                       <PageTransition delay={100}>
@@ -341,9 +350,11 @@ const Dashboard = () => {
                       </PageTransition>
                     </TabsContent>
                     <TabsContent value="tournaments" className="mt-4">
-                      <PageTransition delay={100}>
-                        <TournamentList onSelectTournament={() => {}} />
-                      </PageTransition>
+                      <Suspense fallback={<DataLoader context="tournaments" variant="inline" />}>
+                        <PageTransition delay={100}>
+                          <TournamentList playerTag={player?.tag ?? playerTag} playerName={player?.name ?? playerTag} />
+                        </PageTransition>
+                      </Suspense>
                     </TabsContent>
                   </Tabs>
                 </TabsContent>
@@ -396,7 +407,7 @@ const Dashboard = () => {
             <Dialog open={achievementsOpen} onOpenChange={setAchievementsOpen}>
               <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="sr-only">Achievements</DialogTitle>
+                  <DialogTitle className="sr-only">{t('achievements.title')}</DialogTitle>
                 </DialogHeader>
                 <AchievementsTab
                   playerTag={playerTag}

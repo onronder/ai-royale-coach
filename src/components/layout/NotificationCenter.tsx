@@ -86,7 +86,7 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" aria-label={t("notifications.title")} className="relative">
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge 
@@ -98,7 +98,7 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0" align="end">
+      <PopoverContent className="w-96 max-w-[calc(100vw-1rem)] p-0" align="end">
         <div className="flex items-center justify-between p-4 pb-3">
           <div>
             <h3 className="font-semibold text-foreground">{t('notifications.title')}</h3>

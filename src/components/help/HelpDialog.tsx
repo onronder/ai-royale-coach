@@ -544,9 +544,6 @@ export function HelpDialog({ open, onOpenChange, initialSection }: HelpDialogPro
                         <li>{t("help.coach.overview.step3")}</li>
                       </ol>
                     </HelpCard>
-                    <HelpCard title={t("help.coach.quota.title")} icon={Zap}>
-                      <p className="text-muted-foreground text-sm">{t("help.coach.quota.intro")}</p>
-                    </HelpCard>
                   </div>
                 </section>
               )}

@@ -15,7 +15,6 @@ import {
   CreditCard
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
 
 interface UserSubscriptionStatus {
   id: string;
@@ -32,7 +31,7 @@ interface UserSubscriptionStatus {
  * Admin panel showing all users blocked (without active subscription)
  */
 export function BlockedUsersPanel() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const { data: users, isLoading, refetch, isRefetching } = useQuery({
     queryKey: ['admin-blocked-users'],
@@ -124,32 +123,32 @@ export function BlockedUsersPanel() {
 
   const getStatusBadge = (user: UserSubscriptionStatus) => {
     if (user.subscription_status === 'active') {
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Active</Badge>;
+      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">{t('admin.blocked.active')}</Badge>;
     }
     if (user.subscription_status === 'trialing') {
-      return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Trialing</Badge>;
+      return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">{t('admin.blocked.trialing')}</Badge>;
     }
     if (user.subscription_status === 'past_due') {
-      return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Past Due</Badge>;
+      return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">{t('admin.trials.status.past_due')}</Badge>;
     }
     if (user.subscription_status === 'cancelled') {
       if (user.current_period_end && new Date(user.current_period_end) > now) {
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Cancelled (Active)</Badge>;
+        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">{t('admin.blocked.cancelActive')}</Badge>;
       }
-      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Expired</Badge>;
+      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">{t('admin.trials.status.expired')}</Badge>;
     }
     // Check for grace period users (one-time migration)
     if (user.trial_ends_at && !user.trial_used) {
       const trialEnd = new Date(user.trial_ends_at);
       if (trialEnd > now) {
-        return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">Grace Period</Badge>;
+        return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">{t('admin.blocked.grace')}</Badge>;
       }
-      return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">Grace Expired</Badge>;
+      return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">{t('admin.blocked.graceExpired')}</Badge>;
     }
     if (user.trial_used) {
-      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Trial Used</Badge>;
+      return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">{t('admin.blocked.trialUsed')}</Badge>;
     }
-    return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">No Subscription</Badge>;
+    return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">{t('admin.blocked.none')}</Badge>;
   };
 
   if (isLoading) {
@@ -176,7 +175,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Users
+              {t('admin.blocked.total')}
             </CardTitle>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -188,7 +187,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Subscribers
+              {t('admin.blocked.subscribers')}
             </CardTitle>
             <Crown className="h-4 w-4 text-green-500" />
           </CardHeader>
@@ -200,7 +199,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              On Trial
+              {t('admin.blocked.onTrial')}
             </CardTitle>
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
@@ -212,7 +211,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Past Due
+              {t('admin.trials.status.past_due')}
             </CardTitle>
             <CreditCard className="h-4 w-4 text-amber-500" />
           </CardHeader>
@@ -224,7 +223,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Grace Period
+              {t('admin.blocked.grace')}
             </CardTitle>
             <Clock className="h-4 w-4 text-purple-500" />
           </CardHeader>
@@ -236,7 +235,7 @@ export function BlockedUsersPanel() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Blocked Users
+              {t('admin.blocked.users')}
             </CardTitle>
             <UserX className="h-4 w-4 text-red-500" />
           </CardHeader>
@@ -252,10 +251,10 @@ export function BlockedUsersPanel() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <UserX className="h-5 w-5 text-red-500" />
-              Blocked Users (No Active Subscription)
+              {t('admin.blocked.withoutSub')}
             </CardTitle>
             <CardDescription>
-              Users who cannot access protected routes
+              {t('admin.blocked.withoutAccess')}
             </CardDescription>
           </div>
           <Button 
@@ -265,14 +264,14 @@ export function BlockedUsersPanel() {
             disabled={isRefetching}
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isRefetching ? 'animate-spin' : ''}`} />
-            Refresh
+            {t('common.refresh')}
           </Button>
         </CardHeader>
         <CardContent>
           {blockedUsers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No blocked users</p>
+              <p>{t('admin.blocked.empty')}</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -287,15 +286,15 @@ export function BlockedUsersPanel() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user.email || 'No email'}
+                        {user.email || t('admin.blocked.noEmail')}
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        Joined {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : 'Unknown'}
+                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' }) : t('common.unknown')}
                       </p>
                       {user.trial_ends_at && !user.trial_used && (
                         <p className="text-xs text-muted-foreground">
-                          Grace period {new Date(user.trial_ends_at) > now ? 'ends' : 'ended'} {format(new Date(user.trial_ends_at), 'MMM d, yyyy')}
+                          {t(new Date(user.trial_ends_at) > now ? 'admin.blocked.graceEnds' : 'admin.blocked.graceEnded')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}
                         </p>
                       )}
                     </div>
@@ -315,17 +314,17 @@ export function BlockedUsersPanel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CreditCard className="h-5 w-5 text-amber-500" />
-            Past Due (Payment Failed)
+            {t('admin.blocked.paymentFailed')}
           </CardTitle>
           <CardDescription>
-            Users whose payment failed - they received an email to update their payment method
+            {t('admin.blocked.paymentNotice')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {pastDueUsers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <CreditCard className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No users with failed payments</p>
+              <p>{t('admin.blocked.noFailures')}</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -340,15 +339,15 @@ export function BlockedUsersPanel() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user.email || 'No email'}
+                        {user.email || t('admin.blocked.noEmail')}
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        Joined {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : 'Unknown'}
+                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' }) : t('common.unknown')}
                       </p>
                       {user.current_period_end && (
                         <p className="text-xs text-amber-400">
-                          Period ends {format(new Date(user.current_period_end), 'MMM d, yyyy')}
+                          {t('admin.blocked.periodEnds')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}
                         </p>
                       )}
                     </div>
@@ -368,17 +367,17 @@ export function BlockedUsersPanel() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Crown className="h-5 w-5 text-gold" />
-            Active Subscribers & Trialing Users
+            {t('admin.blocked.activeTrials')}
           </CardTitle>
           <CardDescription>
-            Users with access to protected routes
+            {t('admin.blocked.withAccess')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {[...activeSubscribers, ...trialingUsers, ...gracePeriodUsers].length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Crown className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No active subscribers</p>
+              <p>{t('admin.blocked.noActive')}</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -393,20 +392,20 @@ export function BlockedUsersPanel() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">
-                        {user.email || 'No email'}
+                        {user.email || t('admin.blocked.noEmail')}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {user.account_slots ? (
                           <>
-                            {user.account_slots} account slot{user.account_slots !== 1 ? 's' : ''}
+                            {t('admin.blocked.slots', { count: user.account_slots })}
                             {user.current_period_end && (
-                              <> • {user.subscription_status === 'cancelled' ? 'Ends' : 'Renews'} {format(new Date(user.current_period_end), 'MMM d, yyyy')}</>
+                              <> • {user.subscription_status === 'cancelled' ? t('admin.trials.ends') : t('admin.blocked.renews')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}</>
                             )}
                           </>
                         ) : user.trial_ends_at && !user.trial_used ? (
-                          <>Grace period ends {format(new Date(user.trial_ends_at), 'MMM d, yyyy')}</>
+                          <>{t('admin.blocked.graceEnds')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}</>
                         ) : (
-                          'No subscription details'
+                          t('admin.blocked.noDetails')
                         )}
                       </p>
                     </div>

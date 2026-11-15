@@ -1,3 +1,4 @@
+import { getDateLocale } from '@/i18n/dateLocale';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +24,7 @@ const PAGE_SIZE = 10;
  * List of fraud cases pending review.
  */
 export function FraudCasesList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -118,7 +119,7 @@ export function FraudCasesList() {
       render: (item) => (
         <span className="text-sm text-muted-foreground">
           {item.last_signal_at 
-            ? formatDistanceToNow(new Date(item.last_signal_at), { addSuffix: true })
+            ? formatDistanceToNow(new Date(item.last_signal_at), { addSuffix: true, locale: getDateLocale(i18n.language) })
             : '-'}
         </span>
       ),

@@ -1,3 +1,4 @@
+import { coachingReturnTag } from '@/lib/coachingReturnTag';
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -27,6 +28,8 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
+  const returnToCoaching = coachingReturnTag(searchParams.get('coaching'));
+  const afterAuth = returnToCoaching ? '/select-player?coaching=' + returnToCoaching : '/select-player';
   
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(mode === 'signup');
@@ -72,7 +75,7 @@ const Auth = () => {
           
           if (error) {
             console.error('Error checking profile:', error);
-            navigate("/select-player");
+            navigate(afterAuth);
             return;
           }
           
@@ -81,11 +84,11 @@ const Auth = () => {
             setPendingOAuthUser(session.user.id);
             setShowTermsModal(true);
           } else {
-            navigate("/select-player");
+            navigate(afterAuth);
           }
         } catch (err) {
           console.error('Unexpected error in checkSession:', err);
-          navigate("/select-player");
+          navigate(afterAuth);
         }
       }
     };
@@ -111,7 +114,7 @@ const Auth = () => {
             
             if (error) {
               console.error('Error fetching profile:', error);
-              navigate("/select-player");
+              navigate(afterAuth);
               return;
             }
             
@@ -119,18 +122,18 @@ const Auth = () => {
               setPendingOAuthUser(session.user.id);
               setShowTermsModal(true);
             } else {
-              navigate("/select-player");
+              navigate(afterAuth);
             }
           } catch (err) {
             console.error('Unexpected error in auth callback:', err);
-            navigate("/select-player");
+            navigate(afterAuth);
           }
         }, 0);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, isResetPassword]);
+  }, [navigate, isResetPassword, afterAuth]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,7 +189,7 @@ const Auth = () => {
         setTimeout(() => {
           supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-              navigate("/select-player");
+              navigate(afterAuth);
             }
           });
         }, 500);
@@ -252,7 +255,7 @@ const Auth = () => {
       
       // Navigate to select-player after successful reset
       setTimeout(() => {
-        navigate("/select-player");
+        navigate(afterAuth);
       }, 1500);
     } catch (error) {
       const message = error instanceof Error ? error.message : t("common.error");
@@ -265,16 +268,15 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // Preserve promo code in OAuth redirect
       const promoCode = searchParams.get('promo');
-      const redirectUrl = promoCode 
-        ? `${window.location.origin}/auth?promo=${promoCode}`
-        : `${window.location.origin}/auth`;
-      
+      const redirectUrl = new URL('/auth', window.location.origin);
+      if (promoCode) redirectUrl.searchParams.set('promo', promoCode);
+      if (returnToCoaching) redirectUrl.searchParams.set('coaching', returnToCoaching);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: redirectUrl,
+          redirectTo: redirectUrl.toString(),
         },
       });
       if (error) throw error;
@@ -303,7 +305,7 @@ const Auth = () => {
       setShowTermsModal(false);
       setPendingOAuthUser(null);
       toast.success(t("auth.welcomeBack"));
-      navigate("/select-player");
+      navigate(afterAuth);
     } catch (error) {
       const message = error instanceof Error ? error.message : t("common.error");
       toast.error(message);
@@ -563,11 +565,11 @@ const Auth = () => {
   return (
     <>
       <Helmet>
-        <title>{isSignUp ? t("auth.createAccount") : t("auth.signIn")} - AI Royale</title>
-        <meta name="description" content="Sign in or create your AI Royale account to access AI-powered Clash Royale coaching, deck analysis, and personalized recommendations." />
+        <title>{isSignUp ? t("auth.signUp") : t("auth.signIn")} - AI Royale</title>
+        <meta name="description" content={t(isSignUp ? 'auth.createAccountDesc' : 'auth.signInDesc')} />
         <link rel="canonical" href="https://ai-royale.com/auth" />
-        <meta property="og:title" content="Sign In - AI Royale" />
-        <meta property="og:description" content="Access your AI Royale account for AI-powered Clash Royale coaching and deck analysis." />
+        <meta property="og:title" content={t(isSignUp ? 'auth.signUp' : 'auth.signIn') + ' - AI Royale'} />
+        <meta property="og:description" content={t(isSignUp ? 'auth.createAccountDesc' : 'auth.signInDesc')} />
         <meta property="og:url" content="https://ai-royale.com/auth" />
         <meta property="og:image" content="https://ai-royale.com/og-image.png" />
         <meta name="robots" content="noindex, nofollow" />

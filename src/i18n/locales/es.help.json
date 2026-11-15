@@ -16,6 +16,7 @@
       "needMoreHelp": "Si necesitas consejos de estrategia o coaching personalizado sobre el juego, ¡no dudes en preguntar!",
       "answeredFromHelp": "Respondido desde el Centro de Ayuda (sin usar cuota de IA)"
     },
+    "statsChartDescription": "Compara tus trofeos a lo largo de las últimas partidas.",
     "sections": {
       "gettingStarted": "Primeros Pasos",
       "dashboard": "Panel",
@@ -91,7 +92,7 @@
       "sync": {
         "title": "Sincronización y Actualización de Datos",
         "intro": "Tus datos se sincronizan automáticamente cuando abres el panel. Puedes actualizar manualmente usando el indicador de sincronización en el encabezado.",
-        "note": "Nota: La API de Clash Royale tiene un retraso de 5-15 minutos. Los cambios recientes en el juego pueden no aparecer inmediatamente."
+        "note": "Las partidas nuevas pueden tardar en aparecer. Actualiza cuando termine la partida."
       }
     },
     "matches": {
@@ -341,11 +342,6 @@
         "title": "Sugerencias Proactivas",
         "intro": "Cuando tu tasa de victoria cae por debajo del 55%, el Coach IA sugerirá proactivamente cambios de mazo. Busca la insignia ámbar pulsante en el botón de chat."
       },
-      "quota": {
-        "title": "Cuota Diaria de IA",
-        "intro": "El coaching de IA usa un sistema de cuota diaria para asegurar uso justo para todos los jugadores.",
-        "limit": "Límite gratuito: 10 solicitudes de IA por día. La cuota se reinicia a medianoche UTC."
-      },
       "tips": {
         "title": "Consejos para Mejores Respuestas",
         "tip1": "Sé específico sobre lo que quieres ayuda",
@@ -378,9 +374,9 @@
       "title": "Preguntas Frecuentes",
       "badge": "FAQ",
       "q1": "¿Por qué no aparece mi último mazo?",
-      "a1": "La API de Clash Royale tiene un retraso de 5-15 minutos. Tus cambios recientes en el juego aparecerán después de este retraso. Intenta actualizar en unos minutos.",
+      "a1": "Las partidas nuevas pueden tardar en aparecer. Actualiza cuando termine la partida.",
       "q2": "¿Cómo se calcula mi tasa de victoria?",
-      "a2": "La tasa de victoria se calcula de tus últimas 25 batallas disponibles de la API. Solo incluye batallas de escalera y desafío, no batallas amistosas o 2v2.",
+      "a2": "Las victorias se dividen entre el número de partidas recientes de tu historial.",
       "q3": "¿Por qué algunas funciones requieren iniciar sesión?",
       "a3": "Funciones como guardar mazos, coaching de IA y recomendaciones personalizadas requieren una cuenta para almacenar tus preferencias e historial.",
       "q4": "¿Puedo usar AI Royale en móvil?",
@@ -388,7 +384,11 @@
       "q5": "¿Están seguros mis datos?",
       "a5": "Sí. Solo accedemos a datos públicos disponibles de la API de Clash Royale. Tu contraseña del juego nunca se comparte con nosotros.",
       "q6": "¿Cómo me desvinculo de una cuenta?",
-      "a6": "Ve a la pantalla de Selección de Jugador y haz clic en el botón de eliminar junto a la cuenta que deseas desvincular."
+      "a6": "Ve a la pantalla de Selección de Jugador y haz clic en el botón de eliminar junto a la cuenta que deseas desvincular.",
+      "q7": "¿Cómo cambio mi correo o mi contraseña?",
+      "a7": "Puedes gestionar tu cuenta desde el sistema de acceso. Si necesitas cambiar el correo, contacta con soporte.",
+      "q8": "¿Están seguros mis datos?",
+      "a8": "Usamos cifrado estándar y nunca guardamos tus credenciales de Clash Royale. Solo accedemos a datos públicos mediante tu etiqueta de jugador."
     }
   }
 }

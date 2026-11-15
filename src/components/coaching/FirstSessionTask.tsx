@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSubscription } from '@/hooks/useSubscription';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { TrialFollowup } from './TrialFollowup';
 import { DeckTransfer } from './DeckTransfer';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { getDisplayLevel } from '@/utils/cardLevelCalculator';
@@ -20,20 +21,26 @@ interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  userId:string;playerTag:string;collection:ClashRoyaleCard[];onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
 }) {
- const {t,i18n}=useTranslation(); const {hasAccess,isLoading:accessLoading}=useSubscription();
+ const {t,i18n}=useTranslation(); const {hasAccess,isTrialActive,isLoading:accessLoading}=useSubscription();
  const qc=useQueryClient(); const key=['coaching-task',userId,playerTag];
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
  const [detailsOpen,setDetailsOpen]=useState(false);
  const invoke=async(action:string,confirmedDeckIds?:number[])=>{
    const {data:{session}}=await supabase.auth.getSession();
-   if(!session) throw new Error(t('coaching.error'));
+   if(!session) throw new Error('auth.signInRequired');
    const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,confirmedDeckIds,language:i18n.language.split('-')[0],...(action==='follow-up'?{question}: {})})});
-   const reader=response.body?.getReader(); if(!reader)throw new Error(t('coaching.error'));
+   const reader=response.body?.getReader(); if(!reader)throw new Error('coaching.error');
    const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;trophy_snapshot?:TrophySnapshot;deck_confirmation?:DeckConfirmation;error?:string;deck_unavailable?:boolean}}|undefined;
    while(true){const chunk=await reader.read();buffer+=decoder.decode(chunk.value,{stream:!chunk.done});const lines=buffer.split('\n');buffer=lines.pop()||'';for(const line of lines){if(line.trim()){const item=JSON.parse(line);if(item.status)final=item;}}if(chunk.done)break;}
-   if(!final)throw new Error(t('coaching.error'));
-   if(final.status>=400){const detail=final.data;throw new Error(detail.deck_unavailable?t('coaching.unavailable'):detail.error||t('coaching.error'));}
+   if(!final)throw new Error('coaching.error');
+   if (final.status >= 400) {
+     if (final.data.deck_unavailable) throw new Error('coaching.unavailable');
+     if (final.status === 401) throw new Error('auth.signInRequired');
+     if (final.data.error === 'Subscription required') throw new Error('subscription.requiredForAI');
+     if (final.data.error === 'AI not enabled for this player') throw new Error('subscription.aiNotEnabledForAccount');
+     throw new Error('coaching.error');
+   }
    return final.data;
  };
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
@@ -47,16 +54,16 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
      qc.setQueryData(key,data);
      if(action==='check' && data.task?.battle_result) {
        try { await onMatchResult(data.trophy_snapshot ?? undefined); }
-       catch { setError(t('coaching.profileRefreshError')); }
+       catch { setError('coaching.profileRefreshError'); }
      }
    }catch(e){
      setConfirmation(null);
-     setError(e instanceof Error?e.message:t('coaching.error'));
+     setError(e instanceof Error && ['coaching.unavailable', 'auth.signInRequired', 'subscription.requiredForAI', 'subscription.aiNotEnabledForAccount'].includes(e.message) ? e.message : 'coaching.error');
    }finally{setBusy(null);}
  };
  useEffect(()=>{const revision=task?`${task.id}:${task.recommendation?.add_id}`:null;if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==revision){shown.current=revision;invoke('shown').then(data=>qc.setQueryData(key,data)).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,task?.recommendation?.add_id,hasAccess]);
  const time=(value:string|null|undefined)=>value?new Date(value).toLocaleString(i18n.language):t('coaching.never');
- const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt={c.name} className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{c.name}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:getDisplayLevel(c)})}</p>}</div>;
+ const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt="" decoding="async" className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{c.name}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:getDisplayLevel(c)})}</p>}</div>;
  const swap = task?.recommendation && coachingSwap(task.source_deck, task.recommended_deck, task.recommendation.remove_id);
  const removed = swap?.removed;
  const added = swap?.added;
@@ -74,7 +81,7 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  const step=!task?.recommendation?0:done?3:2;
  const outcomeTone=result?.outcome==='win'?'border-success/60 bg-success/10':result?.outcome==='loss'?'border-destructive/60 bg-destructive/10':'border-border bg-muted/30';
  const outcomeText=result?.outcome==='win'?'text-success':result?.outcome==='loss'?'text-destructive':'text-muted-foreground';
- const mini=(c:ClashRoyaleCard,highlight=false)=><div key={c.id} className="relative min-w-0 text-center"><img src={c.iconUrls?.medium} alt={c.name} className={`mx-auto aspect-[3/4] w-full max-w-14 object-contain ${highlight?'rounded-md ring-2 ring-gold':''}`} loading="lazy"/>{highlight&&<span className="absolute -top-1.5 left-1/2 -translate-x-1/2 rounded bg-gold px-1 text-[10px] font-bold leading-4 text-gold-foreground">{t('coaching.newCard')}</span>}<p className="mt-1 truncate text-[11px] font-medium leading-tight">{c.name}</p></div>;
+ const mini=(c:ClashRoyaleCard,highlight=false)=><div key={c.id} className="relative min-w-0 text-center"><img src={c.iconUrls?.medium} alt="" decoding="async" className={`mx-auto aspect-[3/4] w-full max-w-14 object-contain ${highlight?'rounded-md ring-2 ring-gold':''}`} loading="lazy"/>{highlight&&<span className="absolute -top-1.5 left-1/2 -translate-x-1/2 rounded bg-gold px-1 text-[10px] font-bold leading-4 text-gold-foreground">{t('coaching.newCard')}</span>}<p className="mt-1 break-words text-[11px] font-medium leading-tight">{c.name}</p></div>;
  const steps=[t('coaching.stepSwap'),t('coaching.stepPlay'),t('coaching.stepResult')];
  const header=<div className="flex flex-wrap items-start justify-between gap-3">
   <div className="flex items-center gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/15"><Swords className="h-5 w-5 text-gold"/></div><div><p className="text-xs font-semibold text-muted-foreground">{t('coaching.intro')}</p><h2 className="font-rajdhani text-2xl font-bold leading-tight">{t('coaching.title')}</h2></div></div>
@@ -86,9 +93,9 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
   <div className="min-w-0 space-y-4">
    {removed&&added&&<div className="flex items-center gap-4 rounded-lg border border-border bg-muted/20 p-3">
     <div className="w-16 shrink-0">{card(removed,t('coaching.remove'))}</div><ArrowRight className="h-5 w-5 shrink-0 text-primary"/><div className="w-16 shrink-0">{card(added,t('coaching.add'))}</div>
-    <div className="min-w-0 flex-1 border-l border-border pl-4">{reason&&<p className="break-words text-sm leading-relaxed">{reason}</p>}{practice&&<p className="mt-2 text-sm"><span className="font-semibold text-primary">{t('coaching.practice')}: </span>{practice}</p>}</div>
+    <div className="min-w-0 flex-1 border-l border-border pl-4">{reason&&<p className="break-words text-sm leading-relaxed">{reason}</p>}{practice&&<p className="mt-2 text-sm"><span className="font-semibold text-primary">{t(done ? 'coaching.practiceTip' : 'coaching.practice')}: </span>{practice}</p>}</div>
    </div>}
-   <div className="rounded-lg border border-border p-3"><h3 className="mb-3 text-sm font-semibold">{t('coaching.ready')}</h3><div className="grid grid-cols-4 gap-2 sm:grid-cols-8">{task.recommended_deck.map(c=>mini(c,c.id===added?.id))}</div><DeckTransfer cards={task.recommended_deck} playerTag={playerTag} /></div>
+   <div className="rounded-lg border border-border p-3"><h3 className="mb-3 text-sm font-semibold">{t(done ? 'coaching.playedDeck' : 'coaching.ready')}</h3><div className="grid grid-cols-4 gap-2 sm:grid-cols-8">{task.recommended_deck.map(c=>mini(c,c.id===added?.id))}</div><DeckTransfer cards={task.recommended_deck} playerTag={playerTag} /></div>
   </div>
   <div className="min-w-0 space-y-4">
    <div className={`rounded-lg border p-4 ${result?outcomeTone:'border-border'}`} aria-live="polite">{result?<>
@@ -97,11 +104,13 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
      <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{t('coaching.next')}: </span>{t(result.outcome==='win'?'coaching.nextWin':result.outcome==='loss'?'coaching.nextLoss':'coaching.nextDraw')}</p>
      {result.opponent_deck.length>0&&<Collapsible className="mt-3"><CollapsibleTrigger asChild><Button variant="ghost" size="sm" className="group -ml-2 h-8 px-2 text-xs"><ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180"/>{t('coaching.showOpponent')}</Button></CollapsibleTrigger><CollapsibleContent><div className="mt-2 grid grid-cols-4 gap-2">{result.opponent_deck.map(c=>mini(c))}</div></CollapsibleContent></Collapsible>}
     </>:<>
-     <p className="mb-3 text-sm font-semibold">{t('coaching.waiting')}</p>
+     <p className="text-sm font-semibold">{t('coaching.waiting')}</p>
+     <p className="mb-3 text-sm text-muted-foreground">{t('coaching.syncHint')}</p>
      <Button variant="outline" onClick={()=>void run('check')} disabled={!hasAccess||!!busy} className="h-auto min-h-11 w-full whitespace-normal py-2">{busy==='check'?<Loader2 className="animate-spin"/>:<RefreshCw/>}{t('coaching.check')}</Button>
     </>}
     <p className="mt-3 text-xs text-muted-foreground">{t('coaching.checked',{time:time(task.last_checked_at)})}{task.battles_fetched_at&&<> · {t('coaching.observed',{time:time(task.battles_fetched_at)})}</>}</p>
    </div>
+   {!done && isTrialActive && <TrialFollowup userId={userId} playerTag={playerTag.replace(/^#/,'').toUpperCase()} />}
    <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground"><span className="font-semibold">{t('coaching.you')}: </span>{task.follow_up_question}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}</div>
   </div>
  </div>;
@@ -118,8 +127,8 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
       <Button disabled={!!busy} onClick={()=>void run('start',confirmation.cards.map(c=>c.id))}>{busy?t('coaching.preparing'):t('coaching.confirmDeck')}</Button>
       <Button variant="outline" disabled={!!busy} onClick={()=>setConfirmation(null)}>{t('common.cancel')}</Button>
     </div>
-  </div>:hasAccess?<Button onClick={()=>void run('start')} disabled={!!busy} className="mt-4 h-auto min-h-11 whitespace-normal py-2">{busy?<Loader2 className="animate-spin"/>:<Swords/>}{busy?t('coaching.preparing'):t('coaching.start')}</Button>:null}
+  </div>:hasAccess&&!query.error?<Button onClick={()=>void run('start')} disabled={!!busy} className="mt-4 h-auto min-h-11 whitespace-normal py-2">{busy?<Loader2 className="animate-spin"/>:<Swords/>}{busy?t('coaching.preparing'):t('coaching.start')}</Button>:null}
   {!accessLoading&&!hasAccess&&<p className="mt-4 text-sm text-muted-foreground">{t('coaching.expired')}</p>}
-  {(error||query.error)&&<div role="alert" className="mt-4 flex flex-wrap items-center gap-3"><p className="min-w-0 break-words text-sm text-destructive">{error||t('coaching.error')}</p><Button size="icon" variant="ghost" aria-label={t('common.retry')} onClick={()=>{ if(task?.battle_result) void run('check'); else void query.refetch(); }}><RefreshCw/></Button></div>}
+  {(error||query.error)&&<div role="alert" className="mt-4 flex flex-wrap items-center gap-3"><p className="min-w-0 break-words text-sm text-destructive">{t(error || 'coaching.error')}</p>{(query.error || error === 'coaching.profileRefreshError') && <Button size="icon" variant="ghost" aria-label={t('common.retry')} onClick={()=>{ if(task?.battle_result && error === 'coaching.profileRefreshError') void run('check'); else void query.refetch(); }}><RefreshCw/></Button>}</div>}
  </Card>;
 }

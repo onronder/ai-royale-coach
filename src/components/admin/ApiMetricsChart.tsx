@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,6 +14,7 @@ interface ApiMetricsChartProps {
 }
 
 export function ApiMetricsChart({ data, isLoading }: ApiMetricsChartProps) {
+  const { t } = useTranslation();
   if (isLoading) {
     return <Skeleton className="h-[200px] w-full" />;
   }
@@ -20,7 +22,7 @@ export function ApiMetricsChart({ data, isLoading }: ApiMetricsChartProps) {
   if (data.length === 0) {
     return (
       <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-        No request data available
+        {t('admin.apiMetrics.noRequests')}
       </div>
     );
   }
@@ -65,14 +67,14 @@ export function ApiMetricsChart({ data, isLoading }: ApiMetricsChartProps) {
           dataKey="count"
           stroke="hsl(var(--primary))"
           fill="url(#colorCount)"
-          name="Total Requests"
+          name={t('admin.apiMetrics.totalRequests')}
         />
         <Area
           type="monotone"
           dataKey="cacheHits"
           stroke="hsl(var(--chart-2))"
           fill="url(#colorCache)"
-          name="Cache Hits"
+          name={t('admin.apiMetrics.hits')}
         />
       </AreaChart>
     </ResponsiveContainer>

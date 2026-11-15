@@ -1,3 +1,5 @@
+import { SubscriptionUserContext } from '@/hooks/useSubscription';
+import { supabase } from '@/integrations/supabase/client';
 import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -36,6 +38,12 @@ const DreamArena = lazy(() => import("./pages/DreamArena"));
 const queryClient = createQueryClientWithMetrics();
 
 const App = () => {
+  const [accountId, setAccountId] = useState<string | null | undefined>();
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => setAccountId(session?.user.id ?? null));
+    return () => data.subscription.unsubscribe();
+  }, []);
+
   const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
 
   useEffect(() => {
@@ -66,6 +74,7 @@ const App = () => {
   <HelmetProvider>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
+        <SubscriptionUserContext.Provider value={accountId}>
         <TooltipProvider>
           <MatchDiscussionProvider>
             <ApiMetricsProvider>
@@ -104,6 +113,7 @@ const App = () => {
             </ApiMetricsProvider>
           </MatchDiscussionProvider>
         </TooltipProvider>
+        </SubscriptionUserContext.Provider>
       </QueryClientProvider>
     </ThemeProvider>
   </HelmetProvider>

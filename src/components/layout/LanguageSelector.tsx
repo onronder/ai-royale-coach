@@ -10,9 +10,9 @@ import { Button } from '@/components/ui/button';
 import { languages } from '@/i18n';
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.resolvedLanguage) || languages[0];
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
@@ -24,6 +24,7 @@ export function LanguageSelector() {
         <Button 
           variant="ghost" 
           size="sm" 
+          aria-label={t("settings.preferences.language")}
           className="gap-2 text-foreground/80 hover:text-foreground hover:bg-primary/10"
         >
           <Globe className="h-4 w-4" />
@@ -36,7 +37,7 @@ export function LanguageSelector() {
             key={language.code}
             onClick={() => handleLanguageChange(language.code)}
             className={`flex items-center gap-2 cursor-pointer ${
-              i18n.language === language.code ? 'bg-primary/10 text-primary' : ''
+              i18n.resolvedLanguage === language.code ? 'bg-primary/10 text-primary' : ''
             }`}
           >
             <span className="text-lg">{language.flag}</span>

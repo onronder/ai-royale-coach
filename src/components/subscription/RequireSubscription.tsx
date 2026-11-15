@@ -1,5 +1,6 @@
+import { coachingReturnTag } from '@/lib/coachingReturnTag';
 import { ReactNode, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { SplashScreen } from "@/components/ui/splash-screen";
 import { TrialExpiredPage } from "./TrialExpiredPage";
@@ -14,7 +15,10 @@ interface RequireSubscriptionProps {
 
 export function RequireSubscription({ children, allowReadOnlyAfterTrial = false }: RequireSubscriptionProps) {
   const navigate = useNavigate();
-  const { hasAccess, isLoading, subscriptionStatus } = useSubscription();
+  const location = useLocation();
+  const tag = coachingReturnTag(new URLSearchParams(location.search).get('coaching'));
+  const authPath = location.pathname === '/select-player' && tag ? '/auth?coaching=' + tag : '/auth';
+  const { hasAccess, isLoading, subscriptionStatus, hasUsedTrial } = useSubscription();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   
   useEffect(() => {
@@ -25,7 +29,7 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
       
       // If not authenticated, redirect to auth page
       if (!session) {
-        navigate('/auth');
+        navigate(authPath);
       }
     };
     
@@ -35,12 +39,12 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
       if (!session) {
-        navigate('/auth');
+        navigate(authPath);
       }
     });
     
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, authPath]);
   
   // Show loading while checking auth or subscription
   if (isAuthenticated === null || isLoading) {
@@ -62,5 +66,5 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
   }
 
   // Authenticated but no access - show paywall
-  return <TrialExpiredPage />;
+  return <TrialExpiredPage canStartTrial={!hasUsedTrial && !subscriptionStatus} />;
 }

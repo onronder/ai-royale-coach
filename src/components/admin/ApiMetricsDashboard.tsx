@@ -20,7 +20,7 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
           <div className="flex items-center gap-3">
             <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             <div>
-              <span className="font-medium">{group.name}</span>
+              <span className="font-medium">{t(group.name)}</span>
               <span className="text-xs text-muted-foreground ml-2">
                 ({group.endpoints.length} {t('admin.apiMetrics.endpoints')})
               </span>
@@ -64,7 +64,7 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
 }
 
 export function ApiMetricsDashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [timeframe, setTimeframe] = useState<'15min' | '1hr' | '24hr'>('1hr');
   const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
   const { stats, endpoints, endpointGroups, timeline, recentLogs, isLoading, refetch } = useApiMetrics(timeframe);
@@ -80,9 +80,9 @@ export function ApiMetricsDashboard() {
         <div className="flex items-center gap-2 flex-wrap">
           <Tabs value={timeframe} onValueChange={(v) => setTimeframe(v as typeof timeframe)}>
             <TabsList>
-              <TabsTrigger value="15min">15m</TabsTrigger>
-              <TabsTrigger value="1hr">1h</TabsTrigger>
-              <TabsTrigger value="24hr">24h</TabsTrigger>
+              <TabsTrigger value="15min">{new Intl.NumberFormat(i18n.language, { style: 'unit', unit: 'minute', unitDisplay: 'narrow' }).format(15)}</TabsTrigger>
+              <TabsTrigger value="1hr">{new Intl.NumberFormat(i18n.language, { style: 'unit', unit: 'hour', unitDisplay: 'narrow' }).format(1)}</TabsTrigger>
+              <TabsTrigger value="24hr">{new Intl.NumberFormat(i18n.language, { style: 'unit', unit: 'hour', unitDisplay: 'narrow' }).format(24)}</TabsTrigger>
             </TabsList>
           </Tabs>
           <Button variant="outline" size="icon" onClick={() => refetch()}>
@@ -100,7 +100,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.totalRequests')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : stats?.totalRequests.toLocaleString()}
+              {isLoading ? '...' : stats?.totalRequests.toLocaleString(i18n.language)}
             </p>
           </CardContent>
         </Card>
@@ -169,7 +169,7 @@ export function ApiMetricsDashboard() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Layers className="h-5 w-5" />
-            Endpoints by Category
+            {t('admin.apiMetrics.groupTitle')}
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -177,24 +177,24 @@ export function ApiMetricsDashboard() {
               size="sm"
               onClick={() => setViewMode('grouped')}
             >
-              Grouped
+              {t('admin.apiMetrics.grouped')}
             </Button>
             <Button
               variant={viewMode === 'flat' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setViewMode('flat')}
             >
-              Flat
+              {t('admin.apiMetrics.flat')}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <p className="text-muted-foreground">Loading...</p>
+            <p className="text-muted-foreground">{t('common.loading')}</p>
           ) : viewMode === 'grouped' ? (
             <div className="space-y-2">
               {endpointGroups?.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No data yet</p>
+                <p className="text-muted-foreground text-center py-4">{t('admin.apiMetrics.noData')}</p>
               ) : (
                 endpointGroups?.map((group) => (
                   <EndpointGroupCard key={group.name} group={group} t={t} />
@@ -204,7 +204,7 @@ export function ApiMetricsDashboard() {
           ) : (
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {endpoints?.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">No data yet</p>
+                <p className="text-muted-foreground text-center py-4">{t('admin.apiMetrics.noData')}</p>
               ) : (
                 endpoints?.map((ep) => (
                   <div
@@ -216,13 +216,13 @@ export function ApiMetricsDashboard() {
                         {ep.endpoint}
                       </span>
                       {ep.avgDuration > 500 && (
-                        <Badge variant="destructive" className="text-xs">Slow</Badge>
+                        <Badge variant="destructive" className="text-xs">{t('admin.apiMetrics.slow')}</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <span>{ep.count} calls</span>
+                      <span>{ep.count} {t('admin.apiMetrics.calls')}</span>
                       <span>{ep.avgDuration}ms</span>
-                      <span>{ep.cacheHitRate}% cache</span>
+                      <span>{ep.cacheHitRate}% {t('admin.apiMetrics.cache')}</span>
                     </div>
                   </div>
                 ))
@@ -235,7 +235,7 @@ export function ApiMetricsDashboard() {
       {/* Recent Requests Log */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Recent Requests</CardTitle>
+          <CardTitle className="text-lg">{t('admin.apiMetrics.recent')}</CardTitle>
         </CardHeader>
         <CardContent>
           <ApiRequestLog logs={recentLogs || []} isLoading={isLoading} />

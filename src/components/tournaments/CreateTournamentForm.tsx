@@ -11,9 +11,10 @@ import { Trophy } from "lucide-react";
 
 interface CreateTournamentFormProps {
   onSuccess: () => void;
+  onCancel: () => void;
 }
 
-export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
+export function CreateTournamentForm({ onSuccess, onCancel }: CreateTournamentFormProps) {
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -153,9 +154,12 @@ export function CreateTournamentForm({ onSuccess }: CreateTournamentFormProps) {
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? t('tournaments.creating') : t('tournaments.createButton')}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>{t('common.cancel')}</Button>
+            <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? t('tournaments.creating') : t('tournaments.createButton')}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

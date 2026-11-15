@@ -64,6 +64,13 @@
       "when": 1794669534286,
       "tag": "0008_revenue_net_paid_only",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794718417144,
+      "tag": "0009_trial_coaching_followup",
+      "breakpoints": true
     }
   ]
 }

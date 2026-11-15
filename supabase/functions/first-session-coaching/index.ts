@@ -26,8 +26,9 @@ async function handleRequest(req: Request): Promise<Response> {
  const {data:owner,error:ownerError}=await db.from('player_profiles').select('id,ai_enabled').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
  if(ownerError||!owner) return reply({error:'Linked player required'},403);
  const access=await checkAiAccess(db, user.id);
- let {data:task,error:readError}=await db.from('coaching_tasks').select('*').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
+ const {data:storedTask,error:readError}=await db.from('coaching_tasks').select('*').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
  if(readError) return reply({error:'Unable to load task'},503);
+ let task=storedTask;
  if(action==='get') return reply({task,read_only:!access.allowed});
  if(!access.allowed) return reply({error:'Subscription required',subscription_required:true},403);
  if(!access.isTrial&&!access.isAdmin&&!owner.ai_enabled) return reply({error:'AI not enabled for this player'},403);

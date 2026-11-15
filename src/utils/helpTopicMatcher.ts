@@ -26,7 +26,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'getting-started',
     titleKey: 'help.sections.gettingStarted',
-    excerptKey: 'help.gettingStarted.playerTag.description',
+    excerptKey: 'help.gettingStarted.findTag.intro',
     keywords: {
       en: ['account', 'sign up', 'register', 'player tag', 'login', 'create account', 'find tag', 'multiple accounts', 'get started', 'how to start', 'new user', 'first time'],
       es: ['cuenta', 'registrar', 'etiqueta de jugador', 'iniciar sesión', 'crear cuenta', 'encontrar etiqueta', 'múltiples cuentas', 'comenzar', 'nuevo usuario'],
@@ -46,8 +46,8 @@ const HELP_TOPICS: HelpTopic[] = [
   },
   {
     id: 'stats',
-    titleKey: 'help.sections.stats',
-    excerptKey: 'help.stats.overview.description',
+    titleKey: 'dashboard.playerStats',
+    excerptKey: 'dashboard.tabHelp.overview',
     keywords: {
       en: ['trophies', 'win rate', 'arena', 'statistics', 'performance', 'best trophies', 'trophy count', 'stats', 'record'],
       es: ['trofeos', 'tasa de victoria', 'arena', 'estadísticas', 'rendimiento', 'mejores trofeos'],
@@ -65,7 +65,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'matches',
     titleKey: 'help.sections.matches',
-    excerptKey: 'help.matches.history.description',
+    excerptKey: 'help.matches.history.intro',
     keywords: {
       en: ['battle', 'history', 'opponent', 'match', 'analysis', 'recent battles', 'match history', 'battle log', 'replay'],
       es: ['batalla', 'historial', 'oponente', 'partido', 'análisis', 'batallas recientes'],
@@ -84,7 +84,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'deck',
     titleKey: 'help.sections.deck',
-    excerptKey: 'help.deck.current.description',
+    excerptKey: 'help.deck.current.intro',
     keywords: {
       en: ['current deck', 'my deck', 'recommendations', 'deck suggestions', 'active deck', 'in-game deck'],
       es: ['mazo actual', 'mi mazo', 'recomendaciones', 'sugerencias de mazo'],
@@ -101,7 +101,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'builder',
     titleKey: 'help.sections.builder',
-    excerptKey: 'help.builder.overview.description',
+    excerptKey: 'help.builder.create.intro',
     keywords: {
       en: ['build deck', 'create deck', 'deck builder', 'templates', 'compare', 'save deck', 'deck comparison', 'make deck'],
       es: ['construir mazo', 'crear mazo', 'constructor de mazos', 'plantillas', 'comparar', 'guardar mazo'],
@@ -120,7 +120,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'analytics',
     titleKey: 'help.sections.analytics',
-    excerptKey: 'help.analytics.overview.description',
+    excerptKey: 'help.analytics.deckStats.intro',
     keywords: {
       en: ['analytics', 'trends', 'performance', 'mastery', 'achievements', 'progress', 'card mastery', 'trophy graph'],
       es: ['análisis', 'tendencias', 'rendimiento', 'maestría', 'logros', 'progreso'],
@@ -139,7 +139,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'collection',
     titleKey: 'help.sections.collection',
-    excerptKey: 'help.collection.overview.description',
+    excerptKey: 'help.collection.overview.intro',
     keywords: {
       en: ['cards', 'collection', 'rarity', 'level', 'upgrade', 'card levels', 'inventory', 'card count'],
       es: ['cartas', 'colección', 'rareza', 'nivel', 'mejorar', 'niveles de carta'],
@@ -158,7 +158,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'leaderboard',
     titleKey: 'help.sections.leaderboard',
-    excerptKey: 'help.leaderboard.overview.description',
+    excerptKey: 'help.leaderboard.yourRanking.intro',
     keywords: {
       en: ['ranking', 'top players', 'global', 'leaderboard', 'rank', 'position', 'best players'],
       es: ['clasificación', 'mejores jugadores', 'global', 'tabla de posiciones', 'rango'],
@@ -177,7 +177,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'tournaments',
     titleKey: 'help.sections.tournaments',
-    excerptKey: 'help.tournaments.overview.description',
+    excerptKey: 'help.tournaments.browse.intro',
     keywords: {
       en: ['tournament', 'compete', 'prize', 'join tournament', 'create tournament', 'competition'],
       es: ['torneo', 'competir', 'premio', 'unirse al torneo', 'crear torneo'],
@@ -194,7 +194,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'clans',
     titleKey: 'help.sections.clans',
-    excerptKey: 'help.clans.overview.description',
+    excerptKey: 'help.clans.search.intro',
     keywords: {
       en: ['clan', 'members', 'join clan', 'search clan', 'find clan', 'clan war'],
       es: ['clan', 'miembros', 'unirse al clan', 'buscar clan', 'encontrar clan'],
@@ -211,7 +211,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'coach',
     titleKey: 'help.sections.coach',
-    excerptKey: 'help.coach.overview.description',
+    excerptKey: 'help.coach.overview.intro',
     keywords: {
       en: ['ai coach', 'chat', 'advice', 'tips', 'quota', 'ai limit', 'coaching', 'help me improve'],
       es: ['coach ia', 'chat', 'consejos', 'ayuda', 'cuota', 'límite de ia'],
@@ -228,7 +228,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'features',
     titleKey: 'help.sections.features',
-    excerptKey: 'help.features.language.description',
+    excerptKey: 'help.features.language.intro',
     keywords: {
       en: ['language', 'notifications', 'settings', 'preferences', 'change language', 'features'],
       es: ['idioma', 'notificaciones', 'configuración', 'preferencias', 'cambiar idioma'],
@@ -246,7 +246,7 @@ const HELP_TOPICS: HelpTopic[] = [
   {
     id: 'faq',
     titleKey: 'help.sections.faq',
-    excerptKey: 'help.faq.dataSync.answer',
+    excerptKey: 'help.faq.a1',
     keywords: {
       en: ['faq', 'frequently asked', 'common questions', 'sync', 'data sync', 'refresh', 'update data', 'not showing', 'not working'],
       es: ['preguntas frecuentes', 'sincronizar', 'actualizar datos', 'no muestra', 'no funciona'],

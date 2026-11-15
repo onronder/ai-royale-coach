@@ -1,4 +1,19 @@
 {
+  "trialFollowup": {
+    "survey": "Por que você desativou a renovação? (Opcional)",
+    "avoid_charge": "Evitar uma cobrança enquanto continuo testando",
+    "value": "O treino ajudou menos do que eu esperava",
+    "price": "O preço não cabe no meu orçamento",
+    "technical": "Tive um problema técnico",
+    "other": "Outro motivo",
+    "skip": "Pular",
+    "consent": "Envie um único e-mail no segundo dia do teste se a minha tarefa ainda estiver pendente.",
+    "resume": "Voltar à minha tarefa",
+    "retry": "Recarregar preferências",
+    "error": "Não foi possível salvar sua escolha. Tente de novo.",
+    "admin": "Motivos de cancelamento informados pelos jogadores",
+    "empty": "Nenhuma resposta neste período."
+  },
   "common": {
     "loading": "Carregando...",
     "error": "Erro",
@@ -49,7 +64,9 @@
     "ai": "IA",
     "searching": "Buscando...",
     "locked": "Bloqueado",
-    "thisMayTakeMoment": "Isso pode levar um momento"
+    "thisMayTakeMoment": "Isso pode levar um momento",
+    "dismiss": "Dispensar",
+    "today": "Hoje"
   },
   "announcement": {
     "new": "NOVO",
@@ -81,7 +98,8 @@
     "achievements": "Conquistas",
     "proDna": "Pro DNA",
     "theOracle": "O Oráculo",
-    "dreamArena": "Arena dos Sonhos"
+    "dreamArena": "Arena dos Sonhos",
+    "toggle": "Abrir ou fechar o menu"
   },
   "feedback": {
     "thankYou": "Obrigado pelo seu feedback!",
@@ -104,6 +122,8 @@
     "notHelpful": "Não útil"
   },
   "nav": {
+    "lightTheme": "Usar tema claro",
+    "darkTheme": "Usar tema escuro",
     "signIn": "Entrar",
     "getStarted": "Começar",
     "signOut": "Sair",
@@ -933,7 +953,8 @@
           "aiFeatures": "recursos com IA",
           "battlesAnalyzed": "batalhas analisadas",
           "accuracy": "precisão de previsão"
-        }
+        },
+        "subtitle": "Nosso treinador analisa suas partidas e dá dicas personalizadas para você melhorar."
       },
       "explainer": {
         "badge": "O Que Você Acabou de Experimentar",
@@ -1187,7 +1208,16 @@
       "tournaments": "Torneios"
     },
     "header": {
-      "winRate": "VR"
+      "controlPanel": "Painel de controle",
+      "winRate": "VR",
+      "justNow": "Agora mesmo",
+      "minsAgo": "Há {{count}} min",
+      "hoursAgo": "Há {{count}} h",
+      "dashboardControls": "Controles do painel",
+      "lastUpdated": "Última atualização",
+      "forceRefresh": "Atualizar agora",
+      "activeTasks": "Tarefas ativas",
+      "noTasks": "Nenhuma tarefa ativa ou recente"
     },
     "aiCoach": {
       "title": "Resumo do Coach IA",
@@ -1223,14 +1253,18 @@
       "win": "Vitória",
       "loss": "Derrota",
       "draw": "Empate",
-      "crowns": "Coroas"
+      "crowns": "Coroas",
+      "playToSee": "Jogue para acompanhar seus troféus."
     },
     "achievementWidget": {
       "loading": "Carregando conquistas...",
       "achievement": "{{count}} Conquista",
       "achievements": "{{count}} Conquistas",
       "phase": "Fase {{phase}}"
-    }
+    },
+    "victory": "Vitória",
+    "defeat": "Derrota",
+    "draw": "Empate"
   },
   "deck": {
     "builder": "Construtor de Decks",
@@ -1268,7 +1302,11 @@
     "aiDeckAnalysis": "Análise de Deck IA",
     "analyzingStrategy": "IA está analisando a estratégia do seu deck...",
     "languageChangedReanalyze": "Idioma alterado. Clique em 'Analisar IA' para obter a análise no seu novo idioma.",
-    "templates": "Modelos"
+    "templates": "Modelos",
+    "cards": "Cartas",
+    "synergy": "Sinergia",
+    "matchups": "Confrontos",
+    "noCards": "Nenhuma carta selecionada"
   },
   "coach": {
     "title": "COACH IA",
@@ -1339,7 +1377,8 @@
     "upgradeable": "Pode Evoluir",
     "updateSuccess": "Maestria de cartas atualizada com sucesso",
     "updateFailed": "Erro ao atualizar maestria de cartas",
-    "suggestionsFailed": "Erro ao obter sugestões de cartas"
+    "suggestionsFailed": "Erro ao obter sugestões de cartas",
+    "progress": "Progresso"
   },
   "leaderboard": {
     "title": "Classificação",
@@ -1366,7 +1405,9 @@
     "top100": "Top 100",
     "myClan": "Meu Clã",
     "noClan": "Sem Clã",
-    "rankTop200": "Top 200"
+    "rankTop200": "Top 200",
+    "sync": "Atualizar classificação",
+    "lastSync": "Última sincronização"
   },
   "clan": {
     "details": "Detalhes do Clã",
@@ -1452,6 +1493,10 @@
     "proBadgeTooltip": "Esta conta tem acesso completo à IA com sua assinatura"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Veja os recursos e atualizações recentes.",
+      "button": "Ver novidades"
+    },
     "title": "Configurações da Conta",
     "subtitle": "Gerencie sua conta e assinatura",
     "back": "Voltar",
@@ -1568,7 +1613,7 @@
     "stats": {
       "trophies": "Sua contagem atual de troféus. Ganhe troféus vencendo batalhas e suba no ranking!",
       "bestTrophies": "A maior contagem de troféus que você já alcançou. Mostra seu desempenho máximo.",
-      "winRate": "Porcentagem de batalhas vencidas das suas últimas 25 partidas. Mire em 50% ou mais!",
+      "winRate": "O número de vitórias é dividido pelo número de partidas recentes no histórico.",
       "arena": "Sua arena competitiva atual baseada em troféus. Arenas mais altas desbloqueiam melhores recompensas.",
       "avgElixir": "Custo médio de elixir do seu deck. Menor é mais rápido, maior é mais poderoso. Mire em 3.0-4.0.",
       "crowns": "Coroas de torre destruídas em uma partida. Consiga 3 coroas para dominação total!",
@@ -1851,7 +1896,9 @@
     "matches": "partidas",
     "strong": "Forte (>60%)",
     "even": "Equilibrado (50-60%)",
-    "weak": "Fraco (<50%)"
+    "weak": "Fraco (<50%)",
+    "noData": "Ainda não há dados de vitórias",
+    "noDataDesc": "Jogue para ver sua taxa de vitórias."
   },
   "cardCollection": {
     "title": "Coleção de Cartas",
@@ -1891,6 +1938,10 @@
     }
   },
   "achievements": {
+    "share": "Compartilhar troféus",
+    "shared": "Vitrine compartilhada",
+    "downloaded": "Vitrine salva",
+    "shareFailed": "Não foi possível compartilhar a vitrine",
     "title": "Conquistas",
     "subtitle": "Suas conquistas de batalha",
     "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",
@@ -1913,7 +1964,160 @@
     "progress": "Progresso",
     "pts": "pts",
     "points": "pontos",
-    "unlockedOn": "Desbloqueado em {{date}}"
+    "unlockedOn": "Desbloqueado em {{date}}",
+    "trophyCase": "Galeria de troféus",
+    "playerTrophyCase": "Troféus de {{name}}",
+    "badgesEarned": "Emblemas conquistados",
+    "master": "Mestre",
+    "catalog": {
+      "Placement Novice": {
+        "title": "Posicionamento · Iniciante",
+        "description": "Chegue ao nível 3 em posicionamento."
+      },
+      "Placement Adept": {
+        "title": "Posicionamento · Hábil",
+        "description": "Chegue ao nível 5 em posicionamento."
+      },
+      "Placement Expert": {
+        "title": "Posicionamento · Especialista",
+        "description": "Chegue ao nível 7 em posicionamento."
+      },
+      "Placement Master": {
+        "title": "Posicionamento · Mestre",
+        "description": "Chegue ao nível 9 em posicionamento."
+      },
+      "Placement Legend": {
+        "title": "Posicionamento · Lenda",
+        "description": "Chegue ao nível 10 em posicionamento."
+      },
+      "Timing Novice": {
+        "title": "Tempo · Iniciante",
+        "description": "Chegue ao nível 3 em tempo."
+      },
+      "Timing Adept": {
+        "title": "Tempo · Hábil",
+        "description": "Chegue ao nível 5 em tempo."
+      },
+      "Timing Expert": {
+        "title": "Tempo · Especialista",
+        "description": "Chegue ao nível 7 em tempo."
+      },
+      "Timing Master": {
+        "title": "Tempo · Mestre",
+        "description": "Chegue ao nível 9 em tempo."
+      },
+      "Timing Legend": {
+        "title": "Tempo · Lenda",
+        "description": "Chegue ao nível 10 em tempo."
+      },
+      "Elixir Novice": {
+        "title": "Gestão de elixir · Iniciante",
+        "description": "Chegue ao nível 3 em gestão de elixir."
+      },
+      "Elixir Adept": {
+        "title": "Gestão de elixir · Hábil",
+        "description": "Chegue ao nível 5 em gestão de elixir."
+      },
+      "Elixir Expert": {
+        "title": "Gestão de elixir · Especialista",
+        "description": "Chegue ao nível 7 em gestão de elixir."
+      },
+      "Elixir Master": {
+        "title": "Gestão de elixir · Mestre",
+        "description": "Chegue ao nível 9 em gestão de elixir."
+      },
+      "Elixir Legend": {
+        "title": "Gestão de elixir · Lenda",
+        "description": "Chegue ao nível 10 em gestão de elixir."
+      },
+      "Prediction Novice": {
+        "title": "Previsão · Iniciante",
+        "description": "Chegue ao nível 3 em previsão."
+      },
+      "Prediction Adept": {
+        "title": "Previsão · Hábil",
+        "description": "Chegue ao nível 5 em previsão."
+      },
+      "Prediction Expert": {
+        "title": "Previsão · Especialista",
+        "description": "Chegue ao nível 7 em previsão."
+      },
+      "Prediction Master": {
+        "title": "Previsão · Mestre",
+        "description": "Chegue ao nível 9 em previsão."
+      },
+      "Prediction Legend": {
+        "title": "Previsão · Lenda",
+        "description": "Chegue ao nível 10 em previsão."
+      },
+      "Adaptation Novice": {
+        "title": "Adaptação · Iniciante",
+        "description": "Chegue ao nível 3 em adaptação."
+      },
+      "Adaptation Adept": {
+        "title": "Adaptação · Hábil",
+        "description": "Chegue ao nível 5 em adaptação."
+      },
+      "Adaptation Expert": {
+        "title": "Adaptação · Especialista",
+        "description": "Chegue ao nível 7 em adaptação."
+      },
+      "Adaptation Master": {
+        "title": "Adaptação · Mestre",
+        "description": "Chegue ao nível 9 em adaptação."
+      },
+      "Adaptation Legend": {
+        "title": "Adaptação · Lenda",
+        "description": "Chegue ao nível 10 em adaptação."
+      },
+      "Beginner Graduate": {
+        "title": "Formação inicial",
+        "description": "Conclua a fase «Iniciante»."
+      },
+      "Intermediate Graduate": {
+        "title": "Formação intermediária",
+        "description": "Conclua a fase «Intermediário»."
+      },
+      "Advanced Graduate": {
+        "title": "Formação avançada",
+        "description": "Conclua a fase «Avançado»."
+      },
+      "Master Graduate": {
+        "title": "Formação de mestre",
+        "description": "Conclua a fase «Mestre»."
+      },
+      "Card Master": {
+        "title": "Mestre das cartas",
+        "description": "Chegue pelo menos ao nível de maestria 9 com 5 cartas."
+      },
+      "Card Legend": {
+        "title": "Lenda das cartas",
+        "description": "Chegue pelo menos ao nível de maestria 9 com 20 cartas."
+      },
+      "Ultimate Master": {
+        "title": "Grão-mestre",
+        "description": "Chegue pelo menos ao nível de maestria 10 com 10 cartas."
+      },
+      "First Steps": {
+        "title": "Primeiros passos",
+        "description": "Desbloqueie 1 conquista."
+      },
+      "Achievement Hunter": {
+        "title": "Caçador de conquistas",
+        "description": "Desbloqueie 10 conquistas."
+      },
+      "Achievement Master": {
+        "title": "Mestre das conquistas",
+        "description": "Desbloqueie 25 conquistas."
+      },
+      "Achievement Legend": {
+        "title": "Lenda das conquistas",
+        "description": "Desbloqueie 50 conquistas."
+      }
+    },
+    "synced": "Conquistas sincronizadas",
+    "syncedMessage": "Seu progresso está atualizado.",
+    "unlockedNew": "Você desbloqueou uma nova conquista."
   },
   "analytics": {
     "winRateTrends": "Tendências de Vitória",
@@ -1924,7 +2128,22 @@
     "wr": "TV",
     "battlesCount": "{{count}} batalhas",
     "mostUsedCards": "Cartas Mais Usadas",
-    "usedTimes": "Usada {{count}} vezes"
+    "usedTimes": "Usada {{count}} vezes",
+    "predictions": {
+      "total": "Total de previsões",
+      "battlesTracked": "Batalhas acompanhadas",
+      "avgError": "Erro médio",
+      "accuracyRate": "Taxa de alta precisão",
+      "mostAccurate": "Previsão mais precisa",
+      "leastAccurate": "Previsão menos precisa",
+      "predicted": "Previsão",
+      "actual": "Resultado real",
+      "error": "Erro"
+    },
+    "noDecks": "Ainda não há dados de decks",
+    "noDecksDesc": "Jogue para ver quais decks você usa.",
+    "noTrendData": "Ainda não há dados de tendência",
+    "noTrendDataDesc": "Jogue mais para acompanhar sua taxa de vitórias."
   },
   "templates": {
     "title": "Modelos de Decks Meta",
@@ -2207,7 +2426,23 @@
       "startTrial": "Iniciar Teste Grátis de 3 Dias",
       "subscribe": "Assinar Agora",
       "signOut": "Sair"
-    }
+    },
+    "dailyLimitReached": "Limite diário atingido",
+    "tagClaimedMessage": "Esta tag já está vinculada a outra conta.",
+    "trialConfirm": {
+      "title": "Assinar agora?",
+      "description": "Dias restantes no teste: {{days}}. Se continuar, sua assinatura paga começará imediatamente."
+    },
+    "tagClaimedTitle": "Tag já vinculada",
+    "featureLocked": "Recurso bloqueado",
+    "dailyLimitMessage": "Você atingiu o limite de hoje.",
+    "upgradeToUnlock": "Faça upgrade para desbloquear",
+    "upgradeForUnlimited": "Faça upgrade para ter acesso ilimitado",
+    "unlimitedAccess": "Acesso ilimitado",
+    "unlimited": "Ilimitado",
+    "trial": "Teste",
+    "quotaExhaustedTooltip": "Você usou a cota de hoje.",
+    "usesToday": "Usos restantes hoje: {{remaining}}"
   },
   "onboarding": {
     "stepOf": "Passo {{current}} de {{total}}",
@@ -2287,7 +2522,32 @@
     },
     "helpTooltip": "Analisamos as últimas 25 batalhas do oponente para prever seu deck e estilo de jogo mais provável.",
     "helperText": "Digite a tag do oponente (ex. #ABC12) para prever seu deck e estratégia.",
-    "tryExample": "Experimente"
+    "tryExample": "Experimente",
+    "pasteClipboard": "Colar da área de transferência",
+    "scan": "Escanear",
+    "threatDetected": "AMEAÇA DETECTADA",
+    "awaitingTarget": "Aguardando a tag do adversário…",
+    "enterTagPrompt": "Digite a tag do adversário para prever o deck dele.",
+    "targetNotFound": "Adversário não encontrado",
+    "targetNotFoundDesc": "Não foi possível carregar as batalhas desse jogador.",
+    "confidence": "Confiança",
+    "playstyle": "Estilo de jogo",
+    "aggressive": "Agressivo",
+    "defensive": "Defensivo",
+    "lastSeen": "Última aparição",
+    "matchesAnalyzed": "Batalhas analisadas: {{count}} de {{total}}",
+    "predictedDeck": "Deck previsto",
+    "opponentPrefers": "O adversário costuma usar este deck",
+    "watchOutFor": "Atenção a",
+    "matchupAnalysis": "Análise do confronto",
+    "analyzingMatchup": "Analisando o confronto…",
+    "yourDeck": "Seu deck",
+    "opponent": "Adversário",
+    "favorableMatchup": "Confronto favorável",
+    "challengingMatchup": "Confronto difícil",
+    "evenMatchup": "Confronto equilibrado",
+    "quickTips": "Dicas rápidas",
+    "signInForMatchup": "Entre para ver a análise"
   },
   "proDna": {
     "title": "DNA do Jogador",
@@ -2307,7 +2567,13 @@
     "downloadSuccess": "Imagem baixada com sucesso!",
     "downloadError": "Falha ao baixar imagem",
     "shareNotSupported": "Compartilhamento não suportado neste navegador",
-    "shareError": "Falha ao compartilhar imagem"
+    "shareError": "Falha ao compartilhar imagem",
+    "downloaded": "Cartão de DNA baixado",
+    "downloadFailed": "Não foi possível baixar o cartão",
+    "shared": "Compartilhado",
+    "shareFailed": "Não foi possível compartilhar o cartão",
+    "noDataHint": "Jogue algumas partidas primeiro.",
+    "shareText": "Confira meu DNA Pro do Clash Royale!"
   },
   "achievementShowcase": {
     "trophyCase": "Vitrine de Troféus",
@@ -2317,15 +2583,18 @@
     "achievements": {
       "elixirMaster": {
         "title": "Mestre do Elixir",
-        "hint": "Vença com um deck pesado (4.0+ elixir) sem perder torres"
+        "hint": "Vença com um deck pesado (4.0+ elixir) sem perder torres",
+        "earned": "Você venceu com um deck pesado sem perder torres."
       },
       "comebackKing": {
         "title": "Rei da Virada",
-        "hint": "Vença uma partida depois de perder uma torre primeiro"
+        "hint": "Vença uma partida depois de perder uma torre primeiro",
+        "earned": "Você virou a partida e venceu."
       },
       "perfectDefense": {
         "title": "Defesa Perfeita",
-        "hint": "Vença uma partida sem perder nenhuma torre"
+        "hint": "Vença uma partida sem perder nenhuma torre",
+        "earned": "Você defendeu suas torres sem perder uma coroa."
       },
       "winStreakWarrior": {
         "title": "Guerreiro de Sequência",
@@ -2337,9 +2606,13 @@
       },
       "threeCrownMaster": {
         "title": "Mestre das Três Coroas",
-        "hint": "Vença uma partida com 3 coroas"
+        "hint": "Vença uma partida com 3 coroas",
+        "earned": "Você conquistou as três coroas!"
       }
-    }
+    },
+    "giantSlayer": "Caçador de gigantes",
+    "wonStreak": "Você venceu {{count}} batalhas seguidas.",
+    "wonAgainstOdds": "Você derrotou um adversário com {{count}} troféus a mais."
   },
   "aiPreview": {
     "deckArchetype": "Arquétipo do Deck",
@@ -2385,7 +2658,21 @@
       "endpoints": "endpoints",
       "calls": "chamadas",
       "cache": "cache",
-      "slow": "Lento"
+      "slow": "Lento",
+      "groupTitle": "Endpoints por categoria",
+      "noRequests": "Sem dados de solicitações",
+      "recent": "Solicitações recentes",
+      "loadingLogs": "Carregando registros…",
+      "dupeWarning": "{{count}} chamadas duplicadas (mesmo endpoint em 1 s)",
+      "filter": "Filtrar por endpoint…",
+      "dupes": "Duplicatas",
+      "noDupes": "Nenhuma chamada duplicada",
+      "emptyLog": "Nenhuma solicitação registrada",
+      "hits": "Acertos de cache",
+      "playerGroup": "Dados de jogadores",
+      "deckGroup": "Decks e cartas",
+      "profileGroup": "Contas e perfis",
+      "operationGroup": "Operações"
     },
     "fraudOverview": {
       "signalsToday": "Sinais Hoje",
@@ -2431,7 +2718,232 @@
         "high": "Alto",
         "medium": "Médio",
         "low": "Baixo"
+      },
+      "statuses": {
+        "softBlocked": "Bloqueio parcial",
+        "warning": "Alerta",
+        "clean": "Sem irregularidades"
+      },
+      "seenTimes": "Ocorrências: {{count}}",
+      "reviewNotesPlaceholder": "Notas da revisão (opcional)…",
+      "actions": {
+        "clearMarkClean": "Marcar sem irregularidades",
+        "setWarning": "Emitir alerta",
+        "softBlock": "Aplicar bloqueio parcial"
+      },
+      "loadingDetails": "Carregando detalhes do caso…"
+    },
+    "fraudCases": {
+      "title": "Casos de fraude",
+      "columns": {
+        "userId": "ID do usuário",
+        "status": "Status",
+        "score": "Pontuação",
+        "signals": "Sinais",
+        "lastSignal": "Último sinal",
+        "reviewed": "Revisado"
+      },
+      "statuses": {
+        "softBlocked": "Bloqueio parcial",
+        "warning": "Alerta",
+        "clean": "Sem irregularidades"
+      },
+      "reviewed": "Revisado",
+      "pending": "Pendente",
+      "blocked": "Bloqueado",
+      "warning": "Alerta",
+      "review": "Revisar",
+      "noCasesPending": "Nenhum caso aguardando revisão"
+    },
+    "userLookup": {
+      "title": "Buscar usuários",
+      "email": "E-mail",
+      "playerTag": "Tag de jogador",
+      "searchByEmail": "Buscar por e-mail…",
+      "searchByPlayerTag": "Buscar por tag…",
+      "noUsersFound": "Nenhum usuário encontrado",
+      "clean": "Sem irregularidades",
+      "score": "Pontuação"
+    },
+    "navigation": {
+      "checking": "Verificando acesso…",
+      "title": "Painel administrativo",
+      "subtitle": "Detecção de fraudes e gestão de usuários",
+      "users": "Usuários",
+      "trials": "Testes",
+      "winback": "Reativação",
+      "webhooks": "Webhooks",
+      "admin": "Administração"
+    },
+    "trials": {
+      "paid": "Pagou",
+      "canceledImmediately": "Cancelou imediatamente",
+      "neverUsed": "Nunca usou",
+      "onceCanceled": "Cancelou após uma análise",
+      "inTrial": "Em teste",
+      "noPayment": "Usou sem pagar",
+      "startedTrial": "Iniciou o teste",
+      "linkedTag": "Vinculou a tag",
+      "firstAnalysis": "Fez a primeira análise com IA",
+      "returned": "Ativo em dois ou mais dias",
+      "converted": "Passou para a assinatura paga",
+      "daysRange": "{{days}} dias",
+      "funnel": "Funil de conversão",
+      "revenue": "Receita e atividade dos testes",
+      "sync": "Sincronizar pedidos do Polar",
+      "rate": "Taxa de primeiro pagamento (fim do teste + 7 dias)",
+      "positive": "Pedidos com valor positivo",
+      "zero": "Pedidos de teste de US$ 0",
+      "quota": "Bloqueios históricos por cota de teste",
+      "quotaUsers": "{{users}} usuários · {{canceled}} cancelaram depois",
+      "renewalOff": "Teste ativo com renovação desativada",
+      "timing": "Tempo até o cancelamento",
+      "during": "Cancelamentos durante o teste",
+      "withinHour": "Cancelamentos na primeira hora",
+      "hoursToCancel": "Média de horas até cancelar",
+      "observed": "Atividade observada no teste",
+      "users": "Usuários em teste",
+      "started": "Início",
+      "ends": "Fim",
+      "canceled": "Cancelamento",
+      "hours": "Horas",
+      "tags": "Tags",
+      "chat": "Conversa",
+      "days": "Dias",
+      "lastSeen": "Última atividade",
+      "activity": "Atividade",
+      "status": {
+        "active": "Ativo",
+        "trialing": "Em teste",
+        "past_due": "Pagamento em atraso",
+        "cancelled": "Cancelado",
+        "expired": "Expirado"
       }
+    },
+    "blocked": {
+      "trialing": "Em teste",
+      "active": "Ativo",
+      "cancelActive": "Cancelado (com acesso)",
+      "grace": "Período de carência",
+      "graceExpired": "Carência encerrada",
+      "trialUsed": "Teste utilizado",
+      "none": "Sem assinatura",
+      "total": "Total de usuários",
+      "subscribers": "Assinantes ativos",
+      "onTrial": "Em teste",
+      "users": "Usuários bloqueados",
+      "withoutSub": "Usuários sem assinatura ativa",
+      "withoutAccess": "Usuários sem acesso a páginas protegidas",
+      "empty": "Nenhum usuário bloqueado",
+      "joined": "Cadastro",
+      "paymentFailed": "Em atraso (falha no pagamento)",
+      "paymentNotice": "Usuários avisados por e-mail para atualizar a forma de pagamento após uma falha",
+      "noFailures": "Nenhum usuário com falha de pagamento",
+      "periodEnds": "Fim do período",
+      "activeTrials": "Assinantes ativos e usuários em teste",
+      "withAccess": "Usuários com acesso a páginas protegidas",
+      "noActive": "Nenhum assinante ativo",
+      "slots": "Vagas de conta: {{count}}",
+      "graceEnds": "Fim da carência",
+      "graceEnded": "Carência encerrada",
+      "noEmail": "Sem e-mail",
+      "noDetails": "Sem dados de assinatura",
+      "renews": "Renovação"
+    },
+    "recovery": {
+      "title": "Recuperação de pagamentos",
+      "description": "Acompanhe a recuperação de pagamentos e o tempo de resolução",
+      "rate": "Taxa de recuperação",
+      "summary": "{{recovered}} de {{total}} usuários recuperaram a assinatura",
+      "last30": "Últimos 30 dias",
+      "recovered": "Recuperados",
+      "pending": "Pendentes",
+      "total": "Total em atraso",
+      "stillDue": "Ainda em atraso",
+      "mean": "Tempo médio de recuperação"
+    },
+    "events": {
+      "processed": "Processado",
+      "failed": "Falhou",
+      "skipped": "Ignorado",
+      "total24": "Total (24 h)",
+      "processed24": "Processados (24 h)",
+      "failed24": "Falhas (24 h)",
+      "skipped24": "Ignorados (24 h)",
+      "title": "Eventos de webhook",
+      "description": "Eventos recentes do Polar e estado de processamento",
+      "empty": "Nenhum evento de webhook",
+      "user": "• Usuário:",
+      "id": "ID do evento:",
+      "time": "Processado:",
+      "error": "Erro:",
+      "payload": "Resumo do conteúdo:",
+      "week": "Resumo de 7 dias",
+      "total": "Total de eventos"
+    },
+    "winback": {
+      "breakdown": "Detalhamento da atividade",
+      "ai": "Solicitações de IA",
+      "battles": "Batalhas acompanhadas",
+      "messages": "Mensagens de conversa",
+      "linked": "Contas vinculadas",
+      "days": "Dias ativos",
+      "totalScore": "Pontuação total",
+      "never": "Nunca",
+      "whenSent": "Atividade no envio",
+      "off": "{{percent}}% de desconto",
+      "manual": "Manual",
+      "configuration": "Configurações da campanha",
+      "setup": "Configure o código e o desconto de reativação. Crie os códigos no",
+      "polar": "Painel do Polar",
+      "code": "Código promocional",
+      "codeHint": "Digite o código exato criado no Polar",
+      "discountId": "ID do desconto do Polar",
+      "idHint": "No Polar, abra Descontos, selecione o desconto e copie o ID da URL ou dos detalhes.",
+      "required": "Necessário para desconto automático no pagamento",
+      "percent": "Percentual de desconto",
+      "shown": "Exibido no e-mail e deve corresponder ao Polar.",
+      "configured": "Tudo pronto. O desconto será aplicado no pagamento ao usar o link do e-mail.",
+      "eligible": "Usuários elegíveis",
+      "eligibleHint": "Usuários que cancelaram o teste e podem receber um e-mail de reativação",
+      "sort": "Ordenar por",
+      "activityScore": "Pontuação de atividade",
+      "activeOnly": "Apenas usuários ativos",
+      "counts": "Usuários ativos: {{active}} de {{total}}",
+      "canReceive": "Destinatários elegíveis: {{count}}",
+      "sending": "Enviando…",
+      "sendActive": "Enviar aos usuários ativos ({{count}})",
+      "sendAll": "Enviar aos usuários elegíveis ({{count}})",
+      "noActive": "Nenhum usuário ativo",
+      "noActiveHint": "Desative o filtro de usuários ativos.",
+      "noEligible": "Nenhum usuário elegível",
+      "noEligibleHint": "Os usuários aparecerão após o fim do teste.",
+      "history": "Histórico de campanhas",
+      "historyHint": "E-mails recentes de reativação e pontuação de atividade no envio",
+      "emptyHistory": "Nenhuma campanha enviada",
+      "confirm": "Enviar {{count}} e-mails de reativação?",
+      "bulkDetails": "{{count}} usuários elegíveis sem e-mail de reativação nos últimos 30 dias receberão o código {{code}} para {{percent}}% de desconto.",
+      "onlyActivity": "Apenas usuários com atividade registrada receberão este e-mail.",
+      "autoDiscount": "O desconto será aplicado automaticamente no pagamento",
+      "sendEmails": "Enviar e-mails",
+      "high": "Muito ativo",
+      "low": "Pouca atividade",
+      "noActivity": "Sem atividade",
+      "trialEnded": "Fim do teste",
+      "lastSent": "Último e-mail enviado",
+      "actions": "Ações",
+      "date": "Data",
+      "recipient": "Destinatário",
+      "discount": "Desconto",
+      "autoApply": "Aplicação automática",
+      "needCode": "Insira um código para habilitar o envio.",
+      "needId": "Insira o ID de desconto do Polar (UUID) para aplicá-lo no pagamento.",
+      "invalidId": "O ID deve ser um UUID válido.",
+      "invalidPercent": "O desconto deve estar entre 1 e 100.",
+      "sentOne": "E-mail enviado para {{email}}",
+      "failedOne": "Falha ao enviar: {{error}}",
+      "sentSummary": "Enviados: {{sent}} · Falhas: {{failed}}",
+      "send": "Enviar"
     }
   },
   "oraclePage": {
@@ -2653,5 +3165,31 @@
     "title": "Seu teste terminou",
     "description": "Você ainda pode ver sua última análise. Assine para executar novas análises com IA.",
     "cta": "Assinar novamente"
+  },
+  "loading": {
+    "playerData": "Buscando dados do jogador…",
+    "battles": "Carregando histórico de batalhas…",
+    "deckAnalysis": "Analisando a sinergia do deck…",
+    "matchAnalysis": "Analisando os detalhes da batalha…",
+    "cardCollection": "Carregando a coleção de cartas…",
+    "leaderboard": "Buscando a classificação…",
+    "aiThinking": "O treinador está pensando…",
+    "calculating": "Calculando estatísticas…"
+  },
+  "empty": {
+    "matches": "Nenhuma batalha encontrada",
+    "matchesDesc": "Jogue algumas batalhas para ver seu histórico aqui.",
+    "decks": "Nenhum deck salvo",
+    "decksDesc": "Crie e salve seu primeiro deck.",
+    "cards": "Nenhuma carta acompanhada",
+    "cardsDesc": "Sincronize sua coleção para ver suas cartas."
+  },
+  "charts": {
+    "noData": "Sem dados",
+    "noDataDescription": "Jogue uma batalha para ver suas estatísticas aqui."
+  },
+  "playerSelector": {
+    "addAccount": "Adicionar conta",
+    "accounts": "Contas"
   }
 }

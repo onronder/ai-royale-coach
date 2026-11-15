@@ -637,7 +637,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           "bg-background border-l border-border",
           "transform transition-transform duration-300 ease-in-out",
           "shadow-2xl",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? "translate-x-0" : "invisible translate-x-full"
         )}
       >
         <div className="h-full flex flex-col">
@@ -656,6 +656,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
             <Button
               variant="ghost"
               size="icon"
+              aria-label={t("common.close")}
               onClick={onClose}
               className="hover:bg-destructive/10 hover:text-destructive"
             >
@@ -679,7 +680,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
         "bg-background border-l border-border",
         "transform transition-transform duration-300 ease-in-out",
         "shadow-2xl",
-        isOpen ? "translate-x-0" : "translate-x-full"
+        isOpen ? "translate-x-0" : "invisible translate-x-full"
       )}
     >
       <div className="h-full flex flex-col">
@@ -698,6 +699,7 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
           <Button
             variant="ghost"
             size="icon"
+            aria-label={t("common.close")}
             onClick={onClose}
             className="hover:bg-destructive/10 hover:text-destructive"
           >

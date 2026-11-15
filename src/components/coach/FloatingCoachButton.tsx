@@ -140,7 +140,7 @@ export function FloatingCoachButton({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="fixed bottom-6 right-6 z-50">
+              <div className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-6 z-50 md:bottom-6">
                 {/* Proactive suggestion badge */}
                 {hasProactiveSuggestion && (
                   <div className="absolute -top-2 -left-2 z-10">
@@ -166,6 +166,7 @@ export function FloatingCoachButton({
                 
                 <Button
                   onClick={() => handleOpenChange(true)}
+                  aria-label={t("subscription.paywall.features.aiCoach")}
                   className={cn(
                     "h-14 w-14 rounded-xl",
                     "bg-gradient-gold shadow-gold",
