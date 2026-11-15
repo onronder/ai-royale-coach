@@ -487,7 +487,7 @@ export default function DreamArena() {
           onOpenAchievements={() => setAchievementsOpen(true)}
           onOpenHelp={() => setHelpOpen(true)}
         />
-        <SidebarInset className="min-w-0 flex-1 overflow-x-hidden">
+        <SidebarInset className="min-w-0 flex-1 overflow-x-clip">
         <DashboardHeader
           playerTag={playerTag}
           player={playerData || null}
