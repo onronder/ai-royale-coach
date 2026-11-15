@@ -127,6 +127,13 @@
       "when": 1794753904806,
       "tag": "0017_trial_reminder_frozen_payload",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794754937609,
+      "tag": "0018_trial_email_send_gate",
+      "breakpoints": true
     }
   ]
 }
