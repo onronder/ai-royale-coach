@@ -46,5 +46,3 @@ Deno.serve(async (req) => {
     return new Response(null, { status: 503 });
   }
 });
-
-// The database issues a single-use ticket for the confirmed signup.
