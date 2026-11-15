@@ -1846,9 +1846,6 @@ export type Database = {
           user_id: string
         }[]
       }
-      trial_coaching_state: { Args: Record<PropertyKey, never>; Returns: Json }
-      update_trial_coaching: { Args: { p_subscription: string; p_action: string; p_value?: string }; Returns: Json }
-      trial_cancel_answers: { Args: { p_days: number }; Returns: { reason: string; total: number }[] }
       get_trial_revenue_metrics: { Args: { p_days?: number }; Returns: Json }
       get_user_activity_metrics: { Args: { p_user_id: string }; Returns: Json }
       has_admin_role: {
