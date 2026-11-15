@@ -114,3 +114,6 @@ content_path = "./supabase/templates/magic_link.html"
 
 [functions.trial-coaching-summary]
 verify_jwt = true
+
+[functions.confirmed-welcome]
+verify_jwt = true

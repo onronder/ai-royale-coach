@@ -8,5 +8,13 @@ if (!host || projectUrl.origin !== 'https://' + projectUrl.hostname || projectUr
 if (!/^[\w-]+\.[\w-]+\.[\w-]+$/.test(key)) throw new Error('Expected the public anon JWT used by the web app.');
 const claims = JSON.parse(Buffer.from(key.split('.')[1], 'base64url').toString());
 if (claims.role !== 'anon' || claims.ref !== host[1]) throw new Error('Expected the public anon JWT for this project.');
-console.log(`SELECT cron.schedule('trial-coaching-day-two', '*/10 * * * *',
+if (process.argv[2] === '--activate-welcome') {
+  console.log(`BEGIN;
+SELECT cron.schedule('confirmed-account-welcome', '* * * * *',
+  format('SELECT public.queue_confirmed_welcomes(%L,%L)', '${projectUrl.origin}', '${key}'));
+INSERT INTO public.welcome_cutover DEFAULT VALUES ON CONFLICT DO NOTHING;
+COMMIT;`);
+} else {
+  console.log(`SELECT cron.schedule('trial-coaching-day-two', '*/10 * * * *',
   format('SELECT public.queue_trial_coaching_reminders(%L,%L)', '${projectUrl.origin}', '${key}'));`);
+}

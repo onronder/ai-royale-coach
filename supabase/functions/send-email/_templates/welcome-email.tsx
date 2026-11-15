@@ -356,3 +356,14 @@ const footerLink = {
   fontSize: '12px',
   textDecoration: 'none',
 }
+
+export function getWelcomeSubject(language: string): string {
+  const subjects: Record<string, string> = {
+    en: 'Welcome to AI Royale, Champion! 👑',
+    es: '¡Bienvenido a AI Royale, Campeón! 👑',
+    pt: 'Bem-vindo ao AI Royale, Campeão! 👑',
+    tr: "AI Royale'e Hoş Geldiniz, Şampiyon! 👑",
+    fr: 'Bienvenue sur AI Royale, Champion! 👑',
+  }
+  return subjects[language] || subjects.en
+}
