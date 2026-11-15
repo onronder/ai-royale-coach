@@ -640,6 +640,45 @@ export type Database = {
           },
         ]
       }
+      confirmed_welcome: {
+        Row: {
+          accepted_at: string | null
+          confirmed_at: string
+          email: string
+          language: string
+          payload: Json | null
+          queued_at: string | null
+          resend_id: string | null
+          started_at: string | null
+          ticket: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          confirmed_at: string
+          email: string
+          language: string
+          payload?: Json | null
+          queued_at?: string | null
+          resend_id?: string | null
+          started_at?: string | null
+          ticket?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          confirmed_at?: string
+          email?: string
+          language?: string
+          payload?: Json | null
+          queued_at?: string | null
+          resend_id?: string | null
+          started_at?: string | null
+          ticket?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_usage_logs: {
         Row: {
           feature_name: string
@@ -1907,6 +1946,21 @@ export type Database = {
         }
         Relationships: []
       }
+      welcome_cutover: {
+        Row: {
+          activated_at: string
+          singleton: boolean
+        }
+        Insert: {
+          activated_at?: string
+          singleton?: boolean
+        }
+        Update: {
+          activated_at?: string
+          singleton?: boolean
+        }
+        Relationships: []
+      }
       winback_campaigns: {
         Row: {
           admin_user_id: string
@@ -2034,6 +2088,10 @@ export type Database = {
       }
     }
     Functions: {
+      begin_confirmed_welcome: {
+        Args: { p_payload: Json; p_user: string }
+        Returns: Json
+      }
       begin_reminder_send: {
         Args: { p_attempt: string; p_subscription: string; p_user: string }
         Returns: boolean
@@ -2049,6 +2107,15 @@ export type Database = {
           p_window_seconds?: number
         }
         Returns: boolean
+      }
+      claim_confirmed_welcome: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          payload: Json
+          user_id: string
+        }[]
       }
       claim_player_tag_for_trial: {
         Args: { p_player_tag: string; p_user_id: string }
@@ -2200,9 +2267,17 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      queue_confirmed_welcomes: {
+        Args: { anon_key: string; project_url: string }
+        Returns: undefined
+      }
       queue_trial_coaching_reminders: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
+      }
+      record_confirmed_welcome: {
+        Args: { p_message: string; p_user: string }
+        Returns: boolean
       }
       record_reminder_send: {
         Args: {
