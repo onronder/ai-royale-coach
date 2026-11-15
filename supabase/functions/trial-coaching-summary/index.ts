@@ -1,19 +1,20 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
-import { deliverSummary, type Payload, type Summary, type SummaryTask } from './summary.ts';
+import { resendProvider, sqlStore } from '../_shared/email-attempt.ts';
+import { deliverSummary, type SummaryTask } from './summary.ts';
 
 Deno.serve(async req => {
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const rpc = async (fn: string, args: Record<string, unknown>) => {
+    const { data, error } = await db.rpc(fn as never, args as never);
+    if (error) throw error;
+    return data;
+  };
   try {
-    return await deliverSummary(req, {
-      async take(ticket) {
-        const { data, error } = await db.rpc('claim_trial_summary', { p_ticket: ticket }).maybeSingle();
-        if (error) throw error;
-        return data as Summary | null;
-      },
-      async task({ task_id, user_id }) {
+    return await deliverSummary(req, sqlStore(rpc, 'summary'), resendProvider(Deno.env.get('RESEND_API_KEY')!), {
+      async task(taskId, userId) {
         const { data, error } = await db.from('coaching_tasks')
           .select('id,language,source_deck,recommended_deck,recommendation,follow_up_question,follow_up_answer,battle_result,previous_match')
-          .eq('id', task_id).eq('user_id', user_id).maybeSingle();
+          .eq('id', taskId).eq('user_id', userId).maybeSingle();
         if (error) throw error;
         return data as unknown as SummaryTask | null;
       },
@@ -22,27 +23,6 @@ Deno.serve(async req => {
           .match({ task_id, language, source_hash }).maybeSingle();
         if (error) throw error;
         return (data?.translation ?? undefined) as Record<string, string> | undefined;
-      },
-      async freeze({ user_id, subscription_id, task_id }, payload) {
-        const { data, error } = await db.rpc('freeze_trial_summary', { p_user: user_id, p_subscription: subscription_id, p_task: task_id, p_payload: payload as never });
-        if (error) throw error;
-        return (data ?? null) as Payload | null;
-      },
-      async send(payload, key) {
-        const response = await fetch('https://api.resend.com/emails', {
-          method: 'POST', headers: { Authorization: 'Bearer ' + Deno.env.get('RESEND_API_KEY'),
-            'Content-Type': 'application/json', 'Idempotency-Key': key },
-          body: JSON.stringify(payload), signal: AbortSignal.timeout(10000),
-        });
-        const id = response.ok ? (await response.json()).id : null;
-        if (typeof id !== 'string' || !id) throw new Error('Email delivery was not accepted');
-        return id;
-      },
-      async markSent({ user_id, subscription_id }, messageId) {
-        const { error } = await db.from('trial_coaching_followup')
-          .update({ summary_sent_at: new Date().toISOString(), summary_message_id: messageId })
-          .eq('user_id', user_id).eq('subscription_id', subscription_id).is('summary_sent_at', null);
-        if (error) throw error;
       },
     });
   } catch {

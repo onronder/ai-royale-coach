@@ -1,11 +1,11 @@
+import { isTicket, runAttempt, type AttemptStore, type Mail, type Provider } from '../_shared/email-attempt.ts';
 import { coachingReading, readingText, type ReadingText, type SavedAdvice } from '../_shared/coaching-reading.ts';
 import { localizedCardName } from '../_shared/card-names.ts';
 import { productLanguage, type Language } from '../_shared/language.ts';
 
 type Result = { outcome: 'win' | 'loss' | 'draw'; score: number[]; trophy_change: number | null } | null;
 export interface SummaryTask extends SavedAdvice { id: string; battle_result: Result; previous_match: { battle_result: Result } | null }
-export interface Payload { from: string; to: string[]; subject: string; text: string; language: string }
-export interface Summary { user_id: string; subscription_id: string; task_id: string; player_tag: string; language: string; email: string; payload?: Payload | null }
+export interface Summary { user_id: string; subscription_id: string; task_id: string; player_tag: string; language: string; email: string }
 
 const copy: Record<Language, Record<string, string>> = {
   en: { subject: 'Your AI Royale coaching summary', intro: 'Here is what we suggested during your trial and what happened.', swap: 'Card change', coach: 'Coach answer', match: 'Matching match', previous: 'Earlier match', none: 'No matching match found.', win: 'Victory', loss: 'Defeat', draw: 'Draw', trophies: 'trophies', link: 'Open your Coach screen', why: 'You asked for one coaching summary before your trial ends.' },
@@ -42,39 +42,22 @@ export function summaryEmail(task: SummaryTask, playerTag: string, rawLanguage: 
   return { subject: c.subject, text: lines.join('\n\n') };
 }
 
-interface Delivery {
-  take(ticket: string): Promise<Summary | null>;
-  task(summary: Summary): Promise<SummaryTask | null>;
+export interface SummaryReads {
+  task(taskId: string, userId: string): Promise<SummaryTask | null>;
   translation(taskId: string, language: string, hash: string): Promise<Partial<ReadingText> | undefined>;
-  /** Stores the payload only if none is saved yet and returns the saved one; null when no longer eligible. */
-  freeze(summary: Summary, payload: Payload): Promise<Payload | null>;
-  send(payload: Omit<Payload, 'language'>, key: string): Promise<string>;
-  markSent(summary: Summary, messageId: string): Promise<void>;
 }
 
-export async function deliverSummary(req: Request, d: Delivery): Promise<Response> {
+export async function deliverSummary(req: Request, store: AttemptStore, provider: Provider, reads: SummaryReads, now?: () => number): Promise<Response> {
   if (req.method !== 'POST') return new Response(null, { status: 405 });
   const input = await req.json().catch(() => null);
-  if (typeof input?.ticket !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(input.ticket)) {
-    return new Response(null, { status: 400 });
-  }
-  // take() re-checks consent, live trial and not-yet-sent on every attempt.
-  const summary = await d.take(input.ticket);
-  if (!summary) return new Response(null, { status: 204 });
-  let payload = summary.payload ?? null;
-  if (!payload) {
-    const task = await d.task(summary);
-    if (!task) return new Response(null, { status: 204 });
-    const language = productLanguage(summary.language);
+  if (!isTicket(input?.ticket)) return new Response(null, { status: 400 });
+  await runAttempt(input.ticket, 'trial-summary', store, provider, async (c): Promise<Mail | null> => {
+    const task = c.due_task && c.email && c.player_tag ? await reads.task(c.due_task, c.user_id) : null;
+    if (!task) return null;
+    const language = productLanguage(c.language ?? 'en');
     const hash = await translationHash(task, language);
-    const email = summaryEmail(task, summary.player_tag, language, hash ? await d.translation(task.id, language, hash) : undefined);
-    if (!email) return new Response(null, { status: 204 });
-    payload = await d.freeze(summary, { from: 'AI Royale <noreply@notification.ai-royale.com>', to: [summary.email], ...email, language });
-    if (!payload) return new Response(null, { status: 204 });
-  }
-  // Same key + same frozen body: the provider returns the original message id on retry.
-  const { language: _l, ...mail } = payload;
-  const id = await d.send(mail, 'trial-summary/' + summary.subscription_id);
-  await d.markSent(summary, id);
+    const email = summaryEmail(task, c.player_tag!, language, hash ? await reads.translation(task.id, language, hash) : undefined);
+    return email && { from: 'AI Royale <noreply@notification.ai-royale.com>', to: [c.email!], ...email };
+  }, now);
   return new Response(null, { status: 204 });
 }

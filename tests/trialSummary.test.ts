@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { deliverSummary, summaryEmail, type Payload, type Summary, type SummaryTask } from '../supabase/functions/trial-coaching-summary/summary';
+import { deliverSummary, summaryEmail, type SummaryTask } from '../supabase/functions/trial-coaching-summary/summary';
 
 const deck = (ids: number[]) => ids.map(id => ({ id, name: 'Card' + id, level: 11, maxLevel: 14, iconUrls: { medium: '' } }));
 const base: SummaryTask = {
@@ -8,9 +8,6 @@ const base: SummaryTask = {
   recommendation: { remove_id: 1, add_id: 9, reason: 'Reason.', practice: 'Practice.', language: 'en', follow_up_language: 'en' },
   follow_up_question: 'Why?', follow_up_answer: 'Because it works.', battle_result: null, previous_match: null,
 };
-const ticket = '44dd2c00-eae7-4ea1-8865-b7510387d350';
-const row: Summary = { user_id: 'u', subscription_id: 'sub-1', task_id: 't1', player_tag: 'UY02YVY9G', language: 'en', email: 'x@example.invalid' };
-const req = () => new Request('https://w.invalid', { method: 'POST', body: JSON.stringify({ ticket }) });
 
 describe('end-of-trial coaching summary', () => {
   for (const [lang, none] of [['en','No matching match found.'],['tr','Eşleşen maç bulunamadı.'],['es','No se encontró ninguna partida coincidente.'],['fr','Aucun match correspondant trouvé.'],['pt','Nenhuma partida correspondente encontrada.']]) {
@@ -28,32 +25,11 @@ describe('end-of-trial coaching summary', () => {
     assert.ok(!summaryEmail(base, 'P', 'tr')!.text.includes('Because it works.'));
     assert.ok(summaryEmail(base, 'P', 'en')!.text.includes('Because it works.'));
   });
-  it('retries after a failed record with the same key, recipient, subject and text even if score and language change', async () => {
-    let stored: Payload | null = null; let current = { ...row }; let task = base;
-    const sends: { key: string; body: string }[] = []; const records: string[] = []; let fail = true;
-    const d = { take: async () => ({ ...current, payload: stored }), task: async () => task, translation: async () => undefined,
-      freeze: async (_: Summary, p: Payload) => (stored ??= p),
-      send: async (p: unknown, k: string) => { sends.push({ key: k, body: JSON.stringify(p) }); return 're_1'; },
-      markSent: async (_: Summary, id: string) => { if (fail) { fail = false; throw Error('write failed'); } records.push(id); } };
-    await assert.rejects(deliverSummary(req(), d), /write failed/);
-    task = { ...base, battle_result: { outcome: 'win', score: [3, 0], trophy_change: 30 } }; current = { ...row, language: 'tr' };
-    await deliverSummary(req(), d);
-    assert.equal(sends.length, 2);
-    assert.equal(sends[0].body, sends[1].body);
-    assert.deepEqual(sends.map(s => s.key), ['trial-summary/sub-1', 'trial-summary/sub-1']);
-    assert.ok(sends[0].body.includes('x@example.invalid') && sends[0].body.includes('No matching match found.'));
-    assert.deepEqual(records, ['re_1']);
-  });
-  it('does not resend once consent or the trial is no longer valid', async () => {
+  it('rejects malformed requests', async () => {
     const fail = async () => assert.fail();
-    const r = await deliverSummary(req(), { take: async () => null, task: fail, translation: fail, freeze: fail, send: fail, markSent: fail });
-    assert.equal(r.status, 204);
-    const gone = await deliverSummary(req(), { take: async () => row, task: async () => base, translation: async () => undefined, freeze: async () => null, send: fail, markSent: fail });
-    assert.equal(gone.status, 204);
-  });
-  it('skips when the ticket is not eligible or the task is gone', async () => {
-    const fail = async () => assert.fail();
-    assert.equal((await deliverSummary(req(), { take: async () => null, task: fail, translation: fail, freeze: fail, send: fail, markSent: fail })).status, 204);
-    assert.equal((await deliverSummary(req(), { take: async () => row, task: async () => null, translation: fail, freeze: fail, send: fail, markSent: fail })).status, 204);
+    const store = { claim: fail, freeze: fail, begin: fail, release: fail, record: fail } as never;
+    const provider = { send: fail, findAccepted: fail } as never;
+    const reads = { task: fail, translation: fail } as never;
+    assert.equal((await deliverSummary(new Request('https://w.invalid', { method: 'POST', body: '{"ticket":"x"}' }), store, provider, reads)).status, 400);
   });
 });

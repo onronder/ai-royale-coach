@@ -1579,17 +1579,23 @@ export type Database = {
           opted_in_at: string | null
           opted_task: string | null
           reason: string | null
+          reminder_attempt: string | null
+          reminder_attempt_task: string | null
           reminder_payload: Json | null
+          reminder_send_started_at: string | null
           resend_message_id: string | null
           returned_at: string | null
           sent_at: string | null
           subscription_id: string
+          summary_attempt: string | null
+          summary_attempt_task: string | null
           summary_attempted_at: string | null
           summary_first_attempted_at: string | null
           summary_message_id: string | null
           summary_opted_in_at: string | null
           summary_payload: Json | null
           summary_player_tag: string | null
+          summary_send_started_at: string | null
           summary_sent_at: string | null
           summary_task: string | null
           summary_ticket: string | null
@@ -1604,17 +1610,23 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_attempt?: string | null
+          reminder_attempt_task?: string | null
           reminder_payload?: Json | null
+          reminder_send_started_at?: string | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
           subscription_id: string
+          summary_attempt?: string | null
+          summary_attempt_task?: string | null
           summary_attempted_at?: string | null
           summary_first_attempted_at?: string | null
           summary_message_id?: string | null
           summary_opted_in_at?: string | null
           summary_payload?: Json | null
           summary_player_tag?: string | null
+          summary_send_started_at?: string | null
           summary_sent_at?: string | null
           summary_task?: string | null
           summary_ticket?: string | null
@@ -1629,17 +1641,23 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_attempt?: string | null
+          reminder_attempt_task?: string | null
           reminder_payload?: Json | null
+          reminder_send_started_at?: string | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
           subscription_id?: string
+          summary_attempt?: string | null
+          summary_attempt_task?: string | null
           summary_attempted_at?: string | null
           summary_first_attempted_at?: string | null
           summary_message_id?: string | null
           summary_opted_in_at?: string | null
           summary_payload?: Json | null
           summary_player_tag?: string | null
+          summary_send_started_at?: string | null
           summary_sent_at?: string | null
           summary_task?: string | null
           summary_ticket?: string | null
@@ -2016,6 +2034,14 @@ export type Database = {
       }
     }
     Functions: {
+      begin_reminder_send: {
+        Args: { p_attempt: string; p_subscription: string; p_user: string }
+        Returns: boolean
+      }
+      begin_summary_send: {
+        Args: { p_attempt: string; p_subscription: string; p_user: string }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_identifier: string
@@ -2027,6 +2053,36 @@ export type Database = {
       claim_player_tag_for_trial: {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
+      }
+      claim_reminder_attempt: {
+        Args: { p_ticket: string }
+        Returns: {
+          attempt: string
+          attempt_task: string
+          due_task: string
+          email: string
+          language: string
+          payload: Json
+          player_tag: string
+          send_started_at: string
+          subscription_id: string
+          user_id: string
+        }[]
+      }
+      claim_summary_attempt: {
+        Args: { p_ticket: string }
+        Returns: {
+          attempt: string
+          attempt_task: string
+          due_task: string
+          email: string
+          language: string
+          payload: Json
+          player_tag: string
+          send_started_at: string
+          subscription_id: string
+          user_id: string
+        }[]
       }
       claim_trial_coaching_reminder: {
         Args: { p_ticket: string }
@@ -2069,6 +2125,30 @@ export type Database = {
       finish_trial_ai: {
         Args: { p_id: string; p_success: boolean }
         Returns: undefined
+      }
+      freeze_reminder_attempt: {
+        Args: {
+          p_payload: Json
+          p_subscription: string
+          p_task: string
+          p_user: string
+        }
+        Returns: {
+          attempt: string
+          payload: Json
+        }[]
+      }
+      freeze_summary_attempt: {
+        Args: {
+          p_payload: Json
+          p_subscription: string
+          p_task: string
+          p_user: string
+        }
+        Returns: {
+          attempt: string
+          payload: Json
+        }[]
       }
       freeze_trial_coaching_reminder: {
         Args: { p_payload: Json; p_subscription: string; p_user: string }
@@ -2122,6 +2202,32 @@ export type Database = {
       }
       queue_trial_coaching_reminders: {
         Args: { anon_key: string; project_url: string }
+        Returns: undefined
+      }
+      record_reminder_send: {
+        Args: {
+          p_attempt: string
+          p_message: string
+          p_subscription: string
+          p_user: string
+        }
+        Returns: boolean
+      }
+      record_summary_send: {
+        Args: {
+          p_attempt: string
+          p_message: string
+          p_subscription: string
+          p_user: string
+        }
+        Returns: boolean
+      }
+      release_reminder_attempt: {
+        Args: { p_attempt: string; p_subscription: string; p_user: string }
+        Returns: undefined
+      }
+      release_summary_attempt: {
+        Args: { p_attempt: string; p_subscription: string; p_user: string }
         Returns: undefined
       }
       reserve_trial_ai: {

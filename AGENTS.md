@@ -10,3 +10,4 @@
 - No app-shell service worker: `public/sw.js` is a one-release kill-switch that clears the old Workbox caches; stale cached HTML kept users on old builds.
 - Polar subscription end/revoke events apply only when they match the stored `polar_subscription_id` (`_shared/subscription-events.ts`), so late deliveries cannot close a newer subscription.
 - Revenue counts only `paid` orders with net amount > 0; a first payment must belong to the same subscription and come after the trial ended.
+- Trial emails (day-two reminder, trial summary) send only through `_shared/email-attempt.ts` and its claim/freeze/begin/release/record SQL functions: the final pre-send check reruns eligibility, and a possibly-accepted attempt is reconciled by provider lookup, never re-sent with new content, so each subscription gets at most one message per email kind.
