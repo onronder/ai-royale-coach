@@ -54,27 +54,19 @@ describe('one day-two coaching email', () => {
   });
   it('does not mark a rejected email as sent', async () => {
     await assert.rejects(deliverReminder(request({ ticket }), {
-      take: async () => row, send: async () => { throw Error('provider unavailable'); }, markSent: async () => assert.fail(),
+      take: async () => row, freeze: async (_: Reminder, p: never) => p, send: async () => { throw Error('provider unavailable'); }, markSent: async () => assert.fail(),
     }), /provider unavailable/);
   });
   it('reuses the same provider key if acceptance was not recorded', async () => {
     const keys: string[] = [];
     const delivery = {
-      take: async () => row, send: async (_: unknown, key: string) => { keys.push(key); return 're_same'; },
+      take: async () => row, freeze: async (_: Reminder, p: never) => p, send: async (_: unknown, key: string) => { keys.push(key); return 're_same'; },
       markSent: async () => { if (keys.length === 1) throw Error('write failed'); },
     };
     await assert.rejects(deliverReminder(request({ ticket }), delivery), /write failed/);
     assert.equal((await deliverReminder(request({ ticket }), delivery)).status, 204);
     assert.deepEqual(keys, ['trial-coaching/sub-123', 'trial-coaching/sub-123']);
   });
-});
-
-
-it('preserves only an exact Clash Royale player tag across login', () => {
-  assert.equal(coachingReturnTag('uqrcgqjr2'), 'UQRCGQJR2');
-  for (const value of [null, '', 'P', 'profile', '/player/UQRCGQJR2', 'P28?next=login']) {
-    assert.equal(coachingReturnTag(value), null);
-  }
   it('retries a recorded-failed reminder with the same frozen content and records once, even after a language change', async () => {
     let saved: ReminderPayload | null = null; let lang = 'en'; let fail = true; const bodies: string[] = []; const ids: string[] = [];
     const w = { take: async () => ({ user_id: 'u', subscription_id: 'sub', email: 'x@example.invalid', player_tag: 'UY02YVY9G', language: lang, payload: saved }),
@@ -92,4 +84,12 @@ it('preserves only an exact Clash Royale player tag across login', () => {
       freeze: async () => null, send: async () => assert.fail(), markSent: async () => assert.fail() };
     assert.equal((await deliverReminder(request({ ticket }), w as never)).status, 204);
   });
+});
+
+
+it('preserves only an exact Clash Royale player tag across login', () => {
+  assert.equal(coachingReturnTag('uqrcgqjr2'), 'UQRCGQJR2');
+  for (const value of [null, '', 'P', 'profile', '/player/UQRCGQJR2', 'P28?next=login']) {
+    assert.equal(coachingReturnTag(value), null);
+  }
 });
