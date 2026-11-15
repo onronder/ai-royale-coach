@@ -8,6 +8,27 @@ const row: Reminder = { user_id: 'owner', subscription_id: 'sub-123', email: 'te
 const request = (body: unknown) => new Request('https://worker.invalid', { method: 'POST', body: JSON.stringify(body) });
 
 describe('one day-two coaching email', () => {
+  for (const [language, subject] of [
+    ['en-GB', 'Return to your coaching task'], ['tr-TR', 'Koçluk görevine geri dön'],
+    ['fr-FR', 'Reprends ta mission de coaching'], ['es-ES', 'Retoma tu tarea de entrenamiento'],
+    ['pt-BR', 'Volte à sua tarefa de treino'],
+  ]) {
+    it('sends the localized reminder for ' + language, async () => {
+      let sent = 0;
+      const response = await deliverReminder(request({ ticket }), {
+        take: async () => ({ ...row, language }),
+        send: async payload => {
+          assert.equal(payload.subject, subject);
+          assert.match(payload.text, /https:\/\/ai-royale\.com\/select-player\?coaching=P28/);
+          sent++;
+        },
+        markSent: async () => {},
+      });
+      assert.equal(response.status, 204);
+      assert.equal(sent, 1);
+    });
+  }
+
   it('ignores client recipients, localizes the email and records acceptance after sending', async () => {
     const events: string[] = [];
     const res = await deliverReminder(request({ ticket, email: 'wrong@example.invalid' }), {

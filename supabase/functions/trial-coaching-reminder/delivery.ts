@@ -20,7 +20,7 @@ export async function deliverReminder(req: Request, delivery: Delivery): Promise
   }
   const reminder = await delivery.take(input.ticket);
   if (reminder) {
-    const [subject, body, why] = copy[reminder.language as keyof typeof copy] ?? copy.en;
+    const [subject, body, why] = copy[reminder.language?.toLowerCase().split('-')[0] as keyof typeof copy] ?? copy.en;
     await delivery.send({
       from: 'AI Royale <noreply@notification.ai-royale.com>', to: [reminder.email], subject,
       text: [body, 'https://ai-royale.com/select-player?coaching=' + encodeURIComponent(reminder.player_tag), why].join('\n\n'),
