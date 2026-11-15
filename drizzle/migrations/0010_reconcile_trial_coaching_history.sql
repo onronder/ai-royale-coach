@@ -1,0 +1,1 @@
+-- No additional schema statements. The pending reviewed trial_coaching_followup migration supplies the schema.
