@@ -20,7 +20,7 @@ describe('one day-two coaching email', () => {
         send: async payload => {
           assert.equal(payload.subject, subject);
           assert.match(payload.text, /https:\/\/ai-royale\.com\/select-player\?coaching=P28/);
-          sent++;
+          sent++; return 'msg-1';
         },
         markSent: async () => {},
       });
@@ -36,9 +36,9 @@ describe('one day-two coaching email', () => {
       send: async (message, key) => {
         assert.deepEqual(message.to, [row.email]); assert.equal(key, 'trial-coaching/sub-123');
         assert.match(message.subject, /görevine/); assert.match(message.text, /ai-royale\.com\/select-player\?coaching=P28/);
-        events.push('accepted');
+        events.push('accepted'); return 're_123';
       },
-      markSent: async marked => { assert.equal(marked, row); events.push('recorded'); },
+      markSent: async (marked, id) => { assert.equal(marked, row); assert.equal(id, 're_123'); events.push('recorded'); },
     });
     assert.equal(res.status, 204); assert.deepEqual(events, ['accepted', 'recorded']);
   });
@@ -58,7 +58,7 @@ describe('one day-two coaching email', () => {
   it('reuses the same provider key if acceptance was not recorded', async () => {
     const keys: string[] = [];
     const delivery = {
-      take: async () => row, send: async (_: unknown, key: string) => { keys.push(key); },
+      take: async () => row, send: async (_: unknown, key: string) => { keys.push(key); return 're_same'; },
       markSent: async () => { if (keys.length === 1) throw Error('write failed'); },
     };
     await assert.rejects(deliverReminder(request({ ticket }), delivery), /write failed/);

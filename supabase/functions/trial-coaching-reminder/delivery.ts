@@ -8,8 +8,8 @@ const copy = {
 export interface Reminder { user_id: string; subscription_id: string; email: string; language: string; player_tag: string }
 interface Delivery {
   take(ticket: string): Promise<Reminder | null>;
-  send(payload: { from: string; to: string[]; subject: string; text: string }, key: string): Promise<void>;
-  markSent(reminder: Reminder): Promise<void>;
+  send(payload: { from: string; to: string[]; subject: string; text: string }, key: string): Promise<string>;
+  markSent(reminder: Reminder, messageId: string): Promise<void>;
 }
 
 export async function deliverReminder(req: Request, delivery: Delivery): Promise<Response> {
@@ -21,11 +21,11 @@ export async function deliverReminder(req: Request, delivery: Delivery): Promise
   const reminder = await delivery.take(input.ticket);
   if (reminder) {
     const [subject, body, why] = copy[reminder.language?.toLowerCase().split('-')[0] as keyof typeof copy] ?? copy.en;
-    await delivery.send({
+    const messageId = await delivery.send({
       from: 'AI Royale <noreply@notification.ai-royale.com>', to: [reminder.email], subject,
       text: [body, 'https://ai-royale.com/select-player?coaching=' + encodeURIComponent(reminder.player_tag), why].join('\n\n'),
     }, 'trial-coaching/' + reminder.subscription_id);
-    await delivery.markSent(reminder);
+    await delivery.markSent(reminder, messageId);
   }
   return new Response(null, { status: 204 });
 }
