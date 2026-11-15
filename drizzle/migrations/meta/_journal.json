@@ -71,6 +71,13 @@
       "when": 1794718417144,
       "tag": "0009_trial_coaching_followup",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794727133167,
+      "tag": "0010_reconcile_trial_coaching_history",
+      "breakpoints": true
     }
   ]
 }

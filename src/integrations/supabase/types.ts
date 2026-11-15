@@ -1522,6 +1522,63 @@ export type Database = {
         }
         Relationships: []
       }
+      trial_coaching_followup: {
+        Row: {
+          answered_at: string | null
+          attempted_at: string | null
+          first_attempted_at: string | null
+          opted_in_at: string | null
+          opted_task: string | null
+          reason: string | null
+          returned_at: string | null
+          sent_at: string | null
+          subscription_id: string
+          ticket: string | null
+          user_id: string
+        }
+        Insert: {
+          answered_at?: string | null
+          attempted_at?: string | null
+          first_attempted_at?: string | null
+          opted_in_at?: string | null
+          opted_task?: string | null
+          reason?: string | null
+          returned_at?: string | null
+          sent_at?: string | null
+          subscription_id: string
+          ticket?: string | null
+          user_id: string
+        }
+        Update: {
+          answered_at?: string | null
+          attempted_at?: string | null
+          first_attempted_at?: string | null
+          opted_in_at?: string | null
+          opted_task?: string | null
+          reason?: string | null
+          returned_at?: string | null
+          sent_at?: string | null
+          subscription_id?: string
+          ticket?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_coaching_followup_opted_task_fkey"
+            columns: ["opted_task"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trial_coaching_followup_opted_task_fkey"
+            columns: ["opted_task"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -1790,7 +1847,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      current_trial_coaching: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          language: string | null
+          opted_in_at: string | null
+          opted_task: string | null
+          player_tag: string | null
+          reason: string | null
+          returned_at: string | null
+          sent_at: string | null
+          started_at: string | null
+          subscription_id: string | null
+          task_id: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_coaching_followup_opted_task_fkey"
+            columns: ["opted_task"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trial_coaching_followup_opted_task_fkey"
+            columns: ["opted_task"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
+      }
+      due_trial_coaching: {
+        Row: {
+          email: string | null
+          language: string | null
+          player_tag: string | null
+          subscription_id: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_rate_limit: {
@@ -1860,8 +1958,34 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      queue_trial_coaching_reminders: {
+        Args: { anon_key: string; project_url: string }
+        Returns: undefined
+      }
       reserve_trial_ai: {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
+        Returns: Json
+      }
+      take_trial_coaching_reminder: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          player_tag: string
+          subscription_id: string
+          user_id: string
+        }[]
+      }
+      trial_cancel_answers: {
+        Args: { p_days: number }
+        Returns: {
+          reason: string
+          total: number
+        }[]
+      }
+      trial_coaching_state: { Args: never; Returns: Json }
+      update_trial_coaching: {
+        Args: { p_action: string; p_subscription: string; p_value?: string }
         Returns: Json
       }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
