@@ -16,8 +16,8 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
-        <title>404 - Page Not Found | AI Royale</title>
-        <meta name="description" content="The page you're looking for doesn't exist. Return to AI Royale to continue your Clash Royale coaching journey." />
+        <title>{t('notFound.title')} | AI Royale</title>
+        <meta name="description" content={t('notFound.description')} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       

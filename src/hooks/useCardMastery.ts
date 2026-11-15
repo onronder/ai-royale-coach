@@ -19,6 +19,7 @@ export interface CardMastery {
   mastery_level: number;
   mastery_progress: number;
   ai_tips: string | null;
+  ai_tips_language: string | null;
   last_updated: string;
   win_rate: number;
   crown_avg: number;
@@ -114,10 +115,11 @@ export const useGenerateCardTips = () => {
       cardId: number;
       playerTag: string;
     }) => {
+      const language = i18n.resolvedLanguage ?? 'en';
       toast.loading(i18n.t('cardMastery.generatingFor', { card: cardName }), { id: `card-tips-${cardId}` });
       
       const { data, error } = await supabase.functions.invoke('generate-card-tips', {
-        body: { cardName, winRate, timesUsed, bestPartners, worstMatchups, language: i18n.language }
+        body: { cardName, winRate, timesUsed, bestPartners, worstMatchups, language, playerTag }
       });
       
       if (error) {
@@ -140,11 +142,13 @@ export const useGenerateCardTips = () => {
       // Update card mastery with tips
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
+        const { error: saveError } = await supabase
           .from('card_mastery')
-          .update({ ai_tips: data.tips })
+          .update({ ai_tips: data.tips, ai_tips_language: language })
           .eq('user_id', user.id)
-          .eq('card_id', cardId);
+          .eq('card_id', cardId)
+          .eq('player_tag', playerTag);
+        if (saveError) throw saveError;
       }
       
       return data;

@@ -134,7 +134,7 @@ export const WelcomeEmail = ({
   const t = translations[language as keyof typeof translations] || translations.en
 
   return (
-    <Html>
+    <Html lang={language}>
       <Head />
       <Preview>{t.preview}</Preview>
       <Body style={main}>

@@ -7,9 +7,10 @@ export type { PredictionHistoryEntry };
 
 export function usePredictionHistory(playerTag: string | null) {
   const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? 'en';
 
   return useQuery({
-    queryKey: ['prediction-history', playerTag, i18n.language],
+    queryKey: ['prediction-history', playerTag, language],
     queryFn: async () => {
       if (!playerTag) return [];
 
@@ -20,6 +21,7 @@ export function usePredictionHistory(playerTag: string | null) {
         .from('matchup_predictions')
         .select('*')
         .eq('player_tag', playerTag)
+        .eq('language', language)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);

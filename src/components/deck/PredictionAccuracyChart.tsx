@@ -5,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { PredictionHistoryEntry } from '@/hooks/usePredictionHistory';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
 import { TrendingUp, TrendingDown, Target, Swords, Minus } from 'lucide-react';
-import { format } from 'date-fns';
 
 // Calculate trend by comparing older vs newer prediction errors
 function calculateTrend(predictions: PredictionHistoryEntry[]): 'improving' | 'worsening' | 'stable' | null {
@@ -35,7 +34,7 @@ interface PredictionAccuracyChartProps {
 }
 
 export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAccuracyChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (isLoading) {
     return (
@@ -77,7 +76,7 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
       actual: p.actualWinRateA || 0,
       battles: p.actualBattlesTotal,
       error: p.predictionError !== null ? Math.abs(p.predictionError) : null,
-      date: format(new Date(p.createdAt), 'MMM d'),
+      date: new Date(p.createdAt).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' }),
       deckA: p.deckACards.slice(0, 3).join(', '),
     }));
 
@@ -232,7 +231,7 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
                   ) : (
                     <div className="text-right text-muted-foreground">
                       <div className="text-xs">-</div>
-                      <div className="text-xs">0 battles</div>
+                      <div className="text-xs">0 {t('predictionHistory.battlesTracked').toLocaleLowerCase(i18n.language)}</div>
                     </div>
                   )}
                 </div>

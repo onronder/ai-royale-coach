@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { useTranslation } from "react-i18next";
 import { useAllOperations, operationLabels } from "@/hooks/useAllOperations";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,7 @@ const iconMap = {
 };
 
 export function GlobalProgressCenter() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { operations, activeCount, isLoading, cancelOperation, isCancelling } = useAllOperations();
 
   if (isLoading) return null;
@@ -58,7 +59,7 @@ export function GlobalProgressCenter() {
   };
 
   const getOperationLabel = (operationType: string) => {
-    return operationLabels[operationType]?.label || operationType.replace(/_/g, " ");
+    return t(operationLabels[operationType]?.labelKey ?? 'progress.processing');
   };
 
   return (
@@ -96,7 +97,7 @@ export function GlobalProgressCenter() {
                 {runningOps.map((op) => {
                   const Icon = getOperationIcon(op.operation_type);
                   const percentage = Math.round((op.progress / op.total) * 100);
-                  const elapsed = formatDistanceToNow(new Date(op.started_at), { addSuffix: true });
+                  const elapsed = formatDistanceToNow(new Date(op.started_at), { addSuffix: true, locale: getDateLocale(i18n.language) });
 
                   return (
                     <div 
@@ -155,7 +156,7 @@ export function GlobalProgressCenter() {
                   const Icon = getOperationIcon(op.operation_type);
                   const timeAgo = formatDistanceToNow(
                     new Date(op.completed_at || op.updated_at), 
-                    { addSuffix: true }
+                    { addSuffix: true, locale: getDateLocale(i18n.language) }
                   );
 
                   return (

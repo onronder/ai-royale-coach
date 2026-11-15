@@ -1,0 +1,35 @@
+{{- $lang := "en" -}}
+{{- with printf "%v" .Data.language -}}{{- if or (eq . "tr") (eq . "es") (eq . "fr") (eq . "pt") -}}{{- $lang = . -}}{{- end -}}{{- end -}}
+<!doctype html>
+<html lang="{{ $lang }}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="font:16px/1.6 Arial,sans-serif;color:#172238;margin:24px auto;padding:0 20px;max-width:520px">
+  <p style="color:#195573;font-weight:bold">AI Royale</p>
+{{ if eq $lang "tr" }}
+  <h1>Giriş bağlantın</h1>
+  <p>Hesabına giriş yapmak için aşağıdaki düğmeyi kullan.</p>
+  <p><a style="display:inline-block;padding:10px 18px;border-radius:8px;background:#10364b;color:#fff" href="{{ .ConfirmationURL }}">Giriş yap</a></p>
+  <p style="color:#475569">Bu e-postayı sen istemediysen dikkate almayabilirsin.</p>
+{{ else if eq $lang "es" }}
+  <h1>Tu enlace de acceso</h1>
+  <p>Usa el botón para acceder a tu cuenta.</p>
+  <p><a style="display:inline-block;padding:10px 18px;border-radius:8px;background:#10364b;color:#fff" href="{{ .ConfirmationURL }}">Iniciar sesión</a></p>
+  <p style="color:#475569">Si no solicitaste este correo, puedes ignorarlo.</p>
+{{ else if eq $lang "fr" }}
+  <h1>Votre lien de connexion</h1>
+  <p>Utilisez le bouton pour vous connecter à votre compte.</p>
+  <p><a style="display:inline-block;padding:10px 18px;border-radius:8px;background:#10364b;color:#fff" href="{{ .ConfirmationURL }}">Se connecter</a></p>
+  <p style="color:#475569">Si vous n’avez pas demandé cet e-mail, vous pouvez l’ignorer.</p>
+{{ else if eq $lang "pt" }}
+  <h1>Seu link de acesso</h1>
+  <p>Use o botão abaixo para entrar na sua conta.</p>
+  <p><a style="display:inline-block;padding:10px 18px;border-radius:8px;background:#10364b;color:#fff" href="{{ .ConfirmationURL }}">Entrar</a></p>
+  <p style="color:#475569">Se não solicitou este e-mail, você pode ignorá-lo.</p>
+{{ else }}
+  <h1>Your sign-in link</h1>
+  <p>Use the button below to sign in to your account.</p>
+  <p><a style="display:inline-block;padding:10px 18px;border-radius:8px;background:#10364b;color:#fff" href="{{ .ConfirmationURL }}">Sign in</a></p>
+  <p style="color:#475569">If you did not request this email, you can ignore it.</p>
+{{ end }}
+</body>
+</html>

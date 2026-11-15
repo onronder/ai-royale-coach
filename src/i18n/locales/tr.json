@@ -98,7 +98,8 @@
     "proDna": "Pro DNA",
     "theOracle": "Kahin",
     "toggle": "Gezinme menüsünü aç veya kapat",
-    "toolbox": "Araçlar"
+    "toolbox": "Araçlar",
+    "dreamArena": "Rüya Arenası"
   },
   "feedback": {
     "thankYou": "Geri bildiriminiz için teşekkürler!",
@@ -245,10 +246,10 @@
       "aiCoachInsight": "AI Koç İçgörüsü",
       "tryWithYourDeck": "Kendi Desten ile Dene!",
       "aiInsights": {
-        "hogCycle": "Savunma için Musketeer konumlandırman mükemmel. Hog'un bağlanması için Ice Golem'i düşman birliklerini çekmek için kullanmayı düşün. Fireball değerini orta boy itişleri bekleyerek artırabilirsin.",
-        "golemBeatdown": "Güçlü beatdown uygulaması! Çift iksirde devasa itişler oluşturmaya odaklan. Inferno Tower'a karşı Lightning zamanlaması çok önemli. Tek iksirde Golem'i koymadan önce savunma binalarını baitlemeyi düşün.",
-        "logBait": "Mükemmel büyü baitleme! Princess konumlandırmaların Log kullanımını etkili şekilde zorluyor. Öndeyken uzatmada Rocket döngüsüne odaklan. Büyü kullanım kalıplarını ele veren rakiplere karşı Goblin Barrel tahminlerini daha iyi zamanla.",
-        "xbowSiege": "Sabırlı X-Bow yerleştirmeleri disiplin gösteriyor. Savunma Tesla zamanlaması iyileştirme istiyor—tankları çekmek için nehirden 1 karo uzağa koy. Kötü eşleşmelerde bağlantı zorlamak yerine savunma X-Bow ve Fireball chip hasarına odaklan."
+        "hogCycle": "Silahşor’un savunmada iyi konumlanmış. Buz Golemi ile savunmacıları diğer koridora çekerek Domuz Binicisi’ne kuleye ulaşmak için alan aç. Alev Topu’nu birden fazla destek birliği birbirine yaklaşana kadar sakla.",
+        "golemBeatdown": "Çift iksirde Golem’in arkasına destek biriktir. Felaket Kulesi’ne Yıldırım atacağın anı iyi seç. Tek iksirde Golem’i oynamadan önce rakibe savunma binasını kullandırmayı dene.",
+        "logBait": "Prenses’in yerleşimi rakibi Tomruk kullanmaya zorluyor. Uzatmada öndeysen Roket’i tekrar eline getirip kuleyi yıprat. Rakibin büyüyü nereye attığını takip ederek Goblin Fıçısı’nın düşeceği yeri değiştir.",
+        "xbowSiege": "X Yayı’nı oynamak için doğru anı bekliyorsun. Tankları çekmek için Tesla’yı nehirden bir kare uzağa yerleştirmeyi dene. Zor eşleşmelerde X Yayı ile savun ve Alev Topu ile kuleyi yıprat."
       },
       "tabs": {
         "compare": "Karşılaştır",
@@ -303,7 +304,8 @@
         "strong": "Güçlü",
         "good": "İyi",
         "moderate": "Orta",
-        "proTip": "Bu kartların neden birlikte iyi çalıştığını öğrenmek için herhangi bir sinerjiye tıklayın. Destenizin potansiyelini maksimize etmek için bu kombinasyonları ustalaşın!"
+        "proTip": "Bu kartların neden birlikte iyi çalıştığını öğrenmek için herhangi bir sinerjiye tıklayın. Destenizin potansiyelini maksimize etmek için bu kombinasyonları ustalaşın!",
+        "tipLabel": "Koçun ipucu"
       },
       "difficulty": {
         "subtitle": "Beceri analizi ve öğrenme yol haritası",
@@ -330,254 +332,254 @@
         },
         "deckData": {
           "hogCycle": {
-            "playstyle": "Sürekli döngü ile hızlı tempolu baskı",
+            "playstyle": "Kartlarını hızla döndürerek rakibi sürekli savunmada tut.",
             "strengths": [
-              "Hızlı döngü",
+              "Hızlı kart döngüsü",
               "Çok yönlü savunma",
-              "Chip hasarı"
+              "Kuleye düzenli küçük hasar"
             ],
             "weaknesses": [
-              "Düşük can birlikler",
-              "Büyüye karşı savunmasız",
-              "Beceri gerektirir"
+              "Düşük canlı birlikler",
+              "Büyülere karşı zayıf",
+              "Hassas zamanlama gerektirir"
             ],
             "synergies": [
-              "Ice Golem tank yapar ve savunucuları oyalar",
-              "Tanklara karşı mükemmel savunma sinerjisi",
-              "Chip hasarı için büyü döngüsü",
-              "İnanılmaz döngü ve dikkat dağıtma kombosu"
+              "Buz Golemi darbeleri üstlenir ve savunmacıları peşinden sürükler.",
+              "Savunma kartları birlikte tankları durdurur.",
+              "Büyüler eline döndükçe kuleyi yıpratabilirsin.",
+              "Ucuz kartlarla hem rakibin dikkatini dağıt hem de elini yenile."
             ],
             "matchups": {
               "golemBeatdown": [
-                "Onlara Lightning için değer verme",
-                "Karşı şerite agresif baskı yap",
-                "Fireball'ı Night Witch için sakla"
+                "Rakibin Yıldırım ile aynı anda birden fazla değerli hedefi vurmasına izin verme.",
+                "Karşı koridordan baskı kur.",
+                "Alev Topu’nu Gece Cadısı için sakla."
               ],
               "logBait": [
-                "Princess'a Log, Goblin Gang'e Fireball at",
-                "Rocket döngüsünü önlemek için baskı yap",
-                "Goblin Barrel yerleşimlerini tahmin et"
+                "Prenses’e Tomruk, Goblin Çetesi’ne Alev Topu kullan.",
+                "Rakibin rahatça Roket atamaması için baskıyı sürdür.",
+                "Goblin Fıçısı’nın nereye düşeceğini tahmin et."
               ],
               "xbowSiege": [
-                "Kilitleri önlemek için X-Bow ile aynı şeride baskı yap",
-                "Savunma binalarına Fireball at",
-                "Savunabileceklerinden daha hızlı döngü yap"
+                "X Yayı’nın kulene kilitlenmesini engellemek için aynı koridordan saldır.",
+                "Savunma binalarını Alev Topu ile vur.",
+                "Rakibin savunma kartı eline dönmeden yeniden saldır."
               ]
             },
             "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Temel döngü mekaniklerini öğren",
+              "name": "Temel (1–2. haftalar)",
+              "focus": "Kart döngüsünü yönet",
               "tips": [
-                "Farklı zafer koşullarına karşı optimal Cannon yerleşimini öğren",
-                "Savunma için Musketeer konumlandırmasını pratik yap",
-                "1 eliksirlik kartlarla hızlı döngüye alış"
+                "Farklı kule tehditlerine karşı Top’u nereye koyacağını öğren.",
+                "Silahşor’u savunmada farklı mesafelerden dene.",
+                "1 iksirlik kartlarla elini hızlıca döndürme alıştırması yap."
               ]
             },
             "phase2": {
-              "name": "Orta Seviye (Hafta 3-4)",
-              "focus": "Zamanlama ve büyü değeri",
+              "name": "Orta seviye (3–4. haftalar)",
+              "focus": "Büyüyü doğru anda kullan",
               "tips": [
-                "Hog Rider'ı ne zaman saldırıya göndereceğini öğren",
-                "Büyü yerleşimlerini tahmin etmeyi pratik yap",
-                "Ice Golem oyalama tekniklerini ustalaş"
+                "Domuz Binicisi ile saldırmak ve savunmaya iksir ayırmak arasındaki dengeyi kur.",
+                "Rakibin büyüsünü nereye atacağını tahmin et.",
+                "Buz Golemi ile rakip birlikleri diğer koridora çek."
               ]
             },
             "phase3": {
-              "name": "İleri Seviye (Hafta 5+)",
-              "focus": "Baskı altında mükemmel uygulama",
+              "name": "İleri seviye (5. haftadan itibaren)",
+              "focus": "Baskı altında zamanlama",
               "tips": [
-                "Mükemmel savunmalar için kas hafızası geliştir",
-                "Tüm eşleşmeye özel stratejileri öğren",
-                "Eliksir sayma ve takip etmeyi ustalaş"
+                "Savunma kartlarını son anda doğru kareye bırakma alıştırması yap.",
+                "Her rakip deste için savunma planını değiştir.",
+                "Rakibin ne kadar iksir harcadığını takip et."
               ]
             }
           },
           "golemBeatdown": {
-            "playstyle": "Ezici güçle ağır saldırılar",
+            "playstyle": "Golem’in arkasında birlik biriktirip güçlü bir saldırı kur.",
             "strengths": [
               "Yüksek hasar",
-              "Kule yıkımı",
-              "Ölüm hasarı sinerjisi"
+              "Kule yıkma gücü",
+              "Birliklerin yenilirken verdiği hasar"
             ],
             "weaknesses": [
-              "Pahalı",
-              "Yavaş döngü",
-              "Baskıya karşı savunmasız"
+              "Yüksek iksir maliyeti",
+              "Yavaş kart döngüsü",
+              "Karşı koridor baskısına açık"
             ],
             "synergies": [
-              "Ölüm spawn sinerjisi durdurulamaz saldırı oluşturur",
-              "Kral Kulesi'ni aktive eder ve savunmaları temizler",
-              "Alan hasarı çekme ile birleşir",
-              "Ölümde öfke saldırıyı hızlandırır"
+              "Yenilen birliklerden çıkan destekçiler saldırıyı sürdürür.",
+              "Kral Kulesi’ni etkinleştirip savunmayı temizleyebilirsin.",
+              "Rakipleri bir araya çekerek alan hasarından daha çok yararlanırsın.",
+              "Oduncu yenildiğinde bıraktığı Öfke saldırını hızlandırır."
             ],
             "matchups": {
               "hogCycle": [
-                "Chip hasarlarını görmezden gel",
-                "Çift eliksirde büyük saldırılar oluştur",
-                "Savunma yapılarına Lightning at"
+                "Küçük kule hasarları için aşırı iksir harcama.",
+                "Çift iksirde Golem’in arkasına destek biriktir.",
+                "Savunma binalarına Yıldırım at."
               ],
               "logBait": [
-                "Baby Dragon sürülerini counter'lar",
-                "Inferno Tower'a Lightning at",
-                "Rocket chip'lerine rağmen saldır"
+                "Yavru Ejderha ile kalabalık birlikleri temizle.",
+                "Felaket Kulesi’ne Yıldırım at.",
+                "Rakip kuleye Roket atarken saldırını sürdür."
               ],
               "xbowSiege": [
-                "Golem ile X-Bow hasarını tankla",
-                "Tesla + Archers'a Lightning at",
-                "Ölüm hasarını durduramıyorlar"
+                "X Yayı’nın atışlarını Golem’e yönlendir.",
+                "Tesla ve Okçular’ı tek Yıldırım ile vurmaya çalış.",
+                "Golem kuleye ulaşırsa yenilirken de hasar verir."
               ]
             },
             "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Beatdown temellerini anlama",
+              "name": "Temel (1–2. haftalar)",
+              "focus": "Golem saldırısının temelleri",
               "tips": [
-                "Golem saldırısını güvenle ne zaman başlatacağını öğren",
-                "Golem arkasında destek birlikleri oluşturmayı pratik yap",
-                "Ölüm hasarı sinerjilerini anla"
+                "Golem’i savunmasız kalmadan hangi anda çıkarabileceğini öğren.",
+                "Destek birliklerini Golem’in arkasına sırayla yerleştir.",
+                "Yenilen birliklerin bıraktığı etkilerin nasıl birleştiğini gözle."
               ]
             },
             "phase2": {
-              "name": "Orta Seviye (Hafta 3-4)",
-              "focus": "Saldırı optimizasyonu",
+              "name": "Orta seviye (3–4. haftalar)",
+              "focus": "Saldırıyı destekle",
               "tips": [
-                "Savunma binalarına Lightning zamanlamasını ustalaş",
-                "Kral Kulesi aktivasyonu için Tornado kullanmayı öğren",
-                "Eliksir dezavantajını yönetmeyi pratik yap"
+                "Savunma binalarını Yıldırım ile vuracağın anı seç.",
+                "Kasırga ile rakibi Kral Kulesi’ni etkinleştirecek konuma çek.",
+                "İksirde gerideyken savunmaya ne kadar ayırman gerektiğini dene."
               ]
             },
             "phase3": {
-              "name": "İleri Seviye (Hafta 5+)",
-              "focus": "Baskı adaptasyonu",
+              "name": "İleri seviye (5. haftadan itibaren)",
+              "focus": "Baskıya uyum sağla",
               "tips": [
-                "Karşı şerit baskısını savunmayı öğren",
-                "Anahtar savunma kartlarını çekmeyi ustalaş",
-                "Çift eliksir saldırı zamanlamasını mükemmelleştir"
+                "Karşı koridordan gelen baskıyı az iksirle durdur.",
+                "Rakibin önemli savunma kartlarını Golem’den önce kullandır.",
+                "Çift iksirde saldırıya başlamak için doğru anı seç."
               ]
             }
           },
           "logBait": {
-            "playstyle": "Büyü tuzağı taktikleriyle reaktif oyun",
+            "playstyle": "Rakibe büyüsünü kullandır, ardından savunmasız kalan hedefe saldır.",
             "strengths": [
-              "Kötü takasları zorlar",
+              "Rakibe pahalı savunma yaptırır",
               "Güçlü savunma",
-              "Tahmin hamleleri"
+              "Hamleleri önceden okuma fırsatı"
             ],
             "weaknesses": [
-              "Büyü zamanlaması kritik",
-              "Pasif erken oyun",
-              "Princess'a bağımlı"
+              "Büyü zamanlamasına duyarlı",
+              "Başlangıçta düşük baskı",
+              "Prenses’e bağımlı"
             ],
             "synergies": [
-              "En iyi Log tuzağı kombinasyonu",
-              "Rakibi neye Log atacağını seçmeye zorlar",
-              "Knight tanklar, Inferno eritir",
-              "Chip hasarı biriktirme stratejisi"
+              "Birden fazla tehditle rakibin Tomruk kullanmasını sağlarsın.",
+              "Rakip, Tomruk’u hangi birliğe saklayacağını seçmek zorunda kalır.",
+              "Şövalye darbeleri karşılarken Felaket Kulesi hedefi eritir.",
+              "Küçük vuruşlarla kule hasarı biriktirirsin."
             ],
             "matchups": {
               "hogCycle": [
-                "Inferno Tower Hog'u mükemmel counter'lar",
-                "Goblin Barrel'dan önce Log'larını tuzağa düşür",
-                "Uzatma galibiyetleri için Rocket döngüsü"
+                "Domuz Binicisi’ni Felaket Kulesi ile durdur.",
+                "Goblin Fıçısı’nı atmadan önce rakibe Tomruk kullandır.",
+                "Uzatmada Roket yeniden eline geldikçe kuleyi hedefle."
               ],
               "golemBeatdown": [
-                "Inferno Tower tek cevabınız",
-                "Destek birliklerine Rocket at",
-                "Chip için karşı şerite Barrel at"
+                "Golem’e karşı en önemli savunman Felaket Kulesi.",
+                "Golem’in arkasındaki birlikleri Roket ile vur.",
+                "Goblin Fıçısı’nı diğer koridora atarak kuleyi yıprat."
               ],
               "xbowSiege": [
-                "Knight X-Bow atışlarını tanklar",
-                "Savunma düzenlerine Rocket at",
-                "Princess tepkileri zorlar"
+                "Şövalye ile X Yayı’nın atışlarını karşıla.",
+                "Rakibin toplu savunmasını Roket ile vur.",
+                "Prenses ile rakibi cevap vermeye zorla."
               ]
             },
             "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "Büyü tuzağı temelleri",
+              "name": "Temel (1–2. haftalar)",
+              "focus": "Rakibe büyü kullandır",
               "tips": [
-                "Kral Kulesi arkasına Princess yerleşimini öğren",
-                "Goblin Barrel yerleşim varyasyonlarını pratik yap",
-                "Hangi kartların hangi büyüleri çektiğini anla"
+                "Prenses’i Kral Kulesi’nin arkasında konumlandırmayı öğren.",
+                "Goblin Fıçısı’nı kulenin farklı noktalarına at.",
+                "Hangi birliğin rakipten hangi büyüyü çektiğini gözle."
               ]
             },
             "phase2": {
-              "name": "Orta Seviye (Hafta 3-4)",
-              "focus": "Tahmin ustalığı",
+              "name": "Orta seviye (3–4. haftalar)",
+              "focus": "Rakibin hamlesini öngör",
               "tips": [
-                "Rakibin büyü kullanımını tahmin etmeyi öğren",
-                "Chip hasarı için Rocket döngüsünü ustalaş",
-                "Barrel'dan önce Log çekmeyi pratik yap"
+                "Rakibin büyüsünü ne zaman kullanacağını tahmin et.",
+                "Roket’i tekrar eline getirerek kule hasarı biriktir.",
+                "Goblin Fıçısı’ndan önce rakibin Tomruk’unu çekmeyi dene."
               ]
             },
             "phase3": {
-              "name": "İleri Seviye (Hafta 5+)",
-              "focus": "Zihin oyunları ve adaptasyon",
+              "name": "İleri seviye (5. haftadan itibaren)",
+              "focus": "Rakibin alışkanlıklarına uyum sağla",
               "tips": [
-                "Rakibin kalıpları hakkında okumalar geliştir",
-                "Tüm Goblin Barrel tahmin noktalarını öğren",
-                "Savunma Inferno Tower yerleşimini ustalaş"
+                "Rakibin tekrarladığı savunma hamlelerini fark et.",
+                "Rakibin beklediği noktadan farklı bir yere Goblin Fıçısı at.",
+                "Felaket Kulesi’nin savunmadaki yerleşimini geliştir."
               ]
             }
           },
           "xbowSiege": {
-            "playstyle": "Chip hasarı ile savunma X-Bow kilitleri",
+            "playstyle": "X Yayı’nı koru ve kuleyi küçük vuruşlarla yıprat.",
             "strengths": [
-              "Menzil avantajı",
+              "Menzil üstünlüğü",
               "Güçlü savunma",
-              "Tepkileri zorlar"
+              "Rakibi tepki vermeye zorlar"
             ],
             "weaknesses": [
-              "Eşleşmeye bağlı",
-              "Yüksek beceri tavanı",
-              "Ağır taahhüt"
+              "Eşleşmeye duyarlı",
+              "Hassas yerleşim gerektirir",
+              "Saldırı için yüksek iksir gerekir"
             ],
             "synergies": [
-              "Tesla X-Bow'u tanklardan korur",
-              "Ice Golem tanklar, Archers DPS verir",
-              "Büyü kontrolü ve chip hasarı",
-              "Etkili şekilde dikkat dağıtan döngü kartları"
+              "Tesla, X Yayı’nı tanklardan korur.",
+              "Buz Golemi darbeleri karşılarken Okçular hasar verir.",
+              "Büyüler hem alanı kontrol eder hem de kuleyi yıpratır.",
+              "Ucuz kartlar rakibi oyalarken elini yeniler."
             ],
             "matchups": {
               "hogCycle": [
-                "Tesla ile savun, X-Bow taahhüt etme",
-                "Chip hasarı için Fireball + Log",
-                "Fireball'larını döngüyle geç"
+                "Tesla ile savun, X Yayı için acele etme.",
+                "Alev Topu ve Tomruk ile kuleye küçük hasarlar ver.",
+                "Rakibin Alev Topu eline dönmeden yeni bir tehdit çıkar."
               ],
               "golemBeatdown": [
-                "Sürekli karşı şeride baskı yap",
-                "Saldırı oluşturmalarına izin verme",
-                "Destek birliklerine Fireball at"
+                "Diğer koridora sürekli baskı kur.",
+                "Rakibin Golem arkasında birlik toplamasını engelle.",
+                "Destek birliklerine Alev Topu at."
               ],
               "logBait": [
-                "Princess için Archers",
-                "Sürülerine Log at",
-                "Goblin Gang'e Fireball + Log"
+                "Prenses’e karşı Okçular’ı kullan.",
+                "Kalabalık birlikleri Tomruk ile temizle.",
+                "Goblin Çetesi’ni Alev Topu ve Tomruk ile karşıla."
               ]
             },
             "phase1": {
-              "name": "Temel (Hafta 1-2)",
-              "focus": "X-Bow yerleşimi ve koruması",
+              "name": "Temel (1–2. haftalar)",
+              "focus": "X Yayı’nı yerleştir ve koru",
               "tips": [
-                "Güvenli X-Bow yerleşim pozisyonlarını öğren",
-                "Tank çekme için Tesla yerleşimini pratik yap",
-                "Ne zaman saldırgan vs savunmacı olacağını anla"
+                "X Yayı için güvenli kareleri öğren.",
+                "Tankları merkeze çekmek için Tesla’nın konumunu dene.",
+                "X Yayı’nı ne zaman saldırı, ne zaman savunma için kullanacağına karar ver."
               ]
             },
             "phase2": {
-              "name": "Orta Seviye (Hafta 3-4)",
-              "focus": "Eşleşme bilgisi",
+              "name": "Orta seviye (3–4. haftalar)",
+              "focus": "Rakip desteyi tanı",
               "tips": [
-                "Hangi eşleşmelerin saldırgan X-Bow'u desteklediğini öğren",
-                "Kötü eşleşmelerde savunma X-Bow'unu ustalaş",
-                "Büyü chip hasarı stratejilerini pratik yap"
+                "Hangi destelere karşı X Yayı ile saldırmanın avantajlı olduğunu öğren.",
+                "Zor eşleşmelerde X Yayı’nı savunmada kullan.",
+                "Büyülerle kuleyi azar azar yıpratmayı dene."
               ]
             },
             "phase3": {
-              "name": "İleri Seviye (Hafta 5+)",
-              "focus": "Mükemmel uygulama",
+              "name": "İleri seviye (5. haftadan itibaren)",
+              "focus": "Baskı altında doğru yerleşim",
               "tips": [
-                "Derin eşleşme anlayışı geliştir",
-                "Mükemmel savunma yerleşimlerini ustalaş",
-                "Oyun ortasında oyun tarzını uyarlamayı öğren"
+                "Rakibin kart döngüsüne göre bir saldırı planı kur.",
+                "Savunma kartlarını tam zamanında doğru kareye yerleştir.",
+                "Maçın ortasında rakibin hamlelerine göre oyun planını değiştir."
               ]
             }
           }
@@ -720,8 +722,16 @@
           "Cycle": "Döngü",
           "Beatdown": "Beatdown",
           "Control": "Kontrol",
-          "Siege": "Kuşatma"
+          "Siege": "Kuşatma",
+          "Bait": "Büyü yemi",
+          "Bridge Spam": "Köprü baskısı"
         }
+      },
+      "deckNames": {
+        "hogCycle": "2,6 iksirlik Domuz Binicisi döngüsü",
+        "golemBeatdown": "Golem saldırısı",
+        "logBait": "Klasik Tomruk tuzağı",
+        "xbowSiege": "3,0 iksirlik X Yayı kuşatması"
       }
     },
     "cta": {
@@ -1341,7 +1351,13 @@
     "aiQuota": "Bugünkü AI İstekleri",
     "quotaExhausted": "Günlük AI limiti doldu. Gece yarısı sıfırlanır.",
     "quotaLow": "Bugün için AI istekleri azalıyor.",
-    "accessDenied": "Erişim reddedildi. Bu hesap için AI Koç etkin değil."
+    "accessDenied": "Erişim reddedildi. Bu hesap için AI Koç etkin değil.",
+    "reviewMatch": "Bu maçı değerlendirelim. Sonuç: {{result}}.",
+    "reviewQuestion": "Sonraki maçta neyi farklı yapabilirim?",
+    "gameMode": "Oyun modu",
+    "conversationDate": "{{date}} tarihli sohbet",
+    "messageCount_one": "{{count}} mesaj",
+    "messageCount_other": "{{count}} mesaj"
   },
   "match": {
     "victory": "Zafer",
@@ -1365,7 +1381,8 @@
     "analysis": "Maç Analizi",
     "keyMoments": "Kilit Anlar",
     "counterDeck": "Counter Deste",
-    "discussWithCoach": "AI Koç ile Tartış"
+    "discussWithCoach": "AI Koç ile Tartış",
+    "scanOpponent": "Rakibi incele"
   },
   "cards": {
     "collection": "Kart Koleksiyonu",
@@ -1377,7 +1394,12 @@
     "updateSuccess": "Kart ustalığı başarıyla güncellendi",
     "updateFailed": "Kart ustalığı güncellenemedi",
     "suggestionsFailed": "Kart önerileri alınamadı",
-    "progress": "İlerleme"
+    "progress": "İlerleme",
+    "evolved": "Evrimli",
+    "evolutionUnlocked": "Evrim açıldı. Bu kart savaşta özel yetenekler kazanır.",
+    "elixirCost": "{{cost}} iksir",
+    "displayLevel": "Seviye {{level}}",
+    "evolutionBadge": "EVR"
   },
   "leaderboard": {
     "title": "Liderlik Tablosu",
@@ -1401,10 +1423,10 @@
     "globalLeaderboard": "Global Liderlik Tablosu",
     "syncing": "Senkronize ediliyor...",
     "syncGlobal": "Global Senkronize Et",
-    "top100": "Top 100",
+    "top100": "İlk 100",
     "myClan": "Klanım",
     "noClan": "Klan Yok",
-    "rankTop200": "Top 200",
+    "rankTop200": "İlk 200",
     "sync": "Sıralamayı güncelle",
     "lastSync": "Son eşitleme"
   },
@@ -1436,7 +1458,13 @@
     "noRankingsDescription": "Dünya klan sıralaması yüklenemedi. Yenilemeyi deneyin.",
     "globalRankingsFailed": "Dünya klan sıralaması yüklenemedi",
     "enterSearchQuery": "Lütfen bir arama sorgusu girin",
-    "searchFailed": "Klan araması başarısız"
+    "searchFailed": "Klan araması başarısız",
+    "entryTypes": {
+      "open": "Herkese açık",
+      "closed": "Kapalı",
+      "inviteOnly": "Davetle katılım",
+      "invite_only": "Davetle katılım"
+    }
   },
   "loadingMessages": {
     "playerData": "Oyuncu verileri yükleniyor...",
@@ -1566,7 +1594,8 @@
       "title": "Tercihler",
       "description": "Uygulama tercihlerinizi yönetin",
       "language": "Dil",
-      "languageDescription": "Tercih ettiğiniz dili seçin"
+      "languageDescription": "Tercih ettiğiniz dili seçin",
+      "languageSaveFailed": "Bu cihazın dili değişti. Dil tercihin hesabına kaydedilemedi."
     }
   },
   "matchDetail": {
@@ -1606,7 +1635,7 @@
     "overallStrategy": "Genel Strateji"
   },
   "footer": {
-    "tagline": "Fittechs Software - Elevate your data."
+    "tagline": "Fittechs Software — Verilerinden daha fazla değer elde et."
   },
   "tooltips": {
     "stats": {
@@ -1842,7 +1871,12 @@
     "match": "Maç",
     "pending": "Beklemede",
     "tbd": "Belirlenecek",
-    "unknown": "Bilinmeyen Oyuncu"
+    "unknown": "Bilinmeyen Oyuncu",
+    "formats": {
+      "single_elimination": "Tek elemeli",
+      "double_elimination": "Çift elemeli",
+      "round_robin": "Lig usulü"
+    }
   },
   "comparison": {
     "title": "Hesap Karşılaştırması",
@@ -2164,6 +2198,35 @@
       "beginner": "Başlangıç",
       "intermediate": "Orta",
       "advanced": "İleri"
+    },
+    "averageCost": "Ortalama iksir: {{cost}}",
+    "popularity": "Popülerlik",
+    "descriptions": {
+      "hog_2_6_cycle": "Hızlı kart döngüsüyle baskıyı sürdür. Zamanlama ve iksir yönetimi önemlidir.",
+      "golem_beatdown": "Ağır birliklerin arkasında destek toplayıp güçlü bir saldırı kur.",
+      "x_bow_2_9": "Savunma ağırlıklı kuşatma destesi. Oyunu kontrol edip kuleyi azar azar yıprat.",
+      "pekka_bridge_spam": "Önce savun, sonra hayatta kalan birliklerinle güçlü bir karşı saldırı yap.",
+      "log_bait": "Rakibe büyüsünü kullandırıp Goblin Fıçısı ile saldır.",
+      "hog_2_6_cycle_classic": "Hızlı döngülü klasik deste. İksiri dikkatli harca ve savunma zamanlamana odaklan.",
+      "miner_2_9_cycle": "Rakibi kontrol ederken kısa döngülerle kuleyi yıprat.",
+      "royal_giant_cycle": "Kraliyet Devi’ne hızla dönerek baskıyı sürdür.",
+      "mortar_cycle": "Kuleyi Havan ile hedefleyen hızlı kuşatma destesi.",
+      "cannon_cart_cycle": "Top Arabası ile baskı kurmaya odaklanan döngü destesi.",
+      "e_giant_beatdown": "Elektro Dev’i öne sür, ardından ağır birliklerle saldırıyı destekle.",
+      "mega_knight_sparky": "Mega Şövalye ile savun, Kıvılcım ile karşı saldırı kur.",
+      "lava_hound_clone": "Hava birlikleriyle saldır, doğru anda Klon ile baskıyı artır.",
+      "giant_graveyard": "Dev ve Mezarlık ikilisiyle iki koridorda baskı kur.",
+      "pekka_bridge_spam_classic": "Köprüde baskı kurarken P.E.K.K.A’yı savunmada kullan.",
+      "ram_rider_bridge_spam": "Koç Binici’nin yavaşlatma yeteneğiyle köprüde hızlı baskı kur.",
+      "magic_archer_bridge_spam": "Köprüde baskı kurarken Büyülü Okçu’nun atış açılarından yararlan.",
+      "splashyard": "Savunmayı kontrol edip Mezarlık ile kuleye hasar ver.",
+      "miner_poison_control": "Büyülerini döndürürken Madenci ile kuleyi yıprat.",
+      "ice_bow": "X-Yayı’nı Buz Büyücüsü ve Kasırga ikilisiyle savun.",
+      "classic_log_bait": "Klasik büyü yemi destesi. Rakibe büyüsünü kullandır, ardından saldır.",
+      "prince_bait": "İki prensle baskı kurarken rakibin büyülerini harcat.",
+      "rocket_bait": "Prenses benzeri iki kartla rakibin ağır büyülerini harcat.",
+      "x_bow_3_0": "Klasik X-Yayı döngüsü. Etkili kullanmak için güçlü bir savunma gerekir.",
+      "mortar_rocket": "Havan ve büyü döngüsüyle kuleyi yıprat, Roket ile bitir."
     }
   },
   "deckComparison": {
@@ -2250,7 +2313,15 @@
     "processing": "İşleniyor...",
     "started": "Başladı",
     "recent": "Son",
-    "noOperationsYet": "Henüz işlem yok"
+    "noOperationsYet": "Henüz işlem yok",
+    "elapsed": "Geçen süre",
+    "remaining": "Yaklaşık {{time}} kaldı",
+    "operationsRunning_one": "{{count}} işlem sürüyor",
+    "operationsRunning_other": "{{count}} işlem sürüyor",
+    "cardMastery": "Kart ustalığı hesaplanıyor",
+    "collection": "Kart koleksiyonu güncelleniyor",
+    "deckStats": "Deste istatistikleri güncelleniyor",
+    "achievements": "Başarımlar güncelleniyor"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -2531,7 +2602,22 @@
     "signInForMatchup": "Eşleşme analizini görmek için giriş yapın",
     "helpTooltip": "En olası destelerini ve oyun tarzlarını tahmin etmek için rakibin son 25 maçını analiz ediyoruz.",
     "helperText": "Destesini ve stratejisini tahmin etmek için rakibin oyuncu etiketini girin (örn. #ABC12).",
-    "tryExample": "Dene"
+    "tryExample": "Dene",
+    "errors": {
+      "noDeck": "Etkin deste bulunamadı. Oyunda bir deste seç.",
+      "parseError": "Rakibin kartları okunamadı. Tekrar dene.",
+      "predictionFailed": "Eşleşme tahmini yapılamadı. Tekrar dene."
+    },
+    "result": {
+      "confidence": "Güven düzeyi",
+      "keyMatchups": "Önemli eşleşmeler",
+      "opponentDeck": "Rakibin destesi",
+      "tips": "Strateji ipuçları",
+      "title": "Eşleşme sonucu",
+      "yourDeck": "Desten",
+      "yourWinChance": "Kazanma olasılığın"
+    },
+    "scanButton": "Eşleşmeyi tahmin et"
   },
   "proDna": {
     "title": "Pro DNA'nız",
@@ -2549,7 +2635,15 @@
     "shareFailed": "Kart paylaşılamadı",
     "noData": "DNA'nızı oluşturmak için yeterli savaş verisi yok.",
     "noDataHint": "Önce birkaç maç oynayın!",
-    "shareText": "Clash Royale Pro DNA'ma göz atın!"
+    "shareText": "Clash Royale Pro DNA'ma göz atın!",
+    "adaptability": "Uyum yeteneği",
+    "consistency": "Tutarlılık",
+    "downloadError": "Görsel indirilemedi.",
+    "downloadSuccess": "Görsel indirildi.",
+    "generating": "Görsel hazırlanıyor…",
+    "noDataDescription": "DNA profilini oluşturmak için birkaç maç daha oyna.",
+    "shareError": "Görsel paylaşılamadı.",
+    "shareNotSupported": "Bu tarayıcı paylaşımı desteklemiyor."
   },
   "achievementShowcase": {
     "trophyCase": "Kupa Vitrini",
@@ -2730,7 +2824,16 @@
         "high": "Yüksek",
         "medium": "Orta",
         "low": "Düşük"
-      }
+      },
+      "clean": "Kısıtlama yok",
+      "clearMarkClean": "Kısıtlamaları kaldır",
+      "loadingCaseDetails": "Vaka ayrıntıları yükleniyor…",
+      "reviewNotes": "İnceleme notları (isteğe bağlı)",
+      "seenCount": "{{count}} kez görüldü",
+      "setWarning": "Uyarı ver",
+      "softBlock": "Erişimi kısıtla",
+      "softBlocked": "Erişim kısıtlandı",
+      "warning": "Uyarı"
     },
     "navigation": {
       "checking": "Yönetici erişimi kontrol ediliyor…",
@@ -2920,7 +3023,6 @@
     "proUpgradeMessage": "Canlı Maç Tahminlerinin kilidini açmak için PRO'ya yükseltin."
   },
   "commonExtra": {
-    "note": "This section contains duplicate keys that were previously causing issues",
     "vs": "karşı",
     "new": "YENİ",
     "pro": "PRO",
@@ -3006,7 +3108,7 @@
     "subtitle": "Yapay zeka destekli rüya maçlarında efsanevi profesyonellere meydan oku",
     "liveSubtitle": "Gerçek zamanlı verilerle Global Top 10'a meydan oku",
     "selectOpponent": "Rakibini Seç",
-    "globalTop10": "Global Top 10",
+    "globalTop10": "Dünya sıralamasında ilk 10",
     "live": "CANLI",
     "fight": "Savaş!",
     "limitReached": "Günlük limit doldu",
@@ -3036,11 +3138,11 @@
   },
   "proPlayers": {
     "mohamedLight": {
-      "playstyle": "Her hatayı piksel hassasiyetindeki Goblin Barrelleriyle cezalandıran agresif tuzak uzmanı",
+      "playstyle": "Rakibin hatalarını isabetli Goblin Fıçısı atışlarıyla değerlendiren baskıcı bir oyuncu.",
       "specialty": "Köprü Spamcısı"
     },
     "oyassuu": {
-      "playstyle": "Yıldırım hızındaki Hog Riderlarla her desteyi döngüde geçen efsanevi döngü ustası",
+      "playstyle": "Domuz Binicisi’ni hızla yeniden eline getirip rakibin savunmasını hazırlıksız yakalar.",
       "specialty": "Döngü Ustası"
     },
     "morten": {
@@ -3056,7 +3158,7 @@
       "specialty": "Deprem Kralı"
     },
     "surgicalGoblin": {
-      "playstyle": "X-Bow'ları mükemmel anda kilitleyen hesaplı kuşatma oyuncusu",
+      "playstyle": "X Yayı’nın kuleye kilitleneceği anı hesaplayarak oynar.",
       "specialty": "Kuşatma Ustası"
     }
   },
@@ -3159,5 +3261,35 @@
   "playerSelector": {
     "addAccount": "Hesap ekle",
     "accounts": "Hesaplar"
+  },
+  "accessibility": {
+    "navigationPath": "Gezinme yolu",
+    "pagination": "Sayfalama",
+    "morePages": "Diğer sayfalar",
+    "previousSlide": "Önceki slayt",
+    "nextSlide": "Sonraki slayt",
+    "clanBadge": "Klan arması",
+    "removePlayer": "{{name}} adlı oyuncuyu kaldır",
+    "carousel": "Slayt gösterisi",
+    "slide": "Slayt"
+  },
+  "splash": {
+    "tagline": "Yapay zekâ destekli savaş koçun",
+    "loading": "Arena hazırlanıyor…"
+  },
+  "errors": {
+    "screenFailed": "Bu ekran yüklenemedi.",
+    "details": "Hata ayrıntılarını göster",
+    "reload": "Sayfayı yeniden yükle"
+  },
+  "accountWarning": {
+    "limited": "Erişim kısıtlandı",
+    "detected": "Olağandışı etkinlik algılandı",
+    "limitedDescription": "Olağandışı etkinlik algılandığı için bazı özellikler kısıtlandı. Bunun bir hata olduğunu düşünüyorsan destek ekibine ulaş.",
+    "description": "Olağandışı etkinlik algıladık. Uyarının kalkması için uygulamayı normal şekilde kullanmaya devam et.",
+    "help": "Yardım al"
+  },
+  "coachingHistory": {
+    "language": "Kayıtlı önerinin dili: {{language}}"
   }
 }

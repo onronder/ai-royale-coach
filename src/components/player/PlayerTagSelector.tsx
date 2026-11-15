@@ -26,7 +26,7 @@ interface PlayerTagSelectorProps {
 }
 
 export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [newTag, setNewTag] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -290,7 +290,7 @@ function PlayerTagCard({
         <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4 min-h-[88px] sm:min-h-[96px]">
           <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] shrink-0 rounded-xl bg-gradient-gold flex items-center justify-center shadow-gold/30 shadow-lg overflow-hidden">
             {badgeUrl && !imageError ? (
-              <img src={badgeUrl} alt="Clan badge" className="w-[70%] h-[70%] object-contain" onError={() => setImageError(true)} />
+              <img src={badgeUrl} alt={t('accessibility.clanBadge')} className="w-[70%] h-[70%] object-contain" onError={() => setImageError(true)} />
             ) : (
               <Crown className="h-7 w-7 sm:h-8 sm:w-8 text-gold-foreground" />
             )}
@@ -321,7 +321,7 @@ function PlayerTagCard({
               {profile.trophies !== undefined && (
                 <span className="inline-flex items-center gap-1.5">
                   <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gold shrink-0" />
-                  <span className="font-semibold text-foreground tabular-nums">{profile.trophies.toLocaleString()}</span>
+                  <span className="font-semibold text-foreground tabular-nums">{profile.trophies.toLocaleString(i18n.language)}</span>
                 </span>
               )}
               {profile.arena_name && (
@@ -355,7 +355,7 @@ function PlayerTagCard({
             className="self-center opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={onRemove}
             disabled={isRemoving}
-            aria-label="Remove"
+            aria-label={t('accessibility.removePlayer', { name: profile.player_name || profile.player_tag })}
           >
             <Trash2 className="h-4 w-4" />
           </Button>

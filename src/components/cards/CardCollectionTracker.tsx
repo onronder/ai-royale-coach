@@ -251,7 +251,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                         variant="outline" 
                         className={`text-xs ${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/10 border-${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/20`}
                       >
-                        {card.rarity}
+                        {t(`landing.demo.cards.rarities.${card.rarity.toLowerCase()}`, { defaultValue: card.rarity })}
                       </Badge>
                       {!isMaxLevel && (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">

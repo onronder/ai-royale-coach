@@ -346,6 +346,7 @@ export type Database = {
       }
       card_mastery: {
         Row: {
+          ai_tips_language: string | null
           ai_tips: string | null
           avg_elixir_decks: number | null
           battles_lost: number | null
@@ -364,6 +365,7 @@ export type Database = {
           worst_matchup_cards: string[] | null
         }
         Insert: {
+          ai_tips_language?: string | null
           ai_tips?: string | null
           avg_elixir_decks?: number | null
           battles_lost?: number | null
@@ -382,6 +384,7 @@ export type Database = {
           worst_matchup_cards?: string[] | null
         }
         Update: {
+          ai_tips_language?: string | null
           ai_tips?: string | null
           avg_elixir_decks?: number | null
           battles_lost?: number | null
@@ -1182,6 +1185,7 @@ export type Database = {
           email: string | null
           id: string
           onboarding_completed_at: string | null
+          language_selected_at: string | null
           preferred_language: string | null
           terms_accepted_at: string | null
           terms_version: string | null
@@ -1199,6 +1203,7 @@ export type Database = {
           email?: string | null
           id: string
           onboarding_completed_at?: string | null
+          language_selected_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -1216,6 +1221,7 @@ export type Database = {
           email?: string | null
           id?: string
           onboarding_completed_at?: string | null
+          language_selected_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -1241,6 +1247,7 @@ export type Database = {
           difficulty: string | null
           expires_at: string | null
           id: string
+          language: string | null
           outcome_tracked_at: string | null
           player_tag: string
           recommendation_reason: string
@@ -1265,6 +1272,7 @@ export type Database = {
           difficulty?: string | null
           expires_at?: string | null
           id?: string
+          language?: string | null
           outcome_tracked_at?: string | null
           player_tag: string
           recommendation_reason: string
@@ -1289,6 +1297,7 @@ export type Database = {
           difficulty?: string | null
           expires_at?: string | null
           id?: string
+          language?: string | null
           outcome_tracked_at?: string | null
           player_tag?: string
           recommendation_reason?: string

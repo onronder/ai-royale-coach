@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, Database, Eye, Clock, Users, Mail, Globe, Scale, Building2 } from "lucide-react";
 
 const Privacy = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const sections = [
     {
@@ -63,11 +63,11 @@ const Privacy = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Privacy Policy - AI Royale</title>
-        <meta name="description" content="AI Royale Privacy Policy. Learn how we collect, use, and protect your data. GDPR, CCPA, and KVKK compliant." />
+        <title>{t('legal.privacyPolicy')} | AI Royale</title>
+        <meta name="description" content={t('legal.privacy.introduction')} />
         <link rel="canonical" href="https://ai-royale.com/privacy" />
-        <meta property="og:title" content="Privacy Policy - AI Royale" />
-        <meta property="og:description" content="AI Royale Privacy Policy. Learn how we collect, use, and protect your data." />
+        <meta property="og:title" content={t('legal.privacyPolicy') + ' | AI Royale'} />
+        <meta property="og:description" content={t('legal.privacy.introduction')} />
         <meta property="og:url" content="https://ai-royale.com/privacy" />
       </Helmet>
       <Navbar user={null} />
@@ -78,7 +78,7 @@ const Privacy = () => {
             {t("legal.privacyPolicy")}
           </h1>
           <p className="text-muted-foreground">
-            {t("legal.lastUpdated")}: December 6, 2025
+            {t("legal.lastUpdated")}: {new Date(2025, 11, 6).toLocaleDateString(i18n.language, { dateStyle: 'long' })}
           </p>
           <p className="text-muted-foreground text-sm mt-2">
             {t("legal.privacy.companyName")}

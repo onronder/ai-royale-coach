@@ -1,3 +1,4 @@
+import { Translation } from "react-i18next";
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { Button } from "./button";
@@ -58,17 +59,17 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {/* Error Title */}
               <h1 className="text-2xl font-bold font-rajdhani text-foreground mb-2">
-                Something Went Wrong
+                <Translation>{t => t('common.error')}</Translation>
               </h1>
               <p className="text-muted-foreground mb-6">
-                An unexpected error occurred. Don't worry, your data is safe.
+                <Translation>{t => t('errors.screenFailed')}</Translation>
               </p>
 
               {/* Error Details (collapsible in dev) */}
               {import.meta.env.DEV && this.state.error && (
                 <details className="mb-6 text-left">
                   <summary className="text-sm text-muted-foreground cursor-pointer hover:text-foreground">
-                    View error details
+                    <Translation>{t => t('errors.details')}</Translation>
                   </summary>
                   <pre className="mt-2 p-3 bg-background/50 rounded-lg text-xs text-destructive overflow-auto max-h-40">
                     {this.state.error.toString()}
@@ -85,7 +86,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   className="gap-2"
                 >
                   <RefreshCw className="h-4 w-4" />
-                  Try Again
+                  <Translation>{t => t('common.retry')}</Translation>
                 </Button>
                 <Button
                   variant="outline"
@@ -93,18 +94,17 @@ export class ErrorBoundary extends Component<Props, State> {
                   className="gap-2"
                 >
                   <Home className="h-4 w-4" />
-                  Go Home
+                  <Translation>{t => t('notFound.returnHome')}</Translation>
                 </Button>
               </div>
 
               {/* Reload hint */}
               <p className="mt-6 text-xs text-muted-foreground">
-                If the problem persists,{" "}
                 <button
                   onClick={this.handleReload}
                   className="text-primary hover:underline"
                 >
-                  reload the page
+                  <Translation>{t => t('errors.reload')}</Translation>
                 </button>
               </p>
             </div>

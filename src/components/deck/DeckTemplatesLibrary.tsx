@@ -1,3 +1,5 @@
+import en from '@/i18n/locales/en.json';
+import { useCardName } from '@/i18n/useCardName';
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -10,6 +12,11 @@ import { DataLoader } from "@/components/ui/data-loader";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Trophy, Zap, TrendingUp, Copy, Star, Info } from "lucide-react";
 import { toast } from "sonner";
+
+// Match shipped copy exactly so edits to a template remain visible.
+const descriptionKeys = new Map<string, string>(
+  Object.entries(en.templates.descriptions).map(([key, value]) => [value, key]),
+);
 
 interface DeckTemplate {
   id: string;
@@ -33,7 +40,8 @@ export function DeckTemplatesLibrary({
   userCollection = [], 
   playerTrophies = 0 
 }: DeckTemplatesLibraryProps) {
-  const { t } = useTranslation();
+  const cardLabel = useCardName();
+  const { t, i18n } = useTranslation();
   const [selectedArchetype, setSelectedArchetype] = useState<string>("recommended");
 
   const { data: templates, isLoading } = useQuery({
@@ -150,7 +158,7 @@ export function DeckTemplatesLibrary({
               disabled={arch === "recommended" && recommendedDecks.length === 0}
             >
               {arch === "recommended" && <Star className="h-3 w-3" />}
-              {arch === "recommended" ? t('templates.recommended') : arch}
+              {arch === 'recommended' ? t('templates.recommended') : arch === 'all' ? t('common.all') : t(`landing.demo.cards.archetypes.${arch}`, { defaultValue: arch })}
               {arch === "recommended" && recommendedDecks.length > 0 && (
                 <Badge variant="secondary" className="ml-1 h-5 px-1.5">
                   {recommendedDecks.length}
@@ -209,9 +217,9 @@ export function DeckTemplatesLibrary({
                             </TooltipProvider>
                           )}
                         </div>
-                        <CardDescription>{template.description}</CardDescription>
+                        <CardDescription>{descriptionKeys.has(template.description) ? t(`templates.descriptions.${descriptionKeys.get(template.description)}`) : template.description}</CardDescription>
                       </div>
-                      <Badge variant="secondary">{template.archetype}</Badge>
+                      <Badge variant="secondary">{t(`landing.demo.cards.archetypes.${template.archetype}`, { defaultValue: template.archetype })}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -221,7 +229,7 @@ export function DeckTemplatesLibrary({
                           key={idx}
                           className="aspect-square bg-muted rounded flex items-center justify-center text-xs text-center p-1"
                         >
-                          {card}
+                          {cardLabel(card)}
                         </div>
                       ))}
                     </div>
@@ -229,11 +237,11 @@ export function DeckTemplatesLibrary({
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         <Zap className="h-4 w-4 text-primary" />
-                        <span>{template.avg_elixir} avg</span>
+                        <span>{t('templates.averageCost', { cost: template.avg_elixir.toLocaleString(i18n.language) })}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Trophy className="h-4 w-4 text-warning" />
-                        <span>Popularity: {template.popularity_score}</span>
+                        <span>{t('templates.popularity')}: {template.popularity_score}</span>
                       </div>
                     </div>
 

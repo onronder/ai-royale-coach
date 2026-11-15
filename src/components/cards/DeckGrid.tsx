@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { CardImage } from "./CardImage";
 import { Zap, PackageOpen } from "lucide-react";
-import { GameTooltip, statTooltips } from "@/components/ui/tooltip-helpers";
+import { GameTooltip, useStatTooltips } from "@/components/ui/tooltip-helpers";
 import { EmptyState } from "@/components/ui/empty-state";
 
 interface DeckGridProps {
@@ -14,7 +14,8 @@ interface DeckGridProps {
 
 // Memoized to prevent re-renders when deck hasn't changed
 export const DeckGrid = memo(function DeckGrid({ cards, showElixir = true, size = 'md' }: DeckGridProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const statTooltips = useStatTooltips();
   
   // Memoize expensive calculation
   const avgElixir = useMemo(() => 
@@ -57,7 +58,7 @@ export const DeckGrid = memo(function DeckGrid({ cards, showElixir = true, size 
           <div className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary/10 border border-primary/20 cursor-help">
             <Zap className="w-5 h-5 text-primary" />
             <span className="font-rajdhani font-semibold text-foreground">
-              {t('deck.avgElixir')}: <span className="text-primary text-lg">{avgElixir.toFixed(1)}</span>
+              {t('deck.avgElixir')}: <span className="text-primary text-lg">{avgElixir.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
             </span>
           </div>
         </GameTooltip>

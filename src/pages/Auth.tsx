@@ -152,6 +152,7 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
+            data: { language: i18n.resolvedLanguage ?? 'en' },
           },
         });
         if (error) throw error;
@@ -163,6 +164,8 @@ const Auth = () => {
             .update({
               terms_accepted_at: new Date().toISOString(),
               terms_version: TERMS_VERSION,
+              preferred_language: i18n.resolvedLanguage,
+              language_selected_at: new Date().toISOString(),
             })
             .eq('id', data.user.id);
           
@@ -297,6 +300,8 @@ const Auth = () => {
         .update({
           terms_accepted_at: new Date().toISOString(),
           terms_version: TERMS_VERSION,
+          preferred_language: i18n.resolvedLanguage,
+          language_selected_at: new Date().toISOString(),
         })
         .eq('id', pendingOAuthUser);
       

@@ -51,7 +51,7 @@ export const coachingTranslations = {
    previousMatch: 'Match précédent',
    syncHint: "Vérifiez après le match. Le résultat peut mettre un moment à apparaître.",
    playedDeck: "Deck joué", practiceTip: "Conseil du coach",
-   profileRefreshError: "Ton match est enregistré. Réessaie pour actualiser tes trophées.",
+   profileRefreshError: "Votre match est enregistré. Réessayez pour actualiser vos trophées.",
    partialDeck: "Votre profil a renvoyé sept cartes. Voici le deck de votre dernier match sur la Voie des trophées. Voulez-vous utiliser ce deck ?",
    changedDeck: "Votre deck a changé. Vérifiez ces huit cartes avant de continuer.",
    confirmDeck: "Utiliser ce deck",

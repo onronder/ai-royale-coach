@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ interface SynergyMatrixProps {
 }
 
 export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const [hoveredCell, setHoveredCell] = useState<CardSynergyPair | null>(null);
 
@@ -132,7 +134,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
                     <tr>
                       <th className="p-2 text-xs font-medium text-muted-foreground"></th>
                       {cardNames.map((card, idx) => (
-                        <th key={idx} className="p-2 text-xs font-medium text-muted-foreground max-w-[60px] truncate" title={card}>
+                        <th key={idx} className="p-2 text-xs font-medium text-muted-foreground max-w-[60px] truncate" title={cardLabel(card)}>
                           {card.split(' ').map(w => w[0]).join('')}
                         </th>
                       ))}
@@ -175,7 +177,7 @@ export function SynergyMatrix({ analysis, cardNames }: SynergyMatrixProps) {
                                 <TooltipContent className="max-w-xs">
                                   <div className="space-y-2">
                                     <div className="font-semibold text-sm">
-                                      {pair.card1} × {pair.card2}
+                                      {cardLabel(pair.card1)} × {cardLabel(pair.card2)}
                                     </div>
                                     <div className="flex gap-1">
                                       {renderStars(pair.rating)}

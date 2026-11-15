@@ -14,7 +14,7 @@ interface AchievementDashboardProps {
 }
 
 export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: achievements, isLoading: achievementsLoading } = useAchievements(playerTag);
   const { data: progress, isLoading: progressLoading } = useAchievementProgress(playerTag);
   const { mutate: syncAchievements, isPending: isSyncing } = useSyncAchievements(playerTag);
@@ -222,7 +222,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                                 </Badge>
                               </div>
                               <p className="text-xs text-success mt-2">
-                                {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString() })}
+                                {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString(i18n.language) })}
                               </p>
                             </div>
                           </div>
@@ -341,7 +341,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                           
                           {isUnlocked && (
                             <p className="text-xs text-success mt-2">
-                              ✓ {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString() })}
+                              ✓ {t('achievements.unlockedOn', { date: new Date(userAch.unlocked_at!).toLocaleDateString(i18n.language) })}
                             </p>
                           )}
                         </div>

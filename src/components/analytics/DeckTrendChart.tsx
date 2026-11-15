@@ -12,11 +12,11 @@ interface DeckTrendChartProps {
 }
 
 export function DeckTrendChart({ stats, isLoading }: DeckTrendChartProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   // Group stats by date and calculate daily win rates
   const dailyStats = stats?.reduce((acc, stat) => {
-    const date = new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const date = new Date(stat.date).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
     
     if (!acc[date]) {
       acc[date] = { date, totalWins: 0, totalBattles: 0, trophyChange: 0 };

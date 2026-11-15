@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
@@ -32,7 +33,6 @@ interface Message {
 
 interface Conversation {
   id: string;
-  title: string;
   last_message_at: string;
   message_count: number;
 }
@@ -96,6 +96,7 @@ export function CoachChatPanel({
   matchContext,
   proactiveSuggestion
 }: CoachChatPanelProps) {
+  const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -141,26 +142,21 @@ export function CoachChatPanel({
       startNewConversation();
       
       // Build the match context message
-      const outcome = matchContext.isWin ? 'won' : 'lost';
+      const outcome = t(matchContext.playerCrowns === matchContext.opponentCrowns ? 'dashboard.draw' : matchContext.isWin ? 'dashboard.victory' : 'dashboard.defeat');
       const opponent = matchContext.battle.opponent[0];
       const playerCards = matchContext.battle.team.find(p => p.tag === matchContext.playerTag)?.cards || [];
       const opponentCards = opponent?.cards || [];
       
-      const contextMessage = `I just ${outcome} a match and want to discuss it.
-
-**My Deck:** ${playerCards.map(c => c.name).join(', ')}
-**Opponent's Deck:** ${opponentCards.map(c => c.name).join(', ')}
-**Score:** ${matchContext.playerCrowns} - ${matchContext.opponentCrowns} crowns
-**Trophy Change:** ${matchContext.trophyChange > 0 ? '+' : ''}${matchContext.trophyChange}
-**Game Mode:** ${matchContext.battle.gameMode.name}
-
-${matchContext.analysis ? `**AI Analysis Summary:**
-${matchContext.analysis.deckMatchup}
-
-**Recommendations from Analysis:**
-${matchContext.analysis.recommendations.map(r => `• ${r}`).join('\n')}` : ''}
-
-What could I have done differently to ${matchContext.isWin ? 'perform even better' : 'win this match'}?`;
+      const contextMessage = [
+        t('coach.reviewMatch', { result: outcome }),
+        `${t('matchDetail.yourDeck')}: ${playerCards.map(c => cardLabel(c.name)).join(', ')}`,
+        `${t('matchDetail.opponentDeck')}: ${opponentCards.map(c => cardLabel(c.name)).join(', ')}`,
+        `${t('matchDetail.crowns')}: ${matchContext.playerCrowns} – ${matchContext.opponentCrowns}`,
+        `${t('coaching.trophies')}: ${matchContext.trophyChange > 0 ? '+' : ''}${matchContext.trophyChange}`,
+        `${t('coach.gameMode')}: ${matchContext.battle.gameMode.name}`,
+        ...(matchContext.analysis ? [matchContext.analysis.deckMatchup, ...matchContext.analysis.recommendations] : []),
+        t('coach.reviewQuestion'),
+      ].join('\n\n');
 
       // Auto-send the context message
       handleAutoSend(contextMessage);
@@ -224,12 +220,11 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
       if (data && data.length > 0) {
         // Group messages by conversation (using date as conversation identifier)
-        const grouped = data.reduce((acc: Record<string, { id: string; title: string; last_message_at: string; messages: typeof data }>, msg) => {
+        const grouped = data.reduce((acc: Record<string, { id: string; last_message_at: string; messages: typeof data }>, msg) => {
           const date = new Date(msg.created_at).toLocaleDateString();
           if (!acc[date]) {
             acc[date] = {
               id: date,
-              title: `Chat from ${date}`,
               last_message_at: msg.created_at,
               messages: []
             };
@@ -240,7 +235,6 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
 
         const convos = Object.values(grouped).map((conv) => ({
           id: conv.id,
-          title: conv.title,
           last_message_at: conv.last_message_at,
           message_count: conv.messages.length
         }));
@@ -887,14 +881,14 @@ What could I have done differently to ${matchContext.isWin ? 'perform even bette
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <h3 className="font-rajdhani font-semibold text-sm text-foreground truncate">
-                          {conv.title}
+                          {t('coach.conversationDate', { date: new Date(conv.last_message_at).toLocaleDateString(i18n.language) })}
                         </h3>
                       <p className="text-xs text-muted-foreground mt-1">
                           {t('coach.messageCount', { count: conv.message_count })}
                         </p>
                       </div>
                       <p className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(conv.last_message_at).toLocaleDateString()}
+                        {new Date(conv.last_message_at).toLocaleDateString(i18n.language)}
                       </p>
                     </div>
                   </Card>

@@ -1,3 +1,4 @@
+import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -81,7 +82,8 @@ serve(async (req) => {
       return errorResponse('Subscription required for AI match analysis', 403, { subscription_required: true });
     }
 
-    const { battle, playerTag, language = 'en' }: MatchAnalysisRequest & { language?: string } = await req.json();
+    const { battle, playerTag, language: requestedLanguage }: MatchAnalysisRequest & { language?: string } = await req.json();
+    const language = productLanguage(requestedLanguage);
 
     // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {

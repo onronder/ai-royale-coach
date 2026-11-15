@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -34,7 +35,7 @@ interface LeaderboardViewProps {
  * LeaderboardView - realtime handled by useUnifiedRealtime
  */
 export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: LeaderboardViewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isSyncing, setIsSyncing] = useState(false);
   
   const { profiles } = usePlayerProfiles(userId || null);
@@ -183,7 +184,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       render: (entry) => (
         <div className="flex items-center gap-1.5 text-primary font-bold">
           <Trophy className="w-4 h-4" />
-          <span>{entry.trophies.toLocaleString()}</span>
+          <span>{entry.trophies.toLocaleString(i18n.language)}</span>
         </div>
       ),
     },
@@ -193,7 +194,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
       mobileHidden: true,
       render: (entry) => (
         <span className="text-xs text-muted-foreground">
-          {formatDistanceToNow(new Date(entry.last_synced_at), { addSuffix: true })}
+          {formatDistanceToNow(new Date(entry.last_synced_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
         </span>
       ),
     },
@@ -248,7 +249,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                       </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Trophy className="h-3 w-3 text-primary" />
-                        <span>{trophies.toLocaleString()} {t('leaderboard.trophies')}</span>
+                        <span>{trophies.toLocaleString(i18n.language)} {t('leaderboard.trophies')}</span>
                       </div>
                     </div>
                   </div>
@@ -266,7 +267,7 @@ export function LeaderboardView({ userClanTag, userId, currentPlayerTag }: Leade
                         {trophies > 0 && globalLeaderboard.length > 0 && (
                           <p className="text-xs text-muted-foreground">
                             {(globalLeaderboard[99]?.trophies || 0) - trophies > 0 
-                              ? `${((globalLeaderboard[99]?.trophies || 0) - trophies).toLocaleString()} ${t('leaderboard.toTop100')}`
+                              ? `${((globalLeaderboard[99]?.trophies || 0) - trophies).toLocaleString(i18n.language)} ${t('leaderboard.toTop100')}`
                               : t('leaderboard.closeToTop100')
                             }
                           </p>

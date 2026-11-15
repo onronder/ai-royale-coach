@@ -39,13 +39,14 @@ interface DeckAnalysisPanelProps {
 
 export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? 'en';
   const [showPricing, setShowPricing] = useState(false);
   
   const { data: analysis, isLoading, error } = useQuery({
-    queryKey: ['deck-analysis', player.tag, i18n.language],
+    queryKey: ['deck-analysis', player.tag, language],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke<DeckAnalysisResult>('analyze-deck', {
-        body: { playerData: player, battles, language: i18n.language }
+        body: { playerData: player, battles, language }
       });
       if (error) {
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {

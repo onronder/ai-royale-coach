@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import i18n from "@/i18n";
 
 export interface DeckRecommendation {
   deckId: string;
@@ -34,9 +33,10 @@ export interface RecommendationResponse {
 
 export const useRecommendations = (playerTag: string, trophies: number) => {
   const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? 'en';
 
   return useQuery({
-    queryKey: ['deck-recommendations', playerTag, i18n.language],
+    queryKey: ['deck-recommendations', playerTag, language],
     queryFn: async (): Promise<RecommendationResponse> => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -47,7 +47,7 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
         body: { 
           playerTag, 
           trophies,
-          language: i18n.language 
+          language
         }
       });
 
@@ -88,6 +88,7 @@ export const useRefreshRecommendations = () => {
 
   return useMutation({
     mutationFn: async ({ playerTag, trophies }: { playerTag: string; trophies: number }) => {
+      const language = i18n.resolvedLanguage ?? 'en';
       toast.loading(t('recommendations.refreshing'), { id: 'refresh-recommendations' });
 
       const { data: { session } } = await supabase.auth.getSession();
@@ -100,7 +101,7 @@ export const useRefreshRecommendations = () => {
           playerTag, 
           trophies,
           forceRefresh: true,
-          language: i18n.language 
+          language
         }
       });
 
@@ -121,12 +122,12 @@ export const useRefreshRecommendations = () => {
         throw subscriptionError;
       }
       
-      return data as RecommendationResponse;
+      return { recommendations: data as RecommendationResponse, language };
     },
-    onSuccess: (data, variables) => {
+    onSuccess: ({ recommendations, language }, variables) => {
       queryClient.setQueryData(
-        ['deck-recommendations', variables.playerTag, i18n.language], 
-        data
+        ['deck-recommendations', variables.playerTag, language],
+        recommendations
       );
       toast.success(t('recommendations.refreshed'), { id: 'refresh-recommendations' });
     },

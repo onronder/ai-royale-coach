@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -29,6 +30,7 @@ export function CounterDeckModal({
   opponentDeck, 
   opponentName 
 }: CounterDeckModalProps) {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const [copiedDeck, setCopiedDeck] = useState(false);
 
@@ -88,7 +90,7 @@ export function CounterDeckModal({
                   key={idx}
                   className="p-3 bg-card rounded-lg border text-center"
                 >
-                  <p className="text-sm font-medium truncate">{cardName}</p>
+                  <p className="text-sm font-medium truncate">{cardLabel(cardName)}</p>
                   {counterDeck.explanations[cardName] && (
                     <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                       {counterDeck.explanations[cardName]}

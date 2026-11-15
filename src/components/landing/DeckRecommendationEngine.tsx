@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ interface RecommendationResult {
 }
 
 export function DeckRecommendationEngine() {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const [selectedSkillLevel, setSelectedSkillLevel] = useState<'beginner' | 'intermediate' | 'expert' | null>(null);
   const [selectedPlaystyles, setSelectedPlaystyles] = useState<string[]>([]);
@@ -290,7 +292,7 @@ export function DeckRecommendationEngine() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h5 className="font-rajdhani font-bold text-lg text-foreground">{result.deck.name}</h5>
+                          <h5 className="font-rajdhani font-bold text-lg text-foreground">{t(`landing.demo.deckNames.${result.deck.learningPathKey}`)}</h5>
                           {idx === 0 && (
                             <Badge className="bg-primary/20 text-primary border-primary/30">
                               {t('landing.demo.recommend.topPick')}
@@ -321,7 +323,7 @@ export function DeckRecommendationEngine() {
                       <div 
                         key={cardIdx}
                         className="text-2xl"
-                        title={card.name}
+                        title={cardLabel(card.name)}
                       >
                         {card.emoji}
                       </div>

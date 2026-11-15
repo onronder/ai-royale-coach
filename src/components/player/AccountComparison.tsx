@@ -17,7 +17,8 @@ interface StatRowProps {
   higherIsBetter?: boolean;
 }
 
-function StatRow({ label, icon, values, format = (v) => v.toLocaleString(), higherIsBetter = true }: StatRowProps) {
+function StatRow({ label, icon, values, format, higherIsBetter = true }: StatRowProps) {
+  const { i18n } = useTranslation();
   const numericValues = values.map(v => v ?? 0);
   const maxValue = Math.max(...numericValues);
   const minValue = Math.min(...numericValues);
@@ -46,7 +47,7 @@ function StatRow({ label, icon, values, format = (v) => v.toLocaleString(), high
           >
             {value !== undefined ? (
               <div className="flex items-center justify-center gap-1">
-                <span>{format(value)}</span>
+                <span>{format ? format(value) : value.toLocaleString(i18n.language)}</span>
                 {isBest && <TrendingUp className="h-4 w-4 text-success" />}
                 {isWorst && <TrendingDown className="h-4 w-4 text-destructive/70" />}
               </div>

@@ -246,10 +246,10 @@
       "aiCoachInsight": "Insight del Coach IA",
       "tryWithYourDeck": "Prueba con TU Mazo",
       "aiInsights": {
-        "hogCycle": "Tu posicionamiento de Mosquetero es excelente para defender. Considera usar Gólem de Hielo para atraer tropas enemigas mientras tu Montapuercos conecta para daño extra. El valor del Bola de Fuego puede mejorarse esperando empujes medianos.",
-        "golemBeatdown": "¡Excelente ejecución de beatdown! Concéntrate en construir empujes masivos en elixir doble. Tu timing del Rayo contra Torre Inferno es crucial. Considera atraer los edificios defensivos antes de comprometer tu Gólem en elixir simple.",
-        "logBait": "¡Excelente baiting de hechizos! Tus colocaciones de Princesa fuerzan el uso del Tronco efectivamente. Concéntrate en ciclar Cohete en tiempo extra cuando vayas adelante. Mejora tus predicciones de Barril de Duendes contra oponentes que telegrafían sus patrones de uso de hechizos.",
-        "xbowSiege": "Las colocaciones pacientes de Ballesta muestran disciplina. Tu timing defensivo de Tesla necesita refinamiento—colócalo a 1 casilla del río para atraer tanques. En malas coincidencias, concéntrate en Ballesta defensiva y daño chip con Bola de Fuego en lugar de forzar conexiones."
+        "hogCycle": "La Mosquetera está bien situada en defensa. Atrae a los defensores con el Gólem de hielo para abrir paso al Montapuercos. Guarda la Bola de fuego hasta que se agrupen varias tropas.",
+        "golemBeatdown": "Refuerza al Gólem durante el doble elixir. Elige el momento de usar el Rayo contra la Torre infernal. Con elixir normal, intenta que el rival gaste su edificio defensivo antes de jugar el Gólem.",
+        "logBait": "La posición de tu Princesa obliga al rival a usar El Tronco. Si llevas ventaja en la prórroga, recupera el Cohete. Varía la caída del Barril de duendes según dónde acostumbre lanzar sus hechizos el rival.",
+        "xbowSiege": "Sabes esperar para colocar la Ballesta. Prueba a poner la Torre Tesla a una casilla del río para atraer los tanques. En duelos difíciles, defiende con la Ballesta y desgasta la torre con la Bola de fuego."
       },
       "tabs": {
         "compare": "Comparar",
@@ -304,7 +304,8 @@
         "strong": "Fuerte",
         "good": "Bueno",
         "moderate": "Moderado",
-        "proTip": "Haz clic en cualquier sinergia para aprender por qué estas cartas funcionan bien juntas. ¡Domina estas combinaciones para maximizar el potencial de tu mazo!"
+        "proTip": "Haz clic en cualquier sinergia para aprender por qué estas cartas funcionan bien juntas. ¡Domina estas combinaciones para maximizar el potencial de tu mazo!",
+        "tipLabel": "Consejo experto"
       },
       "difficulty": {
         "subtitle": "Análisis de habilidades y ruta de aprendizaje",
@@ -331,254 +332,254 @@
         },
         "deckData": {
           "hogCycle": {
-            "playstyle": "Presión rápida con ciclo constante",
+            "playstyle": "Recupera tus cartas rápido para mantener la presión.",
             "strengths": [
               "Ciclo rápido",
               "Defensa versátil",
-              "Daño chip"
+              "Daño constante a la torre"
             ],
             "weaknesses": [
-              "Tropas de baja vida",
-              "Vulnerable a hechizos",
-              "Requiere habilidad"
+              "Tropas con poca vida",
+              "Vulnerable a los hechizos",
+              "Exige precisión"
             ],
             "synergies": [
-              "Ice Golem tanquea y distrae defensores",
-              "Sinergia defensiva perfecta vs tanques",
-              "Ciclo de hechizos para daño chip",
-              "Increíble combo de ciclo y distracción"
+              "El Gólem de hielo absorbe golpes y atrae a los defensores.",
+              "Tus cartas defensivas se complementan contra los tanques.",
+              "Recupera tus hechizos para ir desgastando la torre.",
+              "Las cartas baratas distraen al rival mientras renuevas tu mano."
             ],
             "matchups": {
               "golemBeatdown": [
-                "Nunca les des valor para Lightning",
-                "Presiona carril opuesto agresivamente",
-                "Guarda Fireball para Night Witch"
+                "Separa tus tropas para que el Rayo no alcance varios objetivos valiosos.",
+                "Presiona por el carril contrario.",
+                "Guarda la Bola de fuego para la Bruja nocturna."
               ],
               "logBait": [
-                "Log a su Princess, Fireball a su Goblin Gang",
-                "Mantén presión para prevenir ciclo de Rocket",
-                "Predice colocaciones de Goblin Barrel"
+                "Usa El Tronco contra la Princesa y la Bola de fuego contra la Pandilla de duendes.",
+                "Mantén la presión para impedir que el rival lance Cohetes seguidos.",
+                "Anticipa dónde caerá el Barril de duendes."
               ],
               "xbowSiege": [
-                "Presiona mismo carril que X-Bow para prevenir locks",
-                "Fireball a sus edificios defensivos",
-                "Cicla más rápido de lo que pueden defender"
+                "Presiona por el carril de la Ballesta para que no apunte a tu torre.",
+                "Golpea los edificios defensivos con la Bola de fuego.",
+                "Vuelve a atacar antes de que el rival recupere su defensa."
               ]
             },
             "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Domina las mecánicas básicas de ciclo",
+              "name": "Fundamentos (semanas 1 y 2)",
+              "focus": "Domina el ciclo de cartas",
               "tips": [
-                "Aprende la colocación óptima de Cannon vs diferentes condiciones de victoria",
-                "Practica el posicionamiento de Musketeer para defensa",
-                "Acostúmbrate a ciclar rápido con cartas de 1 elixir"
+                "Prueba distintas posiciones para el Cañón según la amenaza.",
+                "Practica la colocación de la Mosquetera en defensa.",
+                "Renueva tu mano con cartas de 1 de elixir."
               ]
             },
             "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Timing y valor de hechizos",
+              "name": "Intermedio (semanas 3 y 4)",
+              "focus": "Aprovecha cada hechizo",
               "tips": [
-                "Aprende cuándo comprometer Hog Rider vs defender",
-                "Practica predecir colocaciones de hechizos",
-                "Domina las técnicas de kiteo con Ice Golem"
+                "Decide cuándo enviar el Montapuercos y cuándo reservar elixir para defender.",
+                "Anticipa dónde caerá el próximo hechizo rival.",
+                "Atrae tropas al otro carril con el Gólem de hielo."
               ]
             },
             "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Ejecución perfecta bajo presión",
+              "name": "Avanzado (desde la semana 5)",
+              "focus": "Juega con precisión bajo presión",
               "tips": [
-                "Desarrolla memoria muscular para defensas perfectas",
-                "Aprende todas las estrategias específicas de cada matchup",
-                "Domina el conteo y seguimiento de elixir"
+                "Practica el momento exacto de desplegar tus defensores.",
+                "Adapta tu defensa al mazo rival.",
+                "Lleva la cuenta del elixir que gasta tu rival."
               ]
             }
           },
           "golemBeatdown": {
-            "playstyle": "Pushes pesados con fuerza abrumadora",
+            "playstyle": "Reúne tropas de apoyo detrás del Gólem para lanzar un ataque contundente.",
             "strengths": [
-              "Alto daño",
-              "Destrucción de torres",
-              "Sinergia de daño de muerte"
+              "Daño elevado",
+              "Gran amenaza para las torres",
+              "Daño al morir"
             ],
             "weaknesses": [
-              "Caro",
+              "Alto coste de elixir",
               "Ciclo lento",
-              "Vulnerable a presión"
+              "Vulnerable a la presión por el otro carril"
             ],
             "synergies": [
-              "Sinergia de spawn de muerte crea push imparable",
-              "Activa Torre del Rey y limpia defensas",
-              "Daño de área combina con pull",
-              "Rage en muerte acelera el push"
+              "Las unidades que aparecen al morir otras tropas mantienen el ataque.",
+              "Puedes activar la torre del rey y despejar las defensas.",
+              "Agrupa las tropas rivales para aprovechar el daño de área.",
+              "La Furia que deja el Leñador acelera el avance."
             ],
             "matchups": {
               "hogCycle": [
-                "Ignora su daño chip",
-                "Construye grandes pushes en doble elixir",
-                "Lightning a sus estructuras defensivas"
+                "Evita gastar demasiado para impedir unos pocos puntos de daño.",
+                "Acumula tropas detrás del Gólem durante el doble elixir.",
+                "Usa el Rayo contra los edificios defensivos."
               ],
               "logBait": [
-                "Baby Dragon countera sus swarms",
-                "Lightning a Inferno Tower",
-                "Pushea a través de su chip de Rocket"
+                "El Bebé dragón elimina los grupos de tropas pequeñas.",
+                "Lanza el Rayo sobre la Torre infernal.",
+                "Mantén el ataque si el rival gasta el Cohete en tu torre."
               ],
               "xbowSiege": [
-                "Tanquea daño de X-Bow con Golem",
-                "Lightning a su Tesla + Archers",
-                "No pueden parar el daño de muerte"
+                "Haz que el Gólem absorba los disparos de la Ballesta.",
+                "Intenta alcanzar la Torre Tesla y las Arqueras con el mismo Rayo.",
+                "Si llega a la torre, el Gólem inflige daño incluso al morir."
               ]
             },
             "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Entendiendo los fundamentos del beatdown",
+              "name": "Fundamentos (semanas 1 y 2)",
+              "focus": "Prepara un ataque con el Gólem",
               "tips": [
-                "Aprende cuándo iniciar un push de Golem de forma segura",
-                "Practica construir tropas de soporte detrás de Golem",
-                "Entiende las sinergias de daño de muerte"
+                "Identifica cuándo puedes jugar el Gólem sin dejar la torre desprotegida.",
+                "Añade las tropas de apoyo detrás del Gólem.",
+                "Observa cómo se combinan los efectos de tus tropas al morir."
               ]
             },
             "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Optimización de push",
+              "name": "Intermedio (semanas 3 y 4)",
+              "focus": "Refuerza tu ataque",
               "tips": [
-                "Domina el timing de Lightning en edificios defensivos",
-                "Aprende a usar Tornado para activar Torre del Rey",
-                "Practica manejar la desventaja de elixir"
+                "Elige el momento de lanzar el Rayo sobre los edificios.",
+                "Usa el Tornado para atraer una tropa y activar la torre del rey.",
+                "Practica la defensa cuando tengas menos elixir que el rival."
               ]
             },
             "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Adaptación a la presión",
+              "name": "Avanzado (desde la semana 5)",
+              "focus": "Responde a la presión",
               "tips": [
-                "Aprende a defender presión en carril opuesto",
-                "Domina el baiting de cartas defensivas clave",
-                "Perfecciona tu timing de push en doble elixir"
+                "Defiende el carril contrario sin agotar tu elixir.",
+                "Haz que el rival gaste sus mejores defensas antes de jugar el Gólem.",
+                "Ajusta el inicio de tu ataque durante el doble elixir."
               ]
             }
           },
           "logBait": {
-            "playstyle": "Juego reactivo con tácticas de bait de hechizos",
+            "playstyle": "Provoca el hechizo del rival antes de lanzar tu siguiente amenaza.",
             "strengths": [
-              "Fuerza malos intercambios",
-              "Defensa fuerte",
-              "Jugadas de predicción"
+              "Intercambios de elixir favorables",
+              "Defensa sólida",
+              "Oportunidades de anticipación"
             ],
             "weaknesses": [
-              "Timing de hechizos crucial",
-              "Early game pasivo",
-              "Dependiente de Princess"
+              "El momento de los hechizos es decisivo",
+              "Inicio de partida prudente",
+              "Depende de la Princesa"
             ],
             "synergies": [
-              "La combinación definitiva de Log bait",
-              "Fuerza al oponente a elegir qué loguear",
-              "Knight tanquea mientras Inferno derrite",
-              "Estrategia de acumulación de daño chip"
+              "Varias amenazas obligan al rival a gastar El Tronco.",
+              "El rival debe decidir contra qué tropa reservar El Tronco.",
+              "El Caballero absorbe golpes mientras la Torre infernal aumenta su daño.",
+              "Los ataques pequeños desgastan la torre poco a poco."
             ],
             "matchups": {
               "hogCycle": [
-                "Inferno Tower countera Hog perfectamente",
-                "Baitea su Log antes de Goblin Barrel",
-                "Ciclo de Rocket para victorias en overtime"
+                "Detén al Montapuercos con la Torre infernal.",
+                "Provoca El Tronco antes de lanzar el Barril de duendes.",
+                "En la prórroga, recupera el Cohete para golpear la torre."
               ],
               "golemBeatdown": [
-                "Inferno Tower es tu única respuesta",
-                "Rocket a sus tropas de soporte",
-                "Barrel en carril opuesto para chip"
+                "La Torre infernal es tu principal respuesta al Gólem.",
+                "Lanza el Cohete sobre las tropas de apoyo.",
+                "Envía el Barril de duendes al otro carril para desgastar la torre."
               ],
               "xbowSiege": [
-                "Knight tanquea disparos de X-Bow",
-                "Rocket a su setup defensivo",
-                "Princess fuerza reacciones"
+                "El Caballero puede absorber los disparos de la Ballesta.",
+                "Golpea las defensas agrupadas con el Cohete.",
+                "Juega la Princesa para obligar al rival a responder."
               ]
             },
             "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Básicos del bait de hechizos",
+              "name": "Fundamentos (semanas 1 y 2)",
+              "focus": "Provoca los hechizos rivales",
               "tips": [
-                "Aprende la colocación de Princess detrás de la Torre del Rey",
-                "Practica variaciones de colocación de Goblin Barrel",
-                "Entiende qué cartas baitean qué hechizos"
+                "Practica la colocación de la Princesa detrás de la torre del rey.",
+                "Varía el punto de caída del Barril de duendes alrededor de la torre.",
+                "Observa qué hechizo reserva el rival para cada tropa."
               ]
             },
             "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Maestría en predicción",
+              "name": "Intermedio (semanas 3 y 4)",
+              "focus": "Anticipa la respuesta",
               "tips": [
-                "Aprende a predecir el uso de hechizos del oponente",
-                "Domina el ciclo de Rocket para daño chip",
-                "Practica baitear Log antes de Barrel"
+                "Predice cuándo usará el rival su hechizo.",
+                "Recupera el Cohete para acumular daño en la torre.",
+                "Practica cómo provocar El Tronco antes de lanzar el Barril de duendes."
               ]
             },
             "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Juegos mentales y adaptación",
+              "name": "Avanzado (desde la semana 5)",
+              "focus": "Lee el juego rival",
               "tips": [
-                "Desarrolla lecturas de los patrones del oponente",
-                "Aprende todos los puntos de predicción de Goblin Barrel",
-                "Domina la colocación defensiva de Inferno Tower"
+                "Detecta sus hábitos defensivos.",
+                "Cambia el punto de caída del Barril de duendes si el rival lo anticipa.",
+                "Afina la posición de la Torre infernal en defensa."
               ]
             }
           },
           "xbowSiege": {
-            "playstyle": "Locks de X-Bow defensivos con daño chip",
+            "playstyle": "Protege la Ballesta para que fije la torre como objetivo y la desgaste.",
             "strengths": [
-              "Ventaja de rango",
-              "Defensa fuerte",
-              "Fuerza reacciones"
+              "Ventaja de alcance",
+              "Defensa sólida",
+              "Obliga al rival a responder"
             ],
             "weaknesses": [
-              "Dependiente de matchup",
-              "Alto skill cap",
-              "Compromiso pesado"
+              "Depende del mazo rival",
+              "Colocación exigente",
+              "Atacar requiere mucho elixir"
             ],
             "synergies": [
-              "Tesla protege X-Bow de tanques",
-              "Ice Golem tanquea, Archers DPS",
-              "Control de hechizos y daño chip",
-              "Cartas de ciclo que distraen efectivamente"
+              "La Torre Tesla protege la Ballesta de los tanques.",
+              "El Gólem de hielo absorbe golpes mientras las Arqueras atacan.",
+              "Los hechizos controlan el terreno y desgastan la torre.",
+              "Las cartas baratas distraen al rival y aceleran tu ciclo."
             ],
             "matchups": {
               "hogCycle": [
-                "Defiende con Tesla, no comprometas X-Bow",
-                "Fireball + Log para daño chip",
-                "Out-ciclea su Fireball"
+                "Defiende con la Torre Tesla y reserva la Ballesta.",
+                "Desgasta la torre con la Bola de fuego y El Tronco.",
+                "Ataca antes de que el rival recupere la Bola de fuego."
               ],
               "golemBeatdown": [
-                "Presiona carril opuesto constantemente",
-                "Nunca les dejes construir pushes",
-                "Fireball a sus tropas de soporte"
+                "Mantén la presión por el carril contrario.",
+                "Impide que el rival acumule tropas detrás del Gólem.",
+                "Lanza la Bola de fuego sobre las tropas de apoyo."
               ],
               "logBait": [
-                "Archers para Princess",
-                "Log a sus swarms",
-                "Fireball + Log a Goblin Gang"
+                "Usa las Arqueras contra la Princesa.",
+                "Elimina los grupos de tropas con El Tronco.",
+                "Responde a la Pandilla de duendes con la Bola de fuego y El Tronco."
               ]
             },
             "phase1": {
-              "name": "Fundamentos (Semana 1-2)",
-              "focus": "Colocación y protección de X-Bow",
+              "name": "Fundamentos (semanas 1 y 2)",
+              "focus": "Coloca y protege la Ballesta",
               "tips": [
-                "Aprende posiciones seguras de colocación de X-Bow",
-                "Practica colocación de Tesla para atraer tanques",
-                "Entiende cuándo ir ofensivo vs defensivo"
+                "Localiza las casillas donde la Ballesta queda menos expuesta.",
+                "Practica la colocación de la Torre Tesla para atraer los tanques al centro.",
+                "Decide cuándo usar la Ballesta en ataque y cuándo en defensa."
               ]
             },
             "phase2": {
-              "name": "Intermedio (Semana 3-4)",
-              "focus": "Conocimiento de matchups",
+              "name": "Intermedio (semanas 3 y 4)",
+              "focus": "Reconoce los mazos rivales",
               "tips": [
-                "Aprende qué matchups favorecen X-Bow ofensivo",
-                "Domina X-Bow defensivo en malos matchups",
-                "Practica estrategias de daño chip con hechizos"
+                "Identifica contra qué mazos conviene atacar con la Ballesta.",
+                "Usa la Ballesta en defensa en los enfrentamientos difíciles.",
+                "Practica cómo desgastar la torre con hechizos."
               ]
             },
             "phase3": {
-              "name": "Avanzado (Semana 5+)",
-              "focus": "Ejecución perfecta",
+              "name": "Avanzado (desde la semana 5)",
+              "focus": "Mejora la precisión",
               "tips": [
-                "Desarrolla comprensión profunda de matchups",
-                "Domina colocaciones defensivas perfectas",
-                "Aprende a adaptar el estilo de juego a mitad de partida"
+                "Prepara el ataque según el ciclo rival.",
+                "Despliega cada defensor en la casilla adecuada y en el momento justo.",
+                "Adapta tu plan a las respuestas del rival durante la partida."
               ]
             }
           }
@@ -721,8 +722,16 @@
           "Cycle": "Ciclo",
           "Beatdown": "Beatdown",
           "Control": "Control",
-          "Siege": "Asedio"
+          "Siege": "Asedio",
+          "Bait": "Cebo de hechizos",
+          "Bridge Spam": "Presión en el puente"
         }
+      },
+      "deckNames": {
+        "hogCycle": "Ciclo de Montapuercos 2,6",
+        "golemBeatdown": "Ataque con Gólem",
+        "logBait": "Cebo clásico contra El Tronco",
+        "xbowSiege": "Asedio con Ballesta 3,0"
       }
     },
     "cta": {
@@ -1342,7 +1351,13 @@
     "aiQuota": "Solicitudes IA Hoy",
     "quotaExhausted": "Límite diario de IA alcanzado. Se reinicia a medianoche.",
     "quotaLow": "Pocas solicitudes de IA restantes hoy.",
-    "accessDenied": "Acceso denegado. El Coach IA no está habilitado para esta cuenta."
+    "accessDenied": "Acceso denegado. El Coach IA no está habilitado para esta cuenta.",
+    "reviewMatch": "Repasemos esta partida. Resultado: {{result}}.",
+    "reviewQuestion": "¿Qué podría hacer de otra manera en la próxima partida?",
+    "gameMode": "Modo de juego",
+    "conversationDate": "Chat del {{date}}",
+    "messageCount_one": "{{count}} mensaje",
+    "messageCount_other": "{{count}} mensajes"
   },
   "match": {
     "victory": "Victoria",
@@ -1366,7 +1381,8 @@
     "analysis": "Análisis de Partida",
     "keyMoments": "Momentos Clave",
     "counterDeck": "Mazo Counter",
-    "discussWithCoach": "Discutir con Coach IA"
+    "discussWithCoach": "Discutir con Coach IA",
+    "scanOpponent": "Analizar a este rival"
   },
   "cards": {
     "collection": "Colección de Cartas",
@@ -1378,7 +1394,12 @@
     "updateSuccess": "Maestría de cartas actualizada exitosamente",
     "updateFailed": "Error al actualizar maestría de cartas",
     "suggestionsFailed": "Error al obtener sugerencias de cartas",
-    "progress": "Progreso"
+    "progress": "Progreso",
+    "evolved": "Evolucionada",
+    "evolutionUnlocked": "Evolución desbloqueada. Esta carta obtiene habilidades especiales en combate.",
+    "elixirCost": "{{cost}} de elixir",
+    "displayLevel": "Nivel {{level}}",
+    "evolutionBadge": "EVO"
   },
   "leaderboard": {
     "title": "Tabla de Líderes",
@@ -1437,7 +1458,13 @@
     "noRankingsDescription": "No se pudieron cargar los rankings globales de clanes. Intenta actualizar.",
     "globalRankingsFailed": "Error al cargar rankings globales de clanes",
     "enterSearchQuery": "Por favor ingresa una búsqueda",
-    "searchFailed": "Error al buscar clanes"
+    "searchFailed": "Error al buscar clanes",
+    "entryTypes": {
+      "open": "Abierto",
+      "closed": "Cerrado",
+      "inviteOnly": "Solo por invitación",
+      "invite_only": "Solo por invitación"
+    }
   },
   "loadingMessages": {
     "playerData": "Cargando datos del jugador...",
@@ -1567,7 +1594,8 @@
       "title": "Preferencias",
       "description": "Gestiona tus preferencias de la aplicación",
       "language": "Idioma",
-      "languageDescription": "Elige tu idioma preferido"
+      "languageDescription": "Elige tu idioma preferido",
+      "languageSaveFailed": "El idioma ha cambiado en este dispositivo. No se pudo guardar en tu cuenta."
     }
   },
   "matchDetail": {
@@ -1607,7 +1635,7 @@
     "overallStrategy": "Estrategia General"
   },
   "footer": {
-    "tagline": "Fittechs Software - Elevate your data."
+    "tagline": "Fittechs Software — Saca más partido a tus datos."
   },
   "tooltips": {
     "stats": {
@@ -1705,7 +1733,7 @@
     "synergyMatrixDesc": "Mapa de calor interactivo que muestra valoraciones de sinergia entre todos los pares de cartas",
     "strong": "Fuerte (4.5-5)",
     "good": "Bueno (3.5-4.4)",
-    "neutral": "Neutral (2.5-3.4)",
+    "neutral": "Neutral (2,5–3,4)",
     "weak": "Débil (1-2.4)",
     "favorable": "Favorable",
     "even": "Equilibrado",
@@ -1843,7 +1871,12 @@
     "match": "Partido",
     "pending": "Pendiente",
     "tbd": "Por Definir",
-    "unknown": "Jugador Desconocido"
+    "unknown": "Jugador Desconocido",
+    "formats": {
+      "single_elimination": "Eliminación directa",
+      "double_elimination": "Doble eliminación",
+      "round_robin": "Todos contra todos"
+    }
   },
   "comparison": {
     "title": "Comparación de Cuentas",
@@ -2165,6 +2198,35 @@
       "beginner": "Principiante",
       "intermediate": "Intermedio",
       "advanced": "Avanzado"
+    },
+    "averageCost": "Elixir medio: {{cost}}",
+    "popularity": "Popularidad",
+    "descriptions": {
+      "hog_2_6_cycle": "Mantén la presión con un ciclo rápido. Exige precisión y un buen control del elixir.",
+      "golem_beatdown": "Prepara un gran ataque con tropas pesadas y supera la defensa rival.",
+      "x_bow_2_9": "Controla la partida con este mazo de asedio defensivo y desgasta la torre poco a poco.",
+      "pekka_bridge_spam": "Defiende y aprovecha las tropas supervivientes para lanzar un contraataque fuerte.",
+      "log_bait": "Fuerza el hechizo rival y ataca con el Barril de duendes.",
+      "hog_2_6_cycle_classic": "Mazo clásico de ciclo rápido que exige buena defensa y precisión al gastar elixir.",
+      "miner_2_9_cycle": "Controla al rival y desgasta su torre con un ciclo rápido.",
+      "royal_giant_cycle": "Vuelve rápido al Gigante noble para mantener la presión.",
+      "mortar_cycle": "Mazo de asedio de ciclo rápido que usa el Mortero para dañar la torre.",
+      "cannon_cart_cycle": "Mazo de ciclo que presiona con el Cañón con ruedas.",
+      "e_giant_beatdown": "Usa al Gigante eléctrico como tanque para encabezar un gran ataque.",
+      "mega_knight_sparky": "Defiende con el Megacaballero y contraataca con Chispitas.",
+      "lava_hound_clone": "Ataca desde el aire y multiplica la presión con Clon.",
+      "giant_graveyard": "Combina Gigante y Cementerio para presionar por ambas calles.",
+      "pekka_bridge_spam_classic": "Presiona en el puente y reserva a P.E.K.K.A para defender.",
+      "ram_rider_bridge_spam": "Presiona rápido en el puente y ralentiza al rival con la Montacarneros.",
+      "magic_archer_bridge_spam": "Presiona en el puente aprovechando los ángulos de tiro del Arquero mágico.",
+      "splashyard": "Controla la defensa y usa Cementerio para dañar la torre.",
+      "miner_poison_control": "Rota tus hechizos y desgasta la torre con el Minero.",
+      "ice_bow": "Defiende la Ballesta combinando Mago de hielo y Tornado.",
+      "classic_log_bait": "El clásico mazo de cebo: fuerza los hechizos del rival y aprovecha la oportunidad.",
+      "prince_bait": "Presiona con los dos príncipes y fuerza los hechizos rivales.",
+      "rocket_bait": "Fuerza los hechizos pesados con dos cartas similares a la Princesa.",
+      "x_bow_3_0": "Ciclo clásico de Ballesta que exige dominar la defensa.",
+      "mortar_rocket": "Desgasta con Mortero y hechizos, y remata con el Cohete."
     }
   },
   "deckComparison": {
@@ -2251,7 +2313,15 @@
     "processing": "Procesando...",
     "started": "Iniciado",
     "recent": "Reciente",
-    "noOperationsYet": "Aún no hay operaciones"
+    "noOperationsYet": "Aún no hay operaciones",
+    "elapsed": "Tiempo transcurrido",
+    "remaining": "Quedan unos {{time}}",
+    "operationsRunning_one": "{{count}} operación en curso",
+    "operationsRunning_other": "{{count}} operaciones en curso",
+    "cardMastery": "Calculando el dominio de cartas",
+    "collection": "Sincronizando la colección",
+    "deckStats": "Actualizando las estadísticas del mazo",
+    "achievements": "Sincronizando logros"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -2305,7 +2375,7 @@
     "successRate": "Tasa de Éxito",
     "types": {
       "standard": "Recomendado",
-      "counter": "Counter Pick",
+      "counter": "Respuesta al mazo rival",
       "strength": "Juega a tus Fortalezas"
     },
     "proactive": {
@@ -2754,7 +2824,16 @@
         "high": "Alto",
         "medium": "Medio",
         "low": "Bajo"
-      }
+      },
+      "clean": "Sin restricciones",
+      "clearMarkClean": "Quitar restricciones",
+      "loadingCaseDetails": "Cargando detalles del caso…",
+      "reviewNotes": "Notas de revisión (opcional)",
+      "seenCount": "Visto {{count}} veces",
+      "setWarning": "Emitir una advertencia",
+      "softBlock": "Limitar el acceso",
+      "softBlocked": "Acceso limitado",
+      "warning": "Advertencia"
     },
     "navigation": {
       "checking": "Comprobando permisos…",
@@ -3059,11 +3138,11 @@
   },
   "proPlayers": {
     "mohamedLight": {
-      "playstyle": "Especialista en cebo agresivo que castiga cada error con Barriles de Duendes perfectos",
+      "playstyle": "Aprovecha los errores del rival con lanzamientos precisos del Barril de duendes.",
       "specialty": "Spam de Puente"
     },
     "oyassuu": {
-      "playstyle": "Maestro del ciclo legendario que supera a cada mazo con Hog Riders ultrarrápidos",
+      "playstyle": "Recupera el Montapuercos antes de que el rival vuelva a tener su defensa en mano.",
       "specialty": "Maestro del Ciclo"
     },
     "morten": {
@@ -3079,7 +3158,7 @@
       "specialty": "Rey del Terremoto"
     },
     "surgicalGoblin": {
-      "playstyle": "Jugador de asedio calculado que fija X-Bows en el momento perfecto",
+      "playstyle": "Elige el momento preciso para que la Ballesta apunte a la torre.",
       "specialty": "Maestro del Asedio"
     }
   },
@@ -3182,5 +3261,35 @@
   "playerSelector": {
     "addAccount": "Añadir cuenta",
     "accounts": "Cuentas"
+  },
+  "accessibility": {
+    "navigationPath": "Ruta de navegación",
+    "pagination": "Paginación",
+    "morePages": "Más páginas",
+    "previousSlide": "Diapositiva anterior",
+    "nextSlide": "Diapositiva siguiente",
+    "clanBadge": "Insignia del clan",
+    "removePlayer": "Quitar a {{name}}",
+    "carousel": "Carrusel",
+    "slide": "Diapositiva"
+  },
+  "splash": {
+    "tagline": "Tu entrenador de batallas con IA",
+    "loading": "Preparando la arena…"
+  },
+  "errors": {
+    "screenFailed": "No se ha podido cargar esta pantalla.",
+    "details": "Ver detalles del error",
+    "reload": "Recargar la página"
+  },
+  "accountWarning": {
+    "limited": "Acceso limitado",
+    "detected": "Actividad inusual detectada",
+    "limitedDescription": "Algunas funciones están limitadas por actividad inusual. Contacta con soporte si crees que es un error.",
+    "description": "Detectamos actividad inusual. Sigue usando la aplicación con normalidad para que desaparezca este aviso.",
+    "help": "Obtener ayuda"
+  },
+  "coachingHistory": {
+    "language": "Consejo guardado en {{language}}"
   }
 }

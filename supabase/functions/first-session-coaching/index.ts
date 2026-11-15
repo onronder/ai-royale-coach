@@ -1,3 +1,4 @@
+import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { z } from 'npm:zod@3';
@@ -9,7 +10,7 @@ import { coachingCard, coachingSwap, formatCoachingAdvice } from '../_shared/coa
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, latestLadderTrophies, normalizeTag } from '../_shared/coaching-match.ts';
 import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayResponseHeaders } from '../_shared/run-id.ts';
-const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up']), language:z.enum(['en','tr','es','fr','pt']).default('en'), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
+const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up']), language:z.string().optional().transform(productLanguage), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
 const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
@@ -98,8 +99,8 @@ async function handleRequest(req: Request): Promise<Response> {
      if (!added || (changed && (!generated.output.reason || !generated.output.practice))) throw new Error('Invalid alternative returned');
      const deck = changed ? original.map((c: {id:number}) => c.id === currentSwap.removed.id ? added : c) : task.recommended_deck;
      const advice = formatCoachingAdvice(currentSwap.removed, added, player.cards, language, generated.output.reason, generated.output.practice, generated.output.answer);
-     const recommendation = { ...task.recommendation, follow_up_verified: true };
-     if (changed) Object.assign(recommendation, { add_id: added.id, reason: advice.reason, practice: advice.practice, verified_swap: true });
+     const recommendation = { ...task.recommendation, follow_up_verified: true, follow_up_language: language };
+     if (changed) Object.assign(recommendation, { language, add_id: added.id, reason: advice.reason, practice: advice.practice, verified_swap: true });
      const update = {
        follow_up_answer: advice.answer, recommended_deck: deck, recommendation,
        ...(changed ? { shown_at: null, matched_battle_key: null, battle_result: null, status: 'ready' } : {}),
@@ -130,7 +131,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if(!removed||!added||sourceDeck.some((c:{id:number})=>c.id===added.id)) throw new Error('AI suggested an invalid card swap');
    const advice=formatCoachingAdvice(removed,added,player.cards,language,suggestion.reason,suggestion.practice);
    const deck=sourceDeck.map((c:{id:number})=>c.id===removed.id?added:c);
-   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:sourceDeck,recommended_deck:deck,recommendation:{...suggestion,reason:advice.reason,practice:advice.practice,verified_swap:true},prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
+   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:sourceDeck,recommended_deck:deck,recommendation:{...suggestion,language,reason:advice.reason,practice:advice.practice,verified_swap:true},prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
    if(error) throw error;
    if(access.isTrial) await recordTrialUsage(db,user.id,'first-session-coaching');
    await event('coaching_generated',{task_id:task.id,gateway_run_id:generated.runId,model:'openai/gpt-6-astra',input_tokens:generated.usage.inputTokens,output_tokens:generated.usage.outputTokens});

@@ -1,3 +1,4 @@
+import { baseLanguage } from '../../supabase/functions/_shared/language';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -43,6 +44,7 @@ const i18nInit = i18n
       escapeValue: false,
     },
     detection: {
+      convertDetectedLanguage: baseLanguage,
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },

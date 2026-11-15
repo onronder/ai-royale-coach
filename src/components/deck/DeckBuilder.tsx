@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -63,6 +64,7 @@ export function DeckBuilder({
   userCollection = [],
   playerTrophies = 0
 }: DeckBuilderProps) {
+  const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { hasAccess } = useSubscription();
   const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
@@ -116,6 +118,7 @@ export function DeckBuilder({
   };
 
   const analyzeDeck = async () => {
+    const language = i18n.language;
     if (selectedCards.length !== 8) {
       toast.error(t('deck.completeDeckFirst'));
       return;
@@ -130,10 +133,10 @@ export function DeckBuilder({
     try {
       const [basicResult, advancedResult] = await Promise.all([
         supabase.functions.invoke('analyze-deck-builder', {
-          body: { cards: selectedCards, language: i18n.language }
+          body: { cards: selectedCards, language }
         }),
         supabase.functions.invoke('analyze-deck-advanced', {
-          body: { cards: selectedCards, language: i18n.language }
+          body: { cards: selectedCards, language }
         })
       ]);
 
@@ -146,6 +149,7 @@ export function DeckBuilder({
       if (basicResult.error) throw basicResult.error;
       if (advancedResult.error) throw advancedResult.error;
       
+      if (language !== i18n.language) return;
       setAnalysis(basicResult.data);
       setAdvancedAnalysis(advancedResult.data);
       setLastAnalyzedLanguage(i18n.language);
@@ -340,7 +344,7 @@ export function DeckBuilder({
                 {availableCards.map((card) => (
                   <button type="button"
                     key={card.id}
-                    aria-label={card.name}
+                    aria-label={cardLabel(card.name)}
                     aria-pressed={selectedCards.some(selected => selected.id === card.id)}
                     className="min-w-0 rounded-lg transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-primary"
                     onClick={() => addCard(card)}

@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Crown, Shield, Swords, FastForward, Play, Pause, Zap, MessageCircle, X, Share2, AlertTriangle } from 'lucide-react';
@@ -44,7 +45,8 @@ export function DreamArenaView({
   onClose,
   onPlayAgain,
 }: DreamArenaViewProps) {
-  const { t } = useTranslation();
+  const cardLabel = useCardName();
+  const { t, i18n } = useTranslation();
   const { play: playSound } = useArenaSound({ enabled: false, volume: 0.5 });
   
   const [currentTick, setCurrentTick] = useState(0);
@@ -336,7 +338,7 @@ export function DreamArenaView({
               <p className="font-bold text-foreground truncate max-w-[100px]">{userProfile.name}</p>
               <div className="flex items-center gap-1 text-gold text-sm">
                 <Crown className="w-3 h-3" />
-                <span>{userProfile.trophies.toLocaleString()}</span>
+                <span>{userProfile.trophies.toLocaleString(i18n.language)}</span>
               </div>
             </div>
           </motion.div>
@@ -350,7 +352,7 @@ export function DreamArenaView({
           >
             <Badge variant="outline" className="animate-pulse-glow border-primary/50 text-primary px-4 py-1">
               <Swords className="w-4 h-4 mr-1" />
-              VS
+              {t('common.vs')}
             </Badge>
             <span className={cn(
               "text-3xl mt-2 tabular-nums arena-timer",
@@ -393,7 +395,7 @@ export function DreamArenaView({
               </div>
               <div className="flex items-center justify-end gap-1 text-gold text-sm">
                 <Crown className="w-3 h-3" />
-                <span>{proTrophies.toLocaleString()}</span>
+                <span>{proTrophies.toLocaleString(i18n.language)}</span>
               </div>
               <Badge variant="secondary" className="text-xs mt-1">{t(proPlayer.specialty)}</Badge>
             </div>
@@ -696,19 +698,19 @@ export function DreamArenaView({
               <div className="relative w-40 h-52 rounded-xl overflow-hidden border-4 border-gold shadow-[0_0_40px_hsl(var(--gold)/0.6)]">
                 <img
                   src={activeCard.iconUrls?.medium}
-                  alt={activeCard.name}
+                  alt={cardLabel(activeCard.name)}
                   className="w-full h-full object-cover bg-black/50"
                 />
                 
                 {/* Card Name Overlay */}
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3">
                   <p className="text-center text-white font-bold text-lg drop-shadow-lg">
-                    {activeCard.name}
+                    {cardLabel(activeCard.name)}
                   </p>
                   {activeCard.elixirCost && (
                     <div className="flex justify-center mt-1">
                       <span className="bg-primary text-primary-foreground text-sm font-bold px-3 py-0.5 rounded-full">
-                        {activeCard.elixirCost} Elixir
+                        {t('cards.elixirCost', { cost: activeCard.elixirCost })}
                       </span>
                     </div>
                   )}

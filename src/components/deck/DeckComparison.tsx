@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -57,6 +58,7 @@ interface MatchupPrediction {
 }
 
 export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckComparisonProps) {
+  const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
   const { hasQuotaRemaining, incrementUsage } = useAIQuota();
@@ -70,7 +72,8 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   const [showPricingModal, setShowPricingModal] = useState(false);
   
   // AI Matchup prediction state
-  const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
+  const [savedPrediction, setMatchupPrediction] = useState<(MatchupPrediction & { language: string }) | null>(null);
+  const matchupPrediction = savedPrediction?.language === i18n.language ? savedPrediction : null;
   const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
   const [showMatchupAnalysis, setShowMatchupAnalysis] = useState(true);
 
@@ -109,6 +112,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   };
 
   const predictMatchup = async () => {
+    const language = i18n.language;
     // Check subscription first
     if (!hasAccess) {
       setShowPricingModal(true);
@@ -145,7 +149,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
           deckA: deckANames, 
           deckB: deckBNames,
           playerTag: playerTag,
-          language: i18n.language 
+          language
         }
       });
 
@@ -158,7 +162,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       if (error) throw error;
       if (!data) throw new Error('No prediction returned');
 
-      setMatchupPrediction(data as MatchupPrediction);
+      setMatchupPrediction({ ...data, language });
       // Only increment usage if it was a fresh prediction (not cached)
       if (!data.fromCache) {
         await incrementUsage();
@@ -294,7 +298,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                   <div>
                     <span className="text-2xl font-bold text-foreground">{deck1Elixir.toFixed(1)}</span>
                   </div>
-                  <div className="text-muted-foreground">vs</div>
+                  <div className="text-muted-foreground">{t('common.vs')}</div>
                   <div>
                     <span className="text-2xl font-bold text-foreground">{deck2Elixir.toFixed(1)}</span>
                   </div>
@@ -308,7 +312,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                   <p className="text-xs text-muted-foreground">{t('deckComparison.lowCost')}</p>
                   <div className="flex justify-around mt-1">
                     <span className="font-bold">{deck1Breakdown.lowCost}</span>
-                    <span className="text-muted-foreground">vs</span>
+                    <span className="text-muted-foreground">{t('common.vs')}</span>
                     <span className="font-bold">{deck2Breakdown.lowCost}</span>
                   </div>
                 </div>
@@ -317,7 +321,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                   <p className="text-xs text-muted-foreground">{t('deckComparison.midCost')}</p>
                   <div className="flex justify-around mt-1">
                     <span className="font-bold">{deck1Breakdown.midCost}</span>
-                    <span className="text-muted-foreground">vs</span>
+                    <span className="text-muted-foreground">{t('common.vs')}</span>
                     <span className="font-bold">{deck2Breakdown.midCost}</span>
                   </div>
                 </div>
@@ -326,7 +330,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                   <p className="text-xs text-muted-foreground">{t('deckComparison.highCost')}</p>
                   <div className="flex justify-around mt-1">
                     <span className="font-bold">{deck1Breakdown.highCost}</span>
-                    <span className="text-muted-foreground">vs</span>
+                    <span className="text-muted-foreground">{t('common.vs')}</span>
                     <span className="font-bold">{deck2Breakdown.highCost}</span>
                   </div>
                 </div>
@@ -431,7 +435,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                                 <div key={idx} className="flex items-center gap-3 bg-background/50 rounded-lg p-2 text-sm">
                                   {getAdvantageIcon(matchup.advantage)}
                                   <span className="font-medium">{matchup.deckACard}</span>
-                                  <span className="text-muted-foreground">vs</span>
+                                  <span className="text-muted-foreground">{t('common.vs')}</span>
                                   <span className="font-medium">{matchup.deckBCard}</span>
                                   <span className="text-muted-foreground text-xs ml-auto hidden sm:block">{matchup.reason}</span>
                                 </div>
@@ -533,7 +537,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                       <div key={idx} className="flex items-center gap-2 bg-muted/50 rounded p-2 text-sm">
                         <Zap className="h-3 w-3 text-primary" />
                         <span className="text-muted-foreground">{card.elixirCost}</span>
-                        <span className="flex-1">{card.name}</span>
+                        <span className="flex-1">{cardLabel(card.name)}</span>
                       </div>
                     ))}
                   </div>
@@ -545,7 +549,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
                       <div key={idx} className="flex items-center gap-2 bg-muted/50 rounded p-2 text-sm">
                         <Zap className="h-3 w-3 text-primary" />
                         <span className="text-muted-foreground">{card.elixirCost}</span>
-                        <span className="flex-1">{card.name}</span>
+                        <span className="flex-1">{cardLabel(card.name)}</span>
                       </div>
                     ))}
                   </div>

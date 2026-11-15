@@ -19,11 +19,11 @@ export interface OperationProgress {
   error: string | null;
 }
 
-export const operationLabels: Record<string, { label: string; icon: string }> = {
-  'card_mastery_calculation': { label: 'Card Mastery Calculation', icon: 'Sparkles' },
-  'card_collection_sync': { label: 'Card Collection Sync', icon: 'RefreshCw' },
-  'deck_stats_tracking': { label: 'Deck Stats Tracking', icon: 'BarChart2' },
-  'achievement_sync': { label: 'Achievement Sync', icon: 'Trophy' },
+export const operationLabels: Record<string, { labelKey: string; icon: string }> = {
+  'card_mastery_calculation': { labelKey: 'progress.cardMastery', icon: 'Sparkles' },
+  'card_collection_sync': { labelKey: 'progress.collection', icon: 'RefreshCw' },
+  'deck_stats_tracking': { labelKey: 'progress.deckStats', icon: 'BarChart2' },
+  'achievement_sync': { labelKey: 'progress.achievements', icon: 'Trophy' },
 };
 
 /**

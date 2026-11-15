@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ interface MatchupPredictionsProps {
 }
 
 export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const [expandedMatchups, setExpandedMatchups] = useState<Set<string>>(new Set());
 
@@ -165,7 +167,7 @@ export function MatchupPredictions({ predictions }: MatchupPredictionsProps) {
                         <div className="flex flex-wrap gap-2">
                           {matchup.keyCards.map((card, i) => (
                             <Badge key={i} variant="outline" className="text-xs">
-                              {card}
+                              {cardLabel(card)}
                             </Badge>
                           ))}
                         </div>

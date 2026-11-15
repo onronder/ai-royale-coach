@@ -19,7 +19,7 @@ interface QuickAccountSwitchProps {
 }
 
 export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwitchProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { profiles, isLoading } = usePlayerProfiles(userId);
   
@@ -96,7 +96,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
                 <div className="flex items-center gap-2 text-xs">
                   <div className="flex items-center gap-1 text-gold group/trophy">
                     <Trophy className="h-3 w-3 animate-[trophy-shine_2s_ease-in-out_infinite]" />
-                    <span className="font-semibold">{currentProfile.trophies?.toLocaleString() || '—'}</span>
+                    <span className="font-semibold">{currentProfile.trophies?.toLocaleString(i18n.language) || '—'}</span>
                   </div>
                   <span className="px-1.5 py-0.5 bg-success/30 text-success text-[10px] font-bold rounded-full border border-success/50 shadow-[0_0_10px_hsl(145_80%_42%/0.5)] flex items-center gap-1">
                     <Crown className="h-2.5 w-2.5 text-gold animate-[trophy-shine_2s_ease-in-out_infinite]" />
@@ -139,7 +139,7 @@ export function QuickAccountSwitch({ currentPlayerTag, userId }: QuickAccountSwi
                 </p>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground group-hover/card:text-gold transition-colors duration-200">
                   <Trophy className="h-3 w-3 text-gold/70 group-hover/card:text-gold group-hover/card:drop-shadow-[0_0_6px_hsl(45_100%_55%/0.6)] transition-all duration-200" />
-                  <span>{profile.trophies?.toLocaleString() || '—'}</span>
+                  <span>{profile.trophies?.toLocaleString(i18n.language) || '—'}</span>
                 </div>
               </div>
             </div>

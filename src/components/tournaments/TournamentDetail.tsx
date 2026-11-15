@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,7 +34,7 @@ interface TournamentDetailProps {
 }
 
 export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, playerName }: TournamentDetailProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -139,13 +140,13 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold">{tournament.name}</h2>
                 <Badge className={`${getStatusColor(tournament.status)} text-white`}>
-                  {tournament.status.replace('_', ' ').toUpperCase()}
+                  {t(`tournaments.${tournament.status === 'in_progress' ? 'inProgress' : tournament.status}`, { defaultValue: t('common.unknown') })}
                 </Badge>
               </div>
               <div className="text-right">
                 <div className="flex items-center gap-1 text-yellow-500 font-bold text-2xl">
                   <DollarSign className="w-6 h-6" />
-                  <span>{tournament.prize_pool.toLocaleString()}</span>
+                  <span>{tournament.prize_pool.toLocaleString(i18n.language)}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">{t('tournaments.prizePool')}</p>
               </div>
@@ -182,7 +183,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                 <div>
                   <p className="text-sm text-muted-foreground">{t('tournaments.starts')}</p>
                   <p className="font-semibold">
-                    {formatDistanceToNow(new Date(tournament.start_date), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(tournament.start_date), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                   </p>
                 </div>
               </div>
@@ -191,7 +192,7 @@ export function TournamentDetail({ tournamentId, isOpen, onClose, playerTag, pla
                 <Trophy className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">{t('tournaments.type')}</p>
-                  <p className="font-semibold">{tournament.tournament_type.replace('_', ' ')}</p>
+                  <p className="font-semibold">{t(`tournaments.formats.${tournament.tournament_type}`, { defaultValue: t('common.unknown') })}</p>
                 </div>
               </div>
             </div>

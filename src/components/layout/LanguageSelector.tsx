@@ -1,3 +1,4 @@
+import { changeLanguage } from '@/i18n/changeLanguage';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import {
@@ -15,7 +16,7 @@ export function LanguageSelector() {
   const currentLanguage = languages.find(lang => lang.code === i18n.resolvedLanguage) || languages[0];
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
+    void changeLanguage(languageCode);
   };
 
   return (

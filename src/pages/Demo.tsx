@@ -31,11 +31,11 @@ const Demo = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Interactive Demo - AI Royale | Try AI Coaching Free</title>
-        <meta name="description" content="Experience AI Royale's powerful features without an account. Try deck analysis, matchup predictions, and AI coaching for Clash Royale." />
+        <title>{t('landing.demoPage.title')} | AI Royale</title>
+        <meta name="description" content={t('landing.demoPage.subtitle')} />
         <link rel="canonical" href="https://ai-royale.com/demo" />
-        <meta property="og:title" content="Interactive Demo - AI Royale" />
-        <meta property="og:description" content="Experience AI Royale's powerful features without an account. Try deck analysis, matchup predictions, and AI coaching." />
+        <meta property="og:title" content={t('landing.demoPage.title') + ' | AI Royale'} />
+        <meta property="og:description" content={t('landing.demoPage.subtitle')} />
         <meta property="og:url" content="https://ai-royale.com/demo" />
         <meta property="og:image" content="https://ai-royale.com/og-demo.png" />
         <meta property="og:image:width" content="1200" />

@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { Card } from '@/components/ui/card';
 import { AnimatedCounter } from './AnimatedCounter';
 import { sampleDecks } from '@/data/sampleDecks';
@@ -25,6 +26,7 @@ const getDeckKey = (deckId: string): string => {
 };
 
 export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const [deck1, setDeck1] = useState<SampleDeck>(sampleDecks[0]);
   const [deck2, setDeck2] = useState<SampleDeck>(sampleDecks[1]);
@@ -79,7 +81,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
         </TooltipTrigger>
         <TooltipContent side="top" className="bg-card border-border p-3">
           <div className="space-y-1">
-            <p className="font-rajdhani font-bold text-foreground">{card.name}</p>
+            <p className="font-rajdhani font-bold text-foreground">{cardLabel(card.name)}</p>
             <div className="flex items-center gap-4 text-sm">
               <span className="text-primary flex items-center gap-1">
                 <Zap className="h-3 w-3" />
@@ -120,7 +122,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
             <SelectContent>
               {sampleDecks.map(deck => (
                 <SelectItem key={deck.id} value={deck.id} disabled={deck.id === deck2.id}>
-                  {deck.name}
+                  {t(`landing.demo.deckNames.${deck.learningPathKey}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -141,7 +143,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
             <SelectContent>
               {sampleDecks.map(deck => (
                 <SelectItem key={deck.id} value={deck.id} disabled={deck.id === deck1.id}>
-                  {deck.name}
+                  {t(`landing.demo.deckNames.${deck.learningPathKey}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -158,7 +160,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-6 bg-card/50 backdrop-blur border-primary/30">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-rajdhani font-bold text-foreground">
-                {deck1.name}
+                {t(`landing.demo.deckNames.${deck1.learningPathKey}`)}
               </h3>
               <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-rajdhani font-semibold border border-primary/30">
                 {getTranslatedArchetype(deck1.stats.archetype)}
@@ -232,7 +234,7 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
           <Card className="p-6 bg-card/50 backdrop-blur border-accent/30">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-rajdhani font-bold text-foreground">
-                {deck2.name}
+                {t(`landing.demo.deckNames.${deck2.learningPathKey}`)}
               </h3>
               <span className="text-xs px-2 py-1 rounded-full bg-accent/10 text-accent font-rajdhani font-semibold border border-accent/30">
                 {getTranslatedArchetype(deck2.stats.archetype)}
@@ -340,8 +342,8 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
 
       {/* Matchup Analysis */}
       <MatchupIndicator
-        deck1Name={deck1.name}
-        deck2Name={deck2.name}
+        deck1Name={t(`landing.demo.deckNames.${deck1.learningPathKey}`)}
+        deck2Name={t(`landing.demo.deckNames.${deck2.learningPathKey}`)}
         deck1Id={deck1.id}
         deck2Id={deck2.id}
         deck1Matchup={deck1.matchups.find(m => m.opponent === deck2.id)}
@@ -360,13 +362,13 @@ export function DeckComparisonView({ isVisible }: DeckComparisonViewProps) {
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-primary">{deck1.name}</span> {t('landing.demo.comparison.favors')} {getTranslatedPlaystyle(deck1).toLowerCase()}
+              <span className="font-semibold text-primary">{t(`landing.demo.deckNames.${deck1.learningPathKey}`)}</span> {t('landing.demo.comparison.favors')} {getTranslatedPlaystyle(deck1).toLowerCase()}
               {deck1.stats.avgElixir < deck2.stats.avgElixir ? `, ${t('landing.demo.comparison.fasterCycling')}` : `, ${t('landing.demo.comparison.heavierInvestments')}`}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground">
-              <span className="font-semibold text-accent">{deck2.name}</span> {t('landing.demo.comparison.excelsIn')} {getTranslatedPlaystyle(deck2).toLowerCase()}
+              <span className="font-semibold text-accent">{t(`landing.demo.deckNames.${deck2.learningPathKey}`)}</span> {t('landing.demo.comparison.excelsIn')} {getTranslatedPlaystyle(deck2).toLowerCase()}
               {deck2.stats.winRate > deck1.stats.winRate ? `, ${t('landing.demo.comparison.higherWinRates')}` : `, ${t('landing.demo.comparison.requiresRefinedExecution')}`}
             </p>
           </div>

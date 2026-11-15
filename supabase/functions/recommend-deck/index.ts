@@ -1,3 +1,5 @@
+import { recommendationReasons } from '../_shared/recommendation-reasons.ts';
+import { productLanguage, type Language } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -40,6 +42,7 @@ interface CandidateScore {
     counterPotential: number;
     cardMastery: number;
   };
+  aiExplanation?: string;
   totalScore: number;
   reason: string;
 }
@@ -192,30 +195,31 @@ function calculateCardMasteryScore(
   return Math.max(0, Math.min(1, 0.5 + masteryBonus - strugglePenalty));
 }
 
-function generateReason(candidate: CandidateScore, profile: PlayerProfile): string {
+function generateReason(candidate: CandidateScore, profile: PlayerProfile, language: Language): string {
+  const copy = recommendationReasons[language];
   const reasons: string[] = [];
   
   if (candidate.scores.archetypeFit >= 0.8) {
-    reasons.push(`matches your strong ${candidate.deck.archetype} playstyle`);
+    reasons.push(copy.style(candidate.deck.archetype));
   }
   
   if (candidate.scores.counterPotential >= 0.7 && profile.troubleMatchups.length > 0) {
-    reasons.push(`counters decks you struggle against`);
+    reasons.push(copy.counter);
   }
   
   if (candidate.scores.cardMastery >= 0.7) {
-    reasons.push(`uses cards you've mastered`);
+    reasons.push(copy.mastery);
   }
   
   if (candidate.scores.skillMatch === 1.0) {
-    reasons.push(`difficulty matches your skill level`);
+    reasons.push(copy.skill);
   }
   
   if (reasons.length === 0) {
-    reasons.push(`popular ${candidate.deck.archetype} deck with ${candidate.deck.difficulty} difficulty`);
+    reasons.push(copy.popular(candidate.deck.archetype));
   }
   
-  return reasons.slice(0, 2).join(' and ');
+  return reasons.slice(0, 2).join(' ');
 }
 
 // ============= Main Handler =============
@@ -230,7 +234,8 @@ serve(async (req) => {
       return errorResponse('Authorization required', 401);
     }
 
-    const { playerTag, trophies = 5000, forceRefresh = false, language = 'en' } = await req.json();
+    const { playerTag, trophies = 5000, forceRefresh = false, language: requestedLanguage } = await req.json();
+    const language = productLanguage(requestedLanguage);
 
     if (!playerTag) {
       return errorResponse('playerTag is required', 400);
@@ -304,6 +309,7 @@ serve(async (req) => {
         .eq('player_tag', playerTag)
         .gte('created_at', cacheExpiry)
         .eq('adopted', false)
+        .eq('language', language)
         .order('recommendation_score', { ascending: false })
         .limit(MAX_RECOMMENDATIONS);
 
@@ -496,7 +502,7 @@ serve(async (req) => {
     
     // Generate reasons for top candidates
     candidates.slice(0, 5).forEach(c => {
-      c.reason = generateReason(c, profile);
+      c.reason = generateReason(c, profile, language);
     });
 
     logger.info('Found valid candidates', { count: candidates.length });
@@ -602,10 +608,8 @@ Rank these decks for this player and provide personalized explanations. Consider
                   candidate.totalScore = ranking.fitScore / 100;
                   enhancedCandidates.push({
                     ...candidate,
-                    reason: candidate.reason,
+                    aiExplanation: ranking.explanation,
                   });
-                  // Store AI explanation separately
-                  (candidate as any).aiExplanation = ranking.explanation;
                 }
               });
               
@@ -634,7 +638,7 @@ Rank these decks for this player and provide personalized explanations. Consider
       difficulty: c.deck.difficulty,
       matchScore: Math.round(c.totalScore * 100),
       reason: c.reason,
-      aiExplanation: (c as any).aiExplanation,
+      aiExplanation: c.aiExplanation,
       recommendationType: c.scores.counterPotential >= 0.8 ? 'counter' : 
                           c.scores.archetypeFit >= 0.8 ? 'strength' : 'standard'
     }));
@@ -647,6 +651,7 @@ Rank these decks for this player and provide personalized explanations. Consider
         recommended_deck_id: rec.deckId,
         recommended_cards: rec.cards,
         recommendation_reason: rec.reason,
+        language,
         recommendation_score: rec.matchScore / 100,
         ai_explanation: rec.aiExplanation,
         archetype: rec.archetype,

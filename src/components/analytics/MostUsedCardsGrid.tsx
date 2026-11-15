@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ interface MostUsedCardsGridProps {
 }
 
 export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   
   // Count card usage across all decks
@@ -50,7 +52,7 @@ export function MostUsedCardsGrid({ stats }: MostUsedCardsGridProps) {
               className="bg-card-secondary rounded-lg p-4 border border-border hover:border-primary/50 transition-all"
             >
               <div className="space-y-2">
-                <div className="font-heading text-foreground">{card.name}</div>
+                <div className="font-heading text-foreground">{cardLabel(card.name)}</div>
                 <div className="text-sm text-muted-foreground">
                   {t('analytics.usedTimes', { count: card.usage })}
                 </div>

@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -53,7 +54,9 @@ const RecommendationTypeBadge = memo(({ type }: { type: string }) => {
 RecommendationTypeBadge.displayName = "RecommendationTypeBadge";
 
 // Simple card grid for string array
-const SimpleCardGrid = memo(({ cards }: { cards: string[] }) => (
+const SimpleCardGrid = memo(({ cards }: { cards: string[] }) => {
+  const cardLabel = useCardName();
+  return (
   <div className="grid grid-cols-4 gap-2">
     {cards.slice(0, 8).map((cardName, idx) => (
       <div 
@@ -61,12 +64,13 @@ const SimpleCardGrid = memo(({ cards }: { cards: string[] }) => (
         className="aspect-[3/4] bg-card/80 rounded border border-border/50 flex items-center justify-center p-1"
       >
         <span className="text-[10px] text-center text-muted-foreground leading-tight">
-          {cardName}
+          {cardLabel(cardName)}
         </span>
       </div>
     ))}
   </div>
-));
+  );
+});
 SimpleCardGrid.displayName = "SimpleCardGrid";
 
 const RecommendationCard = memo(({ 
@@ -80,7 +84,7 @@ const RecommendationCard = memo(({
   index: number;
   playerTag: string;
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
@@ -116,7 +120,7 @@ const RecommendationCard = memo(({
               <RecommendationTypeBadge type={recommendation.recommendationType} />
             </CardTitle>
             <CardDescription className="text-sm">
-              {recommendation.archetype} • {recommendation.avgElixir?.toFixed(1)} Elixir • {recommendation.difficulty}
+              {t(`landing.demo.cards.archetypes.${recommendation.archetype}`, { defaultValue: recommendation.archetype })} • {t('cards.elixirCost', { cost: recommendation.avgElixir?.toLocaleString(i18n.language, { maximumFractionDigits: 1 }) })} • {t(`templates.difficulty.${recommendation.difficulty}`, { defaultValue: recommendation.difficulty })}
             </CardDescription>
           </div>
           <div className="flex flex-col items-end gap-1">

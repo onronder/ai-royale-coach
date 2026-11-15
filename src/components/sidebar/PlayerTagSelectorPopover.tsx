@@ -28,7 +28,7 @@ export function PlayerTagSelectorPopover({
   trophies,
   isCollapsed = false,
 }: PlayerTagSelectorPopoverProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [newTag, setNewTag] = useState("");
@@ -151,7 +151,7 @@ export function PlayerTagSelectorPopover({
                     {profile.trophies && (
                       <span className="flex items-center gap-1">
                         <Trophy className="h-3 w-3 text-gold" />
-                        {profile.trophies.toLocaleString()}
+                        {profile.trophies.toLocaleString(i18n.language)}
                       </span>
                     )}
                     {profile.arena_name && (

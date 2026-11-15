@@ -13,8 +13,8 @@ import { MetaAnalysisPreview } from "@/components/subscription/AIPreviewContent"
 
 interface MetaTrend {
   archetype: string;
-  win_rate: number;
-  usage_rate: number;
+  win_rate?: number;
+  usage_rate?: number;
   trend: "hot" | "cold" | "stable";
   change_7d: number;
   popularity: number;
@@ -131,11 +131,11 @@ export function MetaAnalysis() {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">{t('metaAnalysis.winRate')}</span>
-                    <Badge variant="default">{trend.win_rate.toFixed(1)}%</Badge>
+                    <Badge variant="default">{typeof trend.win_rate === 'number' ? trend.win_rate.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%' : t('common.noData')}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">{t('metaAnalysis.usage')}</span>
-                    <Badge variant="secondary">{trend.usage_rate.toFixed(1)}%</Badge>
+                    <Badge variant="secondary">{typeof trend.usage_rate === 'number' ? trend.usage_rate.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%' : t('common.noData')}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">{t('metaAnalysis.change7d')}</span>

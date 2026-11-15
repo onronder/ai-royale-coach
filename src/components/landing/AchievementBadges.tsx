@@ -100,7 +100,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
   const getLearningPathPhase = (phaseIndex: number) => {
     const key = getDeckKey(deck.id);
     const phaseKey = `phase${phaseIndex + 1}`;
-    return t(`landing.demo.difficulty.decks.${key}.${phaseKey}.name`, { defaultValue: deck.learningPath[phaseIndex]?.phase });
+    return t(`landing.demo.difficulty.deckData.${key}.${phaseKey}.name`, { defaultValue: deck.learningPath[phaseIndex]?.phase });
   };
 
   const learningMilestones = deck.learningPath.map((phase, idx) => ({
@@ -125,7 +125,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
               <Trophy className={`h-5 w-5 text-${deck.color}`} />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name} {t('landing.demo.achievements.title')}</h4>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{t(`landing.demo.deckNames.${deck.learningPathKey}`)} {t('landing.demo.achievements.title')}</h4>
               <p className="text-xs text-muted-foreground">{t('landing.demo.achievements.trackProgress')}</p>
             </div>
           </div>
@@ -274,7 +274,7 @@ export function AchievementBadges({ deck, isVisible }: AchievementBadgesProps) {
         <Card className={`p-4 bg-gradient-to-br from-${deck.color}/5 to-card border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
             <span className={`font-semibold text-${deck.color}`}>{t('landing.demo.achievements.nextMilestone')}:</span>{' '}
-            {t('landing.demo.achievements.nextMilestoneDesc', { phase: learningMilestones.find(m => m.current)?.phase || 'Foundation Phase' })}
+            {t('landing.demo.achievements.nextMilestoneDesc', { phase: learningMilestones.find(m => m.current)?.phase || getLearningPathPhase(0) })}
           </p>
         </Card>
       </div>
