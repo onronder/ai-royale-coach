@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { TrialFollowup } from './TrialFollowup';
 import { DeckTransfer } from './DeckTransfer';
+import { TrialSummaryConsent } from './TrialSummaryConsent';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 import { getDisplayLevel } from '@/utils/cardLevelCalculator';
 import type { TrophySnapshot } from '@/lib/battleTrophies';
@@ -124,11 +125,13 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
      {result.opponent_deck.length>0&&<Collapsible className="mt-3"><CollapsibleTrigger asChild><Button variant="ghost" size="sm" className="group -ml-2 h-8 px-2 text-xs"><ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180"/>{t('coaching.showOpponent')}</Button></CollapsibleTrigger><CollapsibleContent><div className="mt-2 grid grid-cols-4 gap-2">{result.opponent_deck.map(c=>mini(c))}</div></CollapsibleContent></Collapsible>}
     </>:<>
      <p className="text-sm font-semibold">{t('coaching.waiting')}</p>
+     <p className="text-sm text-muted-foreground">{t('coaching.noMatch')}</p>
      <p className="mb-3 text-sm text-muted-foreground">{t('coaching.syncHint')}</p>
      <Button variant="outline" onClick={()=>void run('check')} disabled={!hasAccess||!!busy} className="h-auto min-h-11 w-full whitespace-normal py-2">{busy==='check'?<Loader2 className="animate-spin"/>:<RefreshCw/>}{t('coaching.check')}</Button>
     </>}
     <p className="mt-3 text-xs text-muted-foreground">{t('coaching.checked',{time:time(task.last_checked_at)})}{task.battles_fetched_at&&<> · {t('coaching.observed',{time:time(task.battles_fetched_at)})}</>}</p>
    </div>
+   {isTrialActive && <TrialSummaryConsent userId={userId} playerTag={playerTag.replace(/^#/,'').toUpperCase()} />}
    {!done && isTrialActive && <TrialFollowup userId={userId} playerTag={playerTag.replace(/^#/,'').toUpperCase()} />}
    <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground">{text?.question && <><span className="font-semibold">{t('coaching.you')}: </span>{text.question}</>}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p lang={language} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t('coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t('coaching.ask')}</Button></form>}</div>
   </div>

@@ -16,10 +16,12 @@ Deno.serve(async req => {
             'Content-Type': 'application/json', 'Idempotency-Key': key },
           body: JSON.stringify(payload), signal: AbortSignal.timeout(10000),
         });
-        if (!response.ok || !(await response.json()).id) throw new Error('Email delivery was not accepted');
+        const id = response.ok ? (await response.json()).id : null;
+        if (typeof id !== 'string' || !id) throw new Error('Email delivery was not accepted');
+        return id;
       },
-      async markSent({ user_id, subscription_id }) {
-        const { error } = await db.from('trial_coaching_followup').update({ sent_at: new Date().toISOString() })
+      async markSent({ user_id, subscription_id }, messageId) {
+        const { error } = await db.from('trial_coaching_followup').update({ sent_at: new Date().toISOString(), resend_message_id: messageId })
           .eq('user_id', user_id).eq('subscription_id', subscription_id);
         if (error) throw error;
       },
