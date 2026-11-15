@@ -28,11 +28,10 @@ import { PricingModal } from "@/components/subscription/PricingModal";
 import { ChatRetentionSettings } from "@/components/settings/ChatRetentionSettings";
 import { DataLoader } from "@/components/ui/data-loader";
 import { toast } from "sonner";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 const Settings = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo') || '/select-player';
@@ -57,6 +56,10 @@ const Settings = () => {
     accessEndsAt,
     isCancelling,
   } = useSubscription();
+
+  const billingDate = (value?: string | null) => value
+    ? new Date(value).toLocaleDateString(i18n.language, { dateStyle: 'medium' })
+    : '';
 
   const { profiles, isLoading: isLoadingProfiles, refetch: refetchProfiles } = useUserAIProfiles();
   const { showWhatsNew, dismissWhatsNew, openWhatsNew } = useWhatsNew({ autoOpen: false });
@@ -283,13 +286,13 @@ const Settings = () => {
                 </>
               )}
 
-              {status?.subscription?.currentPeriodEnd && (
+              {!cancelAtPeriodEnd && status?.subscription?.currentPeriodEnd && (
                 <>
                   <Separator />
                   <div className="flex items-center justify-between py-2">
                     <span className="text-sm text-muted-foreground">{t('settings.subscription.renewsOn')}</span>
                     <span className="font-medium">
-                      {format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy')}
+                      {billingDate(status.subscription.currentPeriodEnd)}
                     </span>
                   </div>
                 </>
@@ -302,7 +305,7 @@ const Settings = () => {
                     <XCircle className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span className="text-sm text-muted-foreground">
                       {t('settings.subscription.renewalOff', {
-                        date: format(new Date(accessEndsAt), 'MMM d, yyyy HH:mm'),
+                        date: new Date(accessEndsAt).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short' }),
                       })}
                     </span>
                   </div>
@@ -363,16 +366,10 @@ const Settings = () => {
                               <span className="block">
                                 {isTrialActive 
                                   ? t('settings.subscription.cancelConfirm.trialDescription', {
-                                      date: status?.subscription?.currentPeriodEnd 
-                                        ? format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy')
-                                        : status?.trial?.endsAt
-                                          ? format(new Date(status.trial.endsAt), 'MMM d, yyyy')
-                                          : ''
+                                      date: billingDate(status?.subscription?.currentPeriodEnd ?? status?.trial?.endsAt),
                                     })
                                   : t('settings.subscription.cancelConfirm.activeDescription', {
-                                      date: status?.subscription?.currentPeriodEnd 
-                                        ? format(new Date(status.subscription.currentPeriodEnd), 'MMM d, yyyy')
-                                        : ''
+                                      date: billingDate(status?.subscription?.currentPeriodEnd),
                                     })
                                 }
                               </span>
