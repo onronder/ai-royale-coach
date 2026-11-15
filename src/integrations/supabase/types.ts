@@ -346,8 +346,8 @@ export type Database = {
       }
       card_mastery: {
         Row: {
-          ai_tips_language: string | null
           ai_tips: string | null
+          ai_tips_language: string | null
           avg_elixir_decks: number | null
           battles_lost: number | null
           battles_won: number | null
@@ -365,8 +365,8 @@ export type Database = {
           worst_matchup_cards: string[] | null
         }
         Insert: {
-          ai_tips_language?: string | null
           ai_tips?: string | null
+          ai_tips_language?: string | null
           avg_elixir_decks?: number | null
           battles_lost?: number | null
           battles_won?: number | null
@@ -384,8 +384,8 @@ export type Database = {
           worst_matchup_cards?: string[] | null
         }
         Update: {
-          ai_tips_language?: string | null
           ai_tips?: string | null
+          ai_tips_language?: string | null
           avg_elixir_decks?: number | null
           battles_lost?: number | null
           battles_won?: number | null
@@ -603,6 +603,42 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      coaching_translations: {
+        Row: {
+          language: string
+          source_hash: string
+          task_id: string
+          translation: Json
+        }
+        Insert: {
+          language: string
+          source_hash: string
+          task_id: string
+          translation: Json
+        }
+        Update: {
+          language?: string
+          source_hash?: string
+          task_id?: string
+          translation?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coaching_translations_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coaching_translations_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
       }
       daily_usage_logs: {
         Row: {
@@ -1184,8 +1220,8 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
-          onboarding_completed_at: string | null
           language_selected_at: string | null
+          onboarding_completed_at: string | null
           preferred_language: string | null
           terms_accepted_at: string | null
           terms_version: string | null
@@ -1202,8 +1238,8 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id: string
-          onboarding_completed_at?: string | null
           language_selected_at?: string | null
+          onboarding_completed_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -1220,8 +1256,8 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
-          onboarding_completed_at?: string | null
           language_selected_at?: string | null
+          onboarding_completed_at?: string | null
           preferred_language?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -1538,6 +1574,7 @@ export type Database = {
         Row: {
           answered_at: string | null
           attempted_at: string | null
+          delivery_language: string | null
           first_attempted_at: string | null
           opted_in_at: string | null
           opted_task: string | null
@@ -1551,6 +1588,7 @@ export type Database = {
         Insert: {
           answered_at?: string | null
           attempted_at?: string | null
+          delivery_language?: string | null
           first_attempted_at?: string | null
           opted_in_at?: string | null
           opted_task?: string | null
@@ -1564,6 +1602,7 @@ export type Database = {
         Update: {
           answered_at?: string | null
           attempted_at?: string | null
+          delivery_language?: string | null
           first_attempted_at?: string | null
           opted_in_at?: string | null
           opted_task?: string | null
