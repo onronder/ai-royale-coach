@@ -34,6 +34,8 @@ Aynı kontrollü test verileriyle Chrome masaüstü ve mobil görünümde 154'er
 | Açık/koyu tema ve deneme yenilemesini kapatma/açma | 10 |
 | **Toplam** | **308** |
 
+[Kontrol matrisi](2026-11-15-kontrol-matrisi.csv) her senaryonun rolünü ve hangi görünümde çalıştırıldığını gösterir. Boş hücre, o senaryonun yalnızca diğer görünümde uygulandığını belirtir.
+
 Uygulamadaki 14 adlandırılmış yol ve bulunamayan sayfa kontrol edildi. Fiziksel iPhone'da Safari ile sonuç kartı, deste aktarımı, ziyaretçi gezinmesi ve Yardım ayrıca açıldı. Oyun bağlantısı Clash Royale'in deste kopyalama ekranına ulaştı.
 
 ## Kod kontrolleri
