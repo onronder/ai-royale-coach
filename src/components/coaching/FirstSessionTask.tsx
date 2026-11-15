@@ -16,7 +16,8 @@ import { getDisplayLevel } from '@/utils/cardLevelCalculator';
 import type { TrophySnapshot } from '@/lib/battleTrophies';
 import { coachingSwap, swapStatement, tacticalText } from '../../../supabase/functions/_shared/coaching-advice';
 
-interface Task { id:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:{outcome:'win'|'loss'|'draw';score:number[];trophy_change:number|null;opponent_deck:ClashRoyaleCard[]}|null; }
+interface MatchResult { outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
+interface Task { id:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
 interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  userId:string;playerTag:string;collection:ClashRoyaleCard[];onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
@@ -77,6 +78,7 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  const answer = task?.follow_up_answer && (rec?.follow_up_verified ? task.follow_up_answer :
    legacyTip(task.follow_up_answer) || facts);
  const result=task?.battle_result;
+ const previous=task?.previous_match;
  const done=!!result;
  const step=!task?.recommendation?0:done?3:2;
  const outcomeTone=result?.outcome==='win'?'border-success/60 bg-success/10':result?.outcome==='loss'?'border-destructive/60 bg-destructive/10':'border-border bg-muted/30';
@@ -118,6 +120,20 @@ export function FirstSessionTask({userId,playerTag,collection,onMatchResult}:{
  return <Card aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
   {header}
   {(query.isLoading||accessLoading)?<p className="mt-4 text-sm text-muted-foreground">{t('coaching.loading')}</p>:task?.recommendation?<>
+   {previous && <details className="mt-4 rounded-lg border border-border px-3">
+     <summary className="cursor-pointer py-3 text-sm font-semibold focus-visible:outline-primary">
+       {t('coaching.previousMatch')} · {previous.battle_result.score.join(' – ')} · {t(`coaching.${previous.battle_result.outcome}`)}
+     </summary>
+     <div className="space-y-3 pb-3 text-sm">
+       {previous.battle_result.trophy_change !== null && <p>{t('coaching.trophies')}: {previous.battle_result.trophy_change > 0 ? '+' : ''}{previous.battle_result.trophy_change}</p>}
+       <p className="font-semibold">{t('coaching.playedDeck')}</p>
+       <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">{previous.recommended_deck.map(c=>mini(c))}</div>
+       {previous.battle_result.opponent_deck.length > 0 && <>
+         <p className="font-semibold">{t('coaching.opponent')}</p>
+         <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">{previous.battle_result.opponent_deck.map(c=>mini(c))}</div>
+       </>}
+     </div>
+   </details>}
    {stepper}
    {done?<>{!open&&summary}{open&&body}<Button variant="ghost" size="sm" className="mt-3 -ml-2 h-8 px-2 text-xs" onClick={()=>setOpen(!open)}><ChevronDown className={`h-4 w-4 transition-transform ${open?'rotate-180':''}`}/>{open?t('coaching.hideDetails'):t('coaching.showDetails')}</Button></>:body}
   </>:hasAccess&&confirmation?<div className="mt-4 space-y-3" aria-live="polite">

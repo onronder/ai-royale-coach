@@ -78,6 +78,13 @@
       "when": 1794727133167,
       "tag": "0010_reconcile_trial_coaching_history",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794731405163,
+      "tag": "0011_retain_completed_coaching_match",
+      "breakpoints": true
     }
   ]
 }
