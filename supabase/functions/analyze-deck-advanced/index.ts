@@ -1,3 +1,4 @@
+import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -57,7 +58,8 @@ serve(async (req) => {
       return errorResponse('Subscription required for advanced AI analysis', 403, { subscription_required: true });
     }
 
-    const { cards, playerTag, language = 'en' } = await req.json();
+    const { cards, playerTag, language: requestedLanguage } = await req.json();
+    const language = productLanguage(requestedLanguage);
 
     // Helper to normalize player tags (database stores without #)
     const normalizePlayerTag = (tag: string): string => {

@@ -17,7 +17,7 @@ interface AIAccountSelectorProps {
 }
 
 export function AIAccountSelector({ open, onOpenChange, accountSlots, onComplete }: AIAccountSelectorProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { profiles, updateAIAccess, isUpdating, refetch } = useUserAIProfiles();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -127,14 +127,14 @@ export function AIAccountSelector({ open, onOpenChange, accountSlots, onComplete
                       {isSelected && (
                         <Badge variant="outline" className="border-primary/50 text-primary text-xs">
                           <Sparkles className="h-3 w-3 mr-1" />
-                          AI
+                          {t('common.ai')}
                         </Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                       <span className="flex items-center gap-1">
                         <Trophy className="h-3 w-3 text-gold" />
-                        {profile.trophies?.toLocaleString() || '—'}
+                        {profile.trophies?.toLocaleString(i18n.language) || '—'}
                       </span>
                       {profile.clan_name && (
                         <span className="truncate">{profile.clan_name}</span>

@@ -107,7 +107,7 @@ interface SelectedOpponent {
 }
 
 export default function DreamArena() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const playerTag = searchParams.get('player') || '';
@@ -416,7 +416,7 @@ export default function DreamArena() {
                   <p className="font-bold text-foreground">{selectedOpponent.name}</p>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
                     <Trophy className="w-3 h-3 text-gold" />
-                    {selectedOpponent.trophies.toLocaleString()}
+                    {selectedOpponent.trophies.toLocaleString(i18n.language)}
                     {selectedOpponent.clan && (
                       <>
                         <span className="mx-1">•</span>
@@ -716,7 +716,7 @@ export default function DreamArena() {
                         <div className="text-right">
                           <p className="font-bold text-gold flex items-center gap-1">
                             <Trophy className="w-4 h-4" />
-                            {(player.trophies ?? 0).toLocaleString()}
+                            {(player.trophies ?? 0).toLocaleString(i18n.language)}
                           </p>
                         </div>
                         

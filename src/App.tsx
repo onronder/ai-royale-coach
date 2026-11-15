@@ -1,3 +1,4 @@
+import { restoreAccountLanguage } from '@/i18n/changeLanguage';
 import { SubscriptionUserContext } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { Suspense, lazy, useState, useEffect } from "react";
@@ -43,6 +44,10 @@ const App = () => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => setAccountId(session?.user.id ?? null));
     return () => data.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (accountId) return restoreAccountLanguage(accountId);
+  }, [accountId]);
 
   const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
 

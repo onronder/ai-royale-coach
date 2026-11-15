@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Shield, AlertTriangle, Scale, Globe, Building2 } from "lucide-react";
 
 const Terms = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const sections = [
     {
@@ -46,11 +46,11 @@ const Terms = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>Terms of Service - AI Royale</title>
-        <meta name="description" content="AI Royale Terms of Service. Read our terms and conditions for using the AI-powered Clash Royale coaching platform." />
+        <title>{t('legal.termsOfService')} | AI Royale</title>
+        <meta name="description" content={t('legal.terms.introduction')} />
         <link rel="canonical" href="https://ai-royale.com/terms" />
-        <meta property="og:title" content="Terms of Service - AI Royale" />
-        <meta property="og:description" content="AI Royale Terms of Service. Read our terms and conditions for using the platform." />
+        <meta property="og:title" content={t('legal.termsOfService') + ' | AI Royale'} />
+        <meta property="og:description" content={t('legal.terms.introduction')} />
         <meta property="og:url" content="https://ai-royale.com/terms" />
       </Helmet>
       <Navbar user={null} />
@@ -61,7 +61,7 @@ const Terms = () => {
             {t("legal.termsOfService")}
           </h1>
           <p className="text-muted-foreground">
-            {t("legal.lastUpdated")}: December 6, 2025
+            {t("legal.lastUpdated")}: {new Date(2025, 11, 6).toLocaleDateString(i18n.language, { dateStyle: 'long' })}
           </p>
           <p className="text-muted-foreground text-sm mt-2">
             {t("legal.terms.companyName")}

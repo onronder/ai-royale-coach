@@ -17,7 +17,7 @@ import {
   User,
   Tag
 } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { FraudSignal, UserFraudStatus } from '@/hooks/useFraudStatus';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
@@ -284,7 +284,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {format(new Date(signal.created_at), 'MMM d, HH:mm')}
+                      {new Date(signal.created_at).toLocaleString(i18n.language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                   {signal.details && Object.keys(signal.details).length > 0 && (

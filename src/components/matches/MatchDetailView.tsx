@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
@@ -60,6 +61,7 @@ function getCardImageUrl(cardName: string): string {
 
 // Card icon component with fallback
 function CardIcon({ cardName, className }: { cardName: string; className?: string }) {
+  const cardLabel = useCardName();
   const [hasError, setHasError] = useState(false);
   
   if (hasError) {
@@ -73,7 +75,7 @@ function CardIcon({ cardName, className }: { cardName: string; className?: strin
   return (
     <img
       src={getCardImageUrl(cardName)}
-      alt={cardName}
+      alt={cardLabel(cardName)}
       className={cn("rounded object-cover", className)}
       onError={() => setHasError(true)}
     />
@@ -310,6 +312,7 @@ function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t
 
 export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenCoach }: MatchDetailViewProps) {
   const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? 'en';
   const { hasAccess } = useSubscription();
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -328,7 +331,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
   // IMPORTANT: useQuery MUST be called unconditionally (before any returns)
   const { data: analysis, isLoading, error: analysisError } = useQuery({
-    queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag, i18n.language],
+    queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag, language],
     queryFn: async () => {
       if (!battle) throw new Error('No battle data');
       
@@ -338,7 +341,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
       }
       
       const { data, error } = await supabase.functions.invoke('analyze-match', {
-        body: { battle, playerTag: normalizedPlayerTag, language: i18n.language }
+        body: { battle, playerTag: normalizedPlayerTag, language }
       });
       
       // Check for subscription_required in response

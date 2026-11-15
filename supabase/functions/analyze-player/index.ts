@@ -1,3 +1,4 @@
+import { productLanguage } from "../_shared/language.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
@@ -57,7 +58,8 @@ serve(async (req) => {
       return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    const { playerData, battles, language = 'en' } = await req.json();
+    const { playerData, battles, language: requestedLanguage } = await req.json();
+    const language = productLanguage(requestedLanguage);
     if (!playerData || typeof playerData.tag !== 'string' || !Array.isArray(battles)) {
       return errorResponse('Player data and battles are required', 400);
     }
@@ -76,12 +78,13 @@ serve(async (req) => {
           .from('player_profiles').select('id').eq('user_id', user.id).eq('player_tag', tagKey).maybeSingle();
         if (owned) {
           const { data: last } = await supabase
-            .from('analyses').select('output, created_at')
+            .from('analyses').select('output, created_at, input_fingerprint')
             .in('player_tag', [playerData.tag, `#${tagKey}`, tagKey])
             .eq('analysis_type', 'profile_summary')
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
           if (last) {
-            return jsonResponse({ ...(last.output as Record<string, unknown>), read_only: true, analyzed_at: last.created_at });
+            const savedLanguage = /_(en|tr|es|fr|pt)(?:-[a-z]{2})?$/i.exec(last.input_fingerprint ?? '')?.[1];
+            return jsonResponse({ ...(last.output as Record<string, unknown>), language: savedLanguage?.toLowerCase(), read_only: true, analyzed_at: last.created_at });
           }
         }
       }
@@ -221,6 +224,7 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
     const analysis = aiData.choices[0].message.content;
 
     const result = {
+      language,
       analysis,
       stats: {
         winRate: winRate.toFixed(1),

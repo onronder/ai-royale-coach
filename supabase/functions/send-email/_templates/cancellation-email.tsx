@@ -170,7 +170,7 @@ export const CancellationEmail = ({
   const formattedDate = formatDate(accessEndDate, language)
 
   return (
-    <Html>
+    <Html lang={language}>
       <Head />
       <Preview>{t.preview}</Preview>
       <Body style={main}>

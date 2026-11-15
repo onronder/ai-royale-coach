@@ -4,6 +4,8 @@
 
 // Player analysis from AI
 export interface PlayerAnalysis {
+  language?: string;
+  read_only?: boolean;
   analysis: string;
   stats: {
     winRate: string;

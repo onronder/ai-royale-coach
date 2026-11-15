@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminAccess } from './useAdminAccess';
@@ -85,6 +86,7 @@ function groupEndpoints(endpoints: EndpointStats[]): EndpointGroup[] {
 }
 
 export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
+  const { i18n } = useTranslation();
   const { isAdmin } = useAdminAccess();
 
   const timeframeMins = {
@@ -169,7 +171,7 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
 
   // Fetch timeline data
   const { data: timeline, isLoading: timelineLoading } = useQuery({
-    queryKey: ['api-metrics-timeline', timeframe],
+    queryKey: ['api-metrics-timeline', timeframe, i18n.language],
     queryFn: async (): Promise<TimelinePoint[]> => {
       const { data, error } = await supabase
         .from('api_request_logs')
@@ -194,7 +196,7 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
       );
 
       return Object.entries(grouped).map(([time, stats]) => ({
-        time: new Date(time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: new Date(time).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
         count: stats.count,
         cacheHits: stats.cacheHits,
       }));

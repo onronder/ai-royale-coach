@@ -26,7 +26,7 @@ describe('coaching swap and card levels', () => {
   it('rejects the observed wrong swap and level in both initial and follow-up prose', () => {
     const bad = 'Archers yerine 13. seviye Wizard kullanabilirsin.';
     const advice = formatCoachingAdvice(dragon, wizard, collection, 'tr', bad, bad, bad);
-    assert.equal(advice.reason, 'Electro Dragon (seviye 14) yerine Wizard (seviye 15) kullan.');
+    assert.equal(advice.reason, 'Elektro Ejderha (seviye 14) yerine Büyücü (seviye 15) kullan.');
     assert.equal(advice.answer, advice.reason);
     assert.ok(!advice.practice.includes('Archers'));
     assert.equal(tacticalText('Archers yerine savunmada kullan.', wizard, collection), '');
@@ -36,9 +36,9 @@ describe('coaching swap and card levels', () => {
       'Place {card} behind your tank.', 'Keep {card} out of spell range.');
     assert.equal(advice.practice, 'Place Wizard behind your tank.');
     assert.match(advice.answer!, /Keep Wizard out of spell range/);
-    for (const lang of ['en', 'fr', 'es', 'pt', 'tr-TR']) {
+    for (const [lang, from, to] of [['en', 'Electro Dragon', 'Wizard'], ['fr', 'Électro-dragon', 'Sorcier'], ['es', 'Dragón eléctrico', 'Mago'], ['pt', 'Dragão Elétrico', 'Mago'], ['tr-TR', 'Elektro Ejderha', 'Büyücü']]) {
       const statement = swapStatement(dragon, wizard, lang);
-      for (const token of ['Electro Dragon', '14', 'Wizard', '15']) assert.ok(statement.includes(token));
+      for (const token of [from, '14', to, '15']) assert.ok(statement.includes(token));
     }
   });
 });

@@ -1,8 +1,10 @@
+import { useCardName } from '@/i18n/useCardName';
+import { useTranslation } from "react-i18next";
 import { useState, memo } from "react";
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GameTooltip, rarityTooltips } from "@/components/ui/tooltip-helpers";
+import { GameTooltip, useRarityTooltips } from "@/components/ui/tooltip-helpers";
 import { calculateDisplayLevel } from "@/utils/cardLevelCalculator";
 
 interface CardImageProps {
@@ -27,6 +29,9 @@ export const CardImage = memo(function CardImage({
   showElixir = false,
   className 
 }: CardImageProps) {
+  const cardLabel = useCardName();
+  const { t } = useTranslation();
+  const rarityTooltips = useRarityTooltips();
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -82,12 +87,12 @@ export const CardImage = memo(function CardImage({
       
       {imageError ? (
         <div className="absolute inset-0 flex items-center justify-center p-2 bg-muted">
-          <p className="text-xs text-center font-medium text-muted-foreground">{card.name}</p>
+          <p className="text-xs text-center font-medium text-muted-foreground">{cardLabel(card.name)}</p>
         </div>
       ) : (
         <img
           src={card.iconUrls.medium}
-          alt={card.name}
+          alt={cardLabel(card.name)}
           loading="lazy"
           className={cn(
             "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
@@ -120,7 +125,7 @@ export const CardImage = memo(function CardImage({
           <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
           </svg>
-          EVO
+          {t('cards.evolutionBadge')}
         </div>
       )}
     </div>
@@ -131,19 +136,19 @@ export const CardImage = memo(function CardImage({
       content={
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <p className="font-rajdhani font-bold text-base">{card.name}</p>
+            <p className="font-rajdhani font-bold text-base">{cardLabel(card.name)}</p>
             {isEvolved && (
               <span className="text-xs font-bold text-[hsl(45_100%_55%)] bg-[hsl(45_100%_55%/0.15)] px-1.5 py-0.5 rounded">
-                EVOLVED
+                {t('cards.evolved')}
               </span>
             )}
           </div>
           <p className="text-xs text-muted-foreground capitalize">
-            {rarity} • {card.elixirCost} Elixir • Level {displayLevel}
+            {t(`landing.demo.cards.rarities.${rarity}`, { defaultValue: rarity })} • {card.elixirCost != null && <>{t('cards.elixirCost', { cost: card.elixirCost })} • </>}{t('cards.displayLevel', { level: displayLevel })}
           </p>
           {isEvolved && (
             <p className="text-xs text-[hsl(45_100%_55%)] border-t border-border pt-2">
-              ✨ Evolution unlocked - gains special abilities in battle
+              ✨ {t('cards.evolutionUnlocked')}
             </p>
           )}
           {card.rarity && !isEvolved && (

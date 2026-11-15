@@ -1,3 +1,4 @@
+import { productLanguage } from "../_shared/language.ts";
 import { successfulChatStream } from '../_shared/trial-stream.ts';
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -115,7 +116,8 @@ serve(async (req) => {
         .insert({ user_id: user.id, date: today, request_count: 1 });
     }
 
-    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language = 'en' } = await req.json();
+    const { messages, playerTag, playerStats, recentMatches, savedDecks, cardMastery, achievements, cardCollection, language: requestedLanguage } = await req.json();
+    const language = productLanguage(requestedLanguage);
 
     // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {

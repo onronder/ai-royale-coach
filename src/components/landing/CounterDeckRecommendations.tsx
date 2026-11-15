@@ -64,7 +64,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
             <Shield className={`h-5 w-5 text-${deck.color}`} />
           </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name}</h4>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{t(`landing.demo.deckNames.${deck.learningPathKey}`)}</h4>
               <p className="text-xs text-muted-foreground">{t('landing.demo.counters.subtitle')}</p>
             </div>
         </div>
@@ -96,7 +96,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
                             <Sword className={`h-5 w-5 text-${counterDeck.color}`} />
                           </div>
                           <div>
-                            <h6 className="font-rajdhani font-bold text-foreground">{counterDeck.name}</h6>
+                            <h6 className="font-rajdhani font-bold text-foreground">{t(`landing.demo.deckNames.${counterDeck.learningPathKey}`)}</h6>
                             <p className="text-xs text-muted-foreground">{counterDeck.stats.archetype}</p>
                           </div>
                         </div>
@@ -166,7 +166,7 @@ export function CounterDeckRecommendations({ deck, isVisible }: CounterDeckRecom
                             <Shield className={`h-4 w-4 text-${favorableDeck.color}`} />
                           </div>
                           <div>
-                            <h6 className="font-rajdhani font-semibold text-foreground text-sm">{favorableDeck.name}</h6>
+                            <h6 className="font-rajdhani font-semibold text-foreground text-sm">{t(`landing.demo.deckNames.${favorableDeck.learningPathKey}`)}</h6>
                             <p className="text-xs text-muted-foreground">{favorableDeck.stats.archetype}</p>
                           </div>
                         </div>

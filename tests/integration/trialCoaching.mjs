@@ -14,8 +14,10 @@ await db.exec(`
   create role anon; create role authenticated; create role service_role;
   create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('test.uid', true),'')::uuid $$;
   create function public.is_admin(uuid) returns boolean language sql as $$ select $1 = '${admin}'::uuid $$;
-  create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz);
-  create table profiles(id uuid primary key,trial_started_at timestamptz);
+  create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz, raw_user_meta_data jsonb);
+  create table recommendation_history(id uuid primary key);
+  create table card_mastery(id uuid primary key);
+  create table profiles(id uuid primary key,trial_started_at timestamptz, preferred_language text default 'en', email text);
   create table user_subscriptions(user_id uuid unique,polar_subscription_id text,status text,current_period_start timestamptz,
     current_period_end timestamptz,ends_at timestamptz,created_at timestamptz,cancel_at_period_end boolean);
   create table coaching_tasks(id uuid primary key default gen_random_uuid(),user_id uuid,player_tag text,language text,
@@ -30,6 +32,8 @@ await db.exec(`
     begin insert into cron.jobs values ($1,$2,$3) on conflict (name) do update set schedule=excluded.schedule,command=excluded.command; return 1; end $$;
 `);
 await db.exec(await readFile(new URL('../../drizzle/migrations/0009_trial_coaching_followup.sql', import.meta.url), 'utf8'));
+await db.exec(await readFile(new URL('../../drizzle/migrations/0013_recommendation_language.sql', import.meta.url), 'utf8'));
+await db.exec('create trigger create_profile after insert on auth.users for each row execute function public.handle_new_user()');
 const q = async (sql, params = []) => (await db.query(sql, params)).rows;
 const projectUrl = 'https://fixture.supabase.co';
 const publicToken = role => 'header.' + Buffer.from(JSON.stringify({role, ref: 'fixture'})).toString('base64url') + '.fixture';
@@ -63,8 +67,16 @@ async function age(hours) {
   await q("update user_subscriptions set current_period_start=now()-make_interval(hours=>$1) where user_id=$2", [hours,owner]);
 }
 try {
-  await q("insert into auth.users values ($1,'fixture@example.invalid',now()),($2,'other@example.invalid',now())",[owner,other]);
-  await q('insert into profiles(id) values ($1),($2)', [owner,other]);
+  await q("insert into auth.users(id,email,email_confirmed_at) values ($1,'fixture@example.invalid',now()),($2,'other@example.invalid',now())",[owner,other]);
+  const signupId = '11000000-0000-4000-8000-000000000009';
+  await q("insert into auth.users(id,email,raw_user_meta_data) values ($1,'signup@example.invalid',$2)",[signupId,{language:'es'}]);
+  const [signup] = await q('select * from profiles where id=$1',[signupId]);
+  assert.equal(signup.preferred_language,'es'); assert.ok(signup.language_selected_at);
+  assert.equal(signup.trial_started_at,null);
+  await q('update auth.users set raw_user_meta_data=raw_user_meta_data || $2::jsonb where id=$1',[signupId,{known:true}]);
+  await q("update profiles set preferred_language='pt' where id=$1",[signupId]);
+  assert.deepEqual((await q('select raw_user_meta_data from auth.users where id=$1',[signupId]))[0].raw_user_meta_data,{language:'pt',known:true});
+  assert.equal((await q('select language_selected_at from profiles where id=$1',[owner]))[0].language_selected_at,null);
   await q("insert into user_subscriptions values ($1,'first','trialing',now(),now()+interval '3 days',null,now(),false)",[owner]);
   await q("insert into player_profiles values ($1,'#P28')",[owner]);
   await q("insert into coaching_tasks(user_id,player_tag,language,recommendation,shown_at,created_at) values ($1,'P28','tr','{}',now(),now())",[owner]);
@@ -121,7 +133,12 @@ try {
   const valid = await retry();
   const [message] = await take(valid); assert.equal(message.email,'fixture@example.invalid');
   assert.equal(message.language,'tr'); assert.deepEqual(await take(valid),[]);
-  const retried = await retry(); assert.equal((await take(retried))[0].subscription_id, message.subscription_id);
+  await q("update profiles set preferred_language='fr', language_selected_at=now() where id=$1",[owner]);
+  const retried = await retry(); const [retryMessage] = await take(retried);
+  assert.equal(retryMessage.subscription_id, message.subscription_id);
+  assert.equal(retryMessage.language, 'tr'); // A provider retry retains the original payload.
+  await q("update trial_coaching_followup set first_attempted_at=null, attempted_at=null");
+  const nextDispatch = await retry(); assert.equal((await take(nextDispatch))[0].language,'fr');
   await q('update trial_coaching_followup set sent_at=now()');
   assert.equal(await retry(),undefined);
   await q("update user_subscriptions set polar_subscription_id='second'");

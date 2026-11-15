@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +31,7 @@ interface Tournament {
  * TournamentList - realtime handled by useUnifiedRealtime
  */
 export function TournamentList({ playerTag, playerName }: { playerTag: string; playerName: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
   // Use React Query - realtime invalidation handled by useUnifiedRealtime
@@ -114,13 +115,13 @@ export function TournamentList({ playerTag, playerName }: { playerTag: string; p
                   {tournament.name}
                 </CardTitle>
                 <Badge className={`${getStatusColor(tournament.status)} text-white`}>
-                  {tournament.status.replace('_', ' ').toUpperCase()}
+                  {t(`tournaments.${tournament.status === 'in_progress' ? 'inProgress' : tournament.status}`, { defaultValue: t('common.unknown') })}
                 </Badge>
               </div>
               <div className="text-right">
                 <div className="flex items-center gap-1 text-yellow-500 font-bold">
                   <DollarSign className="w-5 h-5" />
-                  <span className="text-xl">{tournament.prize_pool.toLocaleString()}</span>
+                  <span className="text-xl">{tournament.prize_pool.toLocaleString(i18n.language)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">{t('tournaments.prizePool')}</p>
               </div>
@@ -138,11 +139,11 @@ export function TournamentList({ playerTag, playerName }: { playerTag: string; p
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-muted-foreground" />
-                <span>{formatDistanceToNow(new Date(tournament.start_date), { addSuffix: true })}</span>
+                <span>{formatDistanceToNow(new Date(tournament.start_date), { addSuffix: true, locale: getDateLocale(i18n.language) })}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Trophy className="w-4 h-4 text-muted-foreground" />
-                <span>{tournament.tournament_type.replace('_', ' ')}</span>
+                <span>{t(`tournaments.formats.${tournament.tournament_type}`, { defaultValue: t('common.unknown') })}</span>
               </div>
             </div>
 

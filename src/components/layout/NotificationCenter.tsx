@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Bell, Check, CheckCheck, Trash2, Trophy, RefreshCw, Sparkles, Info, AlertCircle, Loader2 } from "lucide-react";
@@ -59,7 +60,7 @@ const getNotificationColor = (type: Notification['type']) => {
 };
 
 export function NotificationCenter({ playerTag }: NotificationCenterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, unreadCount, isLoading } = useNotifications(playerTag);
   const { mutate: markAsRead } = useMarkAsRead();
@@ -177,7 +178,7 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
                         </p>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                           </span>
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {!notification.read && (

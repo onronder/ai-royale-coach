@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { Crown, Sparkles, Swords } from "lucide-react";
 
 export function SplashScreen() {
+  const { t } = useTranslation();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background arena-bg overflow-hidden">
       {/* Animated Background Particles */}
@@ -47,7 +49,7 @@ export function SplashScreen() {
 
         {/* Tagline */}
         <p className="text-lg text-muted-foreground font-medium mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          Your AI-Powered Battle Coach
+          {t('splash.tagline')}
         </p>
 
         {/* Loading Indicator */}
@@ -61,7 +63,7 @@ export function SplashScreen() {
           
           {/* Loading Text */}
           <p className="text-sm text-muted-foreground">
-            Preparing the arena...
+            {t('splash.loading')}
           </p>
         </div>
 

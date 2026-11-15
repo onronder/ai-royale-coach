@@ -76,7 +76,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-semibold text-success">{t('deckAnalysis.strengths')}</h4>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">{t('common.ai')}</span>
                 </div>
                 <ul className="space-y-1">
                   {basicAnalysis.strengths.map((s, i) => (
@@ -91,7 +91,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-semibold text-destructive">{t('deckAnalysis.weaknesses')}</h4>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">{t('common.ai')}</span>
                 </div>
                 <ul className="space-y-1">
                   {basicAnalysis.weaknesses.map((w, i) => (
@@ -106,7 +106,7 @@ export function AdvancedAnalysisTabs({ advancedAnalysis, basicAnalysis, cardName
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-semibold text-primary">{t('deckAnalysis.recommendations')}</h4>
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">AI</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning">{t('common.ai')}</span>
                 </div>
                 <ul className="space-y-1">
                   {basicAnalysis.recommendations.map((r, i) => (

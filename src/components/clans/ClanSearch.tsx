@@ -34,7 +34,7 @@ interface ClanSearchProps {
 }
 
 export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [clans, setClans] = useState<Clan[]>([]);
   const [globalClans, setGlobalClans] = useState<Clan[]>([]);
@@ -190,7 +190,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
                           <p className="text-sm text-muted-foreground">{clan.clan_tag}</p>
                         </div>
                         <Badge className={`${getClanTypeColor(clan.type)} text-white`}>
-                          {clan.type?.replace('_', ' ').toUpperCase() || 'UNKNOWN'}
+                          {t(`clan.entryTypes.${clan.type}`, { defaultValue: t('common.unknown') })}
                         </Badge>
                       </div>
 
@@ -278,7 +278,7 @@ export function ClanSearch({ onSelectClan, userPlayerTag }: ClanSearchProps) {
                         <div className="text-right shrink-0">
                           <div className="flex items-center gap-1 text-primary font-bold">
                             <Trophy className="w-4 h-4" />
-                            <span>{(clan.clan_score || 0).toLocaleString()}</span>
+                            <span>{(clan.clan_score || 0).toLocaleString(i18n.language)}</span>
                           </div>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Users className="w-3 h-3" />

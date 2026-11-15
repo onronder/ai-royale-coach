@@ -1,4 +1,5 @@
-import React from 'https://esm.sh/react@18.3.1'
+import { productLanguage } from "../_shared/language.ts";
+import * as React from 'https://esm.sh/react@18.3.1'
 import { Resend } from 'https://esm.sh/resend@4.0.0'
 import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
@@ -42,7 +43,8 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
-    const { email, type, name, language = 'en', subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl, accessEndDate, wasTrial } = body
+    const { email, type, name, language: requestedLanguage, subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl, accessEndDate, wasTrial } = body
+    const language = productLanguage(requestedLanguage);
 
     if (!email || !type) {
       return errorResponse('Missing required fields: email and type', 400)
@@ -120,7 +122,11 @@ Deno.serve(async (req) => {
 
       case 'account_update':
         subject = getAccountUpdateSubject(language)
-        html = `<p>Your account has been updated.</p>`
+        html = `<html lang="${language}"><body><p>${{
+          en: 'Your account has been updated.', tr: 'Hesabınız güncellendi.',
+          es: 'Tu cuenta se ha actualizado.', fr: 'Votre compte a été mis à jour.',
+          pt: 'Sua conta foi atualizada.',
+        }[language]}</p></body></html>`
         break
 
       case 'trial_expired':

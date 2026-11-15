@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Shield, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -13,6 +14,7 @@ interface SoftBlockWarningProps {
  * Non-blocking warning banner for users with fraud warnings or soft-blocks.
  */
 export function SoftBlockWarning({ status, className }: SoftBlockWarningProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   if (status === 'clean') {
@@ -34,20 +36,10 @@ export function SoftBlockWarning({ status, className }: SoftBlockWarningProps) {
         )}
         <div className="flex-1">
           <AlertTitle className="text-warning">
-            {isSoftBlocked ? 'Limited Access' : 'Unusual Activity Detected'}
+            {t(isSoftBlocked ? 'accountWarning.limited' : 'accountWarning.detected')}
           </AlertTitle>
           <AlertDescription className="text-muted-foreground mt-1">
-            {isSoftBlocked ? (
-              <>
-                Your account has reduced feature limits due to detected suspicious activity.
-                If you believe this is an error, please contact support.
-              </>
-            ) : (
-              <>
-                We detected some unusual patterns on your account. 
-                Continue using the app normally to clear this warning.
-              </>
-            )}
+            {t(isSoftBlocked ? 'accountWarning.limitedDescription' : 'accountWarning.description')}
           </AlertDescription>
           {isSoftBlocked && (
             <Button 
@@ -57,7 +49,7 @@ export function SoftBlockWarning({ status, className }: SoftBlockWarningProps) {
               onClick={() => navigate('/help')}
             >
               <HelpCircle className="h-4 w-4 mr-2" />
-              Get Help
+              {t('accountWarning.help')}
             </Button>
           )}
         </div>

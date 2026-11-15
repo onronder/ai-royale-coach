@@ -99,3 +99,15 @@ verify_jwt = false
 
 [functions.trial-coaching-reminder]
 verify_jwt = true
+
+[auth.email.template.confirmation]
+subject = "{{ if eq (printf \"%v\" .Data.language) \"tr\" }}E-posta adresini doğrula · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"es\" }}Verifica tu correo electrónico · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"fr\" }}Vérifiez votre adresse e-mail · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"pt\" }}Verifique seu e-mail · AI Royale{{ else }}Verify your email address · AI Royale{{ end }}"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "{{ if eq (printf \"%v\" .Data.language) \"tr\" }}Şifreni sıfırla · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"es\" }}Restablece tu contraseña · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"fr\" }}Réinitialisez votre mot de passe · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"pt\" }}Redefina sua senha · AI Royale{{ else }}Reset your password · AI Royale{{ end }}"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "{{ if eq (printf \"%v\" .Data.language) \"tr\" }}Giriş bağlantın · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"es\" }}Tu enlace de acceso · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"fr\" }}Votre lien de connexion · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"pt\" }}Seu link de acesso · AI Royale{{ else }}Your sign-in link · AI Royale{{ end }}"
+content_path = "./supabase/templates/magic_link.html"

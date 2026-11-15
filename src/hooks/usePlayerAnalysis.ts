@@ -20,16 +20,17 @@ export function usePlayerAnalysis(
   battles: ClashRoyaleBattle[] | undefined
 ) {
   const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage ?? 'en';
   
   return useQuery({
-    queryKey: ['player-analysis', player?.tag, i18n.language],
+    queryKey: ['player-analysis', player?.tag, language],
     queryFn: async () => {
       if (!player || !battles) {
         throw new Error('Player data and battles are required');
       }
 
       const { data, error } = await supabase.functions.invoke<PlayerAnalysisResult>('analyze-player', {
-        body: { playerData: player, battles, language: i18n.language }
+        body: { playerData: player, battles, language }
       });
 
       if (error) {

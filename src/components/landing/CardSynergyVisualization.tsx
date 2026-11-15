@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Network, Sparkles } from 'lucide-react';
@@ -23,6 +24,7 @@ const getDeckKey = (deckId: string): string => {
 
 export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisualizationProps) {
   const { t } = useTranslation();
+  const cardLabel = useCardName();
   const [selectedSynergy, setSelectedSynergy] = useState<CardSynergy | null>(null);
 
   const getStrengthColor = (strength: number) => {
@@ -92,7 +94,7 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
                     {getCardEmoji(synergy.card1)}
                   </div>
                   <span className="text-sm font-rajdhani font-semibold text-foreground truncate">
-                    {synergy.card1}
+                    {cardLabel(synergy.card1)}
                   </span>
                 </div>
 
@@ -115,7 +117,7 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
                 {/* Card 2 */}
                 <div className="flex items-center gap-2 flex-1 justify-end">
                   <span className="text-sm font-rajdhani font-semibold text-foreground truncate">
-                    {synergy.card2}
+                    {cardLabel(synergy.card2)}
                   </span>
                   <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${getStrengthColor(synergy.strength)} flex items-center justify-center text-2xl border border-${deck.color}/20 group-hover:scale-110 transition-transform`}>
                     {getCardEmoji(synergy.card2)}
@@ -148,7 +150,7 @@ export function CardSynergyVisualization({ deck, isVisible }: CardSynergyVisuali
         {/* Summary */}
         <Card className={`p-4 bg-${deck.color}/5 border-${deck.color}/20`}>
           <p className="text-xs text-muted-foreground">
-            <span className={`font-semibold text-${deck.color}`}>Pro Tip:</span>{' '}
+            <span className={`font-semibold text-${deck.color}`}>{t('landing.demo.synergy.tipLabel')}:</span>{' '}
             {t('landing.demo.synergy.proTip')}
           </p>
         </Card>

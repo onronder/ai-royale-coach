@@ -35,7 +35,7 @@ export function OverviewTab({
   analysisLoading,
   analysisError,
 }: OverviewTabProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const statTooltips = useStatTooltips();
 
   return (
@@ -54,9 +54,9 @@ export function OverviewTab({
             <>
               <StatCard
                 title={t('dashboard.currentTrophies')}
-                value={player.trophies.toLocaleString()}
+                value={player.trophies.toLocaleString(i18n.language)}
                 icon={Trophy}
-                description={`${t('dashboard.best')}: ${player.bestTrophies.toLocaleString()}`}
+                description={`${t('dashboard.best')}: ${player.bestTrophies.toLocaleString(i18n.language)}`}
                 trend="neutral"
                 tooltip={statTooltips.trophies}
               />
@@ -94,7 +94,7 @@ export function OverviewTab({
 
         {/* AI Analysis Card - Subscription Gated */}
         {/* Saved summary stays readable after access ends; new generation remains server-blocked. */}
-        {(analysis as { read_only?: boolean } | null)?.read_only ? (
+        {analysis?.read_only ? (
           <AIAnalysisCard analysis={analysis} analysisLoading={false} analysisError={null} />
         ) : (
           <SubscriptionGate feature={t('subscription.features.aiAnalysis')}>
@@ -120,7 +120,7 @@ interface AIAnalysisCardProps {
 }
 
 function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysisCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <Card className="bg-card border-2 border-royal/40 shadow-lg relative overflow-hidden">
@@ -151,7 +151,9 @@ function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysis
         ) : analysis ? (
           <div className="space-y-4">
             <div className="prose prose-sm max-w-none">
-              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/90">
+              {analysis.read_only && analysis.language && analysis.language !== i18n.resolvedLanguage &&
+                <p className="mb-2 text-xs text-muted-foreground">{t('coachingHistory.language', { language: new Intl.DisplayNames([i18n.language], { type: 'language' }).of(analysis.language) })}</p>}
+              <p lang={analysis.language} className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/90">
                 {analysis.analysis.split(/(\*\*[^*\n]+\*\*)/g).map((part, i) =>
                   part.startsWith('**') && part.endsWith('**') && part.length > 4
                     ? <strong key={i}>{part.slice(2, -2)}</strong> : part)}

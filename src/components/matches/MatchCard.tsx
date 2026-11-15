@@ -1,3 +1,5 @@
+import { getDateLocale } from "@/i18n/dateLocale";
+import { useTranslation } from "react-i18next";
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
@@ -17,6 +19,7 @@ interface MatchCardProps {
 
 // Memoized to prevent re-renders when parent updates unrelated state
 export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }: MatchCardProps) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   
   // Normalize player tags - API returns with '#', URL param might not have it
@@ -58,7 +61,7 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
               )}
             >
               <Swords className="w-3 h-3 mr-1" />
-              {isWin ? "VICTORY" : "DEFEAT"}
+              {t(isWin ? 'dashboard.victory' : playerTeam.crowns === opponent.crowns ? 'dashboard.draw' : 'dashboard.defeat')}
             </Badge>
             <span className="text-xs md:text-sm text-muted-foreground font-medium truncate">{battle.gameMode.name}</span>
           </div>
@@ -70,7 +73,7 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
                 isWin ? "text-gold" : "text-muted-foreground"
               )} />
               <span className="font-rajdhani font-semibold">{playerTeam.crowns} - {opponent.crowns}</span>
-              <span className="text-muted-foreground">vs <span className="text-foreground">{opponent.name}</span></span>
+              <span className="text-muted-foreground">{t('common.vs')} <span className="text-foreground">{opponent.name}</span></span>
             </div>
             
             {trophyChange !== 0 && (
@@ -96,12 +99,12 @@ export const MatchCard = memo(function MatchCard({ battle, playerTag, onClick }:
             size="icon"
             onClick={handleQuickScan}
             className="h-8 w-8 min-h-[44px] min-w-[44px] text-emerald-400 hover:bg-emerald-900/20"
-            title="Quick Scan Opponent"
+            title={t('matches.scanOpponent')}
           >
             <Eye className="h-4 w-4" />
           </Button>
           <p className="text-[10px] md:text-xs text-muted-foreground whitespace-nowrap">
-            {formatDistanceToNow(parseClashRoyaleDate(battle.battleTime), { addSuffix: true })}
+            {formatDistanceToNow(parseClashRoyaleDate(battle.battleTime), { addSuffix: true, locale: getDateLocale(i18n.language) })}
           </p>
         </div>
       </div>

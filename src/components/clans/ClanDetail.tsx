@@ -33,7 +33,7 @@ interface ClanDetailProps {
 }
 
 export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: ClanDetailProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -99,7 +99,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
               <h2 className="text-2xl font-bold">{clan.name}</h2>
               <p className="text-muted-foreground">{clan.clan_tag}</p>
               <Badge className={`${getClanTypeColor(clan.type)} text-white`}>
-                {clan.type?.replace('_', ' ').toUpperCase() || 'UNKNOWN'}
+                {t(`clan.entryTypes.${clan.type}`, { defaultValue: t('common.unknown') })}
               </Badge>
             </div>
           </div>
@@ -124,7 +124,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
               <Trophy className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">{t('clan.requiredTrophies')}</p>
-                <p className="font-semibold">{(clan.required_trophies || 0).toLocaleString()}</p>
+                <p className="font-semibold">{(clan.required_trophies || 0).toLocaleString(i18n.language)}</p>
               </div>
             </div>
 
@@ -132,7 +132,7 @@ export function ClanDetail({ clan, isOpen, onClose, playerTag, playerName }: Cla
               <Shield className="w-5 h-5 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">{clan.clan_score ? t('clan.clanScore') : t('clan.warTrophies')}</p>
-                <p className="font-semibold">{(clan.clan_score || clan.war_trophies || 0).toLocaleString()}</p>
+                <p className="font-semibold">{(clan.clan_score || clan.war_trophies || 0).toLocaleString(i18n.language)}</p>
               </div>
             </div>
 

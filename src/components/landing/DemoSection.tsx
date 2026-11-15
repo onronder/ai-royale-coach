@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { useTranslation } from 'react-i18next';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -27,6 +28,7 @@ const deckInsightKeys: Record<string, string> = {
 };
 
 export function DemoSection() {
+  const cardLabel = useCardName();
   const { t } = useTranslation();
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
   const navigate = useNavigate();
@@ -98,7 +100,7 @@ export function DemoSection() {
         </TooltipTrigger>
         <TooltipContent side="top" className="bg-card border-border p-3">
           <div className="space-y-1">
-            <p className="font-rajdhani font-bold text-foreground">{card.name}</p>
+            <p className="font-rajdhani font-bold text-foreground">{cardLabel(card.name)}</p>
             <div className="flex items-center gap-4 text-sm">
               <span className="text-primary flex items-center gap-1">
                 <Zap className="h-3 w-3" />
@@ -179,7 +181,7 @@ export function DemoSection() {
                 <Card className={`p-6 bg-card/50 backdrop-blur ${colorMap[deck.color]} transition-all`}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-rajdhani font-bold text-foreground">
-                      {deck.name}
+                      {t(`landing.demo.deckNames.${deck.learningPathKey}`)}
                     </h3>
                     <span className={`text-sm px-3 py-1 rounded-full bg-${deck.color}/10 text-${deck.color} font-rajdhani font-semibold border border-${deck.color}/30`}>
                       {getTranslatedArchetype(deck.stats.archetype)}

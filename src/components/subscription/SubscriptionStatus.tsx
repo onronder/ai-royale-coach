@@ -28,7 +28,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
       return (
         <Badge variant="outline" className="border-gold/50 text-gold bg-gold/10">
           <Crown className="mr-1 h-3 w-3" />
-          PRO
+          {t('common.pro')}
         </Badge>
       );
     }

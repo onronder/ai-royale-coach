@@ -31,7 +31,7 @@ export function DeckEvolutionTracker({
   onSwap,
   onUndo,
 }: DeckEvolutionTrackerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [swapHistory, setSwapHistory] = useState<SwapHistory[]>([]);
   const [trySwapMode, setTrySwapMode] = useState(false);
 
@@ -120,7 +120,7 @@ export function DeckEvolutionTracker({
                           <Badge variant="default">{swap.newCard}</Badge>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(swap.timestamp).toLocaleTimeString()}
+                          {new Date(swap.timestamp).toLocaleTimeString(i18n.language)}
                         </span>
                       </div>
 

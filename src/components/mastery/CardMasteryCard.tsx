@@ -1,3 +1,4 @@
+import { useCardName } from '@/i18n/useCardName';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +18,8 @@ interface CardMasteryCardProps {
 }
 
 export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
-  const { t } = useTranslation();
+  const cardLabel = useCardName();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const generateTips = useGenerateCardTips();
@@ -55,7 +57,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
           {/* Header with Badge */}
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-heading text-foreground mb-1">{card.card_name}</h3>
+              <h3 className="font-heading text-foreground mb-1">{cardLabel(card.card_name)}</h3>
               <p className="text-xs text-muted-foreground">{t('cardMastery.used', { count: card.times_used })}</p>
             </div>
             <MasteryLevelBadge level={card.mastery_level} />
@@ -111,7 +113,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
                   <div className="flex flex-wrap gap-1">
                     {card.best_partner_cards.map(partner => (
                       <Badge key={partner} variant="secondary" className="text-xs">
-                        {partner}
+                        {cardLabel(partner)}
                       </Badge>
                     ))}
                   </div>
@@ -125,7 +127,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
                   <div className="flex flex-wrap gap-1">
                     {card.worst_matchup_cards.map(matchup => (
                       <Badge key={matchup} variant="destructive" className="text-xs">
-                        {matchup}
+                        {cardLabel(matchup)}
                       </Badge>
                     ))}
                   </div>
@@ -136,7 +138,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <div className="text-xs text-muted-foreground">{t('cardMastery.personalizedTips')}</div>
-                  {!card.ai_tips && (
+                  {(!card.ai_tips || card.ai_tips_language !== i18n.resolvedLanguage) && (
                     <Button 
                       variant="ghost" 
                       size="sm" 
@@ -147,12 +149,12 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
                       {!hasAccess && <Lock className="h-3 w-3 mr-1" />}
                       <Sparkles className="h-3 w-3 mr-1" />
                       {t('cardMastery.generate')}
-                      {!hasAccess && <Badge variant="secondary" className="ml-1 text-[10px] px-1">PRO</Badge>}
+                      {!hasAccess && <Badge variant="secondary" className="ml-1 text-[10px] px-1">{t('common.pro')}</Badge>}
                     </Button>
                   )}
                 </div>
                 {card.ai_tips ? (
-                  <div className="text-xs text-foreground bg-card-secondary rounded p-3 whitespace-pre-wrap">
+                  <div lang={card.ai_tips_language ?? undefined} className="text-xs text-foreground bg-card-secondary rounded p-3 whitespace-pre-wrap">
                     {card.ai_tips}
                   </div>
                 ) : generateTips.isPending ? (

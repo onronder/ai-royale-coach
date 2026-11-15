@@ -1,3 +1,4 @@
+import { productLanguage } from '../../_shared/language.ts';
 import {
   Body,
   Container,
@@ -10,10 +11,99 @@ import {
   Text,
   Button,
   Hr,
-} from 'https://esm.sh/@react-email/components@0.0.22'
+} from 'https://esm.sh/@react-email/components@0.0.22?deps=react@18.3.1'
 import * as React from 'https://esm.sh/react@18.3.1'
 
+const copy = {
+  "en": {
+    "resetTitle": "Reset your password",
+    "magicTitle": "Your sign-in link",
+    "verifyTitle": "Verify your email address",
+    "resetDescription": "Use the button below to choose a new password.",
+    "magicDescription": "Use the button below to sign in to your account.",
+    "verifyDescription": "Welcome to AI Royale! Confirm your email address to get started.",
+    "resetAction": "Reset password",
+    "magicAction": "Sign in",
+    "verifyAction": "Verify email",
+    "link": "Or copy this link into your browser.",
+    "code": "Or use this verification code.",
+    "ignore": "If you did not request this email, you can ignore it.",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service"
+  },
+  "tr": {
+    "resetTitle": "Şifreni sıfırla",
+    "magicTitle": "Giriş bağlantın",
+    "verifyTitle": "E-posta adresini doğrula",
+    "resetDescription": "Yeni bir şifre belirlemek için aşağıdaki düğmeyi kullan.",
+    "magicDescription": "Hesabına giriş yapmak için aşağıdaki düğmeyi kullan.",
+    "verifyDescription": "AI Royale’e hoş geldin! Başlamak için e-posta adresini doğrula.",
+    "resetAction": "Şifremi sıfırla",
+    "magicAction": "Giriş yap",
+    "verifyAction": "E-postamı doğrula",
+    "link": "Dilersen bağlantıyı tarayıcına yapıştırabilirsin.",
+    "code": "Dilersen bu doğrulama kodunu kullanabilirsin.",
+    "ignore": "Bu e-postayı sen istemediysen dikkate almayabilirsin.",
+    "rights": "Tüm hakları saklıdır.",
+    "privacy": "Gizlilik politikası",
+    "terms": "Kullanım koşulları"
+  },
+  "es": {
+    "resetTitle": "Restablece tu contraseña",
+    "magicTitle": "Tu enlace de acceso",
+    "verifyTitle": "Verifica tu correo electrónico",
+    "resetDescription": "Usa el botón para elegir una contraseña nueva.",
+    "magicDescription": "Usa el botón para acceder a tu cuenta.",
+    "verifyDescription": "¡Te damos la bienvenida a AI Royale! Confirma tu dirección de correo para empezar.",
+    "resetAction": "Restablecer contraseña",
+    "magicAction": "Iniciar sesión",
+    "verifyAction": "Verificar correo",
+    "link": "También puedes copiar este enlace en tu navegador.",
+    "code": "También puedes usar este código de verificación.",
+    "ignore": "Si no solicitaste este correo, puedes ignorarlo.",
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Política de privacidad",
+    "terms": "Condiciones del servicio"
+  },
+  "fr": {
+    "resetTitle": "Réinitialisez votre mot de passe",
+    "magicTitle": "Votre lien de connexion",
+    "verifyTitle": "Vérifiez votre adresse e-mail",
+    "resetDescription": "Utilisez le bouton pour choisir un nouveau mot de passe.",
+    "magicDescription": "Utilisez le bouton pour vous connecter à votre compte.",
+    "verifyDescription": "Bienvenue sur AI Royale ! Confirmez votre adresse e-mail pour commencer.",
+    "resetAction": "Réinitialiser le mot de passe",
+    "magicAction": "Se connecter",
+    "verifyAction": "Vérifier mon adresse",
+    "link": "Vous pouvez aussi copier ce lien dans votre navigateur.",
+    "code": "Vous pouvez également utiliser ce code de vérification.",
+    "ignore": "Si vous n’avez pas demandé cet e-mail, vous pouvez l’ignorer.",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d’utilisation"
+  },
+  "pt": {
+    "resetTitle": "Redefina sua senha",
+    "magicTitle": "Seu link de acesso",
+    "verifyTitle": "Verifique seu e-mail",
+    "resetDescription": "Use o botão abaixo para escolher uma nova senha.",
+    "magicDescription": "Use o botão abaixo para entrar na sua conta.",
+    "verifyDescription": "Boas-vindas ao AI Royale! Confirme seu e-mail para começar.",
+    "resetAction": "Redefinir senha",
+    "magicAction": "Entrar",
+    "verifyAction": "Verificar e-mail",
+    "link": "Você também pode colar este link no navegador.",
+    "code": "Você também pode usar este código de verificação.",
+    "ignore": "Se não solicitou este e-mail, você pode ignorá-lo.",
+    "rights": "Todos os direitos reservados.",
+    "privacy": "Política de privacidade",
+    "terms": "Termos de uso"
+  }
+};
+
 interface VerificationEmailProps {
+  language?: string
   supabase_url: string
   email_action_type: string
   redirect_to: string
@@ -29,32 +119,19 @@ export const VerificationEmail = ({
   redirect_to,
   token_hash,
   site_url,
+  language: requestedLanguage,
 }: VerificationEmailProps) => {
   const verificationUrl = `${supabase_url}/auth/v1/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`
   
-  const isPasswordReset = email_action_type === 'recovery'
-  const isMagicLink = email_action_type === 'magiclink'
-  
-  const title = isPasswordReset 
-    ? 'Reset Your Password' 
-    : isMagicLink 
-    ? 'Your Magic Link' 
-    : 'Verify Your Email'
-  
-  const description = isPasswordReset
-    ? 'Click the button below to reset your password and get back in the arena.'
-    : isMagicLink
-    ? 'Click the button below to sign in to your account.'
-    : 'Welcome to AI Royale! Click the button below to verify your email and start dominating the arena.'
-
-  const buttonText = isPasswordReset
-    ? 'Reset Password'
-    : isMagicLink
-    ? 'Sign In'
-    : 'Verify Email'
+  const language = productLanguage(requestedLanguage);
+  const textCopy = copy[language];
+  const mode = email_action_type === 'recovery' ? 'reset' : email_action_type === 'magiclink' ? 'magic' : 'verify';
+  const title = textCopy[`${mode}Title`];
+  const description = textCopy[`${mode}Description`];
+  const buttonText = textCopy[`${mode}Action`];
 
   return (
-    <Html>
+    <Html lang={language}>
       <Head />
       <Preview>{title} - AI Royale</Preview>
       <Body style={main}>
@@ -81,7 +158,7 @@ export const VerificationEmail = ({
 
             {/* Alternative Link */}
             <Text style={altText}>
-              Or copy and paste this link into your browser:
+              {textCopy.link}
             </Text>
             <Text style={linkText}>
               <Link href={verificationUrl} style={link}>
@@ -96,7 +173,7 @@ export const VerificationEmail = ({
               <>
                 <Hr style={divider} />
                 <Text style={altText}>
-                  Or use this verification code:
+                  {textCopy.code}
                 </Text>
                 <Section style={codeContainer}>
                   <Text style={code}>{token}</Text>
@@ -108,15 +185,15 @@ export const VerificationEmail = ({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              If you didn't request this email, you can safely ignore it.
+              {textCopy.ignore}
             </Text>
             <Text style={footerText}>
-              © {new Date().getFullYear()} AI Royale. All rights reserved.
+              © {new Date().getFullYear()} AI Royale. {textCopy.rights}
             </Text>
             <Text style={footerLinks}>
-              <Link href={`${site_url}/privacy`} style={footerLink}>Privacy Policy</Link>
+              <Link href={`${site_url}/privacy`} style={footerLink}>{textCopy.privacy}</Link>
               {' • '}
-              <Link href={`${site_url}/terms`} style={footerLink}>Terms of Service</Link>
+              <Link href={`${site_url}/terms`} style={footerLink}>{textCopy.terms}</Link>
             </Text>
           </Section>
         </Container>

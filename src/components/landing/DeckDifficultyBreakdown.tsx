@@ -68,7 +68,7 @@ export function DeckDifficultyBreakdown({ deck, isVisible }: DeckDifficultyBreak
               <GraduationCap className={`h-5 w-5 text-${deck.color}`} />
             </div>
             <div>
-              <h4 className="font-rajdhani font-bold text-lg text-foreground">{deck.name}</h4>
+              <h4 className="font-rajdhani font-bold text-lg text-foreground">{t(`landing.demo.deckNames.${deck.learningPathKey}`)}</h4>
               <p className="text-xs text-muted-foreground">{t('landing.demo.difficulty.subtitle')}</p>
             </div>
           </div>

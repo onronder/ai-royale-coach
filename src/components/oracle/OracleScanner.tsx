@@ -163,7 +163,8 @@ export function OracleScanner({
   const { t, i18n } = useTranslation();
   const [opponentTag, setOpponentTag] = useState(initialOpponentTag);
   const [searchTag, setSearchTag] = useState<string | null>(null);
-  const [matchupPrediction, setMatchupPrediction] = useState<MatchupPrediction | null>(null);
+  const [savedPrediction, setMatchupPrediction] = useState<(MatchupPrediction & { language: string }) | null>(null);
+  const matchupPrediction = savedPrediction?.language === i18n.language ? savedPrediction : null;
   const [isLoadingMatchup, setIsLoadingMatchup] = useState(false);
 
   const { data: prediction, isLoading, error } = useOraclePrediction(searchTag);
@@ -184,9 +185,10 @@ export function OracleScanner({
     if (prediction && userCurrentDeck && userCurrentDeck.length === 8 && !matchupPrediction && !isLoadingMatchup) {
       predictMatchup();
     }
-  }, [prediction, userCurrentDeck]);
+  }, [prediction, userCurrentDeck, i18n.language]);
 
   const predictMatchup = async () => {
+    const language = i18n.language;
     if (!prediction || !userCurrentDeck || userCurrentDeck.length !== 8) return;
     
     setIsLoadingMatchup(true);
@@ -201,12 +203,14 @@ export function OracleScanner({
         body: {
           deckA: userCurrentDeck.map(c => c.name),
           deckB: prediction.likelyDeck.map(c => c.name),
-          playerTag: userPlayerTag
+          playerTag: userPlayerTag,
+          language,
         }
       });
       
-      if (!error && data) {
+      if (!error && data && language === i18n.language) {
         setMatchupPrediction({
+          language,
           deckAWinRate: data.predicted_win_rate_a || data.predictedWinRateA || 50,
           deckBWinRate: data.predicted_win_rate_b || data.predictedWinRateB || 50,
           confidence: data.confidence || 'medium',

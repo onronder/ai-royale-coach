@@ -88,7 +88,7 @@ export function DemoTeaser() {
             )} style={{ transitionDelay: '200ms' }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-rajdhani font-bold text-foreground">
-                  {selectedDeck.name}
+                  {t(`landing.demo.deckNames.${selectedDeck.learningPathKey}`)}
                 </h3>
                 <span className={cn(
                   "text-sm px-3 py-1 rounded-full font-rajdhani font-semibold border",

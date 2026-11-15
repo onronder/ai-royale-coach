@@ -42,10 +42,11 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
   }, [i18n.language, lastPredictedLanguage, predictions.length, t]);
 
   const fetchPredictions = async () => {
+    const language = i18n.language;
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("predict-deck-performance", {
-        body: { deck, targetTrophies, language: i18n.language },
+        body: { deck, targetTrophies, language },
       });
 
       // Check for subscription_required in response
@@ -61,6 +62,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
         }
         throw error;
       }
+      if (language !== i18n.language) return;
       setPredictions(data.predictions);
       setLastPredictedLanguage(i18n.language);
     } catch (error) {

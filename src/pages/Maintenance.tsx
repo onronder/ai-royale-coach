@@ -14,7 +14,7 @@ const Maintenance = () => {
     <>
       <Helmet>
         <title>{t('maintenance.title', 'Under Maintenance')} - AI Royale</title>
-        <meta name="description" content="AI Royale is currently under maintenance. We'll be back shortly with improvements!" />
+        <meta name="description" content={t('maintenance.description')} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 

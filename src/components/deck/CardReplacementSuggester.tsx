@@ -47,6 +47,7 @@ export function CardReplacementSuggester({
   }, [i18n.language, lastFetchedLanguage, suggestions.length, t]);
 
   const fetchSuggestions = async () => {
+    const language = i18n.language;
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("suggest-card-replacements", {
@@ -54,7 +55,7 @@ export function CardReplacementSuggester({
           currentDeck,
           targetCard,
           availableCards: userCollection,
-          language: i18n.language,
+          language,
         },
       });
 
@@ -71,6 +72,7 @@ export function CardReplacementSuggester({
         }
         throw error;
       }
+      if (language !== i18n.language) return;
       setSuggestions(data.suggestions);
       setLastFetchedLanguage(i18n.language);
     } catch (error) {

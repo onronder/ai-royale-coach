@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +14,7 @@ import { DemoTeaser } from "@/components/landing/DemoTeaser";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 
 const Index = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -30,11 +32,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Helmet>
-        <title>AI Royale - Your AI-Powered Clash Royale Coach</title>
-        <meta name="description" content="Dominate Clash Royale with AI-powered coaching. Get personalized deck recommendations, match analysis, and strategic tips to climb the ladder." />
+        <title>{t('splash.tagline')} | AI Royale</title>
+        <meta name="description" content={t('landing.hero.subtitle')} />
         <link rel="canonical" href="https://ai-royale.com/" />
-        <meta property="og:title" content="AI Royale - Your AI-Powered Clash Royale Coach" />
-        <meta property="og:description" content="Dominate Clash Royale with AI-powered coaching. Get personalized deck recommendations, match analysis, and strategic tips." />
+        <meta property="og:title" content={t('splash.tagline') + ' | AI Royale'} />
+        <meta property="og:description" content={t('landing.hero.subtitle')} />
         <meta property="og:url" content="https://ai-royale.com/" />
       </Helmet>
       <AnnouncementBanner />

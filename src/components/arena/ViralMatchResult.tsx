@@ -200,7 +200,7 @@ export const ViralMatchResult: React.FC<ViralMatchResultProps> = ({
               <p className="text-sm text-muted-foreground mb-1">{t('dreamArena.finalHp')}</p>
               <div className="flex items-center justify-center gap-4">
                 <span className={cn('text-xl font-bold', isVictory ? 'text-emerald-400' : 'text-destructive')}>{lastFrame?.userHp ?? 0}</span>
-                <span className="text-muted-foreground">vs</span>
+                <span className="text-muted-foreground">{t('common.vs')}</span>
                 <span className={cn('text-xl font-bold', !isVictory ? 'text-emerald-400' : 'text-destructive')}>{lastFrame?.proHp ?? 0}</span>
               </div>
             </motion.div>

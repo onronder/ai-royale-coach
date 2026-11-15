@@ -24,6 +24,7 @@ export function ProgressIndicator({
   className,
   variant = "default",
 }: ProgressIndicatorProps) {
+  const { t, i18n } = useTranslation();
   const [elapsedTime, setElapsedTime] = useState(0);
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState<number | null>(null);
 
@@ -51,10 +52,11 @@ export function ProgressIndicator({
   }, [startedAt, progress, total, status]);
 
   const formatTime = (seconds: number) => {
-    if (seconds < 60) return `${seconds}s`;
+    const unit = (value: number, unit: "second" | "minute") => new Intl.NumberFormat(i18n.language, { style: "unit", unit, unitDisplay: "narrow" }).format(value);
+    if (seconds < 60) return unit(seconds, "second");
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}m ${secs}s`;
+    return unit(minutes, "minute") + " " + unit(secs, "second");
   };
 
   if (variant === "compact") {
@@ -96,9 +98,9 @@ export function ProgressIndicator({
                 <AlertCircle className="h-5 w-5 text-destructive" />
               )}
               <span className="font-rajdhani font-semibold text-foreground">
-                {status === "running" && "Processing..."}
-                {status === "completed" && "Completed"}
-                {status === "failed" && "Failed"}
+                {status === "running" && t("progress.processing")}
+                {status === "completed" && t("tournaments.completed")}
+                {status === "failed" && t("admin.events.failed")}
               </span>
             </div>
             <span className="text-2xl font-rajdhani font-bold text-primary">
@@ -117,7 +119,7 @@ export function ProgressIndicator({
             </span>
             {status === "running" && estimatedTimeRemaining !== null && (
               <span className="font-medium">
-                ~{formatTime(estimatedTimeRemaining)} remaining
+                {t('progress.remaining', { time: formatTime(estimatedTimeRemaining) })}
               </span>
             )}
           </div>
@@ -126,7 +128,7 @@ export function ProgressIndicator({
           {variant === "detailed" && status === "running" && (
             <div className="pt-2 border-t border-border/50">
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Elapsed Time</span>
+                <span>{t('progress.elapsed')}</span>
                 <span className="font-mono">{formatTime(elapsedTime)}</span>
               </div>
             </div>

@@ -53,7 +53,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="font-rajdhani font-bold text-lg text-foreground">{t('landing.demo.meta.title')}</h4>
-                <Badge variant="outline" className="text-xs text-warning border-warning">Demo</Badge>
+                <Badge variant="outline" className="text-xs text-warning border-warning">{t('nav.demo')}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">{t('landing.demo.meta.subtitle')}</p>
             </div>
@@ -137,7 +137,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
                       top: `calc(${y}% - 4px)`,
                       transitionDelay: `${(idx + 1) * 100}ms`,
                     }}
-                    title={`${deck.name}: ${getWinRateAtPatch(deck, patch)}%`}
+                    title={`${t(`landing.demo.deckNames.${deck.learningPathKey}`)}: ${getWinRateAtPatch(deck, patch)}%`}
                   />
                 );
               })
@@ -165,7 +165,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
                 <div key={deck.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full bg-${deck.color}`} />
-                    <span className="text-sm text-muted-foreground">{deck.name}</span>
+                    <span className="text-sm text-muted-foreground">{t(`landing.demo.deckNames.${deck.learningPathKey}`)}</span>
                   </div>
                   <Badge variant="outline" className="text-xs">
                     {deck.history[0].winRate}%
@@ -183,7 +183,7 @@ export function MetaTimeline({ decks, isVisible }: MetaTimelineProps) {
                 const trend = getTrendIcon(deck);
                 return (
                   <div key={deck.id} className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground truncate">{deck.name}</span>
+                    <span className="text-sm text-muted-foreground truncate">{t(`landing.demo.deckNames.${deck.learningPathKey}`)}</span>
                     <div className="flex items-center gap-2">
                       <span className={`text-lg ${trend.color}`}>{trend.icon}</span>
                       <Badge 

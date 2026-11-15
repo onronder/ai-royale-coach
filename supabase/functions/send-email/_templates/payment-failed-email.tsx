@@ -1,4 +1,4 @@
-import React from 'https://esm.sh/react@18.3.1'
+import * as React from 'https://esm.sh/react@18.3.1'
 import {
   Body,
   Container,
@@ -151,7 +151,7 @@ export const PaymentFailedEmail = ({
   const paymentUrl = updatePaymentUrl || 'https://polar.sh/purchases/subscriptions'
 
   return (
-    <Html>
+    <Html lang={language}>
       <Head />
       <Preview>{t.preview}</Preview>
       <Body style={main}>

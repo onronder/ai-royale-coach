@@ -1,3 +1,4 @@
+import { getDateLocale } from "@/i18n/dateLocale";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,7 +14,7 @@ interface RecommendationHistoryCardProps {
 }
 
 export const RecommendationHistoryCard = memo(({ playerTag, className }: RecommendationHistoryCardProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: history, isLoading } = useRecommendationHistory(playerTag);
 
   if (isLoading || !history || history.length === 0) {
@@ -84,7 +85,7 @@ export const RecommendationHistoryCard = memo(({ playerTag, className }: Recomme
                   </div>
                 )}
                 <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(rec.created_at), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(rec.created_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                 </span>
               </div>
             </div>

@@ -63,7 +63,10 @@
     "locked": "Locked",
     "thisMayTakeMoment": "This may take a moment",
     "dismiss": "Dismiss",
-    "today": "Today"
+    "today": "Today",
+    "showLess": "Show less",
+    "success": "Success",
+    "viewMore": "View more"
   },
   "announcement": {
     "new": "NEW",
@@ -95,7 +98,8 @@
     "proDna": "Pro DNA",
     "theOracle": "The Oracle",
     "toggle": "Toggle navigation",
-    "toolbox": "Tools"
+    "toolbox": "Tools",
+    "dreamArena": "Dream Arena"
   },
   "feedback": {
     "thankYou": "Thanks for your feedback!",
@@ -292,7 +296,8 @@
         "strong": "Strong",
         "good": "Good",
         "moderate": "Moderate",
-        "proTip": "Click on any synergy to learn why these cards work well together. Master these combinations to maximize your deck's potential!"
+        "proTip": "Click on any synergy to learn why these cards work well together. Master these combinations to maximize your deck's potential!",
+        "tipLabel": "Pro tip"
       },
       "difficulty": {
         "subtitle": "Skill analysis and learning roadmap",
@@ -709,7 +714,9 @@
           "Cycle": "Cycle",
           "Beatdown": "Beatdown",
           "Control": "Control",
-          "Siege": "Siege"
+          "Siege": "Siege",
+          "Bait": "Spell bait",
+          "Bridge Spam": "Bridge spam"
         }
       },
       "matchup": {
@@ -719,6 +726,12 @@
         "favored": "{{deck}} Favored",
         "tips": "Tips",
         "keyCards": "Key Cards"
+      },
+      "deckNames": {
+        "hogCycle": "Hog 2.6 Cycle",
+        "golemBeatdown": "Golem Beatdown",
+        "logBait": "Classic Log Bait",
+        "xbowSiege": "X-Bow 3.0 Siege"
       }
     },
     "cta": {
@@ -1010,7 +1023,10 @@
     "noSpam": "No spam",
     "errors": {
       "invalidCredentials": "Invalid email or password",
-      "emailInUse": "Email already in use"
+      "emailInUse": "Email already in use",
+      "generic": "Something went wrong. Please try again.",
+      "networkError": "Network error. Please try again.",
+      "weakPassword": "Your password is too weak."
     },
     "signInRequired": "Please sign in to continue",
     "termsRequired": "You must accept the Terms of Service and Privacy Policy",
@@ -1250,7 +1266,14 @@
       "achievement": "{{count}} Achievement",
       "achievements": "{{count}} Achievements",
       "phase": "{{phase}} Phase"
-    }
+    },
+    "aiCoachSummary": "AI coach summary",
+    "deckAnalysis": "Deck analysis",
+    "expLevel": "Experience level",
+    "lastSynced": "Last synced",
+    "level": "Level",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…"
   },
   "deck": {
     "builder": "Deck Builder",
@@ -1287,7 +1310,12 @@
     "enterDeckName": "Please enter a deck name",
     "aiDeckAnalysis": "AI Deck Analysis",
     "analyzingStrategy": "AI is analyzing your deck strategy...",
-    "languageChangedReanalyze": "Language changed. Click 'AI Analyze' to get analysis in your new language."
+    "languageChangedReanalyze": "Language changed. Click 'AI Analyze' to get analysis in your new language.",
+    "cardCount": "{{count}}/8 cards",
+    "load": "Load deck",
+    "suggestions": "Suggestions",
+    "synergies": "Synergies",
+    "weaknesses": "Weaknesses"
   },
   "coach": {
     "title": "AI COACH",
@@ -1323,7 +1351,13 @@
     "aiQuota": "AI Requests Today",
     "quotaExhausted": "Daily AI limit reached. Resets at midnight.",
     "quotaLow": "Running low on AI requests today.",
-    "accessDenied": "Access denied. AI Coach is not enabled for this account."
+    "accessDenied": "Access denied. AI Coach is not enabled for this account.",
+    "reviewMatch": "Let’s review this match: {{result}}.",
+    "reviewQuestion": "What should I do differently next time?",
+    "gameMode": "Game mode",
+    "conversationDate": "Chat on {{date}}",
+    "messageCount_one": "{{count}} message",
+    "messageCount_other": "{{count}} messages"
   },
   "matches": {
     "details": "Match Details",
@@ -1335,7 +1369,8 @@
     "analysis": "Match Analysis",
     "keyMoments": "Key Moments",
     "counterDeck": "Counter Deck",
-    "discussWithCoach": "Discuss with AI Coach"
+    "discussWithCoach": "Discuss with AI Coach",
+    "scanOpponent": "Scout this opponent"
   },
   "cards": {
     "collection": "Card Collection",
@@ -1345,7 +1380,14 @@
     "progress": "Progress",
     "updateSuccess": "Card mastery updated successfully",
     "updateFailed": "Failed to update card mastery",
-    "suggestionsFailed": "Failed to fetch card suggestions"
+    "suggestionsFailed": "Failed to fetch card suggestions",
+    "evolved": "Evolved",
+    "evolutionUnlocked": "Evolution unlocked. This card gains special abilities in battle.",
+    "elixirCost": "{{cost}} elixir",
+    "displayLevel": "Level {{level}}",
+    "maxLevel": "Maximum level",
+    "upgradeable": "Upgrade available",
+    "evolutionBadge": "EVO"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -1373,7 +1415,8 @@
     "myClan": "My Clan",
     "noClan": "No Clan",
     "rankTop200": "Top 200",
-    "lastSync": "Last sync"
+    "lastSync": "Last sync",
+    "local": "Local"
   },
   "clan": {
     "details": "Clan Details",
@@ -1403,7 +1446,13 @@
     "noRankingsDescription": "Unable to load global clan rankings. Try refreshing.",
     "globalRankingsFailed": "Failed to load global clan rankings",
     "enterSearchQuery": "Please enter a search query",
-    "searchFailed": "Failed to search clans"
+    "searchFailed": "Failed to search clans",
+    "entryTypes": {
+      "open": "Open",
+      "closed": "Closed",
+      "inviteOnly": "Invite only",
+      "invite_only": "Invite only"
+    }
   },
   "loading": {
     "playerData": "Fetching player data...",
@@ -1449,7 +1498,15 @@
     "trialExpired": "Trial Expired",
     "trialExpiredTooltip": "Subscribe to AI Royale PRO to unlock AI features",
     "proBadge": "PRO",
-    "proBadgeTooltip": "This account has full AI access with your subscription"
+    "proBadgeTooltip": "This account has full AI access with your subscription",
+    "addNew": "Add a player",
+    "enterTag": "Enter a player tag",
+    "invalidTag": "Invalid player tag",
+    "maxAccounts": "You have reached the limit of three accounts.",
+    "playerNotFound": "Player not found",
+    "remove": "Remove",
+    "select": "Select",
+    "validate": "Validate"
   },
   "settings": {
     "whatsNew": {
@@ -1526,7 +1583,8 @@
       "title": "Preferences",
       "description": "Manage your app preferences",
       "language": "Language",
-      "languageDescription": "Choose your preferred language"
+      "languageDescription": "Choose your preferred language",
+      "languageSaveFailed": "Language changed on this device. Your account preference could not be saved."
     }
   },
   "matchDetail": {
@@ -1984,7 +2042,12 @@
     "match": "Match",
     "pending": "Pending",
     "tbd": "TBD",
-    "unknown": "Unknown Player"
+    "unknown": "Unknown Player",
+    "formats": {
+      "single_elimination": "Single elimination",
+      "double_elimination": "Double elimination",
+      "round_robin": "Round robin"
+    }
   },
   "comparison": {
     "title": "Account Comparison",
@@ -2124,6 +2187,35 @@
       "beginner": "Beginner",
       "intermediate": "Intermediate",
       "advanced": "Advanced"
+    },
+    "averageCost": "Average elixir: {{cost}}",
+    "popularity": "Popularity",
+    "descriptions": {
+      "hog_2_6_cycle": "Fast cycle deck with constant pressure. Requires precise timing and elixir management.",
+      "golem_beatdown": "Heavy beatdown deck. Build big pushes and overwhelm opponents.",
+      "x_bow_2_9": "Defensive siege deck. Control the game and chip tower damage.",
+      "pekka_bridge_spam": "Counter-push heavy deck. Defend then punish hard.",
+      "log_bait": "Bait out their spells, then punish with Goblin Barrel.",
+      "hog_2_6_cycle_classic": "Classic fast cycle deck requiring precise elixir management and defensive skills.",
+      "miner_2_9_cycle": "Control-oriented cycle deck with chip damage potential.",
+      "royal_giant_cycle": "Fast Royal Giant cycle for constant pressure.",
+      "mortar_cycle": "Siege-style cycle deck with Mortar as primary win condition.",
+      "cannon_cart_cycle": "Unique cycle deck built around Cannon Cart pressure.",
+      "e_giant_beatdown": "Heavy beatdown with Electro Giant as unstoppable tank.",
+      "mega_knight_sparky": "Defensive Mega Knight paired with Sparky counter-push.",
+      "lava_hound_clone": "Air-focused beatdown with devastating Clone potential.",
+      "giant_graveyard": "Classic Giant Graveyard combo for dual-lane pressure.",
+      "pekka_bridge_spam_classic": "Aggressive bridge spam with PEKKA for defense.",
+      "ram_rider_bridge_spam": "Fast-paced bridge spam with Ram Rider snare ability.",
+      "magic_archer_bridge_spam": "Bridge spam variant with Magic Archer geometry plays.",
+      "splashyard": "Defensive control deck using Graveyard as win condition.",
+      "miner_poison_control": "Spell-cycle control with Miner chip damage.",
+      "ice_bow": "Defensive X-Bow deck with Ice Wizard Tornado combo.",
+      "classic_log_bait": "The original Log Bait - bait out spells then punish.",
+      "prince_bait": "Dual Prince pressure with spell bait elements.",
+      "rocket_bait": "Heavy spell bait variant with double princess-type cards.",
+      "x_bow_3_0": "Classic X-Bow cycle - defensive mastery required.",
+      "mortar_rocket": "Spell cycle Mortar deck with Rocket finisher."
     }
   },
   "deckComparison": {
@@ -2210,7 +2302,15 @@
     "processing": "Processing...",
     "started": "Started",
     "recent": "Recent",
-    "noOperationsYet": "No operations yet"
+    "noOperationsYet": "No operations yet",
+    "elapsed": "Elapsed time",
+    "remaining": "About {{time}} left",
+    "operationsRunning_one": "{{count}} operation running",
+    "operationsRunning_other": "{{count}} operations running",
+    "cardMastery": "Calculating card mastery",
+    "collection": "Syncing card collection",
+    "deckStats": "Tracking deck statistics",
+    "achievements": "Syncing achievements"
   },
   "notifications": {
     "title": "Notifications",
@@ -2491,7 +2591,22 @@
     "signInForMatchup": "Sign in to see matchup analysis",
     "helpTooltip": "We analyze the opponent's last 25 battles to predict their most likely deck and playstyle.",
     "helperText": "Enter an opponent's player tag (e.g. #ABC12) to predict their deck and strategy.",
-    "tryExample": "Try"
+    "tryExample": "Try",
+    "errors": {
+      "noDeck": "No active deck found. Select a deck in the game.",
+      "parseError": "Could not read the opponent’s cards. Please try again.",
+      "predictionFailed": "Matchup prediction failed. Please try again."
+    },
+    "result": {
+      "confidence": "Confidence",
+      "keyMatchups": "Key matchups",
+      "opponentDeck": "Opponent’s deck",
+      "tips": "Strategy tips",
+      "title": "Matchup result",
+      "yourDeck": "Your deck",
+      "yourWinChance": "Your chance of winning"
+    },
+    "scanButton": "Predict matchup"
   },
   "proDna": {
     "title": "Your Pro DNA",
@@ -2509,7 +2624,15 @@
     "shareFailed": "Failed to share card",
     "noData": "Not enough battle data to generate your DNA.",
     "noDataHint": "Play some matches first!",
-    "shareText": "Check out my Clash Royale Pro DNA!"
+    "shareText": "Check out my Clash Royale Pro DNA!",
+    "adaptability": "Adaptability",
+    "consistency": "Consistency",
+    "downloadError": "Image download failed.",
+    "downloadSuccess": "Image downloaded.",
+    "generating": "Creating image…",
+    "noDataDescription": "Play more battles to generate your DNA profile.",
+    "shareError": "Could not share the image.",
+    "shareNotSupported": "This browser does not support sharing."
   },
   "achievementShowcase": {
     "trophyCase": "Trophy Case",
@@ -2690,7 +2813,16 @@
         "high": "High",
         "medium": "Medium",
         "low": "Low"
-      }
+      },
+      "clean": "No restrictions",
+      "clearMarkClean": "Clear restrictions",
+      "loadingCaseDetails": "Loading case details…",
+      "reviewNotes": "Review notes (optional)",
+      "seenCount": "Seen {{count}} times",
+      "setWarning": "Issue a warning",
+      "softBlock": "Limit access",
+      "softBlocked": "Access limited",
+      "warning": "Warning"
     },
     "navigation": {
       "checking": "Checking admin access...",
@@ -3100,5 +3232,64 @@
   "playerSelector": {
     "addAccount": "Add account",
     "accounts": "Accounts"
+  },
+  "accessibility": {
+    "navigationPath": "Breadcrumb",
+    "pagination": "Pagination",
+    "morePages": "More pages",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "clanBadge": "Clan badge",
+    "removePlayer": "Remove {{name}}",
+    "carousel": "Carousel",
+    "slide": "Slide"
+  },
+  "splash": {
+    "tagline": "Your AI battle coach",
+    "loading": "Preparing the arena…"
+  },
+  "errors": {
+    "screenFailed": "This screen could not be loaded.",
+    "details": "View error details",
+    "reload": "Reload the page"
+  },
+  "accountWarning": {
+    "limited": "Limited access",
+    "detected": "Unusual activity detected",
+    "limitedDescription": "Some features are limited because we detected unusual activity. Contact support if you think this is a mistake.",
+    "description": "We detected unusual activity. Continue using the app normally to clear this warning.",
+    "help": "Get help"
+  },
+  "coachingHistory": {
+    "language": "Saved advice in {{language}}"
+  },
+  "emptyStates": {
+    "noCards": "No cards found",
+    "noCardsDesc": "Your cards will appear here.",
+    "noDecks": "No saved decks",
+    "noDecksDesc": "Build your first deck to get started.",
+    "noMatches": "No matches yet",
+    "noMatchesDesc": "Play a match to see your stats."
+  },
+  "loadingMessages": {
+    "analysis": "Analyzing…",
+    "battles": "Loading battles…",
+    "cards": "Loading cards…",
+    "deck": "Analyzing deck…",
+    "leaderboard": "Loading leaderboard…",
+    "playerData": "Loading player data…",
+    "syncing": "Syncing data…"
+  },
+  "match": {
+    "analysis": "Match analysis",
+    "battleTime": "Battle time",
+    "crowns": "Crowns",
+    "defeat": "Defeat",
+    "draw": "Draw",
+    "duration": "Duration",
+    "opponent": "Opponent",
+    "trophyChange": "Trophy change",
+    "victory": "Victory",
+    "viewDetails": "View details"
   }
 }

@@ -126,7 +126,7 @@ const getTypeBadge = (type: ChangelogEntry["type"], t: (key: string) => string) 
 };
 
 export default function Changelog() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <>
@@ -238,7 +238,7 @@ export default function Changelog() {
                           </Badge>
                           <span className="text-sm text-muted-foreground flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            {new Date(entry.date).toLocaleDateString()}
+                            {new Date(entry.date).toLocaleDateString(i18n.language, { timeZone: 'UTC' })}
                           </span>
                         </div>
                         <CardTitle className="text-xl flex items-center gap-2">

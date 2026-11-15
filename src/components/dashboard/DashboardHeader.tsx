@@ -1,3 +1,4 @@
+import { changeLanguage } from '@/i18n/changeLanguage';
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -222,7 +223,7 @@ export function DashboardHeader({
                     ) : (
                       operations.slice(0, 5).map((op) => {
                         const percentage = Math.round((op.progress / op.total) * 100);
-                        const label = operationLabels[op.operation_type]?.label || op.operation_type.replace(/_/g, " ");
+                        const label = t(operationLabels[op.operation_type]?.labelKey ?? 'progress.processing');
                         const isRunning = op.status === "running";
                         
                         return (
@@ -273,7 +274,7 @@ export function DashboardHeader({
                     {languages.map((language) => (
                       <DropdownMenuItem
                         key={language.code}
-                        onClick={() => i18n.changeLanguage(language.code)}
+                        onClick={() => void changeLanguage(language.code)}
                         className={`flex items-center gap-2 cursor-pointer ${
                           i18n.resolvedLanguage === language.code ? 'bg-primary/10 text-primary' : ''
                         }`}
