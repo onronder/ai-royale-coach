@@ -111,3 +111,6 @@ content_path = "./supabase/templates/recovery.html"
 [auth.email.template.magic_link]
 subject = "{{ if eq (printf \"%v\" .Data.language) \"tr\" }}Giriş bağlantın · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"es\" }}Tu enlace de acceso · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"fr\" }}Votre lien de connexion · AI Royale{{ else if eq (printf \"%v\" .Data.language) \"pt\" }}Seu link de acesso · AI Royale{{ else }}Your sign-in link · AI Royale{{ end }}"
 content_path = "./supabase/templates/magic_link.html"
+
+[functions.trial-coaching-summary]
+verify_jwt = true
