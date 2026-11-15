@@ -1579,6 +1579,7 @@ export type Database = {
           opted_in_at: string | null
           opted_task: string | null
           reason: string | null
+          reminder_payload: Json | null
           resend_message_id: string | null
           returned_at: string | null
           sent_at: string | null
@@ -1603,6 +1604,7 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_payload?: Json | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
@@ -1627,6 +1629,7 @@ export type Database = {
           opted_in_at?: string | null
           opted_task?: string | null
           reason?: string | null
+          reminder_payload?: Json | null
           resend_message_id?: string | null
           returned_at?: string | null
           sent_at?: string | null
@@ -2025,6 +2028,17 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      claim_trial_coaching_reminder: {
+        Args: { p_ticket: string }
+        Returns: {
+          email: string
+          language: string
+          payload: Json
+          player_tag: string
+          subscription_id: string
+          user_id: string
+        }[]
+      }
       claim_trial_summary: {
         Args: { p_ticket: string }
         Returns: {
@@ -2055,6 +2069,10 @@ export type Database = {
       finish_trial_ai: {
         Args: { p_id: string; p_success: boolean }
         Returns: undefined
+      }
+      freeze_trial_coaching_reminder: {
+        Args: { p_payload: Json; p_subscription: string; p_user: string }
+        Returns: Json
       }
       freeze_trial_summary: {
         Args: {

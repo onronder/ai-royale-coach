@@ -120,6 +120,13 @@
       "when": 1794753297471,
       "tag": "0016_trial_summary_frozen_payload",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794753904806,
+      "tag": "0017_trial_reminder_frozen_payload",
+      "breakpoints": true
     }
   ]
 }
