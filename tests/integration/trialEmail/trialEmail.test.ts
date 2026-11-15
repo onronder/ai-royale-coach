@@ -18,7 +18,7 @@ const psql = (sql: string, db = 'trial_email_test') => {
 const lit = (v: unknown) => v === null ? 'NULL' : `'${(typeof v === 'string' ? v : JSON.stringify(v)).replace(/'/g, "''")}'`;
 const rpc = async (fn: string, args: Record<string, unknown>) => {
   const out = JSON.parse(psql(`SELECT coalesce(json_agg(r), '[]') FROM public.${fn}(${Object.entries(args).map(([k, v]) => `${k} => ${lit(v)}`).join(', ')}) r`));
-  return out.length === 1 && Object.keys(out[0]).length === 1 && fn in out[0] ? out[0][fn] : out;
+  return out.length === 1 && (out[0] === null || typeof out[0] !== 'object') ? out[0] : out;
 };
 const asUser = (uid: string, sql: string) => psql(`SET test.uid = '${uid}'; ${sql}`);
 const U = '11111111-1111-4111-8111-111111111111', A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', B = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
