@@ -101,9 +101,9 @@ WHERE c.opted_in_at IS NOT NULL AND c.sent_at IS NULL AND c.returned_at IS NULL
   AND now() >= c.started_at + interval '24 hours' AND now() < c.started_at + interval '48 hours';
 REVOKE ALL ON public.due_trial_coaching FROM PUBLIC, anon, authenticated;
 
-CREATE FUNCTION public.queue_trial_coaching_reminders() RETURNS void
+CREATE FUNCTION public.queue_trial_coaching_reminders(project_url text, anon_key text) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
-DECLARE r record; project_url text; anon_key text;
+DECLARE r record;
 BEGIN
   FOR r IN
     WITH due AS (
@@ -117,16 +117,12 @@ BEGIN
       first_attempted_at=coalesce(f.first_attempted_at,now())
       FROM due WHERE (f.user_id,f.subscription_id)=(due.user_id,due.subscription_id) RETURNING f.ticket
   LOOP
-    IF project_url IS NULL THEN
-      SELECT decrypted_secret INTO STRICT project_url FROM vault.decrypted_secrets WHERE name='project_url';
-      SELECT decrypted_secret INTO STRICT anon_key FROM vault.decrypted_secrets WHERE name='anon_key';
-    END IF;
     PERFORM net.http_post(url:=rtrim(project_url,'/') || '/functions/v1/trial-coaching-reminder',
       headers:=jsonb_build_object('Content-Type','application/json','Authorization','Bearer ' || anon_key),
       body:=jsonb_build_object('ticket',r.ticket));
   END LOOP;
 END; $$;
-REVOKE ALL ON FUNCTION public.queue_trial_coaching_reminders() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.queue_trial_coaching_reminders(text,text) FROM PUBLIC, anon, authenticated;
 
 CREATE FUNCTION public.take_trial_coaching_reminder(p_ticket uuid)
 RETURNS TABLE(user_id uuid, subscription_id text, player_tag text, language text, email text)
@@ -139,4 +135,3 @@ LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $$
 $$;
 REVOKE ALL ON FUNCTION public.take_trial_coaching_reminder(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.take_trial_coaching_reminder(uuid) TO service_role;
-SELECT cron.schedule('trial-coaching-day-two','*/10 * * * *','SELECT public.queue_trial_coaching_reminders()');
