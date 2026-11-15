@@ -5,7 +5,7 @@ import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts'
 import { logger } from '../_shared/logger.ts'
-import { WelcomeEmail } from './_templates/welcome-email.tsx'
+import { WelcomeEmail, getWelcomeSubject } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
@@ -63,6 +63,13 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
       )
       
+      // During the staged deployment the old site still sends this request.
+      // Once the confirmed-account queue owns welcomes it is only an acknowledgement.
+      const { data: cutover, error: cutoverError } = await supabaseAdmin
+        .from('welcome_cutover').select('activated_at').eq('singleton', true).maybeSingle()
+      if (cutoverError) throw cutoverError
+      if (cutover) return jsonResponse({ success: true })
+
       const { data: profile, error: profileError } = await supabaseAdmin
         .from('profiles')
         .select('id, email')
@@ -208,17 +215,6 @@ Deno.serve(async (req) => {
 })
 
 // Subject line translations
-function getWelcomeSubject(language: string): string {
-  const subjects: Record<string, string> = {
-    en: 'Welcome to AI Royale, Champion! 👑',
-    es: '¡Bienvenido a AI Royale, Campeón! 👑',
-    pt: 'Bem-vindo ao AI Royale, Campeão! 👑',
-    tr: "AI Royale'e Hoş Geldiniz, Şampiyon! 👑",
-    fr: 'Bienvenue sur AI Royale, Champion! 👑',
-  }
-  return subjects[language] || subjects.en
-}
-
 function getSubscriptionSubject(language: string): string {
   const subjects: Record<string, string> = {
     en: 'Your AI Royale PRO is Active! 👑',

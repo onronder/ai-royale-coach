@@ -35,6 +35,7 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(mode === 'signup');
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isResetPassword, setIsResetPassword] = useState(mode === 'reset-password');
+  const [confirmationPending, setConfirmationPending] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -168,18 +169,11 @@ const Auth = () => {
               language_selected_at: new Date().toISOString(),
             })
             .eq('id', data.user.id);
-          
-          // Send branded welcome email (fire and forget - don't block signup)
-          supabase.functions.invoke('send-email', {
-            body: {
-              email: data.user.email,
-              type: 'welcome',
-              language: i18n.language,
-            }
-          }).catch(err => console.error('Welcome email failed:', err));
         }
-        
-        toast.success(t("auth.welcomeNewUser"));
+        if (!data.session) {
+          setPassword("");
+          setConfirmationPending(true);
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
@@ -328,8 +322,25 @@ const Auth = () => {
     toast.error(t("auth.termsRequired"));
   };
 
+  const resendConfirmation = async () => {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup', email, options: { emailRedirectTo: window.location.origin + '/' },
+      });
+      if (error) throw error;
+      toast.success(t("auth.confirmationRequested"));
+    } catch {
+      toast.error(t("auth.confirmationRetryFailed"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleBackToSignIn = () => {
     setIsForgotPassword(false);
+    setConfirmationPending(false);
+    setIsSignUp(false);
     setResetEmailSent(false);
     setEmail("");
   };
@@ -438,7 +449,7 @@ const Auth = () => {
   }
 
   // Render Forgot Password Form
-  if (isForgotPassword) {
+  if (isForgotPassword || confirmationPending) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden arena-bg">
         {/* Floating Particles */}
@@ -468,7 +479,7 @@ const Auth = () => {
           {/* Logo with Golden Glow */}
           <div className="text-center space-y-3">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-gold shadow-gold relative golden-shine">
-              {resetEmailSent ? (
+              {(confirmationPending || resetEmailSent) ? (
                 <CheckCircle className="h-10 w-10 text-gold-foreground" />
               ) : (
                 <Mail className="h-10 w-10 text-gold-foreground" />
@@ -481,27 +492,32 @@ const Auth = () => {
           <Card variant="arena" className="golden-shine">
             <CardHeader className="space-y-2 text-center">
               <div className="flex items-center justify-center gap-2">
-                {resetEmailSent ? (
+                {(confirmationPending || resetEmailSent) ? (
                   <CheckCircle className="h-5 w-5 text-emerald" />
                 ) : (
                   <Mail className="h-5 w-5 text-primary" />
                 )}
                 <CardTitle className="text-2xl">
-                  {resetEmailSent ? t("auth.resetEmailSent") : t("auth.resetPassword")}
+                  {confirmationPending ? t("auth.checkEmail") : resetEmailSent ? t("auth.resetEmailSent") : t("auth.resetPassword")}
                 </CardTitle>
               </div>
               <CardDescription>
-                {resetEmailSent ? t("auth.resetEmailSentDesc") : t("auth.resetPasswordDesc")}
+                {confirmationPending ? t("auth.verificationInstructions", { email }) : resetEmailSent ? t("auth.resetEmailSentDesc") : t("auth.resetPasswordDesc")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              {resetEmailSent ? (
+              {(confirmationPending || resetEmailSent) ? (
                 <div className="space-y-4">
                   <div className="p-4 rounded-lg bg-emerald/10 border border-emerald/30 text-center">
                     <p className="text-sm text-foreground">
                       {t("auth.checkSpam")}
                     </p>
                   </div>
+                  {confirmationPending && (
+                    <Button variant="golden" size="lg" className="w-full" onClick={resendConfirmation} disabled={isLoading}>
+                      {t("auth.resendConfirmation")}
+                    </Button>
+                  )}
                   <Button 
                     variant="outline"
                     size="lg"
