@@ -37,6 +37,7 @@ export function useTrialCoaching(userId: string | undefined, enabled: boolean, r
     onSuccess: state => {
       client.setQueriesData({ queryKey: ['trial-coaching', userId] }, state);
     },
+    onError: () => client.invalidateQueries({ queryKey: ['trial-coaching', userId] }),
   });
   return { ...query, update };
 }

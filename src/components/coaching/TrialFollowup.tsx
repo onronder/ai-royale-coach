@@ -21,7 +21,10 @@ export function TrialFollowup({ userId, playerTag, renewalOff = false }: {
     mutate({ action: 'return', value: playerTag });
   }, [currentTask, data?.dayTwo, data?.returned, data?.subscriptionId, mutate, playerTag]);
 
-  if (isError && !playerTag) return <Button variant="ghost" onClick={() => void refetch()}>{t('trialFollowup.retry')}</Button>;
+  if (isError) return <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm">
+    <span>{t('trialFollowup.loadError')}</span>
+    <Button size="sm" variant="outline" onClick={() => void refetch()}>{t('trialFollowup.retry')}</Button>
+  </div>;
   if (!data || (playerTag && !currentTask)) return null;
   const survey = !playerTag && renewalOff && data.renewalOff && !data.answered;
   const consent = !!data.playerTag && !data.sent && !data.returned && data.beforeSendCutoff && !(currentTask && data.dayTwo);
@@ -46,9 +49,8 @@ export function TrialFollowup({ userId, playerTag, renewalOff = false }: {
       {t('trialFollowup.consent')}
     </label>}
     {update.isError && <div role="alert" className="flex flex-wrap items-center gap-2 text-sm text-destructive">
-      {t('trialFollowup.error')}
-      {update.variables?.action === 'return' && <Button size="sm" variant="ghost"
-        onClick={() => mutate({ action: 'return', value: playerTag })}>{t('common.retry')}</Button>}
+      {update.variables?.action === 'off' && data.optedIn ? t('trialFollowup.stillOn') : t('trialFollowup.error')}
+      {update.variables && <Button size="sm" variant="outline" onClick={() => mutate(update.variables!)}>{t('trialFollowup.retry')}</Button>}
     </div>}
   </div>;
 }
