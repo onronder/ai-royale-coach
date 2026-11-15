@@ -2,13 +2,15 @@
 // queue is captured in a table so no customer account or email service is used.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 const { PGlite } = await import(process.env.PGLITE_MODULE || '@electric-sql/pglite');
 const db = new PGlite();
 const owner = '11000000-0000-4000-8000-000000000001';
 const other = '11000000-0000-4000-8000-000000000002';
 const admin = '11000000-0000-4000-8000-000000000003';
 await db.exec(`
-  create schema auth; create schema cron; create schema net; create schema vault;
+  create schema auth; create schema cron; create schema net;
   create role anon; create role authenticated; create role service_role;
   create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('test.uid', true),'')::uuid $$;
   create function public.is_admin(uuid) returns boolean language sql as $$ select $1 = '${admin}'::uuid $$;
@@ -19,25 +21,42 @@ await db.exec(`
   create table coaching_tasks(id uuid primary key default gen_random_uuid(),user_id uuid,player_tag text,language text,
     recommendation jsonb,battle_result jsonb,shown_at timestamptz,created_at timestamptz);
   create table player_profiles(user_id uuid,player_tag text);
-  create table vault.decrypted_secrets(name text,decrypted_secret text);
-  insert into vault.decrypted_secrets values ('project_url','https://example.invalid'),('anon_key','test-only');
-  create table net.calls(ticket uuid);
+  create table net.calls(ticket uuid, destination text, request_headers jsonb);
   create function net.http_post(url text,headers jsonb,body jsonb) returns bigint language plpgsql as $$
-    begin insert into net.calls values ((body->>'ticket')::uuid); return 1; end $$;
-  create table cron.jobs(name text, schedule text, command text);
+    begin insert into net.calls values ((body->>'ticket')::uuid, url, headers); return 1; end $$;
+  create table cron.jobs(name text primary key, schedule text, command text);
   create function cron.schedule(text,text,text) returns bigint language plpgsql as $$
-    begin insert into cron.jobs values ($1,$2,$3); return 1; end $$;
+    begin insert into cron.jobs values ($1,$2,$3) on conflict (name) do update set schedule=excluded.schedule,command=excluded.command; return 1; end $$;
 `);
 await db.exec(await readFile(new URL('../../drizzle/migrations/0009_trial_coaching_followup.sql', import.meta.url), 'utf8'));
 const q = async (sql, params = []) => (await db.query(sql, params)).rows;
+const projectUrl = 'https://fixture.supabase.co';
+const publicToken = role => 'header.' + Buffer.from(JSON.stringify({role, ref: 'fixture'})).toString('base64url') + '.fixture';
+const installation = key => execFileSync(process.execPath, [
+  fileURLToPath(new URL('../../scripts/trial-reminder-schedule.mjs', import.meta.url)),
+], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: {VITE_SUPABASE_URL: projectUrl, VITE_SUPABASE_PUBLISHABLE_KEY: key}});
+assert.throws(() => installation(publicToken('service_role')), /public anon JWT/);
+const install = installation(publicToken('anon'));
+await db.exec(install);
+await db.exec(install);
+const jobs = await q('select * from cron.jobs');
+assert.equal(jobs.length, 1);
+assert.equal(jobs[0].name, 'trial-coaching-day-two');
+assert.equal(jobs[0].schedule, '*/10 * * * *');
+const timer = jobs[0].command;
 const actor = async id => q("select set_config('test.uid',$1,false)", [id]);
 const state = async () => (await q('select trial_coaching_state() as s'))[0].s;
 const act = async (action, value = null, sub = 'first') => (await q('select update_trial_coaching($1,$2,$3) as s', [sub,action,value]))[0].s;
 const take = ticket => q('select * from take_trial_coaching_reminder($1)', [ticket]);
 async function queue() {
   await q('truncate net.calls');
-  await q('select queue_trial_coaching_reminders()');
-  return (await q('select ticket from net.calls')).map(row => row.ticket);
+  await q(timer);
+  const requests = await q('select * from net.calls');
+  for (const row of requests) {
+    assert.equal(row.destination, projectUrl + '/functions/v1/trial-coaching-reminder');
+    assert.equal(row.request_headers.Authorization, 'Bearer ' + publicToken('anon'));
+  }
+  return requests.map(row => row.ticket);
 }
 async function age(hours) {
   await q("update user_subscriptions set current_period_start=now()-make_interval(hours=>$1) where user_id=$2", [hours,owner]);
@@ -55,7 +74,7 @@ try {
   assert.equal((await state()).optedIn,false);
   await assert.rejects(q('select * from current_trial_coaching'), /permission/);
   await assert.rejects(q('select * from trial_coaching_followup'), /permission/);
-  await assert.rejects(q('select queue_trial_coaching_reminders()'), /permission/);
+  await assert.rejects(q(timer), /permission/);
   await assert.rejects(q("select * from take_trial_coaching_reminder(gen_random_uuid())"), /permission/);
   await assert.rejects(q('select * from trial_cancel_answers(90)'), /authorized/);
   await assert.rejects(act('reason','price'), /unavailable/);
