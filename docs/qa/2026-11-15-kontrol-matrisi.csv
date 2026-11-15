@@ -1,133 +1,140 @@
 Bölüm,Kontrol kimliği,Kontrol,Rol,Masaüstü,Mobil
+acceptance,answer,Takip sorunun · klavye,trial,geçti,geçti
+acceptance,billing-checkout,İki hesaplı paketin ödeme ekranına aktarılması,trial,geçti,geçti
+acceptance,billing-tiers,Süresi dolmuş hesap · plan seçimi,trial,geçti,geçti
+acceptance,builder-compare,Seçili desteyle karşılaştırma,trial,geçti,geçti
+acceptance,builder-pick,Klavye ile sekiz kart seç,trial,geçti,geçti
+acceptance,builder-ready,Oluşturucu · kartlar ve kapalı kaydet,trial,geçti,geçti
+acceptance,builder-save,Deste kaydet · sekiz kart ve ad,trial,geçti,geçti
+acceptance,builder-templates,Deste şablonları,trial,geçti,geçti
+acceptance,builder-validation,Deste adı doğrulaması,trial,geçti,geçti
+acceptance,clan-search,Klan araması · boş sonuç,trial,geçti,geçti
+acceptance,coach-closed,Kapalı koç klavye ve erişilebilirlik ağacından çıkar,trial,geçti,geçti
+acceptance,help-search,Yardım · arama ve sıfır sonuç,trial,geçti,geçti
+acceptance,help-section,Mobil Yardım · konuya geç,trial,,geçti
+acceptance,nav-320,"Ziyaretçi menüsü, kayıt düğmesi · 320",trial,,geçti
+acceptance,nav-390,"Ziyaretçi menüsü, kayıt düğmesi · 390",trial,,geçti
+acceptance,nav-700,"Ziyaretçi menüsü, kayıt düğmesi · 700",trial,,geçti
+acceptance,notification,Bildirim kutusu · sınırlar,trial,geçti,geçti
 acceptance,result,"Sonuç önce, skor ve kayıtlı deste",trial,geçti,geçti
 acceptance,rival,Rakip deste · klavye,trial,geçti,geçti
-acceptance,answer,Takip sorunun · klavye,trial,geçti,geçti
-acceptance,notification,Bildirim kutusu · sınırlar,trial,geçti,geçti
-acceptance,coach-closed,Kapalı koç klavye ve erişilebilirlik ağacından çıkar,trial,geçti,geçti
-acceptance,builder-ready,Oluşturucu · kartlar ve kapalı kaydet,trial,geçti,geçti
-acceptance,builder-pick,Klavye ile sekiz kart seç,trial,geçti,geçti
-acceptance,builder-validation,Deste adı doğrulaması,trial,geçti,geçti
-acceptance,builder-save,Deste kaydet · sekiz kart ve ad,trial,geçti,geçti
-acceptance,builder-compare,Seçili desteyle karşılaştırma,trial,geçti,geçti
-acceptance,builder-templates,Deste şablonları,trial,geçti,geçti
-acceptance,clan-search,Klan araması · boş sonuç,trial,geçti,geçti
 acceptance,tournament-form,Turnuva oluşturma ve zorunlu alanlar,trial,geçti,geçti
 acceptance,tournament-save,Turnuvayı test hesabında oluştur,trial,geçti,geçti
-acceptance,help-search,Yardım · arama ve sıfır sonuç,trial,geçti,geçti
-acceptance,billing-tiers,Süresi dolmuş hesap · plan seçimi,trial,geçti,geçti
-acceptance,billing-checkout,İki hesaplı paketin ödeme ekranına aktarılması,trial,geçti,geçti
-admin-actions,window,Gelir kartı · dönem seçiminde tutar ve payda,admin,geçti,geçti
-admin-actions,lookup,Oyuncu etiketiyle arama · eşleşme yok,admin,geçti,geçti
 admin,admin,Yönetim paneli,admin,geçti,geçti
-admin,overview,Yönetim · Overview,admin,geçti,geçti
-admin,users,Yönetim · Users,admin,geçti,geçti
-admin,fraud-cases,Yönetim · Fraud Cases,admin,geçti,geçti
-admin,user-lookup,Yönetim · User Lookup,admin,geçti,geçti
-admin,trials,Yönetim · Trials,admin,geçti,geçti
-admin,win-back,Yönetim · Win-back,admin,geçti,geçti
-admin,webhooks,Yönetim · Webhooks,admin,geçti,geçti
 admin,api-metrics,Yönetim · API Metrics,admin,geçti,geçti
-appearance,light,Açık tema · oyuncu panelinde korunur,trial,geçti,geçti
+admin,fraud-cases,Yönetim · Fraud Cases,admin,geçti,geçti
+admin,overview,Yönetim · Overview,admin,geçti,geçti
+admin,trials,Yönetim · Trials,admin,geçti,geçti
+admin,user-lookup,Yönetim · User Lookup,admin,geçti,geçti
+admin,users,Yönetim · Users,admin,geçti,geçti
+admin,webhooks,Yönetim · Webhooks,admin,geçti,geçti
+admin,win-back,Yönetim · Win-back,admin,geçti,geçti
+admin-actions,lookup,Oyuncu etiketiyle arama · eşleşme yok,admin,geçti,geçti
+admin-actions,window,Gelir kartı · dönem seçiminde tutar ve payda,admin,geçti,geçti
 appearance,dark,Koyu tema · yeniden yüklemede korunur,trial,geçti,geçti
-copy,help-keys,Yardım · görünen çeviri anahtarları,expired,geçti,geçti
+appearance,light,Açık tema · oyuncu panelinde korunur,trial,geçti,geçti
 copy,expired-offer,Denemesi biten hesabın abonelik teklifi,expired,geçti,geçti
-cross,oracle-deck,oracle → Deste,trial,geçti,geçti
-cross,oracle-social,oracle → Sosyal,trial,geçti,geçti
+copy,help-keys,Yardım · görünen çeviri anahtarları,expired,geçti,geçti
 cross,arena-deck,arena → Deste,trial,geçti,
 cross,arena-social,arena → Sosyal,trial,geçti,
-cross,oracle-dna,Kâhin → Pro DNA,trial,geçti,geçti
 cross,oracle-achievements,Kâhin → Başarılar,trial,geçti,
+cross,oracle-deck,oracle → Deste,trial,geçti,geçti
+cross,oracle-dna,Masaüstü · Kâhin → Pro DNA / Mobil · Kâhin → DNA,trial,geçti,geçti
 cross,oracle-help,Kâhin → ^Yardım$,trial,geçti,
+cross,oracle-social,oracle → Sosyal,trial,geçti,geçti
 expired,history,Kayıtlı görev ve maç,expired,geçti,geçti
-expired,settings,Abonelik ayarları / erişim ekranı,expired,geçti,geçti
 expired,plans,Süresi dolmuş hesap · plan seçimi,expired,geçti,geçti
+expired,settings,Abonelik ayarları / erişim ekranı,expired,geçti,geçti
+guards,admin,Misafir yönlendirmesi · admin,guest,geçti,geçti
+guards,arena,Misafir yönlendirmesi · arena,guest,geçti,geçti
+guards,oracle,Misafir yönlendirmesi · oracle,guest,geçti,geçti
+guards,player,Misafir yönlendirmesi · player/UQRCGQJR2,guest,geçti,geçti
 guards,select-player,Misafir yönlendirmesi · select-player,guest,geçti,geçti
 guards,settings,Misafir yönlendirmesi · settings,guest,geçti,geçti
-guards,player,Misafir yönlendirmesi · player/UQRCGQJR2,guest,geçti,geçti
-guards,oracle,Misafir yönlendirmesi · oracle,guest,geçti,geçti
-guards,arena,Misafir yönlendirmesi · arena,guest,geçti,geçti
-guards,admin,Misafir yönlendirmesi · admin,guest,geçti,geçti
-lifecycle,fresh,Yeni görev · başlatma,trial,geçti,geçti
 lifecycle,confirm,Yedi kart profili · sekiz kart için onay,trial,geçti,geçti
-lifecycle,retry,Akışın sonundaki hata · deste onayı korunur,trial,geçti,geçti
-lifecycle,generated,Onay sonrası öneri ve koleksiyon seviyeleri,trial,geçti,geçti
-lifecycle,no-match,Eşleşme yok · bekleme ve son kontrol,trial,geçti,geçti
-lifecycle,followup,Takip sorusu · yeni kart ve seviye,trial,geçti,geçti
-lifecycle,match,"Yeni maç · 2–1, +30, başlıkta 6.659",trial,geçti,geçti
 lifecycle,expired,Süre bitince kayıtlı maç ve cevap okunur,trial,geçti,geçti
+lifecycle,followup,Takip sorusu · yeni kart ve seviye,trial,geçti,geçti
+lifecycle,fresh,Yeni görev · başlatma,trial,geçti,geçti
+lifecycle,generated,Onay sonrası öneri ve koleksiyon seviyeleri,trial,geçti,geçti
+lifecycle,match,"Yeni maç · 2–1, +30, başlıkta 6.659",trial,geçti,geçti
+lifecycle,no-match,Eşleşme yok · bekleme ve son kontrol,trial,geçti,geçti
+lifecycle,retry,Akışın sonundaki hata · deste onayı korunur,trial,geçti,geçti
 paid,history,Kayıtlı görev ve maç,paid,geçti,geçti
-paid,settings,Abonelik ayarları / erişim ekranı,paid,geçti,geçti
 paid,nonadmin,Ücretli kullanıcı yönetim erişimi,paid,geçti,geçti
-player,select,Oyuncu seçimi,trial,geçti,geçti
-player,settings,Hesap ayarları,trial,geçti,geçti
-player,renewal,Yenilemeyi kapatma onayı,trial,geçti,geçti
-player,oracle-bare,Kâhin · etiketsiz giriş,trial,geçti,geçti
-player,oracle,Kâhin · bağlı oyuncu,trial,geçti,geçti
-player,oracle-scan,Kâhin · oyuncu tarama,trial,geçti,geçti
-player,arena,Dream Arena · rakip seçimi,trial,geçti,geçti
-player,player,Oyuncu ve öneri,trial,geçti,geçti
-player,deck-qr,Önerilen desteyi QR ile aktar,trial,geçti,
-player,dash-overview,Oyuncu · Genel Bakış,trial,geçti,geçti
-player,dash-matches,Oyuncu · Maçlar,trial,geçti,geçti
-player,match-detail,Geçmiş maç ayrıntısı,trial,geçti,geçti
-player,dash-analytics,Oyuncu · Analitik,trial,geçti,geçti
-player,analytics-filter-0,Analitik · Deste İstatistikleri,trial,geçti,geçti
-player,analytics-filter-1,Analitik · Kart Ustalığı,trial,geçti,geçti
-player,analytics-filter-2,Analitik · Tahminler,trial,geçti,geçti
-player,analytics-filter-3,Analitik · Başarılar,trial,geçti,geçti
+paid,settings,Abonelik ayarları / erişim ekranı,paid,geçti,geçti
+phase3,cancel,Yenileme anketten önce kapanır,trial,geçti,geçti
+phase3,default,Hatırlatma varsayılan olarak kapalı,trial,geçti,geçti
+phase3,email-link,Tek e-postadaki bağlantı kendi görevini açar,trial,geçti,geçti
+phase3,login-link,Oturumu kapalı kullanıcıya giriş gösterilir,trial,geçti,geçti
+phase3,login-return,Giriş sonrası e-postadaki göreve dönüş,trial,geçti,geçti
+phase3,opt-in,Açık izin kaydedilir,trial,geçti,geçti
+phase3,remembered,Anket yanıtı veya atlama korunur,trial,geçti,geçti
+phase3,return-cta,İkinci gün doğru oyuncuya görev bağlantısı,trial,geçti,geçti
+phase3,survey,Masaüstü · İsteğe bağlı iptal yanıtı · avoid_charge / Mobil · İsteğe bağlı iptal yanıtı · skip,trial,geçti,geçti
+phase3,withdraw,İzin sayfa yenilemesinden sonra geri alınır,trial,geçti,geçti
+phase3,wrong-player,Başka oyuncuya ait bağlantı hesap eklemez,trial,geçti,geçti
+phase3-admin,reasons,Yönetici · bildirilen neden ve dönem,admin,geçti,geçti
+phase3-header,select-player-1440,Üst menü · select-player · 1440,trial,geçti,
+phase3-header,select-player-320,Üst menü · select-player · 320,trial,,geçti
+phase3-header,select-player-390,Üst menü · select-player · 390,trial,,geçti
+phase3-header,settings-1440,Üst menü · settings · 1440,trial,geçti,
+phase3-header,settings-320,Üst menü · settings · 320,trial,,geçti
+phase3-header,settings-390,Üst menü · settings · 390,trial,,geçti
 player,achievement-category-0,Başarı kategorisi · Tümü,trial,geçti,geçti
 player,achievement-category-1,Başarı kategorisi · Beceriler,trial,geçti,geçti
 player,achievement-category-2,Başarı kategorisi · Ustalık,trial,geçti,geçti
 player,achievement-category-3,Başarı kategorisi · Öğrenme,trial,geçti,geçti
 player,achievement-category-4,Başarı kategorisi · Kilometre Taşları,trial,geçti,geçti
-player,dash-leaderboard,Oyuncu · Sıralama,trial,geçti,geçti
-player,nav-deck,Ana gezinme · Deste,trial,geçti,geçti
-player,dash-current,Oyuncu · Mevcut,trial,geçti,geçti
-player,dash-builder,Oyuncu · Oluşturucu,trial,geçti,geçti
-player,dash-collection,Oyuncu · Koleksiyon,trial,geçti,geçti
+player,achievements,Başarılar,trial,geçti,
+player,analytics-filter-0,Analitik · Deste İstatistikleri,trial,geçti,geçti
+player,analytics-filter-1,Analitik · Kart Ustalığı,trial,geçti,geçti
+player,analytics-filter-2,Analitik · Tahminler,trial,geçti,geçti
+player,analytics-filter-3,Analitik · Başarılar,trial,geçti,geçti
+player,arena,Dream Arena · rakip seçimi,trial,geçti,geçti
+player,coach-chat,Koç sohbeti · yanıt,trial,geçti,geçti
 player,collection-filter-0,Koleksiyon · Tümü,trial,geçti,geçti
 player,collection-filter-1,Koleksiyon · Yaygın (0),trial,geçti,geçti
 player,collection-filter-2,Koleksiyon · Nadir (0),trial,geçti,geçti
 player,collection-filter-3,Koleksiyon · Destansı (0),trial,geçti,geçti
 player,collection-filter-4,Koleksiyon · Efsan (0),trial,geçti,geçti
 player,collection-filter-5,Koleksiyon · Şamp (0),trial,geçti,geçti
-player,nav-social,Ana gezinme · Sosyal,trial,geçti,geçti
+player,dash-analytics,Oyuncu · Analitik,trial,geçti,geçti
+player,dash-builder,Oyuncu · Oluşturucu,trial,geçti,geçti
 player,dash-clans,Oyuncu · Klanlar,trial,geçti,geçti
+player,dash-collection,Oyuncu · Koleksiyon,trial,geçti,geçti
+player,dash-current,Oyuncu · Mevcut,trial,geçti,geçti
+player,dash-leaderboard,Oyuncu · Sıralama,trial,geçti,geçti
+player,dash-matches,Oyuncu · Maçlar,trial,geçti,geçti
+player,dash-overview,Oyuncu · Genel Bakış,trial,geçti,geçti
 player,dash-tournaments,Oyuncu · Turnuvalar,trial,geçti,geçti
-player,coach-chat,Koç sohbeti · yanıt,trial,geçti,geçti
+player,deck-link,Önerilen desteyi oyuna aktar,trial,,geçti
+player,deck-qr,Önerilen desteyi QR ile aktar,trial,geçti,
 player,dna,Pro DNA,trial,geçti,geçti
-player,achievements,Başarılar,trial,geçti,
 player,help,Oyuncu içi yardım,trial,geçti,
+player,match-detail,Geçmiş maç ayrıntısı,trial,geçti,geçti
+player,nav-deck,Ana gezinme · Deste,trial,geçti,geçti
+player,nav-social,Ana gezinme · Sosyal,trial,geçti,geçti
+player,oracle,Kâhin · bağlı oyuncu,trial,geçti,geçti
+player,oracle-bare,Kâhin · etiketsiz giriş,trial,geçti,geçti
+player,oracle-scan,Kâhin · oyuncu tarama,trial,geçti,geçti
+player,player,Oyuncu ve öneri,trial,geçti,geçti
+player,renewal,Yenilemeyi kapatma onayı,trial,geçti,geçti
+player,select,Oyuncu seçimi,trial,geçti,geçti
+player,settings,Hesap ayarları,trial,geçti,geçti
 preferences,language-en,Ayarlar · English,trial,geçti,geçti
 preferences,language-es,Ayarlar · Español,trial,geçti,geçti
 preferences,language-fr,Ayarlar · Français,trial,geçti,geçti
 preferences,language-pt,Ayarlar · Português,trial,geçti,geçti
 preferences,language-tr,Ayarlar · Türkçe,trial,geçti,geçti
-preferences,whats-new,Ayarlar · yenilikler,trial,geçti,geçti
 preferences,retention,Ayarlar · sohbet saklama süresi,trial,geçti,geçti
-public,home,Ana sayfa,guest,geçti,geçti
+preferences,whats-new,Ayarlar · yenilikler,trial,geçti,geçti
+public,404,Bulunamayan sayfa,guest,geçti,geçti
 public,auth,Oturum açma,guest,geçti,geçti
-public,signup,Hesap oluşturma,guest,geçti,geçti
-public,forgot,Şifre kurtarma formu,guest,geçti,geçti
-public,reset,Yeni şifre formu,guest,geçti,geçti
-public,help,Yardım,guest,geçti,geçti
-public,help-getting-started,Yardım · getting-started,guest,geçti,geçti
-public,help-dashboard,Yardım · dashboard,guest,geçti,geçti
-public,help-stats,Yardım · stats,guest,geçti,geçti
-public,help-matches,Yardım · matches,guest,geçti,geçti
-public,help-deck,Yardım · deck,guest,geçti,geçti
-public,help-builder,Yardım · builder,guest,geçti,geçti
-public,help-analytics,Yardım · analytics,guest,geçti,geçti
-public,help-collection,Yardım · collection,guest,geçti,geçti
-public,help-leaderboard,Yardım · leaderboard,guest,geçti,geçti
-public,help-tournaments,Yardım · tournaments,guest,geçti,geçti
-public,help-clans,Yardım · clans,guest,geçti,geçti
-public,help-coach,Yardım · coach,guest,geçti,geçti
-public,help-features,Yardım · features,guest,geçti,geçti
-public,help-faq,Yardım · faq,guest,geçti,geçti
+public,changelog,Sürüm geçmişi,guest,geçti,geçti
 public,demo,Etkileşimli demo,guest,geçti,geçti
 public,demo-0,Demo · Döngü,guest,geçti,geçti
 public,demo-1,Demo · Beatdown,guest,geçti,geçti
+public,demo-10,Demo · Deste Bul,guest,geçti,geçti
 public,demo-2,Demo · Kontrol,guest,geçti,geçti
 public,demo-3,Demo · Kuşatma,guest,geçti,geçti
 public,demo-4,Demo · Karşılaştır,guest,geçti,geçti
@@ -136,27 +143,38 @@ public,demo-6,Demo · Meta,guest,geçti,geçti
 public,demo-7,Demo · Beceriler,guest,geçti,geçti
 public,demo-8,Demo · Counter,guest,geçti,geçti
 public,demo-9,Demo · Rozetler,guest,geçti,geçti
-public,demo-10,Demo · Deste Bul,guest,geçti,geçti
-public,terms,Kullanım koşulları,guest,geçti,geçti
-public,privacy,Gizlilik,guest,geçti,geçti
-public,changelog,Sürüm geçmişi,guest,geçti,geçti
+public,forgot,Şifre kurtarma formu,guest,geçti,geçti
+public,help,Yardım,guest,geçti,geçti
+public,help-analytics,Yardım · analytics,guest,geçti,geçti
+public,help-builder,Yardım · builder,guest,geçti,geçti
+public,help-clans,Yardım · clans,guest,geçti,geçti
+public,help-coach,Yardım · coach,guest,geçti,geçti
+public,help-collection,Yardım · collection,guest,geçti,geçti
+public,help-dashboard,Yardım · dashboard,guest,geçti,geçti
+public,help-deck,Yardım · deck,guest,geçti,geçti
+public,help-faq,Yardım · faq,guest,geçti,geçti
+public,help-features,Yardım · features,guest,geçti,geçti
+public,help-getting-started,Yardım · getting-started,guest,geçti,geçti
+public,help-leaderboard,Yardım · leaderboard,guest,geçti,geçti
+public,help-matches,Yardım · matches,guest,geçti,geçti
+public,help-stats,Yardım · stats,guest,geçti,geçti
+public,help-tournaments,Yardım · tournaments,guest,geçti,geçti
+public,home,Ana sayfa,guest,geçti,geçti
 public,maintenance,Bakım,guest,geçti,geçti
-public,404,Bulunamayan sayfa,guest,geçti,geçti
-renewal,cancel,Yenileme kapalı · çelişen tarih yok,trial,geçti,geçti
+public,privacy,Gizlilik,guest,geçti,geçti
+public,reset,Yeni şifre formu,guest,geçti,geçti
+public,signup,Hesap oluşturma,guest,geçti,geçti
+public,terms,Kullanım koşulları,guest,geçti,geçti
 renewal,access,Yenileme kapalıyken koçluk içeriğine erişim,trial,geçti,geçti
+renewal,cancel,Yenileme kapalı · çelişen tarih yok,trial,geçti,geçti
 renewal,resume,Yenileme açık · deneme statüsü ve tarih,trial,geçti,geçti
 sharing,export,Kupa vitrinini ilk tıklamada PNG olarak üret,trial,geçti,geçti
-simulation,guide,Dream Arena · talimatlar,trial,geçti,geçti
 simulation,battle,Dream Arena · simülasyonu başlat,trial,geçti,geçti
-simulation,result,Dream Arena · simülasyon sonucu,trial,geçti,geçti
 simulation,close,Dream Arena · rakip listesine dön,trial,geçti,geçti
+simulation,guide,Dream Arena · talimatlar,trial,geçti,geçti
+simulation,result,Dream Arena · simülasyon sonucu,trial,geçti,geçti
 tournament,count,Turnuva listesi · gerçek toplama göre 3/8,trial,geçti,geçti
 tournament,create-nonempty,Dolu listede yeni turnuva ve vazgeçme,trial,geçti,geçti
 tournament,registration,Turnuva katılımı · seçili oyuncu ve 4/8,trial,geçti,geçti
-acceptance,nav-320,"Ziyaretçi menüsü, kayıt düğmesi · 320",trial,,geçti
-acceptance,nav-390,"Ziyaretçi menüsü, kayıt düğmesi · 390",trial,,geçti
-acceptance,nav-700,"Ziyaretçi menüsü, kayıt düğmesi · 700",trial,,geçti
-acceptance,help-section,Mobil Yardım · konuya geç,trial,,geçti
-player,deck-link,Önerilen desteyi oyuna aktar,trial,,geçti
 widthcheck,navigation-390,Alt menü ve koç · 390 px,trial,,geçti
 widthcheck,navigation-700,Alt menü ve koç · 700 px,trial,,geçti

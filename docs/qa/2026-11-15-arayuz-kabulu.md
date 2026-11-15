@@ -1,6 +1,6 @@
 # AI Royale arayüz kabulü · 15 Kasım 2026
 
-İncelenen sürüm PR #3 içindeki `fcc1374`. Karşılaştırma sürümü `97cc311`. Bu çalışma Genel Bakış, ilk koçluk görevi ve uygulamadaki oyuncu, ziyaretçi ve yönetici ekranlarını kapsar.
+İncelenen sürüm PR #3 içindeki `81c1f68`. Karşılaştırma sürümü `97cc311`. Bu çalışma Genel Bakış, ilk koçluk görevi ve uygulamadaki oyuncu, ziyaretçi ve yönetici ekranlarını kapsar.
 
 ## Gözlenen sorunlar ve kabul ölçütleri
 
@@ -14,11 +14,11 @@
 | Yenileme ve tarih | Yenileme kapatıldığında “yenileme tarihi” satırı erişim bitiş bildirimiyle birlikte görünüyordu. Onay tarihleri Türkçe arayüzde İngilizce biçimleniyordu. | Kapalı yenilemede erişim bitiş tarihi seçili dile göre gösteriliyor. Yenilemeyi kapatma, koça erişim ve geri açıldığında deneme statüsünün korunması iki görünümde de örnek ödeme yanıtlarıyla doğrulandı. |
 | Deste ve turnuva | Deste oluşturucudaki kartlar klavyeden seçilemiyordu. Turnuva sayacı toplulaştırılmış yanıtı yanlış sayıyor, katılımcı kimliği yerel tarayıcı durumuna bağlı kalıyordu. | Klavyeyle sekiz kart, isim doğrulaması ve kaydetme kontrol edildi. Örnek turnuvada 3/8 → 4/8 değişimi, seçilen oyuncunun kimliği ve turnuva mevcutken ikinci bir turnuva oluşturma kontrol edildi. |
 | Başarı vitrini | İlk paylaşımda görsel henüz oluşturulmadığı için işlem sessizce bitebiliyordu. | Görsel hazırlama ve dışa aktarma sırası düzeltildi. Yerleşik paylaşım devre dışıyken ilk tıklama her iki genişlikte açılabilir PNG üretti. |
-| Açılış yükü | Analitik, deste oluşturucu ve paylaşım görseli kodları Genel Bakış açılışına ek yük getiriyordu. | Bu işlevler ihtiyaç anında yükleniyor. Aynı oyuncu verisiyle boş tarayıcı önbelleğinden ilk Genel Bakış için istenen JavaScript'in gzip toplamı 902.648 → 822.246 bayt, dosya sayısı 65 → 63. Süre ve saha kullanıcılarının bağlantı hızı ölçülmedi. |
+| Açılış yükü | Analitik, deste oluşturucu ve paylaşım görseli kodları Genel Bakış açılışına ek yük getiriyordu. | Bu işlevler ihtiyaç anında yükleniyor. Aynı oyuncu verisiyle boş tarayıcı önbelleğinden ilk Genel Bakış için istenen JavaScript'in gzip toplamı 902.648 → 826.956 bayt, dosya sayısı 65 → 64. Süre ve saha kullanıcılarının bağlantı hızı ölçülmedi. |
 
 ## Tarayıcı ve cihaz kapsamı
 
-Aynı kontrollü test verileriyle Chrome masaüstü ve mobil görünümde 154'er kontrol geçti. Her kontrolde hedef içeriğe ya da işleme özgü doğrulamanın yanında sayfa taşması, sekme çakışması ve yakalanmamış JavaScript hataları da denetlendi. Aktif deneme, ücretli, süresi dolmuş hesap, ziyaretçi ve yönetici durumları kullanıldı. Toplamlar aynı işlevin iki görünümdeki tekrarlarını içerir.
+Aynı kontrollü test verileriyle Chrome masaüstü ve mobil görünümde toplam 338 kontrol geçti (168 masaüstü, 170 mobil). Her kontrolde hedef içeriğe ya da işleme özgü doğrulamanın yanında sayfa taşması, sekme çakışması ve yakalanmamış JavaScript hataları da denetlendi. Aktif deneme, ücretli, süresi dolmuş hesap, ziyaretçi ve yönetici durumları kullanıldı. Toplamlar aynı işlevin iki görünümdeki tekrarlarını içerir.
 
 | Alan | İki görünümde kontrol |
 | --- | ---: |
@@ -32,7 +32,10 @@ Aynı kontrollü test verileriyle Chrome masaüstü ve mobil görünümde 154'er
 | Kâhin ve Dream Arena'dan gezinme ve simülasyon | 18 |
 | Turnuva kaydı ve görsel dışa aktarma | 8 |
 | Açık/koyu tema ve deneme yenilemesini kapatma/açma | 10 |
-| **Toplam** | **308** |
+| Faz 3 anket, izin, göreve dönüş ve giriş | 22 |
+| Ayarlar ve oyuncu seçimi başlıkları | 6 |
+| Yönetici ekranında bildirilen iptal nedenleri | 2 |
+| **Toplam** | **338** |
 
 [Kontrol matrisi](2026-11-15-kontrol-matrisi.csv) her senaryonun rolünü ve hangi görünümde çalıştırıldığını gösterir. Boş hücre, o senaryonun yalnızca diğer görünümde uygulandığını belirtir.
 
@@ -40,11 +43,22 @@ Uygulamadaki 14 adlandırılmış yol ve bulunamayan sayfa kontrol edildi. Fizik
 
 ## Kod kontrolleri
 
-- `bun test` ile 11 dosyada 62 test geçti. Beş dil için yardım anahtarlarını ve kupa grafiğinin gerçek maç kayıtlarını denetleyen testler depoda.
-- `npx tsc -p tsconfig.app.json --noEmit` ve `npx tsc -p tsconfig.node.json --noEmit` geçti. Değişen iki sunucu işlevi Deno ile tür kontrolünden geçti.
+- `bun test` ile 12 dosyada 67 test geçti. Beş dil için yardım anahtarlarını ve kupa grafiğinin gerçek maç kayıtlarını denetleyen testler depoda.
+- `npx tsc -p tsconfig.app.json --noEmit` ve `npx tsc -p tsconfig.node.json --noEmit` geçti. Koçluk, sohbet ve yeni hatırlatma işlevleri Deno ile tür kontrolünden geçti.
 - `npm run lint` sıfır hata verdi. Başlangıçta 7 hata ve 109 uyarı vardı, 109 uyarı devam ediyor.
 - `npm run build` tamamlandı. 500 kB üzerinde küçültülmüş dosya uyarısı sürüyor.
 
-## Canlı doğrulamanın sınırı
+## Faz 3 kabulü
 
-Canlı sitede var olan oyuncunun 3–1 sonucu, +30 farkı ve 696 kupası görüldü. PR'daki yeni tasarım, yerel sunucu işlevleri ve kontrollü dış servis yanıtlarıyla sınandı. Yeni sürümde aynı canlı hesapla baştan sona giriş ve yeni maç tekrarlanmadı. Üretimde karttan para çekme, iade, gerçek alıcılara e-posta, hesap silme ve harici paylaşım gönderimi yapılmadı. Yönetici gelir kartındaki tutarlar ekrana giren verinin gösterimini doğrular. Polar muhasebesi veya hatırlatma ayarı bu çalışmada yeniden doğrulanmadı.
+- Ayarlarda yenileme önce kapanır. Ardından oyuncu bir neden seçebilir veya atlayabilir. Yenilemeyi geri açma her iki durumda kullanılabilir. Yönetici panelinde dönem filtresiyle oyuncunun bildirdiği nedenler ve atlamalar ayrı sayılır. Davranıştan türetilen etiketler ayrı gösterilir.
+- Bekleyen görevde veya Ayarlar’da tek e-postalık izin varsayılan olarak kapalıdır. İzin görev ve Polar aboneliğiyle ilişkilendirilir. E-posta, deneme başlangıcından 24 saat sonra ve 48. saatten önce, izin sürüyorsa ve aynı görev hâlâ açıksa gönderime uygundur. Tamamlanma, izin iptali, ikinci günde görevi açma, bitiş veya ücretliye geçiş gönderimi durdurur. Yenilemeyi dönem sonunda kapatan oyuncu aynı erişimi sürdürür.
+- E-posta bağlantısı bağlı oyuncu etiketini giriş boyunca korur. Başka hesaba ait etikette seçim ekranı açılır. Giriş testinde misafir için önbellekte kalan abonelik cevabının deneme oyuncusuna ödeme ekranı gösterdiği görüldü ve düzeltildi. Masaüstünde ve mobil görünümde yeniden girişle ilgili göreve ulaşıldı.
+- Fiziksel iPhone Safari’de izole hesapla iptal anketi atlandı, hatırlatma izni açıldı ve geri alındı. Ayarlar başlığındaki taşma ayrıca düzeltildi; son başlık düzeninde etkileşimlerin 320 ve 390 piksel genişliğe sığdığı tarayıcıda ölçüldü.
+- PostgreSQL üzerinde yeni göç, roller, saat sınırları, bekleyen görev ve yeniden deneme test edildi. Zamanlayıcının oluşturduğu işaret yerel HTTP üzerinden Deno işlevine iletildi. Sağlayıcı kabul ettikten sonra veritabanı yazımı özellikle başarısız kılındı. Tekrar denemesinde aynı gönderim anahtarıyla yalnız bir benzersiz test e-postası kaydedildi. İşletim ortamındaki pg_cron ve pg_net yerine zamanlayıcı ve HTTP kuyruğu testte yerel olarak temsil edildi.
+- SQL kabul testi `tests/integration/trialCoaching.mjs` içindedir. İzole bir çalışma dizinine `npm install --prefix <dizin> @electric-sql/pglite@0.5.16` ile kurulabilir. Depo kökünde `PGLITE_MODULE=<dizin>/node_modules/@electric-sql/pglite/dist/index.js node tests/integration/trialCoaching.mjs` komutu boş, bellekteki bir veritabanında çalışır.
+
+## Gerçek hesap ve yayın
+
+Gerçek deneme hesabındaki aynı maç, canlı sitede ve PR önizlemesinde 3–1, +30 ve 696 kupa gösterdi. Yeni Genel Bakış’ta Archers seviye 7 → Arrows seviye 5 önerisi ve sekiz kart korundu. Yeni grafik “Son 1 savaş” ve +30 gösterdi. Polar müşteri bildirimlerindeki **Trial conversion reminder** açık görüldü.
+
+Bu çalışma gerçek oyuncuya yeni maç oynatmadı, tahsilat veya iade yapmadı, müşteriye e-posta göndermedi. Gelir kartı kontrolleri ekranın örnek veriyi sunumunu doğrular. Canlıya alma ayrı adımdır. Yayında `0009_trial_coaching_followup` göçü, `trial-coaching-reminder` sunucu işlevi ve web sürümü birlikte gereklidir. Zamanlayıcı mevcut `project_url` ve `anon_key` Vault kayıtlarını, işlev mevcut Resend yapılandırmasını kullanır. Gerçek gelen kutusuna teslim ve zamanlayıcının ilk canlı çalışması yayından sonra doğrulanabilir.
