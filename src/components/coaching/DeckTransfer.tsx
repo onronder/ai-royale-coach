@@ -25,7 +25,7 @@ export function DeckTransfer({ cards, playerTag }: DeckTransferProps) {
 
   if (isGameDevice) {
     return <>
-      <Button asChild variant="outline" className={buttonClass}>
+      <Button asChild className={buttonClass}>
         <a href={url} target="_blank" rel="noopener noreferrer"><ExternalLink aria-hidden />{openInGame}</a>
       </Button>
       <p className="mt-2 text-center text-xs text-muted-foreground">{account}</p>
@@ -35,7 +35,7 @@ export function DeckTransfer({ cards, playerTag }: DeckTransferProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className={buttonClass}><QrCode aria-hidden />{t('coaching.transfer.openOnPhone')}</Button>
+        <Button className={buttonClass}><QrCode aria-hidden />{t('coaching.transfer.openOnPhone')}</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto">
         <DialogHeader>
