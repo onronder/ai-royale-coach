@@ -18,6 +18,10 @@ const descriptionKeys = new Map<string, string>(
   Object.entries(en.templates.descriptions).map(([key, value]) => [value, key]),
 );
 
+const nameKeys = new Map<string, string>(
+  Object.entries(en.templates.names).map(([key, value]) => [value, key]),
+);
+
 interface DeckTemplate {
   id: string;
   name: string;
@@ -112,9 +116,11 @@ export function DeckTemplatesLibrary({
     }
   };
 
+  const templateName = (name: string) => nameKeys.has(name) ? t(`templates.names.${nameKeys.get(name)}`) : name;
+
   const handleImport = (template: DeckTemplate) => {
     onImportDeck(template.cards);
-    toast.success(t('templates.imported', { name: template.name }));
+    toast.success(t('templates.imported', { name: templateName(template.name) }));
   };
 
   if (isLoading) {
@@ -200,7 +206,7 @@ export function DeckTemplatesLibrary({
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-lg">{template.name}</CardTitle>
+                          <CardTitle className="text-lg">{templateName(template.name)}</CardTitle>
                           {isRecommended && (
                             <TooltipProvider>
                               <Tooltip>

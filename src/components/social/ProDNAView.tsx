@@ -50,7 +50,7 @@ function DNACardSkeleton() {
 }
 
 export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles: battlesProp }: ProDNAViewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // Only fetch if battles not provided as prop (avoid duplicate fetch)
   const { data: fetchedBattles, isLoading } = useClashRoyaleBattles(battlesProp ? null : playerTag);
   const battles = battlesProp || fetchedBattles;
@@ -60,7 +60,12 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
 
   // Calculate DNA when battles are available
   const calculatedDna = battles ? calculatePlayerDNA(battles, playerTag) : null;
-  const displayDna = calculatedDna || dna;
+  const sourceDna = calculatedDna || dna;
+  const displayDna = sourceDna && {
+    ...sourceDna,
+    archetype: sourceDna.archetype === 'Unknown' ? t('common.unknown') : t(`proDna.styles.${sourceDna.archetype}`),
+    similarPro: sourceDna.similarPro === 'Unknown' ? t('common.unknown') : sourceDna.similarPro,
+  };
 
   // Update local state when calculated
   if (calculatedDna && !dna) {
@@ -78,6 +83,8 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
         dna: displayDna,
         playerName,
         playerTag: formattedTag,
+        t,
+        language: i18n.language,
         scale: 2,
       });
       
@@ -104,6 +111,8 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
         dna: displayDna,
         playerName,
         playerTag: formattedTag,
+        t,
+        language: i18n.language,
         scale: 2,
       });
       
@@ -115,7 +124,7 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
           try {
             await navigator.share({
               files: [file],
-              title: `${playerName}'s Pro DNA`,
+              title: `${playerName} · ${t('sidebar.proDna')}`,
               text: t('proDna.shareText'),
             });
             toast.success(t('proDna.shared'));

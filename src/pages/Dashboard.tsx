@@ -400,7 +400,7 @@ const Dashboard = () => {
               open={dnaOpen}
               onOpenChange={setDnaOpen}
               playerTag={playerTag}
-              playerName={player?.name || "Player"}
+              playerName={player?.name || t('leaderboard.player')}
             />
 
             {/* Achievements Modal */}

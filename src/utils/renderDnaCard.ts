@@ -1,6 +1,10 @@
 import type { PlayerDNA } from "@/utils/playerDnaCalculator";
 
+import type { TFunction } from "i18next";
+
 interface RenderOptions {
+  t: TFunction;
+  language: string;
   dna: PlayerDNA;
   playerName: string;
   playerTag: string;
@@ -8,7 +12,7 @@ interface RenderOptions {
 }
 
 export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTMLCanvasElement> {
-  const { dna, playerName, playerTag, scale = 2 } = options;
+  const { dna, playerName, playerTag, t, language, scale = 2 } = options;
   const { stats, archetype, similarPro } = dna;
   const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
 
@@ -66,7 +70,7 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   ctx.fillStyle = '#d4af37';
   ctx.font = 'bold 7px system-ui';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ PLAYER DNA', 140, 24);
+  ctx.fillText(`✦ ${t('proDna.playerDna').toLocaleUpperCase(language)}`, 140, 24, 85);
   ctx.restore();
 
   // Archetype title
@@ -75,7 +79,7 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   ctx.textAlign = 'center';
   ctx.shadowColor = 'rgba(212, 175, 55, 0.5)';
   ctx.shadowBlur = 15;
-  ctx.fillText(archetype.toUpperCase(), 140, 55);
+  ctx.fillText(archetype.toLocaleUpperCase(language), 140, 55, 256);
   ctx.shadowBlur = 0;
 
   // Avatar circle
@@ -145,9 +149,9 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   const statsStartY = 200;
   const statSpacing = 40;
   
-  drawStatBar(ctx, 'AGG', stats.aggression, '#ef4444', '#f97316', statsStartY);
-  drawStatBar(ctx, 'DEF', stats.defense, '#3b82f6', '#06b6d4', statsStartY + statSpacing);
-  drawStatBar(ctx, 'VER', stats.versatility, '#a855f7', '#ec4899', statsStartY + statSpacing * 2);
+  drawStatBar(ctx, t('proDna.aggression'), '⚔', stats.aggression, '#ef4444', '#f97316', statsStartY);
+  drawStatBar(ctx, t('proDna.defense'), '🛡', stats.defense, '#3b82f6', '#06b6d4', statsStartY + statSpacing);
+  drawStatBar(ctx, t('proDna.versatility'), '⇄', stats.versatility, '#a855f7', '#ec4899', statsStartY + statSpacing * 2);
 
   // Similar to section
   const similarY = 330;
@@ -162,7 +166,7 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   ctx.font = '9px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('Similar to: ', 115, similarY + 12);
+  ctx.fillText(`${t('proDna.similarTo')}:`, 105, similarY + 12, 100);
   
   ctx.fillStyle = '#d4af37';
   ctx.font = 'bold 10px system-ui';
@@ -172,7 +176,7 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   ctx.fillStyle = 'rgba(212, 175, 55, 0.5)';
   ctx.font = 'bold 7px system-ui';
   ctx.textAlign = 'right';
-  ctx.fillText('♛ AI ROYALE COACH', 265, 375);
+  ctx.fillText(`♛ ${t('proDna.branding').toLocaleUpperCase(language)}`, 265, 375);
 
   // Corner accents
   ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
@@ -225,7 +229,8 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 
 function drawStatBar(
   ctx: CanvasRenderingContext2D, 
-  label: string, 
+  label: string,
+  icon: string,
   value: number, 
   colorFrom: string, 
   colorTo: string, 
@@ -247,8 +252,7 @@ function drawStatBar(
   ctx.font = 'bold 10px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const icons: Record<string, string> = { 'AGG': '⚔', 'DEF': '🛡', 'VER': '⇄' };
-  ctx.fillText(icons[label] || '●', x + 10, y + 10);
+  ctx.fillText(icon, x + 10, y + 10);
   
   // Label
   ctx.fillStyle = '#d4af37';

@@ -136,7 +136,7 @@ export function DashboardHeader({
                 className="hidden min-[350px]:flex bg-success/10 border-success/30 text-success gap-1.5 px-2.5 py-1 font-rajdhani font-bold"
               >
                 <TrendingUp className="h-3.5 w-3.5" />
-                <span>{winRate.toFixed(1)}%</span>
+                <span>{(winRate / 100).toLocaleString(i18n.language, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
               </Badge>
             </div>
           )}

@@ -77,6 +77,7 @@ it('resolves runtime keys for trial actions, battle results, deck lessons and to
       trialFollowup: ['avoid_charge', 'value', 'price', 'technical', 'other', 'skip'],
       coaching: ['win', 'loss', 'draw'],
       'tournaments.formats': ['single_elimination', 'double_elimination', 'round_robin'],
+      'proDna.styles': ['Bridge Spammer', 'The Great Wall', 'Meta Breaker', 'Balanced Warrior', 'Tactical Mastermind'],
       'templates.difficulty': ['beginner', 'intermediate', 'advanced'],
     };
     for (const [group, keys] of Object.entries(groups)) {

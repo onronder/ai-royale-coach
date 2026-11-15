@@ -73,7 +73,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const added = swap?.added;
  const language = i18n.resolvedLanguage ?? 'en';
  const reading = task && coachingReading(task, language);
- const needsTranslation = !!reading && Object.keys(reading.needed).length > 0;
+ const needsTranslation = !!reading && Object.keys(reading.needed).length > 0 && (!task?.battle_result || detailsOpen);
  const localized = useQuery({
    queryKey: [...key, 'translation', task?.id, language, reading?.needed, reading?.facts, reading?.adviceLanguage, reading?.followUpLanguage],
    enabled: needsTranslation,
@@ -85,7 +85,10 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
      return data.translation;
    },
    staleTime: Infinity,
-   retry: 1,
+   retry: false,
+   retryOnMount: false,
+   refetchOnWindowFocus: false,
+   refetchOnReconnect: false,
  });
  const text = reading && readingText(reading, localized.data);
  const reason = reading && [reading.facts, text?.reason].filter(Boolean).join(' ');
