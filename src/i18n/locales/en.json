@@ -12,7 +12,10 @@
     "retry": "Reload coaching preferences",
     "error": "Your choice could not be saved. Please try again.",
     "admin": "Cancellation reasons reported by players",
-    "empty": "No responses in this period."
+    "empty": "No responses in this period.",
+    "loadError": "We could not load your reminder choice.",
+    "stillOn": "Turning it off failed — your day-two reminder is still on.",
+    "tryAgain": "Try again"
   },
   "gameLabels": {
     "trophyRoad": "Trophy Road",

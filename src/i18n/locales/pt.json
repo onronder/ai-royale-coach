@@ -12,7 +12,10 @@
     "retry": "Recarregar preferências",
     "error": "Não foi possível salvar sua escolha. Tente de novo.",
     "admin": "Motivos de cancelamento informados pelos jogadores",
-    "empty": "Nenhuma resposta neste período."
+    "empty": "Nenhuma resposta neste período.",
+    "loadError": "Não foi possível carregar sua preferência de lembrete.",
+    "stillOn": "Não foi possível desativar — o lembrete do segundo dia continua ativado.",
+    "tryAgain": "Tentar novamente"
   },
   "gameLabels": {
     "trophyRoad": "Caminho de Troféus",
