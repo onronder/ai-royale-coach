@@ -20,3 +20,7 @@ WHERE w.confirmed_at >= c.activated_at ORDER BY w.confirmed_at;
 ```
 
 The worker retries the frozen message with the original key for at most 23 hours after its first attempt. An unresolved row beyond that window requires a read-only check in Resend; never clear its timestamp or send it with a new key. Compare distinct accepted IDs, not the number of HTTP retries. Keep customer addresses out of the PR.
+
+## Release record, 2026-11-15 (UTC)
+
+PR #9 merged at 16:21:34 (b9e4f88). PR #10 merged at 16:21:47 (c00f013). The combined Git tree matches the 114-test acceptance run. Production migration 0019 was applied and verified before activation.
