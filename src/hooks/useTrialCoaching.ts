@@ -21,16 +21,16 @@ export function useTrialCoaching(userId: string | undefined, enabled: boolean, r
     enabled: !!userId && enabled,
     retry: false,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('trial_coaching_state');
+      const { data, error } = await supabase.rpc('trial_coaching_state' as never);
       if (error) throw error;
       return data as unknown as TrialCoachingState | null;
     },
   });
   const update = useMutation({
     mutationFn: async ({ action, value }: { action: 'reason' | 'on' | 'off' | 'return'; value?: string }) => {
-      const { data, error } = await supabase.rpc('update_trial_coaching', {
+      const { data, error } = await supabase.rpc('update_trial_coaching' as never, {
         p_subscription: query.data!.subscriptionId, p_action: action, p_value: value,
-      });
+      } as never);
       if (error) throw error;
       return data as unknown as TrialCoachingState;
     },

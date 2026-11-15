@@ -13,6 +13,8 @@ type Row = {
   chat_messages: number; active_days: number; last_seen: string | null; converted: boolean;
 };
 
+type CancelAnswer = { reason: string; total: number };
+
 function reason(r: Row): string {
   if (r.converted) return 'admin.trials.paid';
   if (r.hours_to_cancel !== null && r.hours_to_cancel <= 1) return 'admin.trials.canceledImmediately';
@@ -29,9 +31,9 @@ export function TrialAnalyticsPanel() {
   const answers = useQuery({
     queryKey: ['trial-cancel-answers', days],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('trial_cancel_answers', { p_days: days });
+      const { data, error } = await supabase.rpc('trial_cancel_answers' as never, { p_days: days } as never);
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as CancelAnswer[];
     },
   });
   const { data = [], isLoading, error } = useQuery({

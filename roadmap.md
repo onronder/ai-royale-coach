@@ -6,3 +6,4 @@
 - [x] Verify cron absence, both Vault entries, Resend secret, and rejection of anonymous/invalid requests
 - [x] Report UY02YVY9G task and trial timing/eligibility without email or IDs
 - [x] Confirm deployment and SQL verification results; no UI, sends, notifications, timestamps, or data changes
+- [ ] Fix current preview type errors without changing runtime behavior
