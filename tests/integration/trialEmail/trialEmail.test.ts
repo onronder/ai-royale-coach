@@ -9,7 +9,7 @@ import { deliverReminder } from '../../../supabase/functions/trial-coaching-remi
 import { deliverSummary, type SummaryTask } from '../../../supabase/functions/trial-coaching-summary/summary';
 
 const PG = process.env.TRIAL_EMAIL_PG ?? '';
-const migration = process.env.TRIAL_EMAIL_MIGRATION ?? '';
+const migration = process.env.TRIAL_EMAIL_MIGRATION ?? 'drizzle/migrations/0018_trial_email_send_gate.sql';
 const psql = (sql: string, db = 'trial_email_test') => {
   const r = Bun.spawnSync(['psql', '-h', PG, '-p', '55432', '-U', 'postgres', '-d', db, '-v', 'ON_ERROR_STOP=1', '-Atqc', sql]);
   if (r.exitCode !== 0) throw new Error(r.stderr.toString());
@@ -61,7 +61,7 @@ const summaryTask = (id: string): SummaryTask => ({ id, language: 'en', source_d
   follow_up_question: null, follow_up_answer: null } as never);
 const reads = { task: async (id: string) => summaryTask(id), translation: async () => undefined };
 
-const ready = (() => { try { return !!PG && !!migration && psql('SELECT 1', 'postgres') === '1'; } catch { return false; } })();
+const ready = (() => { try { return !!PG && psql('SELECT 1', 'postgres') === '1'; } catch { return false; } })();
 
 describe('trial emails against the real SQL functions', { skip: !ready && 'set TRIAL_EMAIL_PG and TRIAL_EMAIL_MIGRATION' }, () => {
   const report: Record<string, unknown> = {};
