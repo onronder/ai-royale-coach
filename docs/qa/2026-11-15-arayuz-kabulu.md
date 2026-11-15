@@ -62,3 +62,19 @@ Uygulamadaki 14 adlandırılmış yol ve bulunamayan sayfa kontrol edildi. Fizik
 Gerçek deneme hesabındaki aynı maç, canlı sitede ve PR önizlemesinde 3–1, +30 ve 696 kupa gösterdi. Yeni Genel Bakış’ta Archers seviye 7 → Arrows seviye 5 önerisi ve sekiz kart korundu. Yeni grafik “Son 1 savaş” ve +30 gösterdi. Polar müşteri bildirimlerindeki **Trial conversion reminder** açık görüldü.
 
 Bu çalışma gerçek oyuncuya yeni maç oynatmadı, tahsilat veya iade yapmadı, müşteriye e-posta göndermedi. Gelir kartı kontrolleri ekranın örnek veriyi sunumunu doğrular. Canlıya alma ayrı adımdır. Yayında `0009_trial_coaching_followup` göçü, `trial-coaching-reminder` sunucu işlevi ve web sürümü birlikte gereklidir. Zamanlayıcı mevcut `project_url` ve `anon_key` Vault kayıtlarını, işlev mevcut Resend yapılandırmasını kullanır. Gerçek gelen kutusuna teslim ve zamanlayıcının ilk canlı çalışması yayından sonra doğrulanabilir.
+
+## Beş dilde birleşik sürüm kabulü
+
+Lovable’ın görev kartı ve kaydırma değişikliği (`c3f793d`) ile Faz 3 birlikte sınandı. Aşağıdaki tarayıcı kontrolleri yerel örnek veriyle çalıştı.
+
+| Dil | 390 piksel | 1440 piksel |
+| --- | ---: | ---: |
+| en | 35 | 35 |
+| tr | 35 | 35 |
+| es | 35 | 35 |
+| fr | 35 | 35 |
+| pt | 35 | 35 |
+
+Her dil ve genişlikte genel sayfalar, ayarlar, oyuncu seçimi, Kâhin, Dream Arena, oyuncu panelindeki sekmeler, yönetim sekmeleri ve bekleyen görevde e-posta izni kontrol edildi. Tamamlanan görevde ayrıntılar, rakip destesi ve cihazın deste aktarım eylemi açıldı. Bekleyen görevde sayfanın sonuna kaydırılabildi. Kontroller sayfa taşmasını, ham dil anahtarlarını ve tarayıcı çalışma hatalarını da denetledi.
+
+78 otomatik test geçti. Dil testleri İngilizce kaynak anahtarları ve yer tutucuları ile uygulamadaki sabit çeviri çağrılarını denetliyor. Beş bölgesel dil seçeneğinde koçluk e-postasının başlığı ve görev bağlantısı test edildi. Veritabanı entegrasyon testi ikinci gün sınırlarını, izin, vazgeçme, dönüş ve tekrar deneme davranışlarını sınadı. Gerçek gelen kutusuna teslim ayrı bir yayın sonrası kontroldür.
