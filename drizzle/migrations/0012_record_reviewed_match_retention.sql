@@ -1,0 +1,1 @@
+-- No additional schema statements. The pending reviewed coaching match retention migration supplies the schema.
