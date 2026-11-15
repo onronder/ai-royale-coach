@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { applySummaryOff, summaryChecked, type SummaryState } from '../src/lib/trialSummaryChoice';
-import { coachingResources } from '../src/i18n/coaching';
+import { coachingTranslations } from '../src/i18n/coaching';
 
 const base: SummaryState = { subscriptionId: 's', optedIn: true, playerTag: 'BBB', taskId: 'task-b', sent: false, trialEndsAt: '' };
 
@@ -24,11 +24,11 @@ describe('summary choice: two players, two tabs', () => {
 
 describe('summary choice errors in five languages', () => {
   for (const lang of ['en', 'tr', 'es', 'fr', 'pt']) it(lang, () => {
-    const c = (coachingResources as Record<string, Record<string, string>>)[lang];
+    const c = (coachingTranslations as Record<string, Record<string, string>>)[lang];
     for (const k of ['summaryLoadError', 'summarySaveError', 'summaryStillOn', 'summaryRetry']) assert.ok(c?.[k], `${lang}.${k}`);
   });
   it('says the summary is still on in Turkish and offers Tekrar dene', () => {
-    const tr = (coachingResources as Record<string, Record<string, string>>).tr;
+    const tr = (coachingTranslations as Record<string, Record<string, string>>).tr;
     assert.match(tr.summaryStillOn, /hâlâ açık/); assert.equal(tr.summaryRetry, 'Tekrar dene');
   });
 });
