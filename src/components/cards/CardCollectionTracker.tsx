@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Translation, useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -79,7 +79,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
     if (error) {
       console.error('Error fetching collection:', error);
-      toast.error(t('cardCollection.loadFailed'));
+      toast.error(<Translation>{translate => translate('cardCollection.loadFailed')}</Translation>);
     } else if (data) {
       setCollection(data);
     }
@@ -87,7 +87,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   };
 
   const syncCollection = async () => {
-    toast.loading(t('cardCollection.syncing'), { id: 'card-collection-sync' });
+    toast.loading(<Translation>{translate => translate('cardCollection.syncing')}</Translation>, { id: 'card-collection-sync' });
     
     try {
       const { error } = await supabase.functions.invoke('sync-card-collection', {
@@ -96,9 +96,9 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
       if (error) {
         console.error('Error syncing collection:', error);
-        toast.error(t('cardCollection.syncFailed'), { id: 'card-collection-sync' });
+        toast.error(<Translation>{translate => translate('cardCollection.syncFailed')}</Translation>, { id: 'card-collection-sync' });
       } else {
-        toast.success(t('cardCollection.syncSuccess'), { id: 'card-collection-sync' });
+        toast.success(<Translation>{translate => translate('cardCollection.syncSuccess')}</Translation>, { id: 'card-collection-sync' });
         
         createNotification({
           player_tag: playerTag,
@@ -112,7 +112,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       }
     } catch (error) {
       console.error('Sync error:', error);
-      toast.error(t('cardCollection.syncFailed'), { id: 'card-collection-sync' });
+      toast.error(<Translation>{translate => translate('cardCollection.syncFailed')}</Translation>, { id: 'card-collection-sync' });
     }
   };
 
@@ -171,7 +171,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
           </CardTitle>
           {syncProgress?.status === 'running' && (
             <Badge variant="secondary" className="animate-pulse">
-              {t('cardCollection.syncing')} {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
+              {<Translation>{translate => translate('cardCollection.syncing')}</Translation>} {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
             </Badge>
           )}
         </div>

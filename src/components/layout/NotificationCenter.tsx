@@ -1,5 +1,7 @@
 import { getDateLocale } from "@/i18n/dateLocale";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { languages } from "@/i18n";
+import { notificationReader } from "@/i18n/notificationText";
 import { useTranslation } from "react-i18next";
 import { Bell, Check, CheckCheck, Trash2, Trophy, RefreshCw, Sparkles, Info, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -61,6 +63,7 @@ const getNotificationColor = (type: Notification['type']) => {
 
 export function NotificationCenter({ playerTag }: NotificationCenterProps) {
   const { t, i18n } = useTranslation();
+  const localize = useMemo(() => notificationReader(i18n, languages.map(({ code }) => code)), [i18n]);
   const [isOpen, setIsOpen] = useState(false);
   const { notifications, unreadCount, isLoading } = useNotifications(playerTag);
   const { mutate: markAsRead } = useMarkAsRead();
@@ -149,6 +152,7 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
           ) : (
             <div className="divide-y divide-border">
               {notifications.map((notification) => {
+                const { title, message } = localize(notification);
                 const Icon = getNotificationIcon(notification.type, notification.icon_name);
                 const iconColor = getNotificationColor(notification.type);
 
@@ -167,14 +171,14 @@ export function NotificationCenter({ playerTag }: NotificationCenterProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <h4 className="text-sm font-medium text-foreground leading-tight">
-                            {notification.title}
+                            {title}
                           </h4>
                           {!notification.read && (
                             <div className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                          {notification.message}
+                          {message}
                         </p>
                         <div className="flex items-center justify-between mt-2">
                           <span className="text-xs text-muted-foreground">

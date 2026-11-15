@@ -658,7 +658,7 @@
           "aggressiveDesc": "Pushes ofensivos, alta pressão",
           "defensive": "Defensivo",
           "defensiveDesc": "Defesa forte, contra-ataques",
-          "beatdown": "Beatdown",
+          "beatdown": "Ataque pesado",
           "beatdownDesc": "Pushes pesados, dano massivo",
           "control": "Controle",
           "controlDesc": "Controle do tabuleiro, jogadas estratégicas",
@@ -724,7 +724,7 @@
         },
         "archetypes": {
           "Cycle": "Ciclo",
-          "Beatdown": "Beatdown",
+          "Beatdown": "Ataque pesado",
           "Control": "Controle",
           "Siege": "Cerco",
           "Bait": "Isca de feitiços",
@@ -2207,6 +2207,9 @@
     "averageCost": "Custo médio de elixir: {{cost}}",
     "popularity": "Popularidade",
     "names": {
+      "lava_hound_balloon": "Lava Hound e Balão",
+      "giant_double_prince": "Gigante e dupla de príncipes",
+      "mortar_bait": "Isca de feitiços com Morteiro",
       "hog_2_6_cycle": "Ciclo de Corredor 2,6",
       "golem_beatdown": "Ataque pesado com Golem",
       "x_bow_2_9": "X-Besta 2,9",
@@ -2232,6 +2235,11 @@
       "mortar_rocket": "Morteiro e Foguete"
     },
     "descriptions": {
+      "lava_hound_balloon": "Neste clássico de Lava Hound e Balão, o Mineiro dá suporte ao tanque e desgasta a torre.",
+      "giant_double_prince": "Neste deck clássico, o Príncipe e o Príncipe das Trevas apoiam o Gigante em ataques fortes.",
+      "royal_giant_fisherman": "Ciclo de Gigante Real com Pescador para controlar as tropas e Caçador para a defesa aérea.",
+      "miner_poison_chip": "Deck de controle que combina o dano gradual do Mineiro com o feitiço de Veneno.",
+      "mortar_bait": "Deck híbrido que combina a pressão de cerco do Morteiro com cartas que atraem os feitiços adversários.",
       "hog_2_6_cycle": "Mantenha a pressão com um ciclo rápido. O tempo de cada jogada e o controle do elixir são essenciais.",
       "golem_beatdown": "Monte um ataque com tropas pesadas para superar a defesa adversária.",
       "x_bow_2_9": "Controle a partida com este deck de cerco defensivo e desgaste a torre aos poucos.",

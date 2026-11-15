@@ -658,7 +658,7 @@
           "aggressiveDesc": "Poussées offensives, haute pression",
           "defensive": "Défensif",
           "defensiveDesc": "Défense forte, contre-attaques",
-          "beatdown": "Beatdown",
+          "beatdown": "Assaut lourd",
           "beatdownDesc": "Poussées lourdes, dégâts massifs",
           "control": "Contrôle",
           "controlDesc": "Contrôle du terrain, jeux stratégiques",
@@ -724,7 +724,7 @@
         },
         "archetypes": {
           "Cycle": "Cycle",
-          "Beatdown": "Beatdown",
+          "Beatdown": "Assaut lourd",
           "Control": "Contrôle",
           "Siege": "Siège",
           "Bait": "Appât à sorts",
@@ -2207,6 +2207,9 @@
     "averageCost": "Coût moyen en élixir : {{cost}}",
     "popularity": "Popularité",
     "names": {
+      "lava_hound_balloon": "Molosse de lave et Ballon",
+      "giant_double_prince": "Géant et double prince",
+      "mortar_bait": "Appât à sorts avec le Mortier",
       "hog_2_6_cycle": "Cycle Chevaucheur de cochon 2,6",
       "golem_beatdown": "Assaut lourd au Golem",
       "x_bow_2_9": "Arc-X 2,9",
@@ -2232,6 +2235,11 @@
       "mortar_rocket": "Mortier et Roquette"
     },
     "descriptions": {
+      "lava_hound_balloon": "Dans ce classique Molosse de lave et Ballon, le Mineur soutient le tank et grignote les points de vie de la tour.",
+      "giant_double_prince": "Dans ce deck classique, le Prince et le Prince ténébreux soutiennent le Géant pour lancer de puissantes offensives.",
+      "royal_giant_fisherman": "Cycle Géant royal avec le Pêcheur pour contrôler les troupes et le Chasseur pour défendre contre les unités aériennes.",
+      "miner_poison_chip": "Deck de contrôle qui associe les dégâts progressifs du Mineur au Poison.",
+      "mortar_bait": "Deck hybride qui combine la pression du Mortier et des cartes qui attirent les sorts adverses.",
       "hog_2_6_cycle": "Maintenez la pression avec un cycle rapide. Le timing et la gestion de l’élixir sont essentiels.",
       "golem_beatdown": "Préparez une attaque massive avec vos troupes lourdes pour submerger la défense adverse.",
       "x_bow_2_9": "Contrôlez la partie avec ce deck de siège défensif et grignotez les points de vie de la tour.",

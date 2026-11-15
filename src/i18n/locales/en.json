@@ -2196,6 +2196,9 @@
     "averageCost": "Average elixir: {{cost}}",
     "popularity": "Popularity",
     "names": {
+      "lava_hound_balloon": "Lava Hound Balloon",
+      "giant_double_prince": "Giant Double Prince",
+      "mortar_bait": "Mortar Bait",
       "hog_2_6_cycle": "Hog 2.6 Cycle",
       "golem_beatdown": "Golem Beatdown",
       "x_bow_2_9": "X-Bow 2.9",
@@ -2221,6 +2224,11 @@
       "mortar_rocket": "Mortar Rocket"
     },
     "descriptions": {
+      "lava_hound_balloon": "Classic LavaLoon deck with Miner for chip damage and tank support",
+      "giant_double_prince": "Classic Giant deck with double prince combo for devastating pushes",
+      "royal_giant_fisherman": "Royal Giant cycle deck with Fisherman for control and Hunter for air defense",
+      "miner_poison_chip": "Control deck with Miner chip damage and Poison spell synergy",
+      "mortar_bait": "Hybrid siege-bait deck combining Mortar pressure with spell bait elements",
       "hog_2_6_cycle": "Fast cycle deck with constant pressure. Requires precise timing and elixir management.",
       "golem_beatdown": "Heavy beatdown deck. Build big pushes and overwhelm opponents.",
       "x_bow_2_9": "Defensive siege deck. Control the game and chip tower damage.",

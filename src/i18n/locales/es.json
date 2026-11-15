@@ -658,7 +658,7 @@
           "aggressiveDesc": "Empujes ofensivos, alta presión",
           "defensive": "Defensivo",
           "defensiveDesc": "Defensa fuerte, contraataques",
-          "beatdown": "Beatdown",
+          "beatdown": "Ataque pesado",
           "beatdownDesc": "Empujes pesados, daño masivo",
           "control": "Control",
           "controlDesc": "Control del tablero, jugadas estratégicas",
@@ -724,7 +724,7 @@
         },
         "archetypes": {
           "Cycle": "Ciclo",
-          "Beatdown": "Beatdown",
+          "Beatdown": "Ataque pesado",
           "Control": "Control",
           "Siege": "Asedio",
           "Bait": "Cebo de hechizos",
@@ -2207,6 +2207,9 @@
     "averageCost": "Elixir medio: {{cost}}",
     "popularity": "Popularidad",
     "names": {
+      "lava_hound_balloon": "Sabueso de lava y Globo bombástico",
+      "giant_double_prince": "Gigante y doble príncipe",
+      "mortar_bait": "Cebo de hechizos con Mortero",
       "hog_2_6_cycle": "Ciclo de Montapuercos 2,6",
       "golem_beatdown": "Ataque pesado con Gólem",
       "x_bow_2_9": "Ballesta 2,9",
@@ -2232,6 +2235,11 @@
       "mortar_rocket": "Mortero y Cohete"
     },
     "descriptions": {
+      "lava_hound_balloon": "El Minero apoya al tanque y desgasta la torre en este mazo clásico de Sabueso de lava y Globo bombástico.",
+      "giant_double_prince": "En este mazo clásico, el Príncipe y el Príncipe oscuro apoyan al Gigante para lanzar ataques contundentes.",
+      "royal_giant_fisherman": "Mazo de ciclo de Gigante noble con Pescador para el control y Cazador para la defensa aérea.",
+      "miner_poison_chip": "Mazo de control que combina el desgaste del Minero con el Veneno.",
+      "mortar_bait": "Mazo híbrido que combina la presión de asedio del Mortero con cartas que atraen los hechizos rivales.",
       "hog_2_6_cycle": "Mantén la presión con un ciclo rápido. Exige precisión y un buen control del elixir.",
       "golem_beatdown": "Prepara un gran ataque con tropas pesadas y supera la defensa rival.",
       "x_bow_2_9": "Controla la partida con este mazo de asedio defensivo y desgasta la torre poco a poco.",
