@@ -168,8 +168,8 @@ const Dashboard = () => {
   return (
     <>
       <Helmet>
-        <title>{player?.name || 'Dashboard'} - AI Royale</title>
-        <meta name="description" content={`AI-powered analytics and coaching for ${player?.name || 'Clash Royale player'}. View stats, deck analysis, and personalized recommendations.`} />
+        <title>{player?.name || t('dashboard.subtabs.overview')} - AI Royale</title>
+        <meta name="description" content={t('dashboard.aiCoach.title')} />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       
@@ -407,7 +407,7 @@ const Dashboard = () => {
             <Dialog open={achievementsOpen} onOpenChange={setAchievementsOpen}>
               <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="sr-only">Achievements</DialogTitle>
+                  <DialogTitle className="sr-only">{t('achievements.title')}</DialogTitle>
                 </DialogHeader>
                 <AchievementsTab
                   playerTag={playerTag}

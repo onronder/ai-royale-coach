@@ -23,15 +23,15 @@ const features = [
 
 interface PricingTier {
   slots: number;
-  price: string;
-  pricePerAccount: string;
+  price: number;
+  pricePerAccount: number;
   popular?: boolean;
 }
 
 const pricingTiers: PricingTier[] = [
-  { slots: 1, price: '$4.99', pricePerAccount: '$4.99' },
-  { slots: 2, price: '$6.98', pricePerAccount: '$3.49', popular: true },
-  { slots: 3, price: '$8.97', pricePerAccount: '$2.99' },
+  { slots: 1, price: 4.99, pricePerAccount: 4.99 },
+  { slots: 2, price: 6.98, pricePerAccount: 3.49, popular: true },
+  { slots: 3, price: 8.97, pricePerAccount: 2.99 },
 ];
 
 interface PendingPromo {
@@ -41,7 +41,7 @@ interface PendingPromo {
 }
 
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining } = useSubscription();
   const [selectedTier, setSelectedTier] = useState<number>(1);
   const [showTrialConfirm, setShowTrialConfirm] = useState(false);
@@ -118,13 +118,9 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
     await proceedToCheckout();
   };
 
-  // Calculate discounted price for display
-  const getDisplayPrice = (originalPrice: string) => {
-    if (!pendingPromo?.discountPercent || pendingPromo.discountPercent <= 0) return originalPrice;
-    const price = parseFloat(originalPrice.replace('$', ''));
-    const discounted = price * (1 - pendingPromo.discountPercent / 100);
-    return `$${discounted.toFixed(2)}`;
-  };
+  const currency = new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'USD' });
+  const getDisplayPrice = (price: number) =>
+    currency.format(price * (1 - Math.max(0, pendingPromo?.discountPercent ?? 0) / 100));
 
   // Check if we should show discounted pricing
   const hasPercentDiscount = pendingPromo && pendingPromo.discountPercent > 0;
@@ -201,11 +197,11 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                   </div>
                   
                   <div className="text-2xl font-bold font-rajdhani text-gold">
-                    {hasPercentDiscount ? getDisplayPrice(tier.price) : tier.price}
+                    {getDisplayPrice(tier.price)}
                   </div>
                   {hasPercentDiscount && (
                     <div className="text-sm text-muted-foreground line-through">
-                      {tier.price}
+                      {currency.format(tier.price)}
                     </div>
                   )}
                   <div className="text-xs text-muted-foreground">
@@ -213,7 +209,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                   </div>
                   
                   <div className="mt-2 text-xs text-emerald-500">
-                    {tier.pricePerAccount}/{t('subscription.perAccount')}
+                    {currency.format(tier.pricePerAccount)}/{t('subscription.perAccount')}
                   </div>
 
                   {selectedTier === tier.slots && (
@@ -261,8 +257,8 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
                 {isCreatingCheckout 
                   ? t('common.loading') 
                   : pendingPromo && pendingPromo.discountPercent > 0
-                    ? `${t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(tier => tier.slots === selectedTier)?.price || '$4.99') })} ${t('subscription.promo.discountOff', { percent: pendingPromo.discountPercent })}`
-                    : t('subscription.subscribeTier', { price: pricingTiers.find(tier => tier.slots === selectedTier)?.price })
+                    ? `${t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(tier => tier.slots === selectedTier)?.price || 4.99) })} ${t('subscription.promo.discountOff', { percent: pendingPromo.discountPercent })}`
+                    : t('subscription.subscribeTier', { price: getDisplayPrice(pricingTiers.find(tier => tier.slots === selectedTier)?.price ?? 4.99) })
                 }
               </Button>
             </div>
@@ -289,7 +285,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
               onClick={proceedToCheckout}
               className="bg-gold text-black hover:bg-gold/90"
             >
-              {t('subscription.trialConfirm.proceed', 'Subscribe Now')}
+              {t('subscription.subscribeNow')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

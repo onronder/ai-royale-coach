@@ -1,3 +1,4 @@
+import { getDateLocale } from '@/i18n/dateLocale';
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +31,7 @@ interface FraudReviewPanelProps {
  * Detailed view for reviewing and acting on a fraud case.
  */
 export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const { userId: adminId } = useAdminAccess();
   const [reviewNotes, setReviewNotes] = useState('');
@@ -221,7 +222,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
               {playerProfiles.map((profile) => (
                 <Badge key={profile.player_tag} variant="outline">
                   #{profile.player_tag}
-                  {profile.ai_enabled && <span className="ml-1 text-green-500">✓ AI</span>}
+                  {profile.ai_enabled && <span className="ml-1 text-green-500">✓ {t('commonExtra.ai')}</span>}
                 </Badge>
               ))}
             </div>
@@ -249,7 +250,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
                     {fp.user_agent?.slice(0, 60)}...
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {t('admin.fraudReview.lastSeen')}: {formatDistanceToNow(new Date(fp.last_seen_at), { addSuffix: true })}
+                    {t('admin.fraudReview.lastSeen')}: {formatDistanceToNow(new Date(fp.last_seen_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                     {' • '}{t('admin.fraudReview.seenTimes', { count: fp.seen_count })}
                   </div>
                 </div>
@@ -344,7 +345,7 @@ export function FraudReviewPanel({ userId, onClose }: FraudReviewPanelProps) {
 
           {fraudStatus?.reviewed_at && (
             <div className="text-sm text-muted-foreground mt-4 p-3 rounded-lg bg-muted/50">
-              <div>{t('admin.fraudReview.lastReviewed')}: {format(new Date(fraudStatus.reviewed_at), 'MMM d, yyyy HH:mm')}</div>
+              <div>{t('admin.fraudReview.lastReviewed')}: {new Date(fraudStatus.reviewed_at).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short' })}</div>
               {fraudStatus.review_notes && (
                 <div className="mt-1">{t('admin.fraudReview.notes')}: {fraudStatus.review_notes}</div>
               )}

@@ -35,6 +35,8 @@ const i18nInit = i18n
       tr: { translation: { ...tr, ...trHelp, coaching: coachingTranslations.tr } },
       fr: { translation: { ...fr, ...frHelp, coaching: coachingTranslations.fr } },
     },
+    supportedLngs: languages.map(language => language.code),
+    load: 'languageOnly',
     fallbackLng: 'en',
     debug: false, // Set to true for debugging
     interpolation: {
@@ -50,6 +52,12 @@ const i18nInit = i18n
       bindI18nStore: 'added removed',
     },
   });
+
+const syncDocumentLanguage = () => {
+  if (typeof document !== 'undefined') document.documentElement.lang = i18n.resolvedLanguage || 'en';
+};
+i18n.on('languageChanged', syncDocumentLanguage);
+void i18nInit.then(syncDocumentLanguage);
 
 export { i18nInit };
 export default i18n;

@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { formatDistanceToNow } from 'date-fns';
 import { clashRoyaleApi, ClashRoyaleCard, ClashRoyaleBattle } from '@/services/clashRoyaleApi';
 import { parseClashRoyaleDate } from '@/lib/utils';
 
 export interface OraclePrediction {
   likelyDeck: ClashRoyaleCard[];
   confidence: number;
-  lastPlayedAgo: string;
+  lastPlayedAt: string;
   playstyle: 'Aggressive' | 'Control';
   deckHash: string;
   matchCount: number;
@@ -149,12 +148,11 @@ function analyzeBattleHistory(
   const playstyle = determinePlaystyle(avgElixir);
   
   // Format last played time
-  const lastPlayedAgo = formatDistanceToNow(bestDeck.lastPlayed, { addSuffix: true });
   
   return {
     likelyDeck: bestDeck.cards,
     confidence,
-    lastPlayedAgo,
+    lastPlayedAt: bestDeck.lastPlayed.toISOString(),
     playstyle,
     deckHash: getDeckHash(bestDeck.cards),
     matchCount: bestDeck.count,

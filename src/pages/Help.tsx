@@ -286,11 +286,11 @@ const Help = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Helmet>
-        <title>Help Center - AI Royale | Complete User Guide</title>
-        <meta name="description" content="Complete guide to AI Royale. Learn how to use deck analysis, AI coaching, card collection tracking, and all features to improve your Clash Royale gameplay." />
+        <title>{t('help.title')} - AI Royale</title>
+        <meta name="description" content={t('help.subtitle')} />
         <link rel="canonical" href="https://ai-royale.com/help" />
-        <meta property="og:title" content="Help Center - AI Royale" />
-        <meta property="og:description" content="Complete guide to AI Royale. Learn how to use all features to improve your Clash Royale gameplay." />
+        <meta property="og:title" content={t('help.title') + ' - AI Royale'} />
+        <meta property="og:description" content={t('help.subtitle')} />
         <meta property="og:url" content="https://ai-royale.com/help" />
         <meta property="og:image" content="https://ai-royale.com/og-help.png" />
         <meta property="og:image:width" content="1200" />
@@ -789,19 +789,19 @@ const Help = () => {
                     <p className="text-muted-foreground mb-4">{t("help.collection.levels.intro")}</p>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="p-2 bg-muted/30 rounded-md">
-                        <span className="text-gray-400">Common:</span> 1-16
+                        <span className="text-gray-400">{t('cardCollection.common')}:</span> 1-16
                       </div>
                       <div className="p-2 bg-muted/30 rounded-md">
-                        <span className="text-blue-400">Rare:</span> 3-16
+                        <span className="text-blue-400">{t('cardCollection.rare')}:</span> 3-16
                       </div>
                       <div className="p-2 bg-muted/30 rounded-md">
-                        <span className="text-purple-400">Epic:</span> 6-16
+                        <span className="text-purple-400">{t('cardCollection.epic')}:</span> 6-16
                       </div>
                       <div className="p-2 bg-muted/30 rounded-md">
-                        <span className="text-yellow-400">Legendary:</span> 9-16
+                        <span className="text-yellow-400">{t('cardCollection.legendary')}:</span> 9-16
                       </div>
                       <div className="p-2 bg-muted/30 rounded-md col-span-2">
-                        <span className="text-cyan-400">Champion:</span> 11-16
+                        <span className="text-cyan-400">{t('cardCollection.champion')}:</span> 11-16
                       </div>
                     </div>
                   </HelpCard>

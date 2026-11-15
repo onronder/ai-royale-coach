@@ -468,7 +468,7 @@ export default function DreamArena() {
     <>
       <Helmet>
         <title>{t('dreamArena.title')} | AI Royale Coach</title>
-        <meta name="description" content="Challenge the world's best Clash Royale players in AI-powered dream matches" />
+        <meta name="description" content={t('dreamArena.subtitle')} />
       </Helmet>
 
       <SidebarProvider defaultOpen={true}>

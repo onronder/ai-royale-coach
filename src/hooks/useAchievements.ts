@@ -156,7 +156,7 @@ export function useSyncAchievements(playerTag: string) {
         toast.success(
           `🏆 ${data.newlyUnlocked.length > 1 ? t('toasts.achievementsUnlocked') : t('toasts.achievementUnlocked')}`,
           {
-            description: data.newlyUnlocked.join(', '),
+            description: data.newlyUnlocked.map((name: string) => t('achievements.catalog.' + name + '.title', { defaultValue: name })).join(', '),
           }
         );
         
@@ -165,7 +165,7 @@ export function useSyncAchievements(playerTag: string) {
           createNotification({
             player_tag: playerTag,
             type: 'achievement',
-            title: `${t('toasts.achievementUnlocked')} ${achievementName}`,
+            title: `${t('toasts.achievementUnlocked')} ${t('achievements.catalog.' + achievementName + '.title', { defaultValue: achievementName })}`,
             message: t('achievements.unlockedNew'),
             icon_name: 'trophy'
           });

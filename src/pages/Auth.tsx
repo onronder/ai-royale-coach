@@ -565,11 +565,11 @@ const Auth = () => {
   return (
     <>
       <Helmet>
-        <title>{isSignUp ? t("auth.createAccount") : t("auth.signIn")} - AI Royale</title>
-        <meta name="description" content="Sign in or create your AI Royale account to access AI-powered Clash Royale coaching, deck analysis, and personalized recommendations." />
+        <title>{isSignUp ? t("auth.signUp") : t("auth.signIn")} - AI Royale</title>
+        <meta name="description" content={t(isSignUp ? 'auth.createAccountDesc' : 'auth.signInDesc')} />
         <link rel="canonical" href="https://ai-royale.com/auth" />
-        <meta property="og:title" content="Sign In - AI Royale" />
-        <meta property="og:description" content="Access your AI Royale account for AI-powered Clash Royale coaching and deck analysis." />
+        <meta property="og:title" content={t(isSignUp ? 'auth.signUp' : 'auth.signIn') + ' - AI Royale'} />
+        <meta property="og:description" content={t(isSignUp ? 'auth.createAccountDesc' : 'auth.signInDesc')} />
         <meta property="og:url" content="https://ai-royale.com/auth" />
         <meta property="og:image" content="https://ai-royale.com/og-image.png" />
         <meta name="robots" content="noindex, nofollow" />

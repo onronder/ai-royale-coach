@@ -43,7 +43,7 @@ export function AchievementBadgeWidget({ playerTag }: AchievementBadgeWidgetProp
               {t(unlockedCount === 1 ? 'dashboard.achievementWidget.achievement' : 'dashboard.achievementWidget.achievements', { count: unlockedCount })}
             </p>
             <p className="text-xs text-muted-foreground">
-              {t('dashboard.achievementWidget.phase', { phase: progress?.learning_phase || 'Beginner' })}
+              {t('dashboard.achievementWidget.phase', { phase: t('achievements.' + (progress?.learning_phase || 'beginner')) })}
             </p>
           </div>
         </div>

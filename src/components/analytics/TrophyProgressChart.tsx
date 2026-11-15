@@ -136,11 +136,11 @@ export function TrophyProgressChart({
         <div className="flex gap-4 mt-2">
           <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
             <p className="text-xs text-muted-foreground">{t('dashboard.trophyProgress.current')}</p>
-            <p className="font-rajdhani font-bold text-primary">{currentTrophies.toLocaleString()}</p>
+            <p className="font-rajdhani font-bold text-primary">{currentTrophies.toLocaleString(i18n.language)}</p>
           </div>
           <div className="px-3 py-1.5 rounded-lg bg-accent/10 border border-accent/20">
             <p className="text-xs text-muted-foreground">{t('dashboard.trophyProgress.best')}</p>
-            <p className="font-rajdhani font-bold text-accent">{bestTrophies.toLocaleString()}</p>
+            <p className="font-rajdhani font-bold text-accent">{bestTrophies.toLocaleString(i18n.language)}</p>
           </div>
         </div>
       </CardHeader>
@@ -179,7 +179,7 @@ export function TrophyProgressChart({
                           data.result === 'win' ? 'text-success' : 
                           data.result === 'loss' ? 'text-destructive' : 'text-muted-foreground'
                         }`}>
-                          {getResultLabel(data.result)} ({data.change > 0 ? "+" : ""}{data.change}) vs {data.opponent}
+                          {getResultLabel(data.result)} ({data.change > 0 ? "+" : ""}{data.change}) {t('commonExtra.vs')} {data.opponent}
                         </p>
                         <p className="text-xs">{t('dashboard.trophyProgress.crowns')}: {data.crowns}</p>
                       </div>

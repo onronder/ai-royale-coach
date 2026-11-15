@@ -164,6 +164,7 @@ interface UnlockedBadgeProps {
 }
 
 function UnlockedBadge({ achievement, onClick }: UnlockedBadgeProps) {
+  const { t } = useTranslation();
   const Icon = iconMap[achievement.icon] || Trophy;
   const rarityClass = getRarityColorClass(achievement.rarity);
 
@@ -224,7 +225,7 @@ function UnlockedBadge({ achievement, onClick }: UnlockedBadgeProps) {
           variant="outline" 
           className={cn("text-[10px] px-2 py-0", rarityClass)}
         >
-          {achievement.rarity}
+          {t('cardCollection.' + achievement.rarity.toLowerCase())}
         </Badge>
       </div>
     </motion.button>
@@ -338,7 +339,7 @@ function AchievementDetailDialog({ achievement, open, onOpenChange }: Achievemen
               variant="outline" 
               className={cn("text-sm px-3 py-1", rarityClass)}
             >
-              {achievement.rarity}
+              {t('cardCollection.' + achievement.rarity.toLowerCase())}
             </Badge>
           </motion.div>
 

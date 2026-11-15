@@ -384,7 +384,11 @@
       "q5": "Mes données sont-elles sécurisées ?",
       "a5": "Oui. Nous accédons uniquement aux données publiques disponibles depuis l'API Clash Royale. Votre mot de passe de jeu n'est jamais partagé avec nous.",
       "q6": "Comment délier un compte ?",
-      "a6": "Allez à l'écran de Sélection du Joueur et cliquez sur le bouton supprimer à côté du compte que vous souhaitez délier."
+      "a6": "Allez à l'écran de Sélection du Joueur et cliquez sur le bouton supprimer à côté du compte que vous souhaitez délier.",
+      "q7": "Comment modifier mon e-mail ou mon mot de passe ?",
+      "a7": "Tu peux gérer ton compte depuis le système de connexion. Pour changer d’adresse e-mail, contacte l’assistance.",
+      "q8": "Mes données sont-elles protégées ?",
+      "a8": "Nous utilisons un chiffrement standard et ne conservons jamais tes identifiants Clash Royale. Ton identifiant de joueur nous donne uniquement accès aux données publiques."
     }
   }
 }

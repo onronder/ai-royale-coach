@@ -266,7 +266,7 @@ export function DeckBuilder({
                   {!hasAccess && <Lock className="w-4 h-4 mr-2" />}
                   <Sparkles className="w-4 h-4 mr-2" />
                   {isAnalyzing ? t('deck.analyzing') : t('deck.aiAnalyze')}
-                  {!hasAccess && <Badge variant="secondary" className="ml-2 text-xs">PRO</Badge>}
+                  {!hasAccess && <Badge variant="secondary" className="ml-2 text-xs">{t('commonExtra.pro')}</Badge>}
                 </Button>
                 <Button 
                   onClick={saveDeck} 

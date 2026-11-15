@@ -379,7 +379,7 @@ const Settings = () => {
                               <span className="block text-xs">
                                 {t('settings.subscription.cancelConfirm.gdprNotice')}{' '}
                                 <Link to="/privacy" className="underline text-primary hover:text-primary/80">
-                                  {t('nav.privacy')}
+                                  {t('legal.privacyPolicy')}
                                 </Link>
                               </span>
                             </AlertDialogDescription>
@@ -478,7 +478,7 @@ const Settings = () => {
                               </span>
                               {profile.trophies && (
                                 <p className="text-xs text-muted-foreground">
-                                  {profile.trophies.toLocaleString()} {t('common.trophies')}
+                                  {profile.trophies.toLocaleString(i18n.language)} {t('common.trophies')}
                                 </p>
                               )}
                             </div>

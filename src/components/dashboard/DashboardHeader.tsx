@@ -1,3 +1,4 @@
+import { getDateLocale } from '@/i18n/dateLocale';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -71,7 +72,7 @@ export function DashboardHeader({
   const [showTasks, setShowTasks] = useState(false);
   
   const { operations, activeCount, cancelOperation, isCancelling } = useAllOperations();
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const currentLanguage = languages.find(lang => lang.code === i18n.resolvedLanguage) || languages[0];
 
   // Calculate time since last update
   const getTimeSinceUpdate = () => {
@@ -125,7 +126,7 @@ export function DashboardHeader({
                 className="bg-gold/10 border-gold/30 text-gold gap-1.5 px-2.5 py-1 font-rajdhani font-bold"
               >
                 <Trophy className="h-3.5 w-3.5" />
-                <span>{player.trophies.toLocaleString()}</span>
+                <span>{player.trophies.toLocaleString(i18n.language)}</span>
               </Badge>
               
               {/* Win Rate Badge - Hidden on very small screens */}
@@ -176,7 +177,7 @@ export function DashboardHeader({
                     {t("dashboard.header.lastUpdated", "Last updated")}
                   </span>
                   <span className="font-medium">
-                    {getTimeSinceUpdate() || t("dashboard.header.unknown", "Unknown")}
+                    {getTimeSinceUpdate() || t("common.unknown", "Unknown")}
                   </span>
                 </div>
                 
@@ -188,7 +189,7 @@ export function DashboardHeader({
                 >
                   <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
                   {isRefreshing 
-                    ? t("dashboard.header.syncing", "Syncing...")
+                    ? t("cardCollection.syncing", "Syncing...")
                     : t("dashboard.header.forceRefresh", "Force Refresh")
                   }
                 </Button>
@@ -244,7 +245,7 @@ export function DashboardHeader({
                             )}
                             {!isRunning && (
                               <p className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(op.completed_at || op.updated_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(op.completed_at || op.updated_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                               </p>
                             )}
                           </div>
@@ -264,7 +265,7 @@ export function DashboardHeader({
                       className="w-full justify-start gap-2 h-10"
                     >
                       <Globe className="h-4 w-4" />
-                      <span className="flex-1 text-left">{t("dashboard.header.language", "Language")}</span>
+                      <span className="flex-1 text-left">{t("settings.preferences.language", "Language")}</span>
                       <span className="text-muted-foreground">{currentLanguage.flag}</span>
                     </Button>
                   </DropdownMenuTrigger>
@@ -274,7 +275,7 @@ export function DashboardHeader({
                         key={language.code}
                         onClick={() => i18n.changeLanguage(language.code)}
                         className={`flex items-center gap-2 cursor-pointer ${
-                          i18n.language === language.code ? 'bg-primary/10 text-primary' : ''
+                          i18n.resolvedLanguage === language.code ? 'bg-primary/10 text-primary' : ''
                         }`}
                       >
                         <span className="text-lg">{language.flag}</span>
@@ -293,7 +294,7 @@ export function DashboardHeader({
                   onClick={handleSettingsClick}
                 >
                   <Settings className="h-4 w-4" />
-                  {t("dashboard.header.settings", "Settings")}
+                  {t("settings.title", "Settings")}
                 </Button>
                 
                 {onOpenHelp && (
@@ -303,7 +304,7 @@ export function DashboardHeader({
                     onClick={handleHelpClick}
                   >
                     <HelpCircle className="h-4 w-4" />
-                    {t("dashboard.header.help", "Help")}
+                    {t("nav.help", "Help")}
                   </Button>
                 )}
               </div>
@@ -316,7 +317,7 @@ export function DashboardHeader({
                   onClick={handleSignOut}
                 >
                   <LogOut className="h-4 w-4" />
-                  {t("dashboard.header.signOut", "Sign Out")}
+                  {t("nav.signOut", "Sign Out")}
                 </Button>
               </div>
             </PopoverContent>

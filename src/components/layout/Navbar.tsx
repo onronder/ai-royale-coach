@@ -81,7 +81,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
               className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-destructive hover:text-destructive/80 font-medium transition-colors"
             >
               <Shield className="h-4 w-4" />
-              <span>Admin</span>
+              <span>{t('admin.navigation.admin')}</span>
             </Link>
           )}
           <LanguageSelector />

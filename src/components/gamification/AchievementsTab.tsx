@@ -143,7 +143,7 @@ const ShareableCard = forwardRef<HTMLDivElement, ShareableCardProps>(
               <Trophy className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">{playerName}'s {t('achievements.trophyCase')}</h2>
+              <h2 className="text-2xl font-bold text-white">{t('achievements.playerTrophyCase', { name: playerName })}</h2>
               <p className="text-gray-400">#{playerTag}</p>
             </div>
           </div>
@@ -180,7 +180,7 @@ const ShareableCard = forwardRef<HTMLDivElement, ShareableCardProps>(
                 >
                   <Icon className="h-6 w-6 text-white" />
                 </div>
-                <p className="text-white text-sm font-medium truncate">{achievement.title.replace(/^[^\w]+/, '')}</p>
+                <p className="text-white text-sm font-medium truncate">{achievement.title}</p>
                 <p className={cn(
                   "text-xs mt-1",
                   achievement.rarity === 'Legendary' && "text-amber-400",
@@ -188,7 +188,7 @@ const ShareableCard = forwardRef<HTMLDivElement, ShareableCardProps>(
                   achievement.rarity === 'Rare' && "text-blue-400",
                   achievement.rarity === 'Common' && "text-gray-400"
                 )}>
-                  {achievement.rarity}
+                  {t('cardCollection.' + achievement.rarity.toLowerCase())}
                 </p>
               </div>
             );

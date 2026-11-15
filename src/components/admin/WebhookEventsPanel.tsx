@@ -1,3 +1,5 @@
+import { getDateLocale } from '@/i18n/dateLocale';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,6 +36,7 @@ interface WebhookEvent {
 type StatusFilter = 'all' | 'processed' | 'failed' | 'skipped';
 
 export function WebhookEventsPanel() {
+  const { t, i18n } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
 
@@ -125,11 +128,11 @@ export function WebhookEventsPanel() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'processed':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">Processed</Badge>;
+        return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">{t('admin.events.processed')}</Badge>;
       case 'failed':
-        return <Badge variant="destructive">Failed</Badge>;
+        return <Badge variant="destructive">{t('admin.events.failed')}</Badge>;
       case 'skipped':
-        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">Skipped</Badge>;
+        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">{t('admin.events.skipped')}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -149,7 +152,7 @@ export function WebhookEventsPanel() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Total (24h)</CardDescription>
+            <CardDescription>{t('admin.events.total24')}</CardDescription>
             <CardTitle className="text-2xl">
               {stats?.last24h.total ?? <Skeleton className="h-8 w-16" />}
             </CardTitle>
@@ -159,7 +162,7 @@ export function WebhookEventsPanel() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1">
               <CheckCircle2 className="h-3 w-3 text-green-500" />
-              Processed (24h)
+              {t('admin.events.processed24')}
             </CardDescription>
             <CardTitle className="text-2xl text-green-600">
               {stats?.last24h.processed ?? <Skeleton className="h-8 w-16" />}
@@ -170,7 +173,7 @@ export function WebhookEventsPanel() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1">
               <XCircle className="h-3 w-3 text-destructive" />
-              Failed (24h)
+              {t('admin.events.failed24')}
             </CardDescription>
             <CardTitle className="text-2xl text-destructive">
               {stats?.last24h.failed ?? <Skeleton className="h-8 w-16" />}
@@ -181,7 +184,7 @@ export function WebhookEventsPanel() {
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1">
               <AlertTriangle className="h-3 w-3 text-yellow-500" />
-              Skipped (24h)
+              {t('admin.events.skipped24')}
             </CardDescription>
             <CardTitle className="text-2xl text-yellow-600">
               {stats?.last24h.skipped ?? <Skeleton className="h-8 w-16" />}
@@ -196,7 +199,7 @@ export function WebhookEventsPanel() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Webhook className="h-5 w-5" />
-              <CardTitle>Webhook Events</CardTitle>
+              <CardTitle>{t('admin.events.title')}</CardTitle>
             </div>
             <Button
               variant="outline"
@@ -205,20 +208,20 @@ export function WebhookEventsPanel() {
               disabled={isFetching}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('common.refresh')}
             </Button>
           </div>
           <CardDescription>
-            Recent Polar webhook events and their processing status
+            {t('admin.events.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
             <TabsList className="mb-4">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="processed">Processed</TabsTrigger>
-              <TabsTrigger value="failed">Failed</TabsTrigger>
-              <TabsTrigger value="skipped">Skipped</TabsTrigger>
+              <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
+              <TabsTrigger value="processed">{t('admin.events.processed')}</TabsTrigger>
+              <TabsTrigger value="failed">{t('admin.events.failed')}</TabsTrigger>
+              <TabsTrigger value="skipped">{t('admin.events.skipped')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value={statusFilter} className="mt-0">
@@ -232,7 +235,7 @@ export function WebhookEventsPanel() {
                 ) : events?.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     <Webhook className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No webhook events found</p>
+                    <p>{t('admin.events.empty')}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -255,9 +258,9 @@ export function WebhookEventsPanel() {
                                 {getStatusBadge(event.status)}
                               </div>
                               <div className="text-sm text-muted-foreground">
-                                {formatDistanceToNow(new Date(event.created_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(event.created_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
                                 {event.user_id && (
-                                  <span className="ml-2">• User: {event.user_id.slice(0, 8)}...</span>
+                                  <span className="ml-2">{t('admin.events.user')} {event.user_id.slice(0, 8)}...</span>
                                 )}
                               </div>
                             </div>
@@ -275,27 +278,27 @@ export function WebhookEventsPanel() {
                           <div className="mt-3 pt-3 border-t space-y-2 text-sm">
                             <div className="grid grid-cols-2 gap-2">
                               <div>
-                                <span className="text-muted-foreground">Event ID:</span>
+                                <span className="text-muted-foreground">{t('admin.events.id')}</span>
                                 <span className="ml-2 font-mono text-xs">{event.event_id || 'N/A'}</span>
                               </div>
                               <div>
-                                <span className="text-muted-foreground">Processed:</span>
+                                <span className="text-muted-foreground">{t('admin.events.time')}</span>
                                 <span className="ml-2">
-                                  {new Date(event.processed_at).toLocaleString()}
+                                  {new Date(event.processed_at).toLocaleString(i18n.language)}
                                 </span>
                               </div>
                             </div>
                             
                             {event.error_message && (
                               <div className="bg-destructive/10 border border-destructive/30 rounded p-2 mt-2">
-                                <span className="text-destructive font-medium">Error: </span>
+                                <span className="text-destructive font-medium">{t('admin.events.error')} </span>
                                 <span className="text-destructive/90">{event.error_message}</span>
                               </div>
                             )}
 
                             {event.payload_summary && (
                               <div className="bg-muted rounded p-2 mt-2">
-                                <span className="text-muted-foreground font-medium">Payload Summary:</span>
+                                <span className="text-muted-foreground font-medium">{t('admin.events.payload')}</span>
                                 <pre className="mt-1 text-xs overflow-x-auto">
                                   {JSON.stringify(event.payload_summary, null, 2)}
                                 </pre>
@@ -316,25 +319,25 @@ export function WebhookEventsPanel() {
       {/* 7-Day Summary */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">7-Day Summary</CardTitle>
+          <CardTitle className="text-lg">{t('admin.events.week')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
             <div className="text-center">
               <div className="text-2xl font-bold">{stats?.last7d.total ?? '-'}</div>
-              <div className="text-sm text-muted-foreground">Total Events</div>
+              <div className="text-sm text-muted-foreground">{t('admin.events.total')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{stats?.last7d.processed ?? '-'}</div>
-              <div className="text-sm text-muted-foreground">Processed</div>
+              <div className="text-sm text-muted-foreground">{t('admin.events.processed')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-destructive">{stats?.last7d.failed ?? '-'}</div>
-              <div className="text-sm text-muted-foreground">Failed</div>
+              <div className="text-sm text-muted-foreground">{t('admin.events.failed')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">{stats?.last7d.skipped ?? '-'}</div>
-              <div className="text-sm text-muted-foreground">Skipped</div>
+              <div className="text-sm text-muted-foreground">{t('admin.events.skipped')}</div>
             </div>
           </div>
         </CardContent>

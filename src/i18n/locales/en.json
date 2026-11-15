@@ -61,7 +61,9 @@
     "ai": "AI",
     "searching": "Searching...",
     "locked": "Locked",
-    "thisMayTakeMoment": "This may take a moment"
+    "thisMayTakeMoment": "This may take a moment",
+    "dismiss": "Dismiss",
+    "today": "Today"
   },
   "announcement": {
     "new": "NEW",
@@ -91,7 +93,9 @@
     "quickActions": "Quick Actions",
     "achievements": "Achievements",
     "proDna": "Pro DNA",
-    "theOracle": "The Oracle"
+    "theOracle": "The Oracle",
+    "toggle": "Toggle navigation",
+    "toolbox": "Tools"
   },
   "feedback": {
     "thankYou": "Thanks for your feedback!",
@@ -1194,7 +1198,15 @@
     },
     "header": {
       "controlPanel": "Control panel",
-      "winRate": "WR"
+      "winRate": "WR",
+      "justNow": "Just now",
+      "minsAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}} h ago",
+      "dashboardControls": "Dashboard controls",
+      "lastUpdated": "Last updated",
+      "forceRefresh": "Refresh now",
+      "activeTasks": "Active tasks",
+      "noTasks": "No active or recent tasks"
     },
     "aiCoach": {
       "title": "AI Coach Summary",
@@ -1230,7 +1242,8 @@
       "win": "Win",
       "loss": "Loss",
       "draw": "Draw",
-      "crowns": "Crowns"
+      "crowns": "Crowns",
+      "playToSee": "Play battles to track your trophy progress"
     },
     "achievementWidget": {
       "loading": "Loading achievements...",
@@ -1359,7 +1372,8 @@
     "top100": "Top 100",
     "myClan": "My Clan",
     "noClan": "No Clan",
-    "rankTop200": "Top 200"
+    "rankTop200": "Top 200",
+    "lastSync": "Last sync"
   },
   "clan": {
     "details": "Clan Details",
@@ -1744,7 +1758,160 @@
     "progress": "Progress",
     "pts": "pts",
     "points": "points",
-    "unlockedOn": "Unlocked on {{date}}"
+    "unlockedOn": "Unlocked on {{date}}",
+    "trophyCase": "Trophy case",
+    "playerTrophyCase": "{{name}}’s trophy case",
+    "badgesEarned": "Badges earned",
+    "master": "Master",
+    "catalog": {
+      "Placement Novice": {
+        "title": "Placement Novice",
+        "description": "Achieve card placement skill level 3"
+      },
+      "Placement Adept": {
+        "title": "Placement Adept",
+        "description": "Achieve card placement skill level 5"
+      },
+      "Placement Expert": {
+        "title": "Placement Expert",
+        "description": "Achieve card placement skill level 7"
+      },
+      "Placement Master": {
+        "title": "Placement Master",
+        "description": "Achieve card placement skill level 9"
+      },
+      "Placement Legend": {
+        "title": "Placement Legend",
+        "description": "Achieve card placement skill level 10"
+      },
+      "Timing Novice": {
+        "title": "Timing Novice",
+        "description": "Achieve timing skill level 3"
+      },
+      "Timing Adept": {
+        "title": "Timing Adept",
+        "description": "Achieve timing skill level 5"
+      },
+      "Timing Expert": {
+        "title": "Timing Expert",
+        "description": "Achieve timing skill level 7"
+      },
+      "Timing Master": {
+        "title": "Timing Master",
+        "description": "Achieve timing skill level 9"
+      },
+      "Timing Legend": {
+        "title": "Timing Legend",
+        "description": "Achieve timing skill level 10"
+      },
+      "Elixir Novice": {
+        "title": "Elixir Novice",
+        "description": "Achieve elixir management skill level 3"
+      },
+      "Elixir Adept": {
+        "title": "Elixir Adept",
+        "description": "Achieve elixir management skill level 5"
+      },
+      "Elixir Expert": {
+        "title": "Elixir Expert",
+        "description": "Achieve elixir management skill level 7"
+      },
+      "Elixir Master": {
+        "title": "Elixir Master",
+        "description": "Achieve elixir management skill level 9"
+      },
+      "Elixir Legend": {
+        "title": "Elixir Legend",
+        "description": "Achieve elixir management skill level 10"
+      },
+      "Prediction Novice": {
+        "title": "Prediction Novice",
+        "description": "Achieve prediction skill level 3"
+      },
+      "Prediction Adept": {
+        "title": "Prediction Adept",
+        "description": "Achieve prediction skill level 5"
+      },
+      "Prediction Expert": {
+        "title": "Prediction Expert",
+        "description": "Achieve prediction skill level 7"
+      },
+      "Prediction Master": {
+        "title": "Prediction Master",
+        "description": "Achieve prediction skill level 9"
+      },
+      "Prediction Legend": {
+        "title": "Prediction Legend",
+        "description": "Achieve prediction skill level 10"
+      },
+      "Adaptation Novice": {
+        "title": "Adaptation Novice",
+        "description": "Achieve adaptation skill level 3"
+      },
+      "Adaptation Adept": {
+        "title": "Adaptation Adept",
+        "description": "Achieve adaptation skill level 5"
+      },
+      "Adaptation Expert": {
+        "title": "Adaptation Expert",
+        "description": "Achieve adaptation skill level 7"
+      },
+      "Adaptation Master": {
+        "title": "Adaptation Master",
+        "description": "Achieve adaptation skill level 9"
+      },
+      "Adaptation Legend": {
+        "title": "Adaptation Legend",
+        "description": "Achieve adaptation skill level 10"
+      },
+      "Beginner Graduate": {
+        "title": "Beginner Graduate",
+        "description": "Complete beginner learning phase"
+      },
+      "Intermediate Graduate": {
+        "title": "Intermediate Graduate",
+        "description": "Complete intermediate learning phase"
+      },
+      "Advanced Graduate": {
+        "title": "Advanced Graduate",
+        "description": "Complete advanced learning phase"
+      },
+      "Master Graduate": {
+        "title": "Master Graduate",
+        "description": "Complete master learning phase"
+      },
+      "Card Master": {
+        "title": "Card Master",
+        "description": "Achieve mastery level 9+ on 5 different cards"
+      },
+      "Card Legend": {
+        "title": "Card Legend",
+        "description": "Achieve mastery level 9+ on 20 different cards"
+      },
+      "Ultimate Master": {
+        "title": "Ultimate Master",
+        "description": "Achieve mastery level 10 on 10 different cards"
+      },
+      "First Steps": {
+        "title": "First Steps",
+        "description": "Unlock your first achievement"
+      },
+      "Achievement Hunter": {
+        "title": "Achievement Hunter",
+        "description": "Unlock 10 achievements"
+      },
+      "Achievement Master": {
+        "title": "Achievement Master",
+        "description": "Unlock 25 achievements"
+      },
+      "Achievement Legend": {
+        "title": "Achievement Legend",
+        "description": "Unlock 50 achievements"
+      }
+    },
+    "synced": "Achievements synced",
+    "syncedMessage": "Your achievement progress is up to date.",
+    "unlockedNew": "You earned a new achievement."
   },
   "deckStats": {
     "title": "Deck Statistics",
@@ -1870,7 +2037,9 @@
     "matches": "matches",
     "strong": "Strong (>60%)",
     "even": "Even (50-60%)",
-    "weak": "Weak (<50%)"
+    "weak": "Weak (<50%)",
+    "noData": "No win-rate data yet",
+    "noDataDesc": "Play battles to see your win rate."
   },
   "cardCollection": {
     "title": "Card Collection",
@@ -1929,7 +2098,11 @@
       "predicted": "Predicted",
       "actual": "Actual",
       "error": "Error"
-    }
+    },
+    "noDecks": "No deck data yet",
+    "noDecksDesc": "Play battles to see which decks you use.",
+    "noTrendData": "No trend data yet",
+    "noTrendDataDesc": "Play more battles to see your win-rate trends."
   },
   "templates": {
     "title": "Meta Deck Templates",
@@ -2212,7 +2385,23 @@
       "startTrial": "Start 3-Day Free Trial",
       "subscribe": "Subscribe Now",
       "signOut": "Sign Out"
-    }
+    },
+    "dailyLimitReached": "Daily limit reached",
+    "tagClaimedMessage": "This player tag is already linked to another account.",
+    "trialConfirm": {
+      "title": "Subscribe now?",
+      "description": "Days remaining in your trial: {{days}}. If you continue, your paid subscription starts immediately."
+    },
+    "tagClaimedTitle": "Player tag already linked",
+    "featureLocked": "Feature locked",
+    "dailyLimitMessage": "You’ve reached today’s usage limit.",
+    "upgradeToUnlock": "Upgrade to unlock",
+    "upgradeForUnlimited": "Upgrade for unlimited access",
+    "unlimitedAccess": "Unlimited access",
+    "unlimited": "Unlimited",
+    "trial": "Trial",
+    "quotaExhaustedTooltip": "Today’s allowance has been used.",
+    "usesToday": "Uses left today: {{remaining}}"
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
@@ -2330,15 +2519,18 @@
     "achievements": {
       "elixirMaster": {
         "title": "Elixir Master",
-        "hint": "Win with a heavy deck (4.0+ elixir) without losing towers"
+        "hint": "Win with a heavy deck (4.0+ elixir) without losing towers",
+        "earned": "You dominated with a heavy deck and kept all your towers safe!"
       },
       "comebackKing": {
         "title": "Comeback King",
-        "hint": "Win a match after losing a tower first"
+        "hint": "Win a match after losing a tower first",
+        "earned": "Never give up! You turned the battle around like a true champion!"
       },
       "perfectDefense": {
         "title": "Perfect Defense",
-        "hint": "Win a match without losing any towers"
+        "hint": "Win a match without losing any towers",
+        "earned": "You defended your towers like a pro! Not a single crown lost!"
       },
       "winStreakWarrior": {
         "title": "Win Streak Warrior",
@@ -2350,9 +2542,13 @@
       },
       "threeCrownMaster": {
         "title": "Three Crown Master",
-        "hint": "Win a match with 3 crowns"
+        "hint": "Win a match with 3 crowns",
+        "earned": "Total domination! You took all three crowns!"
       }
-    }
+    },
+    "giantSlayer": "Giant Slayer",
+    "wonStreak": "Won {{count}} battles in a row.",
+    "wonAgainstOdds": "Defeated an opponent with {{count}} more trophies."
   },
   "aiPreview": {
     "deckArchetype": "Deck Archetype",
@@ -2398,7 +2594,21 @@
       "endpoints": "endpoints",
       "calls": "calls",
       "cache": "cache",
-      "slow": "Slow"
+      "slow": "Slow",
+      "groupTitle": "Endpoints by Category",
+      "noRequests": "No request data available",
+      "recent": "Recent Requests",
+      "loadingLogs": "Loading logs...",
+      "dupeWarning": "{{count}} duplicate calls detected (same endpoint within 1s)",
+      "filter": "Filter by endpoint...",
+      "dupes": "Dupes",
+      "noDupes": "No duplicate calls detected",
+      "emptyLog": "No requests logged yet",
+      "hits": "Cache Hits",
+      "playerGroup": "Player data",
+      "deckGroup": "Decks and cards",
+      "profileGroup": "Accounts and profiles",
+      "operationGroup": "Operations"
     },
     "fraudOverview": {
       "signalsToday": "Signals Today",
@@ -2481,6 +2691,186 @@
         "medium": "Medium",
         "low": "Low"
       }
+    },
+    "navigation": {
+      "checking": "Checking admin access...",
+      "title": "Admin Dashboard",
+      "subtitle": "Fraud detection and user management",
+      "users": "Users",
+      "trials": "Trials",
+      "winback": "Win-back",
+      "webhooks": "Webhooks",
+      "admin": "Admin"
+    },
+    "trials": {
+      "paid": "Paid",
+      "canceledImmediately": "Canceled immediately",
+      "neverUsed": "Never used",
+      "onceCanceled": "One analysis, then canceled",
+      "inTrial": "In trial",
+      "noPayment": "Used but did not pay",
+      "startedTrial": "Started trial",
+      "linkedTag": "Linked player tag",
+      "firstAnalysis": "Ran first AI analysis",
+      "returned": "Active on 2+ days",
+      "converted": "Converted to paid",
+      "daysRange": "{{days}} days",
+      "funnel": "Trial funnel",
+      "revenue": "Revenue & trial activity",
+      "sync": "Sync orders from Polar",
+      "rate": "First paid rate (trial end + 7d)",
+      "positive": "Positive orders",
+      "zero": "$0 trial orders",
+      "quota": "Historical trial quota denials",
+      "quotaUsers": "{{users}} users · {{canceled}} subsequently canceled",
+      "renewalOff": "Renewal off, still trialing",
+      "timing": "Cancellation timing",
+      "during": "Canceled during trial",
+      "withinHour": "Canceled within 1 hour",
+      "hoursToCancel": "Average hours to cancel",
+      "observed": "Observed trial activity",
+      "users": "Trial users",
+      "started": "Started",
+      "ends": "Ends",
+      "canceled": "Canceled",
+      "hours": "Hours",
+      "tags": "Tags",
+      "chat": "Chat",
+      "days": "Days",
+      "lastSeen": "Last seen",
+      "activity": "Activity",
+      "status": {
+        "active": "Active",
+        "trialing": "In trial",
+        "past_due": "Past due",
+        "cancelled": "Canceled",
+        "expired": "Expired"
+      }
+    },
+    "blocked": {
+      "trialing": "Trialing",
+      "active": "Active",
+      "cancelActive": "Cancelled (Active)",
+      "grace": "Grace Period",
+      "graceExpired": "Grace Expired",
+      "trialUsed": "Trial Used",
+      "none": "No Subscription",
+      "total": "Total Users",
+      "subscribers": "Active Subscribers",
+      "onTrial": "On Trial",
+      "users": "Blocked Users",
+      "withoutSub": "Blocked Users (No Active Subscription)",
+      "withoutAccess": "Users who cannot access protected routes",
+      "empty": "No blocked users",
+      "joined": "Joined",
+      "paymentFailed": "Past Due (Payment Failed)",
+      "paymentNotice": "Users whose payment failed - they received an email to update their payment method",
+      "noFailures": "No users with failed payments",
+      "periodEnds": "Period ends",
+      "activeTrials": "Active Subscribers & Trialing Users",
+      "withAccess": "Users with access to protected routes",
+      "noActive": "No active subscribers",
+      "slots": "Account slots: {{count}}",
+      "graceEnds": "Grace period ends",
+      "graceEnded": "Grace period ended",
+      "noEmail": "No email",
+      "noDetails": "No subscription details",
+      "renews": "Renews"
+    },
+    "recovery": {
+      "title": "Payment Recovery",
+      "description": "Track payment failure recovery rates and resolution times",
+      "rate": "Recovery Rate",
+      "summary": "{{recovered}} of {{total}} users recovered their subscription",
+      "last30": "Last 30 Days",
+      "recovered": "Recovered",
+      "pending": "Still Pending",
+      "total": "Total Past Due",
+      "stillDue": "Still Past Due",
+      "mean": "Avg Recovery Time"
+    },
+    "events": {
+      "processed": "Processed",
+      "failed": "Failed",
+      "skipped": "Skipped",
+      "total24": "Total (24h)",
+      "processed24": "Processed (24h)",
+      "failed24": "Failed (24h)",
+      "skipped24": "Skipped (24h)",
+      "title": "Webhook Events",
+      "description": "Recent Polar webhook events and their processing status",
+      "empty": "No webhook events found",
+      "user": "• User:",
+      "id": "Event ID:",
+      "time": "Processed:",
+      "error": "Error:",
+      "payload": "Payload Summary:",
+      "week": "7-Day Summary",
+      "total": "Total Events"
+    },
+    "winback": {
+      "breakdown": "Activity Breakdown:",
+      "ai": "AI Requests",
+      "battles": "Battles Tracked",
+      "messages": "Chat Messages",
+      "linked": "Linked Accounts",
+      "days": "Active Days",
+      "totalScore": "Total Score",
+      "never": "Never",
+      "whenSent": "Activity at time of send:",
+      "off": "{{percent}}% off",
+      "manual": "Manual",
+      "configuration": "Campaign Configuration",
+      "setup": "Configure the promo code and discount for win-back emails. Create promo codes in",
+      "polar": "Polar Dashboard",
+      "code": "Promo Code",
+      "codeHint": "Enter the exact code you created in Polar",
+      "discountId": "Polar Discount ID",
+      "idHint": "The UUID from Polar Dashboard → Discounts → Click on discount → Copy the ID from the URL or details panel",
+      "required": "Required for automatic checkout discount",
+      "percent": "Discount Percentage",
+      "shown": "Shown in the email (must match Polar)",
+      "configured": "Configuration complete! Discount will be automatically applied at checkout when users click the email CTA.",
+      "eligible": "Eligible Users",
+      "eligibleHint": "Users who cancelled their trial and can receive a win-back email",
+      "sort": "Sort by:",
+      "activityScore": "Activity Score",
+      "activeOnly": "Active users only",
+      "counts": "Active users: {{active}} / {{total}}",
+      "canReceive": "Eligible recipients: {{count}}",
+      "sending": "Sending...",
+      "sendActive": "Send to active users ({{count}})",
+      "sendAll": "Send to eligible users ({{count}})",
+      "noActive": "No active users found",
+      "noActiveHint": "Try disabling the \"Active users only\" filter",
+      "noEligible": "No eligible users found",
+      "noEligibleHint": "Users will appear here after their trial ends",
+      "history": "Campaign History",
+      "historyHint": "Recent win-back emails sent by admins (with activity score at time of send)",
+      "emptyHistory": "No campaigns sent yet",
+      "confirm": "Send {{count}} win-back emails?",
+      "bulkDetails": "{{count}} eligible users who have received no win-back email in the last 30 days will receive code {{code}} for {{percent}}% off.",
+      "onlyActivity": "Only users with recorded activity will receive this email.",
+      "autoDiscount": "Discount will be automatically applied at checkout",
+      "sendEmails": "Send Emails",
+      "high": "Highly Active",
+      "low": "Low Activity",
+      "noActivity": "No Activity",
+      "trialEnded": "Trial Ended",
+      "lastSent": "Last Email Sent",
+      "actions": "Actions",
+      "date": "Date",
+      "recipient": "Recipient",
+      "discount": "Discount",
+      "autoApply": "Auto-Apply",
+      "needCode": "Enter a promo code to enable sending emails",
+      "needId": "Enter the Polar Discount ID (UUID) for automatic checkout application",
+      "invalidId": "Polar Discount ID must be a valid UUID",
+      "invalidPercent": "Discount must be between 1 and 100",
+      "sentOne": "Email sent to {{email}}",
+      "failedOne": "Could not send the email: {{error}}",
+      "sentSummary": "Sent: {{sent}} · Failed: {{failed}}",
+      "send": "Send"
     }
   },
   "oraclePage": {
@@ -2702,5 +3092,13 @@
     "title": "Your trial has ended",
     "description": "You can still view your last analysis. Subscribe to run new AI analyses.",
     "cta": "Subscribe again"
+  },
+  "charts": {
+    "noData": "No data available",
+    "noDataDescription": "Play a battle to see your statistics here."
+  },
+  "playerSelector": {
+    "addAccount": "Add account",
+    "accounts": "Accounts"
   }
 }

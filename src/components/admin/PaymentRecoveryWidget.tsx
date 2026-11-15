@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,6 +28,7 @@ interface RecoveryMetrics {
  * Tracks how many past_due users eventually paid and how long it took.
  */
 export function PaymentRecoveryWidget() {
+  const { t } = useTranslation();
   const { data: metrics, isLoading } = useQuery({
     queryKey: ['payment-recovery-metrics'],
     queryFn: async (): Promise<RecoveryMetrics> => {
@@ -169,28 +171,28 @@ export function PaymentRecoveryWidget() {
 
   const statItems = [
     {
-      label: 'Total Past Due',
+      label: t('admin.recovery.total'),
       value: metrics?.totalPastDue || 0,
       icon: AlertCircle,
       color: 'text-amber-500',
       bgColor: 'bg-amber-500/10',
     },
     {
-      label: 'Recovered',
+      label: t('admin.recovery.recovered'),
       value: metrics?.recovered || 0,
       icon: CheckCircle2,
       color: 'text-green-500',
       bgColor: 'bg-green-500/10',
     },
     {
-      label: 'Still Past Due',
+      label: t('admin.recovery.stillDue'),
       value: metrics?.stillPastDue || 0,
       icon: CreditCard,
       color: 'text-red-500',
       bgColor: 'bg-red-500/10',
     },
     {
-      label: 'Avg Recovery Time',
+      label: t('admin.recovery.mean'),
       value: formatTime(metrics?.avgRecoveryTimeHours ?? null),
       icon: Clock,
       color: 'text-blue-500',
@@ -204,17 +206,17 @@ export function PaymentRecoveryWidget() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <RefreshCw className="h-5 w-5 text-amber-500" />
-          Payment Recovery
+          {t('admin.recovery.title')}
         </CardTitle>
         <CardDescription>
-          Track payment failure recovery rates and resolution times
+          {t('admin.recovery.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Recovery Rate Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Recovery Rate</span>
+            <span className="text-sm font-medium">{t('admin.recovery.rate')}</span>
             <span className="text-sm font-bold text-green-500">
               {(metrics?.recoveryRate || 0).toFixed(1)}%
             </span>
@@ -224,7 +226,7 @@ export function PaymentRecoveryWidget() {
             className="h-2"
           />
           <p className="text-xs text-muted-foreground">
-            {metrics?.recovered || 0} of {metrics?.totalPastDue || 0} users recovered their subscription
+            {t('admin.recovery.summary', { recovered: metrics?.recovered || 0, total: metrics?.totalPastDue || 0 })}
           </p>
         </div>
 
@@ -250,20 +252,20 @@ export function PaymentRecoveryWidget() {
         <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Last 30 Days</span>
+            <span className="text-sm font-medium">{t('admin.recovery.last30')}</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="text-2xl font-bold text-green-500">
                 {metrics?.last30DaysRecovered || 0}
               </div>
-              <p className="text-xs text-muted-foreground">Recovered</p>
+              <p className="text-xs text-muted-foreground">{t('admin.recovery.recovered')}</p>
             </div>
             <div>
               <div className="text-2xl font-bold text-red-500">
                 {metrics?.last30DaysFailed || 0}
               </div>
-              <p className="text-xs text-muted-foreground">Still Pending</p>
+              <p className="text-xs text-muted-foreground">{t('admin.recovery.pending')}</p>
             </div>
           </div>
         </div>

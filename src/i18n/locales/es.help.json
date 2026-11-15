@@ -384,7 +384,11 @@
       "q5": "¿Están seguros mis datos?",
       "a5": "Sí. Solo accedemos a datos públicos disponibles de la API de Clash Royale. Tu contraseña del juego nunca se comparte con nosotros.",
       "q6": "¿Cómo me desvinculo de una cuenta?",
-      "a6": "Ve a la pantalla de Selección de Jugador y haz clic en el botón de eliminar junto a la cuenta que deseas desvincular."
+      "a6": "Ve a la pantalla de Selección de Jugador y haz clic en el botón de eliminar junto a la cuenta que deseas desvincular.",
+      "q7": "¿Cómo cambio mi correo o mi contraseña?",
+      "a7": "Puedes gestionar tu cuenta desde el sistema de acceso. Si necesitas cambiar el correo, contacta con soporte.",
+      "q8": "¿Están seguros mis datos?",
+      "a8": "Usamos cifrado estándar y nunca guardamos tus credenciales de Clash Royale. Solo accedemos a datos públicos mediante tu etiqueta de jugador."
     }
   }
 }

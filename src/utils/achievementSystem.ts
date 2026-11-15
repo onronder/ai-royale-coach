@@ -1,3 +1,4 @@
+import type { TFunction } from 'i18next';
 import type { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
 export type AchievementRarity = 'Common' | 'Rare' | 'Epic' | 'Legendary';
@@ -39,7 +40,7 @@ function lostTower(battle: ClashRoyaleBattle): boolean {
  * Check for Elixir Master achievement
  * Win with high elixir deck (> 4.0) without losing any towers
  */
-function checkElixirMaster(battle: ClashRoyaleBattle, index: number): Achievement | null {
+function checkElixirMaster(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
   
   const teamCards = battle.team?.[0]?.cards ?? [];
@@ -50,9 +51,9 @@ function checkElixirMaster(battle: ClashRoyaleBattle, index: number): Achievemen
   if (avgElixir > 4.0 && opponentCrowns === 0) {
     return {
       id: 'elixir-master',
-      title: '⚡ Elixir Master',
+      title: t('achievementShowcase.achievements.elixirMaster.title'),
       icon: 'Zap',
-      description: 'You dominated with a heavy deck and kept all your towers safe!',
+      description: t('achievementShowcase.achievements.elixirMaster.earned'),
       rarity: 'Rare',
       matchIndex: index,
     };
@@ -64,16 +65,16 @@ function checkElixirMaster(battle: ClashRoyaleBattle, index: number): Achievemen
  * Check for Comeback King achievement
  * Won a match after losing a tower first (opponent scored first but you won)
  */
-function checkComebackKing(battle: ClashRoyaleBattle, index: number): Achievement | null {
+function checkComebackKing(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
   
   // If opponent got at least 1 crown but we still won
   if (lostTower(battle)) {
     return {
       id: 'comeback-king',
-      title: '👑 Comeback King',
+      title: t('achievementShowcase.achievements.comebackKing.title'),
       icon: 'Crown',
-      description: 'Never give up! You turned the battle around like a true champion!',
+      description: t('achievementShowcase.achievements.comebackKing.earned'),
       rarity: 'Epic',
       matchIndex: index,
     };
@@ -85,7 +86,7 @@ function checkComebackKing(battle: ClashRoyaleBattle, index: number): Achievemen
  * Check for Perfect Defense achievement
  * Won a match with 0 crowns lost (perfect defense)
  */
-function checkPerfectDefense(battle: ClashRoyaleBattle, index: number): Achievement | null {
+function checkPerfectDefense(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
   
   const opponentCrowns = battle.opponent?.[0]?.crowns ?? 0;
@@ -93,9 +94,9 @@ function checkPerfectDefense(battle: ClashRoyaleBattle, index: number): Achievem
   if (opponentCrowns === 0) {
     return {
       id: 'perfect-defense',
-      title: '🛡️ Perfect Defense',
+      title: t('achievementShowcase.achievements.perfectDefense.title'),
       icon: 'Shield',
-      description: 'You defended your towers like a pro! Not a single crown lost!',
+      description: t('achievementShowcase.achievements.perfectDefense.earned'),
       rarity: 'Rare',
       matchIndex: index,
     };
@@ -107,7 +108,7 @@ function checkPerfectDefense(battle: ClashRoyaleBattle, index: number): Achievem
  * Check for Win Streak Warrior achievement
  * Won 3+ games in a row
  */
-function checkWinStreakWarrior(battles: ClashRoyaleBattle[]): Achievement | null {
+function checkWinStreakWarrior(battles: ClashRoyaleBattle[], t: TFunction): Achievement | null {
   let currentStreak = 0;
   let maxStreak = 0;
   
@@ -124,12 +125,11 @@ function checkWinStreakWarrior(battles: ClashRoyaleBattle[]): Achievement | null
   }
   
   if (maxStreak >= 3) {
-    const streakText = maxStreak >= 5 ? 'an incredible' : maxStreak >= 4 ? 'an amazing' : 'a';
     return {
       id: 'win-streak-warrior',
-      title: '🔥 Win Streak Warrior',
+      title: t('achievementShowcase.achievements.winStreakWarrior.title'),
       icon: 'Flame',
-      description: `You're on fire! ${streakText} ${maxStreak}-win streak shows your skills!`,
+      description: t('achievementShowcase.wonStreak', { count: maxStreak }),
       rarity: maxStreak >= 5 ? 'Legendary' : maxStreak >= 4 ? 'Epic' : 'Rare',
     };
   }
@@ -140,7 +140,7 @@ function checkWinStreakWarrior(battles: ClashRoyaleBattle[]): Achievement | null
  * Check for Underdog achievement
  * Beat an opponent with higher Trophy count
  */
-function checkUnderdog(battle: ClashRoyaleBattle, index: number): Achievement | null {
+function checkUnderdog(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
   
   const teamTrophies = battle.team?.[0]?.startingTrophies ?? 0;
@@ -153,11 +153,9 @@ function checkUnderdog(battle: ClashRoyaleBattle, index: number): Achievement | 
     
     return {
       id: 'underdog',
-      title: isHuge ? '🌟 Giant Slayer' : '💪 Underdog',
+      title: isHuge ? t('achievementShowcase.giantSlayer') : t('achievementShowcase.achievements.underdog.title'),
       icon: isHuge ? 'Star' : 'TrendingUp',
-      description: isHuge 
-        ? `Incredible! You defeated someone ${difference} trophies above you!`
-        : `You proved skill beats trophies! Beat someone ${difference} trophies higher!`,
+      description: t('achievementShowcase.wonAgainstOdds', { count: difference }),
       rarity: isHuge ? 'Legendary' : 'Epic',
       matchIndex: index,
     };
@@ -169,15 +167,15 @@ function checkUnderdog(battle: ClashRoyaleBattle, index: number): Achievement | 
  * Check for Three Crown Master
  * Got a 3-crown victory
  */
-function checkThreeCrownMaster(battle: ClashRoyaleBattle, index: number): Achievement | null {
+function checkThreeCrownMaster(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   const teamCrowns = battle.team?.[0]?.crowns ?? 0;
   
   if (teamCrowns === 3) {
     return {
       id: 'three-crown-master',
-      title: '🏆 Three Crown Master',
+      title: t('achievementShowcase.achievements.threeCrownMaster.title'),
       icon: 'Trophy',
-      description: 'Total domination! You took all three crowns!',
+      description: t('achievementShowcase.achievements.threeCrownMaster.earned'),
       rarity: 'Common',
       matchIndex: index,
     };
@@ -189,17 +187,17 @@ function checkThreeCrownMaster(battle: ClashRoyaleBattle, index: number): Achiev
  * Main function to check all achievements from battle history
  * Returns unique achievements (no duplicates by id)
  */
-export function checkAchievements(battles: ClashRoyaleBattle[]): Achievement[] {
+export function checkAchievements(battles: ClashRoyaleBattle[], t: TFunction): Achievement[] {
   const achievementsMap = new Map<string, Achievement>();
   
   // Check per-battle achievements
   battles.forEach((battle, index) => {
     const perBattleChecks = [
-      checkElixirMaster(battle, index),
-      checkComebackKing(battle, index),
-      checkPerfectDefense(battle, index),
-      checkUnderdog(battle, index),
-      checkThreeCrownMaster(battle, index),
+      checkElixirMaster(battle, index, t),
+      checkComebackKing(battle, index, t),
+      checkPerfectDefense(battle, index, t),
+      checkUnderdog(battle, index, t),
+      checkThreeCrownMaster(battle, index, t),
     ];
     
     perBattleChecks.forEach(achievement => {
@@ -210,7 +208,7 @@ export function checkAchievements(battles: ClashRoyaleBattle[]): Achievement[] {
   });
   
   // Check streak-based achievements
-  const streakAchievement = checkWinStreakWarrior(battles);
+  const streakAchievement = checkWinStreakWarrior(battles, t);
   if (streakAchievement && !achievementsMap.has(streakAchievement.id)) {
     achievementsMap.set(streakAchievement.id, streakAchievement);
   }

@@ -121,7 +121,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
             <div className="flex items-center justify-between mb-2">
               <GraduationCap className="h-8 w-8 text-success" />
               <span className="text-2xl font-bold font-rajdhani text-success capitalize">
-                {progress?.learning_phase || t('achievements.beginner')}
+                {t('achievements.' + (progress?.learning_phase || 'beginner'))}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">{t('achievements.learningPhase')}</p>
@@ -211,11 +211,11 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               <Icon className="h-6 w-6" style={{ color: tierInfo.color }} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-rajdhani font-bold text-foreground">{ach.name}</h4>
-                              <p className="text-xs text-muted-foreground mt-1">{ach.description}</p>
+                              <h4 className="font-rajdhani font-bold text-foreground">{t('achievements.catalog.' + ach.name + '.title', { defaultValue: ach.name })}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">{t('achievements.catalog.' + ach.name + '.description', { defaultValue: ach.description })}</p>
                               <div className="flex items-center gap-2 mt-3">
                                 <Badge variant="outline" style={{ borderColor: tierInfo.color, color: tierInfo.color }}>
-                                  {ach.tier.toUpperCase()}
+                                  {t('mastery.tiers.' + ach.tier)}
                                 </Badge>
                                 <Badge variant="outline" className="text-primary border-primary/30">
                                   +{ach.points} {t('achievements.pts')}
@@ -254,8 +254,8 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               <Icon className="h-6 w-6 text-muted-foreground" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-rajdhani font-bold text-foreground">{ach.name}</h4>
-                              <p className="text-xs text-muted-foreground mt-1">{ach.description}</p>
+                              <h4 className="font-rajdhani font-bold text-foreground">{t('achievements.catalog.' + ach.name + '.title', { defaultValue: ach.name })}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">{t('achievements.catalog.' + ach.name + '.description', { defaultValue: ach.description })}</p>
                               <div className="mt-3">
                                 <div className="flex items-center justify-between mb-1">
                                   <span className="text-xs text-muted-foreground">{t('achievements.progress')}</span>
@@ -265,7 +265,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               </div>
                               <div className="flex items-center gap-2 mt-3">
                                 <Badge variant="outline" className="text-muted-foreground border-muted/30">
-                                  {ach.tier.toUpperCase()}
+                                  {t('mastery.tiers.' + ach.tier)}
                                 </Badge>
                                 <Badge variant="outline" className="text-muted-foreground border-muted/30">
                                   {ach.points} {t('achievements.pts')}
@@ -310,8 +310,8 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-rajdhani font-bold text-foreground">{ach.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">{ach.description}</p>
+                          <h4 className="font-rajdhani font-bold text-foreground">{t('achievements.catalog.' + ach.name + '.title', { defaultValue: ach.name })}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{t('achievements.catalog.' + ach.name + '.description', { defaultValue: ach.description })}</p>
                           
                           {!isUnlocked && (
                             <div className="mt-3">
@@ -329,7 +329,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
                               className={isUnlocked ? tierInfo.text : 'text-muted-foreground border-muted/30'}
                               style={isUnlocked ? { borderColor: tierInfo.color } : undefined}
                             >
-                              {ach.tier.toUpperCase()}
+                              {t('mastery.tiers.' + ach.tier)}
                             </Badge>
                             <Badge 
                               variant="outline" 

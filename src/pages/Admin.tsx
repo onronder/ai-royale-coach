@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,6 +20,7 @@ import { Navbar } from '@/components/layout/Navbar';
  * Only accessible to users with admin roles.
  */
 export default function Admin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAdmin, isModerator, isLoading, isAuthenticated, user } = useAdminAccess();
 
@@ -42,7 +44,7 @@ export default function Admin() {
         <div className="container mx-auto px-4 py-8">
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground">
-              Checking admin access...
+              {t('admin.navigation.checking')}
             </CardContent>
           </Card>
         </div>
@@ -62,46 +64,46 @@ export default function Admin() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <Shield className="h-8 w-8" />
-            Admin Dashboard
+            {t('admin.navigation.title')}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Fraud detection and user management
+            {t('admin.navigation.subtitle')}
           </p>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8 [&>button]:min-h-11">
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:text-center [&_svg]:shrink-0">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
-              Overview
+              {t('dashboard.subtabs.overview')}
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Users
+              {t('admin.navigation.users')}
             </TabsTrigger>
             <TabsTrigger value="cases" className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
-              Fraud Cases
+              {t('admin.fraudCases.title')}
             </TabsTrigger>
             <TabsTrigger value="lookup" className="flex items-center gap-2">
               <Search className="h-4 w-4" />
-              User Lookup
+              {t('admin.userLookup.title')}
             </TabsTrigger>
             <TabsTrigger value="trials" className="flex items-center gap-2">
               <FlaskConical className="h-4 w-4" />
-              Trials
+              {t('admin.navigation.trials')}
             </TabsTrigger>
             <TabsTrigger value="winback" className="flex items-center gap-2">
               <Gift className="h-4 w-4" />
-              Win-back
+              {t('admin.navigation.winback')}
             </TabsTrigger>
             <TabsTrigger value="webhooks" className="flex items-center gap-2">
               <Webhook className="h-4 w-4" />
-              Webhooks
+              {t('admin.navigation.webhooks')}
             </TabsTrigger>
             <TabsTrigger value="metrics" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              API Metrics
+              {t('admin.apiMetrics.title')}
             </TabsTrigger>
           </TabsList>
 

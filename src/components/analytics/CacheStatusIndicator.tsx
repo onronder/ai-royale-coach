@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RefreshCw, Database, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { enUS, tr as trLocale, es, ptBR, fr } from "date-fns/locale";
+import { getDateLocale } from "@/i18n/dateLocale";
 import { supabase } from "@/integrations/supabase/client";
 
 interface CacheStatus {
@@ -22,15 +22,7 @@ interface CacheStatusIndicatorProps {
   isRefreshing?: boolean;
 }
 
-const getDateLocale = (lang: string) => {
-  switch (lang) {
-    case 'tr': return trLocale;
-    case 'es': return es;
-    case 'pt': return ptBR;
-    case 'fr': return fr;
-    default: return enUS;
-  }
-};
+
 
 export function CacheStatusIndicator({ 
   playerTag, 
