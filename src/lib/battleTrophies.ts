@@ -17,3 +17,11 @@ export function withRecentLadderTrophies<T extends { tag: string; trophies: numb
   });
   return withBattleTrophies(player, latestLadderTrophies(player.tag, recent) ?? undefined);
 }
+
+/** Only a ladder log with both totals can place a point on the trophy chart. */
+export function ladderTrophyHistory<T extends Battle>(tag: string, battles: T[]) {
+  return battles.flatMap(battle => {
+    const snapshot = latestLadderTrophies(tag, [battle]);
+    return snapshot ? [{ battle, time: battleTimestamp(battle.battleTime), ...snapshot }] : [];
+  }).sort((a, b) => a.time - b.time);
+}

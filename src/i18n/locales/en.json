@@ -99,6 +99,8 @@
     "notHelpful": "Not helpful"
   },
   "nav": {
+    "lightTheme": "Switch to light mode",
+    "darkTheme": "Switch to dark mode",
     "signIn": "Sign In",
     "getStarted": "Get Started",
     "signOut": "Sign Out",
@@ -1176,6 +1178,7 @@
       "tournaments": "Tournaments"
     },
     "header": {
+      "controlPanel": "Control panel",
       "winRate": "WR"
     },
     "aiCoach": {
@@ -1420,6 +1423,10 @@
     "proBadgeTooltip": "This account has full AI access with your subscription"
   },
   "settings": {
+    "whatsNew": {
+      "description": "See the latest features and updates.",
+      "button": "Show What’s New"
+    },
     "title": "Account Settings",
     "subtitle": "Manage your account and subscription",
     "back": "Back",
@@ -1536,7 +1543,7 @@
     "stats": {
       "trophies": "Your current trophy count. Gain trophies by winning battles and climb the ranks!",
       "bestTrophies": "The highest trophy count you've ever achieved. This shows your peak performance.",
-      "winRate": "Percentage of battles won out of your last 25 matches. Aim for 50% or higher!",
+      "winRate": "Wins divided by the number of recent matches in your battle log.",
       "arena": "Your current competitive arena based on trophy count. Higher arenas unlock better rewards.",
       "avgElixir": "Average elixir cost of your deck. Lower is faster, higher is more powerful. Aim for 3.0-4.0.",
       "crowns": "Tower crowns destroyed in a match. Get 3 crowns for complete domination!",
@@ -1696,6 +1703,10 @@
     "languageChanged": "Language changed. Click predict to get analysis in your new language."
   },
   "achievements": {
+    "share": "Share trophy case",
+    "shared": "Trophy case shared",
+    "downloaded": "Trophy case saved",
+    "shareFailed": "Could not share the trophy case",
     "title": "Achievements",
     "subtitle": "Your battle accomplishments",
     "description": "Track your mastery journey and unlock rewards",

@@ -104,6 +104,8 @@
     "notHelpful": "Não útil"
   },
   "nav": {
+    "lightTheme": "Usar tema claro",
+    "darkTheme": "Usar tema escuro",
     "signIn": "Entrar",
     "getStarted": "Começar",
     "signOut": "Sair",
@@ -1187,6 +1189,7 @@
       "tournaments": "Torneios"
     },
     "header": {
+      "controlPanel": "Painel de controle",
       "winRate": "VR"
     },
     "aiCoach": {
@@ -1452,6 +1455,10 @@
     "proBadgeTooltip": "Esta conta tem acesso completo à IA com sua assinatura"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Veja os recursos e atualizações recentes.",
+      "button": "Ver novidades"
+    },
     "title": "Configurações da Conta",
     "subtitle": "Gerencie sua conta e assinatura",
     "back": "Voltar",
@@ -1568,7 +1575,7 @@
     "stats": {
       "trophies": "Sua contagem atual de troféus. Ganhe troféus vencendo batalhas e suba no ranking!",
       "bestTrophies": "A maior contagem de troféus que você já alcançou. Mostra seu desempenho máximo.",
-      "winRate": "Porcentagem de batalhas vencidas das suas últimas 25 partidas. Mire em 50% ou mais!",
+      "winRate": "O número de vitórias é dividido pelo número de partidas recentes no histórico.",
       "arena": "Sua arena competitiva atual baseada em troféus. Arenas mais altas desbloqueiam melhores recompensas.",
       "avgElixir": "Custo médio de elixir do seu deck. Menor é mais rápido, maior é mais poderoso. Mire em 3.0-4.0.",
       "crowns": "Coroas de torre destruídas em uma partida. Consiga 3 coroas para dominação total!",
@@ -1891,6 +1898,10 @@
     }
   },
   "achievements": {
+    "share": "Compartilhar troféus",
+    "shared": "Vitrine compartilhada",
+    "downloaded": "Vitrine salva",
+    "shareFailed": "Não foi possível compartilhar a vitrine",
     "title": "Conquistas",
     "subtitle": "Suas conquistas de batalha",
     "description": "Acompanhe sua jornada de maestria e desbloqueie recompensas",

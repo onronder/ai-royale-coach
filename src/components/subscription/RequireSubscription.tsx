@@ -14,7 +14,7 @@ interface RequireSubscriptionProps {
 
 export function RequireSubscription({ children, allowReadOnlyAfterTrial = false }: RequireSubscriptionProps) {
   const navigate = useNavigate();
-  const { hasAccess, isLoading, subscriptionStatus } = useSubscription();
+  const { hasAccess, isLoading, subscriptionStatus, hasUsedTrial } = useSubscription();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   
   useEffect(() => {
@@ -62,5 +62,5 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
   }
 
   // Authenticated but no access - show paywall
-  return <TrialExpiredPage />;
+  return <TrialExpiredPage canStartTrial={!hasUsedTrial && !subscriptionStatus} />;
 }

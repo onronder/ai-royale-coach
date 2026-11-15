@@ -223,7 +223,7 @@ const Settings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Megaphone className="h-5 w-5 text-primary" />
-                {t('settings.whatsNew.title', "What's New")}
+                {t('whatsNew.title')}
               </CardTitle>
               <CardDescription>
                 {t('settings.whatsNew.description', "View the latest features and updates")}

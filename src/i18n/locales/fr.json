@@ -104,6 +104,8 @@
     "notHelpful": "Pas utile"
   },
   "nav": {
+    "lightTheme": "Activer le thème clair",
+    "darkTheme": "Activer le thème sombre",
     "signIn": "Connexion",
     "getStarted": "Commencer",
     "signOut": "Déconnexion",
@@ -1187,6 +1189,7 @@
       "tournaments": "Tournois"
     },
     "header": {
+      "controlPanel": "Panneau de contrôle",
       "winRate": "VR"
     },
     "aiCoach": {
@@ -1452,6 +1455,10 @@
     "proBadgeTooltip": "Ce compte a un accès IA complet avec votre abonnement"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Découvrez les dernières fonctionnalités et mises à jour.",
+      "button": "Voir les nouveautés"
+    },
     "title": "Paramètres du Compte",
     "subtitle": "Gérez votre compte et votre abonnement",
     "back": "Retour",
@@ -1568,7 +1575,7 @@
     "stats": {
       "trophies": "Votre nombre actuel de trophées. Gagnez des trophées en remportant des batailles et montez dans le classement !",
       "bestTrophies": "Le plus grand nombre de trophées que vous avez atteint. Cela montre votre meilleure performance.",
-      "winRate": "Pourcentage de batailles gagnées sur vos 25 derniers matchs. Visez 50% ou plus !",
+      "winRate": "Le taux de victoire correspond aux victoires divisées par le nombre de matchs récents dans votre historique.",
       "arena": "Votre arène compétitive actuelle basée sur les trophées. Les arènes supérieures débloquent de meilleures récompenses.",
       "avgElixir": "Coût moyen en élixir de votre deck. Plus bas est plus rapide, plus haut est plus puissant. Visez 3.0-4.0.",
       "crowns": "Couronnes de tour détruites dans un match. Obtenez 3 couronnes pour une domination totale !",
@@ -1891,6 +1898,10 @@
     }
   },
   "achievements": {
+    "share": "Partager mes trophées",
+    "shared": "Vitrine partagée",
+    "downloaded": "Vitrine enregistrée",
+    "shareFailed": "Impossible de partager la vitrine",
     "title": "Succès",
     "subtitle": "Vos accomplissements de combat",
     "description": "Suivez votre parcours de maîtrise et débloquez des récompenses",

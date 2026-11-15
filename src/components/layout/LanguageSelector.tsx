@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { languages } from '@/i18n';
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
@@ -24,6 +24,7 @@ export function LanguageSelector() {
         <Button 
           variant="ghost" 
           size="sm" 
+          aria-label={t("settings.preferences.language")}
           className="gap-2 text-foreground/80 hover:text-foreground hover:bg-primary/10"
         >
           <Globe className="h-4 w-4" />

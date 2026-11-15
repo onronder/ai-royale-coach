@@ -104,6 +104,8 @@
     "notHelpful": "No útil"
   },
   "nav": {
+    "lightTheme": "Activar tema claro",
+    "darkTheme": "Activar tema oscuro",
     "signIn": "Iniciar Sesión",
     "getStarted": "Comenzar",
     "signOut": "Cerrar Sesión",
@@ -1187,6 +1189,7 @@
       "tournaments": "Torneos"
     },
     "header": {
+      "controlPanel": "Panel de control",
       "winRate": "VR"
     },
     "aiCoach": {
@@ -1452,6 +1455,10 @@
     "proBadgeTooltip": "Esta cuenta tiene acceso completo a IA con tu suscripción"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Consulta las últimas funciones y actualizaciones.",
+      "button": "Ver novedades"
+    },
     "title": "Configuración de Cuenta",
     "subtitle": "Administra tu cuenta y suscripción",
     "back": "Atrás",
@@ -1568,7 +1575,7 @@
     "stats": {
       "trophies": "Tu conteo actual de trofeos. ¡Gana trofeos ganando batallas y sube en los rankings!",
       "bestTrophies": "El conteo más alto de trofeos que has alcanzado. Muestra tu máximo rendimiento.",
-      "winRate": "Porcentaje de batallas ganadas de tus últimas 25 partidas. ¡Apunta al 50% o más!",
+      "winRate": "Las victorias se dividen entre el número de partidas recientes de tu historial.",
       "arena": "Tu arena competitiva actual basada en trofeos. Arenas más altas desbloquean mejores recompensas.",
       "avgElixir": "Costo promedio de elixir de tu mazo. Menor es más rápido, mayor es más poderoso. Apunta a 3.0-4.0.",
       "crowns": "Coronas de torre destruidas en una partida. ¡Consigue 3 coronas para dominación total!",
@@ -1891,6 +1898,10 @@
     }
   },
   "achievements": {
+    "share": "Compartir mis trofeos",
+    "shared": "Vitrina compartida",
+    "downloaded": "Vitrina guardada",
+    "shareFailed": "No se pudo compartir la vitrina",
     "title": "Logros",
     "subtitle": "Tus logros de batalla",
     "description": "Rastrea tu camino de maestría y desbloquea recompensas",

@@ -5,19 +5,9 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { XAxis, YAxis, ReferenceLine, Area, AreaChart } from "recharts";
 import { Trophy, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
-import { format } from "date-fns";
-import { parseClashRoyaleDate } from "@/lib/utils";
+import { ladderTrophyHistory } from "@/lib/battleTrophies";
 import { ChartSkeleton } from "@/components/ui/chart-skeleton";
 import { ChartEmptyState } from "@/components/ui/chart-empty-state";
-
-function formatBattleDate(battleTime: string): string {
-  try {
-    const date = parseClashRoyaleDate(battleTime);
-    return format(date, 'MMM d, HH:mm');
-  } catch {
-    return 'Unknown';
-  }
-}
 
 interface TrophyProgressChartProps {
   battles: ClashRoyaleBattle[] | null;
@@ -34,87 +24,26 @@ export function TrophyProgressChart({
   bestTrophies = 0,
   isLoading = false
 }: TrophyProgressChartProps) {
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation();
   const chartData = useMemo(() => {
-    if (!battles || battles.length === 0) return [];
-
-    const normalizedTag = playerTag?.startsWith('#') ? playerTag : `#${playerTag}`;
-    
-    // Sort battles by time (oldest first)
-    const sortedBattles = [...battles].sort(
-      (a, b) => parseClashRoyaleDate(a.battleTime).getTime() - parseClashRoyaleDate(b.battleTime).getTime()
-    );
-
-    // Calculate trophy progression based on battle results
-    let runningTrophies = currentTrophies;
-    
-    // Work backwards from current trophies
-    const trophyChanges: { battle: ClashRoyaleBattle; change: number }[] = [];
-    
-    for (let i = sortedBattles.length - 1; i >= 0; i--) {
-      const battle = sortedBattles[i];
-      const playerTeam = battle.team.find(p => p.tag === normalizedTag);
-      const opponentCrowns = battle.opponent[0]?.crowns || 0;
-      const playerCrowns = playerTeam?.crowns || 0;
-      
-      // Estimate trophy change based on battle type and result
-      let change = 0;
-      if (battle.type === 'pathOfLegend' || battle.type === 'ranked') {
-        if (playerCrowns > opponentCrowns) change = 30;
-        else if (playerCrowns < opponentCrowns) change = -30;
-      } else if (battle.type === 'PvP') {
-        if (playerCrowns > opponentCrowns) change = 25;
-        else if (playerCrowns < opponentCrowns) change = -25;
-      }
-      
-      trophyChanges.unshift({ battle, change });
-    }
-
-    // Now build the chart data forward
-    let trophies = currentTrophies;
-    // First, subtract all changes to get starting point
-    for (const { change } of trophyChanges) {
-      trophies -= change;
-    }
-
-    const data = trophyChanges.map(({ battle, change }, index) => {
-      trophies += change;
-      const playerTeam = battle.team.find(p => p.tag === normalizedTag);
-      const opponentCrowns = battle.opponent[0]?.crowns || 0;
-      const playerCrowns = playerTeam?.crowns || 0;
-      const isWin = playerCrowns > opponentCrowns;
-      const isDraw = playerCrowns === opponentCrowns;
-
+    const dateFormat = new Intl.DateTimeFormat(i18n.language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return ladderTrophyHistory(playerTag, battles ?? []).map(({ battle, time, before, after }, index) => {
+      const player = battle.team[0];
+      const opponent = battle.opponent[0];
       return {
         index: index + 1,
-        trophies: Math.max(0, trophies),
-        date: formatBattleDate(battle.battleTime),
-        result: isWin ? 'win' : isDraw ? 'draw' : 'loss',
-        change: change > 0 ? `+${change}` : change === 0 ? '0' : `${change}`,
-        opponent: battle.opponent[0]?.name || 'Unknown',
-        crowns: `${playerCrowns} - ${opponentCrowns}`,
+        trophies: after,
+        date: dateFormat.format(time),
+        result: player.crowns > opponent.crowns ? 'win' : player.crowns < opponent.crowns ? 'loss' : 'draw',
+        change: after - before,
+        opponent: opponent.name,
+        crowns: `${player.crowns} - ${opponent.crowns}`,
       };
     });
+  }, [battles, playerTag, i18n.language]);
 
-    return data;
-  }, [battles, playerTag, currentTrophies]);
-
-  const trophyTrend = useMemo(() => {
-    if (chartData.length < 2) return 'neutral';
-    const first = chartData[0]?.trophies || 0;
-    const last = chartData[chartData.length - 1]?.trophies || 0;
-    if (last > first) return 'up';
-    if (last < first) return 'down';
-    return 'neutral';
-  }, [chartData]);
-
-  const trophyChange = useMemo(() => {
-    if (chartData.length < 2) return 0;
-    const first = chartData[0]?.trophies || 0;
-    const last = chartData[chartData.length - 1]?.trophies || 0;
-    return last - first;
-  }, [chartData]);
+  const trophyChange = chartData.reduce((total, match) => total + match.change, 0);
+  const trophyTrend = trophyChange > 0 ? 'up' : trophyChange < 0 ? 'down' : 'neutral';
 
   const chartConfig = {
     trophies: {
@@ -250,7 +179,7 @@ export function TrophyProgressChart({
                           data.result === 'win' ? 'text-success' : 
                           data.result === 'loss' ? 'text-destructive' : 'text-muted-foreground'
                         }`}>
-                          {getResultLabel(data.result)} ({data.change}) vs {data.opponent}
+                          {getResultLabel(data.result)} ({data.change > 0 ? "+" : ""}{data.change}) vs {data.opponent}
                         </p>
                         <p className="text-xs">{t('dashboard.trophyProgress.crowns')}: {data.crowns}</p>
                       </div>

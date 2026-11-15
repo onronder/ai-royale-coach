@@ -1,10 +1,12 @@
 import { Moon, Sun, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { t } = useTranslation();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch
@@ -32,7 +34,7 @@ export function ThemeToggle() {
           ? "bg-card/50 border-border/50 hover:border-gold/50 hover:bg-card" 
           : "bg-primary/10 border-primary/30 hover:border-primary/50 hover:bg-primary/20"
       )}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={t(isDark ? "nav.lightTheme" : "nav.darkTheme")}
     >
       {/* Background glow effect */}
       <div className={cn(

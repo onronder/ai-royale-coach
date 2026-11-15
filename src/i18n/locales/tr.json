@@ -102,6 +102,8 @@
     "notHelpful": "Yardımcı değil"
   },
   "nav": {
+    "lightTheme": "Açık temaya geç",
+    "darkTheme": "Koyu temaya geç",
     "signIn": "Giriş Yap",
     "getStarted": "Başla",
     "signOut": "Çıkış Yap",
@@ -1185,6 +1187,7 @@
       "tournaments": "Turnuvalar"
     },
     "header": {
+      "controlPanel": "Kontrol paneli",
       "winRate": "KO"
     },
     "aiCoach": {
@@ -1450,6 +1453,10 @@
     "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zeka erişimine sahip"
   },
   "settings": {
+    "whatsNew": {
+      "description": "Son özellikleri ve güncellemeleri görüntüle.",
+      "button": "Yenilikleri göster"
+    },
     "title": "Hesap Ayarları",
     "subtitle": "Hesabınızı ve aboneliğinizi yönetin",
     "back": "Geri",
@@ -1566,7 +1573,7 @@
     "stats": {
       "trophies": "Mevcut kupa sayınız. Maç kazanarak kupalar kazanın ve sıralamalarda yükselin!",
       "bestTrophies": "Şimdiye kadar ulaştığınız en yüksek kupa sayısı. En iyi performansınızı gösterir.",
-      "winRate": "Son 25 maçtan kazandıklarınızın yüzdesi. %50 veya üzerini hedefleyin!",
+      "winRate": "Galibiyet sayısı, maç geçmişindeki toplam maç sayısına bölünür.",
       "arena": "Kupa sayınıza göre mevcut rekabet arenanız. Daha yüksek arenalar daha iyi ödüller açar.",
       "avgElixir": "Destenizin ortalama iksir maliyeti. Düşük daha hızlı, yüksek daha güçlüdür. 3.0-4.0 hedefleyin.",
       "crowns": "Bir maçta yıkılan kule kuleleri. 3 taç alarak tam hakimiyet sağlayın!",
@@ -1889,6 +1896,10 @@
     }
   },
   "achievements": {
+    "share": "Kupa vitrinini paylaş",
+    "shared": "Kupa vitrini paylaşıldı",
+    "downloaded": "Kupa vitrini kaydedildi",
+    "shareFailed": "Kupa vitrini paylaşılamadı",
     "title": "Başarılar",
     "subtitle": "Savaş başarıların",
     "description": "Ustalık yolculuğunuzu takip edin ve ödüllerin kilidini açın",

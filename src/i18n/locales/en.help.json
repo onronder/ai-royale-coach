@@ -16,6 +16,7 @@
       "needMoreHelp": "If you need strategy advice or personalized coaching about gameplay, feel free to ask!",
       "answeredFromHelp": "Answered from Help Center (no AI quota used)"
     },
+    "statsChartDescription": "Compare your trophy count across recent matches.",
     "sections": {
       "gettingStarted": "Getting Started",
       "dashboard": "Dashboard",
@@ -91,7 +92,7 @@
       "sync": {
         "title": "Data Sync & Refresh",
         "intro": "Your data syncs automatically when you open the dashboard. You can manually refresh using the sync indicator in the header.",
-        "note": "Note: Clash Royale API has a 5-15 minute delay. Recent in-game changes may not appear immediately."
+        "note": "New matches can take a little time to appear. Refresh after the game ends."
       }
     },
     "matches": {
@@ -341,11 +342,6 @@
         "title": "Proactive Suggestions",
         "intro": "When your win rate drops below 55%, the AI Coach will proactively suggest deck changes. Look for the pulsing amber badge on the chat button."
       },
-      "quota": {
-        "title": "Daily AI Quota",
-        "intro": "AI coaching uses a daily quota system to ensure fair usage for all players.",
-        "limit": "Free limit: 10 AI requests per day. Quota resets at midnight UTC."
-      },
       "tips": {
         "title": "Tips for Better Responses",
         "tip1": "Be specific about what you want help with",
@@ -378,9 +374,9 @@
       "title": "Frequently Asked Questions",
       "badge": "FAQ",
       "q1": "Why doesn't my latest deck show up?",
-      "a1": "The Clash Royale API has a 5-15 minute delay. Your recent in-game changes will appear after this delay. Try refreshing in a few minutes.",
+      "a1": "New matches can take a little time to appear. Refresh after the game ends.",
       "q2": "How is my win rate calculated?",
-      "a2": "Win rate is calculated from your last 25 battles available from the API. It only includes ladder and challenge battles, not friendly battles or 2v2.",
+      "a2": "Wins divided by the number of recent matches in your battle log.",
       "q3": "Why are some features requiring login?",
       "a3": "Features like saving decks, AI coaching, and personalized recommendations require an account to store your preferences and history.",
       "q4": "Can I use AI Royale on mobile?",

@@ -76,12 +76,12 @@ const Help = () => {
     { 
       id: "stats", 
       icon: TrendingUp, 
-      label: t("help.sections.stats"),
+      label: t("dashboard.playerStats"),
       keywords: [
-        t("help.stats.title"),
-        t("help.stats.overview.title"),
-        t("help.stats.charts.title"),
-        t("help.stats.aiSummary.title"),
+        t("dashboard.playerStats"),
+        t("dashboard.subtabs.overview"),
+        t("dashboard.trophyProgress.title"),
+        t("dashboard.aiCoach.title"),
         "trophies", "win rate", "arena", "clan", "statistics", "chart"
       ]
     },
@@ -139,9 +139,9 @@ const Help = () => {
       label: t("help.sections.collection"),
       keywords: [
         t("help.collection.title"),
-        t("help.collection.cards.title"),
+        t("help.collection.overview.title"),
         t("help.collection.levels.title"),
-        t("help.collection.progress.title"),
+        t("help.collection.sync.title"),
         "cards", "rarity", "level", "upgrade", "common", "rare", "epic", "legendary", "champion"
       ]
     },
@@ -151,7 +151,7 @@ const Help = () => {
       label: t("help.sections.leaderboard"),
       keywords: [
         t("help.leaderboard.title"),
-        t("help.leaderboard.rankings.title"),
+        t("help.leaderboard.yourRanking.title"),
         t("help.leaderboard.global.title"),
         "ranking", "top players", "global", "position"
       ]
@@ -164,7 +164,6 @@ const Help = () => {
         t("help.tournaments.title"),
         t("help.tournaments.browse.title"),
         t("help.tournaments.create.title"),
-        t("help.tournaments.join.title"),
         "tournament", "compete", "prize", "registration", "bracket"
       ]
     },
@@ -175,8 +174,7 @@ const Help = () => {
       keywords: [
         t("help.clans.title"),
         t("help.clans.search.title"),
-        t("help.clans.join.title"),
-        t("help.clans.details.title"),
+        t("help.clans.types.title"),
         "clan", "members", "war", "join request", "search clan"
       ]
     },
@@ -186,9 +184,8 @@ const Help = () => {
       label: t("help.sections.coach"),
       keywords: [
         t("help.coach.title"),
-        t("help.coach.chat.title"),
+        t("help.coach.overview.title"),
         t("help.coach.tips.title"),
-        t("help.coach.quota.title"),
         "AI", "coach", "chat", "advice", "tips", "strategy", "help"
       ]
     },
@@ -303,64 +300,11 @@ const Help = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "Why doesn't my latest deck show up in AI Royale?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "The Clash Royale API has a 5-15 minute delay. Your recent in-game changes will appear after this delay. Try refreshing in a few minutes."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "How is my win rate calculated?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Win rate is calculated from your last 25 battles available from the API. It only includes ladder and challenge battles, not friendly battles or 2v2."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Why are some features requiring login?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Features like saving decks, AI coaching, and personalized recommendations require an account to store your preferences and history."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Can I use AI Royale on mobile?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes! AI Royale is fully responsive and works on all devices. The interface adapts to your screen size."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "How accurate are the AI matchup predictions?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Predictions are based on deck composition analysis and historical data. Actual results may vary based on skill level and card levels."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Why can't I add more than 3 accounts?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "The 3-account limit ensures fair usage of our AI services and API resources for all users."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Is my data secure with AI Royale?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes! We use industry-standard encryption and never store your Clash Royale login credentials. We only access public data through your Player Tag."
-                }
-              }
-            ]
+            "mainEntity": [1, 2, 3, 4, 5, 6, 7, 8].map(num => ({
+              "@type": "Question",
+              "name": t(`help.faq.q${num}`),
+              "acceptedAnswer": { "@type": "Answer", "text": t(`help.faq.a${num}`) }
+            }))
           })}
         </script>
       </Helmet>
@@ -389,6 +333,7 @@ const Help = () => {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
+                aria-label={t("help.searchPlaceholder")}
                 placeholder={t("help.searchPlaceholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -400,7 +345,16 @@ const Help = () => {
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Navigation */}
-          <aside className="lg:w-64 shrink-0">
+          <div className="lg:hidden">
+            <label htmlFor="help-section" className="mb-1 block text-sm font-medium">{t("help.navigation")}</label>
+            <select id="help-section" value={filteredSectionIds.has(activeSection) ? activeSection : ""}
+              onChange={event => scrollToSection(event.target.value)}
+              className="h-11 w-full rounded-md border border-input bg-card px-3 text-sm">
+              <option value="" disabled>{t("help.navigation")}</option>
+              {filteredSections.map(section => <option key={section.id} value={section.id}>{section.label}</option>)}
+            </select>
+          </div>
+          <aside className="hidden shrink-0 lg:block lg:w-64">
             <Card className="sticky top-24 bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-between">
@@ -553,9 +507,9 @@ const Help = () => {
                   >
                     <p className="text-muted-foreground mb-4">{t("help.dashboard.overview.intro")}</p>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {["stats", "matches", "deck", "builder", "analytics", "collection", "leaderboard", "tournaments", "clans"].map((tab) => (
+                      {["coach", "deck", "social"].map((tab) => (
                         <div key={tab} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md">
-                          <Badge variant="outline" className="text-xs">{t(`help.dashboard.tabs.${tab}`)}</Badge>
+                          <span className="text-sm">{t(`help.dashboard.mainTabs.${tab}`)}</span>
                         </div>
                       ))}
                     </div>
@@ -590,36 +544,35 @@ const Help = () => {
               <section id="stats" className="scroll-mt-24">
                 <SectionHeader 
                   icon={TrendingUp} 
-                  title={t("help.stats.title")} 
-                  badge={t("help.stats.badge")}
+                  title={t("dashboard.playerStats")}
+                  badge={t("dashboard.subtabs.overview")}
                 />
                 
                 <div className="grid gap-6 mt-6">
                   <HelpCard
-                    title={t("help.stats.overview.title")}
+                    title={t("dashboard.subtabs.overview")}
                     icon={TrendingUp}
                   >
-                    <p className="text-muted-foreground mb-4">{t("help.stats.overview.intro")}</p>
+                    <p className="text-muted-foreground mb-4">{t("dashboard.tabHelp.overview")}</p>
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                      <li><strong>{t("help.stats.overview.trophies")}:</strong> {t("help.stats.overview.trophiesDesc")}</li>
-                      <li><strong>{t("help.stats.overview.winRate")}:</strong> {t("help.stats.overview.winRateDesc")}</li>
-                      <li><strong>{t("help.stats.overview.arena")}:</strong> {t("help.stats.overview.arenaDesc")}</li>
-                      <li><strong>{t("help.stats.overview.clan")}:</strong> {t("help.stats.overview.clanDesc")}</li>
+                      <li><strong>{t("dashboard.trophies")}:</strong> {t("tooltips.stats.trophies")}</li>
+                      <li><strong>{t("dashboard.winRate")}:</strong> {t("tooltips.stats.winRate")}</li>
+                      <li><strong>{t("dashboard.arena")}:</strong> {t("tooltips.stats.arena")}</li>
                     </ul>
                   </HelpCard>
 
                   <HelpCard
-                    title={t("help.stats.charts.title")}
+                    title={t("dashboard.trophyProgress.title")}
                     icon={BarChart3}
                   >
-                    <p className="text-muted-foreground">{t("help.stats.charts.intro")}</p>
+                    <p className="text-muted-foreground">{t("help.statsChartDescription")}</p>
                   </HelpCard>
 
                   <HelpCard
-                    title={t("help.stats.aiSummary.title")}
+                    title={t("dashboard.aiCoach.title")}
                     icon={MessageSquare}
                   >
-                    <p className="text-muted-foreground">{t("help.stats.aiSummary.intro")}</p>
+                    <p className="text-muted-foreground">{t("dashboard.aiCoach.subtitle")}</p>
                   </HelpCard>
                 </div>
               </section>
@@ -1010,16 +963,6 @@ const Help = () => {
                     icon={Lightbulb}
                   >
                     <p className="text-muted-foreground">{t("help.coach.proactive.intro")}</p>
-                  </HelpCard>
-
-                  <HelpCard
-                    title={t("help.coach.quota.title")}
-                    icon={Zap}
-                  >
-                    <p className="text-muted-foreground mb-4">{t("help.coach.quota.intro")}</p>
-                    <div className="p-3 bg-primary/10 border border-primary/20 rounded-md">
-                      <p className="text-sm text-primary">{t("help.coach.quota.limit")}</p>
-                    </div>
                   </HelpCard>
 
                   <HelpCard

@@ -149,7 +149,7 @@ serve(async (req) => {
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     // Build comprehensive context-aware system prompt
-    let systemPrompt = `You are an expert Clash Royale AI coach with full access to the player's profile. You provide strategic advice, deck recommendations, and gameplay tips based on their complete game data.
+    const systemPrompt = `You are an expert Clash Royale AI coach with full access to the player's profile. You provide strategic advice, deck recommendations, and gameplay tips based on their complete game data.
 
 LANGUAGE INSTRUCTION: ${languageInstruction}
 

@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PricingModal } from "./PricingModal";
 import { cn } from "@/lib/utils";
 
-export function TrialExpiredPage() {
+export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showPricing, setShowPricing] = useState(false);
@@ -53,17 +53,17 @@ export function TrialExpiredPage() {
             <span className="font-bold text-lg">AI Royale</span>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/help")} className="gap-1.5">
+            <Button variant="ghost" size="sm" aria-label={t("nav.help")} onClick={() => navigate("/help")} className="gap-1.5">
               <HelpCircle className="h-4 w-4" />
               <span className="hidden sm:inline">{t("nav.help", "Help")}</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/terms")} className="gap-1.5">
+            <Button variant="ghost" size="sm" aria-label={t("legal.termsOfService")} onClick={() => navigate("/terms")} className="gap-1.5">
               <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("footer.terms", "Terms")}</span>
+              <span className="hidden sm:inline">{t("legal.termsOfService")}</span>
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/privacy")} className="gap-1.5">
+            <Button variant="ghost" size="sm" aria-label={t("legal.privacyPolicy")} onClick={() => navigate("/privacy")} className="gap-1.5">
               <Shield className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("footer.privacy", "Privacy")}</span>
+              <span className="hidden sm:inline">{t("legal.privacyPolicy")}</span>
             </Button>
           </div>
         </div>
@@ -118,23 +118,14 @@ export function TrialExpiredPage() {
           </Card>
 
           {/* CTA buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex justify-center">
             <Button
               size="lg"
               onClick={() => setShowPricing(true)}
               className="gap-2 bg-gradient-to-r from-gold to-gold/80 hover:from-gold/90 hover:to-gold/70 text-black font-bold px-8"
             >
-              <Zap className="h-5 w-5" />
-              {t("subscription.paywall.startTrial", "Start 3-Day Free Trial")}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => setShowPricing(true)}
-              className="gap-2 border-primary/30 hover:bg-primary/10"
-            >
               <Crown className="h-5 w-5" />
-              {t("subscription.paywall.subscribe", "Subscribe Now")}
+              {t(canStartTrial ? "subscription.paywall.startTrial" : "subscription.paywall.subscribe")}
             </Button>
           </div>
 

@@ -16,6 +16,7 @@
       "needMoreHelp": "Si vous avez besoin de conseils stratégiques ou de coaching personnalisé sur le gameplay, n'hésitez pas à demander !",
       "answeredFromHelp": "Répondu depuis le Centre d'Aide (quota IA non utilisé)"
     },
+    "statsChartDescription": "Comparez vos trophées au fil des derniers matchs.",
     "sections": {
       "gettingStarted": "Premiers Pas",
       "dashboard": "Tableau de Bord",
@@ -91,7 +92,7 @@
       "sync": {
         "title": "Synchronisation et Actualisation des Données",
         "intro": "Vos données se synchronisent automatiquement lorsque vous ouvrez le tableau de bord. Vous pouvez actualiser manuellement en utilisant l'indicateur de synchronisation dans l'en-tête.",
-        "note": "Note : L'API Clash Royale a un délai de 5-15 minutes. Les modifications récentes en jeu peuvent ne pas apparaître immédiatement."
+        "note": "Un nouveau match peut mettre un moment à apparaître. Actualisez après la fin du match."
       }
     },
     "matches": {
@@ -341,11 +342,6 @@
         "title": "Suggestions Proactives",
         "intro": "Quand votre taux de victoire tombe sous 55%, le Coach IA suggérera proactivement des changements de deck. Cherchez le badge ambre pulsant sur le bouton de chat."
       },
-      "quota": {
-        "title": "Quota IA Quotidien",
-        "intro": "Le coaching IA utilise un système de quota quotidien pour assurer une utilisation équitable pour tous les joueurs.",
-        "limit": "Limite gratuite : 10 requêtes IA par jour. Le quota se réinitialise à minuit UTC."
-      },
       "tips": {
         "title": "Conseils pour de Meilleures Réponses",
         "tip1": "Soyez précis sur ce pour quoi vous voulez de l'aide",
@@ -378,9 +374,9 @@
       "title": "Questions Fréquemment Posées",
       "badge": "FAQ",
       "q1": "Pourquoi mon dernier deck n'apparaît-il pas ?",
-      "a1": "L'API Clash Royale a un délai de 5-15 minutes. Vos modifications récentes en jeu apparaîtront après ce délai. Essayez d'actualiser dans quelques minutes.",
+      "a1": "Un nouveau match peut mettre un moment à apparaître. Actualisez après la fin du match.",
       "q2": "Comment mon taux de victoire est-il calculé ?",
-      "a2": "Le taux de victoire est calculé à partir de vos 25 derniers matchs disponibles de l'API. Il inclut uniquement les matchs d'échelle et de défi, pas les matchs amicaux ou 2v2.",
+      "a2": "Le taux de victoire correspond aux victoires divisées par le nombre de matchs récents dans votre historique.",
       "q3": "Pourquoi certaines fonctionnalités nécessitent-elles une connexion ?",
       "a3": "Les fonctionnalités comme sauvegarder des decks, le coaching IA et les recommandations personnalisées nécessitent un compte pour stocker vos préférences et historique.",
       "q4": "Puis-je utiliser AI Royale sur mobile ?",

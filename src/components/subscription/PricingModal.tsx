@@ -174,10 +174,11 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
             )}
 
             {/* Tier Selection */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid gap-3 min-[470px]:grid-cols-3">
               {pricingTiers.map((tier) => (
                 <button
                   key={tier.slots}
+                  aria-pressed={selectedTier === tier.slots}
                   onClick={() => setSelectedTier(tier.slots)}
                   className={cn(
                     "relative p-4 rounded-xl border-2 transition-all text-left",

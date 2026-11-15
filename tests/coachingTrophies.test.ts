@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { latestLadderTrophies } from '../supabase/functions/_shared/coaching-match';
-import { withBattleTrophies, withRecentLadderTrophies } from '../src/lib/battleTrophies';
+import { ladderTrophyHistory, withBattleTrophies, withRecentLadderTrophies } from '../src/lib/battleTrophies';
 
 const ladder = (time: string, before?: number, change?: number) => ({
   type: 'PvP', gameMode: { name: 'Ladder' }, battleTime: time,
@@ -40,5 +40,19 @@ describe('trophies after a coaching match', () => {
     const newer = { trophies: 6631, bestTrophies: 6659 };
     assert.equal(withBattleTrophies(newer, snapshot), newer);
     assert.equal(withBattleTrophies(before), before);
+  });
+});
+
+describe('trophy chart', () => {
+  it('counts the first battle and retains exact changes in chronological order', () => {
+    const game = ladder(win.battleTime, 666, 30);
+    const next = ladder(loss.battleTime, 696, -17);
+    assert.deepEqual(ladderTrophyHistory('p0ly', [next, game]).map(({before, after}) => [before, after]),
+      [[666, 696], [696, 679]]);
+  });
+
+  it('omits unverified totals and non-ladder games even when crowns are present', () => {
+    assert.deepEqual(ladderTrophyHistory('P0LY', [ladder(win.battleTime, 666),
+      {...win, gameMode: { name: 'Challenge' }}, { ...win, battleTime: 'invalid' }]), []);
   });
 });

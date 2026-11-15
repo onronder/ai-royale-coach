@@ -16,6 +16,7 @@
       "needMoreHelp": "Se você precisar de dicas de estratégia ou coaching personalizado sobre o jogo, fique à vontade para perguntar!",
       "answeredFromHelp": "Respondido pela Central de Ajuda (sem usar cota de IA)"
     },
+    "statsChartDescription": "Compare seus troféus ao longo das últimas partidas.",
     "sections": {
       "gettingStarted": "Começando",
       "dashboard": "Painel",
@@ -91,7 +92,7 @@
       "sync": {
         "title": "Sincronização e Atualização de Dados",
         "intro": "Seus dados sincronizam automaticamente quando você abre o painel. Você pode atualizar manualmente usando o indicador de sincronização no cabeçalho.",
-        "note": "Nota: A API do Clash Royale tem um atraso de 5-15 minutos. Mudanças recentes no jogo podem não aparecer imediatamente."
+        "note": "Novas partidas podem levar um tempo para aparecer. Atualize os dados depois do jogo."
       }
     },
     "matches": {
@@ -341,11 +342,6 @@
         "title": "Sugestões Proativas",
         "intro": "Quando sua taxa de vitória cai abaixo de 55%, o Coach IA sugerirá proativamente mudanças de deck. Procure o emblema âmbar pulsante no botão de chat."
       },
-      "quota": {
-        "title": "Cota Diária de IA",
-        "intro": "O coaching de IA usa um sistema de cota diária para garantir uso justo para todos os jogadores.",
-        "limit": "Limite gratuito: 10 solicitações de IA por dia. A cota é reiniciada à meia-noite UTC."
-      },
       "tips": {
         "title": "Dicas para Melhores Respostas",
         "tip1": "Seja específico sobre o que você quer ajuda",
@@ -378,9 +374,9 @@
       "title": "Perguntas Frequentes",
       "badge": "FAQ",
       "q1": "Por que meu último deck não aparece?",
-      "a1": "A API do Clash Royale tem um atraso de 5-15 minutos. Suas mudanças recentes no jogo aparecerão após esse atraso. Tente atualizar em alguns minutos.",
+      "a1": "Novas partidas podem levar um tempo para aparecer. Atualize os dados depois do jogo.",
       "q2": "Como minha taxa de vitória é calculada?",
-      "a2": "A taxa de vitória é calculada das suas últimas 25 batalhas disponíveis da API. Inclui apenas batalhas de escada e desafio, não batalhas amigáveis ou 2v2.",
+      "a2": "O número de vitórias é dividido pelo número de partidas recentes no histórico.",
       "q3": "Por que alguns recursos requerem login?",
       "a3": "Recursos como salvar decks, coaching de IA e recomendações personalizadas requerem uma conta para armazenar suas preferências e histórico.",
       "q4": "Posso usar o AI Royale no celular?",

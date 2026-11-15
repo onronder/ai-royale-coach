@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { 
   Share2, Trophy, Loader2, Zap, Crown, Shield, Flame, TrendingUp, Star, Sparkles 
 } from "lucide-react";
-import html2canvas from "html2canvas";
+import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -31,18 +31,13 @@ export function AchievementsTab({
   const { t } = useTranslation();
   const shareCardRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showSharePreview, setShowSharePreview] = useState(false);
 
   const handleShare = async () => {
-    if (!shareCardRef.current) return;
-    
-    setIsGenerating(true);
-    setShowSharePreview(true);
-
-    // Wait for the preview to render
-    await new Promise(resolve => setTimeout(resolve, 100));
-
+    if (isGenerating) return;
+    flushSync(() => setIsGenerating(true));
     try {
+      const { default: html2canvas } = await import("html2canvas");
+      if (!shareCardRef.current) return;
       const canvas = await html2canvas(shareCardRef.current, {
         backgroundColor: '#1a1a2e',
         scale: 2,
@@ -50,36 +45,34 @@ export function AchievementsTab({
         logging: false,
       });
 
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => resolve(blob!), 'image/png', 1.0);
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(image => image ? resolve(image) : reject(new Error('PNG export failed')), 'image/png');
       });
-
-      // Try native share first
-      if (navigator.share && navigator.canShare({ files: [new File([blob], 'trophy-case.png', { type: 'image/png' })] })) {
-        await navigator.share({
-          title: `${playerName || 'Player'}'s Trophy Case`,
-          text: `Check out my ${unlockedAchievements.length} achievements in AI Royale! 🏆`,
-          files: [new File([blob], 'trophy-case.png', { type: 'image/png' })],
-        });
-        toast.success(t('achievements.shared', 'Trophy Case shared!'));
-      } else {
-        // Fallback: download the image
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `trophy-case-${playerTag}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast.success(t('achievements.downloaded', 'Trophy Case saved!'));
+      const file = new File([blob], 'trophy-case.png', { type: 'image/png' });
+      if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+        try {
+          await navigator.share({ title: t('achievements.trophyCase'), files: [file] });
+          toast.success(t('achievements.shared'));
+          return;
+        } catch (error) {
+          if (error instanceof Error && error.name === 'AbortError') return;
+          if (!(error instanceof Error && error.name === 'NotAllowedError')) throw error;
+        }
       }
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `trophy-case-${playerTag}.png`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast.success(t('achievements.downloaded'));
     } catch (error) {
       console.error('Share failed:', error);
       toast.error(t('achievements.shareFailed', 'Failed to share'));
     } finally {
       setIsGenerating(false);
-      setShowSharePreview(false);
     }
   };
 
@@ -114,7 +107,7 @@ export function AchievementsTab({
       <AchievementShowcase unlockedAchievements={unlockedAchievements} />
 
       {/* Hidden Shareable Card (for html2canvas) */}
-      {showSharePreview && (
+      {isGenerating && (
         <div className="fixed -left-[9999px] top-0">
           <ShareableCard
             ref={shareCardRef}

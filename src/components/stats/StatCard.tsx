@@ -60,9 +60,9 @@ export function StatCard({
       variantStyles[variant],
       className
     )}>
-      <CardContent className="pt-4 md:pt-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2 flex-1">
+      <CardContent className="p-3 sm:p-6">
+        <div className="flex flex-col-reverse items-start gap-2 sm:flex-row sm:justify-between">
+          <div className="min-w-0 space-y-2 sm:flex-1">
             <p className={cn(
               "text-sm font-medium font-rajdhani uppercase tracking-wide",
               variant === 'gradient' ? 'text-primary-foreground/80' : 'text-muted-foreground'
@@ -70,7 +70,7 @@ export function StatCard({
               {title}
             </p>
             <p className={cn(
-              "text-2xl md:text-3xl font-bold font-rajdhani",
+              "break-words text-xl md:text-3xl font-bold font-rajdhani",
               variant === 'gradient' ? 'text-primary-foreground' : trend && trendColors[trend],
               (variant === 'arena' || variant === 'golden') && !trend && 'text-foreground'
             )}>
@@ -86,7 +86,7 @@ export function StatCard({
             )}
           </div>
           <div className={cn(
-            "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
+            "w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0",
             iconContainerStyles[variant]
           )}>
             <Icon className={cn(

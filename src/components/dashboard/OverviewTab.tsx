@@ -62,24 +62,23 @@ export function OverviewTab({
               />
               <StatCard
                 title={t('dashboard.arena')}
-                value={player.arena?.name.split(' ')[0] || t('common.unknown')}
+                value={player.arena?.name || t('common.unknown')}
                 icon={Crown}
-                description={player.arena?.name || ''}
                 tooltip={statTooltips.arena}
               />
               <StatCard
                 title={t('dashboard.winRate')}
                 value={formattedWinRate}
                 icon={Swords}
-                description={t('dashboard.last25Battles')}
-                trend={winRate >= 50 ? 'up' : 'down'}
+                description={battles?.length ? t('dashboard.trophyProgress.lastBattles', { count: battles.length }) : t('dashboard.noBattles')}
+                trend={!battles?.length ? 'neutral' : winRate >= 50 ? 'up' : 'down'}
                 tooltip={statTooltips.winRate}
               />
               <StatCard
                 title={t('dashboard.clan')}
-                value={player.clan?.name.split(' ')[0] || t('dashboard.noClan')}
+                value={player.clan?.name || t('dashboard.noClan')}
                 icon={Users}
-                description={player.clan?.name || t('dashboard.joinClan')}
+                description={player.clan ? undefined : t('dashboard.joinClan')}
               />
             </>
           ) : null}
@@ -152,7 +151,11 @@ function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysis
         ) : analysis ? (
           <div className="space-y-4">
             <div className="prose prose-sm max-w-none">
-              <p className="text-sm whitespace-pre-wrap text-foreground/90 leading-relaxed">{analysis.analysis}</p>
+              <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/90">
+                {analysis.analysis.split(/(\*\*[^*\n]+\*\*)/g).map((part, i) =>
+                  part.startsWith('**') && part.endsWith('**') && part.length > 4
+                    ? <strong key={i}>{part.slice(2, -2)}</strong> : part)}
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 border-t border-border">
               <div className="text-center p-3 rounded-lg bg-success/10 border border-success/20">
