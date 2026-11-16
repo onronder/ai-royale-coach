@@ -2546,7 +2546,11 @@
     "unlimited": "Unlimited",
     "trial": "Trial",
     "quotaExhaustedTooltip": "Today’s allowance has been used.",
-    "usesToday": "Uses left today: {{remaining}}"
+    "usesToday": "Uses left today: {{remaining}}",
+    "adminAccess": "Admin access",
+    "aiTagAccess_one": "AI access for {{count}} player tag",
+    "aiTagAccess_other": "AI access for {{count}} player tags",
+    "adminAccessDescription": "Admin access is not limited to a set number of AI player tags"
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",

@@ -2557,7 +2557,11 @@
     "unlimited": "Sınırsız",
     "trial": "Deneme",
     "quotaExhaustedTooltip": "Bugünkü kullanım hakkı doldu.",
-    "usesToday": "Bugün kalan kullanım: {{remaining}}"
+    "usesToday": "Bugün kalan kullanım: {{remaining}}",
+    "adminAccess": "Yönetici erişimi",
+    "aiTagAccess_one": "{{count}} oyuncu etiketi için AI erişimi",
+    "aiTagAccess_other": "{{count}} oyuncu etiketi için AI erişimi",
+    "adminAccessDescription": "Yönetici erişimi belirli sayıda AI oyuncu etiketiyle sınırlı değildir"
   },
   "onboarding": {
     "stepOf": "Adım {{current}} / {{total}}",
