@@ -3412,7 +3412,8 @@
       "no_consent": "sem consentimento",
       "suppressed": "endereço bloqueado",
       "iys_pending": "IYS pendente",
-      "unknown": "desconhecido"
+      "unknown": "desconhecido",
+      "age_rule_pending": "regra de idade pendente"
     },
     "admin": {
       "title": "Consentimento de e-mails de campanhas",
@@ -3438,7 +3439,23 @@
         "owner": "Responsável",
         "outcome": "Resultado",
         "responded": "Respondida"
-      }
-    }
+      },
+      "collectionRule": "Coleta de consentimento",
+      "collectionOn": "ABERTA — jogadores podem dar novo consentimento",
+      "collectionOff": "PAUSADA — nenhum novo consentimento pode ser dado",
+      "marketRule": "Regra de mercado",
+      "ageRule": "Regra de idade",
+      "approved": "aprovada",
+      "pending": "aguardando decisão",
+      "sendingRule": "Envio de campanhas",
+      "sendingOn": "LIGADO",
+      "sendingRuleNote": "Verificado novamente a cada e-mail: consentimento, bloqueios, mercado, idade, İYS.",
+      "perPlayer": "Escolha por jogador"
+    },
+    "inviteNote": "Opcional. Você pode mudar isso a qualquer momento em Preferências de e-mail.",
+    "optInShort": "Sim, envie campanhas",
+    "withdrawnOk": "Os e-mails de campanha estão desativados. Não enviaremos campanhas para você.",
+    "collectionPaused": "A inscrição em e-mails de campanha ainda não está aberta. Sua conta e seu coaching não são afetados.",
+    "blockedNote": "Nosso serviço de e-mail não consegue entregar campanhas neste endereço (devolução ou denúncia de spam), então nenhuma será enviada."
   }
 }

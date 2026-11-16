@@ -3412,7 +3412,8 @@
       "no_consent": "izin yok",
       "suppressed": "engelli adres",
       "iys_pending": "İYS bekliyor",
-      "unknown": "bilinmiyor"
+      "unknown": "bilinmiyor",
+      "age_rule_pending": "yaş kuralı bekliyor"
     },
     "admin": {
       "title": "Kampanya e-posta izni",
@@ -3438,7 +3439,23 @@
         "owner": "Sorumlu",
         "outcome": "Sonuç",
         "responded": "Yanıt"
-      }
-    }
+      },
+      "collectionRule": "İzin toplama",
+      "collectionOn": "AÇIK — oyuncular yeni izin verebilir",
+      "collectionOff": "DURAKLATILDI — yeni izin verilemez",
+      "marketRule": "Pazar kuralı",
+      "ageRule": "Yaş kuralı",
+      "approved": "onaylandı",
+      "pending": "karar bekliyor",
+      "sendingRule": "Kampanya gönderimi",
+      "sendingOn": "AÇIK",
+      "sendingRuleNote": "Her e-postada yeniden kontrol edilir: izin, engeller, pazar, yaş kuralı, İYS.",
+      "perPlayer": "Oyuncu bazında tercih"
+    },
+    "inviteNote": "İsteğe bağlı. E-posta tercihlerinden istediğin zaman değiştirebilirsin.",
+    "optInShort": "Evet, kampanyaları gönder",
+    "withdrawnOk": "Kampanya e-postaları kapatıldı. Sana kampanya göndermeyeceğiz.",
+    "collectionPaused": "Kampanya e-postası kaydı henüz açık değil. Hesabın ve koçluğun etkilenmez.",
+    "blockedNote": "E-posta hizmetimiz bu adrese kampanya teslim edemiyor (geri dönme veya spam bildirimi); bu yüzden gönderilmeyecek."
   }
 }
