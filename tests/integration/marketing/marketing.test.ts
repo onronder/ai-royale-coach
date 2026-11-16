@@ -3,6 +3,7 @@ import { describe, it, beforeEach, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { deliverPromo, sqlPromoStore, type PromoMail, type PromoProvider } from '../../../supabase/functions/_shared/marketing-gate';
 import { signUnsubscribe, verifyUnsubscribe } from '../../../supabase/functions/_shared/unsubscribe-token';
+import { handleResendEvent, signSvix } from '../../../supabase/functions/_shared/resend-events';
 
 const PG = process.env.MARKETING_PG ?? '';
 const PORT = process.env.MARKETING_PG_PORT ?? '55433';
@@ -68,11 +69,13 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
   });
   beforeEach(() => {
     psql(`DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`, 'postgres'); psql(`CREATE DATABASE ${DB}`, 'postgres');
-    for (const f of ['tests/integration/marketing/base.sql', 'drizzle/migrations/0020_marketing_consent.sql']) {
+    for (const f of ['tests/integration/marketing/base.sql', 'drizzle/migrations/0020_marketing_consent.sql', 'drizzle/migrations/0021_marketing_collection_rules_and_provider_blocks.sql']) {
       const r = Bun.spawnSync(['psql', '-h', PG, '-p', PORT, '-U', 'postgres', '-d', DB, '-X', '-v', 'ON_ERROR_STOP=1', '-q', '-f', f]);
       if (r.exitCode !== 0) throw new Error(f + ': ' + r.stderr.toString());
     }
     psql(`INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${ADMIN}', 'admin@example.invalid', now()); INSERT INTO admins VALUES ('${ADMIN}')`);
+    // Consent collection open (market + age rule approved) for every scenario except the paused-collection one.
+    psql(`UPDATE marketing_settings SET collection_markets = '{global}', age_rule_approved = true`);
   });
   after(() => {
     globalThis.fetch = realFetch;
@@ -285,7 +288,8 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     assert.deepEqual(await send(p), { status: 'blocked', reason: 'no_consent' });
     user(B, 'b@example.invalid', { provider: 'google' }); set(B, 'grant', 'google_first', 'not_asked'); registerIys(B);
     psql(`SELECT public.record_marketing_suppression('B@example.invalid', 'complaint')`);
-    assert.deepEqual(await deliverPromo({ callerIsAdmin: true, campaignKey: 'winback:NOV', userId: B }, store, p, promo), { status: 'blocked', reason: 'no_consent' });
+    assert.deepEqual(await deliverPromo({ callerIsAdmin: true, campaignKey: 'winback:NOV', userId: B }, store, p, promo), { status: 'blocked', reason: 'suppressed' });
+    assert.equal(state(B).state, 'granted', 'a block is not a withdrawal');
     assert.equal(p.accepted.length, 0);
     assert.equal(psql(`SELECT status FROM marketing_deliveries WHERE user_id = '${A}'`), 'blocked');
     ok('withdrawn while queued / suppressed → 0 sends');
@@ -309,5 +313,78 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     const retry = await send(p, true, 'winback:DEC');
     assert.equal(retry.status, 'sent'); assert.equal(p.accepted.length, 2, 'one message per campaign');
     ok('positive gate / retry → exactly one acceptance per campaign');
+  });
+
+  // ---- Consent collection and campaign sending are separate rules ----
+  it('market or age rule not approved: no new consent, sign-up and coaching continue, existing consent can always be withdrawn', async () => {
+    // A player who consented while collection was open...
+    user(B, 'b@example.invalid', { provider: 'google' }); set(B, 'grant', 'google_first', 'not_asked');
+    for (const paused of [`collection_markets = '{}', age_rule_approved = true`, `collection_markets = '{global}', age_rule_approved = false`]) {
+      psql(`UPDATE marketing_settings SET ${paused}`);
+      psql(`DELETE FROM auth.users WHERE id = '${A}'`);
+      // Sign-up with the box ticked still creates the account (trigger never blocks) but records no consent.
+      user(A, 'a@example.invalid', { marketing: 'yes' }); trial(A, 'sub-a-' + paused.length);
+      assert.equal(psql(`SELECT count(*) FROM auth.users WHERE id = '${A}'`), '1', 'sign-up continues');
+      assert.equal(events(A), 0, 'no pending consent created');
+      const s = state(A); assert.equal(s.state, 'not_asked'); assert.equal(s.collectionOpen, false); assert.equal(s.invite, false);
+      // Trial access (what coaching relies on) is untouched by the consent rule.
+      assert.equal(psql(`SELECT count(*) FROM user_subscriptions WHERE user_id = '${A}' AND polar_subscription_id = 'sub-a-' || ${paused.length} AND status = 'trialing'`), '1', 'coaching access continues');
+      for (const src of ['preferences', 'coach_invite']) assert.equal(set(A, 'grant', src, 'not_asked').status, 'collection_paused');
+      assert.equal(events(A), 0);
+      assert.equal(asJson(A, 'SELECT to_jsonb(public.marketing_collection_open())'), false);
+    }
+    // ...can still withdraw (preferences) and unsubscribe (link) while collection is paused.
+    assert.equal(set(B, 'withdraw', 'preferences', 'granted').state, 'withdrawn');
+    psql(`UPDATE marketing_settings SET collection_markets = '{global}', age_rule_approved = true`);
+    set(B, 'grant', 'preferences', 'withdrawn');
+    psql(`UPDATE marketing_settings SET age_rule_approved = false`);
+    psql(`SELECT public.unsubscribe_marketing('${B}')`);
+    assert.equal(state(B).state, 'withdrawn');
+    // Sending is a separate rule: an unapproved age rule also holds campaign sends.
+    psql(`UPDATE marketing_settings SET sending_enabled = true, approved_markets = '{global}'`);
+    const p = fakeProvider();
+    assert.deepEqual(await deliverPromo({ callerIsAdmin: true, campaignKey: 'winback:NOV', userId: B }, store, p, promo), { status: 'blocked', reason: 'age_rule_pending' });
+    assert.equal(p.accepted.length, 0);
+    ok('collection paused (market / age) → no new consent; sign-up, coaching and withdrawal continue');
+  });
+
+  // ---- Resend complaint / permanent bounce (sample Svix-signed events, test secret only) ----
+  const TEST_SECRET = 'whsec_' + Buffer.from('test-only-webhook-secret-not-live').toString('base64');
+  const recordEvent = async (eventId: string, type: string, email: string, block: string | null) =>
+    (await svc('record_provider_email_event', { p_event_id: eventId, p_type: type, p_email: email, p_block_reason: block })) as string;
+  const deliverEvent = async (id: string, payload: unknown, opts: { secret?: string; ts?: number; tamper?: boolean } = {}) => {
+    const ts = opts.ts ?? Math.floor(Date.now() / 1000); const body = JSON.stringify(payload);
+    const signature = await signSvix(opts.secret ?? TEST_SECRET, id, ts, body);
+    return handleResendEvent(TEST_SECRET, { id, timestamp: String(ts), signature }, opts.tamper ? body.replace('a@', 'b@') : body, recordEvent);
+  };
+
+  it('Resend complaint and permanent bounce block the next send as a technical block, never a withdrawal', async () => {
+    granted(); user(B, 'b@example.invalid', { provider: 'google' }); set(B, 'grant', 'google_first', 'not_asked'); registerIys(B);
+    enableSending(); const p = fakeProvider();
+    const C = '33333333-3333-4333-8333-333333333333';
+    user(C, 'c@example.invalid', { provider: 'google' }); set(C, 'grant', 'google_first', 'not_asked'); registerIys(C);
+    // Forged, tampered and stale events are rejected and change nothing.
+    assert.equal((await deliverEvent('msg_forged', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { secret: 'whsec_' + Buffer.from('attacker').toString('base64') })).status, 401);
+    assert.equal((await deliverEvent('msg_tamper', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { tamper: true })).status, 401);
+    assert.equal((await deliverEvent('msg_old', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { ts: Math.floor(Date.now() / 1000) - 3600 })).status, 401);
+    assert.equal(psql('SELECT count(*) FROM marketing_suppressions'), '0');
+    // Transient bounce: recorded, no block.
+    assert.deepEqual((await deliverEvent('msg_soft', { type: 'email.bounced', data: { to: ['c@example.invalid'], bounce: { type: 'Transient' } } })).results, ['ignored']);
+    // Complaint for A, permanent bounce for B (delivered twice: Svix retry).
+    assert.deepEqual((await deliverEvent('msg_c1', { type: 'email.complained', data: { to: ['A@example.invalid'] } })).results, ['blocked']);
+    const bounce = { type: 'email.bounced', data: { to: ['b@example.invalid'], bounce: { type: 'Permanent', subType: 'General' } } };
+    assert.deepEqual((await deliverEvent('msg_b1', bounce)).results, ['blocked']);
+    assert.deepEqual((await deliverEvent('msg_b1', bounce)).results, ['duplicate']);
+    assert.equal(psql(`SELECT string_agg(email || '=' || reason, ',' ORDER BY email) FROM marketing_suppressions`), 'a@example.invalid=complaint,b@example.invalid=hard_bounce');
+    // No consent event was written on anyone's behalf; their consent state is unchanged.
+    assert.equal(psql(`SELECT count(*) FROM marketing_consent_events WHERE event = 'withdrawn'`), '0');
+    assert.equal(state(A).state, 'granted'); assert.equal(state(B).state, 'granted'); assert.equal(state(B).blocked, true);
+    // The next campaign is blocked for A and B, still allowed for C (transient bounce).
+    for (const uid of [A, B]) assert.deepEqual(await deliverPromo({ callerIsAdmin: true, campaignKey: 'nov', userId: uid }, store, p, promo), { status: 'blocked', reason: 'suppressed' });
+    assert.equal((await deliverPromo({ callerIsAdmin: true, campaignKey: 'nov', userId: C }, store, p, promo)).status, 'sent');
+    assert.deepEqual(p.accepted.map(a => a.mail.to[0]), ['c@example.invalid']);
+    // The webhook writer is server-only.
+    assert.throws(() => as(A, `SELECT public.record_provider_email_event('x', 'email.complained', 'c@example.invalid', 'complaint')`), /permission denied/);
+    ok('Resend complaint / hard bounce → technical block, next send blocked, no withdrawal recorded; forged/stale events rejected');
   });
 });

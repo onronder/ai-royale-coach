@@ -53,6 +53,9 @@ export default function EmailPreferences() {
   const state = consent.data?.state;
   const on = state === 'granted';
   const failedOff = change.isError && change.variables?.action === 'withdraw';
+  const withdrawnOk = !change.isPending && change.data?.status === 'ok' && change.variables?.action === 'withdraw';
+  const grantedOk = !change.isPending && change.data?.status === 'ok' && change.variables?.action === 'grant';
+  const collectionOpen = consent.data?.collectionOpen ?? false;
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,14 +79,19 @@ export default function EmailPreferences() {
             ) : (<>
               <p className="text-sm" role="status"><span className="font-medium">{t('marketing.statusLabel')}:</span> {t('marketing.state.' + state)}</p>
               {!consent.data!.verified && !on && <p className="text-sm text-muted-foreground">{t('marketing.unverified')}</p>}
+              {!on && !collectionOpen && <p className="text-sm text-muted-foreground">{t('marketing.collectionPaused')}</p>}
+              {consent.data!.blocked && <p className="text-sm text-muted-foreground">{t('marketing.blockedNote')}</p>}
               <div className="flex flex-col gap-2 sm:flex-row">
                 {on
                   ? <Button variant="outline" disabled={change.isPending} onClick={() => change.mutate({ action: 'withdraw', expected: 'granted' })}>{t('marketing.withdrawButton')}</Button>
-                  : <Button disabled={change.isPending || !consent.data!.verified} onClick={() => change.mutate({ action: 'grant', expected: state! })}>{t('marketing.optInButton')}</Button>}
+                  : <Button disabled={change.isPending || !consent.data!.verified || !collectionOpen} onClick={() => change.mutate({ action: 'grant', expected: state! })}>{t('marketing.optInButton')}</Button>}
                 {state === 'pending' && <Button variant="outline" disabled={change.isPending} onClick={() => change.mutate({ action: 'withdraw', expected: 'pending' })}>{t('marketing.cancelPending')}</Button>}
               </div>
               {change.isPending && <p className="text-sm text-muted-foreground" role="status">{t('marketing.saving')}</p>}
+              {withdrawnOk && <p role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">{t('marketing.withdrawnOk')}</p>}
+              {grantedOk && <p role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">{t('marketing.savedOn')}</p>}
               {change.data?.status === 'conflict' && <p role="alert" className="text-sm">{t('marketing.conflict')}</p>}
+              {change.data?.status === 'collection_paused' && <p role="alert" className="text-sm">{t('marketing.collectionPaused')}</p>}
               {change.isError && (
                 <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
                   <span>{failedOff ? t('marketing.stillOn') : t('marketing.saveError')}</span>

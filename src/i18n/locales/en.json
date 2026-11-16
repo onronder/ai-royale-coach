@@ -3412,7 +3412,8 @@
       "no_consent": "no consent",
       "suppressed": "blocked address",
       "iys_pending": "IYS pending",
-      "unknown": "unknown"
+      "unknown": "unknown",
+      "age_rule_pending": "age rule pending"
     },
     "admin": {
       "title": "Campaign email consent",
@@ -3438,7 +3439,23 @@
         "owner": "Owner",
         "outcome": "Outcome",
         "responded": "Replied"
-      }
-    }
+      },
+      "collectionRule": "Consent collection",
+      "collectionOn": "OPEN — players can give new consent",
+      "collectionOff": "PAUSED — no new consent can be given",
+      "marketRule": "Market rule",
+      "ageRule": "Age rule",
+      "approved": "approved",
+      "pending": "awaiting decision",
+      "sendingRule": "Campaign sending",
+      "sendingOn": "ON",
+      "sendingRuleNote": "Checked again for each email: consent, blocks, market, age rule, İYS.",
+      "perPlayer": "Choice per player"
+    },
+    "inviteNote": "Optional. You can change this anytime in Email preferences.",
+    "optInShort": "Yes, send me campaigns",
+    "withdrawnOk": "Campaign emails are off. We won't send you campaigns.",
+    "collectionPaused": "Campaign email sign-up is not open yet. Your account and coaching are not affected.",
+    "blockedNote": "Our email service can't deliver campaigns to this address (bounce or spam report), so none will be sent."
   }
 }

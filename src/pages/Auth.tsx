@@ -20,7 +20,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, Crown, ArrowLeft, Sparkles, Shield, Mail, KeyRound, CheckCircle } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
-import { MARKETING_TEXT_VERSION, consentLanguage, newRequestKey, setMarketingConsent } from "@/lib/marketingConsent";
+import { MARKETING_TEXT_VERSION, consentLanguage, getCollectionOpen, newRequestKey, setMarketingConsent } from "@/lib/marketingConsent";
 
 const TERMS_VERSION = "1.0";
 
@@ -47,6 +47,9 @@ const Auth = () => {
   const [oauthMarketing, setOauthMarketing] = useState(false);
   const [oauthProvider, setOauthProvider] = useState<string | null>(null);
   const [marketingKey] = useState(newRequestKey);
+  // The optional box is only offered while consent collection is open (market and age rules approved).
+  const [collectionOpen, setCollectionOpen] = useState(false);
+  useEffect(() => { getCollectionOpen().then(setCollectionOpen); }, []);
   
   // Google OAuth terms modal state
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -164,7 +167,7 @@ const Auth = () => {
             data: {
               language: i18n.resolvedLanguage ?? 'en',
               // Only creates a pending choice; it becomes consent when the verified player confirms it in the app.
-              marketing: { choice: marketingOptIn ? 'yes' : 'no', version: MARKETING_TEXT_VERSION, language: consentLanguage(i18n.resolvedLanguage) },
+              marketing: { choice: collectionOpen && marketingOptIn ? 'yes' : 'no', version: MARKETING_TEXT_VERSION, language: consentLanguage(i18n.resolvedLanguage) },
             },
           },
         });
@@ -315,7 +318,7 @@ const Auth = () => {
 
       // First Google sign-in: the address is verified by Google, so the player's explicit choice here is recorded directly.
       // A failure is reported but never blocks sign-in.
-      if (oauthProvider === 'google') {
+      if (oauthProvider === 'google' && collectionOpen) {
         try {
           const r = await setMarketingConsent(oauthMarketing ? 'grant' : 'decline', 'google_first', 'not_asked', i18n.resolvedLanguage ?? 'en', marketingKey);
           if (r.status !== 'ok' && oauthMarketing) toast.error(t("marketing.signupSaveError"));
@@ -778,7 +781,7 @@ const Auth = () => {
                   </Label>
                 </div>
               )}
-              {isSignUp && (<>
+              {isSignUp && collectionOpen && (<>
                 <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/30 border border-border/50">
                   <Checkbox
                     id="marketing-optin"
@@ -891,7 +894,7 @@ const Auth = () => {
                 </Link>
               </Label>
             </div>
-            {oauthProvider === 'google' && (<>
+            {oauthProvider === 'google' && collectionOpen && (<>
                 <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/30 border border-border/50">
                   <Checkbox
                     id="oauth-marketing"

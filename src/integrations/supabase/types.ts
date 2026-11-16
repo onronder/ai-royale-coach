@@ -1107,23 +1107,53 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_provider_events: {
+        Row: {
+          blocked: boolean
+          email: string
+          event_type: string
+          provider_event_id: string
+          received_at: string
+        }
+        Insert: {
+          blocked: boolean
+          email: string
+          event_type: string
+          provider_event_id: string
+          received_at?: string
+        }
+        Update: {
+          blocked?: boolean
+          email?: string
+          event_type?: string
+          provider_event_id?: string
+          received_at?: string
+        }
+        Relationships: []
+      }
       marketing_settings: {
         Row: {
+          age_rule_approved: boolean
           approved_markets: string[]
+          collection_markets: string[]
           installed_at: string
           require_iys: boolean
           sending_enabled: boolean
           singleton: boolean
         }
         Insert: {
+          age_rule_approved?: boolean
           approved_markets?: string[]
+          collection_markets?: string[]
           installed_at?: string
           require_iys?: boolean
           sending_enabled?: boolean
           singleton?: boolean
         }
         Update: {
+          age_rule_approved?: boolean
           approved_markets?: string[]
+          collection_markets?: string[]
           installed_at?: string
           require_iys?: boolean
           sending_enabled?: boolean
@@ -2569,6 +2599,7 @@ export type Database = {
         Returns: undefined
       }
       mark_marketing_prompt: { Args: { p_action: string }; Returns: undefined }
+      marketing_collection_open: { Args: never; Returns: boolean }
       marketing_decision: { Args: { p_user: string }; Returns: Json }
       marketing_state_at: {
         Args: { p_at?: string; p_user: string }
@@ -2618,6 +2649,15 @@ export type Database = {
       record_marketing_suppression: {
         Args: { p_email: string; p_reason: string }
         Returns: undefined
+      }
+      record_provider_email_event: {
+        Args: {
+          p_block_reason: string
+          p_email: string
+          p_event_id: string
+          p_type: string
+        }
+        Returns: string
       }
       record_reminder_send: {
         Args: {

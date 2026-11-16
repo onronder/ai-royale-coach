@@ -237,8 +237,8 @@ const Dashboard = () => {
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
-                      <MarketingInvite userId={user.id} />
                       <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} onMatchResult={refreshAfterMatch} />
+                      <MarketingInvite userId={user.id} />
                       <OverviewTab
                         playerTag={playerTag}
                         player={player || null}
