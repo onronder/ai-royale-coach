@@ -18,6 +18,7 @@ interface WinbackPromoEmailProps {
   appUrl: string
   promoCode: string
   discountPercent: number
+  unsubscribeUrl?: string
 }
 
 const translations = {
@@ -123,12 +124,15 @@ const translations = {
   },
 }
 
+const UNSUBSCRIBE = {"en": "Unsubscribe from campaign emails", "es": "Darse de baja de los correos de campañas", "pt": "Cancelar e-mails de campanhas", "tr": "Kampanya e-postalarından çık", "fr": "Se désabonner des e-mails de campagnes"}
+
 export const WinbackPromoEmail = ({
   name,
   language = 'en',
   appUrl,
   promoCode,
   discountPercent,
+  unsubscribeUrl,
 }: WinbackPromoEmailProps) => {
   const t = translations[language as keyof typeof translations] || translations.en
 
@@ -187,6 +191,7 @@ export const WinbackPromoEmail = ({
           <Section style={footer}>
             <Text style={copyright}>{t.copyright}</Text>
             <Text style={unsubscribeText}>{t.unsubscribe}</Text>
+            {unsubscribeUrl && <Text style={footerLinks}><Link href={unsubscribeUrl} style={footerLink}>{UNSUBSCRIBE[language as keyof typeof UNSUBSCRIBE] ?? UNSUBSCRIBE.en}</Link></Text>}
             <Text style={footerLinks}>
               <Link href={`${appUrl}/privacy`} style={footerLink}>{t.privacy}</Link>
               {' - '}

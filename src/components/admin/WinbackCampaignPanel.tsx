@@ -241,50 +241,20 @@ export function WinbackCampaignPanel() {
         throw new Error(t('admin.winback.invalidPercent'));
       }
 
-      // Send the email
-      const { error: emailError } = await supabase.functions.invoke('send-email', {
+      // The server checks admin rights, current consent, blocks and the campaign switch, logs the campaign, and sends at most once.
+      const { data, error: emailError } = await supabase.functions.invoke('send-email', {
         body: {
-          email: user.email,
           type: 'winback_promo',
-          language: user.preferred_language || 'en',
+          userId: user.id,
           promoCode: promoCode.toUpperCase(),
           discountPercent,
+          polarDiscountId: polarDiscountId.trim(),
         },
       });
-
       if (emailError) throw emailError;
-
-      // Update the profile to mark email as sent
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ winback_email_sent_at: new Date().toISOString() })
-        .eq('id', user.id);
-
-      if (updateError) throw updateError;
-
-      // Log the campaign with polar_discount_id and activity metrics
-      const { data: { user: adminUser } } = await supabase.auth.getUser();
-      
-      const { error: logError } = await supabase
-        .from('winback_campaigns')
-        .insert({
-          admin_user_id: adminUser?.id,
-          target_user_id: user.id,
-          target_email: user.email,
-          promo_code: promoCode.toUpperCase(),
-          discount_percent: discountPercent,
-          polar_discount_id: polarDiscountId.trim() || null,
-          // Log activity metrics at time of sending
-          target_user_activity_score: user.activity_score,
-          target_user_ai_requests: user.ai_requests,
-          target_user_chat_messages: user.chat_messages,
-          target_user_battles_tracked: user.battles_tracked,
-          target_user_linked_accounts: user.linked_accounts,
-          target_user_active_days: user.ai_active_days,
-        });
-
-      if (logError) console.error('Error logging campaign:', logError);
-
+      const result = data as { status: 'sent' | 'blocked' | 'uncertain'; reason?: string };
+      // Only a confirmed provider acceptance counts as sent.
+      if (result?.status !== 'sent') throw new Error(result?.status === 'blocked' ? t('marketing.reason.' + (result.reason ?? 'unknown'), { defaultValue: result.reason }) : t('marketing.saveError'));
       return user;
     },
     onSuccess: (user) => {

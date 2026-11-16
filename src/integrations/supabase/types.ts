@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
       achievement_progress: {
@@ -955,6 +950,205 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_consent_events: {
+        Row: {
+          brand: string
+          channel: string
+          created_at: string
+          email: string
+          event: string
+          id: number
+          language: string | null
+          purpose: string
+          request_key: string | null
+          source: string
+          text_version: string | null
+          user_id: string | null
+        }
+        Insert: {
+          brand?: string
+          channel?: string
+          created_at?: string
+          email: string
+          event: string
+          id?: never
+          language?: string | null
+          purpose?: string
+          request_key?: string | null
+          source: string
+          text_version?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          brand?: string
+          channel?: string
+          created_at?: string
+          email?: string
+          event?: string
+          id?: never
+          language?: string | null
+          purpose?: string
+          request_key?: string | null
+          source?: string
+          text_version?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_consent_events_text_version_language_fkey"
+            columns: ["text_version", "language"]
+            isOneToOne: false
+            referencedRelation: "marketing_consent_texts"
+            referencedColumns: ["version", "language"]
+          },
+        ]
+      }
+      marketing_consent_texts: {
+        Row: {
+          body: string
+          created_at: string
+          language: string
+          sha256: string
+          version: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          language: string
+          sha256: string
+          version: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          language?: string
+          sha256?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      marketing_deliveries: {
+        Row: {
+          campaign_key: string
+          created_at: string
+          email: string
+          idempotency_key: string | null
+          payload: Json | null
+          provider_message_id: string | null
+          reason: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_key: string
+          created_at?: string
+          email: string
+          idempotency_key?: string | null
+          payload?: Json | null
+          provider_message_id?: string | null
+          reason?: string | null
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_key?: string
+          created_at?: string
+          email?: string
+          idempotency_key?: string | null
+          payload?: Json | null
+          provider_message_id?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketing_iys_registrations: {
+        Row: {
+          event_id: number
+          registered_at: string
+        }
+        Insert: {
+          event_id: number
+          registered_at?: string
+        }
+        Update: {
+          event_id?: number
+          registered_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_iys_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "marketing_consent_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_prompts: {
+        Row: {
+          dismissed_at: string | null
+          shown_at: string | null
+          user_id: string
+        }
+        Insert: {
+          dismissed_at?: string | null
+          shown_at?: string | null
+          user_id: string
+        }
+        Update: {
+          dismissed_at?: string | null
+          shown_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      marketing_settings: {
+        Row: {
+          approved_markets: string[]
+          installed_at: string
+          require_iys: boolean
+          sending_enabled: boolean
+          singleton: boolean
+        }
+        Insert: {
+          approved_markets?: string[]
+          installed_at?: string
+          require_iys?: boolean
+          sending_enabled?: boolean
+          singleton?: boolean
+        }
+        Update: {
+          approved_markets?: string[]
+          installed_at?: string
+          require_iys?: boolean
+          sending_enabled?: boolean
+          singleton?: boolean
+        }
+        Relationships: []
+      }
+      marketing_suppressions: {
+        Row: {
+          created_at: string
+          email: string
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          reason?: string
+        }
+        Relationships: []
+      }
       matchup_predictions: {
         Row: {
           actual_battles_total: number | null
@@ -1224,6 +1418,48 @@ export type Database = {
           status?: string | null
           subscription_id?: string | null
           tax_amount?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      privacy_requests: {
+        Row: {
+          assignee: string | null
+          contact_email: string
+          details: string | null
+          due_at: string
+          id: string
+          kind: string
+          outcome: string | null
+          received_at: string
+          responded_at: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          assignee?: string | null
+          contact_email: string
+          details?: string | null
+          due_at?: string
+          id?: string
+          kind: string
+          outcome?: string | null
+          received_at?: string
+          responded_at?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          assignee?: string | null
+          contact_email?: string
+          details?: string | null
+          due_at?: string
+          id?: string
+          kind?: string
+          outcome?: string | null
+          received_at?: string
+          responded_at?: string | null
+          status?: string
           user_id?: string | null
         }
         Relationships: []
@@ -1734,6 +1970,30 @@ export type Database = {
           },
         ]
       }
+      trial_marketing_snapshots: {
+        Row: {
+          captured_at: string
+          state_at_start: string
+          subscription_id: string
+          trial_started_at: string
+          user_id: string | null
+        }
+        Insert: {
+          captured_at?: string
+          state_at_start: string
+          subscription_id: string
+          trial_started_at: string
+          user_id?: string | null
+        }
+        Update: {
+          captured_at?: string
+          state_at_start?: string
+          subscription_id?: string
+          trial_started_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -2088,6 +2348,38 @@ export type Database = {
       }
     }
     Functions: {
+      admin_privacy_requests: {
+        Args: never
+        Returns: {
+          assignee: string | null
+          contact_email: string
+          details: string | null
+          due_at: string
+          id: string
+          kind: string
+          outcome: string | null
+          received_at: string
+          responded_at: string | null
+          status: string
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "privacy_requests"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      admin_trial_marketing: { Args: { p_days?: number }; Returns: Json }
+      admin_update_privacy_request: {
+        Args: {
+          p_assignee: string
+          p_id: string
+          p_outcome: string
+          p_status: string
+        }
+        Returns: undefined
+      }
       begin_confirmed_welcome: {
         Args: { p_payload: Json; p_user: string }
         Returns: Json
@@ -2116,6 +2408,10 @@ export type Database = {
           payload: Json
           user_id: string
         }[]
+      }
+      claim_marketing_delivery: {
+        Args: { p_campaign: string; p_payload: Json; p_user: string }
+        Returns: Json
       }
       claim_player_tag_for_trial: {
         Args: { p_player_tag: string; p_user_id: string }
@@ -2235,6 +2531,7 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      get_my_marketing_consent: { Args: never; Returns: Json }
       get_trial_funnel: {
         Args: { p_days?: number }
         Returns: {
@@ -2267,6 +2564,36 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      mark_marketing_delivery_uncertain: {
+        Args: { p_campaign: string; p_key: string; p_user: string }
+        Returns: undefined
+      }
+      mark_marketing_prompt: { Args: { p_action: string }; Returns: undefined }
+      marketing_decision: { Args: { p_user: string }; Returns: Json }
+      marketing_state_at: {
+        Args: { p_at?: string; p_user: string }
+        Returns: {
+          email: string
+          event_id: number
+          since: string
+          source: string
+          state: string
+          text_version: string
+          verified: boolean
+        }[]
+      }
+      my_privacy_requests: {
+        Args: never
+        Returns: {
+          due_at: string
+          id: string
+          kind: string
+          outcome: string
+          received_at: string
+          responded_at: string
+          status: string
+        }[]
+      }
       queue_confirmed_welcomes: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
@@ -2278,6 +2605,19 @@ export type Database = {
       record_confirmed_welcome: {
         Args: { p_message: string; p_user: string }
         Returns: boolean
+      }
+      record_marketing_delivery: {
+        Args: {
+          p_campaign: string
+          p_key: string
+          p_message_id: string
+          p_user: string
+        }
+        Returns: boolean
+      }
+      record_marketing_suppression: {
+        Args: { p_email: string; p_reason: string }
+        Returns: undefined
       }
       record_reminder_send: {
         Args: {
@@ -2308,6 +2648,21 @@ export type Database = {
       reserve_trial_ai: {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
         Returns: Json
+      }
+      set_my_marketing_consent: {
+        Args: {
+          p_action: string
+          p_expected: string
+          p_language: string
+          p_request_key: string
+          p_source: string
+          p_text_version: string
+        }
+        Returns: Json
+      }
+      submit_privacy_request: {
+        Args: { p_details: string; p_kind: string }
+        Returns: string
       }
       take_trial_coaching_reminder: {
         Args: { p_ticket: string }
@@ -2340,6 +2695,7 @@ export type Database = {
       }
       trial_coaching_state: { Args: never; Returns: Json }
       trial_summary_state: { Args: never; Returns: Json }
+      unsubscribe_marketing: { Args: { p_user: string }; Returns: string }
       update_trial_coaching: {
         Args: { p_action: string; p_subscription: string; p_value?: string }
         Returns: Json
@@ -2491,3 +2847,4 @@ export const Constants = {
     },
   },
 } as const
+

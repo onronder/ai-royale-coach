@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield } from "lucide-react";
+import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,6 +60,10 @@ export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) 
             <Button variant="ghost" size="sm" aria-label={t("legal.termsOfService")} onClick={() => navigate("/terms")} className="gap-1.5">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">{t("legal.termsOfService")}</span>
+            </Button>
+            <Button variant="ghost" size="sm" aria-label={t("marketing.prefsTitle")} onClick={() => navigate("/settings/email")} className="gap-1.5">
+              <Mail className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("marketing.prefsTitle")}</span>
             </Button>
             <Button variant="ghost" size="sm" aria-label={t("legal.privacyPolicy")} onClick={() => navigate("/privacy")} className="gap-1.5">
               <Shield className="h-4 w-4" />

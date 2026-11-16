@@ -12,11 +12,15 @@ import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
 import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
 import { PaymentFailedEmail } from './_templates/payment-failed-email.tsx'
 import { CancellationEmail } from './_templates/cancellation-email.tsx'
+import { deliverPromo, sqlPromoStore, type PromoMail } from '../_shared/marketing-gate.ts'
+import { signUnsubscribe } from '../_shared/unsubscribe-token.ts'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
 
 interface EmailRequest {
-  email: string
+  email?: string
+  userId?: string
+  campaignKey?: string
   type: 'welcome' | 'password_reset' | 'account_update' | 'subscription' | 'trial_expired' | 'winback_promo' | 'payment_failed' | 'subscription_cancelled'
   name?: string
   language?: string
@@ -43,6 +47,8 @@ Deno.serve(async (req) => {
   try {
     // Parse request body
     const body: EmailRequest = await req.json()
+    // Promotions never trust the caller's address or role: admin check, consent gate and one message per campaign/recipient.
+    if (body.type === 'winback_promo') return await sendPromo(req, body)
     const { email, type, name, language: requestedLanguage, subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl, accessEndDate, wasTrial } = body
     const language = productLanguage(requestedLanguage);
 
@@ -147,22 +153,6 @@ Deno.serve(async (req) => {
         )
         break
 
-      case 'winback_promo':
-        if (!promoCode || !discountPercent) {
-          return errorResponse('Missing required fields: promoCode and discountPercent for winback_promo', 400)
-        }
-        subject = getWinbackPromoSubject(language, discountPercent)
-        html = await renderAsync(
-          React.createElement(WinbackPromoEmail, {
-            name,
-            language,
-            appUrl,
-            promoCode,
-            discountPercent,
-          })
-        )
-        break
-
       case 'payment_failed':
         subject = getPaymentFailedSubject(language)
         html = await renderAsync(
@@ -214,6 +204,46 @@ Deno.serve(async (req) => {
   }
 })
 
+async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
+  const url = Deno.env.get('SUPABASE_URL') ?? ''
+  const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '')
+  const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
+  const { data: caller } = token ? await admin.auth.getUser(token) : { data: { user: null } }
+  const { data: isAdmin } = caller?.user ? await admin.rpc('has_admin_role', { p_user_id: caller.user.id, p_role: 'admin' }) : { data: false }
+  const { userId, promoCode, discountPercent } = body
+  if (!promoCode || !discountPercent || discountPercent < 1 || discountPercent > 100) return errorResponse('Missing promoCode/discountPercent', 400)
+  const code = promoCode.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40)
+  const campaignKey = body.campaignKey ?? `winback:${code}`
+  const { data: profile } = userId ? await admin.from('profiles').select('preferred_language, email').eq('id', userId).maybeSingle() : { data: null }
+  const language = productLanguage(profile?.preferred_language ?? undefined)
+  const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
+  const secret = Deno.env.get('MARKETING_UNSUBSCRIBE_SECRET') ?? ''
+  const rpc = async (fn: string, args: Record<string, unknown>) => { const { data, error } = await admin.rpc(fn, args); if (error) throw error; return data }
+  const resend = { async send(mail: PromoMail, key: string) {
+    const r = await fetch('https://api.resend.com/emails', { method: 'POST', body: JSON.stringify(mail), headers: {
+      Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json', 'Idempotency-Key': key } })
+    const data = await r.json().catch(() => null)
+    if (!r.ok || !data?.id) throw new Error('provider error ' + r.status); return String(data.id)
+  } }
+  const result = await deliverPromo({ callerIsAdmin: Boolean(isAdmin), campaignKey, userId: userId ?? '' }, sqlPromoStore(rpc), resend, async () => {
+    if (!secret) throw new Error('unsubscribe secret missing')
+    const unsubscribeUrl = `${url}/functions/v1/marketing-unsubscribe?t=${encodeURIComponent(await signUnsubscribe(secret, userId!))}&l=${language}`
+    return {
+      from: 'AI Royale <noreply@notification.ai-royale.com>', to: [],
+      subject: getWinbackPromoSubject(language, discountPercent),
+      html: await renderAsync(React.createElement(WinbackPromoEmail, { language, appUrl, promoCode: code, discountPercent, unsubscribeUrl })),
+      headers: { 'List-Unsubscribe': `<${unsubscribeUrl}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
+    }
+  }).catch(() => ({ status: 'blocked' as const, reason: 'gate_unavailable' }))
+  if (result.status === 'sent' && !result.repeat) {
+    await admin.from('profiles').update({ winback_email_sent_at: new Date().toISOString() }).eq('id', userId!)
+    await admin.from('winback_campaigns').insert({ admin_user_id: caller!.user!.id, target_user_id: userId, target_email: profile?.email ?? '', promo_code: code,
+      discount_percent: discountPercent, polar_discount_id: (body as { polarDiscountId?: string }).polarDiscountId ?? null })
+  }
+  logger.info('Promotional send decision', { status: result.status, reason: 'reason' in result ? result.reason : undefined })
+  return jsonResponse(result, result.status === 'blocked' && result.reason === 'not_authorized' ? 403 : 200)
+}
+
 // Subject line translations
 function getSubscriptionSubject(language: string): string {
   const subjects: Record<string, string> = {
@@ -250,11 +280,11 @@ function getAccountUpdateSubject(language: string): string {
 
 function getTrialExpiredSubject(language: string): string {
   const subjects: Record<string, string> = {
-    en: 'Your AI Royale Trial Has Ended - Subscribe Now!',
-    es: 'Tu Prueba de AI Royale Ha Terminado - ¡Suscríbete Ahora!',
-    pt: 'Seu Teste do AI Royale Terminou - Assine Agora!',
-    tr: 'AI Royale Denemeniz Sona Erdi - Şimdi Abone Olun!',
-    fr: 'Votre Essai AI Royale a Expiré - Abonnez-vous Maintenant!',
+    en: 'Your AI Royale trial has ended',
+    es: 'Tu prueba de AI Royale ha terminado',
+    pt: 'Seu teste do AI Royale terminou',
+    tr: 'AI Royale deneme süren sona erdi',
+    fr: 'Votre essai AI Royale est terminé',
   }
   return subjects[language] || subjects.en
 }
