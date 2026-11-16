@@ -61,6 +61,10 @@ export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) 
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">{t("legal.termsOfService")}</span>
             </Button>
+            <Button variant="ghost" size="sm" aria-label={t("marketing.prefsTitle")} onClick={() => navigate("/settings/email")} className="gap-1.5">
+              <Mail className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("marketing.prefsTitle")}</span>
+            </Button>
             <Button variant="ghost" size="sm" aria-label={t("legal.privacyPolicy")} onClick={() => navigate("/privacy")} className="gap-1.5">
               <Shield className="h-4 w-4" />
               <span className="hidden sm:inline">{t("legal.privacyPolicy")}</span>

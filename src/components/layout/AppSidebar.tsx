@@ -5,6 +5,7 @@ import {
   Swords, 
   Users, 
   Settings, 
+  Mail,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -378,6 +379,17 @@ export function AppSidebar({
               {isCollapsed && (
                 <TooltipContent side="right">{t("nav.help")}</TooltipContent>
               )}
+            </Tooltip>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenuButton onClick={() => navigate('/settings/email')} className="group">
+                  <Mail className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                  {!isCollapsed && <span className="flex-1">{t("marketing.prefsTitle")}</span>}
+                </SidebarMenuButton>
+              </TooltipTrigger>
+              {isCollapsed && <TooltipContent side="right">{t("marketing.prefsTitle")}</TooltipContent>}
             </Tooltip>
           </SidebarMenuItem>
           <SidebarMenuItem>
