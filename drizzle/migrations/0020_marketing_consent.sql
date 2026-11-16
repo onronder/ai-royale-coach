@@ -112,8 +112,9 @@ CREATE POLICY "consent texts are public" ON public.marketing_consent_texts FOR S
 -- Consent proof and texts never change; the only allowed update is the account link being cleared on deletion.
 CREATE FUNCTION public.marketing_immutable() RETURNS trigger LANGUAGE plpgsql SET search_path = '' AS $$
 BEGIN
-  IF TG_OP = 'UPDATE' AND TG_TABLE_NAME = 'marketing_consent_events' AND NEW.user_id IS NULL
-     AND (to_jsonb(NEW) - 'user_id') = (to_jsonb(OLD) - 'user_id') THEN RETURN NEW; END IF;
+  IF TG_OP = 'UPDATE' AND TG_TABLE_NAME = 'marketing_consent_events' THEN
+    IF to_jsonb(NEW)->>'user_id' IS NULL AND (to_jsonb(NEW) - 'user_id') = (to_jsonb(OLD) - 'user_id') THEN RETURN NEW; END IF;
+  END IF;
   RAISE EXCEPTION '% is append-only', TG_TABLE_NAME;
 END $$;
 CREATE TRIGGER marketing_events_immutable BEFORE UPDATE OR DELETE ON public.marketing_consent_events FOR EACH ROW EXECUTE FUNCTION public.marketing_immutable();
