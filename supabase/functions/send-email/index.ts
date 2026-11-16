@@ -214,7 +214,7 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   if (!promoCode || !discountPercent || discountPercent < 1 || discountPercent > 100) return errorResponse('Missing promoCode/discountPercent', 400)
   const code = promoCode.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40)
   const campaignKey = body.campaignKey ?? `winback:${code}`
-  const { data: profile } = userId ? await admin.from('profiles').select('preferred_language').eq('id', userId).maybeSingle() : { data: null }
+  const { data: profile } = userId ? await admin.from('profiles').select('preferred_language, email').eq('id', userId).maybeSingle() : { data: null }
   const language = productLanguage(profile?.preferred_language ?? undefined)
   const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
   const secret = Deno.env.get('MARKETING_UNSUBSCRIBE_SECRET') ?? ''
@@ -235,7 +235,7 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   }).catch(() => ({ status: 'blocked' as const, reason: 'gate_unavailable' }))
   if (result.status === 'sent' && !result.repeat) {
     await admin.from('profiles').update({ winback_email_sent_at: new Date().toISOString() }).eq('id', userId!)
-    await admin.from('winback_campaigns').insert({ admin_user_id: caller!.user!.id, target_user_id: userId, target_email: '', promo_code: code,
+    await admin.from('winback_campaigns').insert({ admin_user_id: caller!.user!.id, target_user_id: userId, target_email: profile?.email ?? '', promo_code: code,
       discount_percent: discountPercent, polar_discount_id: (body as { polarDiscountId?: string }).polarDiscountId ?? null })
   }
   logger.info('Promotional send decision', { status: result.status, reason: 'reason' in result ? result.reason : undefined })
