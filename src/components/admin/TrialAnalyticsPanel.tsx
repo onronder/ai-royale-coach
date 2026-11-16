@@ -10,6 +10,7 @@ import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
 
 type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
 type MarketingReport = { sendingEnabled: boolean; approvedMarkets: string[]; requireIys: boolean; rows: MarketingRow[];
+  collectionOpen: boolean; collectionMarkets: string[]; ageRuleApproved: boolean;
   accounts: number; granted: number; pending: number; sendable: number; iysPending: number };
 
 type Row = {
@@ -170,7 +171,18 @@ export function TrialAnalyticsPanel() {
             <CardContent className="space-y-3">
               {marketing.isError ? <Button variant="outline" onClick={() => void marketing.refetch()}>{t('marketing.retry')}</Button>
                 : !marketing.data ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>
-                {!marketing.data.sendingEnabled && <p role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm font-medium">{t('marketing.admin.sendingOff')}</p>}
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.collectionRule')}</div>
+                    <div className="font-medium">{marketing.data.collectionOpen ? t('marketing.admin.collectionOn') : t('marketing.admin.collectionOff')}</div>
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.marketRule')}: {marketing.data.collectionMarkets.length ? t('marketing.admin.approved') : t('marketing.admin.pending')} · {t('marketing.admin.ageRule')}: {marketing.data.ageRuleApproved ? t('marketing.admin.approved') : t('marketing.admin.pending')}</div>
+                  </div>
+                  <div role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.sendingRule')}</div>
+                    <div className="font-medium">{marketing.data.sendingEnabled ? t('marketing.admin.sendingOn') : t('marketing.admin.sendingOff')}</div>
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.sendingRuleNote')}</div>
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: t('marketing.admin.accounts'), v: marketing.data.accounts },
@@ -180,6 +192,17 @@ export function TrialAnalyticsPanel() {
                   ].map(c => <div key={c.label} className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">{c.label}</div><div className="text-2xl font-bold">{c.v}</div></div>)}
                 </div>
                 <p className="text-xs text-muted-foreground">{t('marketing.admin.note')}</p>
+                {data.length > 0 && <ul className="divide-y rounded-lg border" aria-label={t('marketing.admin.perPlayer')}>
+                  {data.map(r => { const m = consentFor(r); return (
+                    <li key={r.user_id + r.trial_start} className="p-3">
+                      <div className="truncate text-sm font-medium">{r.email ?? '—'}</div>
+                      <dl className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.atStart')}</dt><dd>{t('marketing.state.' + (m?.at_start ?? 'unknown'))}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.today')}</dt><dd>{m ? t('marketing.state.' + m.current) : '—'}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.sendableToday')}</dt><dd>{m ? (m.sendable ? t('marketing.admin.yes') : <>{t('marketing.admin.no')} <span className="text-muted-foreground">({t('marketing.reason.' + (m.reason ?? 'unknown'))})</span></>) : '—'}</dd></div>
+                      </dl>
+                    </li>); })}
+                </ul>}
               </>)}
             </CardContent>
           </Card>
@@ -188,7 +211,7 @@ export function TrialAnalyticsPanel() {
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
-                  <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity', 'marketing.admin.atStart', 'marketing.admin.today', 'marketing.admin.sendableToday'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
+                  <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
                 </thead>
                 <tbody>
                   {data.map(r => (
@@ -205,11 +228,6 @@ export function TrialAnalyticsPanel() {
                       <td className="p-2">{r.active_days}</td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.last_seen)}</td>
                       <td className="p-2 whitespace-nowrap">{t(reason(r))}</td>
-                      {(() => { const m = consentFor(r); return <>
-                        <td className="p-2 whitespace-nowrap">{t('marketing.state.' + (m?.at_start ?? 'unknown'))}</td>
-                        <td className="p-2 whitespace-nowrap">{m ? t('marketing.state.' + m.current) : '—'}</td>
-                        <td className="p-2 whitespace-nowrap">{m ? (m.sendable ? t('marketing.admin.yes') : t('marketing.admin.no') + ' · ' + t('marketing.reason.' + (m.reason ?? 'unknown'))) : '—'}</td>
-                      </>; })()}
                     </tr>
                   ))}
                 </tbody>
