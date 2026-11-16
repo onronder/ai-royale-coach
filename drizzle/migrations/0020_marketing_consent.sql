@@ -14,10 +14,13 @@ CREATE TABLE public.marketing_consent_texts (
   version text NOT NULL,
   language text NOT NULL CHECK (language IN ('en','tr','es','fr','pt')),
   body text NOT NULL,
-  sha256 text GENERATED ALWAYS AS (encode(sha256(convert_to(body, 'UTF8')), 'hex')) STORED,
+  sha256 text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
   PRIMARY KEY (version, language)
 );
+CREATE FUNCTION public.marketing_text_hash() RETURNS trigger LANGUAGE plpgsql SET search_path = '' AS $$
+BEGIN NEW.sha256 := encode(sha256(convert_to(NEW.body, 'UTF8')), 'hex'); RETURN NEW; END $$;
+CREATE TRIGGER marketing_text_hash BEFORE INSERT ON public.marketing_consent_texts FOR EACH ROW EXECUTE FUNCTION public.marketing_text_hash();
 INSERT INTO public.marketing_consent_texts (version, language, body) VALUES
  ('2026-11-v1','tr','Fittechs Yazılım Anonim Şirketi''nin AI Royale indirim ve kampanyalarını e-postayla almak istiyorum.'),
  ('2026-11-v1','en','I want to receive AI Royale discounts and campaigns from Fittechs Yazılım Anonim Şirketi by email.'),
@@ -358,7 +361,7 @@ BEGIN
   WHERE id = p_id;
 END $$;
 
-REVOKE ALL ON FUNCTION public.marketing_immutable(), public.marketing_state_at(uuid, timestamptz), public.record_signup_marketing_choice(),
+REVOKE ALL ON FUNCTION public.marketing_immutable(), public.marketing_text_hash(), public.marketing_state_at(uuid, timestamptz), public.record_signup_marketing_choice(),
   public.get_my_marketing_consent(), public.set_my_marketing_consent(text, text, text, text, text, text), public.mark_marketing_prompt(text),
   public.capture_trial_marketing_snapshot(), public.marketing_decision(uuid), public.claim_marketing_delivery(text, uuid, jsonb),
   public.record_marketing_delivery(text, uuid, uuid, text), public.mark_marketing_delivery_uncertain(text, uuid, uuid),
