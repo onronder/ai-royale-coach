@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield } from "lucide-react";
+import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
