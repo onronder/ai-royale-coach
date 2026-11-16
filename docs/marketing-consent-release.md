@@ -6,10 +6,14 @@ Starting revision: `b5cb44651602f0fa79a4a18662941d3eb719273c` (draft branch `thr
 | Step | Status |
 |---|---|
 | GitHub PR / merge to main | PENDING — not done |
-| Live backend: migrations `0020_marketing_consent` + `0021_marketing_collection_rules_and_provider_blocks`, deploy `send-email`, new `marketing-unsubscribe` and `resend-webhook`, secrets `MARKETING_UNSUBSCRIBE_SECRET`, `RESEND_WEBHOOK_SECRET`, then register the webhook (events `email.bounced`, `email.complained`) in Resend | PENDING — not done (applied only to this draft's isolated database) |
+| Live backend: apply missing migrations in order: `0020_marketing_consent`, `0021_marketing_collection_rules_and_provider_blocks`, `0022_marketing_market_scope_and_unresolved_sends`, `0023_marketing_hidden_box_and_single_invite_claim`, deploy `send-email`, new `marketing-unsubscribe` and `resend-webhook`, secrets `MARKETING_UNSUBSCRIBE_SECRET`, `RESEND_WEBHOOK_SECRET`, then register the webhook (events `email.bounced`, `email.complained`) in Resend | PENDING — not done (applied only to this draft's isolated database) |
 | Website publication | PENDING — not done |
 | Consent collection (`collection_markets`, `age_rule_approved`) | PAUSED by default: no new consent until market + age rules are approved; withdrawal always works |
 | Campaign sending switch (`sending_enabled`, `approved_markets`, `age_rule_approved`) | OFF; must stay off until company decisions below |
+
+Verified source `3ad21bd` passed 33 isolated SQL/sender acceptance tests and 104 app tests, both TypeScript project checks and the web build. The Preferences → Coach transition also passed in Chrome against local SQL.
+
+Before applying any migration, check the production journal and schema. After applying the missing files, verify the market-scoped and age rules, the single invite claim, paused collection and disabled sending. Confirm both secret names and the enabled Resend webhook without printing secret values or sending a test email.
 
 Safe order: merge → live backend (winback is blocked by the gate from the moment `send-email` is redeployed) → site publication → separate later phase for any campaign.
 
@@ -44,6 +48,6 @@ Privacy request reply deadline defaults to 30 days — confirm per market.
 Re-run:
 ```
 initdb -D /tmp/pgm/data -U postgres; pg_ctl -D /tmp/pgm/data -o "-p 55433 -k /tmp/pgm -c listen_addresses=''" start
-MARKETING_PG=/tmp/pgm bun test tests/integration/marketing   # 23 scenarios, 0 network calls
-bun test tests/*.test.ts                                      # app unit tests
+MARKETING_PG=/tmp/pgm bun test tests/integration/marketing   # 33 scenarios, 0 network calls
+bun test tests/*.test.ts                                      # 104 app tests
 ```
