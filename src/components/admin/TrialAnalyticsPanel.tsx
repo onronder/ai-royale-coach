@@ -6,6 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
+
+type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
+type MarketingReport = { sendingEnabled: boolean; approvedMarkets: string[]; requireIys: boolean; rows: MarketingRow[];
+  accounts: number; granted: number; pending: number; sendable: number; iysPending: number };
 
 type Row = {
   user_id: string; email: string | null; status: string; trial_start: string; trial_end: string | null;
@@ -64,6 +69,16 @@ export function TrialAnalyticsPanel() {
       setSyncing(false);
     }
   };
+
+  const marketing = useQuery({
+    queryKey: ['trial-marketing', days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('admin_trial_marketing' as never, { p_days: days } as never);
+      if (error) throw error;
+      return data as unknown as MarketingReport;
+    },
+  });
+  const consentFor = (r: Row) => marketing.data?.rows.find(m => m.user_id === r.user_id && Date.parse(m.trial_start) === Date.parse(r.trial_start));
 
   const total = data.length;
   const steps = [
@@ -151,11 +166,29 @@ export function TrialAnalyticsPanel() {
             </CardContent>
           </Card>
           <Card>
+            <CardHeader><CardTitle>{t('marketing.admin.title')}</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {marketing.isError ? <Button variant="outline" onClick={() => void marketing.refetch()}>{t('marketing.retry')}</Button>
+                : !marketing.data ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>
+                {!marketing.data.sendingEnabled && <p role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm font-medium">{t('marketing.admin.sendingOff')}</p>}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: t('marketing.admin.accounts'), v: marketing.data.accounts },
+                    { label: t('marketing.admin.granted'), v: marketing.data.granted },
+                    { label: t('marketing.admin.sendableToday'), v: marketing.data.sendable },
+                    { label: t('marketing.admin.iysPending'), v: marketing.data.iysPending },
+                  ].map(c => <div key={c.label} className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">{c.label}</div><div className="text-2xl font-bold">{c.v}</div></div>)}
+                </div>
+                <p className="text-xs text-muted-foreground">{t('marketing.admin.note')}</p>
+              </>)}
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader><CardTitle>{t('admin.trials.users')}</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
-                  <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
+                  <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity', 'marketing.admin.atStart', 'marketing.admin.today', 'marketing.admin.sendableToday'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
                 </thead>
                 <tbody>
                   {data.map(r => (
@@ -172,12 +205,18 @@ export function TrialAnalyticsPanel() {
                       <td className="p-2">{r.active_days}</td>
                       <td className="p-2 whitespace-nowrap">{fmt(r.last_seen)}</td>
                       <td className="p-2 whitespace-nowrap">{t(reason(r))}</td>
+                      {(() => { const m = consentFor(r); return <>
+                        <td className="p-2 whitespace-nowrap">{t('marketing.state.' + (m?.at_start ?? 'unknown'))}</td>
+                        <td className="p-2 whitespace-nowrap">{m ? t('marketing.state.' + m.current) : '—'}</td>
+                        <td className="p-2 whitespace-nowrap">{m ? (m.sendable ? t('marketing.admin.yes') : t('marketing.admin.no') + ' · ' + t('marketing.reason.' + (m.reason ?? 'unknown'))) : '—'}</td>
+                      </>; })()}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </CardContent>
           </Card>
+          <PrivacyRequestsPanel />
         </>
       )}
     </div>
