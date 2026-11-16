@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { getMarketingConsent, newRequestKey, setMarketingConsent, type MarketingState } from '@/lib/marketingConsent';
+import { getMarketingConsent, marketingConsentKey, newRequestKey, setMarketingConsent, type MarketingState } from '@/lib/marketingConsent';
 
 const KINDS = ['access', 'rectification', 'erasure', 'portability', 'objection', 'restriction'] as const;
 type PrivacyRequest = { id: string; kind: string; status: string; received_at: string; due_at: string; responded_at: string | null; outcome: string | null };
@@ -25,13 +25,15 @@ export default function EmailPreferences() {
   useEffect(() => { supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user.id ?? null)); }, []);
   useEffect(() => { if (userId === null) navigate('/auth?returnTo=/settings/email'); }, [userId, navigate]);
 
-  const key = ['marketing-consent', userId];
-  const consent = useQuery({ queryKey: key, queryFn: getMarketingConsent, enabled: !!userId, retry: 1 });
+  const key = marketingConsentKey(userId ?? '', 'prefs');
+  // Read-only key: never shares a cached answer with the Coach invite, which must send its own claiming request.
+  const coachKey = marketingConsentKey(userId ?? '', 'coach');
+  const consent = useQuery({ queryKey: key, queryFn: () => getMarketingConsent(false), enabled: !!userId, retry: 1 });
   const [requestKey, setRequestKey] = useState(newRequestKey);
   const change = useMutation({
     mutationFn: ({ action, expected }: { action: 'grant' | 'withdraw'; expected: MarketingState }) =>
       setMarketingConsent(action, 'preferences', expected, i18n.language, requestKey),
-    onSuccess: r => { client.setQueryData(key, { ...consent.data!, state: r.state, invite: false }); if (r.status === 'ok') setRequestKey(newRequestKey()); },
+    onSuccess: r => { client.setQueryData(key, { ...consent.data!, state: r.state, invite: false }); client.invalidateQueries({ queryKey: coachKey, exact: true }); if (r.status === 'ok') setRequestKey(newRequestKey()); },
   });
 
   const requests = useQuery({ queryKey: ['privacy-requests', userId], enabled: !!userId, queryFn: async () => {

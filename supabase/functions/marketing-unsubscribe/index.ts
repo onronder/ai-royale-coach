@@ -28,7 +28,10 @@ Deno.serve(async (req) => {
   }
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 })
   const admin = createClient(Deno.env.get('SUPABASE_URL') ?? '', Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '')
-  const { error } = await admin.rpc('unsubscribe_marketing', { p_user: v.userId })
+  // Campaign links withdraw consent only for the address that campaign was sent to.
+  const { error } = v.campaignKey
+    ? await admin.rpc('unsubscribe_marketing_delivery', { p_user: v.userId, p_campaign: v.campaignKey })
+    : await admin.rpc('unsubscribe_marketing', { p_user: v.userId })
   if (error) return page(lang, t.title, `<p>${esc(t.bad)}</p>`, 503)
   return page(lang, t.title, `<h1>${esc(t.title)}</h1><p>${esc(t.done)}</p>`)
 })

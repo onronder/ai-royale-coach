@@ -3357,6 +3357,7 @@
     "manage": "Preferências de e-mail",
     "savedOn": "Os e-mails de campanhas estão ativados. Você pode desativá-los em Preferências de e-mail.",
     "saveError": "Não foi possível salvar sua preferência. Sua conta não foi afetada.",
+    "uncertainResult": "Resultado incerto: o provedor de e-mail pode já ter aceitado esta mensagem. Ela não será reenviada automaticamente; verifique o registro do provedor.",
     "conflict": "Sua preferência mudou em outra janela. Verifique novamente.",
     "retry": "Tentar novamente",
     "signupSaveError": "Não foi possível salvar sua escolha de e-mails de campanhas. Você pode defini-la depois em Preferências de e-mail.",

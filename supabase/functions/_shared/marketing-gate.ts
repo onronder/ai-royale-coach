@@ -4,6 +4,7 @@ export interface PromoMail { from: string; to: string[]; subject: string; html: 
 export type PromoClaim =
   | { action: 'done'; messageId: string }
   | { action: 'blocked'; reason: string }
+  | { action: 'unresolved' }
   | { action: 'send'; key: string; payload: PromoMail; email: string };
 export interface PromoStore {
   claim(campaign: string, userId: string, payload: PromoMail): Promise<PromoClaim>;
@@ -31,12 +32,16 @@ export async function deliverPromo(req: PromoRequest, store: PromoStore, provide
   catch { return { status: 'blocked', reason: 'gate_unavailable' }; }
   if (claim.action === 'done') return { status: 'sent', messageId: claim.messageId, repeat: true };
   if (claim.action === 'blocked') return { status: 'blocked', reason: claim.reason };
+  // A previous attempt may have been accepted and can no longer be replayed safely: never send again, report it as uncertain.
+  if (claim.action === 'unresolved') return { status: 'uncertain' };
   const frozen: PromoMail = { ...claim.payload, to: [claim.email] };
   let id: string;
   try { id = await provider.send(frozen, `promo/${claim.key}`); }
   catch { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
-  try { await store.record(req.campaignKey, req.userId, claim.key, id); }
-  catch { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
+  // Only a confirmed local record counts as sent; anything else leaves the outcome uncertain for the admin.
+  let recorded = false;
+  try { recorded = await store.record(req.campaignKey, req.userId, claim.key, id); } catch { recorded = false; }
+  if (!recorded) { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
   return { status: 'sent', messageId: id, repeat: false };
 }
 
@@ -47,6 +52,7 @@ export function sqlPromoStore(rpc: Rpc): PromoStore {
       const r = await rpc('claim_marketing_delivery', { p_campaign: campaign, p_user: userId, p_payload: payload }) as Record<string, unknown>;
       if (!r || typeof r !== 'object') throw new Error('gate returned nothing');
       if (r.action === 'done') return { action: 'done', messageId: String(r.messageId) };
+      if (r.action === 'unresolved') return { action: 'unresolved' };
       if (r.action === 'send') return { action: 'send', key: String(r.key), payload: r.payload as PromoMail, email: String(r.email) };
       return { action: 'blocked', reason: String(r.reason ?? 'unknown') };
     },

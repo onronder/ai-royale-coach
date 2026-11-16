@@ -254,7 +254,7 @@ export function WinbackCampaignPanel() {
       if (emailError) throw emailError;
       const result = data as { status: 'sent' | 'blocked' | 'uncertain'; reason?: string };
       // Only a confirmed provider acceptance counts as sent.
-      if (result?.status !== 'sent') throw new Error(result?.status === 'blocked' ? t('marketing.reason.' + (result.reason ?? 'unknown'), { defaultValue: result.reason }) : t('marketing.saveError'));
+      if (result?.status !== 'sent') throw new Error(result?.status === 'blocked' ? t('marketing.reason.' + (result.reason ?? 'unknown'), { defaultValue: result.reason }) : result?.status === 'uncertain' ? t('marketing.uncertainResult') : t('marketing.saveError'));
       return user;
     },
     onSuccess: (user) => {

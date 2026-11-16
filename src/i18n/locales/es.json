@@ -3357,6 +3357,7 @@
     "manage": "Preferencias de correo",
     "savedOn": "Los correos de campañas están activados. Puedes desactivarlos en Preferencias de correo.",
     "saveError": "No se pudo guardar tu preferencia. Tu cuenta no se ha visto afectada.",
+    "uncertainResult": "Resultado incierto: es posible que el proveedor de correo ya haya aceptado este mensaje. No se volverá a enviar automáticamente; revisa el registro del proveedor.",
     "conflict": "Tu preferencia cambió en otra ventana. Revísala de nuevo.",
     "retry": "Reintentar",
     "signupSaveError": "No se pudo guardar tu elección de correos de campañas. Puedes configurarla más tarde en Preferencias de correo.",

@@ -3357,6 +3357,7 @@
     "manage": "Email preferences",
     "savedOn": "Campaign emails are on. You can turn them off in Email preferences.",
     "saveError": "Your preference could not be saved. Your account is not affected.",
+    "uncertainResult": "Outcome uncertain: the email provider may already have accepted this message. It will not be sent again automatically; check the provider log.",
     "conflict": "Your preference changed in another window. Please check it again.",
     "retry": "Try again",
     "signupSaveError": "Your campaign email choice could not be saved. You can set it later in Email preferences.",

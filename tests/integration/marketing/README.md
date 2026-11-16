@@ -1,4 +1,4 @@
-Acceptance tests for campaign-email consent, the promotional send gate and privacy requests, run against the real SQL in `0021_marketing_collection_rules_and_provider_blocks.sql` and
+Acceptance tests for campaign-email consent, the promotional send gate and privacy requests, run against the real SQL in `0021_marketing_collection_rules_and_provider_blocks.sql`, `0022_marketing_market_scope_and_unresolved_sends.sql` and
 `drizzle/migrations/0020_marketing_consent.sql` on a throwaway local Postgres reachable only through a Unix socket.
 
     initdb -D /tmp/pgm/data -U postgres          # as a non-root user

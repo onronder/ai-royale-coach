@@ -227,7 +227,7 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   } }
   const result = await deliverPromo({ callerIsAdmin: Boolean(isAdmin), campaignKey, userId: userId ?? '' }, sqlPromoStore(rpc), resend, async () => {
     if (!secret) throw new Error('unsubscribe secret missing')
-    const unsubscribeUrl = `${url}/functions/v1/marketing-unsubscribe?t=${encodeURIComponent(await signUnsubscribe(secret, userId!))}&l=${language}`
+    const unsubscribeUrl = `${url}/functions/v1/marketing-unsubscribe?t=${encodeURIComponent(await signUnsubscribe(secret, userId!, campaignKey))}&l=${language}`
     return {
       from: 'AI Royale <noreply@notification.ai-royale.com>', to: [],
       subject: getWinbackPromoSubject(language, discountPercent),

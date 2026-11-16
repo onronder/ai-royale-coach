@@ -14,8 +14,12 @@ export function consentLanguage(lng: string | undefined): (typeof MARKETING_LANG
 }
 export const newRequestKey = () => crypto.randomUUID();
 
-export async function getMarketingConsent(): Promise<MarketingConsent> {
-  const { data, error } = await supabase.rpc('get_my_marketing_consent' as never);
+/** claimInvite: the Coach screen claims the once-per-account invite atomically; other screens read without claiming. */
+/** Cache keys per purpose: the read-only preferences answer must never stand in for the Coach invite's claiming request. */
+export const marketingConsentKey = (userId: string, purpose: 'coach' | 'prefs') => ['marketing-consent', userId, purpose] as const;
+
+export async function getMarketingConsent(claimInvite = false): Promise<MarketingConsent> {
+  const { data, error } = await supabase.rpc('get_my_marketing_consent' as never, { p_claim_invite: claimInvite } as never);
   if (error) throw error;
   return data as unknown as MarketingConsent;
 }

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Mail, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getMarketingConsent, markMarketingPrompt, newRequestKey, setMarketingConsent, type MarketingState } from '@/lib/marketingConsent';
+import { getMarketingConsent, marketingConsentKey, markMarketingPrompt, newRequestKey, setMarketingConsent, type MarketingState } from '@/lib/marketingConsent';
 
 /**
  * Optional, dismissible campaign-email invite on the Coach screen. Shown once per account (not per device or tag), and a
@@ -13,25 +13,30 @@ import { getMarketingConsent, markMarketingPrompt, newRequestKey, setMarketingCo
 export function MarketingInvite({ userId }: { userId: string }) {
   const { t, i18n } = useTranslation();
   const client = useQueryClient();
-  const key = ['marketing-consent', userId];
-  const consent = useQuery({ queryKey: key, queryFn: getMarketingConsent, retry: 1, staleTime: 60_000 });
+  const key = marketingConsentKey(userId, 'coach');
+  const prefsKey = marketingConsentKey(userId, 'prefs');
+  const consent = useQuery({ queryKey: key, queryFn: () => getMarketingConsent(true), retry: 1, staleTime: 60_000 });
   const [requestKey, setRequestKey] = useState(newRequestKey);
   const [hidden, setHidden] = useState(false);
   const marked = useRef(false);
+  // The server offers the invite once per account; the device that showed it keeps it until the player answers or leaves.
+  const [shownHere, setShownHere] = useState(false);
   const data = consent.data;
-  const mode: 'invite' | 'confirm' | null = !data || hidden || !data.collectionOpen ? null : data.state === 'pending' && data.verified ? 'confirm' : data.invite ? 'invite' : null;
+  const mode: 'invite' | 'confirm' | null = !data || hidden || !data.collectionOpen ? null : data.state === 'pending' && data.verified ? 'confirm'
+    : data.invite || (shownHere && data.state === 'not_asked') ? 'invite' : null;
 
+  // The server already recorded the showing when it granted this session the invite; keep it here until answered.
   useEffect(() => {
-    if (mode === 'invite' && !marked.current) { marked.current = true; markMarketingPrompt('shown').catch(() => {}); }
+    if (mode === 'invite' && !marked.current) { marked.current = true; setShownHere(true); }
   }, [mode]);
 
   const grant = useMutation({
     mutationFn: (expected: MarketingState) => setMarketingConsent('grant', mode === 'confirm' ? 'signup_confirm' : 'coach_invite', expected, i18n.language, requestKey),
-    onSuccess: r => { if (r.status !== 'ok') client.invalidateQueries({ queryKey: key }); else client.setQueryData(key, { ...data!, state: r.state, invite: false }); setRequestKey(newRequestKey()); },
+    onSuccess: r => { if (r.status !== 'ok') client.invalidateQueries({ queryKey: key }); else client.setQueryData(key, { ...data!, state: r.state, invite: false }); client.invalidateQueries({ queryKey: prefsKey, exact: true }); setRequestKey(newRequestKey()); },
   });
   const dismiss = useMutation({
     mutationFn: () => markMarketingPrompt('dismissed'),
-    onSuccess: () => { setHidden(true); client.invalidateQueries({ queryKey: key }); },
+    onSuccess: () => { setHidden(true); client.invalidateQueries({ queryKey: key }); client.invalidateQueries({ queryKey: prefsKey, exact: true }); },
   });
 
   if (grant.data?.status === 'ok' && grant.data.state === 'granted') {

@@ -167,7 +167,8 @@ const Auth = () => {
             data: {
               language: i18n.resolvedLanguage ?? 'en',
               // Only creates a pending choice; it becomes consent when the verified player confirms it in the app.
-              marketing: { choice: collectionOpen && marketingOptIn ? 'yes' : 'no', version: MARKETING_TEXT_VERSION, language: consentLanguage(i18n.resolvedLanguage) },
+              // Sent only when the box was actually displayed (collection lookup resolved open); a hidden box records nothing.
+              ...(collectionOpen ? { marketing: { choice: marketingOptIn ? 'yes' : 'no', shown: true, version: MARKETING_TEXT_VERSION, language: consentLanguage(i18n.resolvedLanguage) } } : {}),
             },
           },
         });

@@ -32,9 +32,9 @@ const svc = async (fn: string, args: Record<string, unknown>) => {
   return JSON.parse(psql(`SET ROLE service_role; ${call}`));
 };
 const A = '11111111-1111-4111-8111-111111111111', B = '22222222-2222-4222-8222-222222222222', ADMIN = '99999999-9999-4999-8999-999999999999';
-const user = (id: string, email: string, opts: { confirmed?: boolean; marketing?: 'yes' | 'no'; provider?: string } = {}) => psql(
+const user = (id: string, email: string, opts: { confirmed?: boolean; marketing?: 'yes' | 'no'; shown?: boolean; provider?: string } = {}) => psql(
   `INSERT INTO auth.users (id, email, email_confirmed_at, raw_user_meta_data, raw_app_meta_data) VALUES ('${id}', '${email}',
-   ${opts.confirmed === false ? 'NULL' : 'now()'}, ${lit(opts.marketing ? { marketing: { choice: opts.marketing, version: '2026-11-v1', language: 'tr' } } : {})},
+   ${opts.confirmed === false ? 'NULL' : 'now()'}, ${lit(opts.marketing ? { marketing: { choice: opts.marketing, ...(opts.shown ? { shown: true } : {}), version: '2026-11-v1', language: 'tr' } } : {})},
    ${lit({ provider: opts.provider ?? 'email' })})`);
 const trial = (uid: string, sub: string, startOffset = '0 hours') => psql(`INSERT INTO user_subscriptions (user_id, polar_subscription_id, status, current_period_start, current_period_end, created_at)
   VALUES ('${uid}', '${sub}', 'trialing', now() - interval '${startOffset}', now() - interval '${startOffset}' + interval '72 hours', now() - interval '${startOffset}')`);
@@ -69,7 +69,7 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
   });
   beforeEach(() => {
     psql(`DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`, 'postgres'); psql(`CREATE DATABASE ${DB}`, 'postgres');
-    for (const f of ['tests/integration/marketing/base.sql', 'drizzle/migrations/0020_marketing_consent.sql', 'drizzle/migrations/0021_marketing_collection_rules_and_provider_blocks.sql']) {
+    for (const f of ['tests/integration/marketing/base.sql', 'drizzle/migrations/0020_marketing_consent.sql', 'drizzle/migrations/0021_marketing_collection_rules_and_provider_blocks.sql', 'drizzle/migrations/0022_marketing_market_scope_and_unresolved_sends.sql', 'drizzle/migrations/0023_marketing_hidden_box_and_single_invite_claim.sql']) {
       const r = Bun.spawnSync(['psql', '-h', PG, '-p', PORT, '-U', 'postgres', '-d', DB, '-X', '-v', 'ON_ERROR_STOP=1', '-q', '-f', f]);
       if (r.exitCode !== 0) throw new Error(f + ': ' + r.stderr.toString());
     }
@@ -84,7 +84,7 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
   });
 
   it('empty box at sign-up: declined, no invite, nothing sendable', () => {
-    user(A, 'a@example.invalid', { marketing: 'no' }); trial(A, 'sub-a');
+    user(A, 'a@example.invalid', { marketing: 'no', shown: true }); trial(A, 'sub-a');
     const s = state(A);
     assert.equal(s.state, 'declined'); assert.equal(s.invite, false);
     ok('empty box');
@@ -185,7 +185,7 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     assert.equal(state(A).state, 'not_asked', '"Not now" is not a consent state');
     psql(`UPDATE user_subscriptions SET status = 'canceled'`); trial(A, 'sub-a2');
     assert.equal(state(A).invite, false);
-    user(B, 'b@example.invalid', { marketing: 'no' }); trial(B, 'sub-b');
+    user(B, 'b@example.invalid', { marketing: 'no', shown: true }); trial(B, 'sub-b');
     assert.equal(state(B).invite, false, 'declined at sign-up → no automatic invite');
     ok('single invite / two devices / no re-invite');
   });
@@ -387,4 +387,137 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     assert.throws(() => as(A, `SELECT public.record_provider_email_event('x', 'email.complained', 'c@example.invalid', 'complaint')`), /permission denied/);
     ok('Resend complaint / hard bounce → technical block, next send blocked, no withdrawal recorded; forged/stale events rejected');
   });
+
+  it('review / signup while the optional checkbox is hidden', () => {
+    psql("UPDATE marketing_settings SET collection_markets='{}', age_rule_approved=false");
+    user(A,'example-a@example.invalid',{marketing:'no'});
+    console.log('REVIEW hidden signup: state='+state(A).state+', events='+events(A));
+    assert.equal(state(A).state,'not_asked');
+  });
+
+  it('review / second device after a view without dismissal', () => {
+    user(A,'example-a@example.invalid'); trial(A,'demo-invite');
+    assert.equal(state(A).invite,true);
+    as(A,"SELECT public.mark_marketing_prompt('shown')");
+    console.log('REVIEW already shown, still invited='+state(A).invite);
+    assert.equal(state(A).invite,false);
+  });
+
+  it('review / recording the provider acceptance returned false', async () => {
+    granted(); enableSending(); const p=fakeProvider();
+    const result=await deliverPromo({callerIsAdmin:true,campaignKey:'demo-append',userId:A},
+      {...store,record:async()=>false},p,promo);
+    console.log('REVIEW database did not record acceptance: UI result='+result.status);
+    assert.equal(result.status,'uncertain');
+  });
+
+  it('review / one acceptance for an unresolved send after the provider window', async () => {
+    granted(); enableSending();
+    let hours=0; const accepted:{key:string; hours:number; id:string}[]=[];
+    const provider:PromoProvider={ async send(_mail,key) {
+      const recent=accepted.find(a=>a.key===key && hours-a.hours<24);
+      if(recent) return recent.id;
+      const entry={key,hours,id:'fake-'+String(accepted.length+1)}; accepted.push(entry); return entry.id;
+    }};
+    const first=await deliverPromo({callerIsAdmin:true,campaignKey:'demo-window',userId:A},
+      {...store,record:async()=>{throw new Error('test-only unavailable');}},provider,promo);
+    assert.equal(first.status,'uncertain'); hours=25;
+    psql("UPDATE marketing_deliveries SET created_at=created_at-interval '25 hours', updated_at=updated_at-interval '25 hours'");
+    await send(provider,true,'demo-window');
+    console.log('REVIEW after 25h: provider acceptances='+accepted.length);
+    assert.equal(accepted.length,1);
+  });
+
+  it('review / an address update after an unresolved acceptance', async () => {
+    granted(); enableSending(); const p=fakeProvider(); const req={callerIsAdmin:true,campaignKey:'demo-move',userId:A};
+    assert.equal((await deliverPromo(req,{...store,record:async()=>{throw new Error('test-only unavailable');}},p,promo)).status,'uncertain');
+    psql("UPDATE auth.users SET email='new-a@example.invalid' WHERE id='"+A+"'");
+    assert.equal(set(A,'grant','preferences','not_asked').state,'granted'); registerIys(A);
+    await deliverPromo(req,store,p,promo);
+    console.log('REVIEW same account, new confirmed address: provider acceptances='+p.accepted.length);
+    assert.equal(p.accepted.length,1);
+  });
+
+
+  // ---- Approved market scope (collection, sending, age rule, IYS) ----
+  it('market scope: consent collection and sending follow the approved markets; IYS applies only to its markets', async () => {
+    const C = '33333333-3333-4333-8333-333333333333';
+    psql(`UPDATE marketing_settings SET collection_markets = '{TR,DE}', age_rule_approved = false, age_rule_markets = '{TR,DE}'`);
+    user(A, 'a@example.invalid'); user(B, 'b@example.invalid'); user(C, 'c@example.invalid');
+    psql(`INSERT INTO marketing_account_markets (user_id, market, source) VALUES ('${A}', 'TR', 'admin'), ('${B}', 'DE', 'admin')`);
+    // Collection: TR and DE accounts may consent; an account with no reliable market may not.
+    assert.equal(state(A).collectionOpen, true); assert.equal(state(C).collectionOpen, false);
+    assert.equal(set(A, 'grant', 'preferences', 'not_asked').state, 'granted');
+    assert.equal(set(B, 'grant', 'preferences', 'not_asked').state, 'granted');
+    assert.equal(set(C, 'grant', 'preferences', 'not_asked').status, 'collection_paused');
+    // Sending approved only for DE; IYS required (TR only).
+    psql(`UPDATE marketing_settings SET sending_enabled = true, approved_markets = '{DE}', require_iys = true, iys_markets = '{TR}'`);
+    const p = fakeProvider(); const go = (uid: string) => deliverPromo({ callerIsAdmin: true, campaignKey: 'market-scope', userId: uid }, store, p, promo);
+    assert.deepEqual(await go(A), { status: 'blocked', reason: 'market_rule_pending' });
+    assert.equal((await go(B)).status, 'sent', 'DE is outside the IYS scope: no IYS record needed');
+    // Once TR sending is approved, the TR account still needs its IYS record.
+    psql(`UPDATE marketing_settings SET approved_markets = '{DE,TR}'`);
+    assert.deepEqual(await go(A), { status: 'blocked', reason: 'iys_pending' });
+    registerIys(A); assert.equal((await go(A)).status, 'sent');
+    // Age rule approved only for TR: DE sends are held again.
+    psql(`UPDATE marketing_settings SET age_rule_markets = '{TR}'`);
+    assert.deepEqual(await deliverPromo({ callerIsAdmin: true, campaignKey: 'market-scope-2', userId: B }, store, p, promo), { status: 'blocked', reason: 'age_rule_pending' });
+    assert.deepEqual(p.accepted.map(a => a.mail.to[0]), ['b@example.invalid', 'a@example.invalid']);
+    // Only admins assign a market; players cannot set their own.
+    assert.throws(() => as(C, `SELECT public.admin_set_marketing_market('${C}', 'DE')`), /Not authorized/);
+    assert.throws(() => as(C, 'SELECT * FROM marketing_account_markets'), /permission denied/);
+    as(ADMIN, `SELECT public.admin_set_marketing_market('${C}', 'tr')`);
+    assert.equal(state(C).collectionOpen, true);
+    ok('market scope → collection/sending only in approved markets; IYS only in its markets; unknown market held');
+  });
+
+  it('unsubscribe link from an old email only affects the address that email was sent to', async () => {
+    granted(); enableSending(); const p = fakeProvider();
+    assert.equal((await send(p, true, 'old-mail')).status, 'sent');
+    const tok = await signUnsubscribe('test-secret', A, 'old-mail');
+    const v = await verifyUnsubscribe('test-secret', tok);
+    assert.deepEqual(v, { userId: A, campaignKey: 'old-mail' });
+    // The account moves to a new address and grants consent for it.
+    psql(`UPDATE auth.users SET email = 'new-a@example.invalid' WHERE id = '${A}'`);
+    assert.equal(set(A, 'grant', 'preferences', 'not_asked').state, 'granted');
+    // The old email's link withdraws the old address only; the new address keeps its consent.
+    assert.equal(psql(`SET ROLE service_role; SELECT public.unsubscribe_marketing_delivery('${v!.userId}', '${v!.campaignKey}')`), 'done');
+    assert.equal(state(A).state, 'granted');
+    assert.equal(psql(`SELECT string_agg(email || '=' || event, ',' ORDER BY id) FROM marketing_consent_events WHERE user_id = '${A}'`),
+      'a@example.invalid=granted,new-a@example.invalid=granted,a@example.invalid=withdrawn');
+    // Repeating is harmless; switching back to the old address does not revive the old consent.
+    psql(`SET ROLE service_role; SELECT public.unsubscribe_marketing_delivery('${A}', 'old-mail')`);
+    psql(`UPDATE auth.users SET email = 'a@example.invalid' WHERE id = '${A}'`);
+    assert.equal(state(A).state, 'withdrawn');
+    assert.equal(psql(`SELECT count(*) FROM marketing_consent_events WHERE user_id = '${A}' AND event = 'withdrawn'`), '1');
+    assert.throws(() => as(A, `SELECT public.unsubscribe_marketing_delivery('${A}', 'old-mail')`), /permission denied/);
+    ok('old unsubscribe link → only the address it was sent to');
+  });
+
+  it('independent / submitted signup after hidden checkbox and open collection on the server', () => {
+    // Auth.tsx submits this choice while the checkbox is hidden during a pending or failed rule lookup.
+    user(A, 'qa-signup@example.invalid', {marketing: 'no'});
+    console.log('HIDDEN_SIGNUP state=' + state(A).state + ' events=' + events(A));
+    assert.equal(events(A), 0);
+  });
+  it('independent / two coach screens read eligibility before either records a view', () => {
+    user(A, 'qa-invite@example.invalid'); trial(A, 'trial-invite-qa');
+    const desktop = state(A).invite;
+    const mobile = state(A).invite;
+    as(A, "SELECT public.mark_marketing_prompt('shown')");
+    as(A, "SELECT public.mark_marketing_prompt('shown')");
+    console.log('TWO_SCREENS desktop=' + desktop + ' mobile=' + mobile + ' laterRead=' + state(A).invite);
+    assert.equal(Number(desktop) + Number(mobile), 1);
+  });
+
+  it('preferences read then coach claim → invite once, nothing recorded', () => {
+    user(A, 'qa-prefs-coach@example.invalid'); trial(A, 'trial-prefs-coach');
+    const prefs = asJson(A, 'SELECT public.get_my_marketing_consent(false)');
+    const coach = asJson(A, 'SELECT public.get_my_marketing_consent(true)');
+    const later = asJson(A, 'SELECT public.get_my_marketing_consent(true)');
+    console.log('PREFS_THEN_COACH prefs=' + prefs.invite + ' coach=' + coach.invite + ' later=' + later.invite + ' state=' + coach.state + ' events=' + events(A));
+    assert.equal(prefs.invite, false); assert.equal(coach.invite, true); assert.equal(later.invite, false);
+    assert.equal(coach.state, 'not_asked'); assert.equal(events(A), 0);
+  });
+
 });

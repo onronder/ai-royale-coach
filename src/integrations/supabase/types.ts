@@ -950,6 +950,27 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_account_markets: {
+        Row: {
+          market: string
+          set_at: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          market: string
+          set_at?: string
+          source: string
+          user_id: string
+        }
+        Update: {
+          market?: string
+          set_at?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketing_consent_events: {
         Row: {
           brand: string
@@ -1037,6 +1058,7 @@ export type Database = {
           provider_message_id: string | null
           reason: string | null
           status: string
+          uncertain_since: string | null
           updated_at: string
           user_id: string
         }
@@ -1049,6 +1071,7 @@ export type Database = {
           provider_message_id?: string | null
           reason?: string | null
           status: string
+          uncertain_since?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1061,6 +1084,7 @@ export type Database = {
           provider_message_id?: string | null
           reason?: string | null
           status?: string
+          uncertain_since?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -1134,27 +1158,33 @@ export type Database = {
       marketing_settings: {
         Row: {
           age_rule_approved: boolean
+          age_rule_markets: string[]
           approved_markets: string[]
           collection_markets: string[]
           installed_at: string
+          iys_markets: string[]
           require_iys: boolean
           sending_enabled: boolean
           singleton: boolean
         }
         Insert: {
           age_rule_approved?: boolean
+          age_rule_markets?: string[]
           approved_markets?: string[]
           collection_markets?: string[]
           installed_at?: string
+          iys_markets?: string[]
           require_iys?: boolean
           sending_enabled?: boolean
           singleton?: boolean
         }
         Update: {
           age_rule_approved?: boolean
+          age_rule_markets?: string[]
           approved_markets?: string[]
           collection_markets?: string[]
           installed_at?: string
+          iys_markets?: string[]
           require_iys?: boolean
           sending_enabled?: boolean
           singleton?: boolean
@@ -2400,6 +2430,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_set_marketing_market: {
+        Args: { p_market: string; p_user: string }
+        Returns: undefined
+      }
       admin_trial_marketing: { Args: { p_days?: number }; Returns: Json }
       admin_update_privacy_request: {
         Args: {
@@ -2561,7 +2595,10 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
-      get_my_marketing_consent: { Args: never; Returns: Json }
+      get_my_marketing_consent: {
+        Args: { p_claim_invite?: boolean }
+        Returns: Json
+      }
       get_trial_funnel: {
         Args: { p_days?: number }
         Returns: {
@@ -2600,7 +2637,16 @@ export type Database = {
       }
       mark_marketing_prompt: { Args: { p_action: string }; Returns: undefined }
       marketing_collection_open: { Args: never; Returns: boolean }
+      marketing_collection_open_for: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
       marketing_decision: { Args: { p_user: string }; Returns: Json }
+      marketing_in_scope: {
+        Args: { p_list: string[]; p_market: string }
+        Returns: boolean
+      }
+      marketing_market_of: { Args: { p_user: string }; Returns: string }
       marketing_state_at: {
         Args: { p_at?: string; p_user: string }
         Returns: {
@@ -2736,6 +2782,10 @@ export type Database = {
       trial_coaching_state: { Args: never; Returns: Json }
       trial_summary_state: { Args: never; Returns: Json }
       unsubscribe_marketing: { Args: { p_user: string }; Returns: string }
+      unsubscribe_marketing_delivery: {
+        Args: { p_campaign: string; p_user: string }
+        Returns: string
+      }
       update_trial_coaching: {
         Args: { p_action: string; p_subscription: string; p_value?: string }
         Returns: Json

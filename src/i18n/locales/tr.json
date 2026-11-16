@@ -3357,6 +3357,7 @@
     "manage": "E-posta tercihleri",
     "savedOn": "Kampanya e-postaları açık. E-posta tercihlerinden kapatabilirsin.",
     "saveError": "Tercihin kaydedilemedi. Hesabın etkilenmedi.",
+    "uncertainResult": "Sonuç belirsiz: e-posta sağlayıcısı bu iletiyi kabul etmiş olabilir. Otomatik olarak yeniden gönderilmeyecek; sağlayıcı kaydını kontrol et.",
     "conflict": "Tercihin başka bir pencerede değişti. Lütfen yeniden kontrol et.",
     "retry": "Tekrar dene",
     "signupSaveError": "Kampanya e-posta tercihin kaydedilemedi. Daha sonra E-posta tercihlerinden ayarlayabilirsin.",

@@ -3357,6 +3357,7 @@
     "manage": "Préférences e-mail",
     "savedOn": "Les e-mails de campagnes sont activés. Vous pouvez les désactiver dans Préférences e-mail.",
     "saveError": "Votre préférence n’a pas pu être enregistrée. Votre compte n’est pas affecté.",
+    "uncertainResult": "Résultat incertain : le fournisseur d’e-mail a peut-être déjà accepté ce message. Il ne sera pas renvoyé automatiquement ; vérifiez le journal du fournisseur.",
     "conflict": "Votre préférence a changé dans une autre fenêtre. Vérifiez-la à nouveau.",
     "retry": "Réessayer",
     "signupSaveError": "Votre choix pour les e-mails de campagnes n’a pas pu être enregistré. Vous pourrez le définir plus tard dans Préférences e-mail.",
