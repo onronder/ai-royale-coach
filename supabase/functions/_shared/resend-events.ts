@@ -27,7 +27,7 @@ export async function verifySvix(secret: string, headers: { id: string | null; t
 }
 
 export type BlockReason = 'hard_bounce' | 'complaint' | null;
-export interface ProviderEvent { type?: string; data?: { to?: string[] | string; bounce?: { type?: string } } }
+export interface ProviderEvent { type?: string; data?: { from?: string; to?: string[] | string; bounce?: { type?: string } } }
 export function classify(ev: ProviderEvent): { emails: string[]; block: BlockReason } {
   const to = ev.data?.to; const emails = (Array.isArray(to) ? to : to ? [to] : []).filter(e => typeof e === 'string' && e.includes('@'));
   if (ev.type === 'email.complained') return { emails, block: 'complaint' };
@@ -40,6 +40,12 @@ export async function handleResendEvent(secret: string, headers: { id: string | 
   body: string, record: RecordEvent, nowSeconds?: number): Promise<{ status: number; results?: string[] }> {
   if (!await verifySvix(secret, headers, body, nowSeconds)) return { status: 401 };
   let ev: ProviderEvent; try { ev = JSON.parse(body); } catch { return { status: 400 }; }
+  // The Resend team also serves other products. Ignore their events before reading recipients.
+  const from = ev?.data?.from;
+  const sender = typeof from === 'string' ? from.trim().toLowerCase() : '';
+  if (sender !== 'noreply@notification.ai-royale.com' && sender !== 'ai royale <noreply@notification.ai-royale.com>') {
+    return { status: 200, results: [] };
+  }
   const { emails, block } = classify(ev);
   const results: string[] = [];
   for (const [i, email] of emails.entries()) results.push(await record(`${headers.id}:${i}`, ev.type ?? 'unknown', email, block));

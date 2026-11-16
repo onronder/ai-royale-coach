@@ -364,15 +364,15 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     const C = '33333333-3333-4333-8333-333333333333';
     user(C, 'c@example.invalid', { provider: 'google' }); set(C, 'grant', 'google_first', 'not_asked'); registerIys(C);
     // Forged, tampered and stale events are rejected and change nothing.
-    assert.equal((await deliverEvent('msg_forged', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { secret: 'whsec_' + Buffer.from('attacker').toString('base64') })).status, 401);
-    assert.equal((await deliverEvent('msg_tamper', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { tamper: true })).status, 401);
-    assert.equal((await deliverEvent('msg_old', { type: 'email.complained', data: { to: ['a@example.invalid'] } }, { ts: Math.floor(Date.now() / 1000) - 3600 })).status, 401);
+    assert.equal((await deliverEvent('msg_forged', { type: 'email.complained', data: { from: 'AI Royale <noreply@notification.ai-royale.com>', to: ['a@example.invalid'] } }, { secret: 'whsec_' + Buffer.from('attacker').toString('base64') })).status, 401);
+    assert.equal((await deliverEvent('msg_tamper', { type: 'email.complained', data: { from: 'AI Royale <noreply@notification.ai-royale.com>', to: ['a@example.invalid'] } }, { tamper: true })).status, 401);
+    assert.equal((await deliverEvent('msg_old', { type: 'email.complained', data: { from: 'AI Royale <noreply@notification.ai-royale.com>', to: ['a@example.invalid'] } }, { ts: Math.floor(Date.now() / 1000) - 3600 })).status, 401);
     assert.equal(psql('SELECT count(*) FROM marketing_suppressions'), '0');
     // Transient bounce: recorded, no block.
-    assert.deepEqual((await deliverEvent('msg_soft', { type: 'email.bounced', data: { to: ['c@example.invalid'], bounce: { type: 'Transient' } } })).results, ['ignored']);
+    assert.deepEqual((await deliverEvent('msg_soft', { type: 'email.bounced', data: { from: 'AI Royale <noreply@notification.ai-royale.com>', to: ['c@example.invalid'], bounce: { type: 'Transient' } } })).results, ['ignored']);
     // Complaint for A, permanent bounce for B (delivered twice: Svix retry).
-    assert.deepEqual((await deliverEvent('msg_c1', { type: 'email.complained', data: { to: ['A@example.invalid'] } })).results, ['blocked']);
-    const bounce = { type: 'email.bounced', data: { to: ['b@example.invalid'], bounce: { type: 'Permanent', subType: 'General' } } };
+    assert.deepEqual((await deliverEvent('msg_c1', { type: 'email.complained', data: { from: 'AI Royale <noreply@notification.ai-royale.com>', to: ['A@example.invalid'] } })).results, ['blocked']);
+    const bounce = { type: 'email.bounced', data: { from: 'noreply@notification.ai-royale.com', to: ['b@example.invalid'], bounce: { type: 'Permanent', subType: 'General' } } };
     assert.deepEqual((await deliverEvent('msg_b1', bounce)).results, ['blocked']);
     assert.deepEqual((await deliverEvent('msg_b1', bounce)).results, ['duplicate']);
     assert.equal(psql(`SELECT string_agg(email || '=' || reason, ',' ORDER BY email) FROM marketing_suppressions`), 'a@example.invalid=complaint,b@example.invalid=hard_bounce');
@@ -386,6 +386,18 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     // The webhook writer is server-only.
     assert.throws(() => as(A, `SELECT public.record_provider_email_event('x', 'email.complained', 'c@example.invalid', 'complaint')`), /permission denied/);
     ok('Resend complaint / hard bounce → technical block, next send blocked, no withdrawal recorded; forged/stale events rejected');
+  });
+
+  it('ignores shared-team events whose sender is missing or belongs to a different product', async () => {
+    for (const type of ['email.complained', 'email.bounced']) {
+      for (const from of [undefined, 'Other App <notify@other.example>', 'AI Royale <notify@other.example>']) {
+        const payload = { type, data: { from, to: ['same-recipient@example.invalid'], bounce: { type: 'Permanent' } } };
+        assert.deepEqual(await deliverEvent('msg_scope', payload), { status: 200, results: [] });
+      }
+    }
+    assert.equal(psql('SELECT count(*) FROM public.marketing_provider_events'), '0');
+    assert.equal(psql('SELECT count(*) FROM public.marketing_suppressions'), '0');
+    assert.equal(psql('SELECT count(*) FROM public.marketing_consent_events'), '0');
   });
 
   it('review / signup while the optional checkbox is hidden', () => {
