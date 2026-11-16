@@ -52,6 +52,7 @@ import { AchievementsTab } from "@/components/gamification/AchievementsTab";
 import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
 import { HelpDialog } from "@/components/help/HelpDialog";
 import { FirstSessionTask } from "@/components/coaching/FirstSessionTask";
+import { MarketingInvite } from "@/components/marketing/MarketingInvite";
 const AnalyticsTab = lazy(() => import("@/components/dashboard/AnalyticsTab").then(m => ({ default: m.AnalyticsTab })));
 const DeckBuilder = lazy(() => import("@/components/deck/DeckBuilder").then(m => ({ default: m.DeckBuilder })));
 const TournamentList = lazy(() => import("@/components/tournaments/TournamentList").then(m => ({ default: m.TournamentList })));
@@ -236,6 +237,7 @@ const Dashboard = () => {
                       <TabsTrigger value="leaderboard" className="flex-1">{t("dashboard.subtabs.leaderboard")}</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
+                      <MarketingInvite userId={user.id} />
                       <FirstSessionTask key={`${user.id}:${playerTag}`} userId={user.id} playerTag={playerTag} onMatchResult={refreshAfterMatch} />
                       <OverviewTab
                         playerTag={playerTag}
