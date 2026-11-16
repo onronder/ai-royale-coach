@@ -6,6 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
+import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
+
+type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
+type MarketingReport = { sendingEnabled: boolean; approvedMarkets: string[]; requireIys: boolean; rows: MarketingRow[];
+  collectionOpen: boolean; collectionMarkets: string[]; ageRuleApproved: boolean;
+  accounts: number; granted: number; pending: number; sendable: number; iysPending: number };
 
 type Row = {
   user_id: string; email: string | null; status: string; trial_start: string; trial_end: string | null;
@@ -64,6 +70,16 @@ export function TrialAnalyticsPanel() {
       setSyncing(false);
     }
   };
+
+  const marketing = useQuery({
+    queryKey: ['trial-marketing', days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('admin_trial_marketing' as never, { p_days: days } as never);
+      if (error) throw error;
+      return data as unknown as MarketingReport;
+    },
+  });
+  const consentFor = (r: Row) => marketing.data?.rows.find(m => m.user_id === r.user_id && Date.parse(m.trial_start) === Date.parse(r.trial_start));
 
   const total = data.length;
   const steps = [
@@ -151,6 +167,46 @@ export function TrialAnalyticsPanel() {
             </CardContent>
           </Card>
           <Card>
+            <CardHeader><CardTitle>{t('marketing.admin.title')}</CardTitle></CardHeader>
+            <CardContent className="space-y-3">
+              {marketing.isError ? <Button variant="outline" onClick={() => void marketing.refetch()}>{t('marketing.retry')}</Button>
+                : !marketing.data ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.collectionRule')}</div>
+                    <div className="font-medium">{marketing.data.collectionOpen ? t('marketing.admin.collectionOn') : t('marketing.admin.collectionOff')}</div>
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.marketRule')}: {marketing.data.collectionMarkets.length ? t('marketing.admin.approved') : t('marketing.admin.pending')} · {t('marketing.admin.ageRule')}: {marketing.data.ageRuleApproved ? t('marketing.admin.approved') : t('marketing.admin.pending')}</div>
+                  </div>
+                  <div role="status" className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.sendingRule')}</div>
+                    <div className="font-medium">{marketing.data.sendingEnabled ? t('marketing.admin.sendingOn') : t('marketing.admin.sendingOff')}</div>
+                    <div className="text-xs text-muted-foreground">{t('marketing.admin.sendingRuleNote')}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: t('marketing.admin.accounts'), v: marketing.data.accounts },
+                    { label: t('marketing.admin.granted'), v: marketing.data.granted },
+                    { label: t('marketing.admin.sendableToday'), v: marketing.data.sendable },
+                    { label: t('marketing.admin.iysPending'), v: marketing.data.iysPending },
+                  ].map(c => <div key={c.label} className="rounded-lg border p-3"><div className="text-xs text-muted-foreground">{c.label}</div><div className="text-2xl font-bold">{c.v}</div></div>)}
+                </div>
+                <p className="text-xs text-muted-foreground">{t('marketing.admin.note')}</p>
+                {data.length > 0 && <ul className="divide-y rounded-lg border" aria-label={t('marketing.admin.perPlayer')}>
+                  {data.map(r => { const m = consentFor(r); return (
+                    <li key={r.user_id + r.trial_start} className="p-3">
+                      <div className="truncate text-sm font-medium">{r.email ?? '—'}</div>
+                      <dl className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.atStart')}</dt><dd>{t('marketing.state.' + (m?.at_start ?? 'unknown'))}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.today')}</dt><dd>{m ? t('marketing.state.' + m.current) : '—'}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.sendableToday')}</dt><dd>{m ? (m.sendable ? t('marketing.admin.yes') : <>{t('marketing.admin.no')} <span className="text-muted-foreground">({t('marketing.reason.' + (m.reason ?? 'unknown'))})</span></>) : '—'}</dd></div>
+                      </dl>
+                    </li>); })}
+                </ul>}
+              </>)}
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader><CardTitle>{t('admin.trials.users')}</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -178,6 +234,7 @@ export function TrialAnalyticsPanel() {
               </table>
             </CardContent>
           </Card>
+          <PrivacyRequestsPanel />
         </>
       )}
     </div>

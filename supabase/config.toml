@@ -117,3 +117,10 @@ verify_jwt = true
 
 [functions.confirmed-welcome]
 verify_jwt = true
+
+# Session-free unsubscribe link in campaign emails (signed token checked in code)
+[functions.marketing-unsubscribe]
+verify_jwt = false
+
+[functions.resend-webhook]
+verify_jwt = false

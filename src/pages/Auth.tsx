@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, Crown, ArrowLeft, Sparkles, Shield, Mail, KeyRound, CheckCircle } from "lucide-react";
 import GoogleIcon from "@/components/icons/GoogleIcon";
+import { MARKETING_TEXT_VERSION, consentLanguage, getCollectionOpen, newRequestKey, setMarketingConsent } from "@/lib/marketingConsent";
 
 const TERMS_VERSION = "1.0";
 
@@ -41,6 +42,14 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  // Optional campaign-email choice; separate from the terms and unchecked by default.
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const [oauthMarketing, setOauthMarketing] = useState(false);
+  const [oauthProvider, setOauthProvider] = useState<string | null>(null);
+  const [marketingKey] = useState(newRequestKey);
+  // The optional box is only offered while consent collection is open (market and age rules approved).
+  const [collectionOpen, setCollectionOpen] = useState(false);
+  useEffect(() => { getCollectionOpen().then(setCollectionOpen); }, []);
   
   // Google OAuth terms modal state
   const [showTermsModal, setShowTermsModal] = useState(false);
@@ -82,6 +91,7 @@ const Auth = () => {
           
           if (!profile?.terms_accepted_at) {
             // Show terms modal for OAuth users who haven't accepted
+            setOauthProvider(session.user.app_metadata?.provider ?? null);
             setPendingOAuthUser(session.user.id);
             setShowTermsModal(true);
           } else {
@@ -120,6 +130,7 @@ const Auth = () => {
             }
             
             if (!profile?.terms_accepted_at) {
+              setOauthProvider(session.user.app_metadata?.provider ?? null);
               setPendingOAuthUser(session.user.id);
               setShowTermsModal(true);
             } else {
@@ -153,7 +164,12 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            data: { language: i18n.resolvedLanguage ?? 'en' },
+            data: {
+              language: i18n.resolvedLanguage ?? 'en',
+              // Only creates a pending choice; it becomes consent when the verified player confirms it in the app.
+              // Sent only when the box was actually displayed (collection lookup resolved open); a hidden box records nothing.
+              ...(collectionOpen ? { marketing: { choice: marketingOptIn ? 'yes' : 'no', shown: true, version: MARKETING_TEXT_VERSION, language: consentLanguage(i18n.resolvedLanguage) } } : {}),
+            },
           },
         });
         if (error) throw error;
@@ -300,6 +316,17 @@ const Auth = () => {
         .eq('id', pendingOAuthUser);
       
       if (error) throw error;
+
+      // First Google sign-in: the address is verified by Google, so the player's explicit choice here is recorded directly.
+      // A failure is reported but never blocks sign-in.
+      if (oauthProvider === 'google' && collectionOpen) {
+        try {
+          const r = await setMarketingConsent(oauthMarketing ? 'grant' : 'decline', 'google_first', 'not_asked', i18n.resolvedLanguage ?? 'en', marketingKey);
+          if (r.status !== 'ok' && oauthMarketing) toast.error(t("marketing.signupSaveError"));
+        } catch {
+          if (oauthMarketing) toast.error(t("marketing.signupSaveError"));
+        }
+      }
       
       setShowTermsModal(false);
       setPendingOAuthUser(null);
@@ -755,6 +782,25 @@ const Auth = () => {
                   </Label>
                 </div>
               )}
+              {isSignUp && collectionOpen && (<>
+                <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/30 border border-border/50">
+                  <Checkbox
+                    id="marketing-optin"
+                    checked={marketingOptIn}
+                    onCheckedChange={(checked) => setMarketingOptIn(checked === true)}
+                    disabled={isLoading}
+                    className="mt-0.5"
+                    aria-describedby="marketing-optin-note"
+                  />
+                  <div className="space-y-1">
+                    <Label htmlFor="marketing-optin" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">{t("marketing.text")}</Label>
+                    <p id="marketing-optin-note" className="text-xs text-muted-foreground">
+                      {t("marketing.optionalNote")}{" "}
+                      <Link to="/privacy" target="_blank" className="text-primary hover:underline">{t("marketing.privacyLink")}</Link>
+                    </p>
+                  </div>
+                </div>
+              </>)}
               
               <Button 
                 type="submit" 
@@ -849,6 +895,25 @@ const Auth = () => {
                 </Link>
               </Label>
             </div>
+            {oauthProvider === 'google' && collectionOpen && (<>
+                <div className="flex items-start space-x-3 p-3 rounded-lg bg-background/30 border border-border/50">
+                  <Checkbox
+                    id="oauth-marketing"
+                    checked={oauthMarketing}
+                    onCheckedChange={(checked) => setOauthMarketing(checked === true)}
+                    disabled={isLoading}
+                    className="mt-0.5"
+                    aria-describedby="oauth-marketing-note"
+                  />
+                  <div className="space-y-1">
+                    <Label htmlFor="oauth-marketing" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">{t("marketing.text")}</Label>
+                    <p id="oauth-marketing-note" className="text-xs text-muted-foreground">
+                      {t("marketing.optionalNote")}{" "}
+                      <Link to="/privacy" target="_blank" className="text-primary hover:underline">{t("marketing.privacyLink")}</Link>
+                    </p>
+                  </div>
+                </div>
+            </>)}
             <div className="flex gap-3">
               <Button
                 variant="outline"

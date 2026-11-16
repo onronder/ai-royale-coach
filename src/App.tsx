@@ -25,6 +25,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const SelectPlayer = lazy(() => import("./pages/SelectPlayer"));
 const Settings = lazy(() => import("./pages/Settings"));
+const EmailPreferences = lazy(() => import("./pages/EmailPreferences"));
 const Help = lazy(() => import("./pages/Help"));
 const Demo = lazy(() => import("./pages/Demo"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -100,6 +101,8 @@ const App = () => {
                       <Route path="/privacy" element={<Privacy />} />
                       <Route path="/changelog" element={<Changelog />} />
                       <Route path="/maintenance" element={<Maintenance />} />
+                      {/* Signed-in only: stays reachable after a subscription ends */}
+                      <Route path="/settings/email" element={<EmailPreferences />} />
                       
                       {/* PROTECTED ROUTES - Subscription required */}
                       <Route path="/select-player" element={<RequireSubscription allowReadOnlyAfterTrial><SelectPlayer /></RequireSubscription>} />

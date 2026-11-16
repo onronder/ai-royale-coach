@@ -141,6 +141,34 @@
       "when": 1794758893957,
       "tag": "0019_confirmed_welcome",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794838555461,
+      "tag": "0020_marketing_consent",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1794853156254,
+      "tag": "0021_marketing_collection_rules_and_provider_blocks",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1794859200768,
+      "tag": "0022_marketing_market_scope_and_unresolved_sends",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794861632741,
+      "tag": "0023_marketing_hidden_box_and_single_invite_claim",
+      "breakpoints": true
     }
   ]
 }
