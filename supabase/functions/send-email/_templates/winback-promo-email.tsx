@@ -18,6 +18,7 @@ interface WinbackPromoEmailProps {
   appUrl: string
   promoCode: string
   discountPercent: number
+  unsubscribeUrl?: string
 }
 
 const translations = {

@@ -220,8 +220,10 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   const secret = Deno.env.get('MARKETING_UNSUBSCRIBE_SECRET') ?? ''
   const rpc = async (fn: string, args: Record<string, unknown>) => { const { data, error } = await admin.rpc(fn, args); if (error) throw error; return data }
   const resend = { async send(mail: PromoMail, key: string) {
-    const { data, error } = await new Resend(Deno.env.get('RESEND_API_KEY') as string).emails.send(mail, { idempotencyKey: key } as never)
-    if (error || !data?.id) throw new Error('provider error'); return data.id
+    const r = await fetch('https://api.resend.com/emails', { method: 'POST', body: JSON.stringify(mail), headers: {
+      Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json', 'Idempotency-Key': key } })
+    const data = await r.json().catch(() => null)
+    if (!r.ok || !data?.id) throw new Error('provider error ' + r.status); return String(data.id)
   } }
   const result = await deliverPromo({ callerIsAdmin: Boolean(isAdmin), campaignKey, userId: userId ?? '' }, sqlPromoStore(rpc), resend, async () => {
     if (!secret) throw new Error('unsubscribe secret missing')
