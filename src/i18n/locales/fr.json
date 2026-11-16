@@ -2560,8 +2560,7 @@
     "usesToday": "Utilisations restantes aujourd’hui : {{remaining}}",
     "adminAccess": "Accès administrateur",
     "aiTagAccessOne": "Accès IA pour {{count}} tag joueur",
-    "aiTagAccessMany": "Accès IA pour {{count}} tags joueur",
-    "adminAccessDescription": "L'accès administrateur n'est pas limité à un nombre de tags avec IA"
+    "aiTagAccessMany": "Accès IA pour {{count}} tags joueur"
   },
   "onboarding": {
     "stepOf": "Étape {{current}} sur {{total}}",

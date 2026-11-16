@@ -83,7 +83,6 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
                 </div>
                 <div>
                   <p className="font-semibold font-rajdhani">{t('subscription.adminAccess')}</p>
-                  <p className="text-sm text-muted-foreground">{t('subscription.adminAccessDescription')}</p>
                 </div>
               </>
             ) : plan.kind === 'paid' ? (

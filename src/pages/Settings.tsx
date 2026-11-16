@@ -441,11 +441,9 @@ const Settings = () => {
                 <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border/50">
                   <div>
                     <span className="text-sm font-medium">{t('settings.aiAccounts.slotsUsed')}</span>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {plan.kind === 'admin'
-                        ? t('subscription.adminAccessDescription')
-                        : t(accountSlots === 1 ? 'subscription.aiTagAccessOne' : 'subscription.aiTagAccessMany', { count: accountSlots })}
-                    </p>
+                    {plan.kind !== 'admin' && <p className="text-xs text-muted-foreground mt-0.5">
+                      {t(accountSlots === 1 ? 'subscription.aiTagAccessOne' : 'subscription.aiTagAccessMany', { count: accountSlots })}
+                    </p>}
                   </div>
                   {plan.kind === 'admin' ? (
                     <Badge variant="outline" className="px-3 py-1">{t('subscription.adminAccess')}</Badge>

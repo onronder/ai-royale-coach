@@ -2560,8 +2560,7 @@
     "usesToday": "Bugün kalan kullanım: {{remaining}}",
     "adminAccess": "Yönetici erişimi",
     "aiTagAccessOne": "{{count}} oyuncu etiketi için AI erişimi",
-    "aiTagAccessMany": "{{count}} oyuncu etiketi için AI erişimi",
-    "adminAccessDescription": "Yönetici erişimi belirli sayıda AI oyuncu etiketiyle sınırlı değildir"
+    "aiTagAccessMany": "{{count}} oyuncu etiketi için AI erişimi"
   },
   "onboarding": {
     "stepOf": "Adım {{current}} / {{total}}",

@@ -2549,8 +2549,7 @@
     "usesToday": "Uses left today: {{remaining}}",
     "adminAccess": "Admin access",
     "aiTagAccessOne": "AI access for {{count}} player tag",
-    "aiTagAccessMany": "AI access for {{count}} player tags",
-    "adminAccessDescription": "Admin access is not limited to a set number of AI player tags"
+    "aiTagAccessMany": "AI access for {{count}} player tags"
   },
   "onboarding": {
     "stepOf": "Step {{current}} of {{total}}",
