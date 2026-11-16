@@ -279,12 +279,12 @@ LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $$
   WHERE campaign_key = p_campaign AND user_id = p_user AND idempotency_key = p_key AND status = 'claimed' $$;
 
 -- Session-free unsubscribe from a signed link. Repeating it is harmless.
-CREATE FUNCTION public.unsubscribe_marketing(p_user uuid, p_email text) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+CREATE FUNCTION public.unsubscribe_marketing(p_user uuid) RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE st record;
 BEGIN
   PERFORM pg_advisory_xact_lock(hashtext('marketing:' || p_user));
   SELECT * INTO st FROM public.marketing_state_at(p_user);
-  IF st.email IS NULL OR st.email <> lower(p_email) THEN RETURN 'done'; END IF;
+  IF st.email IS NULL THEN RETURN 'done'; END IF;
   IF st.state IN ('granted','pending') THEN
     INSERT INTO public.marketing_consent_events (user_id, email, event, source, request_key)
     VALUES (p_user, st.email, 'withdrawn', 'unsubscribe_link', 'unsub:' || st.event_id) ON CONFLICT (request_key) DO NOTHING;
@@ -362,12 +362,12 @@ REVOKE ALL ON FUNCTION public.marketing_immutable(), public.marketing_state_at(u
   public.get_my_marketing_consent(), public.set_my_marketing_consent(text, text, text, text, text, text), public.mark_marketing_prompt(text),
   public.capture_trial_marketing_snapshot(), public.marketing_decision(uuid), public.claim_marketing_delivery(text, uuid, jsonb),
   public.record_marketing_delivery(text, uuid, uuid, text), public.mark_marketing_delivery_uncertain(text, uuid, uuid),
-  public.unsubscribe_marketing(uuid, text), public.record_marketing_suppression(text, text), public.admin_trial_marketing(integer),
+  public.unsubscribe_marketing(uuid), public.record_marketing_suppression(text, text), public.admin_trial_marketing(integer),
   public.submit_privacy_request(text, text), public.my_privacy_requests(), public.admin_privacy_requests(),
   public.admin_update_privacy_request(uuid, text, text, text) FROM PUBLIC, anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.get_my_marketing_consent(), public.set_my_marketing_consent(text, text, text, text, text, text),
   public.mark_marketing_prompt(text), public.admin_trial_marketing(integer), public.submit_privacy_request(text, text),
   public.my_privacy_requests(), public.admin_privacy_requests(), public.admin_update_privacy_request(uuid, text, text, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.claim_marketing_delivery(text, uuid, jsonb), public.record_marketing_delivery(text, uuid, uuid, text),
-  public.mark_marketing_delivery_uncertain(text, uuid, uuid), public.unsubscribe_marketing(uuid, text),
+  public.mark_marketing_delivery_uncertain(text, uuid, uuid), public.unsubscribe_marketing(uuid),
   public.record_marketing_suppression(text, text) TO service_role;

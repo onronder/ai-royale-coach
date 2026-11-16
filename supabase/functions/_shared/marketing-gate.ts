@@ -21,18 +21,17 @@ const CAMPAIGN = /^[a-z0-9_:-]{3,80}$/i;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function deliverPromo(req: PromoRequest, store: PromoStore, provider: PromoProvider,
-  build: (email: string) => Promise<PromoMail> | PromoMail): Promise<PromoResult> {
+  build: () => Promise<PromoMail> | PromoMail): Promise<PromoResult> {
   if (!req.callerIsAdmin) return { status: 'blocked', reason: 'not_authorized' };
   if (!CAMPAIGN.test(req.campaignKey) || !UUID.test(req.userId)) return { status: 'blocked', reason: 'invalid_request' };
-  // The draft payload is built for a placeholder address; the store replaces the recipient with the verified one.
-  const draft = await build('');
+  // The recipient is never taken from the caller: the gate returns the account's current verified address.
+  const draft = { ...(await build()), to: [] };
   let claim: PromoClaim;
   try { claim = await store.claim(req.campaignKey, req.userId, draft); }
   catch { return { status: 'blocked', reason: 'gate_unavailable' }; }
   if (claim.action === 'done') return { status: 'sent', messageId: claim.messageId, repeat: true };
   if (claim.action === 'blocked') return { status: 'blocked', reason: claim.reason };
-  const mail = claim.payload.to.length && claim.payload.to[0] ? claim.payload : await build(claim.email);
-  const frozen: PromoMail = { ...mail, to: [claim.email] };
+  const frozen: PromoMail = { ...claim.payload, to: [claim.email] };
   let id: string;
   try { id = await provider.send(frozen, `promo/${claim.key}`); }
   catch { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
