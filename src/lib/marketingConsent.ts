@@ -5,8 +5,8 @@ export const MARKETING_TEXT_VERSION = '2026-11-v1';
 export const MARKETING_LANGUAGES = ['en', 'tr', 'es', 'fr', 'pt'] as const;
 export type MarketingState = 'not_asked' | 'pending' | 'granted' | 'declined' | 'withdrawn' | 'expired';
 export type MarketingSource = 'signup_confirm' | 'google_first' | 'coach_invite' | 'preferences';
-export interface MarketingConsent { state: MarketingState; verified: boolean; since: string | null; invite: boolean; provider: string | null }
-export interface SetResult { status: 'ok' | 'conflict' | 'unverified'; state: MarketingState; repeat?: boolean }
+export interface MarketingConsent { state: MarketingState; verified: boolean; since: string | null; invite: boolean; provider: string | null; collectionOpen: boolean; blocked: boolean }
+export interface SetResult { status: 'ok' | 'conflict' | 'unverified' | 'collection_paused'; state: MarketingState; repeat?: boolean }
 
 export function consentLanguage(lng: string | undefined): (typeof MARKETING_LANGUAGES)[number] {
   const base = (lng ?? 'en').slice(0, 2) as (typeof MARKETING_LANGUAGES)[number];
@@ -34,4 +34,11 @@ export async function setMarketingConsent(action: 'grant' | 'decline' | 'withdra
 export async function markMarketingPrompt(action: 'shown' | 'dismissed') {
   const { error } = await supabase.rpc('mark_marketing_prompt' as never, { p_action: action } as never);
   if (error) throw error;
+}
+
+/** Consent collection is open only once the market and age rules are approved. Fails closed: hide the box on error. */
+export async function getCollectionOpen(): Promise<boolean> {
+  const { data, error } = await supabase.rpc('marketing_collection_open' as never);
+  if (error) return false;
+  return data === true;
 }
