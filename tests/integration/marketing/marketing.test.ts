@@ -328,7 +328,7 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
       assert.equal(events(A), 0, 'no pending consent created');
       const s = state(A); assert.equal(s.state, 'not_asked'); assert.equal(s.collectionOpen, false); assert.equal(s.invite, false);
       // Trial access (what coaching relies on) is untouched by the consent rule.
-      assert.equal(psql(`SELECT count(*) FROM user_subscriptions WHERE user_id = '${A}' AND status = 'trialing'`), '1', 'coaching access continues');
+      assert.equal(psql(`SELECT count(*) FROM user_subscriptions WHERE user_id = '${A}' AND polar_subscription_id = 'sub-a-' || ${paused.length} AND status = 'trialing'`), '1', 'coaching access continues');
       for (const src of ['preferences', 'coach_invite']) assert.equal(set(A, 'grant', src, 'not_asked').status, 'collection_paused');
       assert.equal(events(A), 0);
       assert.equal(asJson(A, 'SELECT to_jsonb(public.marketing_collection_open())'), false);
