@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
+import { planSummary } from "@/lib/planSummary";
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { AIAccountSelector } from "@/components/subscription/AIAccountSelector";
 import { TrialFollowup } from "@/components/coaching/TrialFollowup";
@@ -57,6 +59,8 @@ const Settings = () => {
     accessEndsAt,
     isCancelling,
   } = useSubscription();
+  const { isAdmin } = useAdminAccess();
+  const plan = planSummary({ isAdmin, isTrialActive, subscriptionStatus, accountSlots });
 
   const billingDate = (value?: string | null) => value
     ? new Date(value).toLocaleDateString(i18n.language, { dateStyle: 'medium' })
@@ -280,7 +284,11 @@ const Settings = () => {
                     <div className="flex items-center gap-2">
                       <Crown className="h-4 w-4 text-gold" />
                       <span className="font-medium">
-                        {t('settings.subscription.proTier', { count: accountSlots })}
+                        {plan.kind === 'admin'
+                          ? t('subscription.adminAccess')
+                          : plan.kind === 'trial'
+                            ? t('subscription.freeTrial')
+                            : t('subscription.aiTagAccess', { count: accountSlots })}
                       </span>
                     </div>
                   </div>
@@ -333,7 +341,7 @@ const Settings = () => {
               <div className="pt-2 space-y-2">
                 {hasAccess ? (
                   <>
-                    {accountSlots < 3 && (
+                    {accountSlots < 3 && plan.kind !== 'admin' && (
                       <Button 
                         variant="outline" 
                         className="w-full border-gold/50 hover:bg-gold/10"
@@ -434,12 +442,18 @@ const Settings = () => {
                   <div>
                     <span className="text-sm font-medium">{t('settings.aiAccounts.slotsUsed')}</span>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {t('settings.aiAccounts.slotsDescription', { count: accountSlots })}
+                      {plan.kind === 'admin'
+                        ? t('subscription.adminAccessDescription')
+                        : t('subscription.aiTagAccess', { count: accountSlots })}
                     </p>
                   </div>
-                  <Badge variant={aiEnabledCount === accountSlots ? "default" : "outline"} className="text-lg px-3 py-1">
-                    {aiEnabledCount} / {accountSlots}
-                  </Badge>
+                  {plan.kind === 'admin' ? (
+                    <Badge variant="outline" className="px-3 py-1">{t('subscription.adminAccess')}</Badge>
+                  ) : (
+                    <Badge variant={aiEnabledCount === accountSlots ? "default" : "outline"} className="text-lg px-3 py-1">
+                      {aiEnabledCount} / {accountSlots}
+                    </Badge>
+                  )}
                 </div>
 
                 {/* AI Account List */}

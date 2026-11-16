@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Crown, Clock, Sparkles, AlertCircle } from "lucide-react";
 import { PricingModal } from "@/components/subscription/PricingModal";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
+import { planSummary } from "@/lib/planSummary";
+import { ShieldCheck } from "lucide-react";
 
 interface SubscriptionStatusProps {
   compact?: boolean;
@@ -22,9 +25,19 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
     hasUsedTrial,
     accountSlots,
   } = useSubscription();
+  const { isAdmin } = useAdminAccess();
+  const plan = planSummary({ isAdmin, isTrialActive, subscriptionStatus, accountSlots });
 
   if (compact) {
-    if (subscriptionStatus === 'active') {
+    if (plan.kind === 'admin') {
+      return (
+        <Badge variant="outline" className="border-gold/50 text-gold bg-gold/10">
+          <ShieldCheck className="mr-1 h-3 w-3" />
+          {t('subscription.adminAccess')}
+        </Badge>
+      );
+    }
+    if (plan.kind === 'paid') {
       return (
         <Badge variant="outline" className="border-gold/50 text-gold bg-gold/10">
           <Crown className="mr-1 h-3 w-3" />
@@ -63,7 +76,17 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {subscriptionStatus === 'active' ? (
+            {plan.kind === 'admin' ? (
+              <>
+                <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
+                  <ShieldCheck className="h-5 w-5 text-gold" />
+                </div>
+                <div>
+                  <p className="font-semibold font-rajdhani">{t('subscription.adminAccess')}</p>
+                  <p className="text-sm text-muted-foreground">{t('subscription.adminAccessDescription')}</p>
+                </div>
+              </>
+            ) : plan.kind === 'paid' ? (
               <>
                 <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center">
                   <Crown className="h-5 w-5 text-gold" />
@@ -71,11 +94,11 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
                 <div>
                   <p className="font-semibold font-rajdhani">{t('subscription.proPlan')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {t('subscription.accountSlots', { count: accountSlots })}
+                    {t('subscription.aiTagAccess', { count: plan.aiTags })}
                   </p>
                 </div>
               </>
-            ) : isTrialActive ? (
+            ) : plan.kind === 'trial' ? (
               <>
                 <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                   <Clock className="h-5 w-5 text-primary" />
@@ -102,7 +125,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
             )}
           </div>
 
-          {!hasAccess && (
+          {!hasAccess && plan.kind !== 'admin' && (
             <Button 
               onClick={() => setShowPricingModal(true)}
               className="bg-gradient-to-r from-gold to-yellow-500 text-black hover:from-gold/90 hover:to-yellow-500/90"
@@ -111,7 +134,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
             </Button>
           )}
 
-          {subscriptionStatus === 'active' && (
+          {plan.kind === 'paid' && (
             <Badge variant="outline" className="border-emerald-500/50 text-emerald-500 bg-emerald-500/10">
               {t('subscription.active')}
             </Badge>
