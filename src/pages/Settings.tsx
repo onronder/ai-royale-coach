@@ -288,7 +288,7 @@ const Settings = () => {
                           ? t('subscription.adminAccess')
                           : plan.kind === 'trial'
                             ? t('subscription.freeTrial')
-                            : t('subscription.aiTagAccess', { count: accountSlots })}
+                            : t(accountSlots === 1 ? 'subscription.aiTagAccessOne' : 'subscription.aiTagAccessMany', { count: accountSlots })}
                       </span>
                     </div>
                   </div>
@@ -444,7 +444,7 @@ const Settings = () => {
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {plan.kind === 'admin'
                         ? t('subscription.adminAccessDescription')
-                        : t('subscription.aiTagAccess', { count: accountSlots })}
+                        : t(accountSlots === 1 ? 'subscription.aiTagAccessOne' : 'subscription.aiTagAccessMany', { count: accountSlots })}
                     </p>
                   </div>
                   {plan.kind === 'admin' ? (

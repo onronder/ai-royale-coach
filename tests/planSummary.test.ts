@@ -33,9 +33,9 @@ for (const l of languages) {
     const t = i18n.getFixedT(l);
     const [admin, one, two, three, trial] = expected[l];
     assert.equal(t('subscription.adminAccess'), admin);
-    assert.equal(t('subscription.aiTagAccess', { count: 1 }), one);
-    assert.equal(t('subscription.aiTagAccess', { count: 2 }), two);
-    assert.equal(t('subscription.aiTagAccess', { count: 3 }), three);
+    assert.equal(t('subscription.aiTagAccessOne', { count: 1 }), one);
+    assert.equal(t('subscription.aiTagAccessMany', { count: 2 }), two);
+    assert.equal(t('subscription.aiTagAccessMany', { count: 3 }), three);
     const trialText = t('subscription.trialDaysLeft', { days: 3 });
     if (trial) assert.equal(trialText, trial); else assert.match(trialText, /3/);
   });

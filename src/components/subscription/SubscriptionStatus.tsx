@@ -94,7 +94,7 @@ export function SubscriptionStatus({ compact = false }: SubscriptionStatusProps)
                 <div>
                   <p className="font-semibold font-rajdhani">{t('subscription.proPlan')}</p>
                   <p className="text-sm text-muted-foreground">
-                    {t('subscription.aiTagAccess', { count: plan.aiTags })}
+                    {t(plan.aiTags === 1 ? 'subscription.aiTagAccessOne' : 'subscription.aiTagAccessMany', { count: plan.aiTags })}
                   </p>
                 </div>
               </>

@@ -2559,8 +2559,8 @@
     "quotaExhaustedTooltip": "Tu as utilisé ton quota du jour.",
     "usesToday": "Utilisations restantes aujourd’hui : {{remaining}}",
     "adminAccess": "Accès administrateur",
-    "aiTagAccess_one": "Accès IA pour {{count}} tag joueur",
-    "aiTagAccess_other": "Accès IA pour {{count}} tags joueur",
+    "aiTagAccessOne": "Accès IA pour {{count}} tag joueur",
+    "aiTagAccessMany": "Accès IA pour {{count}} tags joueur",
     "adminAccessDescription": "L'accès administrateur n'est pas limité à un nombre de tags avec IA"
   },
   "onboarding": {
