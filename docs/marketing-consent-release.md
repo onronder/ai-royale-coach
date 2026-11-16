@@ -6,9 +6,10 @@ Starting revision: `b5cb44651602f0fa79a4a18662941d3eb719273c` (draft branch `thr
 | Step | Status |
 |---|---|
 | GitHub PR / merge to main | PENDING — not done |
-| Live backend: migration `0020_marketing_consent`, deploy `send-email`, new `marketing-unsubscribe`, secret `MARKETING_UNSUBSCRIBE_SECRET` | PENDING — not done (applied only to this draft's isolated database) |
+| Live backend: migrations `0020_marketing_consent` + `0021_marketing_collection_rules_and_provider_blocks`, deploy `send-email`, new `marketing-unsubscribe` and `resend-webhook`, secrets `MARKETING_UNSUBSCRIBE_SECRET`, `RESEND_WEBHOOK_SECRET`, then register the webhook (events `email.bounced`, `email.complained`) in Resend | PENDING — not done (applied only to this draft's isolated database) |
 | Website publication | PENDING — not done |
-| Campaign sending switch (`marketing_settings.sending_enabled`, `approved_markets`) | OFF; must stay off until company decisions below |
+| Consent collection (`collection_markets`, `age_rule_approved`) | PAUSED by default: no new consent until market + age rules are approved; withdrawal always works |
+| Campaign sending switch (`sending_enabled`, `approved_markets`, `age_rule_approved`) | OFF; must stay off until company decisions below |
 
 Safe order: merge → live backend (winback is blocked by the gate from the moment `send-email` is redeployed) → site publication → separate later phase for any campaign.
 
@@ -31,3 +32,18 @@ No sale/sharing for advertising or targeted ads was found in code; campaign cons
 | Invite records, trial snapshots | product/report | legitimate interest (to confirm) | company decision | cascade on account deletion / unlinked |
 | Campaign delivery log | one-message-per-campaign proof | legitimate interest (to confirm) | company decision | manual |
 Privacy request reply deadline defaults to 30 days — confirm per market.
+
+## Second delivery (2026-11-16 UTC)
+- Coach: first coaching task above, campaign invite directly below; shorter invite copy; "Not now" kept.
+- Admin → Trials: per-player list with "choice at trial start / today / sendable today (+reason)"; collection rule and sending rule shown separately.
+- Preferences: withdraw-success and save-error states (screenshots in Files `kampanya-izni/v2/`).
+- Collection vs sending: `0021` adds `marketing_collection_open()`; grant returns `collection_paused`, ticked sign-up box records nothing, sign-up/coaching continue, withdraw/unsubscribe always work; age rule also gates sending.
+- Resend complaint / permanent bounce: `resend-webhook` verifies Svix signatures (5-min tolerance), stores a technical block (`hard_bounce` / `complaint`) once per event id; no consent event is written; transient bounces ignored.
+- Visual tests answer AI calls (`analyze-player`, `recommend-deck`) with fake responses; the only pass-through is the read-only coaching `get`. Without the fake, the browser does call these AI functions on the draft backend.
+
+Re-run:
+```
+initdb -D /tmp/pgm/data -U postgres; pg_ctl -D /tmp/pgm/data -o "-p 55433 -k /tmp/pgm -c listen_addresses=''" start
+MARKETING_PG=/tmp/pgm bun test tests/integration/marketing   # 23 scenarios, 0 network calls
+bun test tests/*.test.ts                                      # app unit tests
+```
