@@ -280,11 +280,11 @@ function getAccountUpdateSubject(language: string): string {
 
 function getTrialExpiredSubject(language: string): string {
   const subjects: Record<string, string> = {
-    en: 'Your AI Royale Trial Has Ended - Subscribe Now!',
-    es: 'Tu Prueba de AI Royale Ha Terminado - ¡Suscríbete Ahora!',
-    pt: 'Seu Teste do AI Royale Terminou - Assine Agora!',
-    tr: 'AI Royale Denemeniz Sona Erdi - Şimdi Abone Olun!',
-    fr: 'Votre Essai AI Royale a Expiré - Abonnez-vous Maintenant!',
+    en: 'Your AI Royale trial has ended',
+    es: 'Tu prueba de AI Royale ha terminado',
+    pt: 'Seu teste do AI Royale terminou',
+    tr: 'AI Royale deneme süren sona erdi',
+    fr: 'Votre essai AI Royale est terminé',
   }
   return subjects[language] || subjects.en
 }
