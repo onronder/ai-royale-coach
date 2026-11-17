@@ -8,10 +8,14 @@ export type PromoClaim =
   | { action: 'send'; key: string; payload: PromoMail; email: string };
 export interface PromoStore {
   claim(campaign: string, userId: string, payload: PromoMail): Promise<PromoClaim>;
-  record(campaign: string, userId: string, key: string, messageId: string): Promise<boolean>;
+  record(campaign: string, userId: string, key: string, messageId: string, acceptedAt?: string | null): Promise<boolean>;
   uncertain(campaign: string, userId: string, key: string): Promise<void>;
 }
-export interface PromoProvider { send(mail: PromoMail, idempotencyKey: string): Promise<string> }
+export interface PromoProvider {
+  send(mail: PromoMail, idempotencyKey: string): Promise<string>;
+  /** Provider's own first-acceptance time for a message id (ISO), or null when it cannot be confirmed. */
+  acceptedAt?(messageId: string): Promise<string | null>;
+}
 export type PromoResult =
   | { status: 'sent'; messageId: string; repeat: boolean }
   | { status: 'blocked'; reason: string }
@@ -39,8 +43,10 @@ export async function deliverPromo(req: PromoRequest, store: PromoStore, provide
   try { id = await provider.send(frozen, `promo/${claim.key}`); }
   catch { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
   // Only a confirmed local record counts as sent; anything else leaves the outcome uncertain for the admin.
+  let acceptedAt: string | null = null;
+  try { acceptedAt = provider.acceptedAt ? await provider.acceptedAt(id) : null; } catch { acceptedAt = null; }
   let recorded = false;
-  try { recorded = await store.record(req.campaignKey, req.userId, claim.key, id); } catch { recorded = false; }
+  try { recorded = await store.record(req.campaignKey, req.userId, claim.key, id, acceptedAt); } catch { recorded = false; }
   if (!recorded) { await store.uncertain(req.campaignKey, req.userId, claim.key).catch(() => {}); return { status: 'uncertain' }; }
   return { status: 'sent', messageId: id, repeat: false };
 }
@@ -56,8 +62,8 @@ export function sqlPromoStore(rpc: Rpc): PromoStore {
       if (r.action === 'send') return { action: 'send', key: String(r.key), payload: r.payload as PromoMail, email: String(r.email) };
       return { action: 'blocked', reason: String(r.reason ?? 'unknown') };
     },
-    async record(campaign, userId, key, messageId) {
-      return Boolean(await rpc('record_marketing_delivery', { p_campaign: campaign, p_user: userId, p_key: key, p_message_id: messageId }));
+    async record(campaign, userId, key, messageId, acceptedAt) {
+      return Boolean(await rpc('record_marketing_delivery_at', { p_campaign: campaign, p_user: userId, p_key: key, p_message_id: messageId, p_accepted_at: acceptedAt ?? null }));
     },
     async uncertain(campaign, userId, key) { await rpc('mark_marketing_delivery_uncertain', { p_campaign: campaign, p_user: userId, p_key: key }); },
   };
