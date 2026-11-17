@@ -18,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useSubscription } from "@/hooks/useSubscription";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
+import { AnalysisServiceError, readAnalysisServiceError, retryAnalysisError } from "@/lib/analysisError";
 
 interface MatchDetailViewProps {
   battle: ClashRoyaleBattle | null;
@@ -351,6 +352,8 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
       }
       
       if (error) {
+        const serviceError = await readAnalysisServiceError(error);
+        if (serviceError) throw serviceError;
         // Check if it's an auth error
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           throw new Error('AUTH_REQUIRED');
@@ -368,7 +371,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
     retry: (failureCount, error) => {
       // Don't retry auth or subscription errors
       if (error instanceof Error && (error.message === 'AUTH_REQUIRED' || error.message === 'SUBSCRIPTION_REQUIRED')) return false;
-      return failureCount < 2;
+      return retryAnalysisError(error, failureCount, 2);
     },
   });
   
@@ -517,7 +520,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
                       </Button>
                     </div>
                   ) : (
-                    <p className="text-sm text-destructive">{t('matchDetail.analysisFailed')}</p>
+                    <p className="text-sm text-destructive">{analysisError instanceof AnalysisServiceError ? analysisError.message : t('matchDetail.analysisFailed')}</p>
                   )}
                 </div>
               ) : analysis ? (

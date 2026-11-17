@@ -3,6 +3,7 @@
 For a PR that changes a customer email, record the GitHub merge, production backend deployment/activation and website publication as separate events with UTC timestamps and revisions. Mark pending or inapplicable steps explicitly. Preview shares production services. Run send/retry acceptance with a disposable database and fake provider; reconcile natural production messages read-only. The confirmed welcome rollout is in `docs/confirmed-welcome-release.md`.
 
 ## Page layout
+- Deck and match analysis preserve gateway error statuses and safe messages through the function client; terminal failures are not retried or mistaken for subscription requirements.
 - Dream Arena opponent selection uses the shared AppSidebar and DashboardHeader; cinematic loading and battles remain full-screen to preserve the match experience.
 - On player selection, a live Polar trial with exactly one linked tag and no recorded trial AI usage opens that player once per account (localStorage flag); otherwise the user picks.
 - Subscription access is decided only by `supabase/functions/_shared/subscription-access.ts` (used by get-subscription-status and ai-access); cancellation uses Polar `cancel_at_period_end`, never DELETE, so users keep what they were promised until the period end.

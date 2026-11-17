@@ -6,6 +6,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
+import { analysisErrorResponse } from "../_shared/analysis-error.ts";
 
 interface MatchAnalysisRequest {
   battle: any;
@@ -184,7 +185,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Lovable AI error', { status: response.status, error: errorText });
-      throw new Error(`AI analysis failed: ${response.status}`);
+      return analysisErrorResponse(response.status, errorText);
     }
 
     const aiData = await response.json();
