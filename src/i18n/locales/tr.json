@@ -22,7 +22,31 @@
     "pendingOrders": "Pozitif tutarlı bekleyen siparişler",
     "firstPaid": "İlk ödeme",
     "afterCancel": "İptal sonrası etkinlik",
-    "returnedAfterEnd": "Deneme sonrası gözlenen ilk dönüş"
+    "returnedAfterEnd": "Deneme sonrası gözlenen ilk dönüş",
+    "overview": {
+      "trialsStarted": "Başlayan denemeler",
+      "accounts": "{{trials}} deneme · {{accounts}} ayrı hesap",
+      "d7Paid": "7 gün içinde ödeme",
+      "d7Sub": "7 günlük süresi dolan denemelerden",
+      "d7Wait": "7 günlük süresini dolduran deneme henüz yok",
+      "unknownTime": "Tarihi belirsiz ödemeler",
+      "unknownSub": "Tarih doğrulanana kadar ödeme sayılmaz",
+      "coachSteps": "Koç adımları",
+      "coachNote": "Her adım, gözlendiği deneme sayısını gösterir.",
+      "filters": "Hesapları göster",
+      "all": "Tümü",
+      "trialing": "Deneme sürüyor",
+      "inApp": "Uygulamada geri kazanım adayları",
+      "inAppNote": "Uygulamaya döndüğünde teklif görür. Bu, e-posta gönderme izni vermez.",
+      "email": "Bugün e-postaya uygun",
+      "emailNote": "Kampanya izni ve gönderim kuralları gönderim anında yeniden kontrol edilir.",
+      "none": "Bu grupta hesap yok.",
+      "emptyTitle": "Henüz ölçüm geçmişi yok",
+      "emptyBody": "Bu dönemde başlayan denemeler burada görünecek.",
+      "loadError": "Deneme raporu yüklenemedi.",
+      "retry": "Tekrar dene",
+      "listCount": "{{count}} hesap"
+    }
   },
   "trialFollowup": {
     "survey": "Yenilemeyi neden kapattın? (İsteğe bağlı)",

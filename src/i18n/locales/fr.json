@@ -22,7 +22,31 @@
     "pendingOrders": "Commandes payantes en attente",
     "firstPaid": "Premier paiement",
     "afterCancel": "Activité après annulation",
-    "returnedAfterEnd": "Premier retour observé après l’essai"
+    "returnedAfterEnd": "Premier retour observé après l’essai",
+    "overview": {
+      "trialsStarted": "Essais démarrés",
+      "accounts": "{{trials}} essais · {{accounts}} comptes distincts",
+      "d7Paid": "Payé sous 7 jours",
+      "d7Sub": "Parmi les essais dont les 7 jours sont écoulés",
+      "d7Wait": "Aucun essai n'a encore atteint 7 jours",
+      "unknownTime": "Paiements à date incertaine",
+      "unknownSub": "Non comptés comme payés tant que la date n'est pas confirmée",
+      "coachSteps": "Étapes du coach",
+      "coachNote": "Chaque étape compte les essais où elle a été observée.",
+      "filters": "Afficher les comptes",
+      "all": "Tous",
+      "trialing": "Essai en cours",
+      "inApp": "Candidats à la reconquête dans l'app",
+      "inAppNote": "Voient une offre à leur retour dans l'app. Cela n'autorise pas l'envoi d'emails.",
+      "email": "Éligibles à l'email aujourd'hui",
+      "emailNote": "Le consentement et les règles d'envoi sont revérifiés au moment de l'envoi.",
+      "none": "Aucun compte dans ce groupe.",
+      "emptyTitle": "Pas encore d'historique de mesure",
+      "emptyBody": "Les essais démarrés sur cette période apparaîtront ici.",
+      "loadError": "Le rapport des essais n'a pas pu être chargé.",
+      "retry": "Réessayer",
+      "listCount": "{{count}} comptes"
+    }
   },
   "trialFollowup": {
     "survey": "Pourquoi avez-vous désactivé le renouvellement ? (Facultatif)",
