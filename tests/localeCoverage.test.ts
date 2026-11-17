@@ -4,13 +4,14 @@ import { join } from 'node:path';
 import { it } from 'node:test';
 import ts from 'typescript';
 import { coachingTranslations } from '../src/i18n/coaching';
+import { firstValueTranslations } from '../src/i18n/firstValue';
 
 const src = new URL('../src/', import.meta.url).pathname;
 const languages = ['en', 'tr', 'es', 'fr', 'pt'] as const;
 
 function messages(language: typeof languages[number]) {
   const read = (suffix: string) => JSON.parse(readFileSync(join(src, 'i18n/locales', language + suffix + '.json'), 'utf8'));
-  const dictionary = { ...read(''), ...read('.help'), coaching: coachingTranslations[language] };
+  const dictionary = { ...read(''), ...read('.help'), coaching: coachingTranslations[language], firstValue: firstValueTranslations[language] };
   const entries = new Map<string, string>();
   function visit(value: unknown, key: string) {
     if (typeof value === 'string') entries.set(key, value);

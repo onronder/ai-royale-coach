@@ -14,7 +14,7 @@ const load=f=>readFile(new URL(f,import.meta.url),'utf8');
 const migrations=await readdir(new URL('../../../drizzle/migrations/',import.meta.url));
 let passed=0;
 const ok=(condition,label)=>{ assert.ok(condition,label); passed++; };
-for (const f of ['../marketing/base.sql','../marketing/platform.sql','platform.sql']) {
+for (const f of ['../marketing/base.sql','../marketing/platform.sql','platform.sql','../firstValue/platform.sql','../../../drizzle/migrations/0006_first_session_coaching.sql','../../../drizzle/migrations/0014_coaching_translations.sql']) {
   await sql.unsafe(await load(f));
 }
 const reportingMigrations = migrations.filter(f => /^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort();

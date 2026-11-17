@@ -1,3 +1,4 @@
+import { FirstValuePanel } from '@/components/admin/FirstValuePanel';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -88,7 +89,7 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="overview">
-            {isAdmin ? <RevenueOverviewPanel section="overview" adminId={user?.id} /> : <FraudOverviewDashboard />}
+            {isAdmin ? <div className="space-y-6"><RevenueOverviewPanel section="overview" adminId={user?.id} /><FirstValuePanel /></div> : <FraudOverviewDashboard />}
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">

@@ -2680,6 +2680,11 @@ export type Database = {
       }
     }
     Functions: {
+      get_my_first_value: { Args: Record<PropertyKey, never>; Returns: Json }
+      record_first_value_step: { Args: { p_step: string }; Returns: undefined }
+      first_value_feedback: { Args: { p_reason: string | null }; Returns: boolean }
+      admin_first_value_report: { Args: { p_cohort?: string; p_from?: string | null; p_to?: string | null; p_at?: string; p_metric?: string; p_offset?: number }; Returns: Json }
+
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
       admin_marketing_reach: { Args: never; Returns: Json }
       admin_privacy_requests: {
