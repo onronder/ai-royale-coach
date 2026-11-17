@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, AlertCircle, Inbox } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
 import { consentStateKey, emailWinback, inAppWinback, type WinbackCandidateLite } from '@/lib/winbackAudience';
 
 type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
@@ -381,7 +380,6 @@ export function TrialAnalyticsPanel() {
           </Card>
         </>
       )}
-      <PrivacyRequestsPanel />
     </div>
   );
 }
