@@ -145,7 +145,7 @@ describe('first-acceptance time after a failed first write (fixes PR #15 review)
     const failing = { ...sqlPromoStore(rpc), record: async () => false };
     await send(U(2), 'NOV', fakeProvider(), failing);
     const rows = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x),'[]') FROM admin_winback_candidates() x WHERE x->>'id'='${U(2)}'`));
-    expect(rows[0]).toMatchObject({ winback_allowed: true });
+    expect(rows[0]).toMatchObject({ winback_allowed: false, winback_block_reason: 'previous_uncertain', winback_email_sent_at: null });
   });
 });
 
