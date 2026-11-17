@@ -183,6 +183,13 @@
       "when": 1794911429645,
       "tag": "0025_apply_pending_trial_conversion",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794915172825,
+      "tag": "0026_winback_account_cooldown",
+      "breakpoints": true
     }
   ]
 }

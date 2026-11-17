@@ -62,3 +62,12 @@ export function sqlPromoStore(rpc: Rpc): PromoStore {
     async uncertain(campaign, userId, key) { await rpc('mark_marketing_delivery_uncertain', { p_campaign: campaign, p_user: userId, p_key: key }); },
   };
 }
+
+// Win-back sends: every campaign code lives under the `winback:` namespace so the server-side account cooldown
+// (claim_winback_delivery) sees all of them, and the claim always goes through that cooldown/segment gate.
+export function winbackCampaignKey(code: string, requested?: string | null): string {
+  return requested && /^winback:[a-z0-9_:-]{1,72}$/i.test(requested) ? requested : `winback:${code}`;
+}
+export function winbackRpc(rpc: Rpc): Rpc {
+  return (fn, args) => rpc(fn === 'claim_marketing_delivery' ? 'claim_winback_delivery' : fn, args);
+}
