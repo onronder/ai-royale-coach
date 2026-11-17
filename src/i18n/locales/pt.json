@@ -3120,7 +3120,10 @@
       "sentOne": "E-mail enviado para {{email}}",
       "failedOne": "Falha ao enviar: {{error}}",
       "sentSummary": "Enviados: {{sent}} · Falhas: {{failed}}",
-      "send": "Enviar"
+      "send": "Enviar",
+      "uncertainSent": "Incerto — verifique o registro do provedor",
+      "unverifiedTime": "horário não verificado",
+      "until": "até {{date}}"
     }
   },
   "oraclePage": {
@@ -3472,7 +3475,8 @@
       "unknown": "desconhecido",
       "age_rule_pending": "regra de idade pendente",
       "cooldown": "período de espera: o último e-mail de reativação foi enviado há menos de 720 horas",
-      "previous_uncertain": "um e-mail de reativação anterior tem resultado incerto"
+      "previous_uncertain": "um e-mail de reativação anterior tem resultado incerto",
+      "cooldown_unverified": "período de espera (horário de aceitação não verificado, espera segura mantida)"
     },
     "admin": {
       "title": "Consentimento de e-mails de campanhas",

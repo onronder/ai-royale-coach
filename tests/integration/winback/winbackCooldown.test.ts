@@ -26,19 +26,22 @@ const psqlAsync = async (sql: string) => {
   if (code !== 0) throw new Error(err); return out.trim();
 };
 const lit = (v: unknown) => v === null || v === undefined ? 'NULL' : `'${(typeof v === 'string' ? v : JSON.stringify(v)).replace(/'/g, "''")}'`;
-const cast: Record<string, string> = { p_payload: '::jsonb', p_key: '::uuid', p_user: '::uuid' };
+const cast: Record<string, string> = { p_payload: '::jsonb', p_key: '::uuid', p_user: '::uuid', p_accepted_at: '::timestamptz' };
 // Same shape the edge function uses: service-role RPC, wrapped by winbackRpc exactly like send-email.
 const rpc = winbackRpc(async (fn, a) => JSON.parse(await psqlAsync(`SET ROLE service_role; SELECT to_jsonb(public.${fn}(${Object.entries(a).map(([k, v]) => `${k} => ${lit(v)}${cast[k] ?? ''}`).join(', ')}))`)));
 
 const U = (n: number) => `00000000-0000-0000-0000-00000000000${n}`;
 const promo = (code: string): PromoMail => ({ from: 'AI Royale <noreply@notification.ai-royale.com>', to: [], subject: `Offer ${code}`, html: `<p>${code}</p>` });
 // Fake provider with Resend-like idempotency: the same key returns the same message id and is accepted once.
-function fakeProvider() {
-  const accepted = new Map<string, { id: string; mail: PromoMail }>();
+function fakeProvider(opts: { verifiable?: boolean } = {}) {
+  const accepted = new Map<string, { id: string; mail: PromoMail; at: string }>();
   return { accepted, async send(mail: PromoMail, key: string) {
     const prev = accepted.get(key); if (prev) return prev.id;
     await Bun.sleep(5);
-    const id = 'msg_' + (accepted.size + 1); accepted.set(key, { id, mail }); return id;
+    const id = 'msg_' + (accepted.size + 1); accepted.set(key, { id, mail, at: new Date().toISOString() }); return id;
+  }, async acceptedAt(id: string) {
+    if (opts.verifiable === false) return null;
+    return [...accepted.values()].find(a => a.id === id)?.at ?? null;
   } };
 }
 const send = (userId: string, code: string, provider = fakeProvider(), store = sqlPromoStore(rpc)) =>
@@ -53,7 +56,7 @@ beforeAll(() => {
   const f = (p: string) => readFileSync(new URL(p, import.meta.url), 'utf8');
   const sql = [f('../marketing/base.sql'), f('../conversion/fixture.sql'),
     ...['0020_marketing_consent', '0021_marketing_collection_rules_and_provider_blocks', '0022_marketing_market_scope_and_unresolved_sends',
-      '0023_marketing_hidden_box_and_single_invite_claim', '0024_trial_conversion', '0026_winback_account_cooldown']
+      '0023_marketing_hidden_box_and_single_invite_claim', '0024_trial_conversion', '0026_winback_account_cooldown', '0027_winback_verified_first_acceptance']
       .map(m => f(`../../../drizzle/migrations/${m}.sql`)), f('fixture.sql')].join('\n;\n');
   const r = Bun.spawnSync(['psql', '-h', PG, '-p', PORT, '-U', 'postgres', '-d', DB, '-X', '-q', '-v', 'ON_ERROR_STOP=1'], { env, stdin: Buffer.from(sql) });
   if (r.exitCode !== 0) throw new Error(r.stderr.toString());
@@ -88,6 +91,61 @@ describe('720-hour boundary (UTC instants, fixed clock)', () => {
       expect(Date.parse(a.next_eligible_at)).toBe(Date.parse(b.next_eligible_at));
       expect(Date.parse(a.next_eligible_at)).toBe(Date.parse(LIMIT));
     }
+  });
+});
+
+describe('first-acceptance time after a failed first write (fixes PR #15 review)', () => {
+  const firstFails = async (p: ReturnType<typeof fakeProvider>) => {
+    const failing = { ...sqlPromoStore(rpc), record: async () => { throw new Error('db write failed'); } };
+    expect(await send(U(2), 'NOV', p, failing)).toEqual({ status: 'uncertain' });
+    // The provider accepted it 10 hours ago; the confirmation only happens now (still inside the 23 h replay window).
+    const tenHoursAgo = new Date(Date.now() - 10 * 3600_000).toISOString();
+    [...p.accepted.values()][0].at = tenHoursAgo;
+    psql(`UPDATE marketing_deliveries SET created_at = '${tenHoursAgo}'::timestamptz - interval '1 second' WHERE user_id='${U(2)}'`);
+    return tenHoursAgo;
+  };
+  const row = () => psql(`SELECT accepted_at, accepted_at_verified FROM marketing_deliveries WHERE user_id='${U(2)}'`).split('|');
+  test('verified: 720 h counts from the provider first acceptance, not the late write', async () => {
+    const p = fakeProvider(); const first = await firstFails(p);
+    expect(await send(U(2), 'NOV', p)).toMatchObject({ status: 'sent', messageId: 'msg_1' });
+    const [at, verified] = row();
+    expect(Date.parse(at)).toBe(Date.parse(first)); expect(verified).toBe('t');
+    const d = decide(U(2), new Date().toISOString(), 'UTC');
+    expect(d).toMatchObject({ allowed: false, reason: 'cooldown', last_accepted_verified: true });
+    expect(Date.parse(d.next_eligible_at)).toBe(Date.parse(first) + 720 * 3600_000);
+    expect(p.accepted.size).toBe(1);
+    console.log('[report] verified replay: accepted_at =', at, 'next eligible =', d.next_eligible_at);
+  });
+  test('legacy profile stamp cannot move the acceptance time forward', async () => {
+    const p = fakeProvider(); const first = await firstFails(p);
+    await send(U(2), 'NOV', p);
+    psql(`UPDATE profiles SET winback_email_sent_at = now() WHERE id='${U(2)}'`);
+    const d = decide(U(2), new Date().toISOString(), 'UTC');
+    expect(Date.parse(d.last_accepted_at)).toBe(Date.parse(first));
+    expect(Date.parse(d.next_eligible_at)).toBe(Date.parse(first) + 720 * 3600_000);
+  });
+  test('unverifiable: safe (later) wait is kept and flagged as unverified', async () => {
+    const p = fakeProvider({ verifiable: false }); const first = await firstFails(p);
+    const before = Date.now();
+    expect(await send(U(2), 'NOV', p)).toMatchObject({ status: 'sent' });
+    const [at, verified] = row();
+    expect(verified).toBe('f'); expect(Date.parse(at)).toBeGreaterThan(Date.parse(first));
+    expect(Date.parse(at)).toBeGreaterThanOrEqual(before - 1000);
+    expect(decide(U(2), new Date().toISOString(), 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown_unverified', last_accepted_verified: false });
+    const rows = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x),'[]') FROM admin_winback_candidates() x WHERE x->>'id'='${U(2)}'`));
+    expect(rows[0]).toMatchObject({ winback_allowed: false, winback_block_reason: 'cooldown_unverified', winback_last_verified: false });
+  });
+  test('implausible provider time (before the claim) is not trusted', async () => {
+    const p = fakeProvider(); await firstFails(p);
+    [...p.accepted.values()][0].at = new Date(Date.now() - 40 * 86400_000).toISOString();
+    await send(U(2), 'NOV', p);
+    expect(row()[1]).toBe('f');
+  });
+  test('admin list: uncertain previous send is reported as such, not as never sent', async () => {
+    const failing = { ...sqlPromoStore(rpc), record: async () => false };
+    await send(U(2), 'NOV', fakeProvider(), failing);
+    const rows = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x),'[]') FROM admin_winback_candidates() x WHERE x->>'id'='${U(2)}'`));
+    expect(rows[0]).toMatchObject({ winback_allowed: false, winback_block_reason: 'previous_uncertain', winback_email_sent_at: null });
   });
 });
 

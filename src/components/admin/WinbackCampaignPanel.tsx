@@ -56,6 +56,7 @@ interface EligibleUser {
   winback_allowed: boolean | null;
   winback_block_reason: string | null;
   winback_next_eligible_at: string | null;
+  winback_last_verified: boolean | null;
   // Activity metrics
   activity_score: number;
   ai_requests: number;
@@ -363,10 +364,18 @@ export function WinbackCampaignPanel() {
       render: (user) => (
         user.winback_email_sent_at ? (
           <div className="flex items-center gap-1">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
+            {user.winback_last_verified === false
+              ? <AlertCircle className="h-4 w-4 text-amber-500" />
+              : <CheckCircle2 className="h-4 w-4 text-green-500" />}
             <span className="text-muted-foreground text-sm">
               {formatDistanceToNow(new Date(user.winback_email_sent_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
+              {user.winback_last_verified === false && <> · {t('admin.winback.unverifiedTime')}</>}
             </span>
+          </div>
+        ) : user.winback_block_reason === 'previous_uncertain' ? (
+          <div className="flex items-center gap-1">
+            <AlertCircle className="h-4 w-4 text-amber-500" />
+            <span className="text-sm text-amber-600">{t('admin.winback.uncertainSent')}</span>
           </div>
         ) : (
           <span className="text-muted-foreground text-sm">{t('admin.winback.never')}</span>
@@ -378,15 +387,25 @@ export function WinbackCampaignPanel() {
       header: t('admin.winback.actions'),
       isAction: true,
       render: (user) => (
-        <Button
-          size="sm"
-          variant={canSendToUser(user) ? 'default' : 'outline'}
-          disabled={!isConfigValid || sendEmailMutation.isPending || !canSendToUser(user)}
-          onClick={() => sendEmailMutation.mutate(user)}
-        >
-          <Send className="h-4 w-4 mr-1" />
-          {sendEmailMutation.isPending ? t('admin.winback.sending') : t('admin.winback.send')}
-        </Button>
+        <div className="flex flex-col items-start gap-1">
+          <Button
+            size="sm"
+            variant={canSendToUser(user) ? 'default' : 'outline'}
+            disabled={!isConfigValid || sendEmailMutation.isPending || !canSendToUser(user)}
+            onClick={() => sendEmailMutation.mutate(user)}
+          >
+            <Send className="h-4 w-4 mr-1" />
+            {sendEmailMutation.isPending ? t('admin.winback.sending') : t('admin.winback.send')}
+          </Button>
+          {!canSendToUser(user) && (
+            <span className="text-xs text-muted-foreground max-w-[220px]" data-testid="winback-block-reason">
+              {t('marketing.reason.' + (user.winback_block_reason ?? 'unknown'), { defaultValue: user.winback_block_reason ?? '' })}
+              {user.winback_next_eligible_at && user.winback_block_reason !== 'previous_uncertain' && (
+                <> · {t('admin.winback.until', { date: new Date(user.winback_next_eligible_at).toLocaleString(i18n.language, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC' })}</>
+              )}
+            </span>
+          )}
+        </div>
       ),
     },
   ];

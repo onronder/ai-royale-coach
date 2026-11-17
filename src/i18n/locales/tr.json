@@ -3120,7 +3120,10 @@
       "sentOne": "E-posta gönderildi: {{email}}",
       "failedOne": "E-posta gönderilemedi: {{error}}",
       "sentSummary": "Gönderilen: {{sent}} · Başarısız: {{failed}}",
-      "send": "Gönder"
+      "send": "Gönder",
+      "uncertainSent": "Belirsiz — sağlayıcı kaydını kontrol edin",
+      "unverifiedTime": "zaman doğrulanmadı",
+      "until": "{{date}} tarihine kadar"
     }
   },
   "oraclePage": {
@@ -3472,7 +3475,8 @@
       "unknown": "bilinmiyor",
       "age_rule_pending": "yaş kuralı bekliyor",
       "cooldown": "bekleme süresi: son geri kazanım e-postasının üzerinden 720 saat geçmedi",
-      "previous_uncertain": "önceki geri kazanım e-postasının sonucu belirsiz"
+      "previous_uncertain": "önceki geri kazanım e-postasının sonucu belirsiz",
+      "cooldown_unverified": "bekleme süresi (kabul zamanı doğrulanamadı, güvenli bekleme korunuyor)"
     },
     "admin": {
       "title": "Kampanya e-posta izni",

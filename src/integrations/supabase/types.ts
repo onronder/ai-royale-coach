@@ -1051,6 +1051,7 @@ export type Database = {
       marketing_deliveries: {
         Row: {
           accepted_at: string | null
+          accepted_at_verified: boolean | null
           campaign_key: string
           created_at: string
           email: string
@@ -1065,6 +1066,7 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
+          accepted_at_verified?: boolean | null
           campaign_key: string
           created_at?: string
           email: string
@@ -1079,6 +1081,7 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
+          accepted_at_verified?: boolean | null
           campaign_key?: string
           created_at?: string
           email?: string
@@ -2933,6 +2936,16 @@ export type Database = {
       }
       record_marketing_delivery: {
         Args: {
+          p_campaign: string
+          p_key: string
+          p_message_id: string
+          p_user: string
+        }
+        Returns: boolean
+      }
+      record_marketing_delivery_at: {
+        Args: {
+          p_accepted_at: string
           p_campaign: string
           p_key: string
           p_message_id: string

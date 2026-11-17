@@ -224,6 +224,13 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
       Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json', 'Idempotency-Key': key } })
     const data = await r.json().catch(() => null)
     if (!r.ok || !data?.id) throw new Error('provider error ' + r.status); return String(data.id)
+  },
+  // The provider's own record of the message: its created_at is the first acceptance, also for an idempotent replay.
+  async acceptedAt(id: string) {
+    const r = await fetch(`https://api.resend.com/emails/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}` } })
+    const data = r.ok ? await r.json().catch(() => null) : null
+    const t = data?.id === id && typeof data?.created_at === 'string' ? Date.parse(data.created_at) : NaN
+    return Number.isNaN(t) ? null : new Date(t).toISOString()
   } }
   const result = await deliverPromo({ callerIsAdmin: Boolean(isAdmin), campaignKey, userId: userId ?? '' }, sqlPromoStore(rpc), resend, async () => {
     if (!secret) throw new Error('unsubscribe secret missing')
@@ -236,7 +243,7 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
     }
   }).catch(() => ({ status: 'blocked' as const, reason: 'gate_unavailable' }))
   if (result.status === 'sent' && !result.repeat) {
-    await admin.from('profiles').update({ winback_email_sent_at: new Date().toISOString() }).eq('id', userId!)
+    // The cooldown time lives on the delivery row (provider acceptance); the legacy profile stamp is no longer written.
     await admin.from('winback_campaigns').insert({ admin_user_id: caller!.user!.id, target_user_id: userId, target_email: profile?.email ?? '', promo_code: code,
       discount_percent: discountPercent, polar_discount_id: (body as { polarDiscountId?: string }).polarDiscountId ?? null })
   }

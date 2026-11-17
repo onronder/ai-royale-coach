@@ -3109,7 +3109,10 @@
       "sentOne": "Email sent to {{email}}",
       "failedOne": "Could not send the email: {{error}}",
       "sentSummary": "Sent: {{sent}} · Failed: {{failed}}",
-      "send": "Send"
+      "send": "Send",
+      "uncertainSent": "Uncertain — check the provider log",
+      "unverifiedTime": "time unverified",
+      "until": "until {{date}}"
     }
   },
   "oraclePage": {
@@ -3472,7 +3475,8 @@
       "unknown": "unknown",
       "age_rule_pending": "age rule pending",
       "cooldown": "waiting period: last win-back email less than 720 hours ago",
-      "previous_uncertain": "a previous win-back email has an uncertain result"
+      "previous_uncertain": "a previous win-back email has an uncertain result",
+      "cooldown_unverified": "waiting period (acceptance time unverified, safe wait kept)"
     },
     "admin": {
       "title": "Campaign email consent",
