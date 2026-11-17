@@ -360,9 +360,9 @@ export function TrialAnalyticsPanel() {
               </table>
             </CardContent>
           </Card>
-          <PrivacyRequestsPanel />
         </>
       )}
+      <PrivacyRequestsPanel />
     </div>
   );
 }
