@@ -6,7 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle, Inbox } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
 
 type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
@@ -30,6 +31,7 @@ export function TrialAnalyticsPanel() {
   const { t, i18n } = useTranslation();
   const fmt = (date: string | null) => date ? new Date(date).toLocaleString(i18n.language) : '—';
   const [days, setDays] = useState(30);
+  const [filter, setFilter] = useState<string>('all');
   const answers = useQuery({
     queryKey: ['trial-cancel-answers', days],
     queryFn: async () => {
@@ -89,6 +91,23 @@ export function TrialAnalyticsPanel() {
     { label: t('admin.trials.returned'), n: data.filter(r => r.active_days >= 2).length },
     { label: t('admin.trials.converted'), n: data.filter(r => r.has_payment).length },
   ];
+  const accounts = new Set(data.map(row => row.user_id)).size;
+  const coachSteps = [
+    { label: t('conversion.cardSeen'), n: data.filter(r => r.card_seen).length },
+    { label: t('conversion.requested'), n: data.filter(r => r.requested).length },
+    { label: t('conversion.match'), n: data.filter(r => r.matched).length },
+  ];
+  const filters = [
+    { key: 'all', label: t('conversion.overview.all'), match: () => true },
+    { key: 'trialing', label: t('conversion.overview.trialing'), match: (r: Row) => r.segment === 'trial_renewal_on' || r.segment === 'trial_renewal_off' },
+    { key: 'trial_renewal_off', label: t('conversion.trial_renewal_off'), match: (r: Row) => r.segment === 'trial_renewal_off' },
+    { key: 'payment_recovery', label: t('conversion.payment_recovery'), match: (r: Row) => r.segment === 'payment_recovery' },
+    { key: 'expired_winback', label: t('conversion.expired_winback'), match: (r: Row) => r.segment === 'expired_winback' },
+  ];
+  const activeFilter = filters.find(f => f.key === filter) ?? filters[0];
+  const visible = data.filter(activeFilter.match);
+  const inAppRows = data.filter(r => r.segment === 'expired_winback');
+  const emailRows = (marketing.data?.rows ?? []).filter(m => m.sendable).map(m => ({ key: m.subscription_id, email: data.find(r => r.subscription_id === m.subscription_id)?.email ?? null }));
   const canceled = data.filter(r => r.canceled_at !== null);
   const within1h = canceled.filter(r => (cancelHours(r) ?? 99) <= 1).length;
   const avgCancel = canceled.length ? canceled.reduce((a, r) => a + (cancelHours(r) ?? 0), 0) / canceled.length : null;
@@ -101,16 +120,105 @@ export function TrialAnalyticsPanel() {
           <Button key={d} size="sm" variant={d === days ? 'default' : 'outline'} onClick={() => setDays(d)}>{t('admin.trials.daysRange', { days: d })}</Button>
         ))}
       </div>
-      {isLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : error ? (
-        <p className="text-destructive">{(error as Error).message}</p>
+      {isLoading ? (
+        <div className="space-y-4" aria-busy="true">
+          <div className="grid gap-4 md:grid-cols-3">{[0, 1, 2].map(i => <Skeleton key={i} className="h-28 rounded-lg" />)}</div>
+          <Skeleton className="h-24 rounded-lg" />
+          <Skeleton className="h-64 rounded-lg" />
+        </div>
+      ) : error ? (
+        <Card role="alert" className="border-destructive/50">
+          <CardContent className="flex flex-col items-start gap-3 p-6 sm:flex-row sm:items-center">
+            <AlertCircle className="h-5 w-5 text-destructive" />
+            <div className="flex-1">
+              <p className="font-medium">{t('conversion.overview.loadError')}</p>
+              <p className="text-sm text-muted-foreground">{(error as Error).message}</p>
+            </div>
+            <Button variant="outline" onClick={() => void refetchCohort()}>{t('conversion.overview.retry')}</Button>
+          </CardContent>
+        </Card>
+      ) : total === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-2 p-10 text-center">
+            <Inbox className="h-8 w-8 text-muted-foreground" />
+            <p className="font-medium">{t('conversion.overview.emptyTitle')}</p>
+            <p className="text-sm text-muted-foreground">{t('conversion.overview.emptyBody')}</p>
+          </CardContent>
+        </Card>
       ) : (
         <>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground">{t('conversion.overview.trialsStarted')}</p>
+                <p className="mt-1 text-3xl font-bold">{total}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('conversion.overview.accounts', { trials: total, accounts })}</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground">{t('conversion.overview.d7Paid')}</p>
+                <p className="mt-1 text-3xl font-bold">
+                  {!rev ? '–' : rev.eligible_trials ? <>{rev.eligible_paid}<span className="text-lg text-muted-foreground"> / {rev.eligible_trials}</span></> : '—'}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {rev && rev.eligible_trials ? `${Math.round((rev.eligible_paid / rev.eligible_trials) * 100)}% · ${t('conversion.overview.d7Sub')}` : t('conversion.overview.d7Wait')}
+                </p>
+              </CardContent>
+            </Card>
+            <Card className={rev?.unknown_paid_time ? 'border-primary/40' : undefined}>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground">{t('conversion.overview.unknownTime')}</p>
+                <p className="mt-1 text-3xl font-bold">{rev?.unknown_paid_time ?? '–'}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('conversion.overview.unknownSub')}</p>
+              </CardContent>
+            </Card>
+          </div>
+          {rev && rev.unclassified_subscriptions > 0 && <p className="text-sm text-muted-foreground">{t('conversion.unclassified', { count: rev.unclassified_subscriptions })}</p>}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">{t('conversion.overview.coachSteps')}</CardTitle>
+              <p className="text-xs text-muted-foreground">{t('conversion.overview.coachNote')}</p>
+            </CardHeader>
+            <CardContent>
+              <ol className="grid gap-3 sm:grid-cols-3">
+                {coachSteps.map((s, i) => (
+                  <li key={s.label} className="rounded-lg border bg-muted/30 p-3">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-primary">{i + 1}</span>{s.label}
+                    </div>
+                    <div className="mt-1 text-2xl font-bold">{s.n} <span className="text-sm font-normal text-muted-foreground">{Math.round((s.n / total) * 100)}%</span></div>
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              { title: t('conversion.overview.inApp'), note: t('conversion.overview.inAppNote'), rows: inAppRows.map(r => ({ key: r.subscription_id, email: r.email })) },
+              { title: t('conversion.overview.email'), note: t('conversion.overview.emailNote'), rows: emailRows },
+            ].map(g => (
+              <Card key={g.title}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <CardTitle className="text-base">{g.title}</CardTitle>
+                    <Badge variant="secondary">{t('conversion.overview.listCount', { count: g.rows.length })}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{g.note}</p>
+                </CardHeader>
+                <CardContent>
+                  {g.rows.length ? (
+                    <ul className="max-h-48 divide-y overflow-y-auto rounded-md border text-sm">
+                      {g.rows.map(r => <li key={r.key} className="truncate px-3 py-2">{r.email ?? '—'}</li>)}
+                    </ul>
+                  ) : <p className="text-sm text-muted-foreground">{g.title === t('conversion.overview.email') && !marketing.data ? (marketing.isError ? t('conversion.overview.loadError') : '…') : t('conversion.overview.none')}</p>}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
           <Card>
             <CardHeader><CardTitle>{t('admin.trials.funnel')}</CardTitle>
-              <p className="text-sm text-muted-foreground">{t('conversion.scope', {
-                trials: total, accounts: new Set(data.map(row => row.user_id)).size,
-              })}</p>
-              {rev && rev.unclassified_subscriptions > 0 && <p className="text-sm text-muted-foreground">{t('conversion.unclassified', { count: rev.unclassified_subscriptions })}</p>}
+              <p className="text-sm text-muted-foreground">{t('conversion.scope', { trials: total, accounts })}</p>
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {steps.map(s => (
@@ -213,14 +321,23 @@ export function TrialAnalyticsPanel() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle>{t('admin.trials.users')}</CardTitle></CardHeader>
+            <CardHeader className="space-y-3"><CardTitle>{t('admin.trials.users')}</CardTitle>
+              <div role="group" aria-label={t('conversion.overview.filters')} className="flex flex-wrap gap-2">
+                {filters.map(f => (
+                  <Button key={f.key} size="sm" variant={f.key === activeFilter.key ? 'default' : 'outline'} aria-pressed={f.key === activeFilter.key} onClick={() => setFilter(f.key)}>
+                    {f.label} <span className="ml-1 opacity-70">{data.filter(f.match).length}</span>
+                  </Button>
+                ))}
+              </div>
+            </CardHeader>
             <CardContent className="overflow-x-auto">
+              {visible.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">{t('conversion.overview.none')}</p>}
               <table className="w-full text-sm">
                 <thead className="text-left text-muted-foreground">
                   <tr>{['auth.email', 'admin.fraudCases.columns.status', 'admin.trials.started', 'admin.trials.ends', 'admin.trials.canceled', 'admin.trials.hours', 'admin.trials.tags', 'commonExtra.ai', 'admin.trials.chat', 'admin.trials.days', 'admin.trials.lastSeen', 'admin.trials.activity', 'conversion.firstPaid', 'conversion.afterCancel', 'conversion.returnedAfterEnd'].map(h => <th key={h} className="p-2 whitespace-nowrap">{t(h)}</th>)}</tr>
                 </thead>
                 <tbody>
-                  {data.map(r => (
+                  {visible.map(r => (
                     <tr key={r.subscription_id} className="border-t">
                       <td className="p-2">{r.email}</td>
                       <td className="p-2"><Badge variant="outline">{r.status === 'superseded' ? t('conversion.superseded') : t('admin.trials.status.' + r.status, { defaultValue: r.status })}</Badge></td>
