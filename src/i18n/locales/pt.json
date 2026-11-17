@@ -3261,6 +3261,25 @@
         "canceled": "Cancelada",
         "revoked": "Revogada",
         "cancelled": "Cancelada"
+      },
+      "reach": {
+        "title": "Alcance de e-mails de campanha (contas com acesso)",
+        "note": "Pelas regras de consentimento do servidor. Uma contagem por conta. Não derivado do funil de cadastro.",
+        "active_paid": "Pagos ativos",
+        "active_trial": "Em teste",
+        "already_chose": "Já escolheram",
+        "invitable": "Podem ser convidados",
+        "waiting_missing_info": "Aguardando informações",
+        "reasons": "Motivos de espera",
+        "reason": {
+          "email_unverified": "E-mail não verificado",
+          "market_unknown": "Mercado desconhecido",
+          "market_closed": "Mercado fechado",
+          "age_unknown": "Idade desconhecida",
+          "age_rule_pending": "Regra de idade pendente",
+          "iys_not_ready": "İYS não pronto",
+          "closed": "Coleta fechada"
+        }
       }
     }
   },

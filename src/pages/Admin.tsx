@@ -17,6 +17,7 @@ import { RevenueOverviewPanel } from '@/components/admin/RevenueOverviewPanel';
 import { UserDirectoryPanel } from '@/components/admin/UserDirectoryPanel';
 import { UnstartedAudienceCard } from '@/components/admin/UnstartedAudienceCard';
 import { PrivacyRequestsPanel } from '@/components/admin/PrivacyRequestsPanel';
+import { MarketingReachCard } from '@/components/admin/MarketingReachCard';
 import { Navbar } from '@/components/layout/Navbar';
 
 /**
@@ -106,6 +107,7 @@ export default function Admin() {
           {isAdmin && <TabsContent value="revenue"><RevenueOverviewPanel section="revenue" /></TabsContent>}
 
           <TabsContent value="campaigns" className="space-y-6">
+            {isAdmin && <MarketingReachCard />}
             {isAdmin && <UnstartedAudienceCard />}
             <WinbackCampaignPanel />
           </TabsContent>

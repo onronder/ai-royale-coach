@@ -3261,6 +3261,25 @@
         "canceled": "İptal",
         "revoked": "Kapatıldı",
         "cancelled": "İptal"
+      },
+      "reach": {
+        "title": "Kampanya e-postası erişimi (erişimi olan hesaplar)",
+        "note": "Sunucunun izin kurallarından. Hesap başına tek sayım. Kayıt hunisinden türetilmez.",
+        "active_paid": "Aktif ücretli",
+        "active_trial": "Denemede",
+        "already_chose": "Karar vermiş",
+        "invitable": "Davet edilebilir",
+        "waiting_missing_info": "Eksik bilgiyle bekleyen",
+        "reasons": "Bekleme gerekçeleri",
+        "reason": {
+          "email_unverified": "E-posta doğrulanmamış",
+          "market_unknown": "Pazar bilinmiyor",
+          "market_closed": "Pazar kapalı",
+          "age_unknown": "Yaş bilinmiyor",
+          "age_rule_pending": "Yaş kuralı bekliyor",
+          "iys_not_ready": "İYS hazır değil",
+          "closed": "İzin toplama kapalı"
+        }
       }
     }
   },

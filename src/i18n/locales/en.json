@@ -3250,6 +3250,25 @@
         "canceled": "Canceled",
         "revoked": "Revoked",
         "cancelled": "Canceled"
+      },
+      "reach": {
+        "title": "Campaign email reach (accounts with access)",
+        "note": "From the server’s consent rules. One count per account. Not derived from the sign-up funnel.",
+        "active_paid": "Active paid",
+        "active_trial": "In trial",
+        "already_chose": "Already chose",
+        "invitable": "Can be invited",
+        "waiting_missing_info": "Waiting for missing info",
+        "reasons": "Waiting reasons",
+        "reason": {
+          "email_unverified": "Email not verified",
+          "market_unknown": "Market unknown",
+          "market_closed": "Market closed",
+          "age_unknown": "Age unknown",
+          "age_rule_pending": "Age rule pending",
+          "iys_not_ready": "İYS not ready",
+          "closed": "Collection closed"
+        }
       }
     }
   },

@@ -3261,6 +3261,25 @@
         "canceled": "Annulé",
         "revoked": "Révoqué",
         "cancelled": "Annulé"
+      },
+      "reach": {
+        "title": "Portée des e-mails de campagne (comptes avec accès)",
+        "note": "Selon les règles de consentement du serveur. Un compte = un. Non dérivé de l’entonnoir d’inscription.",
+        "active_paid": "Payants actifs",
+        "active_trial": "En essai",
+        "already_chose": "Ont déjà choisi",
+        "invitable": "Invitables",
+        "waiting_missing_info": "En attente d’informations",
+        "reasons": "Motifs d’attente",
+        "reason": {
+          "email_unverified": "E-mail non vérifié",
+          "market_unknown": "Marché inconnu",
+          "market_closed": "Marché fermé",
+          "age_unknown": "Âge inconnu",
+          "age_rule_pending": "Règle d’âge en attente",
+          "iys_not_ready": "İYS non prêt",
+          "closed": "Collecte fermée"
+        }
       }
     }
   },

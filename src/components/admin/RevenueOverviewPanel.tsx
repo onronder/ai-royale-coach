@@ -84,7 +84,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
                   : <span className="flex items-center gap-3 text-sm tabular-nums">
                       <button type="button" className="font-semibold underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded" onClick={open(s.key)}>{n(c[s.key])}</button>
                       <span className="text-muted-foreground w-16 text-right" title={t('admin.revenue.ofCohort')}>{formatRate(rate(c[s.key], base), lang)}</span>
-                      {prev && !(prev.ui && measured === 0) && <span className="text-muted-foreground w-20 text-right" title={t('admin.revenue.fromPrevious')}>↳ {formatRate(rate(c[s.key], c[prev.key]), lang)}</span>}
+                      <span className="text-muted-foreground w-20 text-right" title={t('admin.revenue.fromPrevious')}>{prev && !(prev.ui && measured === 0) ? `↳ ${formatRate(rate(c[s.key], c[prev.key]), lang)}` : ''}</span>
                     </span>}
               </li>;
             })}
