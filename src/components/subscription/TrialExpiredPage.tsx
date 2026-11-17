@@ -5,10 +5,11 @@ import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield, 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { PaymentRecovery } from './PaymentRecovery';
 import { PricingModal } from "./PricingModal";
 import { cn } from "@/lib/utils";
 
-export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) {
+export function TrialExpiredPage({ canStartTrial, paymentDue = false }: { canStartTrial: boolean; paymentDue?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showPricing, setShowPricing] = useState(false);
@@ -76,6 +77,7 @@ export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) 
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-2xl space-y-8">
+          {paymentDue ? <PaymentRecovery /> : <>
           {/* Lock icon and title */}
           <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-destructive/10 border-2 border-destructive/30 mx-auto">
@@ -132,6 +134,8 @@ export function TrialExpiredPage({ canStartTrial }: { canStartTrial: boolean }) 
               {t(canStartTrial ? "subscription.paywall.startTrial" : "subscription.paywall.subscribe")}
             </Button>
           </div>
+
+          </>}
 
           {/* Sign out option */}
           <div className="text-center">

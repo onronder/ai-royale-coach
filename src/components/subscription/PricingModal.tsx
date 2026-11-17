@@ -1,3 +1,4 @@
+import { PaymentRecovery } from './PaymentRecovery';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -42,7 +43,7 @@ interface PendingPromo {
 
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
   const { t, i18n } = useTranslation();
-  const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining } = useSubscription();
+  const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining, subscriptionStatus } = useSubscription();
   const [selectedTier, setSelectedTier] = useState<number>(1);
   const [showTrialConfirm, setShowTrialConfirm] = useState(false);
   
@@ -124,6 +125,13 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
 
   // Check if we should show discounted pricing
   const hasPercentDiscount = pendingPromo && pendingPromo.discountPercent > 0;
+
+  if (subscriptionStatus === 'past_due') {
+    return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent>
+      <DialogHeader><DialogTitle>{t('conversion.payment_recovery')}</DialogTitle></DialogHeader>
+      <PaymentRecovery />
+    </DialogContent></Dialog>;
+  }
 
   return (
     <>

@@ -1,4 +1,29 @@
 {
+  "conversion": {
+    "scope": "{{trials}} trials · {{accounts}} distinct accounts. Marked test accounts are excluded.",
+    "unclassified": "Subscriptions omitted because the trial start could not be verified: {{count}}.",
+    "payment_review": "Payment needs reconciliation",
+    "unknownPayments": "Accounts with unknown payment timing: {{count}}",
+    "payment_recovery": "Payment needs attention",
+    "recoveryBody": "Update the payment method for your existing subscription in Polar.",
+    "updatePayment": "Update payment method",
+    "portalError": "The billing portal could not be opened. Please try again.",
+    "superseded": "Earlier subscription",
+    "customer": "Paying customer",
+    "trial_renewal_off": "Trial · renewal off",
+    "trial_renewal_on": "Trial · renewal on",
+    "expired_winback": "Eligible on return",
+    "other": "No action identified",
+    "cardSeen": "Coach card seen",
+    "requested": "Recommendation requested",
+    "recommendationSeen": "Recommendation seen",
+    "match": "First match matched",
+    "waitD7": "No trial has completed the seven-day observation window.",
+    "pendingOrders": "Pending positive orders",
+    "firstPaid": "First payment",
+    "afterCancel": "Activity after cancellation",
+    "returnedAfterEnd": "First observed return after trial"
+  },
   "trialFollowup": {
     "survey": "Why did you turn renewal off? (Optional)",
     "avoid_charge": "Avoid a charge while I keep trying it",
@@ -3409,6 +3434,7 @@
       "rejected": "Declined"
     },
     "reason": {
+      "ineligible": "this account is no longer eligible for win-back",
       "sending_off": "sending off",
       "market_rule_pending": "market rule pending",
       "no_account": "no account",

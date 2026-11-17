@@ -1,4 +1,29 @@
 {
+  "conversion": {
+    "scope": "{{trials}} essais · {{accounts}} comptes distincts. Les comptes de test identifiés sont exclus.",
+    "unclassified": "Abonnements exclus faute de début d’essai vérifié : {{count}}.",
+    "payment_review": "Paiement à rapprocher",
+    "unknownPayments": "Comptes sans date de paiement certaine : {{count}}",
+    "payment_recovery": "Paiement en attente",
+    "recoveryBody": "Mettez à jour le moyen de paiement de votre abonnement actuel sur Polar.",
+    "updatePayment": "Mettre à jour le moyen de paiement",
+    "portalError": "Impossible d’ouvrir le portail de facturation. Réessayez.",
+    "superseded": "Abonnement précédent",
+    "customer": "Client payant",
+    "trial_renewal_off": "Essai · renouvellement désactivé",
+    "trial_renewal_on": "Essai · renouvellement activé",
+    "expired_winback": "Offre possible au retour",
+    "other": "Aucune action identifiée",
+    "cardSeen": "Carte de coaching vue",
+    "requested": "Conseil demandé",
+    "recommendationSeen": "Conseil consulté",
+    "match": "Premier match retrouvé",
+    "waitD7": "Aucun essai n’a atteint la fin des sept jours d’observation.",
+    "pendingOrders": "Commandes payantes en attente",
+    "firstPaid": "Premier paiement",
+    "afterCancel": "Activité après annulation",
+    "returnedAfterEnd": "Premier retour observé après l’essai"
+  },
   "trialFollowup": {
     "survey": "Pourquoi avez-vous désactivé le renouvellement ? (Facultatif)",
     "avoid_charge": "Éviter un prélèvement tout en continuant l’essai",
@@ -3409,6 +3434,7 @@
       "rejected": "Refusée"
     },
     "reason": {
+      "ineligible": "ce compte ne remplit plus les critères de la campagne de réactivation",
       "sending_off": "envoi désactivé",
       "market_rule_pending": "règle de marché en attente",
       "no_account": "pas de compte",

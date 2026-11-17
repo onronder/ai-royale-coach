@@ -45,16 +45,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-interface ActivityMetrics {
-  activity_score: number;
-  ai_requests: number;
-  ai_active_days: number;
-  chat_messages: number;
-  battles_tracked: number;
-  linked_accounts: number;
-  is_active: boolean;
-}
-
 interface EligibleUser {
   id: string;
   email: string;
@@ -144,50 +134,12 @@ export function WinbackCampaignPanel() {
   const [sortBy, setSortBy] = useState<SortOption>('activity_score');
 
   // Fetch eligible users with activity metrics
-  const { data: eligibleUsers, isLoading: loadingUsers } = useQuery({
+  const { data: eligibleUsers, isLoading: loadingUsers, isError: usersError, refetch: reloadUsers } = useQuery({
     queryKey: ['winback-eligible-users'],
     queryFn: async () => {
-      // Get users who:
-      // 1. Have trial_used = true (trial ended)
-      // 2. Don't have an active subscription
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('id, email, preferred_language, trial_ends_at, trial_used, winback_email_sent_at')
-        .eq('trial_used', true)
-        .not('email', 'is', null);
-
+      const { data, error } = await supabase.rpc('admin_winback_candidates');
       if (error) throw error;
-
-      // Filter out users with active subscriptions
-      const { data: activeSubscriptions } = await supabase
-        .from('user_subscriptions')
-        .select('user_id')
-        .in('status', ['active', 'trialing']);
-
-      const activeUserIds = new Set(activeSubscriptions?.map(s => s.user_id) || []);
-      const eligibleProfiles = (profiles || []).filter(p => !activeUserIds.has(p.id));
-
-      // Fetch activity metrics for each user using RPC
-      const usersWithActivity = await Promise.all(
-        eligibleProfiles.map(async (profile) => {
-          const { data: metrics } = await supabase.rpc('get_user_activity_metrics', {
-            p_user_id: profile.id
-          });
-          
-          const activityMetrics = metrics as unknown as ActivityMetrics | null;
-          
-          return {
-            ...profile,
-            activity_score: activityMetrics?.activity_score || 0,
-            ai_requests: activityMetrics?.ai_requests || 0,
-            ai_active_days: activityMetrics?.ai_active_days || 0,
-            chat_messages: activityMetrics?.chat_messages || 0,
-            battles_tracked: activityMetrics?.battles_tracked || 0,
-            linked_accounts: activityMetrics?.linked_accounts || 0,
-            is_active: activityMetrics?.is_active || false,
-          } as EligibleUser;
-        })
-      );
+      const usersWithActivity = (data ?? []) as unknown as EligibleUser[];
 
       // Sort by activity score descending (most active first)
       return usersWithActivity.sort((a, b) => b.activity_score - a.activity_score);
@@ -728,7 +680,7 @@ export function WinbackCampaignPanel() {
             </div>
           </CardHeader>
           <CardContent>
-            {loadingUsers ? (
+            {usersError ? <Button variant="outline" onClick={() => void reloadUsers()}>{t('common.retry')}</Button> : loadingUsers ? (
               <ResponsiveTableSkeleton columns={6} rows={5} />
             ) : (
               <ResponsiveTable

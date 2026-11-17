@@ -1,4 +1,29 @@
 {
+  "conversion": {
+    "scope": "{{trials}} deneme · {{accounts}} ayrı hesap. İşaretli test hesapları hariç.",
+    "unclassified": "Deneme başlangıcı doğrulanamayan {{count}} abonelik bu ölçüme dahil edilmedi.",
+    "payment_review": "Ödeme kaydı doğrulanmalı",
+    "unknownPayments": "Ödeme zamanı belirsiz hesap sayısı: {{count}}",
+    "payment_recovery": "Ödeme bekliyor",
+    "recoveryBody": "Mevcut aboneliğinin ödeme yöntemini Polar üzerinden güncelleyebilirsin.",
+    "updatePayment": "Ödeme yöntemini güncelle",
+    "portalError": "Ödeme sayfası açılamadı. Tekrar dene.",
+    "superseded": "Önceki abonelik",
+    "customer": "Ücretli müşteri",
+    "trial_renewal_off": "Deneme · yenileme kapalı",
+    "trial_renewal_on": "Deneme · yenileme açık",
+    "expired_winback": "Dönüşte teklife aday",
+    "other": "Belirlenmiş işlem yok",
+    "cardSeen": "Koçluk kartını gördü",
+    "requested": "Öneri istedi",
+    "recommendationSeen": "Öneriyi gördü",
+    "match": "İlk maç eşleşti",
+    "waitD7": "Yedi günlük izleme süresini tamamlayan deneme yok.",
+    "pendingOrders": "Pozitif tutarlı bekleyen siparişler",
+    "firstPaid": "İlk ödeme",
+    "afterCancel": "İptal sonrası etkinlik",
+    "returnedAfterEnd": "Deneme sonrası gözlenen ilk dönüş"
+  },
   "trialFollowup": {
     "survey": "Yenilemeyi neden kapattın? (İsteğe bağlı)",
     "avoid_charge": "Kartımdan çekilmesin, denemeye devam edeceğim",
@@ -3409,6 +3434,7 @@
       "rejected": "Reddedildi"
     },
     "reason": {
+      "ineligible": "bu hesap artık geri kazanım kampanyasına uygun değil",
       "sending_off": "gönderim kapalı",
       "market_rule_pending": "pazar kuralı bekliyor",
       "no_account": "hesap yok",

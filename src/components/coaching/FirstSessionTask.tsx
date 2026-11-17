@@ -1,3 +1,4 @@
+import { observeTrialStep } from '@/lib/trialObservation';
 import { useCardName } from '@/i18n/useCardName';
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -27,6 +28,23 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
 }) {
   const cardLabel = useCardName();
  const {t,i18n}=useTranslation(); const {hasAccess,isTrialActive,isLoading:accessLoading}=useSubscription();
+ const cardRoot = useRef<HTMLDivElement>(null);
+ useEffect(() => {
+   if (!isTrialActive || !cardRoot.current || typeof IntersectionObserver === 'undefined') return;
+   const observer = new IntersectionObserver(([entry]) => {
+     if (entry.isIntersecting && document.visibilityState === 'visible') {
+       observeTrialStep('coach_card_seen');
+       observer.disconnect();
+     }
+   });
+   const observe = () => { if (cardRoot.current && document.visibilityState === 'visible') {
+     observer.unobserve(cardRoot.current);
+     observer.observe(cardRoot.current);
+   }};
+   observe();
+   document.addEventListener('visibilitychange', observe);
+   return () => { observer.disconnect(); document.removeEventListener('visibilitychange', observe); };
+ }, [isTrialActive, userId, playerTag]);
  const qc=useQueryClient(); const key=['coaching-task',userId,playerTag];
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
@@ -51,6 +69,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
  const run=async(action:string,confirmedDeckIds?:number[])=>{
    if(busy)return;
+   if (isTrialActive && action === 'start' && !confirmedDeckIds) observeTrialStep('recommendation_requested');
    setBusy(action);
    setError('');
    try{
@@ -137,7 +156,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
   </div>
  </div>;
  const summary=done&&removed&&added&&<div className="mt-4 flex flex-wrap items-center gap-3 text-sm"><img src={removed.iconUrls?.medium} alt={cardLabel(removed.name)} className="h-10 w-auto"/><ArrowRight className="h-4 w-4 text-primary"/><img src={added.iconUrls?.medium} alt={cardLabel(added.name)} className="h-10 w-auto"/><span className="font-rajdhani text-2xl font-bold">{result!.score.join(' – ')}</span><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result!.outcome}`)}</span></div>;
- return <Card aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
+ return <Card ref={cardRoot} aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
   {header}
   {needsTranslation && !localized.data && <div role="status" className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
     {localized.isError ? <>{t('coaching.translationError')} <Button variant="outline" size="sm" onClick={() => void localized.refetch()}>{t('common.retry')}</Button></> :

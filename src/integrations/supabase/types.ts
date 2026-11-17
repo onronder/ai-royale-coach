@@ -1451,6 +1451,10 @@ export type Database = {
           customer_id: string | null
           gross_amount: number | null
           order_id: string
+          discount_amount_cents: number | null
+          refunded_net_cents: number | null
+          provider_updated_at: string | null
+          paid_at: string | null
           recorded_at: string
           status: string | null
           subscription_id: string | null
@@ -1465,6 +1469,10 @@ export type Database = {
           customer_id?: string | null
           gross_amount?: number | null
           order_id: string
+          discount_amount_cents?: number | null
+          refunded_net_cents?: number | null
+          provider_updated_at?: string | null
+          paid_at?: string | null
           recorded_at?: string
           status?: string | null
           subscription_id?: string | null
@@ -1479,6 +1487,10 @@ export type Database = {
           customer_id?: string | null
           gross_amount?: number | null
           order_id?: string
+          discount_amount_cents?: number | null
+          refunded_net_cents?: number | null
+          provider_updated_at?: string | null
+          paid_at?: string | null
           recorded_at?: string
           status?: string | null
           subscription_id?: string | null
@@ -2604,6 +2616,28 @@ export type Database = {
         Args: { p_claim_invite?: boolean }
         Returns: Json
       }
+      my_return_experiment: { Args: never; Returns: Json }
+      observe_return_offer: { Args: { p_key: string; p_step: string }; Returns: undefined }
+      admin_set_trial_test_account: { Args: { p_user: string; p_test: boolean }; Returns: undefined }
+      admin_return_results: {
+        Args: { p_key: string; p_days: number; p_currency?: string }
+        Returns: { arm: string; assigned: number; seen: number; dismissed: number; checkout_started: number;
+          mature: number; paying: number; full_price_renewals: number; paid_net_cents: number | null; unreconciled_partial_refunds: number | null;
+          missing_payment_times: number | null }[]
+      }
+      observe_trial_step: { Args: { p_step: string }; Returns: undefined }
+      admin_trial_conversion: {
+        Args: { p_days?: number | null; p_include_tests?: boolean }
+        Returns: {
+          subscription_id: string; user_id: string; email: string; trial_start: string; trial_end: string;
+          status: string; renewal_off: boolean; is_test: boolean; canceled_at: string | null;
+          first_paid_at: string | null; has_payment: boolean; within_d7: boolean; uncertain_d7: boolean; linked_tags: number; has_saved_summary: boolean; ai_uses: number;
+          chat_messages: number; active_days: number; last_seen: string | null; card_seen: string | null;
+          requested: string | null; recommendation_seen: string | null; matched: string | null;
+          last_action_after_cancel: string | null; first_return_after_end: string | null; segment: string;
+        }[]
+      }
+      admin_winback_candidates: { Args: never; Returns: Json[] }
       get_trial_funnel: {
         Args: { p_days?: number }
         Returns: {

@@ -1,3 +1,5 @@
+import { PaymentRecovery } from './PaymentRecovery';
+import { observeTrialStep } from '@/lib/trialObservation';
 import { coachingReturnTag } from '@/lib/coachingReturnTag';
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -46,6 +48,12 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
     return () => subscription.unsubscribe();
   }, [navigate, authPath]);
   
+  useEffect(() => {
+    if (isAuthenticated && !isLoading && subscriptionStatus && subscriptionStatus !== 'active' && allowReadOnlyAfterTrial) {
+      observeTrialStep('app_opened');
+    }
+  }, [isAuthenticated, isLoading, subscriptionStatus, allowReadOnlyAfterTrial, location.pathname]);
+
   // Show loading while checking auth or subscription
   if (isAuthenticated === null || isLoading) {
     return <SplashScreen />;
@@ -61,6 +69,10 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
     return <>{children}</>;
   }
   
+  if (subscriptionStatus === 'past_due') {
+    return allowReadOnlyAfterTrial ? <><PaymentRecovery />{children}</> : <TrialExpiredPage canStartTrial={false} paymentDue />;
+  }
+
   if (allowReadOnlyAfterTrial && subscriptionStatus) {
     return (<><TrialEndedBanner />{children}</>);
   }

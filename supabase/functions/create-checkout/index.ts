@@ -1,3 +1,4 @@
+import { routeBillingRequest } from './recovery.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
@@ -34,7 +35,19 @@ serve(async (req) => {
       return errorResponse('Unauthorized', 401);
     }
 
-    const { successUrl, cancelUrl, accountSlots = 1, discountId } = await req.json();
+    const { successUrl, accountSlots = 1, discountId, recovery } = await req.json();
+    const { data: subscription, error: readError } = await supabase.from('user_subscriptions')
+      .select('status,polar_customer_id').eq('user_id', user.id).maybeSingle();
+    if (readError) return errorResponse('Subscription status unavailable', 503);
+    const customer = subscription?.polar_customer_id
+      ? { customer_id: subscription.polar_customer_id } : { external_customer_id: user.id };
+    const billing = await routeBillingRequest(subscription?.status ?? null, recovery === true, customer, polarAccessToken);
+    if (billing) {
+      if ('error' in billing) return errorResponse(billing.error, billing.status);
+      const response = jsonResponse({ ...billing, kind: 'recovery' });
+      response.headers.set('Cache-Control', 'no-store');
+      return response;
+    }
     
     // Validate accountSlots
     const slots = Math.min(Math.max(1, accountSlots), 3);
@@ -89,6 +102,16 @@ serve(async (req) => {
     if (!checkoutUrl) {
       logger.error('No checkout URL in response', { response: checkoutData });
       return errorResponse('Invalid checkout response', 500);
+    }
+
+    // Only actual checkout creation counts; opening the recovery portal exits above.
+    // Analytics failure must not discard a valid checkout URL.
+    try {
+      const service = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+      const { error } = await service.rpc('record_return_checkout', { p_user: user.id });
+      if (error) logger.warn('Return checkout observation unavailable');
+    } catch {
+      logger.warn('Return checkout observation unavailable');
     }
 
     logger.info('Polar checkout created', { userId: user.id, slots });
