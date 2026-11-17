@@ -275,6 +275,22 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     ok('switch off → 0 sends');
   });
 
+  it('rechecks the adult confirmation after consent was granted, on regular and win-back sends', async () => {
+    granted(); enableSending();
+    const provider = fakeProvider();
+    for (const adult of ['false', 'NULL']) {
+      as(ADMIN, `SELECT public.admin_set_marketing_age('${A}', ${adult})`);
+      for (const campaign of ['seasonal', 'winback:NOV']) {
+        assert.deepEqual(await send(provider, true, campaign), { status: 'blocked', reason: 'adult_unconfirmed' });
+      }
+      assert.equal(state(A).state, 'granted');
+    }
+    assert.equal(provider.accepted.length, 0);
+    as(ADMIN, `SELECT public.admin_set_marketing_age('${A}', true)`);
+    assert.equal((await send(provider, true, 'seasonal')).status, 'sent');
+    assert.equal(provider.accepted.length, 1);
+  });
+
   it('market rule not approved: held', async () => {
     granted(); psql(`UPDATE marketing_settings SET sending_enabled = true`); const p = fakeProvider();
     assert.deepEqual(await send(p), { status: 'blocked', reason: 'market_rule_pending' });

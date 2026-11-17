@@ -71,6 +71,7 @@ beforeAll(() => {
     UPDATE profiles SET winback_email_sent_at = '${LEGACY_AT}' WHERE id = '${U(4)}'`);
   const later = readdirSync(new URL('../../../drizzle/migrations/', import.meta.url)).filter(m => /^00(2[89]|[3-9][0-9])_.*\.sql$/.test(m)).sort();
   run(later.map(m => f(`../../../drizzle/migrations/${m}`)).join('\n;\n'));
+  psql(`INSERT INTO marketing_account_ages (user_id, adult, source) SELECT id, true, 'admin' FROM auth.users`);
   const admin = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x ORDER BY x->>'id'),'[]') FROM admin_winback_candidates() x`));
   for (const n of [1, 2, 3, 4]) legacy[n] = { sender: decide(U(n), LEGACY_CHECK, 'UTC'), admin: admin.find((r: { id: string }) => r.id === U(n)) ?? null };
   psql(`DELETE FROM marketing_deliveries`);
