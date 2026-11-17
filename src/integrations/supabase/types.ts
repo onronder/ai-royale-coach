@@ -1449,13 +1449,13 @@ export type Database = {
           created_at: string
           currency: string | null
           customer_id: string | null
+          discount_amount_cents: number | null
           gross_amount: number | null
           order_id: string
-          discount_amount_cents: number | null
-          refunded_net_cents: number | null
-          provider_updated_at: string | null
           paid_at: string | null
+          provider_updated_at: string | null
           recorded_at: string
+          refunded_net_cents: number | null
           status: string | null
           subscription_id: string | null
           tax_amount: number | null
@@ -1467,13 +1467,13 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_id?: string | null
+          discount_amount_cents?: number | null
           gross_amount?: number | null
           order_id: string
-          discount_amount_cents?: number | null
-          refunded_net_cents?: number | null
-          provider_updated_at?: string | null
           paid_at?: string | null
+          provider_updated_at?: string | null
           recorded_at?: string
+          refunded_net_cents?: number | null
           status?: string | null
           subscription_id?: string | null
           tax_amount?: number | null
@@ -1485,13 +1485,13 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_id?: string | null
+          discount_amount_cents?: number | null
           gross_amount?: number | null
           order_id?: string
-          discount_amount_cents?: number | null
-          refunded_net_cents?: number | null
-          provider_updated_at?: string | null
           paid_at?: string | null
+          provider_updated_at?: string | null
           recorded_at?: string
+          refunded_net_cents?: number | null
           status?: string | null
           subscription_id?: string | null
           tax_amount?: number | null
@@ -1707,6 +1707,59 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      return_experiment_accounts: {
+        Row: {
+          arm: string
+          assigned_at: string
+          checkout_at: string | null
+          dismissed_at: string | null
+          experiment_key: string
+          seen_at: string | null
+          user_id: string
+        }
+        Insert: {
+          arm: string
+          assigned_at?: string
+          checkout_at?: string | null
+          dismissed_at?: string | null
+          experiment_key: string
+          seen_at?: string | null
+          user_id: string
+        }
+        Update: {
+          arm?: string
+          assigned_at?: string
+          checkout_at?: string | null
+          dismissed_at?: string | null
+          experiment_key?: string
+          seen_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_experiment_accounts_experiment_key_fkey"
+            columns: ["experiment_key"]
+            isOneToOne: false
+            referencedRelation: "return_experiments"
+            referencedColumns: ["experiment_key"]
+          },
+        ]
+      }
+      return_experiments: {
+        Row: {
+          experiment_key: string
+          window_utc: unknown
+        }
+        Insert: {
+          experiment_key: string
+          window_utc: unknown
+        }
+        Update: {
+          experiment_key?: string
+          window_utc?: unknown
+        }
+        Relationships: []
       }
       saved_decks: {
         Row: {
@@ -2047,6 +2100,33 @@ export type Database = {
           },
         ]
       }
+      trial_conversion_periods: {
+        Row: {
+          ends_at: string
+          first_cancel_at: string | null
+          started_at: string
+          subscription_id: string
+          superseded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ends_at: string
+          first_cancel_at?: string | null
+          started_at: string
+          subscription_id: string
+          superseded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ends_at?: string
+          first_cancel_at?: string | null
+          started_at?: string
+          subscription_id?: string
+          superseded_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       trial_marketing_snapshots: {
         Row: {
           captured_at: string
@@ -2068,6 +2148,60 @@ export type Database = {
           subscription_id?: string
           trial_started_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      trial_surface_visits: {
+        Row: {
+          day_utc: string
+          first_seen: string
+          last_seen: string
+          phase: string
+          step: string
+          subscription_id: string
+        }
+        Insert: {
+          day_utc: string
+          first_seen: string
+          last_seen: string
+          phase: string
+          step: string
+          subscription_id: string
+        }
+        Update: {
+          day_utc?: string
+          first_seen?: string
+          last_seen?: string
+          phase?: string
+          step?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_surface_visits_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "trial_conversion_facts"
+            referencedColumns: ["subscription_id"]
+          },
+          {
+            foreignKeyName: "trial_surface_visits_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "trial_conversion_periods"
+            referencedColumns: ["subscription_id"]
+          },
+        ]
+      }
+      trial_test_accounts: {
+        Row: {
+          user_id: string
+        }
+        Insert: {
+          user_id: string
+        }
+        Update: {
+          user_id?: string
         }
         Relationships: []
       }
@@ -2423,6 +2557,37 @@ export type Database = {
           },
         ]
       }
+      trial_conversion_facts: {
+        Row: {
+          active_days: number | null
+          ai_uses: number | null
+          canceled_at: string | null
+          card_seen: string | null
+          chat_messages: number | null
+          email: string | null
+          first_paid_at: string | null
+          first_return_after_end: string | null
+          has_payment: boolean | null
+          has_saved_summary: boolean | null
+          is_test: boolean | null
+          last_action_after_cancel: string | null
+          last_seen: string | null
+          linked_tags: number | null
+          matched: string | null
+          recommendation_seen: string | null
+          renewal_off: boolean | null
+          requested: string | null
+          segment: string | null
+          status: string | null
+          subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
+          uncertain_d7: boolean | null
+          user_id: string | null
+          within_d7: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_privacy_requests: {
@@ -2447,9 +2612,66 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_return_results: {
+        Args: { p_currency?: string; p_days: number; p_key: string }
+        Returns: {
+          arm: string
+          assigned: number
+          checkout_started: number
+          dismissed: number
+          full_price_renewals: number
+          mature: number
+          missing_payment_times: number
+          paid_net_cents: number
+          paying: number
+          seen: number
+          unreconciled_partial_refunds: number
+        }[]
+      }
       admin_set_marketing_market: {
         Args: { p_market: string; p_user: string }
         Returns: undefined
+      }
+      admin_set_trial_test_account: {
+        Args: { p_test: boolean; p_user: string }
+        Returns: undefined
+      }
+      admin_trial_conversion: {
+        Args: { p_days?: number; p_include_tests?: boolean }
+        Returns: {
+          active_days: number | null
+          ai_uses: number | null
+          canceled_at: string | null
+          card_seen: string | null
+          chat_messages: number | null
+          email: string | null
+          first_paid_at: string | null
+          first_return_after_end: string | null
+          has_payment: boolean | null
+          has_saved_summary: boolean | null
+          is_test: boolean | null
+          last_action_after_cancel: string | null
+          last_seen: string | null
+          linked_tags: number | null
+          matched: string | null
+          recommendation_seen: string | null
+          renewal_off: boolean | null
+          requested: string | null
+          segment: string | null
+          status: string | null
+          subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
+          uncertain_d7: boolean | null
+          user_id: string | null
+          within_d7: boolean | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "trial_conversion_facts"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       admin_trial_marketing: { Args: { p_days?: number }; Returns: Json }
       admin_update_privacy_request: {
@@ -2461,6 +2683,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      admin_winback_candidates: { Args: never; Returns: Json[] }
       begin_confirmed_welcome: {
         Args: { p_payload: Json; p_user: string }
         Returns: Json
@@ -2552,6 +2775,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      claim_winback_delivery: {
+        Args: { p_campaign: string; p_payload: Json; p_user: string }
+        Returns: Json
+      }
       cleanup_old_api_logs: { Args: never; Returns: undefined }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }
@@ -2616,28 +2843,6 @@ export type Database = {
         Args: { p_claim_invite?: boolean }
         Returns: Json
       }
-      my_return_experiment: { Args: never; Returns: Json }
-      observe_return_offer: { Args: { p_key: string; p_step: string }; Returns: undefined }
-      admin_set_trial_test_account: { Args: { p_user: string; p_test: boolean }; Returns: undefined }
-      admin_return_results: {
-        Args: { p_key: string; p_days: number; p_currency?: string }
-        Returns: { arm: string; assigned: number; seen: number; dismissed: number; checkout_started: number;
-          mature: number; paying: number; full_price_renewals: number; paid_net_cents: number | null; unreconciled_partial_refunds: number | null;
-          missing_payment_times: number | null }[]
-      }
-      observe_trial_step: { Args: { p_step: string }; Returns: undefined }
-      admin_trial_conversion: {
-        Args: { p_days?: number | null; p_include_tests?: boolean }
-        Returns: {
-          subscription_id: string; user_id: string; email: string; trial_start: string; trial_end: string;
-          status: string; renewal_off: boolean; is_test: boolean; canceled_at: string | null;
-          first_paid_at: string | null; has_payment: boolean; within_d7: boolean; uncertain_d7: boolean; linked_tags: number; has_saved_summary: boolean; ai_uses: number;
-          chat_messages: number; active_days: number; last_seen: string | null; card_seen: string | null;
-          requested: string | null; recommendation_seen: string | null; matched: string | null;
-          last_action_after_cancel: string | null; first_return_after_end: string | null; segment: string;
-        }[]
-      }
-      admin_winback_candidates: { Args: never; Returns: Json[] }
       get_trial_funnel: {
         Args: { p_days?: number }
         Returns: {
@@ -2710,6 +2915,12 @@ export type Database = {
           status: string
         }[]
       }
+      my_return_experiment: { Args: never; Returns: Json }
+      observe_return_offer: {
+        Args: { p_key: string; p_step: string }
+        Returns: undefined
+      }
+      observe_trial_step: { Args: { p_step: string }; Returns: undefined }
       queue_confirmed_welcomes: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
@@ -2753,6 +2964,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      record_return_checkout: { Args: { p_user: string }; Returns: undefined }
       record_summary_send: {
         Args: {
           p_attempt: string

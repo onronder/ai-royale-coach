@@ -15,8 +15,8 @@
 
 | Aşama | Durum |
 |---|---|
-| GitHub birleşmesi | Bekliyor. Birleşme zamanı (UTC) ve revizyon burada kaydedilecek. |
-| Canlı veritabanı ve dört sunucu işlevi | Bekliyor. Uygulanan revizyon ve zaman (UTC) ayrıca kaydedilecek. |
+| GitHub birleşmesi | Tamamlandı. main `0622673` (PR #14). |
+| Canlı veritabanı ve dört sunucu işlevi | Tamamlandı 2026-11-17 ~10:30 UTC, revizyon `0622673`: `0024` normal geçişle tek sefer uygulandı (boş `0025` eşliğinde); `polar-webhook`, `backfill-polar-orders`, `create-checkout`, `send-email` dağıtıldı. Polar `customer_sessions:write` yetkisi doğrulanmadı. |
 | ai-royale.com site yayını | Proje sahibinin Lovable yayını bekleniyor. Sürüm ve zaman (UTC) ayrıca kaydedilecek. |
 
 1. Yalıtılmış PostgreSQL kurulumunda `CONVERSION_PG=/path/to/socket CONVERSION_PG_PORT=55483 node tests/integration/conversion/run.mjs` çalıştır. Bu test yalnızca ağ dinlemesi kapalı geçici bir PostgreSQL kabul eder. Ayrıca uygulama testlerini ve mevcut kampanya izni testlerini sahte sağlayıcı ile çalıştır.

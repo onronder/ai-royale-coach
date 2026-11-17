@@ -22,7 +22,31 @@
     "pendingOrders": "Pedidos de importe positivo pendientes",
     "firstPaid": "Primer pago",
     "afterCancel": "Actividad tras la cancelación",
-    "returnedAfterEnd": "Primer regreso observado tras la prueba"
+    "returnedAfterEnd": "Primer regreso observado tras la prueba",
+    "overview": {
+      "trialsStarted": "Pruebas iniciadas",
+      "accounts": "{{trials}} pruebas · {{accounts}} cuentas distintas",
+      "d7Paid": "Pagaron en 7 días",
+      "d7Sub": "De las pruebas con los 7 días cumplidos",
+      "d7Wait": "Ninguna prueba ha cumplido aún sus 7 días",
+      "unknownTime": "Pagos con fecha incierta",
+      "unknownSub": "No cuentan como pago hasta confirmar la fecha",
+      "coachSteps": "Pasos del coach",
+      "coachNote": "Cada paso cuenta las pruebas en que se observó.",
+      "filters": "Mostrar cuentas",
+      "all": "Todas",
+      "trialing": "Prueba en curso",
+      "inApp": "Candidatos a recuperar en la app",
+      "inAppNote": "Ven una oferta al volver a la app. Esto no permite enviarles emails.",
+      "email": "Aptos para email hoy",
+      "emailNote": "El consentimiento y las reglas de envío se revisan de nuevo al enviar.",
+      "none": "No hay cuentas en este grupo.",
+      "emptyTitle": "Aún no hay historial de medición",
+      "emptyBody": "Las pruebas iniciadas en este periodo aparecerán aquí.",
+      "loadError": "No se pudo cargar el informe de pruebas.",
+      "retry": "Reintentar",
+      "listCount": "{{count}} cuentas"
+    }
   },
   "trialFollowup": {
     "survey": "¿Por qué desactivaste la renovación? (Opcional)",

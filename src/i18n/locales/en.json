@@ -22,7 +22,31 @@
     "pendingOrders": "Pending positive orders",
     "firstPaid": "First payment",
     "afterCancel": "Activity after cancellation",
-    "returnedAfterEnd": "First observed return after trial"
+    "returnedAfterEnd": "First observed return after trial",
+    "overview": {
+      "trialsStarted": "Trials started",
+      "accounts": "{{trials}} trials · {{accounts}} separate accounts",
+      "d7Paid": "Paid within 7 days",
+      "d7Sub": "Of trials whose 7-day window has finished",
+      "d7Wait": "No trial has finished its 7-day window yet",
+      "unknownTime": "Payments with unclear date",
+      "unknownSub": "Not counted as paid until the date is confirmed",
+      "coachSteps": "Coach steps",
+      "coachNote": "Each step counts trials where it was observed.",
+      "filters": "Show accounts",
+      "all": "All",
+      "trialing": "Trial running",
+      "inApp": "In-app win-back candidates",
+      "inAppNote": "Shown an offer on return to the app. This does not allow emailing them.",
+      "email": "Email-eligible today",
+      "emailNote": "Campaign consent and sending rules are checked again at send time.",
+      "none": "No accounts in this group.",
+      "emptyTitle": "No measurement history yet",
+      "emptyBody": "Trials started in this period will appear here.",
+      "loadError": "The trial report could not be loaded.",
+      "retry": "Try again",
+      "listCount": "{{count}} accounts"
+    }
   },
   "trialFollowup": {
     "survey": "Why did you turn renewal off? (Optional)",
