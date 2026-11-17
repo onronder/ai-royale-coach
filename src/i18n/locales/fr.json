@@ -1184,7 +1184,7 @@
       },
       "thirdParty": {
         "title": "Prestataires de services",
-        "content": "Ces prestataires traitent les données pour notre compte et selon nos instructions :\n• Infrastructure cloud et authentification : stockage, connexion et traitements serveur\n• Polar : essais, abonnements et paiements\n• Resend : envoi des e-mails\n• Fournisseurs de modèles d’IA : données de jeu et tes questions, pour générer analyses et réponses de coaching\n• API Clash Royale de Supercell : récupération des données de jeu publiques"
+        "content": "Nous utilisons les services suivants aux fins indiquées :\n• Infrastructure cloud et authentification : stockage, connexion et traitements serveur\n• Polar : essais, abonnements et paiements\n• Resend : envoi des e-mails\n• Fournisseurs de modèles d’IA : données de jeu et tes questions, pour générer analyses et réponses de coaching\n• API Clash Royale de Supercell : récupération des données de jeu publiques"
       },
       "contact": {
         "title": "Nous contacter",
@@ -3630,6 +3630,7 @@
       "suppressed": "adresse bloquée",
       "iys_pending": "IYS en attente",
       "unknown": "inconnu",
+      "adult_unconfirmed": "majorité du titulaire du compte non confirmée",
       "age_rule_pending": "règle d'âge en attente",
       "cooldown": "Un nouvel e-mail de réactivation n’est possible que si plus de 720 heures se sont écoulées depuis l’acceptation du dernier e-mail.",
       "previous_uncertain": "un e-mail de réactivation précédent a un résultat incertain",

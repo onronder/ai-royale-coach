@@ -54,7 +54,7 @@ beforeAll(() => {
   if (psql('show listen_addresses', 'postgres') !== '') throw new Error('test Postgres must be socket-only');
   psql(`CREATE DATABASE ${DB}`, 'postgres');
   const f = (p: string) => readFileSync(new URL(p, import.meta.url), 'utf8');
-  const sql = [f('../marketing/base.sql'), f('../conversion/fixture.sql'),
+  const sql = [f('../marketing/base.sql'), f('../conversion/fixture.sql'), f('../revenue/platform.sql'),
     ...['0020_marketing_consent', '0021_marketing_collection_rules_and_provider_blocks', '0022_marketing_market_scope_and_unresolved_sends',
       '0023_marketing_hidden_box_and_single_invite_claim', '0024_trial_conversion', '0026_winback_account_cooldown', '0027_winback_verified_first_acceptance']
       .map(m => f(`../../../drizzle/migrations/${m}.sql`)), f('fixture.sql')].join('\n;\n');
@@ -71,6 +71,7 @@ beforeAll(() => {
     UPDATE profiles SET winback_email_sent_at = '${LEGACY_AT}' WHERE id = '${U(4)}'`);
   const later = readdirSync(new URL('../../../drizzle/migrations/', import.meta.url)).filter(m => /^00(2[89]|[3-9][0-9])_.*\.sql$/.test(m)).sort();
   run(later.map(m => f(`../../../drizzle/migrations/${m}`)).join('\n;\n'));
+  psql(`INSERT INTO marketing_account_ages (user_id, adult, source) SELECT id, true, 'admin' FROM auth.users`);
   const admin = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x ORDER BY x->>'id'),'[]') FROM admin_winback_candidates() x`));
   for (const n of [1, 2, 3, 4]) legacy[n] = { sender: decide(U(n), LEGACY_CHECK, 'UTC'), admin: admin.find((r: { id: string }) => r.id === U(n)) ?? null };
   psql(`DELETE FROM marketing_deliveries`);

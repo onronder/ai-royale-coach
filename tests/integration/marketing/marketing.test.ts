@@ -65,7 +65,7 @@ const enableSending = () => psql(`UPDATE marketing_settings SET sending_enabled 
 const registerIys = (uid: string) => psql(`INSERT INTO marketing_iys_registrations (event_id) SELECT id FROM marketing_consent_events WHERE user_id = '${uid}' AND event = 'granted' ORDER BY id DESC LIMIT 1`);
 
 // Full chain: platform stand-ins, then every consent / conversion / win-back migration up to the newest one.
-const SCHEMA = ['tests/integration/marketing/base.sql', 'tests/integration/marketing/platform.sql',
+const SCHEMA = ['tests/integration/marketing/base.sql', 'tests/integration/marketing/platform.sql', 'tests/integration/revenue/platform.sql',
   ...readdirSync('drizzle/migrations').filter(f => /^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort().map(f => 'drizzle/migrations/' + f)];
 const ready = (() => { try { return !!PG && psql('SELECT 1', 'postgres') === '1'; } catch { return false; } })();
 const results: string[] = [];
@@ -273,6 +273,22 @@ describe('marketing consent against the real SQL', { skip: !ready && 'set MARKET
     assert.deepEqual(await send(p), { status: 'blocked', reason: 'sending_off' });
     assert.equal(p.accepted.length, 0);
     ok('switch off → 0 sends');
+  });
+
+  it('rechecks the adult confirmation after consent was granted, on regular and win-back sends', async () => {
+    granted(); enableSending();
+    const provider = fakeProvider();
+    for (const adult of ['false', 'NULL']) {
+      as(ADMIN, `SELECT public.admin_set_marketing_age('${A}', ${adult})`);
+      for (const campaign of ['seasonal', 'winback:NOV']) {
+        assert.deepEqual(await send(provider, true, campaign), { status: 'blocked', reason: 'adult_unconfirmed' });
+      }
+      assert.equal(state(A).state, 'granted');
+    }
+    assert.equal(provider.accepted.length, 0);
+    as(ADMIN, `SELECT public.admin_set_marketing_age('${A}', true)`);
+    assert.equal((await send(provider, true, 'seasonal')).status, 'sent');
+    assert.equal(provider.accepted.length, 1);
   });
 
   it('market rule not approved: held', async () => {

@@ -1184,7 +1184,7 @@
       },
       "thirdParty": {
         "title": "Service Providers",
-        "content": "These providers process data on our behalf and on our instructions:\n• Cloud infrastructure and authentication: storage, sign-in and server processing\n• Polar: trials, subscriptions and payments\n• Resend: email delivery\n• AI model providers: game data and your questions, to generate analyses and coaching answers\n• Supercell Clash Royale API: retrieving public game data"
+        "content": "We use the following services for these purposes:\n• Cloud infrastructure and authentication: storage, sign-in and server processing\n• Polar: trials, subscriptions and payments\n• Resend: email delivery\n• AI model providers: game data and your questions, to generate analyses and coaching answers\n• Supercell Clash Royale API: retrieving public game data"
       },
       "contact": {
         "title": "Contact Us",
@@ -3630,6 +3630,7 @@
       "suppressed": "blocked address",
       "iys_pending": "IYS pending",
       "unknown": "unknown",
+      "adult_unconfirmed": "account age 18+ not confirmed",
       "age_rule_pending": "age rule pending",
       "cooldown": "A new win-back email requires more than 720 hours to have passed since the last email was accepted.",
       "previous_uncertain": "a previous win-back email has an uncertain result",

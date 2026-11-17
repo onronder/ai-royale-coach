@@ -218,6 +218,13 @@
       "when": 1794925710120,
       "tag": "0030_admin_revenue_as_of",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1794928814972,
+      "tag": "0031_campaign_recheck_account_age",
+      "breakpoints": true
     }
   ]
 }

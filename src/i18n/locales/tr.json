@@ -1184,7 +1184,7 @@
       },
       "thirdParty": {
         "title": "Hizmet Sağlayıcılar",
-        "content": "Bu hizmet sağlayıcılar verileri bizim adımıza ve talimatlarımızla işler:\n• Bulut altyapısı ve kimlik doğrulama: veri depolama, giriş ve sunucu işlemleri\n• Polar: deneme, abonelik ve ödeme işlemleri\n• Resend: e-posta gönderimi\n• Yapay zekâ model sağlayıcıları: analiz ve koçluk yanıtları üretmek için oyun verileri ve soruların\n• Supercell Clash Royale API’si: herkese açık oyun verilerinin alınması"
+        "content": "Aşağıdaki hizmetlerden belirtilen amaçlarla yararlanıyoruz:\n• Bulut altyapısı ve kimlik doğrulama: veri depolama, giriş ve sunucu işlemleri\n• Polar: deneme, abonelik ve ödeme işlemleri\n• Resend: e-posta gönderimi\n• Yapay zekâ model sağlayıcıları: analiz ve koçluk yanıtları üretmek için oyun verileri ve soruların\n• Supercell Clash Royale API’si: herkese açık oyun verilerinin alınması"
       },
       "contact": {
         "title": "Bize Ulaşın",
@@ -3630,6 +3630,7 @@
       "suppressed": "engelli adres",
       "iys_pending": "İYS bekliyor",
       "unknown": "bilinmiyor",
+      "adult_unconfirmed": "hesabın 18 yaş ve üzeri olduğu doğrulanmadı",
       "age_rule_pending": "yaş kuralı bekliyor",
       "cooldown": "Yeni bir geri kazanım e-postası için son e-postanın kabulünden bu yana 720 saatten fazla geçmiş olmalı.",
       "previous_uncertain": "önceki geri kazanım e-postasının sonucu belirsiz",
