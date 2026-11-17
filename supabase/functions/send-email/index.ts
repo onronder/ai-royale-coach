@@ -213,12 +213,12 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   const { userId, promoCode, discountPercent } = body
   if (!promoCode || !discountPercent || discountPercent < 1 || discountPercent > 100) return errorResponse('Missing promoCode/discountPercent', 400)
   const code = promoCode.toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 40)
-  const campaignKey = body.campaignKey ?? `winback:${code}`
+  const campaignKey = winbackCampaignKey(code, body.campaignKey)
   const { data: profile } = userId ? await admin.from('profiles').select('preferred_language, email').eq('id', userId).maybeSingle() : { data: null }
   const language = productLanguage(profile?.preferred_language ?? undefined)
   const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
   const secret = Deno.env.get('MARKETING_UNSUBSCRIBE_SECRET') ?? ''
-  const rpc = async (fn: string, args: Record<string, unknown>) => { const { data, error } = await admin.rpc(fn === 'claim_marketing_delivery' ? 'claim_winback_delivery' : fn, args); if (error) throw error; return data }
+  const rpc = winbackRpc(async (fn: string, args: Record<string, unknown>) => { const { data, error } = await admin.rpc(fn, args); if (error) throw error; return data })
   const resend = { async send(mail: PromoMail, key: string) {
     const r = await fetch('https://api.resend.com/emails', { method: 'POST', body: JSON.stringify(mail), headers: {
       Authorization: `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json', 'Idempotency-Key': key } })
