@@ -38,7 +38,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
   const lang = i18n.language;
   const { range, setRange, includeTests, setIncludeTests, filter } = useFilter();
   const q = useRevenueOverview(filter);
-  const [detail, setDetail] = useState<string | null>(null);
+  const [detail, setDetail] = useState<{ metric: string; asOf: string } | null>(null);
   const n = (v: number | undefined) => new Intl.NumberFormat(lang).format(v ?? 0);
   const label = (k: string) => t(`admin.revenue.metric.${k}`);
 
@@ -64,7 +64,8 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
     const measured = q.data.ui_measured_signups;
     const trialToPaid = q.data.transitions.first_paid;
     const loss = biggestLoss(q.data.transitions);
-    const open = (k: string) => () => setDetail(k);
+    const asOf = q.data.generated_at;
+    const open = (metric: string) => () => setDetail({ metric, asOf });
     const pct = (a: string, b: string) => formatRate(rate(c[a], c[b]), lang);
     const currencies = Object.keys(q.data.cash_net_cents);
 
@@ -111,6 +112,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
     const cash = (
       <div className="rounded-md border bg-card p-3">
         <span className="text-xs text-muted-foreground">{t('admin.revenue.cash')}</span>
+        {q.data.undated_orders > 0 && <p className="text-xs text-muted-foreground">{t('admin.revenue.undatedOrders', { count: q.data.undated_orders })}</p>}
         {q.data.incomplete_orders > 0 && <p className="text-xs text-muted-foreground">{t('admin.revenue.incompleteOrders', { count: q.data.incomplete_orders })}</p>}
         {currencies.length === 0 && !q.data.incomplete_orders ? <p className="text-sm text-muted-foreground">{t('admin.revenue.noPayments')}</p>
           : currencies.map(cur => <p key={cur} className="text-lg font-semibold tabular-nums">{formatCents(q.data!.cash_net_cents[cur], cur, lang)}</p>)}
@@ -153,7 +155,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
   return <div className="space-y-4">
     {filters}
     {content}
-    <DetailDialog asOf={q.data?.generated_at} metric={detail} filter={filter} onClose={() => setDetail(null)} />
+    <DetailDialog asOf={detail?.asOf} metric={detail?.metric ?? null} filter={filter} onClose={() => setDetail(null)} />
   </div>;
 }
 
@@ -181,7 +183,7 @@ function DetailDialog({ metric, filter, onClose, asOf }: { asOf?: string; metric
               <td className="p-2 break-all">{r.email ?? r.user_id.slice(0, 8)} {r.is_test && <Badge variant="outline">{t('admin.revenue.test')}</Badge>}</td>
               <td className="p-2 whitespace-nowrap">{fmt(r.signup_at)}</td>
               <td className="p-2 whitespace-nowrap">{fmt(r.trial_start)}</td>
-              <td className="p-2 whitespace-nowrap">{fmt(r.first_paid_at)}</td>
+              <td className="p-2 whitespace-nowrap">{!r.first_paid_at && r.undated_payment ? t('admin.revenue.paidDatePending') : fmt(r.first_paid_at)}</td>
               <td className="p-2">{r.sub_status ? t(`admin.revenue.sub.${r.sub_status}`, r.sub_status) : t('admin.revenue.access.never_subscribed')}{r.renewal_off && ` · ${t('admin.revenue.renewalOff')}`}</td>
             </tr>)}</tbody>
           </table>

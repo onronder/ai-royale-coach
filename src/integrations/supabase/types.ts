@@ -1505,6 +1505,33 @@ export type Database = {
         }
         Relationships: []
       }
+      polar_order_sync: {
+        Row: {
+          claimed_at: string | null
+          last_completed_at: string | null
+          next_page: number
+          queued_at: string | null
+          singleton: boolean
+          ticket: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          last_completed_at?: string | null
+          next_page?: number
+          queued_at?: string | null
+          singleton?: boolean
+          ticket?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          last_completed_at?: string | null
+          next_page?: number
+          queued_at?: string | null
+          singleton?: boolean
+          ticket?: string | null
+        }
+        Relationships: []
+      }
       polar_orders: {
         Row: {
           amount: number
@@ -2878,6 +2905,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      claim_polar_order_sync: {
+        Args: { p_ticket: string }
+        Returns: number
+      }
       claim_winback_delivery: {
         Args: { p_campaign: string; p_payload: Json; p_user: string }
         Returns: Json
@@ -2942,6 +2973,10 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      finish_polar_order_sync: {
+        Args: { p_more: boolean; p_ticket: string }
+        Returns: boolean
+      }
       get_my_marketing_consent: {
         Args: { p_claim_invite?: boolean }
         Returns: Json
@@ -3033,6 +3068,14 @@ export type Database = {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
       }
+      polar_positive_net: {
+        Args: { p_amount: number; p_refunded: number; p_status: string }
+        Returns: number
+      }
+      queue_polar_order_sync: {
+        Args: { anon_key: string; project_url: string }
+        Returns: undefined
+      }
       queue_trial_coaching_reminders: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
@@ -3106,6 +3149,10 @@ export type Database = {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
         Returns: Json
       }
+      record_polar_payment_dates: {
+        Args: { p_dates: Json }
+        Returns: number
+      }
       revenue_cohort: {
         Args: {
           p_at?: string
@@ -3116,10 +3163,12 @@ export type Database = {
         Returns: {
           checkout_at: string
           continue_at: string
+          current_sub_paid: boolean
           email: string
           first_paid_at: string
           first_renewal_at: string
           has_access: boolean
+          has_payment: boolean
           is_test: boolean
           offer_seen_at: string
           pricing_at: string
@@ -3129,9 +3178,12 @@ export type Database = {
           trial_clicked_at: string
           trial_end: string
           trial_paid_at: string
+          trial_payment_at: string
           trial_start: string
           trial_time_unknown: boolean
+          trial_undated: boolean
           ui_measured: boolean
+          undated_payment: boolean
           user_id: string
           verified_at: string
         }[]
