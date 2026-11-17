@@ -8,4 +8,4 @@ UPDATE public.user_subscriptions SET status='expired' WHERE polar_subscription_i
 UPDATE auth.users SET email_confirmed_at=now();
 UPDATE public.marketing_settings SET sending_enabled=true, approved_markets='{global}', age_rule_approved=true, require_iys=false;
 INSERT INTO public.marketing_consent_events(user_id,email,event,source,text_version,language,request_key)
-  SELECT id,email,'granted','settings','2026-11-v1','tr','fixture:'||id FROM auth.users;
+  SELECT id,email,'granted','preferences','2026-11-v1','tr','fixture:'||id FROM auth.users;

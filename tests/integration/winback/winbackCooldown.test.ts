@@ -154,7 +154,7 @@ describe('full send path (real claim SQL + sender code)', () => {
     expect(p.accepted.size).toBe(1);
   });
   test('consent and address blocks still apply after the cooldown', async () => {
-    psql(`INSERT INTO marketing_consent_events(user_id,email,event,source,request_key) VALUES ('${U(2)}','fixture2@example.invalid','withdrawn','settings','w2')`);
+    psql(`INSERT INTO marketing_consent_events(user_id,email,event,source,request_key) VALUES ('${U(2)}','fixture2@example.invalid','withdrawn','preferences','w2')`);
     expect(await send(U(2), 'NOV')).toEqual({ status: 'blocked', reason: 'no_consent' });
     psql(`INSERT INTO marketing_suppressions(email,reason) VALUES ('fixture3@example.invalid','complaint')`);
     expect(await send(U(3), 'NOV')).toEqual({ status: 'blocked', reason: 'suppressed' });
