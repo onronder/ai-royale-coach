@@ -3470,7 +3470,9 @@
       "suppressed": "endereço bloqueado",
       "iys_pending": "IYS pendente",
       "unknown": "desconhecido",
-      "age_rule_pending": "regra de idade pendente"
+      "age_rule_pending": "regra de idade pendente",
+      "cooldown": "período de espera: o último e-mail de reativação foi enviado há menos de 720 horas",
+      "previous_uncertain": "um e-mail de reativação anterior tem resultado incerto"
     },
     "admin": {
       "title": "Consentimento de e-mails de campanhas",
