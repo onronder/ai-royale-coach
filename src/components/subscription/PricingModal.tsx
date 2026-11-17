@@ -41,6 +41,8 @@ interface PendingPromo {
   discountPercent: number;
 }
 
+import { recordAcquisitionStep } from '@/lib/acquisitionSteps';
+
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
   const { t, i18n } = useTranslation();
   const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining, subscriptionStatus } = useSubscription();
@@ -93,7 +95,10 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
     }
   }, [open]);
 
+  useEffect(() => { if (open && subscriptionStatus !== 'past_due') recordAcquisitionStep('pricing_shown'); }, [open, subscriptionStatus]);
+
   const proceedToCheckout = async () => {
+    recordAcquisitionStep('polar_continue_clicked');
     try {
       const checkoutUrl = await createCheckout({
         accountSlots: selectedTier,

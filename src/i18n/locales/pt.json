@@ -2965,7 +2965,11 @@
       "trials": "Testes",
       "winback": "Reativação",
       "webhooks": "Webhooks",
-      "admin": "Administração"
+      "admin": "Administração",
+      "overview": "Visão geral",
+      "revenue": "Membros pagos e receita",
+      "campaigns": "Campanhas e consentimento",
+      "operations": "Operações"
     },
     "trials": {
       "paid": "Pagou",
@@ -3139,6 +3143,125 @@
       "uncertainSent": "Incerto — verifique o registro do provedor",
       "unverifiedTime": "horário não verificado",
       "until": "disponível após {{date}} (nesse exato momento ainda aguarda)"
+    },
+    "revenue": {
+      "loading": "Carregando…",
+      "error": "Não foi possível carregar o relatório. Nada é exibido como zero.",
+      "retry": "Tentar novamente",
+      "range": "Período de cadastro",
+      "ranges": {
+        "7": "Últimos 7 dias",
+        "30": "Últimos 30 dias",
+        "90": "Últimos 90 dias",
+        "all": "Tudo"
+      },
+      "includeTests": "Incluir contas de teste e admin",
+      "timezoneNote": "Datas em Europe/Istanbul; salvas em UTC.",
+      "funnelTitle": "Do cadastro à receita",
+      "funnelNote": "Mesma coorte de cadastro em cada etapa. Etapas de tela medidas para {{measured}} de {{total}} cadastros.",
+      "screenStep": "tela",
+      "notMeasured": "não medido",
+      "ofCohort": "Parte da coorte",
+      "fromPrevious": "Da etapa anterior",
+      "biggestLoss": "Maior perda medida",
+      "noLoss": "Nenhuma perda medida",
+      "mrr": "MRR",
+      "noData": "Sem dados",
+      "cash": "Recebido líquido (por moeda)",
+      "noPayments": "Nenhum pedido pago positivo",
+      "refunded": "Reembolsado",
+      "ofMature": "{{n}} de {{d}} maduros",
+      "detailTotal": "{{count}} contas",
+      "empty": "Nenhuma conta.",
+      "notObserved": "não medido",
+      "test": "teste",
+      "renewalOff": "renovação desligada",
+      "prev": "Anterior",
+      "next": "Próximo",
+      "directoryTitle": "Contas",
+      "directoryNote": "Uma linha por conta. Busque por e-mail ou tag de jogador.",
+      "searchPlaceholder": "E-mail ou tag de jogador",
+      "unstartedTitle": "Verificados há 24–48 h, sem teste",
+      "unstartedNote": "Somente leitura. “Enviável” é a decisão atual do servidor; é 0 enquanto o envio está desligado.",
+      "metric": {
+        "signups": "Novos cadastros",
+        "verified": "E-mail verificado",
+        "offer_seen": "Oferta de teste vista",
+        "trial_clicked": "Clique em “Iniciar teste”",
+        "pricing_shown": "Janela de preços exibida",
+        "continue_clicked": "Continuou para a Polar",
+        "checkout_created": "Link de pagamento Polar criado",
+        "trial_started": "Teste iniciado",
+        "first_paid": "Primeiro pedido pago",
+        "first_renewal": "Primeira renovação",
+        "mature_24h": "Cadastros com mais de 24 h",
+        "trial_24h": "Teste em 24 h",
+        "mature_48h": "Cadastros com mais de 48 h",
+        "trial_48h": "Teste em 48 h",
+        "d7_mature": "Testes após fim + 7 dias",
+        "d7_paid": "Primeiro pagamento até fim do teste + 7 dias",
+        "d7_pending": "Aguardando resultado D7",
+        "active_paid": "Membros pagos ativos",
+        "renewal_off_access": "Renovação desligada, ainda com acesso",
+        "past_due": "Pagamento atrasado",
+        "trialing": "Em teste agora",
+        "lost_paid": "Pagou e foi perdido"
+      },
+      "step": {
+        "trial_offer_seen": "Oferta de teste vista",
+        "trial_start_clicked": "Clique em “Iniciar teste”",
+        "pricing_shown": "Janela de preços exibida",
+        "polar_continue_clicked": "Continuou para a Polar",
+        "checkout_created": "Link de pagamento Polar criado",
+        "trial_started": "Teste iniciado",
+        "first_paid": "Primeiro pedido pago"
+      },
+      "col": {
+        "account": "Conta",
+        "signup": "Cadastro",
+        "trial": "Início do teste",
+        "firstPaid": "Primeiro pagamento",
+        "status": "Assinatura",
+        "lastStep": "Última etapa observada",
+        "access": "Acesso",
+        "marketing": "E-mail de campanha",
+        "security": "Segurança"
+      },
+      "access": {
+        "paid": "Pago",
+        "trialing": "Teste",
+        "past_due": "Pagamento atrasado",
+        "ended": "Encerrado",
+        "never_subscribed": "Nunca assinou"
+      },
+      "security": {
+        "ok": "OK",
+        "review": "Em análise",
+        "blocked": "Bloqueado"
+      },
+      "marketing": {
+        "granted": "Aceitou",
+        "withdrawn": "Retirou",
+        "none": "Sem escolha",
+        "pending": "Pendente"
+      },
+      "unstarted": {
+        "total": "Total",
+        "consented": "Consentimento válido",
+        "sendable": "Enviável segundo o servidor"
+      },
+      "mrrReason": {
+        "no_verified_polar_mrr_source": "Não há MRR da Polar verificado nem fonte de preço recorrente comprovada; o MRR não é calculado.",
+        "unknown": "Fonte indisponível."
+      },
+      "sub": {
+        "active": "Ativa",
+        "trialing": "Teste",
+        "past_due": "Pagamento atrasado",
+        "canceled": "Cancelada",
+        "revoked": "Revogada",
+        "cancelled": "Cancelada"
+      }
     }
   },
   "oraclePage": {

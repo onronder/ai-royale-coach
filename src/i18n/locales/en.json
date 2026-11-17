@@ -2954,7 +2954,11 @@
       "trials": "Trials",
       "winback": "Win-back",
       "webhooks": "Webhooks",
-      "admin": "Admin"
+      "admin": "Admin",
+      "overview": "Overview",
+      "revenue": "Paid members & revenue",
+      "campaigns": "Campaigns & consent",
+      "operations": "Operations"
     },
     "trials": {
       "paid": "Paid",
@@ -3128,6 +3132,125 @@
       "uncertainSent": "Uncertain — check the provider log",
       "unverifiedTime": "time unverified",
       "until": "eligible after {{date}} (still waits at that exact moment)"
+    },
+    "revenue": {
+      "loading": "Loading…",
+      "error": "This report could not be loaded. Nothing is shown as zero.",
+      "retry": "Try again",
+      "range": "Sign-up period",
+      "ranges": {
+        "7": "Last 7 days",
+        "30": "Last 30 days",
+        "90": "Last 90 days",
+        "all": "All time"
+      },
+      "includeTests": "Include test and admin accounts",
+      "timezoneNote": "Dates in Europe/Istanbul; stored in UTC.",
+      "funnelTitle": "Sign-up to revenue",
+      "funnelNote": "Same sign-up cohort for every step. Screen steps are measured for {{measured}} of {{total}} sign-ups (after measurement started).",
+      "screenStep": "screen",
+      "notMeasured": "not measured",
+      "ofCohort": "Share of cohort",
+      "fromPrevious": "From previous step",
+      "biggestLoss": "Largest measured drop",
+      "noLoss": "No measured drop yet",
+      "mrr": "MRR",
+      "noData": "No data",
+      "cash": "Net collected (per currency)",
+      "noPayments": "No positive paid orders",
+      "refunded": "Refunded",
+      "ofMature": "{{n}} of {{d}} mature",
+      "detailTotal": "{{count}} accounts",
+      "empty": "No accounts match.",
+      "notObserved": "not measured",
+      "test": "test",
+      "renewalOff": "renewal off",
+      "prev": "Previous",
+      "next": "Next",
+      "directoryTitle": "Accounts",
+      "directoryNote": "One row per account. Search by email or player tag.",
+      "searchPlaceholder": "Email or player tag",
+      "unstartedTitle": "Verified 24–48h ago, no trial yet",
+      "unstartedNote": "Read-only. Sendable is the server’s current campaign decision; it is 0 while sending is off.",
+      "metric": {
+        "signups": "New sign-ups",
+        "verified": "Email verified",
+        "offer_seen": "Trial offer seen",
+        "trial_clicked": "“Start trial” clicked",
+        "pricing_shown": "Price window shown",
+        "continue_clicked": "Continued to Polar",
+        "checkout_created": "Polar checkout link created",
+        "trial_started": "Trial started",
+        "first_paid": "First paid order",
+        "first_renewal": "First renewal",
+        "mature_24h": "Sign-ups older than 24h",
+        "trial_24h": "Trial within 24h",
+        "mature_48h": "Sign-ups older than 48h",
+        "trial_48h": "Trial within 48h",
+        "d7_mature": "Trials past end + 7 days",
+        "d7_paid": "First payment within trial end + 7 days",
+        "d7_pending": "Waiting for D7 result",
+        "active_paid": "Active paid members",
+        "renewal_off_access": "Renewal off, still has access",
+        "past_due": "Payment overdue",
+        "trialing": "In trial now",
+        "lost_paid": "Paid, then lost"
+      },
+      "step": {
+        "trial_offer_seen": "Trial offer seen",
+        "trial_start_clicked": "“Start trial” clicked",
+        "pricing_shown": "Price window shown",
+        "polar_continue_clicked": "Continued to Polar",
+        "checkout_created": "Polar checkout link created",
+        "trial_started": "Trial started",
+        "first_paid": "First paid order"
+      },
+      "col": {
+        "account": "Account",
+        "signup": "Signed up",
+        "trial": "Trial start",
+        "firstPaid": "First payment",
+        "status": "Subscription",
+        "lastStep": "Last observed step",
+        "access": "Access",
+        "marketing": "Campaign email",
+        "security": "Security"
+      },
+      "access": {
+        "paid": "Paid",
+        "trialing": "Trial",
+        "past_due": "Payment overdue",
+        "ended": "Ended",
+        "never_subscribed": "Never subscribed"
+      },
+      "security": {
+        "ok": "OK",
+        "review": "Under review",
+        "blocked": "Blocked"
+      },
+      "marketing": {
+        "granted": "Opted in",
+        "withdrawn": "Opted out",
+        "none": "No choice",
+        "pending": "Pending"
+      },
+      "unstarted": {
+        "total": "Total",
+        "consented": "Valid campaign consent",
+        "sendable": "Server says sendable"
+      },
+      "mrrReason": {
+        "no_verified_polar_mrr_source": "No verified Polar MRR or proven recurring price source is connected, so MRR is not calculated.",
+        "unknown": "Source unavailable."
+      },
+      "sub": {
+        "active": "Active",
+        "trialing": "Trial",
+        "past_due": "Payment overdue",
+        "canceled": "Canceled",
+        "revoked": "Revoked",
+        "cancelled": "Canceled"
+      }
     }
   },
   "oraclePage": {

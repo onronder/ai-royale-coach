@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield, Mail } from "lucide-react";
@@ -8,12 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { PaymentRecovery } from './PaymentRecovery';
 import { PricingModal } from "./PricingModal";
 import { cn } from "@/lib/utils";
+import { recordAcquisitionStep } from "@/lib/acquisitionSteps";
 
 export function TrialExpiredPage({ canStartTrial, paymentDue = false }: { canStartTrial: boolean; paymentDue?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [showPricing, setShowPricing] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  useEffect(() => { if (canStartTrial && !paymentDue) recordAcquisitionStep("trial_offer_seen"); }, [canStartTrial, paymentDue]);
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -127,7 +129,7 @@ export function TrialExpiredPage({ canStartTrial, paymentDue = false }: { canSta
           <div className="flex justify-center">
             <Button
               size="lg"
-              onClick={() => setShowPricing(true)}
+              onClick={() => { if (canStartTrial) recordAcquisitionStep("trial_start_clicked"); setShowPricing(true); }}
               className="gap-2 bg-gradient-to-r from-gold to-gold/80 hover:from-gold/90 hover:to-gold/70 text-black font-bold px-8"
             >
               <Crown className="h-5 w-5" />

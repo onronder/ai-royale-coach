@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
       achievement_progress: {
@@ -80,6 +75,39 @@ export type Database = {
           name?: string
           points?: number
           tier?: string
+        }
+        Relationships: []
+      }
+      acquisition_events: {
+        Row: {
+          created_at: string
+          step: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          step: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          step?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      acquisition_settings: {
+        Row: {
+          measured_since: string
+          singleton: boolean
+        }
+        Insert: {
+          measured_since?: string
+          singleton?: boolean
+        }
+        Update: {
+          measured_since?: string
+          singleton?: boolean
         }
         Relationships: []
       }
@@ -2620,6 +2648,7 @@ export type Database = {
       }
     }
     Functions: {
+      acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
       admin_marketing_reach: { Args: never; Returns: Json }
       admin_privacy_requests: {
         Args: never
@@ -2658,6 +2687,27 @@ export type Database = {
           seen: number
           unreconciled_partial_refunds: number
         }[]
+      }
+      admin_revenue_detail: {
+        Args: {
+          p_at?: string
+          p_from: string
+          p_include_tests?: boolean
+          p_limit?: number
+          p_metric: string
+          p_offset?: number
+          p_to: string
+        }
+        Returns: Json
+      }
+      admin_revenue_overview: {
+        Args: {
+          p_at?: string
+          p_from: string
+          p_include_tests?: boolean
+          p_to: string
+        }
+        Returns: Json
       }
       admin_set_marketing_age: {
         Args: { p_adult: boolean; p_user: string }
@@ -2709,6 +2759,10 @@ export type Database = {
         }
       }
       admin_trial_marketing: { Args: { p_days?: number }; Returns: Json }
+      admin_unstarted_audience: {
+        Args: { p_at?: string; p_include_tests?: boolean }
+        Returns: Json
+      }
       admin_update_privacy_request: {
         Args: {
           p_assignee: string
@@ -2717,6 +2771,10 @@ export type Database = {
           p_status: string
         }
         Returns: undefined
+      }
+      admin_user_directory: {
+        Args: { p_limit?: number; p_offset?: number; p_search?: string }
+        Returns: Json
       }
       admin_winback_candidates: { Args: never; Returns: Json[] }
       begin_confirmed_welcome: {
@@ -2969,6 +3027,8 @@ export type Database = {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
       }
+      record_acquisition_step: { Args: { p_step: string }; Returns: undefined }
+      record_checkout_created: { Args: { p_user: string }; Returns: undefined }
       record_confirmed_welcome: {
         Args: { p_message: string; p_user: string }
         Returns: boolean
@@ -3035,6 +3095,38 @@ export type Database = {
       reserve_trial_ai: {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
         Returns: Json
+      }
+      revenue_cohort: {
+        Args: {
+          p_at?: string
+          p_from: string
+          p_include_tests: boolean
+          p_to: string
+        }
+        Returns: {
+          checkout_at: string
+          continue_at: string
+          email: string
+          first_paid_at: string
+          first_renewal_at: string
+          has_access: boolean
+          is_test: boolean
+          offer_seen_at: string
+          pricing_at: string
+          renewal_off: boolean
+          signup_at: string
+          sub_status: string
+          trial_clicked_at: string
+          trial_end: string
+          trial_start: string
+          ui_measured: boolean
+          user_id: string
+          verified_at: string
+        }[]
+      }
+      revenue_metric_match: {
+        Args: { c: Record<string, unknown>; p_at: string; p_metric: string }
+        Returns: boolean
       }
       set_my_marketing_consent: {
         Args: {
@@ -3242,3 +3334,4 @@ export const Constants = {
     },
   },
 } as const
+
