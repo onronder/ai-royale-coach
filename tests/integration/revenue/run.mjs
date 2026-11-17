@@ -12,11 +12,50 @@ const sql=postgres({...opts,database:db});
 try {
 const load=f=>readFile(new URL(f,import.meta.url),'utf8');
 const migrations=await readdir(new URL('../../../drizzle/migrations/',import.meta.url));
-for (const f of ['../marketing/base.sql','../marketing/platform.sql','platform.sql',
-  ...migrations.filter(f=>/^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort().map(f=>'../../../drizzle/migrations/'+f)]) await sql.unsafe(await load(f));
-const run='r'+Date.now().toString(36), ids={};
 let passed=0;
 const ok=(condition,label)=>{ assert.ok(condition,label); passed++; };
+for (const f of ['../marketing/base.sql','../marketing/platform.sql','platform.sql']) {
+  await sql.unsafe(await load(f));
+}
+const reportingMigrations = migrations.filter(f => /^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort();
+for (const file of reportingMigrations) {
+  const migration = await load('../../../drizzle/migrations/' + file);
+  if (file !== '0032_admin_reporting_reconciliation.sql') {
+    await sql.unsafe(migration);
+    continue;
+  }
+
+  // Upgrade the shipped reporting schema with real pre-upgrade rows in place.
+  const owner = crypto.randomUUID(), orphan = crypto.randomUUID();
+  await sql`INSERT INTO auth.users(id,email) VALUES (${owner},'upgrade@example.invalid')`;
+  await sql`INSERT INTO acquisition_events(user_id,step) VALUES (${owner},'trial_offer_seen')`;
+  const snapshot = async () => (await sql`SELECT a.measured_since::text, e.created_at::text, m.sending_enabled
+    FROM acquisition_settings a CROSS JOIN marketing_settings m CROSS JOIN acquisition_events e WHERE e.user_id=${owner}`)[0];
+  const beforeUpgrade = await snapshot();
+
+  // Older versions allowed orphaned events. Exercise that path without carrying its fixture forward.
+  const rollback = new Error('orphan fixture checked');
+  await assert.rejects(sql.begin(async tx => {
+    await tx`INSERT INTO acquisition_events(user_id,step) VALUES (${orphan},'trial_offer_seen')`;
+    await tx.unsafe(migration);
+    ok((await tx`SELECT 1 FROM acquisition_events WHERE user_id=${orphan}`).length === 1, 'legacy orphan is preserved');
+    ok((await tx`SELECT convalidated FROM pg_constraint WHERE conname='acquisition_events_user_id_fkey' AND conrelid='acquisition_events'::regclass`)[0].convalidated === false,
+       'old orphans do not block the upgrade');
+    throw rollback;
+  }), e => e === rollback);
+
+  await sql.begin(tx => tx.unsafe(migration));
+  assert.deepEqual(await snapshot(), beforeUpgrade);
+  ok(beforeUpgrade.sending_enabled === false, 'upgrade preserves stored event, measurement start and disabled sending');
+  ok((await sql`SELECT convalidated FROM pg_constraint WHERE conname='acquisition_events_user_id_fkey' AND conrelid='acquisition_events'::regclass`)[0].convalidated === true,
+     'foreign key validated with intact history');
+  await assert.rejects(sql`INSERT INTO acquisition_events(user_id,step) VALUES (${orphan},'trial_offer_seen')`, e => e.code === '23503');
+  ok((await sql`SELECT count(*)::int n FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname='admin_user_directory'`)[0].n === 1,
+     'one unambiguous directory signature for existing and new callers');
+  await sql`DELETE FROM auth.users WHERE id=${owner}`;
+  ok((await sql`SELECT 1 FROM acquisition_events WHERE user_id=${owner}`).length === 0, 'future account deletion removes its event');
+}
+const run='r'+Date.now().toString(36), ids={};
 async function rpc(user,fn,args={}) {
   try {
     const data=await sql.begin(async tx=>{

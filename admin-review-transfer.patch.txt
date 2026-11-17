@@ -1,0 +1,2325 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index a9372a44d2427a214f2ca5903ba78a852b40eeee..5af3586874a5e4799fd0f04d1f162a906aa5d298 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -21,3 +21,4 @@ For a PR that changes a customer email, record the GitHub merge, production back
+ - Market-scoped rules (collection, sending, age, IYS) use only a server-assigned account market (`marketing_account_markets`, admin-set), never IP/language/domain; unknown market gets only `global` rules and always needs IYS. A promo attempt with an unknown provider outcome is replayed only with its frozen key/body to the same address inside 23h, otherwise it stays `uncertain` and is never re-sent; campaign unsubscribe links carry the campaign key and withdraw only the address that campaign went to.
+ - The sign-up form sends a campaign choice only when its box was displayed (`shown: true`; a hidden box records nothing), and the Coach invite is claimed atomically inside `get_my_marketing_consent(p_claim_invite)` so only one session ever receives it; other screens read with `false`. Invite access uses SQL `marketing_subscription_access`, which must mirror `_shared/subscription-access.ts`.
+ - Win-back email eligibility is decided only by SQL `winback_cooldown_at` (used by `claim_winback_delivery` and `admin_winback_candidates`): last accepted win-back > 720 h (fixed hours, timezone-independent) and no uncertain attempt in another `winback:` campaign, under an account advisory lock; admin screens read `winback_allowed` instead of computing dates. Cooldown time = provider-verified first acceptance (`record_marketing_delivery_at`); unverifiable times keep the later write time flagged unverified; rows with a NULL verification flag and the legacy profile stamp (counted only without a recorded delivery) are reported unverified (`cooldown_unverified`) but still wait; `outcome_uncertain` is a separate state that blocks other campaigns.
++- Admin revenue/funnel numbers and their detail lists come from one SQL source (revenue_cohort + revenue_metric_match) so totals always equal details; UI never derives money or MRR.
+diff --git a/docs/admin-revenue-funnel.md b/docs/admin-revenue-funnel.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..32225ccf04d26d462fcefc64adce19d5f8307189
+--- /dev/null
++++ b/docs/admin-revenue-funnel.md
+@@ -0,0 +1,16 @@
++# Yönetim • Kayıttan gelire
++
++- Ekran adımları (teklif görüldü, denemeyi başlat, fiyat penceresi, Polar'a devam) yalnız ilk edinimde, hesap başına ilk kez kaydedilir; ölçüm başlangıcından önceki kayıtlar "ölçülmedi" gösterilir. Polar ödeme bağlantısı yalnız sunucuda (`create-checkout`) kaydedilir; kart girildiğini kanıtlamaz.
++- Mali adımlar yalnız `polar_orders` ve `trial_conversion_periods`'tan: pozitif net (`amount - refunded`) ödenmiş sipariş; paket değişimi ilk ödeme sayılmaz; ilk yenileme = ilk ödemeden sonraki ilk pozitif `subscription_cycle`.
++- Tüm sayılar ve detay listeleri aynı SQL kaynağından (`revenue_cohort` + `revenue_metric_match`), bu yüzden KPI toplamı = detay toplamı. Raporlar bir "as of" anına göre okunabilir; sonradan gelen kayıtlar olgun kohortu değiştirmez.
++- MRR: doğrulanmış Polar MRR kaynağı yok → "Veri yok" ve neden. Tahsilat para birimi başına ayrı, iadeler ayrı.
++- Kampanya erişimi `admin_marketing_reach()` (0028) olduğu gibi gösterilir; "24–48 saat önce doğrulanmış, deneme yok" kitlesi ayrı sayılır ve gönderilebilir sayı sunucunun `marketing_decision` kararıdır.
++
++## Test
++- `bun test tests` (uygulama testleri; winback testi `WINBACK_PG` yalıtılmış Postgres ister)
++- `REVENUE_API=http://127.0.0.1:8001 bun tests/integration/revenue/run.mjs` — yalnız atılabilir taslak arka ucu; sahte hesaplar oluşturur, gerçek API ile SQL işlevlerini çağırır, sonunda siler.
++
++## Yayın sırası
++1. Taslağı incele/kabul et → 0029 ve 0030 canlı veritabanına uygulanır (ölçüm başlangıcı o an).
++2. `create-checkout` işlevini aynı sürümden dağıt.
++3. Siteyi yayınla.
+diff --git a/drizzle/migrations/0029_admin_revenue_funnel.sql b/drizzle/migrations/0029_admin_revenue_funnel.sql
+new file mode 100644
+index 0000000000000000000000000000000000000000..c67092c999a360da900499264ff315d63be0a4a4
+--- /dev/null
++++ b/drizzle/migrations/0029_admin_revenue_funnel.sql
+@@ -0,0 +1,203 @@
++CREATE TABLE public.acquisition_settings (singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton), measured_since timestamptz NOT NULL DEFAULT now());
++GRANT SELECT ON public.acquisition_settings TO authenticated;
++GRANT ALL ON public.acquisition_settings TO service_role;
++ALTER TABLE public.acquisition_settings ENABLE ROW LEVEL SECURITY;
++CREATE POLICY "Admins read acquisition settings" ON public.acquisition_settings FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
++INSERT INTO public.acquisition_settings DEFAULT VALUES;
++
++CREATE TABLE public.acquisition_events (
++  user_id uuid NOT NULL,
++  step text NOT NULL CHECK (step IN ('trial_offer_seen','trial_start_clicked','pricing_shown','polar_continue_clicked','checkout_created')),
++  created_at timestamptz NOT NULL DEFAULT now(),
++  PRIMARY KEY (user_id, step)
++);
++GRANT SELECT ON public.acquisition_events TO authenticated;
++GRANT ALL ON public.acquisition_events TO service_role;
++ALTER TABLE public.acquisition_events ENABLE ROW LEVEL SECURITY;
++CREATE POLICY "Admins read acquisition events" ON public.acquisition_events FOR SELECT TO authenticated USING (public.is_admin(auth.uid()));
++
++CREATE OR REPLACE FUNCTION public.acquisition_is_first(p_user uuid) RETURNS boolean
++LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++  SELECT NOT EXISTS (SELECT 1 FROM public.user_subscriptions s WHERE s.user_id=p_user AND s.polar_subscription_id IS NOT NULL)
++     AND NOT EXISTS (SELECT 1 FROM public.polar_orders o WHERE o.user_id=p_user)
++     AND NOT EXISTS (SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=p_user)
++$$;
++REVOKE ALL ON FUNCTION public.acquisition_is_first(uuid) FROM PUBLIC, anon, authenticated;
++
++CREATE OR REPLACE FUNCTION public.record_acquisition_step(p_step text) RETURNS void
++LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE u uuid := auth.uid();
++BEGIN
++  IF u IS NULL OR p_step NOT IN ('trial_offer_seen','trial_start_clicked','pricing_shown','polar_continue_clicked') THEN RETURN; END IF;
++  IF NOT public.acquisition_is_first(u) THEN RETURN; END IF;
++  INSERT INTO public.acquisition_events(user_id, step) VALUES (u, p_step) ON CONFLICT DO NOTHING;
++END $$;
++REVOKE ALL ON FUNCTION public.record_acquisition_step(text) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.record_acquisition_step(text) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.record_checkout_created(p_user uuid) RETURNS void
++LANGUAGE plpgsql SECURITY DEFINER SET search_path TO '' AS $$
++BEGIN
++  IF NOT public.acquisition_is_first(p_user) THEN RETURN; END IF;
++  INSERT INTO public.acquisition_events(user_id, step) VALUES (p_user, 'checkout_created') ON CONFLICT DO NOTHING;
++END $$;
++REVOKE ALL ON FUNCTION public.record_checkout_created(uuid) FROM PUBLIC, anon, authenticated;
++GRANT EXECUTE ON FUNCTION public.record_checkout_created(uuid) TO service_role;
++
++CREATE OR REPLACE FUNCTION public.revenue_cohort(p_from date, p_to date, p_include_tests boolean, p_at timestamptz DEFAULT now())
++RETURNS TABLE(user_id uuid, email text, signup_at timestamptz, verified_at timestamptz, is_test boolean, ui_measured boolean,
++  offer_seen_at timestamptz, trial_clicked_at timestamptz, pricing_at timestamptz, continue_at timestamptz, checkout_at timestamptz,
++  trial_start timestamptz, trial_end timestamptz, first_paid_at timestamptz, first_renewal_at timestamptz,
++  sub_status text, renewal_off boolean, has_access boolean)
++LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++  WITH cfg AS (SELECT measured_since FROM public.acquisition_settings WHERE singleton),
++  u AS (
++    SELECT a.id, a.email::text AS email, a.created_at, a.email_confirmed_at,
++      (EXISTS (SELECT 1 FROM public.trial_test_accounts t WHERE t.user_id=a.id) OR EXISTS (SELECT 1 FROM public.admin_roles r WHERE r.user_id=a.id)) AS is_test
++    FROM auth.users a
++    WHERE (p_from IS NULL OR a.created_at >= (p_from::timestamp AT TIME ZONE 'Europe/Istanbul'))
++      AND (p_to IS NULL OR a.created_at < ((p_to + 1)::timestamp AT TIME ZONE 'Europe/Istanbul'))
++  ),
++  pos AS (
++    SELECT o.user_id, coalesce(o.paid_at,o.created_at) AS ts, o.billing_reason
++    FROM public.polar_orders o
++    WHERE o.status='paid' AND o.amount - coalesce(o.refunded_net_cents,0) > 0 AND o.user_id IN (SELECT id FROM u)
++  ),
++  fp AS (SELECT p.user_id, min(p.ts) AS first_paid FROM pos p WHERE p.billing_reason IS DISTINCT FROM 'subscription_update' GROUP BY 1)
++  SELECT u.id, u.email, u.created_at, u.email_confirmed_at, u.is_test, u.created_at >= cfg.measured_since,
++    max(e.created_at) FILTER (WHERE e.step='trial_offer_seen'),
++    max(e.created_at) FILTER (WHERE e.step='trial_start_clicked'),
++    max(e.created_at) FILTER (WHERE e.step='pricing_shown'),
++    max(e.created_at) FILTER (WHERE e.step='polar_continue_clicked'),
++    max(e.created_at) FILTER (WHERE e.step='checkout_created'),
++    tp.started_at, tp.ends_at, fp.first_paid,
++    (SELECT min(p.ts) FROM pos p WHERE p.user_id=u.id AND p.billing_reason='subscription_cycle' AND p.ts > fp.first_paid),
++    s.status, coalesce(s.cancel_at_period_end,false), public.marketing_subscription_access(u.id, p_at)
++  FROM u CROSS JOIN cfg
++  LEFT JOIN public.acquisition_events e ON e.user_id=u.id
++  LEFT JOIN LATERAL (SELECT t.started_at, t.ends_at FROM public.trial_conversion_periods t WHERE t.user_id=u.id ORDER BY t.started_at LIMIT 1) tp ON true
++  LEFT JOIN fp ON fp.user_id=u.id
++  LEFT JOIN public.user_subscriptions s ON s.user_id=u.id
++  WHERE p_include_tests OR NOT u.is_test
++  GROUP BY u.id,u.email,u.created_at,u.email_confirmed_at,u.is_test,cfg.measured_since,tp.started_at,tp.ends_at,fp.first_paid,s.status,s.cancel_at_period_end
++$$;
++REVOKE ALL ON FUNCTION public.revenue_cohort(date,date,boolean,timestamptz) FROM PUBLIC, anon, authenticated;
++
++CREATE OR REPLACE FUNCTION public.revenue_metric_match(p_metric text, c record, p_at timestamptz) RETURNS boolean
++LANGUAGE plpgsql IMMUTABLE SET search_path TO '' AS $$
++BEGIN
++  RETURN coalesce(CASE p_metric
++    WHEN 'signups' THEN true
++    WHEN 'verified' THEN c.verified_at IS NOT NULL
++    WHEN 'offer_seen' THEN c.ui_measured AND c.offer_seen_at IS NOT NULL
++    WHEN 'trial_clicked' THEN c.ui_measured AND c.trial_clicked_at IS NOT NULL
++    WHEN 'pricing_shown' THEN c.ui_measured AND c.pricing_at IS NOT NULL
++    WHEN 'continue_clicked' THEN c.ui_measured AND c.continue_at IS NOT NULL
++    WHEN 'checkout_created' THEN c.ui_measured AND c.checkout_at IS NOT NULL
++    WHEN 'trial_started' THEN c.trial_start IS NOT NULL
++    WHEN 'first_paid' THEN c.first_paid_at IS NOT NULL
++    WHEN 'first_renewal' THEN c.first_renewal_at IS NOT NULL
++    WHEN 'mature_24h' THEN c.signup_at <= p_at - interval '24 hours'
++    WHEN 'trial_24h' THEN c.signup_at <= p_at - interval '24 hours' AND c.trial_start <= c.signup_at + interval '24 hours'
++    WHEN 'mature_48h' THEN c.signup_at <= p_at - interval '48 hours'
++    WHEN 'trial_48h' THEN c.signup_at <= p_at - interval '48 hours' AND c.trial_start <= c.signup_at + interval '48 hours'
++    WHEN 'd7_mature' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' <= p_at
++    WHEN 'd7_paid' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' <= p_at AND c.first_paid_at <= c.trial_end + interval '7 days'
++    WHEN 'd7_pending' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' > p_at AND c.first_paid_at IS NULL
++    WHEN 'active_paid' THEN c.has_access AND c.sub_status='active' AND c.first_paid_at IS NOT NULL
++    WHEN 'renewal_off_access' THEN c.has_access AND c.renewal_off
++    WHEN 'past_due' THEN c.sub_status='past_due'
++    WHEN 'trialing' THEN c.has_access AND c.sub_status='trialing'
++    WHEN 'lost_paid' THEN c.first_paid_at IS NOT NULL AND NOT c.has_access AND c.sub_status IS DISTINCT FROM 'past_due'
++    ELSE false END, false);
++END $$;
++REVOKE ALL ON FUNCTION public.revenue_metric_match(text,record,timestamptz) FROM PUBLIC, anon, authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_revenue_overview(p_from date, p_to date, p_include_tests boolean DEFAULT false)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE at timestamptz := now(); counts jsonb := '{}'; n bigint; cash jsonb; refunds jsonb;
++  metrics text[] := ARRAY['signups','verified','offer_seen','trial_clicked','pricing_shown','continue_clicked','checkout_created','trial_started','first_paid','first_renewal','mature_24h','trial_24h','mature_48h','trial_48h','d7_mature','d7_paid','d7_pending','active_paid','renewal_off_access','past_due','trialing','lost_paid'];
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH c AS MATERIALIZED (SELECT * FROM public.revenue_cohort(p_from,p_to,p_include_tests,at)),
++  o AS (SELECT upper(o.currency) currency, o.amount - coalesce(o.refunded_net_cents,0) net, coalesce(o.refunded_net_cents,0) refunded, o.status
++        FROM public.polar_orders o JOIN c ON c.user_id=o.user_id)
++  SELECT (SELECT jsonb_object_agg(mm, (SELECT count(*) FROM c WHERE public.revenue_metric_match(mm, c, at))) FROM unnest(metrics) mm),
++         (SELECT count(*) FROM c WHERE c.ui_measured),
++         (SELECT coalesce(jsonb_object_agg(currency, cents),'{}') FROM (SELECT currency, sum(net) cents FROM o WHERE status='paid' AND net>0 GROUP BY 1) x),
++         (SELECT coalesce(jsonb_object_agg(currency, cents),'{}') FROM (SELECT currency, sum(refunded) cents FROM o WHERE refunded>0 GROUP BY 1) x)
++  INTO counts, n, cash, refunds;
++  RETURN jsonb_build_object('generated_at', at, 'counts', counts, 'ui_measured_signups', n,
++    'measured_since', (SELECT measured_since FROM public.acquisition_settings WHERE singleton),
++    'cash_net_cents', cash, 'refunded_cents', refunds,
++    'mrr', jsonb_build_object('available', false, 'reason', 'no_verified_polar_mrr_source'));
++END $$;
++REVOKE ALL ON FUNCTION public.admin_revenue_overview(date,date,boolean) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_revenue_overview(date,date,boolean) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_revenue_detail(p_metric text, p_from date, p_to date, p_include_tests boolean DEFAULT false, p_limit integer DEFAULT 50, p_offset integer DEFAULT 0)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE at timestamptz := now(); total bigint; rows jsonb;
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH c AS (SELECT * FROM public.revenue_cohort(p_from,p_to,p_include_tests,at) c WHERE public.revenue_metric_match(p_metric, c, at))
++  SELECT (SELECT count(*) FROM c), coalesce((SELECT jsonb_agg(to_jsonb(x)) FROM (SELECT user_id,email,signup_at,verified_at,trial_start,trial_end,first_paid_at,first_renewal_at,sub_status,renewal_off,has_access,is_test
++     FROM c ORDER BY signup_at DESC LIMIT least(greatest(p_limit,1),200) OFFSET greatest(p_offset,0)) x),'[]') INTO total, rows;
++  RETURN jsonb_build_object('metric', p_metric, 'total', total, 'rows', rows);
++END $$;
++REVOKE ALL ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_user_directory(p_search text DEFAULT NULL, p_limit integer DEFAULT 25, p_offset integer DEFAULT 0)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE q text := nullif(trim(coalesce(p_search,'')),''); total bigint; rows jsonb;
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH base AS (
++    SELECT a.id, a.email::text email, a.created_at FROM auth.users a
++    WHERE q IS NULL OR a.email ILIKE '%'||q||'%'
++       OR EXISTS (SELECT 1 FROM public.player_profiles pp WHERE pp.user_id=a.id AND upper(replace(pp.player_tag,'#','')) = upper(replace(q,'#','')))
++  ), page AS (SELECT * FROM base ORDER BY created_at DESC LIMIT least(greatest(p_limit,1),100) OFFSET greatest(p_offset,0))
++  SELECT (SELECT count(*) FROM base), coalesce(jsonb_agg(jsonb_build_object(
++      'user_id', p.id, 'email', p.email, 'signup_at', p.created_at,
++      'last_step', CASE
++         WHEN EXISTS (SELECT 1 FROM public.polar_orders o WHERE o.user_id=p.id AND o.status='paid' AND o.amount-coalesce(o.refunded_net_cents,0)>0) THEN 'first_paid'
++         WHEN EXISTS (SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=p.id) THEN 'trial_started'
++         ELSE (SELECT e.step FROM public.acquisition_events e WHERE e.user_id=p.id ORDER BY e.created_at DESC LIMIT 1) END,
++      'access', CASE
++         WHEN public.marketing_subscription_access(p.id) THEN CASE WHEN s.status='trialing' THEN 'trialing' ELSE 'paid' END
++         WHEN s.status='past_due' THEN 'past_due'
++         WHEN s.user_id IS NOT NULL THEN 'ended'
++         ELSE 'never_subscribed' END,
++      'renewal_off', coalesce(s.cancel_at_period_end,false),
++      'marketing', coalesce((SELECT st.state FROM public.marketing_state_at(p.id) st), 'none'),
++      'security', CASE WHEN f.status IN ('blocked','suspended') THEN 'blocked' WHEN f.status IN ('flagged','review','restricted') THEN 'review' ELSE 'ok' END,
++      'tags', (SELECT coalesce(jsonb_agg(pp.player_tag ORDER BY pp.created_at),'[]') FROM public.player_profiles pp WHERE pp.user_id=p.id)
++    ) ORDER BY p.created_at DESC),'[]')
++  INTO total, rows
++  FROM page p LEFT JOIN public.user_subscriptions s ON s.user_id=p.id LEFT JOIN public.user_fraud_status f ON f.user_id=p.id;
++  RETURN jsonb_build_object('total', total, 'rows', rows);
++END $$;
++REVOKE ALL ON FUNCTION public.admin_user_directory(text,integer,integer) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_user_directory(text,integer,integer) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_unstarted_audience(p_include_tests boolean DEFAULT false)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE r jsonb;
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH a AS (
++    SELECT u.id FROM auth.users u
++    WHERE u.email_confirmed_at <= now() - interval '24 hours' AND u.email_confirmed_at > now() - interval '48 hours'
++      AND NOT EXISTS (SELECT 1 FROM public.user_subscriptions s WHERE s.user_id=u.id)
++      AND NOT EXISTS (SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=u.id)
++      AND (p_include_tests OR NOT (EXISTS (SELECT 1 FROM public.trial_test_accounts t WHERE t.user_id=u.id) OR EXISTS (SELECT 1 FROM public.admin_roles r WHERE r.user_id=u.id)))
++  )
++  SELECT jsonb_build_object('total', count(*),
++    'consented', count(*) FILTER (WHERE (SELECT st.state FROM public.marketing_state_at(a.id) st)='granted'),
++    'sendable', count(*) FILTER (WHERE (public.marketing_decision(a.id)->>'allowed')::boolean))
++  INTO r FROM a;
++  RETURN r;
++END $$;
++REVOKE ALL ON FUNCTION public.admin_unstarted_audience(boolean) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_unstarted_audience(boolean) TO authenticated;
+\ No newline at end of file
+diff --git a/drizzle/migrations/0030_admin_revenue_as_of.sql b/drizzle/migrations/0030_admin_revenue_as_of.sql
+new file mode 100644
+index 0000000000000000000000000000000000000000..9f24c7eef7afab8ea0fec5820f046dc92686d41f
+--- /dev/null
++++ b/drizzle/migrations/0030_admin_revenue_as_of.sql
+@@ -0,0 +1,99 @@
++DROP FUNCTION public.admin_revenue_overview(date,date,boolean);
++DROP FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer);
++DROP FUNCTION public.admin_unstarted_audience(boolean);
++
++CREATE OR REPLACE FUNCTION public.revenue_cohort(p_from date, p_to date, p_include_tests boolean, p_at timestamptz DEFAULT now())
++RETURNS TABLE(user_id uuid, email text, signup_at timestamptz, verified_at timestamptz, is_test boolean, ui_measured boolean,
++  offer_seen_at timestamptz, trial_clicked_at timestamptz, pricing_at timestamptz, continue_at timestamptz, checkout_at timestamptz,
++  trial_start timestamptz, trial_end timestamptz, first_paid_at timestamptz, first_renewal_at timestamptz,
++  sub_status text, renewal_off boolean, has_access boolean)
++LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++  WITH cfg AS (SELECT measured_since FROM public.acquisition_settings WHERE singleton),
++  u AS (
++    SELECT a.id, a.email::text AS email, a.created_at, a.email_confirmed_at,
++      (EXISTS (SELECT 1 FROM public.trial_test_accounts t WHERE t.user_id=a.id) OR EXISTS (SELECT 1 FROM public.admin_roles r WHERE r.user_id=a.id)) AS is_test
++    FROM auth.users a
++    WHERE a.created_at <= p_at
++      AND (p_from IS NULL OR a.created_at >= (p_from::timestamp AT TIME ZONE 'Europe/Istanbul'))
++      AND (p_to IS NULL OR a.created_at < ((p_to + 1)::timestamp AT TIME ZONE 'Europe/Istanbul'))
++  ),
++  pos AS (
++    SELECT o.user_id, coalesce(o.paid_at,o.created_at) AS ts, o.billing_reason
++    FROM public.polar_orders o
++    WHERE coalesce(o.paid_at,o.created_at) <= p_at AND o.status='paid' AND o.amount - coalesce(o.refunded_net_cents,0) > 0 AND o.user_id IN (SELECT id FROM u)
++  ),
++  fp AS (SELECT p.user_id, min(p.ts) AS first_paid FROM pos p WHERE p.billing_reason IS DISTINCT FROM 'subscription_update' GROUP BY 1)
++  SELECT u.id, u.email, u.created_at, u.email_confirmed_at, u.is_test, u.created_at >= cfg.measured_since,
++    max(e.created_at) FILTER (WHERE e.step='trial_offer_seen'),
++    max(e.created_at) FILTER (WHERE e.step='trial_start_clicked'),
++    max(e.created_at) FILTER (WHERE e.step='pricing_shown'),
++    max(e.created_at) FILTER (WHERE e.step='polar_continue_clicked'),
++    max(e.created_at) FILTER (WHERE e.step='checkout_created'),
++    tp.started_at, tp.ends_at, fp.first_paid,
++    (SELECT min(p.ts) FROM pos p WHERE p.user_id=u.id AND p.billing_reason='subscription_cycle' AND p.ts > fp.first_paid),
++    s.status, coalesce(s.cancel_at_period_end,false), public.marketing_subscription_access(u.id, p_at)
++  FROM u CROSS JOIN cfg
++  LEFT JOIN public.acquisition_events e ON e.user_id=u.id AND e.created_at <= p_at
++  LEFT JOIN LATERAL (SELECT t.started_at, t.ends_at FROM public.trial_conversion_periods t WHERE t.user_id=u.id AND t.started_at <= p_at ORDER BY t.started_at LIMIT 1) tp ON true
++  LEFT JOIN fp ON fp.user_id=u.id
++  LEFT JOIN public.user_subscriptions s ON s.user_id=u.id
++  WHERE p_include_tests OR NOT u.is_test
++  GROUP BY u.id,u.email,u.created_at,u.email_confirmed_at,u.is_test,cfg.measured_since,tp.started_at,tp.ends_at,fp.first_paid,s.status,s.cancel_at_period_end
++$$;
++REVOKE ALL ON FUNCTION public.revenue_cohort(date,date,boolean,timestamptz) FROM PUBLIC, anon, authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_revenue_overview(p_from date, p_to date, p_include_tests boolean DEFAULT false, p_at timestamptz DEFAULT NULL)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE at timestamptz := coalesce(p_at, now()); counts jsonb := '{}'; n bigint; cash jsonb; refunds jsonb;
++  metrics text[] := ARRAY['signups','verified','offer_seen','trial_clicked','pricing_shown','continue_clicked','checkout_created','trial_started','first_paid','first_renewal','mature_24h','trial_24h','mature_48h','trial_48h','d7_mature','d7_paid','d7_pending','active_paid','renewal_off_access','past_due','trialing','lost_paid'];
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH c AS MATERIALIZED (SELECT * FROM public.revenue_cohort(p_from,p_to,p_include_tests,at)),
++  o AS (SELECT upper(o.currency) currency, o.amount - coalesce(o.refunded_net_cents,0) net, coalesce(o.refunded_net_cents,0) refunded, o.status
++        FROM public.polar_orders o JOIN c ON c.user_id=o.user_id WHERE coalesce(o.paid_at,o.created_at) <= at)
++  SELECT (SELECT jsonb_object_agg(mm, (SELECT count(*) FROM c WHERE public.revenue_metric_match(mm, c, at))) FROM unnest(metrics) mm),
++         (SELECT count(*) FROM c WHERE c.ui_measured),
++         (SELECT coalesce(jsonb_object_agg(currency, cents),'{}') FROM (SELECT currency, sum(net) cents FROM o WHERE status='paid' AND net>0 GROUP BY 1) x),
++         (SELECT coalesce(jsonb_object_agg(currency, cents),'{}') FROM (SELECT currency, sum(refunded) cents FROM o WHERE refunded>0 GROUP BY 1) x)
++  INTO counts, n, cash, refunds;
++  RETURN jsonb_build_object('generated_at', at, 'counts', counts, 'ui_measured_signups', n,
++    'measured_since', (SELECT measured_since FROM public.acquisition_settings WHERE singleton),
++    'cash_net_cents', cash, 'refunded_cents', refunds,
++    'mrr', jsonb_build_object('available', false, 'reason', 'no_verified_polar_mrr_source'));
++END $$;
++REVOKE ALL ON FUNCTION public.admin_revenue_overview(date,date,boolean,timestamptz) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_revenue_overview(date,date,boolean,timestamptz) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_revenue_detail(p_metric text, p_from date, p_to date, p_include_tests boolean DEFAULT false, p_limit integer DEFAULT 50, p_offset integer DEFAULT 0, p_at timestamptz DEFAULT NULL)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE at timestamptz := coalesce(p_at, now()); total bigint; rows jsonb;
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH c AS (SELECT * FROM public.revenue_cohort(p_from,p_to,p_include_tests,at) c WHERE public.revenue_metric_match(p_metric, c, at))
++  SELECT (SELECT count(*) FROM c), coalesce((SELECT jsonb_agg(to_jsonb(x)) FROM (SELECT user_id,email,signup_at,verified_at,trial_start,trial_end,first_paid_at,first_renewal_at,sub_status,renewal_off,has_access,is_test
++     FROM c ORDER BY signup_at DESC LIMIT least(greatest(p_limit,1),200) OFFSET greatest(p_offset,0)) x),'[]') INTO total, rows;
++  RETURN jsonb_build_object('metric', p_metric, 'total', total, 'rows', rows);
++END $$;
++REVOKE ALL ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer,timestamptz) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer,timestamptz) TO authenticated;
++
++CREATE OR REPLACE FUNCTION public.admin_unstarted_audience(p_include_tests boolean DEFAULT false, p_at timestamptz DEFAULT NULL)
++RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
++DECLARE r jsonb; at timestamptz := coalesce(p_at, now());
++BEGIN
++  IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
++  WITH a AS (
++    SELECT u.id FROM auth.users u
++    WHERE u.email_confirmed_at <= at - interval '24 hours' AND u.email_confirmed_at > at - interval '48 hours'
++      AND NOT EXISTS (SELECT 1 FROM public.user_subscriptions s WHERE s.user_id=u.id AND s.created_at <= at)
++      AND NOT EXISTS (SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=u.id AND t.started_at <= at)
++      AND (p_include_tests OR NOT (EXISTS (SELECT 1 FROM public.trial_test_accounts t WHERE t.user_id=u.id) OR EXISTS (SELECT 1 FROM public.admin_roles r WHERE r.user_id=u.id)))
++  )
++  SELECT jsonb_build_object('total', count(*),
++    'consented', count(*) FILTER (WHERE (SELECT st.state FROM public.marketing_state_at(a.id) st)='granted'),
++    'sendable', count(*) FILTER (WHERE (public.marketing_decision(a.id)->>'allowed')::boolean))
++  INTO r FROM a;
++  RETURN r;
++END $$;
++REVOKE ALL ON FUNCTION public.admin_unstarted_audience(boolean,timestamptz) FROM PUBLIC, anon;
++GRANT EXECUTE ON FUNCTION public.admin_unstarted_audience(boolean,timestamptz) TO authenticated;
+\ No newline at end of file
+diff --git a/drizzle/migrations/meta/0029_snapshot.json b/drizzle/migrations/meta/0029_snapshot.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e98c33a5bdc774cb420ade6feeab0490a2e0a81
+--- /dev/null
++++ b/drizzle/migrations/meta/0029_snapshot.json
+@@ -0,0 +1,18 @@
++{
++  "id": "b22c0042-7cd5-40b1-937b-1adee2242cfc",
++  "prevId": "84aa4d55-f336-4c60-8253-fe694d97ac9f",
++  "version": "7",
++  "dialect": "postgresql",
++  "tables": {},
++  "enums": {},
++  "schemas": {},
++  "views": {},
++  "sequences": {},
++  "roles": {},
++  "policies": {},
++  "_meta": {
++    "columns": {},
++    "schemas": {},
++    "tables": {}
++  }
++}
+diff --git a/drizzle/migrations/meta/0030_snapshot.json b/drizzle/migrations/meta/0030_snapshot.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..60c71725745b19b8ecce05e1a5975fe7be2698d2
+--- /dev/null
++++ b/drizzle/migrations/meta/0030_snapshot.json
+@@ -0,0 +1,18 @@
++{
++  "id": "7a94b9c7-893b-45c1-890f-60b758bff655",
++  "prevId": "b22c0042-7cd5-40b1-937b-1adee2242cfc",
++  "version": "7",
++  "dialect": "postgresql",
++  "tables": {},
++  "enums": {},
++  "schemas": {},
++  "views": {},
++  "sequences": {},
++  "roles": {},
++  "policies": {},
++  "_meta": {
++    "columns": {},
++    "schemas": {},
++    "tables": {}
++  }
++}
+diff --git a/drizzle/migrations/meta/_journal.json b/drizzle/migrations/meta/_journal.json
+index af1801d9774fd6c238043bdc839bb1209698efe5..29d346cff8dc42b51ef601e5c0a1c67eff4e6f68 100644
+--- a/drizzle/migrations/meta/_journal.json
++++ b/drizzle/migrations/meta/_journal.json
+@@ -204,6 +204,20 @@
+       "when": 1794924128129,
+       "tag": "0028_consent_invite_access_and_winback_time_verification",
+       "breakpoints": true
++    },
++    {
++      "idx": 29,
++      "version": "7",
++      "when": 1794925493012,
++      "tag": "0029_admin_revenue_funnel",
++      "breakpoints": true
++    },
++    {
++      "idx": 30,
++      "version": "7",
++      "when": 1794925710120,
++      "tag": "0030_admin_revenue_as_of",
++      "breakpoints": true
+     }
+   ]
+ }
+diff --git a/roadmap.md b/roadmap.md
+index f2d1498b91a19ad1e8b1bf82c560c07196bf2fc4..06dc3da43f0332868de7b4cd9b62cac7deb9717e 100644
+--- a/roadmap.md
++++ b/roadmap.md
+@@ -1,5 +1,4 @@
+ # Roadmap
+-- [x] Campaign-email consent, invite, preferences, privacy requests, promo gate, admin report (draft only)
+-- [ ] Resend bounce/complaint webhook → record_marketing_suppression (needs webhook signing secret)
+-- [ ] Retention purge job (needs company retention periods)
+-- [ ] Live release: merge, backend, publish (owner)
++- [x] Admin revenue/funnel IA (draft)
++- [x] Show admin_marketing_reach() in admin (5 languages), separate from unstarted audience
++- [x] Share branch + test command
+diff --git a/src/components/admin/MarketingReachCard.tsx b/src/components/admin/MarketingReachCard.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..6b055137fe21f107c2fcbb30fd8c3409290bf533
+--- /dev/null
++++ b/src/components/admin/MarketingReachCard.tsx
+@@ -0,0 +1,39 @@
++import { useQuery } from '@tanstack/react-query';
++import { useTranslation } from 'react-i18next';
++import { supabase } from '@/integrations/supabase/client';
++import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
++import { ReportError, ReportLoading } from './ReportState';
++
++type Reach = { active_paid: number; active_trial: number; already_chose: number; invitable: number; waiting_missing_info: number; waiting_by_reason: Record<string, number> };
++
++/** Read-only view of the server's admin_marketing_reach() (one row per account with current access). Nothing is derived here. */
++export function MarketingReachCard() {
++  const { t, i18n } = useTranslation();
++  const q = useQuery({
++    queryKey: ['admin-marketing-reach'],
++    queryFn: async () => {
++      const { data, error } = await supabase.rpc('admin_marketing_reach' as never);
++      if (error) throw error;
++      return data as unknown as Reach;
++    },
++  });
++  const n = (v: number | undefined) => new Intl.NumberFormat(i18n.language).format(v ?? 0);
++  return <Card>
++    <CardHeader>
++      <CardTitle className="text-base">{t('admin.revenue.reach.title')}</CardTitle>
++      <CardDescription>{t('admin.revenue.reach.note')}</CardDescription>
++    </CardHeader>
++    <CardContent className="space-y-3">
++      {q.isLoading ? <ReportLoading /> : q.isError || !q.data ? <ReportError onRetry={() => q.refetch()} /> : <>
++        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-5">
++          {(['active_paid', 'active_trial', 'already_chose', 'invitable', 'waiting_missing_info'] as const).map(k =>
++            <div key={k} className="rounded-md border p-3"><dt className="text-xs text-muted-foreground">{t(`admin.revenue.reach.${k}`)}</dt>
++              <dd className="text-2xl font-semibold tabular-nums">{n(q.data![k])}</dd></div>)}
++        </dl>
++        {Object.keys(q.data.waiting_by_reason).length > 0 && <ul className="flex flex-wrap gap-2 text-xs" aria-label={t('admin.revenue.reach.reasons')}>
++          {Object.entries(q.data.waiting_by_reason).map(([k, v]) => <li key={k} className="rounded border px-2 py-1">{t(`admin.revenue.reach.reason.${k}`, k)}: <span className="font-semibold tabular-nums">{n(v)}</span></li>)}
++        </ul>}
++      </>}
++    </CardContent>
++  </Card>;
++}
+diff --git a/src/components/admin/ReportState.tsx b/src/components/admin/ReportState.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..e215d1d5ee86c4d094cb94f2918d016eff9d230f
+--- /dev/null
++++ b/src/components/admin/ReportState.tsx
+@@ -0,0 +1,19 @@
++import { useTranslation } from 'react-i18next';
++import { AlertCircle, Loader2 } from 'lucide-react';
++import { Button } from '@/components/ui/button';
++
++/** Shared loading / error states: a failed query is never shown as 0. */
++export function ReportLoading() {
++  const { t } = useTranslation();
++  return <div role="status" aria-live="polite" className="flex items-center gap-2 py-8 text-muted-foreground justify-center">
++    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />{t('admin.revenue.loading')}
++  </div>;
++}
++
++export function ReportError({ onRetry }: { onRetry: () => void }) {
++  const { t } = useTranslation();
++  return <div role="alert" className="flex flex-col items-center gap-3 rounded-md border border-destructive/40 bg-destructive/5 py-6 text-center">
++    <p className="flex items-center gap-2 text-sm text-destructive"><AlertCircle className="h-4 w-4" aria-hidden />{t('admin.revenue.error')}</p>
++    <Button size="sm" variant="outline" onClick={onRetry}>{t('admin.revenue.retry')}</Button>
++  </div>;
++}
+diff --git a/src/components/admin/RevenueOverviewPanel.tsx b/src/components/admin/RevenueOverviewPanel.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..fd43978c02fc7f7c25c3241a397a979d8e89a680
+--- /dev/null
++++ b/src/components/admin/RevenueOverviewPanel.tsx
+@@ -0,0 +1,193 @@
++import { useState } from 'react';
++import { useTranslation } from 'react-i18next';
++import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
++import { Button } from '@/components/ui/button';
++import { Badge } from '@/components/ui/badge';
++import { Switch } from '@/components/ui/switch';
++import { Label } from '@/components/ui/label';
++import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
++import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
++import { useRevenueDetail, useRevenueOverview, type RevenueFilter } from '@/hooks/useRevenueReports';
++import { FUNNEL_STEPS, biggestLoss, formatCents, formatRate, istanbulDate, rate, shiftDate } from '@/lib/revenueFunnel';
++import { ReportError, ReportLoading } from './ReportState';
++
++type Section = 'overview' | 'trials' | 'revenue';
++const RANGES = ['7', '30', '90', 'all'] as const;
++
++function useFilter() {
++  const [range, setRange] = useState<(typeof RANGES)[number]>('30');
++  const [includeTests, setIncludeTests] = useState(false);
++  const today = istanbulDate();
++  const filter: RevenueFilter = { from: range === 'all' ? null : shiftDate(today, -Number(range) + 1), to: range === 'all' ? null : today, includeTests };
++  return { range, setRange, includeTests, setIncludeTests, filter };
++}
++
++function Kpi({ label, value, hint, onOpen }: { label: string; value: string; hint?: string; onOpen?: () => void }) {
++  const body = <>
++    <span className="text-xs text-muted-foreground">{label}</span>
++    <span className="text-2xl font-semibold tabular-nums">{value}</span>
++    {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
++  </>;
++  return onOpen
++    ? <button type="button" onClick={onOpen} className="flex flex-col gap-1 rounded-md border bg-card p-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{body}</button>
++    : <div className="flex flex-col gap-1 rounded-md border bg-card p-3">{body}</div>;
++}
++
++export function RevenueOverviewPanel({ section = 'overview' }: { section?: Section }) {
++  const { t, i18n } = useTranslation();
++  const lang = i18n.language;
++  const { range, setRange, includeTests, setIncludeTests, filter } = useFilter();
++  const q = useRevenueOverview(filter);
++  const [detail, setDetail] = useState<string | null>(null);
++  const n = (v: number | undefined) => new Intl.NumberFormat(lang).format(v ?? 0);
++  const label = (k: string) => t(`admin.revenue.metric.${k}`);
++
++  const filters = (
++    <div className="flex flex-wrap items-center gap-3">
++      <Select value={range} onValueChange={v => setRange(v as typeof range)}>
++        <SelectTrigger className="w-44" aria-label={t('admin.revenue.range')}><SelectValue /></SelectTrigger>
++        <SelectContent>{RANGES.map(r => <SelectItem key={r} value={r}>{t(`admin.revenue.ranges.${r}`)}</SelectItem>)}</SelectContent>
++      </Select>
++      <div className="flex items-center gap-2">
++        <Switch id={`tests-${section}`} checked={includeTests} onCheckedChange={setIncludeTests} />
++        <Label htmlFor={`tests-${section}`} className="text-sm">{t('admin.revenue.includeTests')}</Label>
++      </div>
++      <span className="text-xs text-muted-foreground">{t('admin.revenue.timezoneNote')}</span>
++    </div>
++  );
++
++  let content: React.ReactNode;
++  if (q.isLoading) content = <ReportLoading />;
++  else if (q.isError || !q.data) content = <ReportError onRetry={() => q.refetch()} />;
++  else {
++    const c = q.data.counts;
++    const measured = q.data.ui_measured_signups;
++    const loss = biggestLoss(c, measured);
++    const open = (k: string) => () => setDetail(k);
++    const pct = (a: string, b: string) => formatRate(rate(c[a], c[b]), lang);
++    const currencies = Object.keys(q.data.cash_net_cents);
++
++    const funnel = (
++      <Card>
++        <CardHeader><CardTitle className="text-base">{t('admin.revenue.funnelTitle')}</CardTitle>
++          <CardDescription>{t('admin.revenue.funnelNote', { measured: n(measured), total: n(c.signups) })}</CardDescription></CardHeader>
++        <CardContent>
++          <ol className="divide-y">
++            {FUNNEL_STEPS.map((s, i) => {
++              const unmeasured = s.ui && measured === 0;
++              const prev = i > 0 ? FUNNEL_STEPS[i - 1] : null;
++              const base = s.ui ? measured : c.signups;
++              return <li key={s.key} className="flex flex-wrap items-center justify-between gap-2 py-2">
++                <span className="text-sm">{label(s.key)} {s.ui && <Badge variant="outline" className="ml-1 text-[10px]">{t('admin.revenue.screenStep')}</Badge>}</span>
++                {unmeasured
++                  ? <span className="text-sm text-muted-foreground">{t('admin.revenue.notMeasured')}</span>
++                  : <span className="flex items-center gap-3 text-sm tabular-nums">
++                      <button type="button" className="font-semibold underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded" onClick={open(s.key)}>{n(c[s.key])}</button>
++                      <span className="text-muted-foreground w-16 text-right" title={t('admin.revenue.ofCohort')}>{formatRate(rate(c[s.key], base), lang)}</span>
++                      <span className="text-muted-foreground w-20 text-right" title={t('admin.revenue.fromPrevious')}>{prev && !(prev.ui && measured === 0) ? `↳ ${formatRate(rate(c[s.key], c[prev.key]), lang)}` : ''}</span>
++                    </span>}
++              </li>;
++            })}
++          </ol>
++        </CardContent>
++      </Card>
++    );
++
++    const lossCard = (
++      <Kpi label={t('admin.revenue.biggestLoss')}
++        value={loss ? `${n(loss.lost)} · ${formatRate(loss.rate, lang)}` : '—'}
++        hint={loss ? `${label(loss.from)} → ${label(loss.to)}` : t('admin.revenue.noLoss')} />
++    );
++
++    const mrr = (
++      <div className="rounded-md border bg-card p-3">
++        <span className="text-xs text-muted-foreground">{t('admin.revenue.mrr')}</span>
++        <p className="text-sm font-medium">{t('admin.revenue.noData')}</p>
++        <p className="text-xs text-muted-foreground">{t(`admin.revenue.mrrReason.${q.data.mrr.reason ?? 'unknown'}`)}</p>
++      </div>
++    );
++
++    const cash = (
++      <div className="rounded-md border bg-card p-3">
++        <span className="text-xs text-muted-foreground">{t('admin.revenue.cash')}</span>
++        {currencies.length === 0 ? <p className="text-sm text-muted-foreground">{t('admin.revenue.noPayments')}</p>
++          : currencies.map(cur => <p key={cur} className="text-lg font-semibold tabular-nums">{formatCents(q.data!.cash_net_cents[cur], cur, lang)}</p>)}
++        {Object.entries(q.data.refunded_cents).map(([cur, v]) => <p key={cur} className="text-xs text-muted-foreground">{t('admin.revenue.refunded')}: {formatCents(v, cur, lang)}</p>)}
++      </div>
++    );
++
++    if (section === 'overview') content = <div className="space-y-4">
++      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
++        <Kpi label={label('signups')} value={n(c.signups)} onOpen={open('signups')} />
++        <Kpi label={label('trial_started')} value={n(c.trial_started)} hint={pct('trial_started', 'signups')} onOpen={open('trial_started')} />
++        <Kpi label={label('first_paid')} value={n(c.first_paid)} hint={pct('first_paid', 'trial_started')} onOpen={open('first_paid')} />
++        {lossCard}
++      </div>
++      <div className="grid gap-3 sm:grid-cols-2">{mrr}{cash}</div>
++      {funnel}
++    </div>;
++    else if (section === 'trials') content = <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
++      <Kpi label={label('trial_24h')} value={formatRate(rate(c.trial_24h, c.mature_24h), lang)} hint={t('admin.revenue.ofMature', { n: n(c.trial_24h), d: n(c.mature_24h) })} onOpen={open('trial_24h')} />
++      <Kpi label={label('trial_48h')} value={formatRate(rate(c.trial_48h, c.mature_48h), lang)} hint={t('admin.revenue.ofMature', { n: n(c.trial_48h), d: n(c.mature_48h) })} onOpen={open('trial_48h')} />
++      <Kpi label={label('d7_paid')} value={formatRate(rate(c.d7_paid, c.d7_mature), lang)} hint={t('admin.revenue.ofMature', { n: n(c.d7_paid), d: n(c.d7_mature) })} onOpen={open('d7_paid')} />
++      <Kpi label={label('d7_pending')} value={n(c.d7_pending)} onOpen={open('d7_pending')} />
++      <Kpi label={label('trialing')} value={n(c.trialing)} onOpen={open('trialing')} />
++      <Kpi label={label('renewal_off_access')} value={n(c.renewal_off_access)} onOpen={open('renewal_off_access')} />
++    </div>;
++    else content = <div className="space-y-4">
++      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
++        <Kpi label={label('first_paid')} value={n(c.first_paid)} onOpen={open('first_paid')} />
++        <Kpi label={label('active_paid')} value={n(c.active_paid)} onOpen={open('active_paid')} />
++        <Kpi label={label('first_renewal')} value={n(c.first_renewal)} hint={pct('first_renewal', 'first_paid')} onOpen={open('first_renewal')} />
++        <Kpi label={label('renewal_off_access')} value={n(c.renewal_off_access)} onOpen={open('renewal_off_access')} />
++        <Kpi label={label('past_due')} value={n(c.past_due)} onOpen={open('past_due')} />
++        <Kpi label={label('lost_paid')} value={n(c.lost_paid)} hint={pct('lost_paid', 'first_paid')} onOpen={open('lost_paid')} />
++      </div>
++      <div className="grid gap-3 sm:grid-cols-2">{cash}{mrr}</div>
++    </div>;
++  }
++
++  return <div className="space-y-4">
++    {filters}
++    {content}
++    <DetailDialog metric={detail} filter={filter} onClose={() => setDetail(null)} />
++  </div>;
++}
++
++function DetailDialog({ metric, filter, onClose }: { metric: string | null; filter: RevenueFilter; onClose: () => void }) {
++  const { t, i18n } = useTranslation();
++  const [page, setPage] = useState(0);
++  const size = 25;
++  const q = useRevenueDetail(metric, filter, page, size);
++  const fmt = (d: string | null) => d ? new Date(d).toLocaleString(i18n.language, { timeZone: 'Europe/Istanbul', dateStyle: 'short', timeStyle: 'short' }) : t('admin.revenue.notObserved');
++  const pages = q.data ? Math.max(1, Math.ceil(q.data.total / size)) : 1;
++  return <Dialog open={!!metric} onOpenChange={o => { if (!o) { onClose(); setPage(0); } }}>
++    <DialogContent className="max-w-4xl">
++      <DialogHeader>
++        <DialogTitle>{metric ? t(`admin.revenue.metric.${metric}`) : ''}</DialogTitle>
++        <DialogDescription>{q.data ? t('admin.revenue.detailTotal', { count: q.data.total }) : ' '}</DialogDescription>
++      </DialogHeader>
++      {q.isLoading ? <ReportLoading /> : q.isError || !q.data ? <ReportError onRetry={() => q.refetch()} /> :
++        q.data.rows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">{t('admin.revenue.empty')}</p> :
++        <div className="max-h-[60vh] overflow-auto">
++          <table className="w-full text-sm">
++            <thead className="sticky top-0 bg-background text-left text-xs text-muted-foreground">
++              <tr><th className="p-2">{t('admin.revenue.col.account')}</th><th className="p-2">{t('admin.revenue.col.signup')}</th><th className="p-2">{t('admin.revenue.col.trial')}</th><th className="p-2">{t('admin.revenue.col.firstPaid')}</th><th className="p-2">{t('admin.revenue.col.status')}</th></tr>
++            </thead>
++            <tbody className="divide-y">{q.data.rows.map(r => <tr key={r.user_id}>
++              <td className="p-2 break-all">{r.email ?? r.user_id.slice(0, 8)} {r.is_test && <Badge variant="outline">{t('admin.revenue.test')}</Badge>}</td>
++              <td className="p-2 whitespace-nowrap">{fmt(r.signup_at)}</td>
++              <td className="p-2 whitespace-nowrap">{fmt(r.trial_start)}</td>
++              <td className="p-2 whitespace-nowrap">{fmt(r.first_paid_at)}</td>
++              <td className="p-2">{r.sub_status ? t(`admin.revenue.sub.${r.sub_status}`, r.sub_status) : t('admin.revenue.access.never_subscribed')}{r.renewal_off && ` · ${t('admin.revenue.renewalOff')}`}</td>
++            </tr>)}</tbody>
++          </table>
++        </div>}
++      <div className="flex items-center justify-between pt-2">
++        <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>{t('admin.revenue.prev')}</Button>
++        <span className="text-xs text-muted-foreground">{page + 1} / {pages}</span>
++        <Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>{t('admin.revenue.next')}</Button>
++      </div>
++    </DialogContent>
++  </Dialog>;
++}
+diff --git a/src/components/admin/TrialAnalyticsPanel.tsx b/src/components/admin/TrialAnalyticsPanel.tsx
+index 7be0fa000ca887f1099e8e31f734425981babb6f..28bf95062a060861e21ff8d4fad8c328086b4392 100644
+--- a/src/components/admin/TrialAnalyticsPanel.tsx
++++ b/src/components/admin/TrialAnalyticsPanel.tsx
+@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
+ import { Button } from '@/components/ui/button';
+ import { Loader2, AlertCircle, Inbox } from 'lucide-react';
+ import { Skeleton } from '@/components/ui/skeleton';
+-import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
+ import { consentStateKey, emailWinback, inAppWinback, type WinbackCandidateLite } from '@/lib/winbackAudience';
+ 
+ type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
+@@ -381,7 +380,6 @@ export function TrialAnalyticsPanel() {
+           </Card>
+         </>
+       )}
+-      <PrivacyRequestsPanel />
+     </div>
+   );
+ }
+diff --git a/src/components/admin/UnstartedAudienceCard.tsx b/src/components/admin/UnstartedAudienceCard.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..4394785732f12d6a25fd529d0c2f39033c48abc3
+--- /dev/null
++++ b/src/components/admin/UnstartedAudienceCard.tsx
+@@ -0,0 +1,34 @@
++import { useState } from 'react';
++import { useTranslation } from 'react-i18next';
++import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
++import { Switch } from '@/components/ui/switch';
++import { Label } from '@/components/ui/label';
++import { useUnstartedAudience } from '@/hooks/useRevenueReports';
++import { ReportError, ReportLoading } from './ReportState';
++
++/** Read-only audience size. No campaign, coupon or send button here by design. */
++export function UnstartedAudienceCard() {
++  const { t, i18n } = useTranslation();
++  const [includeTests, setIncludeTests] = useState(false);
++  const q = useUnstartedAudience(includeTests);
++  const n = (v: number) => new Intl.NumberFormat(i18n.language).format(v);
++  return <Card>
++    <CardHeader>
++      <CardTitle className="text-base">{t('admin.revenue.unstartedTitle')}</CardTitle>
++      <CardDescription>{t('admin.revenue.unstartedNote')}</CardDescription>
++    </CardHeader>
++    <CardContent className="space-y-3">
++      <div className="flex items-center gap-2">
++        <Switch id="unstarted-tests" checked={includeTests} onCheckedChange={setIncludeTests} />
++        <Label htmlFor="unstarted-tests" className="text-sm">{t('admin.revenue.includeTests')}</Label>
++      </div>
++      {q.isLoading ? <ReportLoading /> : q.isError || !q.data ? <ReportError onRetry={() => q.refetch()} /> :
++        <dl className="grid grid-cols-3 gap-3">
++          {(['total', 'consented', 'sendable'] as const).map(k => <div key={k} className="rounded-md border p-3">
++            <dt className="text-xs text-muted-foreground">{t(`admin.revenue.unstarted.${k}`)}</dt>
++            <dd className="text-2xl font-semibold tabular-nums">{n(q.data![k])}</dd>
++          </div>)}
++        </dl>}
++    </CardContent>
++  </Card>;
++}
+diff --git a/src/components/admin/UserDirectoryPanel.tsx b/src/components/admin/UserDirectoryPanel.tsx
+new file mode 100644
+index 0000000000000000000000000000000000000000..05796f69103967a6316ca97b5c3d4dc1d00f354f
+--- /dev/null
++++ b/src/components/admin/UserDirectoryPanel.tsx
+@@ -0,0 +1,53 @@
++import { useEffect, useState } from 'react';
++import { useTranslation } from 'react-i18next';
++import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
++import { Input } from '@/components/ui/input';
++import { Button } from '@/components/ui/button';
++import { Badge } from '@/components/ui/badge';
++import { useUserDirectory } from '@/hooks/useRevenueReports';
++import { ReportError, ReportLoading } from './ReportState';
++
++export function UserDirectoryPanel() {
++  const { t, i18n } = useTranslation();
++  const [input, setInput] = useState('');
++  const [search, setSearch] = useState('');
++  const [page, setPage] = useState(0);
++  useEffect(() => { const id = setTimeout(() => { setSearch(input.trim()); setPage(0); }, 300); return () => clearTimeout(id); }, [input]);
++  const q = useUserDirectory(search, page);
++  const size = 25;
++  const pages = q.data ? Math.max(1, Math.ceil(q.data.total / size)) : 1;
++  const fmt = (d: string) => new Date(d).toLocaleDateString(i18n.language, { timeZone: 'Europe/Istanbul' });
++  return <Card>
++    <CardHeader>
++      <CardTitle className="text-base">{t('admin.revenue.directoryTitle')}</CardTitle>
++      <CardDescription>{t('admin.revenue.directoryNote')}</CardDescription>
++    </CardHeader>
++    <CardContent className="space-y-3">
++      <Input value={input} onChange={e => setInput(e.target.value)} placeholder={t('admin.revenue.searchPlaceholder')} aria-label={t('admin.revenue.searchPlaceholder')} className="max-w-sm" />
++      {q.isLoading ? <ReportLoading /> : q.isError || !q.data ? <ReportError onRetry={() => q.refetch()} /> :
++        q.data.rows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">{t('admin.revenue.empty')}</p> :
++        <div className="overflow-x-auto">
++          <table className="w-full text-sm">
++            <thead className="text-left text-xs text-muted-foreground"><tr>
++              <th className="p-2">{t('admin.revenue.col.account')}</th><th className="p-2">{t('admin.revenue.col.signup')}</th>
++              <th className="p-2">{t('admin.revenue.col.lastStep')}</th><th className="p-2">{t('admin.revenue.col.access')}</th>
++              <th className="p-2">{t('admin.revenue.col.marketing')}</th><th className="p-2">{t('admin.revenue.col.security')}</th>
++            </tr></thead>
++            <tbody className="divide-y">{q.data.rows.map(r => <tr key={r.user_id}>
++              <td className="p-2"><div className="break-all">{r.email ?? r.user_id.slice(0, 8)}</div>{r.tags.length > 0 && <div className="text-xs text-muted-foreground">{r.tags.join(', ')}</div>}</td>
++              <td className="p-2 whitespace-nowrap">{fmt(r.signup_at)}</td>
++              <td className="p-2">{r.last_step ? t(`admin.revenue.step.${r.last_step}`) : t('admin.revenue.notObserved')}</td>
++              <td className="p-2">{t(`admin.revenue.access.${r.access}`)}{r.renewal_off && <span className="block text-xs text-muted-foreground">{t('admin.revenue.renewalOff')}</span>}</td>
++              <td className="p-2">{t(`admin.revenue.marketing.${r.marketing}`, r.marketing)}</td>
++              <td className="p-2"><Badge variant={r.security === 'blocked' ? 'destructive' : r.security === 'review' ? 'secondary' : 'outline'}>{t(`admin.revenue.security.${r.security}`)}</Badge></td>
++            </tr>)}</tbody>
++          </table>
++        </div>}
++      {q.data && <div className="flex items-center justify-between">
++        <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)}>{t('admin.revenue.prev')}</Button>
++        <span className="text-xs text-muted-foreground">{t('admin.revenue.detailTotal', { count: q.data.total })} · {page + 1} / {pages}</span>
++        <Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>{t('admin.revenue.next')}</Button>
++      </div>}
++    </CardContent>
++  </Card>;
++}
+diff --git a/src/components/subscription/PricingModal.tsx b/src/components/subscription/PricingModal.tsx
+index 04ef86322f8775a052f21daab6513c423056ea92..b929ffd2ea0e858b9e96b556e5f5cfaa2d37a453 100644
+--- a/src/components/subscription/PricingModal.tsx
++++ b/src/components/subscription/PricingModal.tsx
+@@ -41,6 +41,8 @@ interface PendingPromo {
+   discountPercent: number;
+ }
+ 
++import { recordAcquisitionStep } from '@/lib/acquisitionSteps';
++
+ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
+   const { t, i18n } = useTranslation();
+   const { createCheckout, isCreatingCheckout, isTrialActive, trialDaysRemaining, subscriptionStatus } = useSubscription();
+@@ -93,7 +95,10 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
+     }
+   }, [open]);
+ 
++  useEffect(() => { if (open && subscriptionStatus !== 'past_due') recordAcquisitionStep('pricing_shown'); }, [open, subscriptionStatus]);
++
+   const proceedToCheckout = async () => {
++    recordAcquisitionStep('polar_continue_clicked');
+     try {
+       const checkoutUrl = await createCheckout({
+         accountSlots: selectedTier,
+diff --git a/src/components/subscription/TrialExpiredPage.tsx b/src/components/subscription/TrialExpiredPage.tsx
+index 81b2cdb5b00f0232860d75ec18304c698fbf9ab8..93d839f5d2edebedea8e34fd6b1815195086838e 100644
+--- a/src/components/subscription/TrialExpiredPage.tsx
++++ b/src/components/subscription/TrialExpiredPage.tsx
+@@ -1,4 +1,4 @@
+-import { useState } from "react";
++import { useEffect, useState } from "react";
+ import { useTranslation } from "react-i18next";
+ import { useNavigate } from "react-router-dom";
+ import { Lock, Crown, Zap, Target, Users, LogOut, HelpCircle, FileText, Shield, Mail } from "lucide-react";
+@@ -8,12 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
+ import { PaymentRecovery } from './PaymentRecovery';
+ import { PricingModal } from "./PricingModal";
+ import { cn } from "@/lib/utils";
++import { recordAcquisitionStep } from "@/lib/acquisitionSteps";
+ 
+ export function TrialExpiredPage({ canStartTrial, paymentDue = false }: { canStartTrial: boolean; paymentDue?: boolean }) {
+   const { t } = useTranslation();
+   const navigate = useNavigate();
+   const [showPricing, setShowPricing] = useState(false);
+   const [isSigningOut, setIsSigningOut] = useState(false);
++  useEffect(() => { if (canStartTrial && !paymentDue) recordAcquisitionStep("trial_offer_seen"); }, [canStartTrial, paymentDue]);
+ 
+   const handleSignOut = async () => {
+     setIsSigningOut(true);
+@@ -127,7 +129,7 @@ export function TrialExpiredPage({ canStartTrial, paymentDue = false }: { canSta
+           <div className="flex justify-center">
+             <Button
+               size="lg"
+-              onClick={() => setShowPricing(true)}
++              onClick={() => { if (canStartTrial) recordAcquisitionStep("trial_start_clicked"); setShowPricing(true); }}
+               className="gap-2 bg-gradient-to-r from-gold to-gold/80 hover:from-gold/90 hover:to-gold/70 text-black font-bold px-8"
+             >
+               <Crown className="h-5 w-5" />
+diff --git a/src/hooks/useRevenueReports.ts b/src/hooks/useRevenueReports.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..727d2e90612948676d2678b5fbe03e2dee490bd3
+--- /dev/null
++++ b/src/hooks/useRevenueReports.ts
+@@ -0,0 +1,58 @@
++import { useQuery, keepPreviousData } from '@tanstack/react-query';
++import { supabase } from '@/integrations/supabase/client';
++
++export type RevenueFilter = { from: string | null; to: string | null; includeTests: boolean };
++export type RevenueOverview = {
++  generated_at: string; counts: Record<string, number>; ui_measured_signups: number; measured_since: string;
++  cash_net_cents: Record<string, number>; refunded_cents: Record<string, number>;
++  mrr: { available: boolean; reason?: string };
++};
++export type RevenueDetailRow = {
++  user_id: string; email: string | null; signup_at: string; verified_at: string | null; trial_start: string | null; trial_end: string | null;
++  first_paid_at: string | null; first_renewal_at: string | null; sub_status: string | null; renewal_off: boolean; has_access: boolean; is_test: boolean;
++};
++export type DirectoryRow = {
++  user_id: string; email: string | null; signup_at: string; last_step: string | null; access: string; renewal_off: boolean;
++  marketing: string; security: 'ok' | 'review' | 'blocked'; tags: string[];
++};
++export type UnstartedAudience = { total: number; consented: number; sendable: number };
++
++const call = async <T,>(fn: string, args: Record<string, unknown>) => {
++  const { data, error } = await supabase.rpc(fn as never, args as never);
++  if (error) throw error;
++  return data as unknown as T;
++};
++
++export function useRevenueOverview(f: RevenueFilter) {
++  return useQuery({
++    queryKey: ['admin-revenue-overview', f],
++    queryFn: () => call<RevenueOverview>('admin_revenue_overview', { p_from: f.from, p_to: f.to, p_include_tests: f.includeTests }),
++    retry: 1,
++  });
++}
++
++export function useRevenueDetail(metric: string | null, f: RevenueFilter, page: number, pageSize = 25) {
++  return useQuery({
++    queryKey: ['admin-revenue-detail', metric, f, page],
++    enabled: !!metric,
++    placeholderData: keepPreviousData,
++    queryFn: () => call<{ total: number; rows: RevenueDetailRow[] }>('admin_revenue_detail', {
++      p_metric: metric, p_from: f.from, p_to: f.to, p_include_tests: f.includeTests, p_limit: pageSize, p_offset: page * pageSize,
++    }),
++  });
++}
++
++export function useUserDirectory(search: string, page: number, pageSize = 25) {
++  return useQuery({
++    queryKey: ['admin-user-directory', search, page],
++    placeholderData: keepPreviousData,
++    queryFn: () => call<{ total: number; rows: DirectoryRow[] }>('admin_user_directory', { p_search: search || null, p_limit: pageSize, p_offset: page * pageSize }),
++  });
++}
++
++export function useUnstartedAudience(includeTests: boolean) {
++  return useQuery({
++    queryKey: ['admin-unstarted-audience', includeTests],
++    queryFn: () => call<UnstartedAudience>('admin_unstarted_audience', { p_include_tests: includeTests }),
++  });
++}
+diff --git a/src/i18n/locales/en.json b/src/i18n/locales/en.json
+index 74d9cf1861abe0d301b2adc90eede7f076e67442..ed67ce7c6533d2e098f757fed61ba729f0538f7e 100644
+--- a/src/i18n/locales/en.json
++++ b/src/i18n/locales/en.json
+@@ -2954,7 +2954,11 @@
+       "trials": "Trials",
+       "winback": "Win-back",
+       "webhooks": "Webhooks",
+-      "admin": "Admin"
++      "admin": "Admin",
++      "overview": "Overview",
++      "revenue": "Paid members & revenue",
++      "campaigns": "Campaigns & consent",
++      "operations": "Operations"
+     },
+     "trials": {
+       "paid": "Paid",
+@@ -3128,6 +3132,144 @@
+       "uncertainSent": "Uncertain — check the provider log",
+       "unverifiedTime": "time unverified",
+       "until": "eligible after {{date}} (still waits at that exact moment)"
++    },
++    "revenue": {
++      "loading": "Loading…",
++      "error": "This report could not be loaded. Nothing is shown as zero.",
++      "retry": "Try again",
++      "range": "Sign-up period",
++      "ranges": {
++        "7": "Last 7 days",
++        "30": "Last 30 days",
++        "90": "Last 90 days",
++        "all": "All time"
++      },
++      "includeTests": "Include test and admin accounts",
++      "timezoneNote": "Dates in Europe/Istanbul; stored in UTC.",
++      "funnelTitle": "Sign-up to revenue",
++      "funnelNote": "Same sign-up cohort for every step. Screen steps are measured for {{measured}} of {{total}} sign-ups (after measurement started).",
++      "screenStep": "screen",
++      "notMeasured": "not measured",
++      "ofCohort": "Share of cohort",
++      "fromPrevious": "From previous step",
++      "biggestLoss": "Largest measured drop",
++      "noLoss": "No measured drop yet",
++      "mrr": "MRR",
++      "noData": "No data",
++      "cash": "Net collected (per currency)",
++      "noPayments": "No positive paid orders",
++      "refunded": "Refunded",
++      "ofMature": "{{n}} of {{d}} mature",
++      "detailTotal": "{{count}} accounts",
++      "empty": "No accounts match.",
++      "notObserved": "not measured",
++      "test": "test",
++      "renewalOff": "renewal off",
++      "prev": "Previous",
++      "next": "Next",
++      "directoryTitle": "Accounts",
++      "directoryNote": "One row per account. Search by email or player tag.",
++      "searchPlaceholder": "Email or player tag",
++      "unstartedTitle": "Verified 24–48h ago, no trial yet",
++      "unstartedNote": "Read-only. Sendable is the server’s current campaign decision; it is 0 while sending is off.",
++      "metric": {
++        "signups": "New sign-ups",
++        "verified": "Email verified",
++        "offer_seen": "Trial offer seen",
++        "trial_clicked": "“Start trial” clicked",
++        "pricing_shown": "Price window shown",
++        "continue_clicked": "Continued to Polar",
++        "checkout_created": "Polar checkout link created",
++        "trial_started": "Trial started",
++        "first_paid": "First paid order",
++        "first_renewal": "First renewal",
++        "mature_24h": "Sign-ups older than 24h",
++        "trial_24h": "Trial within 24h",
++        "mature_48h": "Sign-ups older than 48h",
++        "trial_48h": "Trial within 48h",
++        "d7_mature": "Trials past end + 7 days",
++        "d7_paid": "First payment within trial end + 7 days",
++        "d7_pending": "Waiting for D7 result",
++        "active_paid": "Active paid members",
++        "renewal_off_access": "Renewal off, still has access",
++        "past_due": "Payment overdue",
++        "trialing": "In trial now",
++        "lost_paid": "Paid, then lost"
++      },
++      "step": {
++        "trial_offer_seen": "Trial offer seen",
++        "trial_start_clicked": "“Start trial” clicked",
++        "pricing_shown": "Price window shown",
++        "polar_continue_clicked": "Continued to Polar",
++        "checkout_created": "Polar checkout link created",
++        "trial_started": "Trial started",
++        "first_paid": "First paid order"
++      },
++      "col": {
++        "account": "Account",
++        "signup": "Signed up",
++        "trial": "Trial start",
++        "firstPaid": "First payment",
++        "status": "Subscription",
++        "lastStep": "Last observed step",
++        "access": "Access",
++        "marketing": "Campaign email",
++        "security": "Security"
++      },
++      "access": {
++        "paid": "Paid",
++        "trialing": "Trial",
++        "past_due": "Payment overdue",
++        "ended": "Ended",
++        "never_subscribed": "Never subscribed"
++      },
++      "security": {
++        "ok": "OK",
++        "review": "Under review",
++        "blocked": "Blocked"
++      },
++      "marketing": {
++        "granted": "Opted in",
++        "withdrawn": "Opted out",
++        "none": "No choice",
++        "pending": "Pending"
++      },
++      "unstarted": {
++        "total": "Total",
++        "consented": "Valid campaign consent",
++        "sendable": "Server says sendable"
++      },
++      "mrrReason": {
++        "no_verified_polar_mrr_source": "No verified Polar MRR or proven recurring price source is connected, so MRR is not calculated.",
++        "unknown": "Source unavailable."
++      },
++      "sub": {
++        "active": "Active",
++        "trialing": "Trial",
++        "past_due": "Payment overdue",
++        "canceled": "Canceled",
++        "revoked": "Revoked",
++        "cancelled": "Canceled"
++      },
++      "reach": {
++        "title": "Campaign email reach (accounts with access)",
++        "note": "From the server’s consent rules. One count per account. Not derived from the sign-up funnel.",
++        "active_paid": "Active paid",
++        "active_trial": "In trial",
++        "already_chose": "Already chose",
++        "invitable": "Can be invited",
++        "waiting_missing_info": "Waiting for missing info",
++        "reasons": "Waiting reasons",
++        "reason": {
++          "email_unverified": "Email not verified",
++          "market_unknown": "Market unknown",
++          "market_closed": "Market closed",
++          "age_unknown": "Age unknown",
++          "age_rule_pending": "Age rule pending",
++          "iys_not_ready": "İYS not ready",
++          "closed": "Collection closed"
++        }
++      }
+     }
+   },
+   "oraclePage": {
+diff --git a/src/i18n/locales/es.json b/src/i18n/locales/es.json
+index 04b7ca1a9eef7cbc6523758f97d908fbaceca0e2..c8f2c3f46428cc9c383e78942ec524308fa3dc01 100644
+--- a/src/i18n/locales/es.json
++++ b/src/i18n/locales/es.json
+@@ -2965,7 +2965,11 @@
+       "trials": "Pruebas",
+       "winback": "Reactivación",
+       "webhooks": "Webhooks",
+-      "admin": "Administración"
++      "admin": "Administración",
++      "overview": "Resumen",
++      "revenue": "Miembros de pago e ingresos",
++      "campaigns": "Campañas y consentimiento",
++      "operations": "Operaciones"
+     },
+     "trials": {
+       "paid": "Pagó",
+@@ -3139,6 +3143,144 @@
+       "uncertainSent": "Incierto: revisa el registro del proveedor",
+       "unverifiedTime": "hora sin verificar",
+       "until": "disponible después del {{date}} (en ese momento exacto aún espera)"
++    },
++    "revenue": {
++      "loading": "Cargando…",
++      "error": "No se pudo cargar el informe. Nada se muestra como cero.",
++      "retry": "Reintentar",
++      "range": "Período de registro",
++      "ranges": {
++        "7": "Últimos 7 días",
++        "30": "Últimos 30 días",
++        "90": "Últimos 90 días",
++        "all": "Todo"
++      },
++      "includeTests": "Incluir cuentas de prueba y admin",
++      "timezoneNote": "Fechas en Europe/Istanbul; guardadas en UTC.",
++      "funnelTitle": "Del registro a los ingresos",
++      "funnelNote": "Misma cohorte de registro en cada paso. Los pasos de pantalla se miden para {{measured}} de {{total}} registros.",
++      "screenStep": "pantalla",
++      "notMeasured": "no medido",
++      "ofCohort": "Parte de la cohorte",
++      "fromPrevious": "Desde el paso anterior",
++      "biggestLoss": "Mayor caída medida",
++      "noLoss": "Aún sin caída medida",
++      "mrr": "MRR",
++      "noData": "Sin datos",
++      "cash": "Cobro neto (por moneda)",
++      "noPayments": "Sin pedidos pagados positivos",
++      "refunded": "Reembolsado",
++      "ofMature": "{{n}} de {{d}} maduros",
++      "detailTotal": "{{count}} cuentas",
++      "empty": "No hay cuentas.",
++      "notObserved": "no medido",
++      "test": "prueba",
++      "renewalOff": "renovación desactivada",
++      "prev": "Anterior",
++      "next": "Siguiente",
++      "directoryTitle": "Cuentas",
++      "directoryNote": "Una fila por cuenta. Busca por email o etiqueta de jugador.",
++      "searchPlaceholder": "Email o etiqueta de jugador",
++      "unstartedTitle": "Verificados hace 24–48 h, sin prueba",
++      "unstartedNote": "Solo lectura. “Enviable” es la decisión actual del servidor; es 0 mientras el envío está desactivado.",
++      "metric": {
++        "signups": "Nuevos registros",
++        "verified": "Email verificado",
++        "offer_seen": "Oferta de prueba vista",
++        "trial_clicked": "Clic en “Iniciar prueba”",
++        "pricing_shown": "Ventana de precios mostrada",
++        "continue_clicked": "Continuó a Polar",
++        "checkout_created": "Enlace de pago de Polar creado",
++        "trial_started": "Prueba iniciada",
++        "first_paid": "Primer pedido pagado",
++        "first_renewal": "Primera renovación",
++        "mature_24h": "Registros con más de 24 h",
++        "trial_24h": "Prueba en 24 h",
++        "mature_48h": "Registros con más de 48 h",
++        "trial_48h": "Prueba en 48 h",
++        "d7_mature": "Pruebas pasado fin + 7 días",
++        "d7_paid": "Primer pago en fin de prueba + 7 días",
++        "d7_pending": "Esperando resultado D7",
++        "active_paid": "Miembros de pago activos",
++        "renewal_off_access": "Renovación desactivada, aún con acceso",
++        "past_due": "Pago atrasado",
++        "trialing": "En prueba ahora",
++        "lost_paid": "Pagó y se perdió"
++      },
++      "step": {
++        "trial_offer_seen": "Oferta de prueba vista",
++        "trial_start_clicked": "Clic en “Iniciar prueba”",
++        "pricing_shown": "Ventana de precios mostrada",
++        "polar_continue_clicked": "Continuó a Polar",
++        "checkout_created": "Enlace de pago de Polar creado",
++        "trial_started": "Prueba iniciada",
++        "first_paid": "Primer pedido pagado"
++      },
++      "col": {
++        "account": "Cuenta",
++        "signup": "Registro",
++        "trial": "Inicio de prueba",
++        "firstPaid": "Primer pago",
++        "status": "Suscripción",
++        "lastStep": "Último paso observado",
++        "access": "Acceso",
++        "marketing": "Email de campañas",
++        "security": "Seguridad"
++      },
++      "access": {
++        "paid": "De pago",
++        "trialing": "Prueba",
++        "past_due": "Pago atrasado",
++        "ended": "Finalizada",
++        "never_subscribed": "Nunca suscrito"
++      },
++      "security": {
++        "ok": "Correcto",
++        "review": "En revisión",
++        "blocked": "Bloqueado"
++      },
++      "marketing": {
++        "granted": "Aceptó",
++        "withdrawn": "Retiró",
++        "none": "Sin elección",
++        "pending": "Pendiente"
++      },
++      "unstarted": {
++        "total": "Total",
++        "consented": "Consentimiento válido",
++        "sendable": "Enviable según el servidor"
++      },
++      "mrrReason": {
++        "no_verified_polar_mrr_source": "No hay MRR de Polar verificado ni fuente de precio recurrente probada; el MRR no se calcula.",
++        "unknown": "Fuente no disponible."
++      },
++      "sub": {
++        "active": "Activa",
++        "trialing": "Prueba",
++        "past_due": "Pago atrasado",
++        "canceled": "Cancelada",
++        "revoked": "Revocada",
++        "cancelled": "Cancelada"
++      },
++      "reach": {
++        "title": "Alcance de emails de campaña (cuentas con acceso)",
++        "note": "Según las reglas de consentimiento del servidor. Un conteo por cuenta. No se deriva del embudo de registro.",
++        "active_paid": "De pago activos",
++        "active_trial": "En prueba",
++        "already_chose": "Ya eligieron",
++        "invitable": "Se pueden invitar",
++        "waiting_missing_info": "Esperando información",
++        "reasons": "Motivos de espera",
++        "reason": {
++          "email_unverified": "Email no verificado",
++          "market_unknown": "Mercado desconocido",
++          "market_closed": "Mercado cerrado",
++          "age_unknown": "Edad desconocida",
++          "age_rule_pending": "Regla de edad pendiente",
++          "iys_not_ready": "İYS no listo",
++          "closed": "Recogida cerrada"
++        }
++      }
+     }
+   },
+   "oraclePage": {
+diff --git a/src/i18n/locales/fr.json b/src/i18n/locales/fr.json
+index b08b7980fe9c5114f71e2913509957ac882f4c77..57cd90452ec40753dfdb3399c6a9d02ae83b1518 100644
+--- a/src/i18n/locales/fr.json
++++ b/src/i18n/locales/fr.json
+@@ -2965,7 +2965,11 @@
+       "trials": "Essais",
+       "winback": "Réactivation",
+       "webhooks": "Webhooks",
+-      "admin": "Administration"
++      "admin": "Administration",
++      "overview": "Vue d’ensemble",
++      "revenue": "Membres payants et revenus",
++      "campaigns": "Campagnes et consentement",
++      "operations": "Opérations"
+     },
+     "trials": {
+       "paid": "A payé",
+@@ -3139,6 +3143,144 @@
+       "uncertainSent": "Incertain — vérifiez le journal du fournisseur",
+       "unverifiedTime": "heure non vérifiée",
+       "until": "possible après le {{date}} (attend encore à ce moment précis)"
++    },
++    "revenue": {
++      "loading": "Chargement…",
++      "error": "Le rapport n’a pas pu être chargé. Rien n’est affiché comme zéro.",
++      "retry": "Réessayer",
++      "range": "Période d’inscription",
++      "ranges": {
++        "7": "7 derniers jours",
++        "30": "30 derniers jours",
++        "90": "90 derniers jours",
++        "all": "Tout"
++      },
++      "includeTests": "Inclure les comptes test et admin",
++      "timezoneNote": "Dates en Europe/Istanbul ; stockées en UTC.",
++      "funnelTitle": "De l’inscription au revenu",
++      "funnelNote": "Même cohorte d’inscription à chaque étape. Les étapes d’écran sont mesurées pour {{measured}} des {{total}} inscriptions.",
++      "screenStep": "écran",
++      "notMeasured": "non mesuré",
++      "ofCohort": "Part de la cohorte",
++      "fromPrevious": "Depuis l’étape précédente",
++      "biggestLoss": "Plus forte perte mesurée",
++      "noLoss": "Aucune perte mesurée",
++      "mrr": "MRR",
++      "noData": "Aucune donnée",
++      "cash": "Encaissement net (par devise)",
++      "noPayments": "Aucune commande payée positive",
++      "refunded": "Remboursé",
++      "ofMature": "{{n}} sur {{d}} matures",
++      "detailTotal": "{{count}} comptes",
++      "empty": "Aucun compte.",
++      "notObserved": "non mesuré",
++      "test": "test",
++      "renewalOff": "renouvellement coupé",
++      "prev": "Précédent",
++      "next": "Suivant",
++      "directoryTitle": "Comptes",
++      "directoryNote": "Une ligne par compte. Recherche par e-mail ou tag joueur.",
++      "searchPlaceholder": "E-mail ou tag joueur",
++      "unstartedTitle": "Vérifiés il y a 24–48 h, sans essai",
++      "unstartedNote": "Lecture seule. « Envoyable » est la décision actuelle du serveur ; 0 tant que l’envoi est désactivé.",
++      "metric": {
++        "signups": "Nouvelles inscriptions",
++        "verified": "E-mail vérifié",
++        "offer_seen": "Offre d’essai vue",
++        "trial_clicked": "Clic sur « Démarrer l’essai »",
++        "pricing_shown": "Fenêtre de prix affichée",
++        "continue_clicked": "Poursuite vers Polar",
++        "checkout_created": "Lien de paiement Polar créé",
++        "trial_started": "Essai démarré",
++        "first_paid": "Première commande payée",
++        "first_renewal": "Premier renouvellement",
++        "mature_24h": "Inscriptions de plus de 24 h",
++        "trial_24h": "Essai sous 24 h",
++        "mature_48h": "Inscriptions de plus de 48 h",
++        "trial_48h": "Essai sous 48 h",
++        "d7_mature": "Essais après fin + 7 jours",
++        "d7_paid": "Premier paiement avant fin d’essai + 7 jours",
++        "d7_pending": "Résultat J7 en attente",
++        "active_paid": "Membres payants actifs",
++        "renewal_off_access": "Renouvellement coupé, accès conservé",
++        "past_due": "Paiement en retard",
++        "trialing": "En essai",
++        "lost_paid": "Payé puis perdu"
++      },
++      "step": {
++        "trial_offer_seen": "Offre d’essai vue",
++        "trial_start_clicked": "Clic sur « Démarrer l’essai »",
++        "pricing_shown": "Fenêtre de prix affichée",
++        "polar_continue_clicked": "Poursuite vers Polar",
++        "checkout_created": "Lien de paiement Polar créé",
++        "trial_started": "Essai démarré",
++        "first_paid": "Première commande payée"
++      },
++      "col": {
++        "account": "Compte",
++        "signup": "Inscription",
++        "trial": "Début d’essai",
++        "firstPaid": "Premier paiement",
++        "status": "Abonnement",
++        "lastStep": "Dernière étape observée",
++        "access": "Accès",
++        "marketing": "E-mail de campagne",
++        "security": "Sécurité"
++      },
++      "access": {
++        "paid": "Payant",
++        "trialing": "Essai",
++        "past_due": "Paiement en retard",
++        "ended": "Terminé",
++        "never_subscribed": "Jamais abonné"
++      },
++      "security": {
++        "ok": "OK",
++        "review": "En examen",
++        "blocked": "Bloqué"
++      },
++      "marketing": {
++        "granted": "Accepté",
++        "withdrawn": "Retiré",
++        "none": "Aucun choix",
++        "pending": "En attente"
++      },
++      "unstarted": {
++        "total": "Total",
++        "consented": "Consentement valide",
++        "sendable": "Envoyable selon le serveur"
++      },
++      "mrrReason": {
++        "no_verified_polar_mrr_source": "Aucun MRR Polar vérifié ni source de prix récurrent prouvée ; le MRR n’est pas calculé.",
++        "unknown": "Source indisponible."
++      },
++      "sub": {
++        "active": "Actif",
++        "trialing": "Essai",
++        "past_due": "Paiement en retard",
++        "canceled": "Annulé",
++        "revoked": "Révoqué",
++        "cancelled": "Annulé"
++      },
++      "reach": {
++        "title": "Portée des e-mails de campagne (comptes avec accès)",
++        "note": "Selon les règles de consentement du serveur. Un compte = un. Non dérivé de l’entonnoir d’inscription.",
++        "active_paid": "Payants actifs",
++        "active_trial": "En essai",
++        "already_chose": "Ont déjà choisi",
++        "invitable": "Invitables",
++        "waiting_missing_info": "En attente d’informations",
++        "reasons": "Motifs d’attente",
++        "reason": {
++          "email_unverified": "E-mail non vérifié",
++          "market_unknown": "Marché inconnu",
++          "market_closed": "Marché fermé",
++          "age_unknown": "Âge inconnu",
++          "age_rule_pending": "Règle d’âge en attente",
++          "iys_not_ready": "İYS non prêt",
++          "closed": "Collecte fermée"
++        }
++      }
+     }
+   },
+   "oraclePage": {
+diff --git a/src/i18n/locales/pt.json b/src/i18n/locales/pt.json
+index 528543069b4384b320ce62ab2b1bfe4df1c5469c..fdcdeaceb4e4373d460a5f1662ddde2c09148379 100644
+--- a/src/i18n/locales/pt.json
++++ b/src/i18n/locales/pt.json
+@@ -2965,7 +2965,11 @@
+       "trials": "Testes",
+       "winback": "Reativação",
+       "webhooks": "Webhooks",
+-      "admin": "Administração"
++      "admin": "Administração",
++      "overview": "Visão geral",
++      "revenue": "Membros pagos e receita",
++      "campaigns": "Campanhas e consentimento",
++      "operations": "Operações"
+     },
+     "trials": {
+       "paid": "Pagou",
+@@ -3139,6 +3143,144 @@
+       "uncertainSent": "Incerto — verifique o registro do provedor",
+       "unverifiedTime": "horário não verificado",
+       "until": "disponível após {{date}} (nesse exato momento ainda aguarda)"
++    },
++    "revenue": {
++      "loading": "Carregando…",
++      "error": "Não foi possível carregar o relatório. Nada é exibido como zero.",
++      "retry": "Tentar novamente",
++      "range": "Período de cadastro",
++      "ranges": {
++        "7": "Últimos 7 dias",
++        "30": "Últimos 30 dias",
++        "90": "Últimos 90 dias",
++        "all": "Tudo"
++      },
++      "includeTests": "Incluir contas de teste e admin",
++      "timezoneNote": "Datas em Europe/Istanbul; salvas em UTC.",
++      "funnelTitle": "Do cadastro à receita",
++      "funnelNote": "Mesma coorte de cadastro em cada etapa. Etapas de tela medidas para {{measured}} de {{total}} cadastros.",
++      "screenStep": "tela",
++      "notMeasured": "não medido",
++      "ofCohort": "Parte da coorte",
++      "fromPrevious": "Da etapa anterior",
++      "biggestLoss": "Maior perda medida",
++      "noLoss": "Nenhuma perda medida",
++      "mrr": "MRR",
++      "noData": "Sem dados",
++      "cash": "Recebido líquido (por moeda)",
++      "noPayments": "Nenhum pedido pago positivo",
++      "refunded": "Reembolsado",
++      "ofMature": "{{n}} de {{d}} maduros",
++      "detailTotal": "{{count}} contas",
++      "empty": "Nenhuma conta.",
++      "notObserved": "não medido",
++      "test": "teste",
++      "renewalOff": "renovação desligada",
++      "prev": "Anterior",
++      "next": "Próximo",
++      "directoryTitle": "Contas",
++      "directoryNote": "Uma linha por conta. Busque por e-mail ou tag de jogador.",
++      "searchPlaceholder": "E-mail ou tag de jogador",
++      "unstartedTitle": "Verificados há 24–48 h, sem teste",
++      "unstartedNote": "Somente leitura. “Enviável” é a decisão atual do servidor; é 0 enquanto o envio está desligado.",
++      "metric": {
++        "signups": "Novos cadastros",
++        "verified": "E-mail verificado",
++        "offer_seen": "Oferta de teste vista",
++        "trial_clicked": "Clique em “Iniciar teste”",
++        "pricing_shown": "Janela de preços exibida",
++        "continue_clicked": "Continuou para a Polar",
++        "checkout_created": "Link de pagamento Polar criado",
++        "trial_started": "Teste iniciado",
++        "first_paid": "Primeiro pedido pago",
++        "first_renewal": "Primeira renovação",
++        "mature_24h": "Cadastros com mais de 24 h",
++        "trial_24h": "Teste em 24 h",
++        "mature_48h": "Cadastros com mais de 48 h",
++        "trial_48h": "Teste em 48 h",
++        "d7_mature": "Testes após fim + 7 dias",
++        "d7_paid": "Primeiro pagamento até fim do teste + 7 dias",
++        "d7_pending": "Aguardando resultado D7",
++        "active_paid": "Membros pagos ativos",
++        "renewal_off_access": "Renovação desligada, ainda com acesso",
++        "past_due": "Pagamento atrasado",
++        "trialing": "Em teste agora",
++        "lost_paid": "Pagou e foi perdido"
++      },
++      "step": {
++        "trial_offer_seen": "Oferta de teste vista",
++        "trial_start_clicked": "Clique em “Iniciar teste”",
++        "pricing_shown": "Janela de preços exibida",
++        "polar_continue_clicked": "Continuou para a Polar",
++        "checkout_created": "Link de pagamento Polar criado",
++        "trial_started": "Teste iniciado",
++        "first_paid": "Primeiro pedido pago"
++      },
++      "col": {
++        "account": "Conta",
++        "signup": "Cadastro",
++        "trial": "Início do teste",
++        "firstPaid": "Primeiro pagamento",
++        "status": "Assinatura",
++        "lastStep": "Última etapa observada",
++        "access": "Acesso",
++        "marketing": "E-mail de campanha",
++        "security": "Segurança"
++      },
++      "access": {
++        "paid": "Pago",
++        "trialing": "Teste",
++        "past_due": "Pagamento atrasado",
++        "ended": "Encerrado",
++        "never_subscribed": "Nunca assinou"
++      },
++      "security": {
++        "ok": "OK",
++        "review": "Em análise",
++        "blocked": "Bloqueado"
++      },
++      "marketing": {
++        "granted": "Aceitou",
++        "withdrawn": "Retirou",
++        "none": "Sem escolha",
++        "pending": "Pendente"
++      },
++      "unstarted": {
++        "total": "Total",
++        "consented": "Consentimento válido",
++        "sendable": "Enviável segundo o servidor"
++      },
++      "mrrReason": {
++        "no_verified_polar_mrr_source": "Não há MRR da Polar verificado nem fonte de preço recorrente comprovada; o MRR não é calculado.",
++        "unknown": "Fonte indisponível."
++      },
++      "sub": {
++        "active": "Ativa",
++        "trialing": "Teste",
++        "past_due": "Pagamento atrasado",
++        "canceled": "Cancelada",
++        "revoked": "Revogada",
++        "cancelled": "Cancelada"
++      },
++      "reach": {
++        "title": "Alcance de e-mails de campanha (contas com acesso)",
++        "note": "Pelas regras de consentimento do servidor. Uma contagem por conta. Não derivado do funil de cadastro.",
++        "active_paid": "Pagos ativos",
++        "active_trial": "Em teste",
++        "already_chose": "Já escolheram",
++        "invitable": "Podem ser convidados",
++        "waiting_missing_info": "Aguardando informações",
++        "reasons": "Motivos de espera",
++        "reason": {
++          "email_unverified": "E-mail não verificado",
++          "market_unknown": "Mercado desconhecido",
++          "market_closed": "Mercado fechado",
++          "age_unknown": "Idade desconhecida",
++          "age_rule_pending": "Regra de idade pendente",
++          "iys_not_ready": "İYS não pronto",
++          "closed": "Coleta fechada"
++        }
++      }
+     }
+   },
+   "oraclePage": {
+diff --git a/src/i18n/locales/tr.json b/src/i18n/locales/tr.json
+index b1b298c91194aad1ba1d1b06c44dd1d6b4da14ea..fcb120c42ec015759bd37042083d27538d3e6c97 100644
+--- a/src/i18n/locales/tr.json
++++ b/src/i18n/locales/tr.json
+@@ -2965,7 +2965,11 @@
+       "trials": "Denemeler",
+       "winback": "Geri kazanım",
+       "webhooks": "Webhook’lar",
+-      "admin": "Yönetim"
++      "admin": "Yönetim",
++      "overview": "Genel Bakış",
++      "revenue": "Ücretli Üyeler / Gelir",
++      "campaigns": "Kampanyalar / İzinler",
++      "operations": "Operasyon"
+     },
+     "trials": {
+       "paid": "Ödeme yaptı",
+@@ -3139,6 +3143,144 @@
+       "uncertainSent": "Belirsiz — sağlayıcı kaydını kontrol edin",
+       "unverifiedTime": "zaman doğrulanmadı",
+       "until": "{{date}} sonrasında uygun (tam bu anda hâlâ bekler)"
++    },
++    "revenue": {
++      "loading": "Yükleniyor…",
++      "error": "Rapor yüklenemedi. Hiçbir değer sıfır olarak gösterilmiyor.",
++      "retry": "Tekrar dene",
++      "range": "Kayıt dönemi",
++      "ranges": {
++        "7": "Son 7 gün",
++        "30": "Son 30 gün",
++        "90": "Son 90 gün",
++        "all": "Tüm zamanlar"
++      },
++      "includeTests": "Test ve yönetici hesaplarını dahil et",
++      "timezoneNote": "Tarihler Europe/Istanbul; kayıtlar UTC.",
++      "funnelTitle": "Kayıttan gelire",
++      "funnelNote": "Her adım aynı kayıt kohortu. Ekran adımları {{total}} kaydın {{measured}} tanesi için ölçülüyor (ölçüm başladıktan sonra).",
++      "screenStep": "ekran",
++      "notMeasured": "ölçülmedi",
++      "ofCohort": "Kohort içindeki pay",
++      "fromPrevious": "Önceki adımdan",
++      "biggestLoss": "En büyük ölçülmüş kayıp",
++      "noLoss": "Henüz ölçülmüş kayıp yok",
++      "mrr": "MRR",
++      "noData": "Veri yok",
++      "cash": "Net tahsilat (para birimine göre)",
++      "noPayments": "Pozitif ödenmiş sipariş yok",
++      "refunded": "İade",
++      "ofMature": "{{d}} olgun kayıttan {{n}}",
++      "detailTotal": "{{count}} hesap",
++      "empty": "Eşleşen hesap yok.",
++      "notObserved": "ölçülmedi",
++      "test": "test",
++      "renewalOff": "yenileme kapalı",
++      "prev": "Önceki",
++      "next": "Sonraki",
++      "directoryTitle": "Hesaplar",
++      "directoryNote": "Hesap başına tek satır. E-posta veya oyuncu etiketiyle ara.",
++      "searchPlaceholder": "E-posta veya oyuncu etiketi",
++      "unstartedTitle": "24–48 saat önce doğrulandı, henüz deneme yok",
++      "unstartedNote": "Salt okunur. Gönderilebilir, sunucunun güncel kampanya kararıdır; gönderim kapalıyken 0’dır.",
++      "metric": {
++        "signups": "Yeni kayıt",
++        "verified": "E-posta doğrulandı",
++        "offer_seen": "Deneme teklifi görüldü",
++        "trial_clicked": "“Denemeyi başlat” tıklandı",
++        "pricing_shown": "Fiyat penceresi görüldü",
++        "continue_clicked": "Polar’a devam edildi",
++        "checkout_created": "Polar ödeme bağlantısı oluştu",
++        "trial_started": "Deneme başladı",
++        "first_paid": "İlk ödenmiş sipariş",
++        "first_renewal": "İlk yenileme",
++        "mature_24h": "24 saati geçen kayıtlar",
++        "trial_24h": "24 saat içinde deneme",
++        "mature_48h": "48 saati geçen kayıtlar",
++        "trial_48h": "48 saat içinde deneme",
++        "d7_mature": "Bitişi + 7 günü geçen denemeler",
++        "d7_paid": "Deneme bitişi + 7 gün içinde ilk ödeme",
++        "d7_pending": "D7 sonucu bekleniyor",
++        "active_paid": "Aktif ücretli üye",
++        "renewal_off_access": "Yenileme kapalı, erişim sürüyor",
++        "past_due": "Ödeme gecikmiş",
++        "trialing": "Şu an denemede",
++        "lost_paid": "Ödedi, sonra kaybedildi"
++      },
++      "step": {
++        "trial_offer_seen": "Deneme teklifi görüldü",
++        "trial_start_clicked": "“Denemeyi başlat” tıklandı",
++        "pricing_shown": "Fiyat penceresi görüldü",
++        "polar_continue_clicked": "Polar’a devam edildi",
++        "checkout_created": "Polar ödeme bağlantısı oluştu",
++        "trial_started": "Deneme başladı",
++        "first_paid": "İlk ödenmiş sipariş"
++      },
++      "col": {
++        "account": "Hesap",
++        "signup": "Kayıt",
++        "trial": "Deneme başlangıcı",
++        "firstPaid": "İlk ödeme",
++        "status": "Abonelik",
++        "lastStep": "Son gözlenen adım",
++        "access": "Erişim",
++        "marketing": "Kampanya e-postası",
++        "security": "Güvenlik"
++      },
++      "access": {
++        "paid": "Ücretli",
++        "trialing": "Deneme",
++        "past_due": "Ödeme gecikmiş",
++        "ended": "Sona ermiş",
++        "never_subscribed": "Hiç abone olmamış"
++      },
++      "security": {
++        "ok": "Sorun yok",
++        "review": "İncelemede",
++        "blocked": "Engelli"
++      },
++      "marketing": {
++        "granted": "İzin verdi",
++        "withdrawn": "İzni geri çekti",
++        "none": "Seçim yok",
++        "pending": "Bekliyor"
++      },
++      "unstarted": {
++        "total": "Toplam",
++        "consented": "Geçerli kampanya izni",
++        "sendable": "Sunucuya göre gönderilebilir"
++      },
++      "mrrReason": {
++        "no_verified_polar_mrr_source": "Doğrulanmış Polar MRR’ı veya kanıtlanmış dönemsel fiyat kaynağı bağlı değil; MRR hesaplanmıyor.",
++        "unknown": "Kaynak yok."
++      },
++      "sub": {
++        "active": "Aktif",
++        "trialing": "Deneme",
++        "past_due": "Ödeme gecikmiş",
++        "canceled": "İptal",
++        "revoked": "Kapatıldı",
++        "cancelled": "İptal"
++      },
++      "reach": {
++        "title": "Kampanya e-postası erişimi (erişimi olan hesaplar)",
++        "note": "Sunucunun izin kurallarından. Hesap başına tek sayım. Kayıt hunisinden türetilmez.",
++        "active_paid": "Aktif ücretli",
++        "active_trial": "Denemede",
++        "already_chose": "Karar vermiş",
++        "invitable": "Davet edilebilir",
++        "waiting_missing_info": "Eksik bilgiyle bekleyen",
++        "reasons": "Bekleme gerekçeleri",
++        "reason": {
++          "email_unverified": "E-posta doğrulanmamış",
++          "market_unknown": "Pazar bilinmiyor",
++          "market_closed": "Pazar kapalı",
++          "age_unknown": "Yaş bilinmiyor",
++          "age_rule_pending": "Yaş kuralı bekliyor",
++          "iys_not_ready": "İYS hazır değil",
++          "closed": "İzin toplama kapalı"
++        }
++      }
+     }
+   },
+   "oraclePage": {
+diff --git a/src/integrations/supabase/types.ts b/src/integrations/supabase/types.ts
+index 2c3f15a66bf2f2029c7b2f541a4b5648535ce88f..ca79735397d54dd385bf3b96a9377808e2ff1877 100644
+--- a/src/integrations/supabase/types.ts
++++ b/src/integrations/supabase/types.ts
+@@ -7,11 +7,6 @@ export type Json =
+   | Json[]
+ 
+ export type Database = {
+-  // Allows to automatically instantiate createClient with right options
+-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+-  __InternalSupabase: {
+-    PostgrestVersion: "13.0.5"
+-  }
+   public: {
+     Tables: {
+       achievement_progress: {
+@@ -83,6 +78,39 @@ export type Database = {
+         }
+         Relationships: []
+       }
++      acquisition_events: {
++        Row: {
++          created_at: string
++          step: string
++          user_id: string
++        }
++        Insert: {
++          created_at?: string
++          step: string
++          user_id: string
++        }
++        Update: {
++          created_at?: string
++          step?: string
++          user_id?: string
++        }
++        Relationships: []
++      }
++      acquisition_settings: {
++        Row: {
++          measured_since: string
++          singleton: boolean
++        }
++        Insert: {
++          measured_since?: string
++          singleton?: boolean
++        }
++        Update: {
++          measured_since?: string
++          singleton?: boolean
++        }
++        Relationships: []
++      }
+       admin_audit_log: {
+         Row: {
+           action: string
+@@ -2620,6 +2648,7 @@ export type Database = {
+       }
+     }
+     Functions: {
++      acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
+       admin_marketing_reach: { Args: never; Returns: Json }
+       admin_privacy_requests: {
+         Args: never
+@@ -2659,6 +2688,27 @@ export type Database = {
+           unreconciled_partial_refunds: number
+         }[]
+       }
++      admin_revenue_detail: {
++        Args: {
++          p_at?: string
++          p_from: string
++          p_include_tests?: boolean
++          p_limit?: number
++          p_metric: string
++          p_offset?: number
++          p_to: string
++        }
++        Returns: Json
++      }
++      admin_revenue_overview: {
++        Args: {
++          p_at?: string
++          p_from: string
++          p_include_tests?: boolean
++          p_to: string
++        }
++        Returns: Json
++      }
+       admin_set_marketing_age: {
+         Args: { p_adult: boolean; p_user: string }
+         Returns: undefined
+@@ -2709,6 +2759,10 @@ export type Database = {
+         }
+       }
+       admin_trial_marketing: { Args: { p_days?: number }; Returns: Json }
++      admin_unstarted_audience: {
++        Args: { p_at?: string; p_include_tests?: boolean }
++        Returns: Json
++      }
+       admin_update_privacy_request: {
+         Args: {
+           p_assignee: string
+@@ -2718,6 +2772,10 @@ export type Database = {
+         }
+         Returns: undefined
+       }
++      admin_user_directory: {
++        Args: { p_limit?: number; p_offset?: number; p_search?: string }
++        Returns: Json
++      }
+       admin_winback_candidates: { Args: never; Returns: Json[] }
+       begin_confirmed_welcome: {
+         Args: { p_payload: Json; p_user: string }
+@@ -2969,6 +3027,8 @@ export type Database = {
+         Args: { anon_key: string; project_url: string }
+         Returns: undefined
+       }
++      record_acquisition_step: { Args: { p_step: string }; Returns: undefined }
++      record_checkout_created: { Args: { p_user: string }; Returns: undefined }
+       record_confirmed_welcome: {
+         Args: { p_message: string; p_user: string }
+         Returns: boolean
+@@ -3036,6 +3096,38 @@ export type Database = {
+         Args: { p_feature: string; p_request_key: string; p_user_id: string }
+         Returns: Json
+       }
++      revenue_cohort: {
++        Args: {
++          p_at?: string
++          p_from: string
++          p_include_tests: boolean
++          p_to: string
++        }
++        Returns: {
++          checkout_at: string
++          continue_at: string
++          email: string
++          first_paid_at: string
++          first_renewal_at: string
++          has_access: boolean
++          is_test: boolean
++          offer_seen_at: string
++          pricing_at: string
++          renewal_off: boolean
++          signup_at: string
++          sub_status: string
++          trial_clicked_at: string
++          trial_end: string
++          trial_start: string
++          ui_measured: boolean
++          user_id: string
++          verified_at: string
++        }[]
++      }
++      revenue_metric_match: {
++        Args: { c: Record<string, unknown>; p_at: string; p_metric: string }
++        Returns: boolean
++      }
+       set_my_marketing_consent: {
+         Args: {
+           p_action: string
+@@ -3242,3 +3334,4 @@ export const Constants = {
+     },
+   },
+ } as const
++
+diff --git a/src/lib/acquisitionSteps.ts b/src/lib/acquisitionSteps.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..1d2e7029f95152801a66d8bc06b49ee808675706
+--- /dev/null
++++ b/src/lib/acquisitionSteps.ts
+@@ -0,0 +1,15 @@
++import { supabase } from '@/integrations/supabase/client';
++
++export type AcquisitionStep = 'trial_offer_seen' | 'trial_start_clicked' | 'pricing_shown' | 'polar_continue_clicked';
++
++/**
++ * Fire-and-forget first-acquisition observation. The server keeps only the first occurrence per account
++ * and ignores accounts that already had a Polar subscription/order/trial. Never blocks or throws.
++ */
++export function recordAcquisitionStep(step: AcquisitionStep): void {
++  try {
++    void Promise.resolve(supabase.rpc('record_acquisition_step' as never, { p_step: step } as never)).catch(() => undefined);
++  } catch {
++    /* measurement must never affect sign-up or checkout */
++  }
++}
+diff --git a/src/lib/revenueFunnel.ts b/src/lib/revenueFunnel.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..b2760155212ba55cabdb0153d042a552fbad7910
+--- /dev/null
++++ b/src/lib/revenueFunnel.ts
+@@ -0,0 +1,63 @@
++// Pure helpers for the admin signup-to-revenue report. Counts come from the server; this file never derives money.
++export type FunnelCounts = Record<string, number>;
++
++/** Acquisition order. `ui` steps are measured only for signups after the measurement start. */
++export const FUNNEL_STEPS = [
++  { key: 'signups', ui: false },
++  { key: 'verified', ui: false },
++  { key: 'offer_seen', ui: true },
++  { key: 'trial_clicked', ui: true },
++  { key: 'pricing_shown', ui: true },
++  { key: 'continue_clicked', ui: true },
++  { key: 'checkout_created', ui: true },
++  { key: 'trial_started', ui: false },
++  { key: 'first_paid', ui: false },
++  { key: 'first_renewal', ui: false },
++] as const;
++
++/** Conversion rate; null (shown as "—") when the denominator is 0. */
++export function rate(numerator: number, denominator: number): number | null {
++  if (!Number.isFinite(denominator) || denominator <= 0) return null;
++  return numerator / denominator;
++}
++
++export function formatRate(value: number | null, locale: string) {
++  return value === null ? '—' : new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }).format(value);
++}
++
++export type StepLoss = { from: string; to: string; lost: number; rate: number };
++
++/**
++ * Largest measured drop between consecutive steps. UI steps use only the measured part of the cohort,
++ * so steps that were not measured never create a fake loss.
++ */
++export function biggestLoss(counts: FunnelCounts, uiMeasured: number): StepLoss | null {
++  const usable = FUNNEL_STEPS.filter(s => !s.ui || uiMeasured > 0);
++  let best: StepLoss | null = null;
++  for (let i = 1; i < usable.length; i++) {
++    const a = usable[i - 1], b = usable[i];
++    // Comparing a whole-cohort step with a measured-only step is not a like-for-like drop.
++    if (a.ui !== b.ui && (a.ui || b.ui) && uiMeasured !== (counts.signups ?? 0)) continue;
++    const from = counts[a.key] ?? 0, to = counts[b.key] ?? 0;
++    const lost = Math.max(0, from - to);
++    const r = rate(lost, from);
++    if (r !== null && lost > 0 && (!best || lost > best.lost)) best = { from: a.key, to: b.key, lost, rate: r };
++  }
++  return best;
++}
++
++/** Today's date in Europe/Istanbul as YYYY-MM-DD (reporting zone; storage stays UTC). */
++export function istanbulDate(at: Date = new Date()) {
++  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(at);
++}
++
++export function shiftDate(ymd: string, days: number) {
++  const d = new Date(ymd + 'T00:00:00Z');
++  d.setUTCDate(d.getUTCDate() + days);
++  return d.toISOString().slice(0, 10);
++}
++
++/** Money per currency, never summed across currencies. */
++export function formatCents(cents: number, currency: string, locale: string) {
++  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(cents / 100);
++}
+diff --git a/src/pages/Admin.tsx b/src/pages/Admin.tsx
+index 241f2c3ac1cd9ed5da984f3cdf10f38de807f28e..5701862fc0d21a3e2f2575e188961102f56f9ff6 100644
+--- a/src/pages/Admin.tsx
++++ b/src/pages/Admin.tsx
+@@ -3,7 +3,7 @@ import { useEffect } from 'react';
+ import { useNavigate } from 'react-router-dom';
+ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+ import { Card, CardContent } from '@/components/ui/card';
+-import { Shield, AlertTriangle, Search, LayoutDashboard, Activity, Users, Webhook, Gift, FlaskConical } from 'lucide-react';
++import { Shield, AlertTriangle, Search, LayoutDashboard, Activity, Users, Webhook, Gift, FlaskConical, Wallet } from 'lucide-react';
+ import { useAdminAccess } from '@/hooks/useAdminAccess';
+ import { FraudOverviewDashboard } from '@/components/admin/FraudOverviewDashboard';
+ import { FraudCasesList } from '@/components/admin/FraudCasesList';
+@@ -13,6 +13,11 @@ import { BlockedUsersPanel } from '@/components/admin/BlockedUsersPanel';
+ import { WebhookEventsPanel } from '@/components/admin/WebhookEventsPanel';
+ import { WinbackCampaignPanel } from '@/components/admin/WinbackCampaignPanel';
+ import { TrialAnalyticsPanel } from '@/components/admin/TrialAnalyticsPanel';
++import { RevenueOverviewPanel } from '@/components/admin/RevenueOverviewPanel';
++import { UserDirectoryPanel } from '@/components/admin/UserDirectoryPanel';
++import { UnstartedAudienceCard } from '@/components/admin/UnstartedAudienceCard';
++import { PrivacyRequestsPanel } from '@/components/admin/PrivacyRequestsPanel';
++import { MarketingReachCard } from '@/components/admin/MarketingReachCard';
+ import { Navbar } from '@/components/layout/Navbar';
+ 
+ /**
+@@ -72,71 +77,56 @@ export default function Admin() {
+         </div>
+ 
+         <Tabs defaultValue="overview" className="space-y-6">
+-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:text-center [&_svg]:shrink-0">
+-            <TabsTrigger value="overview" className="flex items-center gap-2">
+-              <LayoutDashboard className="h-4 w-4" />
+-              {t('dashboard.subtabs.overview')}
+-            </TabsTrigger>
+-            <TabsTrigger value="users" className="flex items-center gap-2">
+-              <Users className="h-4 w-4" />
+-              {t('admin.navigation.users')}
+-            </TabsTrigger>
+-            <TabsTrigger value="cases" className="flex items-center gap-2">
+-              <AlertTriangle className="h-4 w-4" />
+-              {t('admin.fraudCases.title')}
+-            </TabsTrigger>
+-            <TabsTrigger value="lookup" className="flex items-center gap-2">
+-              <Search className="h-4 w-4" />
+-              {t('admin.userLookup.title')}
+-            </TabsTrigger>
+-            <TabsTrigger value="trials" className="flex items-center gap-2">
+-              <FlaskConical className="h-4 w-4" />
+-              {t('admin.navigation.trials')}
+-            </TabsTrigger>
+-            <TabsTrigger value="winback" className="flex items-center gap-2">
+-              <Gift className="h-4 w-4" />
+-              {t('admin.navigation.winback')}
+-            </TabsTrigger>
+-            <TabsTrigger value="webhooks" className="flex items-center gap-2">
+-              <Webhook className="h-4 w-4" />
+-              {t('admin.navigation.webhooks')}
+-            </TabsTrigger>
+-            <TabsTrigger value="metrics" className="flex items-center gap-2">
+-              <Activity className="h-4 w-4" />
+-              {t('admin.apiMetrics.title')}
+-            </TabsTrigger>
++          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:text-center [&_svg]:shrink-0">
++            <TabsTrigger value="overview" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{t('admin.navigation.overview')}</TabsTrigger>
++            <TabsTrigger value="users" className="flex items-center gap-2"><Users className="h-4 w-4" />{t('admin.navigation.users')}</TabsTrigger>
++            <TabsTrigger value="trials" className="flex items-center gap-2"><FlaskConical className="h-4 w-4" />{t('admin.navigation.trials')}</TabsTrigger>
++            {isAdmin && <TabsTrigger value="revenue" className="flex items-center gap-2"><Wallet className="h-4 w-4" />{t('admin.navigation.revenue')}</TabsTrigger>}
++            <TabsTrigger value="campaigns" className="flex items-center gap-2"><Gift className="h-4 w-4" />{t('admin.navigation.campaigns')}</TabsTrigger>
++            <TabsTrigger value="operations" className="flex items-center gap-2"><Activity className="h-4 w-4" />{t('admin.navigation.operations')}</TabsTrigger>
+           </TabsList>
+ 
+           <TabsContent value="overview">
+-            <FraudOverviewDashboard />
++            {isAdmin ? <RevenueOverviewPanel section="overview" /> : <FraudOverviewDashboard />}
+           </TabsContent>
+ 
+-          <TabsContent value="users">
++          <TabsContent value="users" className="space-y-6">
++            {isAdmin && <UserDirectoryPanel />}
+             <BlockedUsersPanel />
++            <section aria-labelledby="lookup-heading" className="space-y-3">
++              <h2 id="lookup-heading" className="text-lg font-semibold flex items-center gap-2"><Search className="h-5 w-5" />{t('admin.userLookup.title')}</h2>
++              <UserLookup />
++            </section>
+           </TabsContent>
+ 
+-          <TabsContent value="cases">
+-            <FraudCasesList />
+-          </TabsContent>
+-
+-          <TabsContent value="lookup">
+-            <UserLookup />
+-          </TabsContent>
+-
+-          <TabsContent value="trials">
++          <TabsContent value="trials" className="space-y-6">
++            {isAdmin && <RevenueOverviewPanel section="trials" />}
+             <TrialAnalyticsPanel />
+           </TabsContent>
+ 
+-          <TabsContent value="winback">
+-            <WinbackCampaignPanel />
+-          </TabsContent>
++          {isAdmin && <TabsContent value="revenue"><RevenueOverviewPanel section="revenue" /></TabsContent>}
+ 
+-          <TabsContent value="webhooks">
+-            <WebhookEventsPanel />
++          <TabsContent value="campaigns" className="space-y-6">
++            {isAdmin && <MarketingReachCard />}
++            {isAdmin && <UnstartedAudienceCard />}
++            <WinbackCampaignPanel />
+           </TabsContent>
+ 
+-          <TabsContent value="metrics">
+-            <ApiMetricsDashboard />
++          <TabsContent value="operations" className="space-y-8">
++            {isAdmin && <FraudOverviewDashboard />}
++            <section aria-labelledby="cases-heading" className="space-y-3">
++              <h2 id="cases-heading" className="text-lg font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5" />{t('admin.fraudCases.title')}</h2>
++              <FraudCasesList />
++            </section>
++            <PrivacyRequestsPanel />
++            <section aria-labelledby="webhooks-heading" className="space-y-3">
++              <h2 id="webhooks-heading" className="text-lg font-semibold flex items-center gap-2"><Webhook className="h-5 w-5" />{t('admin.navigation.webhooks')}</h2>
++              <WebhookEventsPanel />
++            </section>
++            <section aria-labelledby="metrics-heading" className="space-y-3">
++              <h2 id="metrics-heading" className="text-lg font-semibold flex items-center gap-2"><Activity className="h-5 w-5" />{t('admin.apiMetrics.title')}</h2>
++              <ApiMetricsDashboard />
++            </section>
+           </TabsContent>
+         </Tabs>
+       </main>
+diff --git a/supabase/functions/create-checkout/index.ts b/supabase/functions/create-checkout/index.ts
+index d67e60392bd7eae93c4bddcc1c35b5b16e705995..eb1f37ec772ff64baaf1d5d649b5f318b01f961e 100644
+--- a/supabase/functions/create-checkout/index.ts
++++ b/supabase/functions/create-checkout/index.ts
+@@ -110,6 +110,9 @@ serve(async (req) => {
+       const service = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+       const { error } = await service.rpc('record_return_checkout', { p_user: user.id });
+       if (error) logger.warn('Return checkout observation unavailable');
++      // First-acquisition funnel: a valid checkout URL exists (does not prove card entry). Server ignores repeat/non-first accounts.
++      const { error: acqError } = await service.rpc('record_checkout_created', { p_user: user.id });
++      if (acqError) logger.warn('Acquisition checkout observation unavailable');
+     } catch {
+       logger.warn('Return checkout observation unavailable');
+     }
+diff --git a/tests/integration/revenue/run.mjs b/tests/integration/revenue/run.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..2ae27625f4f9dae46b681ce363a28419a26a40aa
+--- /dev/null
++++ b/tests/integration/revenue/run.mjs
+@@ -0,0 +1,134 @@
++// Revenue funnel acceptance against a DISPOSABLE draft backend (never production).
++// Real SQL functions are called through the API as real signed-in users.
++// Usage: REVENUE_API=http://127.0.0.1:8001 bun tests/integration/revenue/run.mjs
++// Needs DB_URL (row-level writer), SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY of that disposable backend.
++import assert from 'node:assert/strict';
++import postgres from 'postgres';
++
++const api = process.env.REVENUE_API;
++assert(api && /^http:\/\/(127\.0\.0\.1|localhost)/.test(api), 'REVENUE_API must be a local disposable backend');
++const anon = process.env.SUPABASE_ANON_KEY, service = process.env.SUPABASE_SERVICE_ROLE_KEY;
++const sql = postgres(process.env.DB_URL, { max: 1 });
++const run = 'r' + Date.now().toString(36);
++const pw = 'Fixture-' + run + '-pw!';
++const ids = {};
++let passed = 0;
++const ok = (cond, msg) => { assert.ok(cond, msg); passed++; };
++
++async function admin(path, method, body) {
++  const r = await fetch(api + '/auth/v1/admin/' + path, { method, headers: { apikey: service, Authorization: 'Bearer ' + service, 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
++  if (!r.ok) throw new Error('admin ' + path + ' ' + r.status);
++  return r.status === 204 ? null : r.json();
++}
++async function token(email) {
++  const r = await fetch(api + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { apikey: anon, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pw }) });
++  assert.equal(r.status, 200, 'sign in ' + email);
++  return (await r.json()).access_token;
++}
++async function rpc(tok, fn, args = {}) {
++  const r = await fetch(api + '/rest/v1/rpc/' + fn, { method: 'POST', headers: { apikey: anon, Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
++  const body = await r.text();
++  return { status: r.status, data: body ? JSON.parse(body) : null };
++}
++const svc = (fn, args) => rpc(service, fn, args);
++const istanbulToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
++const shift = (d, n) => { const x = new Date(d + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
++const range = { p_from: shift(istanbulToday, -60), p_to: istanbulToday };
++
++try {
++  const mk = async k => { ids[k] = (await admin('users', 'POST', { email: `${k}-${run}@fixture.invalid`, password: pw, email_confirm: true })).id; };
++  await mk('admin');
++  await sql`INSERT INTO public.admin_roles(user_id, role) VALUES (${ids.admin}, 'admin')`;
++  const adminTok = await token(`admin-${run}@fixture.invalid`);
++  // Accounts sign up now (T0); later events are placed in the future and reports are read "as of" P = T0+30d.
++  const P = (await sql`SELECT (now() + interval '30 days') AS p`)[0].p.toISOString();
++  const AUD_AT = (await sql`SELECT (now() + interval '30 hours') AS p`)[0].p.toISOString();
++  const before = (await rpc(adminTok, 'admin_revenue_overview', { ...range, p_include_tests: false, p_at: P })).data;
++  const audBefore = (await rpc(adminTok, 'admin_unstarted_audience', { p_include_tests: false, p_at: AUD_AT })).data;
++  for (const k of ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7']) await mk(k);
++  await sql`INSERT INTO public.trial_conversion_periods(subscription_id,user_id,started_at,ends_at) VALUES
++    (${'s1' + run}, ${ids.u1}, now()+interval '2 hours', now()+interval '3 days'),
++    (${'s2' + run}, ${ids.u2}, now()+interval '30 hours', now()+interval '4 days'),
++    (${'s5' + run}, ${ids.u5}, now()+interval '50 hours', now()+interval '5 days')`;
++  await sql`INSERT INTO public.user_subscriptions(user_id,polar_subscription_id,status,current_period_start,current_period_end) VALUES
++    (${ids.u1}, ${'s1' + run}, 'active', now(), now()+interval '60 days'),
++    (${ids.u2}, ${'s2' + run}, 'canceled', now(), now()+interval '4 days'),
++    (${ids.u4}, ${'s4' + run}, 'active', now(), now()+interval '60 days'),
++    (${ids.u5}, ${'s5' + run}, 'past_due', now(), now()+interval '20 days')`;
++  const o = (id, u, sub, amt, cur, reason, at, refund = null) => sql`INSERT INTO public.polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,created_at,recorded_at,refunded_net_cents)
++    VALUES (${id + run}, ${u}, ${sub + run}, ${amt}, ${cur}, ${reason}, 'paid', now() + ${at}::interval, now(), ${refund})`;
++  await o('o1z', ids.u1, 's1', 0, 'usd', 'subscription_create', '2 hours');
++  await o('o1', ids.u1, 's1', 499, 'usd', 'subscription_cycle', '4 days');
++  await o('o1r', ids.u1, 's1', 499, 'usd', 'subscription_cycle', '29 days');
++  await o('o1late', ids.u1, 's1', 499, 'usd', 'subscription_cycle', '45 days'); // after P: must not change the mature report
++  await o('o2', ids.u2, 's2', 999, 'usd', 'subscription_cycle', '5 days', 999);
++  await o('o4', ids.u4, 's4', 499, 'usd', 'subscription_create', '0 seconds');
++  await o('o5', ids.u5, 's5', 459, 'eur', 'subscription_cycle', '6 days');
++  await sql`INSERT INTO public.player_profiles(user_id,player_tag) VALUES (${ids.u5}, ${'#A' + run}), (${ids.u5}, ${'#B' + run})`;
++  await sql`INSERT INTO public.user_fraud_status(user_id,status) VALUES (${ids.u6}, 'blocked')`;
++
++  // U3: first acquisition. Repeated clicks and two tabs collapse to one row per step; client cannot write checkout_created.
++  const t3 = await token(`u3-${run}@fixture.invalid`);
++  const steps = ['trial_offer_seen', 'trial_start_clicked', 'trial_start_clicked', 'pricing_shown', 'polar_continue_clicked', 'checkout_created'];
++  await Promise.all([...steps, ...steps].map(s => rpc(t3, 'record_acquisition_step', { p_step: s })));
++  ok((await rpc(t3, 'record_checkout_created', { p_user: ids.u3 })).status >= 400, 'users cannot record checkout themselves');
++  await Promise.all([svc('record_checkout_created', { p_user: ids.u3 }), svc('record_checkout_created', { p_user: ids.u3 })]);
++  const ev = await sql`SELECT step FROM public.acquisition_events WHERE user_id = ${ids.u3}`;
++  ok(ev.length === 5, 'U3 has exactly 5 distinct steps (dedup)');
++  // U4 already paid (recovery/plan change): not first acquisition
++  const t4 = await token(`u4-${run}@fixture.invalid`);
++  await rpc(t4, 'record_acquisition_step', { p_step: 'pricing_shown' });
++  await svc('record_checkout_created', { p_user: ids.u4 });
++  ok((await sql`SELECT count(*)::int n FROM public.acquisition_events WHERE user_id = ${ids.u4}`)[0].n === 0, 'recovery/plan change not counted as acquisition');
++
++  // Roles
++  ok((await rpc(t3, 'admin_revenue_overview', { ...range, p_include_tests: false })).status >= 400, 'non-admin denied overview');
++  ok((await rpc(t3, 'admin_user_directory', {})).status >= 400, 'non-admin denied directory');
++
++  const ov = (await rpc(adminTok, 'admin_revenue_overview', { ...range, p_include_tests: false, p_at: P })).data;
++  const d = k => Number(ov.counts[k]) - Number(before.counts[k]);
++  const expect = { signups: 7, checkout_created: 1, continue_clicked: 1, pricing_shown: 1, trial_clicked: 1, offer_seen: 1, trial_started: 3,
++    trial_24h: 1, trial_48h: 2, first_paid: 3, first_renewal: 1, d7_mature: 3, d7_paid: 2, past_due: 1, active_paid: 2, lost_paid: 0 };
++  for (const [k, v] of Object.entries(expect)) ok(d(k) === v, `${k}: expected +${v}, got +${d(k)}`);
++  const cents = (o, c) => Number(o?.[c] ?? 0);
++  ok(cents(ov.cash_net_cents, 'USD') - cents(before.cash_net_cents, 'USD') === 1497, 'USD cash excludes zero and refunded orders');
++  ok(cents(ov.cash_net_cents, 'EUR') - cents(before.cash_net_cents, 'EUR') === 459, 'EUR kept separate');
++  ok(cents(ov.refunded_cents, 'USD') - cents(before.refunded_cents, 'USD') === 999, 'refunds visible');
++  ok(ov.mrr.available === false && ov.mrr.reason, 'MRR not fabricated');
++  const withTests = (await rpc(adminTok, 'admin_revenue_overview', { ...range, p_include_tests: true, p_at: P })).data;
++  ok(Number(withTests.counts.signups) === Number(ov.counts.signups) + Number(withTests.counts.signups - ov.counts.signups) && withTests.counts.signups > ov.counts.signups, 'admin account excluded by default');
++
++  for (const k of Object.keys(ov.counts)) {
++    const det = (await rpc(adminTok, 'admin_revenue_detail', { p_metric: k, ...range, p_include_tests: false, p_limit: 200, p_offset: 0, p_at: P })).data;
++    ok(Number(det.total) === Number(ov.counts[k]), `total=detail for ${k}`);
++  }
++  const page2 = (await rpc(adminTok, 'admin_revenue_detail', { p_metric: 'signups', ...range, p_include_tests: false, p_limit: 2, p_offset: 2, p_at: P })).data;
++  ok(page2.rows.length <= 2, 'detail pages');
++
++  const dir = (await rpc(adminTok, 'admin_user_directory', { p_search: 'B' + run })).data;
++  ok(dir.total === 1 && dir.rows[0].tags.length === 2, 'two tags, one account row');
++  ok(dir.rows[0].access === 'past_due' && dir.rows[0].security === 'ok', 'past_due is not blocked');
++  const u6 = (await rpc(adminTok, 'admin_user_directory', { p_search: `u6-${run}` })).data.rows[0];
++  ok(u6.security === 'blocked' && u6.access === 'never_subscribed', 'blocked only means security');
++  ok((await rpc(adminTok, 'admin_user_directory', { p_search: `u2-${run}` })).data.rows[0].access === 'ended', 'ended separate');
++
++  const aud = (await rpc(adminTok, 'admin_unstarted_audience', { p_include_tests: false, p_at: AUD_AT })).data;
++  ok(aud.total - audBefore.total === 3, 'U3, U6, U7: verified 24-48h earlier, no trial/subscription; U1/U2/U4/U5 excluded');
++  const late = (await rpc(adminTok, 'admin_unstarted_audience', { p_include_tests: false, p_at: P })).data;
++  ok(late.total === 0 || late.total < aud.total, '24-48h window closes');
++  ok(aud.sendable === 0, 'sending off => sendable 0');
++  console.log(`REVENUE ACCEPTANCE PASSED: ${passed} assertions`);
++} finally {
++  await fetch(api + '/rest/v1/acquisition_events?user_id=in.(' + Object.values(ids).join(',') + ')', { method: 'DELETE', headers: { apikey: service, Authorization: 'Bearer ' + service } }).catch(() => {});
++  const list = Object.values(ids);
++  if (list.length) {
++    await sql`DELETE FROM public.polar_orders WHERE user_id = ANY(${list})`.catch(() => {});
++    await sql`DELETE FROM public.user_subscriptions WHERE user_id = ANY(${list})`.catch(() => {});
++    await sql`DELETE FROM public.trial_conversion_periods WHERE user_id = ANY(${list})`.catch(() => {});
++    await sql`DELETE FROM public.player_profiles WHERE user_id = ANY(${list})`.catch(() => {});
++    await sql`DELETE FROM public.user_fraud_status WHERE user_id = ANY(${list})`.catch(() => {});
++    await sql`DELETE FROM public.admin_roles WHERE user_id = ANY(${list})`.catch(() => {});
++    for (const id of list) await admin('users/' + id, 'DELETE').catch(() => {});
++  }
++  await sql.end();
++}
+diff --git a/tests/revenueFunnel.test.ts b/tests/revenueFunnel.test.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..99157c6018aeed995b370021ad22709d902e9cb2
+--- /dev/null
++++ b/tests/revenueFunnel.test.ts
+@@ -0,0 +1,22 @@
++import { describe, expect, it } from 'vitest';
++import { biggestLoss, istanbulDate, rate, formatRate } from '../src/lib/revenueFunnel';
++
++describe('revenue funnel', () => {
++  it('shows a dash instead of a rate when the denominator is 0', () => {
++    expect(rate(0, 0)).toBeNull();
++    expect(formatRate(rate(3, 0), 'tr')).toBe('—');
++    expect(rate(1, 4)).toBe(0.25);
++  });
++  it('ignores unmeasured screen steps when finding the biggest loss', () => {
++    const counts = { signups: 100, verified: 90, offer_seen: 0, trial_clicked: 0, pricing_shown: 0, continue_clicked: 0, checkout_created: 0, trial_started: 30, first_paid: 5, first_renewal: 2 };
++    expect(biggestLoss(counts, 0)).toEqual({ from: 'verified', to: 'trial_started', lost: 60, rate: 60 / 90 });
++  });
++  it('uses measured screen steps when the whole cohort was measured', () => {
++    const counts = { signups: 10, verified: 10, offer_seen: 9, trial_clicked: 3, pricing_shown: 3, continue_clicked: 2, checkout_created: 2, trial_started: 2, first_paid: 1, first_renewal: 0 };
++    expect(biggestLoss(counts, 10)?.from).toBe('offer_seen');
++  });
++  it('reports dates in Istanbul time (UTC+3)', () => {
++    expect(istanbulDate(new Date('2026-11-17T21:30:00Z'))).toBe('2026-11-18');
++    expect(istanbulDate(new Date('2026-11-17T20:59:00Z'))).toBe('2026-11-17');
++  });
++});

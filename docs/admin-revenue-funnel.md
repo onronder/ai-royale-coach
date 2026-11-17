@@ -14,4 +14,6 @@ Aynı Unix soketiyle dış ağ dinlemeyen geçici PostgreSQL kullanılır. REVEN
 
 ## Yayın
 
-İzin düzeltmesindeki 0029 ve yönetim geçişleri 0030–0031 sırasıyla uygulanır. Düzenlenmiş GitHub kaynağından create-checkout işlevi dağıtılır, sonra ön yüz yayımlanır. Ölçüm başlangıcı, geçiş ve işlev/ön yüz yayın saatleri kaydedilir. Bekleyen orijinal Lovable taslağını bunun üstüne kabul etmek farklı numaralı geçişleri yeniden uygular. Kampanya gönderimi ayrı iş kararıdır.
+GitHub ana dalındaki 0029 ve 0030 yönetim geçişlerinin içeriği ve sırası korunur. Veritabanında hangi geçişlerin uygulanmış olduğunu kontrol edin. Eksik olanları sırayla uygulayın. 0031 kampanya gönderiminde hesap yaşını yeniden denetler. 0032 mevcut hesap ve edinim kayıtlarını koruyarak yönetim raporlarını günceller. Önceki hesabı kaldırılmış bir edinim kaydı varsa geçmiş kaydı korunur ve yabancı anahtar yeni kayıtları denetler.
+
+Ardından bu sürümden `create-checkout` işlevini dağıtın ve ön yüzü yayımlayın. Veritabanı geçişi, işlev dağıtımı ve site yayını saatlerini ayrı kaydedin. Kampanya gönderim ayarı bu geçişlerden etkilenmez.
