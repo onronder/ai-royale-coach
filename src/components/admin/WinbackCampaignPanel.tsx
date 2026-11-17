@@ -1,7 +1,7 @@
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { canResendWinback } from '@/lib/winbackAudience';
+import { canSendWinback } from '@/lib/winbackAudience';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -53,6 +53,9 @@ interface EligibleUser {
   trial_ends_at: string | null;
   trial_used: boolean | null;
   winback_email_sent_at: string | null;
+  winback_allowed: boolean | null;
+  winback_block_reason: string | null;
+  winback_next_eligible_at: string | null;
   // Activity metrics
   activity_score: number;
   ai_requests: number;
@@ -227,8 +230,8 @@ export function WinbackCampaignPanel() {
     setSendingToAll(true);
     setConfirmBulkSend(false);
     
-    // Filter users who haven't received email in last 30 days
-    const usersToEmail = displayedUsers.filter(user => canResendWinback(user.winback_email_sent_at));
+    // Same eligibility the server enforces at send time
+    const usersToEmail = displayedUsers.filter(user => canSendWinback(user));
 
     let successCount = 0;
     let failCount = 0;
@@ -253,9 +256,9 @@ export function WinbackCampaignPanel() {
     }
   };
 
-  // Check if user can receive email (not sent in last 30 days)
+  // Server decision: last accepted win-back > 720 h ago and no uncertain attempt
   const canSendToUser = (user: EligibleUser) => {
-    return canResendWinback(user.winback_email_sent_at);
+    return canSendWinback(user);
   };
 
   // Count eligible users who can receive email (based on current filter)

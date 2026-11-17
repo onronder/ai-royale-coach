@@ -3470,7 +3470,9 @@
       "suppressed": "engelli adres",
       "iys_pending": "İYS bekliyor",
       "unknown": "bilinmiyor",
-      "age_rule_pending": "yaş kuralı bekliyor"
+      "age_rule_pending": "yaş kuralı bekliyor",
+      "cooldown": "bekleme süresi: son geri kazanım e-postasının üzerinden 720 saat geçmedi",
+      "previous_uncertain": "önceki geri kazanım e-postasının sonucu belirsiz"
     },
     "admin": {
       "title": "Kampanya e-posta izni",

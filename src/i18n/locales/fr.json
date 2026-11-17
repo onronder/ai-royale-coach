@@ -3470,7 +3470,9 @@
       "suppressed": "adresse bloquée",
       "iys_pending": "IYS en attente",
       "unknown": "inconnu",
-      "age_rule_pending": "règle d'âge en attente"
+      "age_rule_pending": "règle d'âge en attente",
+      "cooldown": "délai d'attente : le dernier e-mail de réactivation date de moins de 720 heures",
+      "previous_uncertain": "un e-mail de réactivation précédent a un résultat incertain"
     },
     "admin": {
       "title": "Consentement aux e-mails de campagnes",

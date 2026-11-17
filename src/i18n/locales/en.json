@@ -3470,7 +3470,9 @@
       "suppressed": "blocked address",
       "iys_pending": "IYS pending",
       "unknown": "unknown",
-      "age_rule_pending": "age rule pending"
+      "age_rule_pending": "age rule pending",
+      "cooldown": "waiting period: last win-back email less than 720 hours ago",
+      "previous_uncertain": "a previous win-back email has an uncertain result"
     },
     "admin": {
       "title": "Campaign email consent",
