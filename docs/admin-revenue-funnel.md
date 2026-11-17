@@ -4,7 +4,7 @@ Hesap oluşturma ve ilk edinim adımları hesap başına ilk kez sayılır. Baş
 
 Her adımın sayısı tekil hesapları gösterir. Önceki adımdan dönüşüm, karşılaştırılabilir hesaplarda iki adımı sırasıyla tamamlayanların ilk adımı tamamlayanlara oranıdır. Doğrudan ödeme bir deneme dönüşümü oluşturmaz. Sonuç listeleri aynı sorgudan gelir ve ayrıntılar açıldığı raporun zamanını kullanır.
 
-Denemede D7, aynı abonelikte denemenin bitişinden yedi gün sonrasına kadar doğrulanmış pozitif ödemeyi ölçer (sağ sınır hariç). Henüz süresi dolmayanlarla tarihi belirsiz ödemeler ayrı gösterilir. Doğrulanmış ödeme ve mutabık kısmi iadeler döviz cinsine göre toplanır. Bilgisi eksik sipariş ayrıca sayılır. MRR için kesin bir dönemsel fiyat kaynağı bağlanana kadar veri yok gösterilir. Yönetim bilgileri canlı kayıtlardan okunur. Daha sonra yapılan mutabakat, iade veya abonelik durumu değişikliği geçmiş kohortların güncel sonucunu değiştirebilir.
+Denemede D7, aynı abonelikte denemenin bitişinden yedi gün sonrasına kadar doğrulanmış pozitif ödemeyi ölçer (sağ sınır hariç). Henüz süresi dolmayanlarla tarihi belirsiz ödemeler ayrı gösterilir. Doğrulanmış ödeme ve mutabık kısmi iadeler döviz cinsine göre toplanır. Bilgisi eksik sipariş ayrıca sayılır. MRR kartı seçili kayıt grubundan bağımsızdır. Fittechs’in USD cinsinden raporlanan üç AI Royale ürünü için İstanbul gününe ait Polar Analytics MRR değerini gösterir. Yönetim bilgileri canlı kayıtlardan okunur. Daha sonra yapılan mutabakat, iade veya abonelik durumu değişikliği geçmiş kohortların güncel sonucunu değiştirebilir.
 
 Kampanya erişimi doğrudan admin_marketing_reach() sonucudur. 24–48 saat önce doğrulanmış ve deneme başlatmamış hesaplar ayrı bir kitledir. İzin, abone erişimi ve güvenlik durumu ayrı boyutlardır. Gönderilebilir sayı için sunucunun kampanya kararı kullanılır.
 
@@ -37,3 +37,9 @@ GROUP BY currency;
 ```
 
 Son sorgu tüm hesapları kapsar. Yönetim paneli için aynı kayıt dönemi ve test hesabı filtresini seç. Üretim kanıtı için tarihleri sipariş kimliğiyle Polar sistem olaylarıyla karşılaştır. Elle tarih girme. Test için `REVENUE_PG=/path/to/socket node tests/integration/revenue/run.mjs` ve `bun test tests/polarReconciliation.test.ts` çalıştır.
+
+## Polar Analytics MRR kartı
+
+`polar-mrr` işlevini ön yüzden önce dağıt. Mevcut Polar anahtarı için `metrics:read` ve ödeme sayfasında kullanılan üç ürün kimliği gerekir. Yönetici ekranı açıkken değer 15 dakikada bir salt okunur yenilenir. Bu istek sipariş eşitlemesinden bağımsızdır. Yanıt yoksa kart hata ve yeniden deneme seçeneği gösterir. Doğrulanmış sıfır ayrı gösterilir.
+
+Karşılaştırma için Polar Analytics’te aynı üç ürünü, İstanbul saat dilimini ve gün aralığını seç. O günün `Monthly Recurring Revenue` sütununu karşılaştır. CSV tutarları senttir. Yönetimdeki sipariş tutarı iadelerden sonra, Polar kesintilerinden öncedir. Polar Analytics’in `Net Revenue` ölçüsünün kapsamı farklıdır.

@@ -88,7 +88,7 @@ export default function Admin() {
           </TabsList>
 
           <TabsContent value="overview">
-            {isAdmin ? <RevenueOverviewPanel section="overview" /> : <FraudOverviewDashboard />}
+            {isAdmin ? <RevenueOverviewPanel section="overview" adminId={user?.id} /> : <FraudOverviewDashboard />}
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
@@ -104,7 +104,7 @@ export default function Admin() {
             <TrialAnalyticsPanel />
           </TabsContent>
 
-          {isAdmin && <TabsContent value="revenue"><RevenueOverviewPanel section="revenue" /></TabsContent>}
+          {isAdmin && <TabsContent value="revenue"><RevenueOverviewPanel section="revenue" adminId={user?.id} /></TabsContent>}
 
           <TabsContent value="campaigns" className="space-y-6">
             {isAdmin && <MarketingReachCard />}
