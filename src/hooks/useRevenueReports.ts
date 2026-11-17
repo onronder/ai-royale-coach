@@ -5,14 +5,14 @@ export type RevenueFilter = { from: string | null; to: string | null; includeTes
 import type { Transitions } from '@/lib/revenueFunnel';
 
 export type RevenueOverview = {
-  transitions: Transitions; incomplete_orders: number;
+  transitions: Transitions; incomplete_orders: number; undated_orders: number;
   generated_at: string; counts: Record<string, number>; ui_measured_signups: number; measured_since: string;
   cash_net_cents: Record<string, number>; refunded_cents: Record<string, number>;
   mrr: { available: boolean; reason?: string };
 };
 export type RevenueDetailRow = {
   user_id: string; email: string | null; signup_at: string; verified_at: string | null; trial_start: string | null; trial_end: string | null;
-  first_paid_at: string | null; first_renewal_at: string | null; sub_status: string | null; renewal_off: boolean; has_access: boolean; is_test: boolean;
+  undated_payment: boolean; first_paid_at: string | null; first_renewal_at: string | null; sub_status: string | null; renewal_off: boolean; has_access: boolean; is_test: boolean;
 };
 export type DirectoryRow = {
   user_id: string; email: string | null; signup_at: string; last_step: string | null; access: string; renewal_off: boolean;
@@ -29,6 +29,7 @@ const call = async <T,>(fn: string, args: Record<string, unknown>) => {
 export function useRevenueOverview(f: RevenueFilter) {
   return useQuery({
     queryKey: ['admin-revenue-overview', f],
+    refetchInterval: 15 * 60 * 1000,
     queryFn: () => call<RevenueOverview>('admin_revenue_overview', { p_from: f.from, p_to: f.to, p_include_tests: f.includeTests }),
     retry: 1,
   });

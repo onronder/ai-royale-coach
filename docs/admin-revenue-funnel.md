@@ -17,3 +17,23 @@ Aynı Unix soketiyle dış ağ dinlemeyen geçici PostgreSQL kullanılır. REVEN
 GitHub ana dalındaki 0029 ve 0030 yönetim geçişlerinin içeriği ve sırası korunur. Veritabanında hangi geçişlerin uygulanmış olduğunu kontrol edin. Eksik olanları sırayla uygulayın. 0031 kampanya gönderiminde hesap yaşını yeniden denetler. 0032 mevcut hesap ve edinim kayıtlarını koruyarak yönetim raporlarını günceller. Önceki hesabı kaldırılmış bir edinim kaydı varsa geçmiş kaydı korunur ve yabancı anahtar yeni kayıtları denetler.
 
 Ardından bu sürümden `create-checkout` işlevini dağıtın ve ön yüzü yayımlayın. Veritabanı geçişi, işlev dağıtımı ve site yayını saatlerini ayrı kaydedin. Kampanya gönderim ayarı bu geçişlerden etkilenmez.
+
+## Polar ödeme mutabakatı (0033)
+
+Ücretli müşteri, seçilen kayıt grubunda iade sonrası pozitif bir ödenmiş siparişi olan tekil hesaptır. Kur çevrimi yapılmaz. Ödeme zamanı eksik olsa da doğrulanmış net tutar ilgili dövizin toplamına girer. Eksik tarih ayrıca gösterilir. Denemeden ödemeye geçiş aynı abonelikte deneme bitişinden sonraki doğrulanmış zamana dayanır. Sonucu belirsiz veya henüz değerlendirme süresi dolmamış bir deneme, ölçülen kayıp hesabına girmez. Bu dönemin filtresi hesapların kayıt tarihidir.
+
+1. 0033 geçişini uygula ve aynı sürümden `backfill-polar-orders` işlevini dağıt. Mevcut Polar anahtarı AI Royale ürünleri için `orders:read` ve `events:read` erişimine sahip olmalı. Ürünler ödeme sayfasındaki `POLAR_PRODUCT_ID_1/2/3` ayarlarını kullanır.
+2. `node --env-file=.env scripts/trial-reminder-schedule.mjs --polar-orders` çıktısını proje sahibi olarak bir kez uygula. Aynı görev adıyla yeniden kurmak görev sayısını artırmaz. Zamanlayıcı her 15 dakikada en fazla 50 siparişi eskiden yeniye eşitler ve son sayfadan sonra başa döner. Yönetimdeki eşitleme düğmesi tüm sayfaları tek seferde işler. Polar'a yalnızca okuma istekleri yapılır. Kampanya ayarlarına ve ödeme işlemlerine dokunulmaz.
+3. Sistem kaynaklı `order.paid` olayının sipariş ve müşteri kimlikleri ile varsa abonelik ve ürün kimlikleri eşleşince olay zamanı kaydedilir. Eşleşmeyen kayıtlar sonraki taramada tekrar incelenir. Başarısız sayfa ilerletilmez. İlk tam taramayı ve hata halinde ilerlemeyi aşağıdaki salt okunur kontrollerle izle.
+
+```sql
+SELECT jobname, schedule, active FROM cron.job WHERE jobname='polar-order-reconciliation';
+SELECT next_page, queued_at, claimed_at, last_completed_at FROM public.polar_order_sync;
+SELECT currency, count(DISTINCT user_id) AS customers,
+       sum(public.polar_positive_net(status,amount,refunded_net_cents)) AS net_cents,
+       count(*) FILTER (WHERE paid_at IS NULL) AS pending_dates
+FROM public.polar_orders WHERE user_id IS NOT NULL AND public.polar_positive_net(status,amount,refunded_net_cents)>0
+GROUP BY currency;
+```
+
+Son sorgu tüm hesapları kapsar. Yönetim paneli için aynı kayıt dönemi ve test hesabı filtresini seç. Üretim kanıtı için tarihleri sipariş kimliğiyle Polar sistem olaylarıyla karşılaştır. Elle tarih girme. Test için `REVENUE_PG=/path/to/socket node tests/integration/revenue/run.mjs` ve `bun test tests/polarReconciliation.test.ts` çalıştır.

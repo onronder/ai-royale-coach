@@ -190,7 +190,7 @@ const range = { p_from: shift(istanbulToday, -60), p_to: istanbulToday };
   await sql`INSERT INTO polar_orders(order_id,user_id,amount,currency,billing_reason,status,created_at)
     VALUES (${'unknown'+run},${ids.u7},400,'usd','subscription_cycle','paid',now())`;
   const bucket=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
-  ok(bucket.incomplete_orders > 0,'unknown payment time is identified');
+  ok(bucket.undated_orders > 0,'unknown payment time is identified');
   const beforeD7=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
   await sql`INSERT INTO polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,created_at)
     VALUES (${'missing-d7'+run},${ids.u2},${'s2'+run},499,'usd','subscription_cycle','paid',now()+interval '5 days')`;
@@ -203,6 +203,71 @@ const range = { p_from: shift(istanbulToday, -60), p_to: istanbulToday };
      VALUES (${'partial'+run},${ids.u2},${'s2'+run},499,'eur','subscription_cycle','partially_refunded',now()+interval '5 days',now()+interval '5 days',99)`;
   const partial=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
   ok(partial.cash_net_cents.EUR-otherSub.cash_net_cents.EUR===400 && partial.counts.d7_paid===beforeD7.counts.d7_paid+1,'reconciled partial refund shows remaining net and dated payment');
+  // Reproduce the observed 3 paid + 3 zero-dollar orders in a separate signup cohort.
+  const day = shift(istanbulToday, -40);
+  const report = async () => (await rpc(adminTok, 'admin_revenue_overview', {p_from:day,p_to:day})).data;
+  const accounts = [], observations = [];
+  for (let i=0; i<3; i++) {
+    const account = crypto.randomUUID(), sub = 'case-sub-'+i, customer = 'case-customer-'+i;
+    accounts.push(account);
+    await sql`INSERT INTO auth.users(id,email,created_at)
+      VALUES (${account}, ${'paid-'+i+'@example.invalid'}, (${day}::date + time '12:00') AT TIME ZONE 'Europe/Istanbul')`;
+    await sql`INSERT INTO user_subscriptions(user_id,polar_subscription_id,status,current_period_start,current_period_end)
+      VALUES (${account},${sub},'active',now()-interval '38 days',now()+interval '5 days')`;
+    await sql`INSERT INTO trial_conversion_periods(user_id,subscription_id,started_at,ends_at)
+      VALUES (${account},${sub},now()-interval '39 days',now()-interval '36 days')`;
+    for (const amount of [0,499]) {
+      await sql`INSERT INTO polar_orders(order_id,user_id,subscription_id,customer_id,status,amount,currency,billing_reason,created_at)
+        VALUES (${sub+'-'+amount},${account},${sub},${customer},'paid',${amount},'usd',
+        ${amount ? 'subscription_cycle' : 'subscription_create'},now()-interval '39 days')`;
+    }
+    observations.push({order_id:sub+'-499',customer_id:customer,paid_at:new Date(Date.now()-35*86400000).toISOString()});
+  }
+  const undated = await report();
+  ok(undated.counts.first_paid===3 && undated.counts.active_paid===3 && undated.cash_net_cents.USD===1497, '3 distinct paying customers / 1497 net cents without dates');
+  ok(undated.undated_orders===3 && undated.incomplete_orders===0 && undated.counts.d7_unknown===3 && undated.counts.d7_paid===0, 'free trial orders are neither paid nor missing dates');
+  ok(undated.transitions.first_paid.entered===0 && undated.counts.lost_paid===0, 'undated payments are not lost conversions or churn');
+  const details = (await rpc(adminTok,'admin_revenue_detail',{p_metric:'first_paid',p_from:day,p_to:day})).data;
+  ok(details.total===3 && details.rows.every(x=>x.undated_payment && x.first_paid_at===null && accounts.includes(x.user_id)), 'paying customer details and dates agree with headline');
+  await sql`UPDATE polar_orders SET user_id=NULL WHERE order_id='case-sub-1-499'`;
+  ok((await report()).counts.first_paid===3,'sync with missing external id preserves the linked account');
+  const wrong = [{...observations[0],customer_id:'unrelated'}, {...observations[1],paid_at:'2100-01-01T00:00:00Z'}];
+  const save = arr => svc('record_polar_payment_dates',{p_dates:arr});
+  ok((await rpc(ids.u1,'record_polar_payment_dates',{p_dates:observations})).status===403,'historical dates cannot be changed by a player');
+  ok((await save(wrong)).data===0,'mismatched customer and future receipt cannot date orders');
+  const concurrent = await Promise.all([save(observations),save(observations)]);
+  ok(concurrent.reduce((n,r)=>n+r.data,0)===3 && (await save(observations)).data===0, 'overlapping jobs and retries date each order once');
+  const matched = await report();
+  ok(matched.counts.first_paid===3 && matched.cash_net_cents.USD===1497 && matched.undated_orders===0, 'reconciliation changes timing only');
+  ok(matched.transitions.first_paid.advanced===3 && matched.counts.d7_paid===3 && matched.counts.d7_unknown===0,'matched times qualify for the correct trial window');
+  await sql`UPDATE polar_orders SET status='partially_refunded',refunded_net_cents=100 WHERE order_id='case-sub-0-499'`;
+  await sql`UPDATE polar_orders SET status='refunded',refunded_net_cents=499 WHERE order_id='case-sub-1-499'`;
+  ok((await report()).cash_net_cents.USD===898 && (await report()).counts.first_paid===2,'verified refunds change net and keep the correct number of customers');
+
+  const queue = () => sql`SELECT public.queue_polar_order_sync('https://example.invalid','anon-test')`;
+  await Promise.all([queue(),queue()]);
+  const queued = await sql`SELECT body->>'ticket' AS ticket FROM net.requests`;
+  ok(queued.length===1,'one outstanding scheduled request');
+  const ticket = queued[0].ticket;
+  ok((await rpc(ids.u1,'claim_polar_order_sync',{p_ticket:ticket})).status===403,'only backend can claim a scheduled page');
+  ok((await svc('claim_polar_order_sync',{p_ticket:crypto.randomUUID()})).data===null,'incorrect ticket cannot start a sync');
+  ok((await svc('claim_polar_order_sync',{p_ticket:ticket})).data===1 && (await svc('claim_polar_order_sync',{p_ticket:ticket})).data===null,'ticket starts at page one and cannot be reused');
+  await sql`UPDATE polar_order_sync SET queued_at=now()-interval '11 minutes'`;
+  await queue();
+  const claimNext = async () => {
+    const [{ticket}] = await sql`SELECT ticket FROM polar_order_sync`;
+    return {ticket,page:(await svc('claim_polar_order_sync',{p_ticket:ticket})).data};
+  };
+  const retry = await claimNext();
+  const finish = (t,more) => svc('finish_polar_order_sync',{p_ticket:t,p_more:more});
+  ok(retry.page===1 && !(await finish(ticket,true)).data && (await finish(retry.ticket,true)).data, 'failed page is retried; expired worker cannot advance progress');
+  await queue();
+  const last = await claimNext();
+  ok(last.page===2 && (await finish(last.ticket,false)).data,'continued at next page and completed sweep');
+  const [state] = await sql`SELECT next_page,last_completed_at FROM polar_order_sync`;
+  ok(state.next_page===1 && state.last_completed_at!==null && !(await sql`SELECT sending_enabled FROM marketing_settings`)[0].sending_enabled,
+    'next sweep starts at page one; campaign sending stays off');
+
   await sql`INSERT INTO auth.users(id,email) SELECT gen_random_uuid(),'perf-'||n||'@example.invalid' FROM generate_series(1,1000)n`;
   await sql`ANALYZE auth.users`;
   await sql.begin(async tx => {
@@ -210,7 +275,7 @@ const range = { p_from: shift(istanbulToday, -60), p_to: istanbulToday };
     for (const [label,query] of [['directory','SELECT admin_user_directory(NULL,25,50)'],['overview','SELECT admin_revenue_overview(NULL,NULL,false)']]) {
       const plan=await tx.unsafe('EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) '+query);
       const result=plan[0]['QUERY PLAN'][0];
-      console.log(label+' / 1009 local synthetic accounts / '+result['Execution Time']+' ms / shared hits '+result.Plan['Shared Hit Blocks']);
+      console.log(label+' / local synthetic accounts / '+result['Execution Time']+' ms / shared hits '+result.Plan['Shared Hit Blocks']);
     }
   });
   console.log('Revenue socket acceptance passed: '+passed+' checks');

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Database } from '@/integrations/supabase/types';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -57,13 +57,22 @@ export function TrialAnalyticsPanel() {
       return data as unknown as Revenue;
     },
   });
+  const queryClient = useQueryClient();
+  const [syncFailed, setSyncFailed] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const syncOrders = async () => {
     setSyncing(true);
+    setSyncFailed(false);
     try {
       const { error } = await supabase.functions.invoke('backfill-polar-orders');
       if (error) throw error;
-      await Promise.all([refetchRev(), refetchCohort()]);
+      await Promise.all([refetchRev(), refetchCohort(),
+        queryClient.invalidateQueries({ queryKey: ['admin-revenue-overview'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-revenue-detail'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-user-directory'] }),
+      ]);
+    } catch {
+      setSyncFailed(true);
     } finally {
       setSyncing(false);
     }
@@ -255,6 +264,7 @@ export function TrialAnalyticsPanel() {
                 {syncing ? <Loader2 className="h-4 w-4 animate-spin" /> : t('admin.trials.sync')}
               </Button>
             </CardHeader>
+            {syncFailed && <p role="alert" className="px-6 pb-3 text-sm text-destructive">{t('admin.revenue.syncError')}</p>}
             <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: t('admin.trials.rate'), v: rev ? (rev.eligible_trials ? `${rev.eligible_paid}/${rev.eligible_trials}` : '—') : '–',
