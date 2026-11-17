@@ -57,6 +57,7 @@ interface EligibleUser {
   winback_block_reason: string | null;
   winback_next_eligible_at: string | null;
   winback_last_verified: boolean | null;
+  winback_outcome_uncertain?: boolean | null;
   // Activity metrics
   activity_score: number;
   ai_requests: number;
@@ -363,7 +364,7 @@ export function WinbackCampaignPanel() {
       header: t('admin.winback.lastSent'),
       render: (user) => (
         user.winback_email_sent_at ? (
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             {user.winback_last_verified === false
               ? <AlertCircle className="h-4 w-4 text-amber-500" />
               : <CheckCircle2 className="h-4 w-4 text-green-500" />}
@@ -371,6 +372,9 @@ export function WinbackCampaignPanel() {
               {formatDistanceToNow(new Date(user.winback_email_sent_at), { addSuffix: true, locale: getDateLocale(i18n.language) })}
               {user.winback_last_verified === false && <> · {t('admin.winback.unverifiedTime')}</>}
             </span>
+            {user.winback_outcome_uncertain && (
+              <span className="text-xs text-amber-600">{t('admin.winback.uncertainSent')}</span>
+            )}
           </div>
         ) : user.winback_block_reason === 'previous_uncertain' ? (
           <div className="flex items-center gap-1">

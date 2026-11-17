@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
       achievement_progress: {
@@ -955,6 +950,27 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_account_ages: {
+        Row: {
+          adult: boolean
+          set_at: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          adult: boolean
+          set_at?: string
+          source: string
+          user_id: string
+        }
+        Update: {
+          adult?: boolean
+          set_at?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketing_account_markets: {
         Row: {
           market: string
@@ -1174,6 +1190,7 @@ export type Database = {
           collection_markets: string[]
           installed_at: string
           iys_markets: string[]
+          iys_ready: boolean
           require_iys: boolean
           sending_enabled: boolean
           singleton: boolean
@@ -1185,6 +1202,7 @@ export type Database = {
           collection_markets?: string[]
           installed_at?: string
           iys_markets?: string[]
+          iys_ready?: boolean
           require_iys?: boolean
           sending_enabled?: boolean
           singleton?: boolean
@@ -1196,6 +1214,7 @@ export type Database = {
           collection_markets?: string[]
           installed_at?: string
           iys_markets?: string[]
+          iys_ready?: boolean
           require_iys?: boolean
           sending_enabled?: boolean
           singleton?: boolean
@@ -2596,6 +2615,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_marketing_reach: { Args: never; Returns: Json }
       admin_privacy_requests: {
         Args: never
         Returns: {
@@ -2633,6 +2653,10 @@ export type Database = {
           seen: number
           unreconciled_partial_refunds: number
         }[]
+      }
+      admin_set_marketing_age: {
+        Args: { p_adult: boolean; p_user: string }
+        Returns: undefined
       }
       admin_set_marketing_market: {
         Args: { p_market: string; p_user: string }
@@ -2891,6 +2915,7 @@ export type Database = {
         Args: { p_user: string }
         Returns: boolean
       }
+      marketing_collection_reason: { Args: { p_user: string }; Returns: string }
       marketing_decision: { Args: { p_user: string }; Returns: Json }
       marketing_in_scope: {
         Args: { p_list: string[]; p_market: string }
@@ -2908,6 +2933,10 @@ export type Database = {
           text_version: string
           verified: boolean
         }[]
+      }
+      marketing_subscription_access: {
+        Args: { p_at?: string; p_user: string }
+        Returns: boolean
       }
       my_privacy_requests: {
         Args: never
@@ -3208,3 +3237,4 @@ export const Constants = {
     },
   },
 } as const
+

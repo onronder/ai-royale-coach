@@ -1135,8 +1135,8 @@
         "content": "AI Royale es una herramienta de análisis independiente impulsada por IA para jugadores de Clash Royale. Proporcionamos análisis de mazos, información de batallas y recomendaciones estratégicas.\n\nTodos los datos del juego se obtienen EXCLUSIVAMENTE a través de la API pública oficial de Clash Royale de Supercell. NO accedemos a ningún sistema interno de Supercell, cuentas de jugadores ni datos privados más allá de lo disponible públicamente a través de la API oficial.\n\nAI Royale es una herramienta creada por fans para ayudar a los jugadores a mejorar su experiencia de juego."
       },
       "dataProcessing": {
-        "title": "Procesamiento de Datos",
-        "content": "AI Royale procesa exclusivamente datos relacionados con el juego obtenidos a través de la API oficial de Clash Royale. Esto incluye: estadísticas del jugador, historial de batallas, composiciones de mazos, niveles de cartas y recuento de trofeos.\n\nNO accedemos, procesamos ni almacenamos ningún dato personal sensible. Solo usamos tu dirección de correo electrónico para fines de autenticación."
+        "title": "Tratamiento de datos",
+        "content": "AI Royale trata datos de cuenta, datos de juego de la API oficial de Supercell y actividad de uso para gestionar tu cuenta, ofrecer coaching y gestionar tu suscripción. Tu correo se usa para avisos de cuenta y suscripción, correos de coaching que solicites y, solo si lo aceptas, correos de campaña. Consulta la Política de Privacidad para más detalles."
       },
       "aiDisclaimer": {
         "title": "Aviso sobre Recomendaciones de IA",
@@ -1151,56 +1151,71 @@
         "content": "Estos términos se regirán e interpretarán de acuerdo con las leyes de Turquía. Cualquier disputa que surja del uso de AI Royale estará sujeta a la jurisdicción exclusiva de los tribunales de Turquía."
       },
       "contact": {
-        "title": "Información de Contacto",
-        "content": "Si tienes alguna pregunta sobre estos Términos de Servicio, por favor contáctanos:"
+        "title": "Información de contacto",
+        "content": "¿Preguntas sobre estas Condiciones de uso? Escríbenos:"
+      },
+      "marketingChoice": {
+        "title": "Preferencia de correos de campaña",
+        "content": "Crear una cuenta de AI Royale, suscribirse o iniciar una prueba no crea consentimiento para recibir correos de campaña. Puedes gestionar tu preferencia de comunicaciones de campaña desde tu cuenta.\n\nAceptar estas condiciones o leer la Política de Privacidad no crea consentimiento de marketing en tu nombre. La preferencia de campaña es opcional e independiente de estas condiciones."
       }
     },
     "privacy": {
       "companyName": "Fittechs Yazılım Anonim Şirketi",
-      "introduction": "Esta Política de Privacidad explica cómo AI Royale maneja tus datos. Estamos comprometidos a proteger tu privacidad y ser transparentes sobre nuestras prácticas de datos.",
+      "introduction": "Esta Política de Privacidad explica cómo se tratan tus datos personales cuando usas AI Royale.",
       "affiliationDisclaimer": {
         "title": "Marcas de Terceros y Afiliación",
         "content": "AI Royale NO está afiliado, respaldado, patrocinado ni específicamente aprobado por Supercell Oy. Clash Royale y Supercell son marcas comerciales de Supercell Oy.\n\nTodos los datos del juego procesados por AI Royale se obtienen EXCLUSIVAMENTE a través de la API pública oficial de Clash Royale de Supercell. No accedemos a ningún sistema interno de Supercell ni a datos privados de jugadores.\n\nPara más información, consulta la Política de Contenido de Fans de Supercell: www.supercell.com/fan-content-policy"
       },
       "noSensitiveData": {
-        "title": "Datos que NO Recopilamos",
-        "content": "• NO recopilamos ni procesamos datos personales sensibles\n• NO accedemos a la información personal, contactos o ubicación de tu dispositivo\n• NO almacenamos detalles de tarjetas de pago (los pagos son manejados por procesadores de terceros)\n• NO recopilamos ningún dato más allá de lo necesario para el servicio\n• NO vendemos, compartimos ni monetizamos tus datos de ninguna manera"
+        "title": "Datos que no tratamos",
+        "content": "• No pedimos datos de categorías especiales como salud o religión\n• No accedemos a los contactos, fotos ni ubicación de tu dispositivo\n• No guardamos datos de tarjetas; los pagos los procesa nuestro proveedor de pagos\n• No vendemos tus datos personales\n• No pedimos tu fecha de nacimiento completa con fines de marketing"
       },
       "dataWeCollect": {
-        "title": "Datos que Recopilamos",
-        "content": "• Dirección de correo electrónico: Usada únicamente para autenticación y recuperación de contraseña\n• Tag de Jugador de Clash Royale: Usado para obtener tus estadísticas del juego desde la API oficial de Clash Royale\n• Datos del juego: Estadísticas del jugador, historial de batallas, composiciones de mazos, niveles de cartas - todos disponibles públicamente a través de la API oficial de Supercell\n• Datos de uso: Analíticas básicas para mejorar nuestro servicio"
+        "title": "Datos que tratamos",
+        "content": "• Datos de cuenta: correo electrónico, método de inicio de sesión, estado de verificación del correo, idioma\n• Etiqueta de jugador de Clash Royale y datos de juego de la API pública oficial de Supercell (estadísticas, historial de batallas, mazos, niveles de cartas, trofeos)\n• Contenido de coaching: análisis de IA, tareas de coaching, tus preguntas y mensajes de chat\n• Datos de suscripción: estado de la prueba y la suscripción, fechas del periodo, estado del pedido del proveedor de pagos (no datos de tarjeta)\n• Actividad de uso: qué funciones usas y cuándo\n• Preferencias de correo y pruebas: tu elección sobre correos de campaña, la hora y la versión del texto mostrado\n• Registros de envío: hora de envío, ID del mensaje del proveedor, información de direcciones rebotadas o con queja"
       },
       "howWeUseData": {
-        "title": "Cómo Usamos los Datos",
-        "content": "Las estadísticas del juego se procesan únicamente para proporcionar análisis impulsados por IA y recomendaciones de coaching. Tus datos se usan para:\n\n• Generar recomendaciones personalizadas de mazos\n• Analizar tu rendimiento en batallas\n• Proporcionar información estratégica de coaching\n• Rastrear tu progreso a lo largo del tiempo\n\nNo usamos tus datos para publicidad o marketing."
+        "title": "Finalidades y bases jurídicas",
+        "content": "• Crear tu cuenta, el inicio de sesión y la seguridad — celebración y ejecución del contrato\n• Analizar datos de juego y ofrecer coaching — ejecución del contrato\n• Gestionar pruebas y suscripciones, pagos y cancelaciones — ejecución del contrato y obligaciones legales\n• Proteger el servicio y detectar errores y abusos — interés legítimo\n• Medir el uso para mejorar el servicio — interés legítimo\n• Correos de campaña opcionales y correos de coaching que solicitas — tu consentimiento explícito"
       },
       "dataRetention": {
-        "title": "Retención de Datos",
-        "content": "• Datos de cuenta: Retenidos mientras tu cuenta esté activa\n• Estadísticas del juego: Almacenadas temporalmente en caché (5-30 minutos) para rendimiento\n• Historial de chat: Retenido por 30 días, luego eliminado automáticamente\n• Puedes solicitar la eliminación de tu cuenta y todos los datos asociados en cualquier momento"
+        "title": "Conservación",
+        "content": "Conservamos los datos solo el tiempo necesario para su finalidad y el exigido por la ley:\n• Datos de cuenta y coaching: mientras tu cuenta esté abierta\n• Datos de juego: en caché por poco tiempo para el rendimiento\n• Registros de suscripción y pago: durante el plazo legal de conservación\n• Pruebas de consentimiento: el tiempo necesario para demostrarlo; tras borrar la cuenta, una prueba mínima desvinculada de ti\n• Puedes pedir la eliminación de tu cuenta y datos en cualquier momento"
       },
       "thirdParty": {
-        "title": "Servicios de Terceros",
-        "content": "AI Royale utiliza los siguientes servicios de terceros:\n\n• API de Clash Royale de Supercell: Para obtener datos del juego\n• Proveedor de autenticación: Para inicio de sesión seguro\n• Infraestructura en la nube: Para almacenamiento y procesamiento de datos\n\nTodos los servicios de terceros están contractualmente obligados a proteger tus datos."
-      },
-      "complianceTitle": "Cumplimiento Internacional de Protección de Datos",
-      "complianceSubtitle": "AI Royale cumple con las regulaciones globales de protección de datos",
-      "gdpr": {
-        "title": "Cumplimiento GDPR (Unión Europea)",
-        "content": "AI Royale cumple con el Reglamento General de Protección de Datos (GDPR) para usuarios en el Espacio Económico Europeo.\n\nBajo el GDPR, tienes los siguientes derechos:\n\n• Derecho de Acceso: Solicitar una copia de tus datos personales\n• Derecho de Rectificación: Solicitar corrección de datos inexactos\n• Derecho de Supresión: Solicitar eliminación de tus datos (\"derecho al olvido\")\n• Derecho a Limitar el Procesamiento: Limitar cómo usamos tus datos\n• Derecho a la Portabilidad de Datos: Recibir tus datos en formato portable\n• Derecho de Oposición: Objetar el procesamiento basado en intereses legítimos\n\nPara ejercer estos derechos, contáctanos en la dirección a continuación. Responderemos en 30 días."
-      },
-      "ccpa": {
-        "title": "Cumplimiento CCPA (California, EE.UU.)",
-        "content": "AI Royale cumple con la Ley de Privacidad del Consumidor de California (CCPA) para residentes de California.\n\nBajo la CCPA, los residentes de California tienen derecho a:\n\n• Saber qué información personal se recopila\n• Saber si la información personal se vende o divulga\n• Decir no a la venta de información personal\n• Acceder a su información personal\n• Solicitar eliminación de información personal\n• Servicio y precio igualitario (no discriminación)\n\nNO vendemos tu información personal a terceros. Para enviar una solicitud CCPA, contáctanos en la dirección a continuación."
-      },
-      "kvkk": {
-        "title": "Cumplimiento KVKK (Turquía)",
-        "content": "AI Royale cumple con la Ley de Protección de Datos Personales de Turquía (KVKK - Kişisel Verilerin Korunması Kanunu).\n\nComo controlador de datos, Fittechs Yazılım Anonim Şirketi procesa tus datos de acuerdo con los principios de KVKK. Tienes derecho a:\n\n• Saber si tus datos personales están siendo procesados\n• Solicitar información sobre las actividades de procesamiento\n• Solicitar corrección o eliminación de tus datos\n• Objetar el procesamiento y solicitar restricción\n\nPara solicitudes relacionadas con KVKK, por favor contáctanos en la dirección a continuación."
+        "title": "Proveedores de servicios",
+        "content": "Estos proveedores tratan datos en nuestro nombre y siguiendo nuestras instrucciones:\n• Infraestructura en la nube y autenticación: almacenamiento, inicio de sesión y procesamiento\n• Polar: pruebas, suscripciones y pagos\n• Resend: envío de correos\n• Proveedores de modelos de IA: datos de juego y tus preguntas, para generar análisis y respuestas de coaching\n• API de Clash Royale de Supercell: obtención de datos públicos de juego"
       },
       "contact": {
         "title": "Contáctanos",
-        "content": "Si tienes alguna pregunta sobre esta Política de Privacidad o tus datos, por favor contacta:"
+        "content": "¿Preguntas sobre esta política o tus datos? Escríbenos:"
+      },
+      "controller": {
+        "title": "Responsable del tratamiento",
+        "content": "El responsable del tratamiento de tus datos personales en AI Royale es Fittechs Yazılım Anonim Şirketi. Solicitudes de privacidad y datos: support@fittechs.com"
+      },
+      "emails": {
+        "title": "Correos que podemos enviarte",
+        "content": "Mantenemos tres tipos separados:\n\n1. Avisos de cuenta y suscripción: verificación, restablecimiento de contraseña, estado de la prueba y la suscripción, problemas de pago, confirmación de cancelación. Forman parte del servicio y no contienen marketing.\n2. Correos de coaching: recordatorios y resúmenes enviados solo cuando los pides en la app. Puedes desactivarlos cuando quieras.\n3. Correos de campaña: descuentos y campañas de AI Royale. Solo se envían si das tu permiso expreso."
+      },
+      "campaignConsent": {
+        "title": "Preferencia de correos de campaña",
+        "content": "• La casilla está vacía por defecto. Crear una cuenta, iniciar una prueba, pagar, verificar tu correo, leer esta política o aceptar las condiciones no crea consentimiento para campañas.\n• Cuando aceptas, registramos como prueba tu cuenta, la dirección de correo correspondiente, la hora, la pantalla donde elegiste, el idioma y la versión del texto mostrado.\n• Puedes retirarlo cuando quieras en Preferencias de correo o con el enlace de un correo de campaña. Retirarlo no afecta a envíos anteriores; después no se envían correos de campaña.\n• Al principio solo lo pedimos a cuentas de 18 años o más en un mercado aprobado. Nunca deducimos tu país por tu IP, idioma o dominio de correo."
+      },
+      "winback": {
+        "title": "Correos de reactivación",
+        "content": "Los jugadores cuya suscripción terminó y que aceptaron correos de campaña pueden recibir un correo de reactivación. Para decidir quién es candidato usamos el estado de la suscripción y la actividad de uso en la app. No se envía un nuevo correo de reactivación a la misma cuenta antes de 720 horas. Si no diste tu permiso, no recibirás estos correos."
+      },
+      "transfers": {
+        "title": "Transferencias internacionales",
+        "content": "Algunos de nuestros proveedores están fuera de Turquía, por lo que tus datos pueden tratarse en el extranjero. Escríbenos para conocer el mecanismo de transferencia y su base."
+      },
+      "rights": {
+        "title": "Tus derechos y solicitudes",
+        "content": "Puedes acceder, rectificar o suprimir tus datos, limitar u oponerte al tratamiento, solicitar la portabilidad y retirar cualquier consentimiento. Envía tu solicitud a support@fittechs.com o usa la sección de solicitudes de privacidad de la app. Respondemos dentro de los plazos legales. También puedes reclamar ante la autoridad de protección de datos de tu país."
       }
-    }
+    },
+    "versionLabel": "Versión"
   },
   "dashboard": {
     "accountSwitch": {
@@ -3123,7 +3138,7 @@
       "send": "Enviar",
       "uncertainSent": "Incierto: revisa el registro del proveedor",
       "unverifiedTime": "hora sin verificar",
-      "until": "hasta {{date}}"
+      "until": "disponible después del {{date}} (en ese momento exacto aún espera)"
     }
   },
   "oraclePage": {
@@ -3403,7 +3418,7 @@
     "language": "Consejo guardado en {{language}}"
   },
   "marketing": {
-    "text": "Quiero recibir por correo electrónico los descuentos y campañas de AI Royale de Fittechs Yazılım Anonim Şirketi.",
+    "text": "Quiero recibir correos electrónicos de Fittechs Yazılım Anonim Şirketi sobre descuentos y campañas de AI Royale.",
     "optionalNote": "Opcional. Puedes cambiarlo cuando quieras en Preferencias de correo o desde cualquier correo de campaña.",
     "privacyLink": "Aviso de privacidad",
     "inviteTitle": "Tu preferencia de correos de campañas",
@@ -3474,9 +3489,9 @@
       "iys_pending": "IYS pendiente",
       "unknown": "desconocido",
       "age_rule_pending": "regla de edad pendiente",
-      "cooldown": "periodo de espera: el último correo de reactivación se envió hace menos de 720 horas",
+      "cooldown": "Para enviar un nuevo correo de reactivación deben haber pasado más de 720 horas desde que se aceptó el último correo.",
       "previous_uncertain": "un correo de reactivación anterior tiene un resultado incierto",
-      "cooldown_unverified": "periodo de espera (hora de aceptación sin verificar, se mantiene la espera segura)"
+      "cooldown_unverified": "Para enviar un nuevo correo de reactivación deben haber pasado más de 720 horas desde que se aceptó el último correo. (La hora del último envío no está verificada; la espera se cuenta desde esta hora registrada.)"
     },
     "admin": {
       "title": "Consentimiento de correos de campañas",
@@ -3515,7 +3530,7 @@
       "sendingRuleNote": "Se vuelve a comprobar en cada correo: consentimiento, bloqueos, mercado, edad, İYS.",
       "perPlayer": "Elección por jugador"
     },
-    "inviteNote": "Opcional. Puedes cambiarlo cuando quieras en Preferencias de correo.",
+    "inviteNote": "Esta opción es voluntaria. Puedes usar AI Royale sin dar tu permiso. Puedes cambiar tu preferencia cuando quieras en Preferencias de correo o con el enlace de cualquier correo de campaña.",
     "optInShort": "Sí, envíame campañas",
     "withdrawnOk": "Los correos de campañas están desactivados. No te enviaremos campañas.",
     "collectionPaused": "La suscripción a correos de campañas aún no está abierta. Tu cuenta y tu coaching no se ven afectados.",

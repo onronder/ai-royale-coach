@@ -3,61 +3,25 @@ import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, Database, Eye, Clock, Users, Mail, Globe, Scale, Building2 } from "lucide-react";
+import { ShieldCheck, Database, Eye, Clock, Users, Mail, MailCheck, RotateCcw, Globe, Scale, Building2 } from "lucide-react";
+import { ContactEmail, LEGAL_UPDATED, LEGAL_VERSION, LegalText } from "@/components/legal/LegalText";
 
 const Privacy = () => {
   const { t, i18n } = useTranslation();
 
   const sections = [
-    {
-      icon: Building2,
-      title: t("legal.privacy.affiliationDisclaimer.title"),
-      content: t("legal.privacy.affiliationDisclaimer.content"),
-      highlight: true,
-    },
-    {
-      icon: ShieldCheck,
-      title: t("legal.privacy.noSensitiveData.title"),
-      content: t("legal.privacy.noSensitiveData.content"),
-    },
-    {
-      icon: Database,
-      title: t("legal.privacy.dataWeCollect.title"),
-      content: t("legal.privacy.dataWeCollect.content"),
-    },
-    {
-      icon: Eye,
-      title: t("legal.privacy.howWeUseData.title"),
-      content: t("legal.privacy.howWeUseData.content"),
-    },
-    {
-      icon: Clock,
-      title: t("legal.privacy.dataRetention.title"),
-      content: t("legal.privacy.dataRetention.content"),
-    },
-    {
-      icon: Users,
-      title: t("legal.privacy.thirdParty.title"),
-      content: t("legal.privacy.thirdParty.content"),
-    },
-  ];
-
-  const complianceSections = [
-    {
-      icon: Globe,
-      title: t("legal.privacy.gdpr.title"),
-      content: t("legal.privacy.gdpr.content"),
-    },
-    {
-      icon: Scale,
-      title: t("legal.privacy.ccpa.title"),
-      content: t("legal.privacy.ccpa.content"),
-    },
-    {
-      icon: ShieldCheck,
-      title: t("legal.privacy.kvkk.title"),
-      content: t("legal.privacy.kvkk.content"),
-    },
+    { icon: Building2, title: t("legal.privacy.affiliationDisclaimer.title"), content: t("legal.privacy.affiliationDisclaimer.content"), highlight: true },
+    { icon: Building2, title: t("legal.privacy.controller.title"), content: t("legal.privacy.controller.content") },
+    { icon: ShieldCheck, title: t("legal.privacy.noSensitiveData.title"), content: t("legal.privacy.noSensitiveData.content") },
+    { icon: Database, title: t("legal.privacy.dataWeCollect.title"), content: t("legal.privacy.dataWeCollect.content") },
+    { icon: Eye, title: t("legal.privacy.howWeUseData.title"), content: t("legal.privacy.howWeUseData.content") },
+    { icon: Mail, title: t("legal.privacy.emails.title"), content: t("legal.privacy.emails.content") },
+    { icon: MailCheck, title: t("legal.privacy.campaignConsent.title"), content: t("legal.privacy.campaignConsent.content") },
+    { icon: RotateCcw, title: t("legal.privacy.winback.title"), content: t("legal.privacy.winback.content") },
+    { icon: Clock, title: t("legal.privacy.dataRetention.title"), content: t("legal.privacy.dataRetention.content") },
+    { icon: Users, title: t("legal.privacy.thirdParty.title"), content: t("legal.privacy.thirdParty.content") },
+    { icon: Globe, title: t("legal.privacy.transfers.title"), content: t("legal.privacy.transfers.content") },
+    { icon: Scale, title: t("legal.privacy.rights.title"), content: t("legal.privacy.rights.content") },
   ];
 
   return (
@@ -78,7 +42,7 @@ const Privacy = () => {
             {t("legal.privacyPolicy")}
           </h1>
           <p className="text-muted-foreground">
-            {t("legal.lastUpdated")}: {new Date(2025, 11, 6).toLocaleDateString(i18n.language, { dateStyle: 'long' })}
+            {t("legal.lastUpdated")}: {LEGAL_UPDATED.toLocaleDateString(i18n.language, { dateStyle: 'long', timeZone: 'UTC' })} · {t("legal.versionLabel")}: {LEGAL_VERSION}
           </p>
           <p className="text-muted-foreground text-sm mt-2">
             {t("legal.privacy.companyName")}
@@ -121,37 +85,7 @@ const Privacy = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {section.content}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* International Compliance Section */}
-        <div className="mt-10 mb-6">
-          <h2 className="text-2xl font-bold text-foreground text-center mb-2">
-            {t("legal.privacy.complianceTitle")}
-          </h2>
-          <p className="text-muted-foreground text-center text-sm">
-            {t("legal.privacy.complianceSubtitle")}
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {complianceSections.map((section, index) => (
-            <Card key={index} className="border-primary/30 bg-primary/5 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-xl">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <section.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  {section.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {section.content}
+                  <LegalText text={section.content} />
                 </p>
               </CardContent>
             </Card>
@@ -167,9 +101,8 @@ const Privacy = () => {
             <p className="text-muted-foreground">
               {t("legal.privacy.contact.content")}
             </p>
-            <p className="text-primary mt-2">
-              Fittechs Yazılım Anonim Şirketi
-            </p>
+            <p className="mt-2"><ContactEmail /></p>
+            <p className="text-muted-foreground mt-1">Fittechs Yazılım Anonim Şirketi</p>
           </CardContent>
         </Card>
       </main>

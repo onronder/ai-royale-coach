@@ -2,7 +2,7 @@
 // send-email win-back wiring), on a socket-only throwaway Postgres with an in-memory fake email provider.
 //   WINBACK_PG=/tmp/pgw [WINBACK_PG_PORT=55483] bun test tests/integration/winback
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { deliverPromo, sqlPromoStore, winbackCampaignKey, winbackRpc, type PromoMail } from '../../../supabase/functions/_shared/marketing-gate';
 
 const PG = process.env.WINBACK_PG ?? '';
@@ -58,9 +58,25 @@ beforeAll(() => {
     ...['0020_marketing_consent', '0021_marketing_collection_rules_and_provider_blocks', '0022_marketing_market_scope_and_unresolved_sends',
       '0023_marketing_hidden_box_and_single_invite_claim', '0024_trial_conversion', '0026_winback_account_cooldown', '0027_winback_verified_first_acceptance']
       .map(m => f(`../../../drizzle/migrations/${m}.sql`)), f('fixture.sql')].join('\n;\n');
-  const r = Bun.spawnSync(['psql', '-h', PG, '-p', PORT, '-U', 'postgres', '-d', DB, '-X', '-q', '-v', 'ON_ERROR_STOP=1'], { env, stdin: Buffer.from(sql) });
-  if (r.exitCode !== 0) throw new Error(r.stderr.toString());
+  const run = (text: string) => {
+    const r = Bun.spawnSync(['psql', '-h', PG, '-p', PORT, '-U', 'postgres', '-d', DB, '-X', '-q', '-v', 'ON_ERROR_STOP=1'], { env, stdin: Buffer.from(text) });
+    if (r.exitCode !== 0) throw new Error(r.stderr.toString());
+  };
+  run(sql);
+  // Legacy rows written BEFORE the newer migrations exist: a delivery from before 0027 (no verification flag), a
+  // provider-verified delivery, and a profile-only stamp. Account 1 has no history at all.
+  psql(`INSERT INTO marketing_deliveries (campaign_key, user_id, email, idempotency_key, status, accepted_at, accepted_at_verified, provider_message_id)
+    VALUES ('winback:OLD', '${U(2)}', 'fixture2@example.invalid', gen_random_uuid(), 'sent', '${LEGACY_AT}', NULL, 'legacy_1'),
+           ('winback:OLD', '${U(3)}', 'fixture3@example.invalid', gen_random_uuid(), 'sent', '${LEGACY_AT}', true, 'legacy_2');
+    UPDATE profiles SET winback_email_sent_at = '${LEGACY_AT}' WHERE id = '${U(4)}'`);
+  const later = readdirSync(new URL('../../../drizzle/migrations/', import.meta.url)).filter(m => /^00(2[89]|[3-9][0-9])_.*\.sql$/.test(m)).sort();
+  run(later.map(m => f(`../../../drizzle/migrations/${m}`)).join('\n;\n'));
+  const admin = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x ORDER BY x->>'id'),'[]') FROM admin_winback_candidates() x`));
+  for (const n of [1, 2, 3, 4]) legacy[n] = { sender: decide(U(n), LEGACY_CHECK, 'UTC'), admin: admin.find((r: { id: string }) => r.id === U(n)) ?? null };
+  psql(`DELETE FROM marketing_deliveries`);
 });
+const LEGACY_AT = '2026-11-10T09:00:00Z', LEGACY_CHECK = '2026-11-20T09:00:00Z';
+const legacy: Record<number, { sender: Record<string, unknown>; admin: Record<string, unknown> | null }> = {};
 afterAll(() => { psql(`DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`, 'postgres'); expect(netCalls).toEqual([]); });
 beforeEach(() => { psql(`DELETE FROM marketing_deliveries; DELETE FROM marketing_suppressions; INSERT INTO marketing_consent_events(user_id,email,event,source,text_version,language) SELECT u.id,u.email,'granted','preferences','2026-11-v1','tr' FROM auth.users u WHERE (SELECT e.event FROM marketing_consent_events e WHERE e.user_id=u.id ORDER BY e.id DESC LIMIT 1) <> 'granted'; UPDATE profiles SET winback_email_sent_at = NULL`); });
 
@@ -73,7 +89,14 @@ describe('720-hour boundary (UTC instants, fixed clock)', () => {
   });
   test('1 s before / exactly at / 1 s after 720 h', () => {
     psql(`UPDATE profiles SET winback_email_sent_at = '${LAST}' WHERE id = '${U(2)}'`);
-    expect(decide(U(2), '2026-11-19T08:59:59Z', 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown' });
+    expect(decide(U(2), '2026-11-19T08:59:59Z', 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown_unverified' });
+    expect(decide(U(2), LIMIT, 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown_unverified' });
+    expect(decide(U(2), '2026-11-19T09:00:01Z', 'UTC')).toMatchObject({ allowed: true, reason: null });
+  });
+  test('1 s before / exactly at / 1 s after 720 h from a provider-verified acceptance', () => {
+    psql(`INSERT INTO marketing_deliveries(campaign_key,user_id,email,status,idempotency_key,provider_message_id,accepted_at,accepted_at_verified)
+          VALUES ('winback:VER','${U(2)}','fixture2@example.invalid','sent',gen_random_uuid(),'m-ver','${LAST}',true)`);
+    expect(decide(U(2), '2026-11-19T08:59:59Z', 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown', last_accepted_verified: true });
     expect(decide(U(2), LIMIT, 'UTC')).toMatchObject({ allowed: false, reason: 'cooldown' });
     expect(decide(U(2), '2026-11-19T09:00:01Z', 'UTC')).toMatchObject({ allowed: true, reason: null });
   });
@@ -161,14 +184,14 @@ describe('full send path (real claim SQL + sender code)', () => {
     psql(`INSERT INTO marketing_deliveries(campaign_key,user_id,email,status,idempotency_key,provider_message_id,accepted_at)
           VALUES ('winback:OLD','${U(2)}','fixture2@example.invalid','sent',gen_random_uuid(),'m-old', now() - interval '720 hours' + interval '1 minute')`);
     const p = fakeProvider();
-    expect(await send(U(2), 'NEW', p)).toEqual({ status: 'blocked', reason: 'cooldown' });
+    expect(await send(U(2), 'NEW', p)).toEqual({ status: 'blocked', reason: 'cooldown_unverified' });
     psql(`UPDATE marketing_deliveries SET accepted_at = now() - interval '720 hours' - interval '1 minute' WHERE campaign_key='winback:OLD'`);
     expect(await send(U(2), 'NEW', p)).toMatchObject({ status: 'sent' });
     expect(p.accepted.size).toBe(1);
   });
   test('legacy profile stamp also counts', async () => {
     psql(`UPDATE profiles SET winback_email_sent_at = now() - interval '10 days' WHERE id='${U(3)}'`);
-    expect(await send(U(3), 'NOV')).toEqual({ status: 'blocked', reason: 'cooldown' });
+    expect(await send(U(3), 'NOV')).toEqual({ status: 'blocked', reason: 'cooldown_unverified' });
   });
   test('bulk loop: one held account, others sent once each', async () => {
     psql(`UPDATE profiles SET winback_email_sent_at = now() - interval '5 days' WHERE id='${U(3)}'`);
@@ -225,8 +248,49 @@ describe('full send path (real claim SQL + sender code)', () => {
     psql(`UPDATE profiles SET winback_email_sent_at = now() - interval '5 days' WHERE id='${U(3)}'`);
     const rows = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x ORDER BY x->>'id'),'[]') FROM admin_winback_candidates() x`));
     const byId = Object.fromEntries(rows.map((r: { id: string }) => [r.id, r]));
-    expect(byId[U(3)]).toMatchObject({ winback_allowed: false, winback_block_reason: 'cooldown' });
+    expect(byId[U(3)]).toMatchObject({ winback_allowed: false, winback_block_reason: 'cooldown_unverified' });
     expect(byId[U(4)]).toMatchObject({ winback_allowed: true });
     expect((await send(U(3), 'X')).status).toBe('blocked');
+  });
+});
+
+describe('legacy send times recorded before this migration (created before it ran)', () => {
+  test('pre-0027 delivery without a verification flag: shown as "time not verified", still used for the wait', () => {
+    expect(legacy[2].sender).toMatchObject({ allowed: false, reason: 'cooldown_unverified', last_accepted_verified: false, last_time_source: 'delivery', outcome_uncertain: false });
+    expect(new Date(legacy[2].sender.last_accepted_at as string).toISOString()).toBe('2026-11-10T09:00:00.000Z');
+  });
+  test('provider-verified first acceptance is kept and stays verified', () => {
+    expect(legacy[3].sender).toMatchObject({ allowed: false, reason: 'cooldown', last_accepted_verified: true });
+    expect(new Date(legacy[3].sender.last_accepted_at as string).toISOString()).toBe('2026-11-10T09:00:00.000Z');
+  });
+  test('profile-only stamp: unverified, still blocks inside 720 h', () => {
+    expect(legacy[4].sender).toMatchObject({ allowed: false, reason: 'cooldown_unverified', last_accepted_verified: false, last_time_source: 'legacy_profile' });
+  });
+  test('no history: time and verification state stay empty', () => {
+    expect(legacy[1].sender).toMatchObject({ allowed: true, reason: null, last_accepted_at: null, last_accepted_verified: null, last_time_source: null });
+  });
+  test('admin screen shows the same verification state as the sender decision', () => {
+    for (const n of [2, 3, 4]) {
+      const a = legacy[n].admin!; const d = legacy[n].sender;
+      expect(a.winback_last_verified).toBe(d.last_accepted_verified as boolean);
+      expect(a.winback_time_source).toBe(d.last_time_source as string);
+    }
+  });
+});
+
+describe('"sent, time not verified" vs "outcome unknown"', () => {
+  test('unknown outcome blocks every other campaign, unverified time only waits 720 h', async () => {
+    psql(`INSERT INTO marketing_deliveries (campaign_key, user_id, email, idempotency_key, status, uncertain_since) VALUES ('winback:UNK', '${U(3)}', 'fixture3@example.invalid', gen_random_uuid(), 'uncertain', now() - interval '2 days')`);
+    psql(`UPDATE profiles SET winback_email_sent_at = now() - interval '721 hours' WHERE id = '${U(4)}'`);
+    const unk = decide(U(3), new Date().toISOString(), 'UTC'); const unv = decide(U(4), new Date().toISOString(), 'UTC');
+    expect(unk).toMatchObject({ allowed: false, reason: 'previous_uncertain', outcome_uncertain: true });
+    expect(unv).toMatchObject({ allowed: true, last_accepted_verified: false, outcome_uncertain: false });
+    const p = fakeProvider();
+    expect((await send(U(3), 'NEW', p)).status).toBe('blocked');
+    expect(p.accepted.size).toBe(0);
+    const rows = JSON.parse(psql(`SET test.uid='${U(6)}'; SET ROLE authenticated; SELECT coalesce(jsonb_agg(x),'[]') FROM admin_winback_candidates() x`));
+    const byId = Object.fromEntries(rows.map((r: { id: string }) => [r.id, r]));
+    expect(byId[U(3)]).toMatchObject({ winback_allowed: false, winback_outcome_uncertain: true, winback_block_reason: 'previous_uncertain' });
+    expect(byId[U(4)]).toMatchObject({ winback_allowed: true, winback_last_verified: false, winback_outcome_uncertain: false });
   });
 });

@@ -3,7 +3,8 @@ import { Helmet } from "react-helmet-async";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Shield, AlertTriangle, Scale, Globe, Building2 } from "lucide-react";
+import { FileText, Shield, AlertTriangle, Scale, Globe, Building2, Mail } from "lucide-react";
+import { ContactEmail, LEGAL_UPDATED, LEGAL_VERSION, LegalText } from "@/components/legal/LegalText";
 
 const Terms = () => {
   const { t, i18n } = useTranslation();
@@ -24,6 +25,11 @@ const Terms = () => {
       icon: Shield,
       title: t("legal.terms.dataProcessing.title"),
       content: t("legal.terms.dataProcessing.content"),
+    },
+    {
+      icon: Mail,
+      title: t("legal.terms.marketingChoice.title"),
+      content: t("legal.terms.marketingChoice.content"),
     },
     {
       icon: AlertTriangle,
@@ -61,7 +67,7 @@ const Terms = () => {
             {t("legal.termsOfService")}
           </h1>
           <p className="text-muted-foreground">
-            {t("legal.lastUpdated")}: {new Date(2025, 11, 6).toLocaleDateString(i18n.language, { dateStyle: 'long' })}
+            {t("legal.lastUpdated")}: {LEGAL_UPDATED.toLocaleDateString(i18n.language, { dateStyle: 'long', timeZone: 'UTC' })} · {t("legal.versionLabel")}: {LEGAL_VERSION}
           </p>
           <p className="text-muted-foreground text-sm mt-2">
             {t("legal.terms.companyName")}
@@ -104,7 +110,7 @@ const Terms = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {section.content}
+                  <LegalText text={section.content} />
                 </p>
               </CardContent>
             </Card>
@@ -119,9 +125,8 @@ const Terms = () => {
             <p className="text-muted-foreground">
               {t("legal.terms.contact.content")}
             </p>
-            <p className="text-primary mt-2">
-              Fittechs Yazılım Anonim Şirketi
-            </p>
+            <p className="mt-2"><ContactEmail /></p>
+            <p className="text-muted-foreground mt-1">Fittechs Yazılım Anonim Şirketi</p>
           </CardContent>
         </Card>
       </main>

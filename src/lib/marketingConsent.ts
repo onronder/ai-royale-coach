@@ -1,11 +1,11 @@
 import { supabase } from '@/integrations/supabase/client';
 
 /** Must match the immutable texts stored server-side for this version (checked by tests). */
-export const MARKETING_TEXT_VERSION = '2026-11-v1';
+export const MARKETING_TEXT_VERSION = '2026-11-v2';
 export const MARKETING_LANGUAGES = ['en', 'tr', 'es', 'fr', 'pt'] as const;
 export type MarketingState = 'not_asked' | 'pending' | 'granted' | 'declined' | 'withdrawn' | 'expired';
 export type MarketingSource = 'signup_confirm' | 'google_first' | 'coach_invite' | 'preferences';
-export interface MarketingConsent { state: MarketingState; verified: boolean; since: string | null; invite: boolean; provider: string | null; collectionOpen: boolean; blocked: boolean }
+export interface MarketingConsent { state: MarketingState; verified: boolean; since: string | null; invite: boolean; access?: boolean; provider: string | null; collectionOpen: boolean; blocked: boolean }
 export interface SetResult { status: 'ok' | 'conflict' | 'unverified' | 'collection_paused'; state: MarketingState; repeat?: boolean }
 
 export function consentLanguage(lng: string | undefined): (typeof MARKETING_LANGUAGES)[number] {

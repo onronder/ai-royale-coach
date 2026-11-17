@@ -57,7 +57,10 @@ export function MarketingInvite({ userId }: { userId: string }) {
           <h2 id="marketing-invite-title" className="font-semibold">{mode === 'confirm' ? t('marketing.confirmTitle') : t('marketing.inviteTitle')}</h2>
           {mode === 'confirm' && <p className="text-sm text-muted-foreground">{t('marketing.confirmBody')}</p>}
           <p className="text-sm text-muted-foreground">{t('marketing.text')}</p>
-          <p className="text-xs text-muted-foreground">{t('marketing.inviteNote')}</p>
+          <p className="text-xs text-muted-foreground">
+            {t('marketing.inviteNote')}{' '}
+            <Link to="/privacy" target="_blank" className="text-primary hover:underline">{t('marketing.privacyLink')}</Link>
+          </p>
         </div>
       </div>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
