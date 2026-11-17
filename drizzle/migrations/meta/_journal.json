@@ -239,6 +239,13 @@
       "when": 1794932401525,
       "tag": "0033_polar_payment_reconciliation",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1794939433101,
+      "tag": "0034_apply_pending_0033_noop",
+      "breakpoints": true
     }
   ]
 }

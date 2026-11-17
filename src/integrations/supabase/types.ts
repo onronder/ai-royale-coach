@@ -1505,6 +1505,33 @@ export type Database = {
         }
         Relationships: []
       }
+      polar_order_sync: {
+        Row: {
+          claimed_at: string | null
+          last_completed_at: string | null
+          next_page: number
+          queued_at: string | null
+          singleton: boolean
+          ticket: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          last_completed_at?: string | null
+          next_page?: number
+          queued_at?: string | null
+          singleton?: boolean
+          ticket?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          last_completed_at?: string | null
+          next_page?: number
+          queued_at?: string | null
+          singleton?: boolean
+          ticket?: string | null
+        }
+        Relationships: []
+      }
       polar_orders: {
         Row: {
           amount: number
@@ -2824,6 +2851,7 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      claim_polar_order_sync: { Args: { p_ticket: string }; Returns: number }
       claim_reminder_attempt: {
         Args: { p_ticket: string }
         Returns: {
@@ -2894,6 +2922,10 @@ export type Database = {
           p_user_id: string
           p_window_seconds?: number
         }
+        Returns: boolean
+      }
+      finish_polar_order_sync: {
+        Args: { p_more: boolean; p_ticket: string }
         Returns: boolean
       }
       finish_trial_ai: {
@@ -3029,7 +3061,15 @@ export type Database = {
         Returns: undefined
       }
       observe_trial_step: { Args: { p_step: string }; Returns: undefined }
+      polar_positive_net: {
+        Args: { p_amount: number; p_refunded: number; p_status: string }
+        Returns: number
+      }
       queue_confirmed_welcomes: {
+        Args: { anon_key: string; project_url: string }
+        Returns: undefined
+      }
+      queue_polar_order_sync: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
       }
@@ -3066,6 +3106,7 @@ export type Database = {
         Args: { p_email: string; p_reason: string }
         Returns: undefined
       }
+      record_polar_payment_dates: { Args: { p_dates: Json }; Returns: number }
       record_provider_email_event: {
         Args: {
           p_block_reason: string
@@ -3116,10 +3157,12 @@ export type Database = {
         Returns: {
           checkout_at: string
           continue_at: string
+          current_sub_paid: boolean
           email: string
           first_paid_at: string
           first_renewal_at: string
           has_access: boolean
+          has_payment: boolean
           is_test: boolean
           offer_seen_at: string
           pricing_at: string
@@ -3129,9 +3172,12 @@ export type Database = {
           trial_clicked_at: string
           trial_end: string
           trial_paid_at: string
+          trial_payment_at: string
           trial_start: string
           trial_time_unknown: boolean
+          trial_undated: boolean
           ui_measured: boolean
+          undated_payment: boolean
           user_id: string
           verified_at: string
         }[]
