@@ -14,6 +14,7 @@ import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { DeckAnalysisPreview } from "@/components/subscription/AIPreviewContent";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
+import { AnalysisServiceError, readAnalysisServiceError, retryAnalysisError } from "@/lib/analysisError";
 
 interface DeckAnalysisResult {
   archetype: {
@@ -49,6 +50,8 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
         body: { playerData: player, battles, language }
       });
       if (error) {
+        const serviceError = await readAnalysisServiceError(error);
+        if (serviceError) throw serviceError;
         if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
           throw new Error('AUTH_REQUIRED');
         }
@@ -66,7 +69,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
     staleTime: 24 * 60 * 60 * 1000,
     retry: (failureCount, err) => {
       if (err instanceof Error && (err.message === 'AUTH_REQUIRED' || err.message === 'SUBSCRIPTION_REQUIRED')) return false;
-      return failureCount < 1;
+      return retryAnalysisError(err, failureCount, 1);
     },
   });
 
@@ -109,7 +112,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
                 </Button>
               </>
             ) : (
-              <p className="text-destructive">{t('deckAnalysis.failedToAnalyze')}</p>
+              <p className="text-destructive">{error instanceof AnalysisServiceError ? error.message : t('deckAnalysis.failedToAnalyze')}</p>
             )}
           </div>
         </CardContent>
