@@ -1,45 +1,88 @@
-// Revenue funnel acceptance against a DISPOSABLE draft backend (never production).
-// Real SQL functions are called through the API as real signed-in users.
-// Usage: REVENUE_API=http://127.0.0.1:8001 bun tests/integration/revenue/run.mjs
-// Needs DB_URL (row-level writer), SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY of that disposable backend.
+// Disposable SQL acceptance. This runner never connects to an email, billing or Auth API.
 import assert from 'node:assert/strict';
+import { readFile, readdir } from 'node:fs/promises';
 import postgres from 'postgres';
+const dir=process.env.REVENUE_PG, port=process.env.REVENUE_PG_PORT ?? '55432';
+assert(dir?.startsWith('/'), 'Set REVENUE_PG to a local socket directory');
+const opts={path:dir+'/.s.PGSQL.'+port,username:'postgres',max:3,onnotice:()=>{}};
+const root=postgres({...opts,database:'postgres'}), db='revenue_qa_'+process.pid;
+assert.equal((await root`SELECT current_setting('listen_addresses') AS addr`)[0].addr,'');
+await root.unsafe('CREATE DATABASE '+db);
+const sql=postgres({...opts,database:db});
+try {
+const load=f=>readFile(new URL(f,import.meta.url),'utf8');
+const migrations=await readdir(new URL('../../../drizzle/migrations/',import.meta.url));
+let passed=0;
+const ok=(condition,label)=>{ assert.ok(condition,label); passed++; };
+for (const f of ['../marketing/base.sql','../marketing/platform.sql','platform.sql']) {
+  await sql.unsafe(await load(f));
+}
+const reportingMigrations = migrations.filter(f => /^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort();
+for (const file of reportingMigrations) {
+  const migration = await load('../../../drizzle/migrations/' + file);
+  if (file !== '0032_admin_reporting_reconciliation.sql') {
+    await sql.unsafe(migration);
+    continue;
+  }
 
-const api = process.env.REVENUE_API;
-assert(api && /^http:\/\/(127\.0\.0\.1|localhost)/.test(api), 'REVENUE_API must be a local disposable backend');
-const anon = process.env.SUPABASE_ANON_KEY, service = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const sql = postgres(process.env.DB_URL, { max: 1 });
-const run = 'r' + Date.now().toString(36);
-const pw = 'Fixture-' + run + '-pw!';
-const ids = {};
-let passed = 0;
-const ok = (cond, msg) => { assert.ok(cond, msg); passed++; };
+  // Upgrade the shipped reporting schema with real pre-upgrade rows in place.
+  const owner = crypto.randomUUID(), orphan = crypto.randomUUID();
+  await sql`INSERT INTO auth.users(id,email) VALUES (${owner},'upgrade@example.invalid')`;
+  await sql`INSERT INTO acquisition_events(user_id,step) VALUES (${owner},'trial_offer_seen')`;
+  const snapshot = async () => (await sql`SELECT a.measured_since::text, e.created_at::text, m.sending_enabled
+    FROM acquisition_settings a CROSS JOIN marketing_settings m CROSS JOIN acquisition_events e WHERE e.user_id=${owner}`)[0];
+  const beforeUpgrade = await snapshot();
 
-async function admin(path, method, body) {
-  const r = await fetch(api + '/auth/v1/admin/' + path, { method, headers: { apikey: service, Authorization: 'Bearer ' + service, 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
-  if (!r.ok) throw new Error('admin ' + path + ' ' + r.status);
-  return r.status === 204 ? null : r.json();
+  // Older versions allowed orphaned events. Exercise that path without carrying its fixture forward.
+  const rollback = new Error('orphan fixture checked');
+  await assert.rejects(sql.begin(async tx => {
+    await tx`INSERT INTO acquisition_events(user_id,step) VALUES (${orphan},'trial_offer_seen')`;
+    await tx.unsafe(migration);
+    ok((await tx`SELECT 1 FROM acquisition_events WHERE user_id=${orphan}`).length === 1, 'legacy orphan is preserved');
+    ok((await tx`SELECT convalidated FROM pg_constraint WHERE conname='acquisition_events_user_id_fkey' AND conrelid='acquisition_events'::regclass`)[0].convalidated === false,
+       'old orphans do not block the upgrade');
+    throw rollback;
+  }), e => e === rollback);
+
+  await sql.begin(tx => tx.unsafe(migration));
+  assert.deepEqual(await snapshot(), beforeUpgrade);
+  ok(beforeUpgrade.sending_enabled === false, 'upgrade preserves stored event, measurement start and disabled sending');
+  ok((await sql`SELECT convalidated FROM pg_constraint WHERE conname='acquisition_events_user_id_fkey' AND conrelid='acquisition_events'::regclass`)[0].convalidated === true,
+     'foreign key validated with intact history');
+  await assert.rejects(sql`INSERT INTO acquisition_events(user_id,step) VALUES (${orphan},'trial_offer_seen')`, e => e.code === '23503');
+  ok((await sql`SELECT count(*)::int n FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname='admin_user_directory'`)[0].n === 1,
+     'one unambiguous directory signature for existing and new callers');
+  await sql`DELETE FROM auth.users WHERE id=${owner}`;
+  ok((await sql`SELECT 1 FROM acquisition_events WHERE user_id=${owner}`).length === 0, 'future account deletion removes its event');
 }
-async function token(email) {
-  const r = await fetch(api + '/auth/v1/token?grant_type=password', { method: 'POST', headers: { apikey: anon, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pw }) });
-  assert.equal(r.status, 200, 'sign in ' + email);
-  return (await r.json()).access_token;
+const run='r'+Date.now().toString(36), ids={};
+async function rpc(user,fn,args={}) {
+  try {
+    const data=await sql.begin(async tx=>{
+      await tx`SELECT set_config('test.uid',${user==='service'?'':user},true)`;
+      await tx.unsafe(user==='service'?'SET LOCAL ROLE service_role':'SET LOCAL ROLE authenticated');
+      const parts=Object.keys(args).map((k,i)=>k+' => $'+(i+1));
+      return (await tx.unsafe('SELECT public.'+fn+'('+parts.join(',')+') AS result',Object.values(args)))[0].result;
+    });
+    return {status:200,data};
+  } catch (e) {
+    if (e.code==='42501'||e.message==='Not authorized') return {status:403};
+    throw e;
+  }
 }
-async function rpc(tok, fn, args = {}) {
-  const r = await fetch(api + '/rest/v1/rpc/' + fn, { method: 'POST', headers: { apikey: anon, Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
-  const body = await r.text();
-  return { status: r.status, data: body ? JSON.parse(body) : null };
-}
-const svc = (fn, args) => rpc(service, fn, args);
+const svc=(fn,args)=>rpc('service',fn,args);
 const istanbulToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
 const shift = (d, n) => { const x = new Date(d + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
 const range = { p_from: shift(istanbulToday, -60), p_to: istanbulToday };
 
-try {
-  const mk = async k => { ids[k] = (await admin('users', 'POST', { email: `${k}-${run}@fixture.invalid`, password: pw, email_confirm: true })).id; };
+  const mk = async k => {
+    ids[k] = crypto.randomUUID();
+    await sql`INSERT INTO auth.users(id,email,email_confirmed_at) VALUES (${ids[k]}, ${k+'-'+run+'@example.invalid'},now())`;
+  };
   await mk('admin');
   await sql`INSERT INTO public.admin_roles(user_id, role) VALUES (${ids.admin}, 'admin')`;
-  const adminTok = await token(`admin-${run}@fixture.invalid`);
+  await sql`INSERT INTO admins VALUES (${ids.admin})`;
+  const adminTok = ids.admin;
   // Accounts sign up now (T0); later events are placed in the future and reports are read "as of" P = T0+30d.
   const P = (await sql`SELECT (now() + interval '30 days') AS p`)[0].p.toISOString();
   const AUD_AT = (await sql`SELECT (now() + interval '30 hours') AS p`)[0].p.toISOString();
@@ -55,8 +98,8 @@ try {
     (${ids.u2}, ${'s2' + run}, 'canceled', now(), now()+interval '4 days'),
     (${ids.u4}, ${'s4' + run}, 'active', now(), now()+interval '60 days'),
     (${ids.u5}, ${'s5' + run}, 'past_due', now(), now()+interval '20 days')`;
-  const o = (id, u, sub, amt, cur, reason, at, refund = null) => sql`INSERT INTO public.polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,created_at,recorded_at,refunded_net_cents)
-    VALUES (${id + run}, ${u}, ${sub + run}, ${amt}, ${cur}, ${reason}, 'paid', now() + ${at}::interval, now(), ${refund})`;
+  const o = (id, u, sub, amt, cur, reason, at, refund = null) => sql`INSERT INTO public.polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,created_at,paid_at,refunded_net_cents)
+    VALUES (${id + run}, ${u}, ${sub + run}, ${amt}, ${cur}, ${reason}, 'paid', now() + ${at}::interval, now() + ${at}::interval, ${refund})`;
   await o('o1z', ids.u1, 's1', 0, 'usd', 'subscription_create', '2 hours');
   await o('o1', ids.u1, 's1', 499, 'usd', 'subscription_cycle', '4 days');
   await o('o1r', ids.u1, 's1', 499, 'usd', 'subscription_cycle', '29 days');
@@ -68,7 +111,7 @@ try {
   await sql`INSERT INTO public.user_fraud_status(user_id,status) VALUES (${ids.u6}, 'blocked')`;
 
   // U3: first acquisition. Repeated clicks and two tabs collapse to one row per step; client cannot write checkout_created.
-  const t3 = await token(`u3-${run}@fixture.invalid`);
+  const t3 = ids.u3;
   const steps = ['trial_offer_seen', 'trial_start_clicked', 'trial_start_clicked', 'pricing_shown', 'polar_continue_clicked', 'checkout_created'];
   await Promise.all([...steps, ...steps].map(s => rpc(t3, 'record_acquisition_step', { p_step: s })));
   ok((await rpc(t3, 'record_checkout_created', { p_user: ids.u3 })).status >= 400, 'users cannot record checkout themselves');
@@ -76,7 +119,7 @@ try {
   const ev = await sql`SELECT step FROM public.acquisition_events WHERE user_id = ${ids.u3}`;
   ok(ev.length === 5, 'U3 has exactly 5 distinct steps (dedup)');
   // U4 already paid (recovery/plan change): not first acquisition
-  const t4 = await token(`u4-${run}@fixture.invalid`);
+  const t4 = ids.u4;
   await rpc(t4, 'record_acquisition_step', { p_step: 'pricing_shown' });
   await svc('record_checkout_created', { p_user: ids.u4 });
   ok((await sql`SELECT count(*)::int n FROM public.acquisition_events WHERE user_id = ${ids.u4}`)[0].n === 0, 'recovery/plan change not counted as acquisition');
@@ -96,7 +139,7 @@ try {
   ok(cents(ov.refunded_cents, 'USD') - cents(before.refunded_cents, 'USD') === 999, 'refunds visible');
   ok(ov.mrr.available === false && ov.mrr.reason, 'MRR not fabricated');
   const withTests = (await rpc(adminTok, 'admin_revenue_overview', { ...range, p_include_tests: true, p_at: P })).data;
-  ok(Number(withTests.counts.signups) === Number(ov.counts.signups) + Number(withTests.counts.signups - ov.counts.signups) && withTests.counts.signups > ov.counts.signups, 'admin account excluded by default');
+  ok(Number(withTests.counts.signups) === Number(ov.counts.signups) + 1, 'admin account excluded by default');
 
   for (const k of Object.keys(ov.counts)) {
     const det = (await rpc(adminTok, 'admin_revenue_detail', { p_metric: k, ...range, p_include_tests: false, p_limit: 200, p_offset: 0, p_at: P })).data;
@@ -109,6 +152,8 @@ try {
   ok(dir.total === 1 && dir.rows[0].tags.length === 2, 'two tags, one account row');
   ok(dir.rows[0].access === 'past_due' && dir.rows[0].security === 'ok', 'past_due is not blocked');
   const u6 = (await rpc(adminTok, 'admin_user_directory', { p_search: `u6-${run}` })).data.rows[0];
+  const neverSubscribed = (await rpc(adminTok,'admin_user_directory',{p_access:'never_subscribed'})).data;
+  ok(neverSubscribed.rows.every(r=>r.access==='never_subscribed') && neverSubscribed.rows.some(r=>r.user_id===ids.u6), 'directory access filter and rows agree');
   ok(u6.security === 'blocked' && u6.access === 'never_subscribed', 'blocked only means security');
   ok((await rpc(adminTok, 'admin_user_directory', { p_search: `u2-${run}` })).data.rows[0].access === 'ended', 'ended separate');
 
@@ -117,18 +162,58 @@ try {
   const late = (await rpc(adminTok, 'admin_unstarted_audience', { p_include_tests: false, p_at: P })).data;
   ok(late.total === 0 || late.total < aud.total, '24-48h window closes');
   ok(aud.sendable === 0, 'sending off => sendable 0');
-  console.log(`REVENUE ACCEPTANCE PASSED: ${passed} assertions`);
+  await sql`UPDATE user_fraud_status SET status='soft_blocked' WHERE user_id=${ids.u6}`;
+  const limited = await rpc(adminTok, 'admin_user_directory', {p_search: 'u6-'+run});
+  ok(limited.data.rows[0].security === 'limited', 'real soft block is visible');
+  await sql`UPDATE user_subscriptions SET status='canceled', current_period_end=now() WHERE user_id=${ids.u5}`;
+  const afterLoss = (await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(afterLoss.counts.lost_paid === ov.counts.lost_paid+1 && afterLoss.counts.past_due === ov.counts.past_due-1,'past due resolves as lost paid');
+  ok(ov.transitions.first_paid.entered === 3 && ov.transitions.first_paid.advanced === 2, 'direct pay excluded from trial conversion');
+  const futureIdentity = ids.u7;
+  await sql`UPDATE auth.users SET email_confirmed_at=now()+interval '31 days' WHERE id=${futureIdentity}`;
+  const prior=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(prior.counts.verified === ov.counts.verified-1,'future verification excluded');
+  await sql`UPDATE auth.users SET email_confirmed_at=now() WHERE id=${futureIdentity}`;
+  await sql`INSERT INTO marketing_consent_events(user_id,email,event,source,text_version,language)
+    SELECT id,email,'granted','preferences','2026-11-v2','en' FROM auth.users WHERE id=${ids.u7}`;
+  const withGrant=(await rpc(adminTok,'admin_unstarted_audience',{p_at:AUD_AT})).data;
+  const oauth=crypto.randomUUID();
+  await sql`INSERT INTO auth.users(id,email,email_confirmed_at,raw_app_meta_data) VALUES (${oauth},'google@example.invalid',now(),'{"provider":"google"}'::jsonb)`;
+  await sql`UPDATE marketing_settings SET collection_markets='{DE}', age_rule_markets='{DE}'`;
+  await sql`INSERT INTO marketing_account_markets (user_id,market,source) VALUES (${oauth},'DE','admin')`;
+  await sql`INSERT INTO marketing_account_ages (user_id,adult,source) VALUES (${oauth},true,'admin')`;
+  const google=await rpc(oauth,'get_my_marketing_consent',{p_claim_invite:false});
+  ok(google.data.collectionOpen && google.data.provider==='google' && google.data.state==='not_asked','post-sign-in Google account with pre-approved eligibility can choose before trial');
+  ok(withGrant.consented===1 && withGrant.sendable===0, 'verified without trial: positive consent, sending OFF');
+  const reach=(await rpc(adminTok,'admin_marketing_reach')).data;
+  ok(Number.isInteger(reach.active_paid) && reach.invitable===0, 'reach uses existing protected aggregate');
+  await sql`INSERT INTO polar_orders(order_id,user_id,amount,currency,billing_reason,status,created_at)
+    VALUES (${'unknown'+run},${ids.u7},400,'usd','subscription_cycle','paid',now())`;
+  const bucket=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(bucket.incomplete_orders > 0,'unknown payment time is identified');
+  const beforeD7=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  await sql`INSERT INTO polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,created_at)
+    VALUES (${'missing-d7'+run},${ids.u2},${'s2'+run},499,'usd','subscription_cycle','paid',now()+interval '5 days')`;
+  const missingD7=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(missingD7.counts.d7_unknown === beforeD7.counts.d7_unknown+1 && missingD7.counts.d7_paid === beforeD7.counts.d7_paid,'undated payment does not become a dated D7 success');
+  await o('different-sub',ids.u2,'later-plan',450,'usd','subscription_cycle','5 days');
+  const otherSub=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(otherSub.counts.d7_paid === beforeD7.counts.d7_paid,'unrelated subscription cannot convert the trial');
+  await sql`INSERT INTO polar_orders(order_id,user_id,subscription_id,amount,currency,billing_reason,status,paid_at,created_at,refunded_net_cents)
+     VALUES (${'partial'+run},${ids.u2},${'s2'+run},499,'eur','subscription_cycle','partially_refunded',now()+interval '5 days',now()+interval '5 days',99)`;
+  const partial=(await rpc(adminTok,'admin_revenue_overview',{...range,p_at:P})).data;
+  ok(partial.cash_net_cents.EUR-otherSub.cash_net_cents.EUR===400 && partial.counts.d7_paid===beforeD7.counts.d7_paid+1,'reconciled partial refund shows remaining net and dated payment');
+  await sql`INSERT INTO auth.users(id,email) SELECT gen_random_uuid(),'perf-'||n||'@example.invalid' FROM generate_series(1,1000)n`;
+  await sql`ANALYZE auth.users`;
+  await sql.begin(async tx => {
+    await tx`SELECT set_config('test.uid',${ids.admin},true)`; await tx.unsafe('SET LOCAL ROLE authenticated');
+    for (const [label,query] of [['directory','SELECT admin_user_directory(NULL,25,50)'],['overview','SELECT admin_revenue_overview(NULL,NULL,false)']]) {
+      const plan=await tx.unsafe('EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) '+query);
+      const result=plan[0]['QUERY PLAN'][0];
+      console.log(label+' / 1009 local synthetic accounts / '+result['Execution Time']+' ms / shared hits '+result.Plan['Shared Hit Blocks']);
+    }
+  });
+  console.log('Revenue socket acceptance passed: '+passed+' checks');
 } finally {
-  await fetch(api + '/rest/v1/acquisition_events?user_id=in.(' + Object.values(ids).join(',') + ')', { method: 'DELETE', headers: { apikey: service, Authorization: 'Bearer ' + service } }).catch(() => {});
-  const list = Object.values(ids);
-  if (list.length) {
-    await sql`DELETE FROM public.polar_orders WHERE user_id = ANY(${list})`.catch(() => {});
-    await sql`DELETE FROM public.user_subscriptions WHERE user_id = ANY(${list})`.catch(() => {});
-    await sql`DELETE FROM public.trial_conversion_periods WHERE user_id = ANY(${list})`.catch(() => {});
-    await sql`DELETE FROM public.player_profiles WHERE user_id = ANY(${list})`.catch(() => {});
-    await sql`DELETE FROM public.user_fraud_status WHERE user_id = ANY(${list})`.catch(() => {});
-    await sql`DELETE FROM public.admin_roles WHERE user_id = ANY(${list})`.catch(() => {});
-    for (const id of list) await admin('users/' + id, 'DELETE').catch(() => {});
-  }
-  await sql.end();
+  await sql.end(); await root.unsafe('DROP DATABASE '+db); await root.end();
 }

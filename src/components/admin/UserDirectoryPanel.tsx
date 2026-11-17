@@ -13,7 +13,8 @@ export function UserDirectoryPanel() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   useEffect(() => { const id = setTimeout(() => { setSearch(input.trim()); setPage(0); }, 300); return () => clearTimeout(id); }, [input]);
-  const q = useUserDirectory(search, page);
+  const [access, setAccess] = useState('');
+  const q = useUserDirectory(search, page, access);
   const size = 25;
   const pages = q.data ? Math.max(1, Math.ceil(q.data.total / size)) : 1;
   const fmt = (d: string) => new Date(d).toLocaleDateString(i18n.language, { timeZone: 'Europe/Istanbul' });
@@ -23,6 +24,14 @@ export function UserDirectoryPanel() {
       <CardDescription>{t('admin.revenue.directoryNote')}</CardDescription>
     </CardHeader>
     <CardContent className="space-y-3">
+      <label className="flex flex-wrap items-center gap-2 text-sm">
+        {t('admin.revenue.col.access')}
+        <select className="rounded border bg-background p-2" value={access} onChange={e => { setAccess(e.target.value); setPage(0); }}>
+          <option value="">{t('admin.revenue.ranges.all')}</option>
+          {['never_subscribed','trialing','paid','past_due','ended'].map(key =>
+            <option key={key} value={key}>{t(`admin.revenue.access.${key}`)}</option>)}
+        </select>
+      </label>
       <Input value={input} onChange={e => setInput(e.target.value)} placeholder={t('admin.revenue.searchPlaceholder')} aria-label={t('admin.revenue.searchPlaceholder')} className="max-w-sm" />
       {q.isLoading ? <ReportLoading /> : q.isError || !q.data ? <ReportError onRetry={() => q.refetch()} /> :
         q.data.rows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">{t('admin.revenue.empty')}</p> :
@@ -36,7 +45,7 @@ export function UserDirectoryPanel() {
             <tbody className="divide-y">{q.data.rows.map(r => <tr key={r.user_id}>
               <td className="p-2"><div className="break-all">{r.email ?? r.user_id.slice(0, 8)}</div>{r.tags.length > 0 && <div className="text-xs text-muted-foreground">{r.tags.join(', ')}</div>}</td>
               <td className="p-2 whitespace-nowrap">{fmt(r.signup_at)}</td>
-              <td className="p-2">{r.last_step ? t(`admin.revenue.step.${r.last_step}`) : t('admin.revenue.notObserved')}</td>
+              <td className="p-2">{r.last_step ? t(`admin.revenue.${r.last_step === "verified" || r.last_step === "signups" ? "metric" : "step"}.${r.last_step}`) : t('admin.revenue.notObserved')}</td>
               <td className="p-2">{t(`admin.revenue.access.${r.access}`)}{r.renewal_off && <span className="block text-xs text-muted-foreground">{t('admin.revenue.renewalOff')}</span>}</td>
               <td className="p-2">{t(`admin.revenue.marketing.${r.marketing}`, r.marketing)}</td>
               <td className="p-2"><Badge variant={r.security === 'blocked' ? 'destructive' : r.security === 'review' ? 'secondary' : 'outline'}>{t(`admin.revenue.security.${r.security}`)}</Badge></td>

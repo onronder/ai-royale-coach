@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +27,7 @@ import { Navbar } from '@/components/layout/Navbar';
 export default function Admin() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [oldSubscriptionsOpen, setOldSubscriptionsOpen] = useState(false);
   const { isAdmin, isModerator, isLoading, isAuthenticated, user } = useAdminAccess();
 
   useEffect(() => {
@@ -91,8 +92,7 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
-            {isAdmin && <UserDirectoryPanel />}
-            <BlockedUsersPanel />
+            {isAdmin ? <UserDirectoryPanel /> : <BlockedUsersPanel />}
             <section aria-labelledby="lookup-heading" className="space-y-3">
               <h2 id="lookup-heading" className="text-lg font-semibold flex items-center gap-2"><Search className="h-5 w-5" />{t('admin.userLookup.title')}</h2>
               <UserLookup />
@@ -113,6 +113,10 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="operations" className="space-y-8">
+            {isAdmin && <details onToggle={e => setOldSubscriptionsOpen(e.currentTarget.open)}>
+              <summary className="cursor-pointer text-sm font-medium">{t('admin.revenue.legacySubscriptions')}</summary>
+              {oldSubscriptionsOpen && <BlockedUsersPanel />}
+            </details>}
             {isAdmin && <FraudOverviewDashboard />}
             <section aria-labelledby="cases-heading" className="space-y-3">
               <h2 id="cases-heading" className="text-lg font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5" />{t('admin.fraudCases.title')}</h2>

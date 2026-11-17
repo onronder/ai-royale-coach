@@ -14,6 +14,7 @@ import {
   Calendar,
   CreditCard
 } from 'lucide-react';
+import { ReportError } from './ReportState';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface UserSubscriptionStatus {
@@ -33,7 +34,7 @@ interface UserSubscriptionStatus {
 export function BlockedUsersPanel() {
   const { t, i18n } = useTranslation();
   
-  const { data: users, isLoading, refetch, isRefetching } = useQuery({
+  const { data: users, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ['admin-blocked-users'],
     queryFn: async () => {
       // Get all profiles with their subscription status
@@ -43,8 +44,7 @@ export function BlockedUsersPanel() {
         .order('created_at', { ascending: false });
       
       if (profilesError) {
-        console.error('Failed to fetch profiles:', profilesError);
-        return [];
+        throw profilesError;
       }
       
       // Get all subscriptions
@@ -53,7 +53,7 @@ export function BlockedUsersPanel() {
         .select('user_id, status, current_period_end, account_slots');
       
       if (subsError) {
-        console.error('Failed to fetch subscriptions:', subsError);
+        throw subsError;
       }
       
       // Create a map of subscriptions by user_id
@@ -151,6 +151,7 @@ export function BlockedUsersPanel() {
     return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">{t('admin.blocked.none')}</Badge>;
   };
 
+  if (isError) return <ReportError onRetry={() => refetch()} />;
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -290,11 +291,11 @@ export function BlockedUsersPanel() {
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' }) : t('common.unknown')}
+                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' }) : t('common.unknown')}
                       </p>
                       {user.trial_ends_at && !user.trial_used && (
                         <p className="text-xs text-muted-foreground">
-                          {t(new Date(user.trial_ends_at) > now ? 'admin.blocked.graceEnds' : 'admin.blocked.graceEnded')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}
+                          {t(new Date(user.trial_ends_at) > now ? 'admin.blocked.graceEnds' : 'admin.blocked.graceEnded')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' })}
                         </p>
                       )}
                     </div>
@@ -343,11 +344,11 @@ export function BlockedUsersPanel() {
                       </p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' }) : t('common.unknown')}
+                        {t('admin.blocked.joined')} {user.created_at ? new Date(user.created_at).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' }) : t('common.unknown')}
                       </p>
                       {user.current_period_end && (
                         <p className="text-xs text-amber-400">
-                          {t('admin.blocked.periodEnds')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}
+                          {t('admin.blocked.periodEnds')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' })}
                         </p>
                       )}
                     </div>
@@ -399,11 +400,11 @@ export function BlockedUsersPanel() {
                           <>
                             {t('admin.blocked.slots', { count: user.account_slots })}
                             {user.current_period_end && (
-                              <> • {user.subscription_status === 'cancelled' ? t('admin.trials.ends') : t('admin.blocked.renews')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}</>
+                              <> • {user.subscription_status === 'cancelled' ? t('admin.trials.ends') : t('admin.blocked.renews')} {new Date(user.current_period_end).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' })}</>
                             )}
                           </>
                         ) : user.trial_ends_at && !user.trial_used ? (
-                          <>{t('admin.blocked.graceEnds')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium' })}</>
+                          <>{t('admin.blocked.graceEnds')} {new Date(user.trial_ends_at).toLocaleDateString(i18n.language, { dateStyle: 'medium', timeZone: 'Europe/Istanbul' })}</>
                         ) : (
                           t('admin.blocked.noDetails')
                         )}

@@ -108,11 +108,12 @@ serve(async (req) => {
     // Analytics failure must not discard a valid checkout URL.
     try {
       const service = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-      const { error } = await service.rpc('record_return_checkout', { p_user: user.id });
-      if (error) logger.warn('Return checkout observation unavailable');
-      // First-acquisition funnel: a valid checkout URL exists (does not prove card entry). Server ignores repeat/non-first accounts.
-      const { error: acqError } = await service.rpc('record_checkout_created', { p_user: user.id });
-      if (acqError) logger.warn('Acquisition checkout observation unavailable');
+      const [returnStep, acquisitionStep] = await Promise.all([
+        service.rpc('record_return_checkout', { p_user: user.id }),
+        service.rpc('record_checkout_created', { p_user: user.id }),
+      ]);
+      if (returnStep.error) logger.warn('Return checkout observation unavailable');
+      if (acquisitionStep.error) logger.warn('Acquisition checkout observation unavailable');
     } catch {
       logger.warn('Return checkout observation unavailable');
     }
