@@ -2773,7 +2773,7 @@ export type Database = {
         Returns: undefined
       }
       admin_user_directory: {
-        Args: { p_limit?: number; p_offset?: number; p_search?: string }
+        Args: { p_access?: string; p_limit?: number; p_offset?: number; p_search?: string }
         Returns: Json
       }
       admin_winback_candidates: { Args: never; Returns: Json[] }

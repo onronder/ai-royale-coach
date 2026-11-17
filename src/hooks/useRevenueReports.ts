@@ -2,7 +2,10 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export type RevenueFilter = { from: string | null; to: string | null; includeTests: boolean };
+import type { Transitions } from '@/lib/revenueFunnel';
+
 export type RevenueOverview = {
+  transitions: Transitions; incomplete_orders: number;
   generated_at: string; counts: Record<string, number>; ui_measured_signups: number; measured_since: string;
   cash_net_cents: Record<string, number>; refunded_cents: Record<string, number>;
   mrr: { available: boolean; reason?: string };
@@ -13,7 +16,7 @@ export type RevenueDetailRow = {
 };
 export type DirectoryRow = {
   user_id: string; email: string | null; signup_at: string; last_step: string | null; access: string; renewal_off: boolean;
-  marketing: string; security: 'ok' | 'review' | 'blocked'; tags: string[];
+  marketing: string; security: 'ok' | 'review' | 'limited' | 'blocked'; tags: string[];
 };
 export type UnstartedAudience = { total: number; consented: number; sendable: number };
 
@@ -31,22 +34,22 @@ export function useRevenueOverview(f: RevenueFilter) {
   });
 }
 
-export function useRevenueDetail(metric: string | null, f: RevenueFilter, page: number, pageSize = 25) {
+export function useRevenueDetail(metric: string | null, f: RevenueFilter, page: number, asOf?: string, pageSize = 25) {
   return useQuery({
-    queryKey: ['admin-revenue-detail', metric, f, page],
+    queryKey: ['admin-revenue-detail', metric, f, page, asOf],
     enabled: !!metric,
     placeholderData: keepPreviousData,
     queryFn: () => call<{ total: number; rows: RevenueDetailRow[] }>('admin_revenue_detail', {
-      p_metric: metric, p_from: f.from, p_to: f.to, p_include_tests: f.includeTests, p_limit: pageSize, p_offset: page * pageSize,
+      p_metric: metric, p_at: asOf, p_from: f.from, p_to: f.to, p_include_tests: f.includeTests, p_limit: pageSize, p_offset: page * pageSize,
     }),
   });
 }
 
-export function useUserDirectory(search: string, page: number, pageSize = 25) {
+export function useUserDirectory(search: string, page: number, access: string, pageSize = 25) {
   return useQuery({
-    queryKey: ['admin-user-directory', search, page],
+    queryKey: ['admin-user-directory', search, page, access],
     placeholderData: keepPreviousData,
-    queryFn: () => call<{ total: number; rows: DirectoryRow[] }>('admin_user_directory', { p_search: search || null, p_limit: pageSize, p_offset: page * pageSize }),
+    queryFn: () => call<{ total: number; rows: DirectoryRow[] }>('admin_user_directory', { p_search: search || null, p_access: access || null, p_limit: pageSize, p_offset: page * pageSize }),
   });
 }
 

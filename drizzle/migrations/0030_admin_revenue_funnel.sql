@@ -6,7 +6,7 @@ CREATE POLICY "Admins read acquisition settings" ON public.acquisition_settings 
 INSERT INTO public.acquisition_settings DEFAULT VALUES;
 
 CREATE TABLE public.acquisition_events (
-  user_id uuid NOT NULL,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   step text NOT NULL CHECK (step IN ('trial_offer_seen','trial_start_clicked','pricing_shown','polar_continue_clicked','checkout_created')),
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, step)
@@ -48,7 +48,7 @@ CREATE OR REPLACE FUNCTION public.revenue_cohort(p_from date, p_to date, p_inclu
 RETURNS TABLE(user_id uuid, email text, signup_at timestamptz, verified_at timestamptz, is_test boolean, ui_measured boolean,
   offer_seen_at timestamptz, trial_clicked_at timestamptz, pricing_at timestamptz, continue_at timestamptz, checkout_at timestamptz,
   trial_start timestamptz, trial_end timestamptz, first_paid_at timestamptz, first_renewal_at timestamptz,
-  sub_status text, renewal_off boolean, has_access boolean)
+  sub_status text, renewal_off boolean, has_access boolean, trial_paid_at timestamptz, trial_time_unknown boolean)
 LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
   WITH cfg AS (SELECT measured_since FROM public.acquisition_settings WHERE singleton),
   u AS (
@@ -72,7 +72,7 @@ LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
     max(e.created_at) FILTER (WHERE e.step='checkout_created'),
     tp.started_at, tp.ends_at, fp.first_paid,
     (SELECT min(p.ts) FROM pos p WHERE p.user_id=u.id AND p.billing_reason='subscription_cycle' AND p.ts > fp.first_paid),
-    s.status, coalesce(s.cancel_at_period_end,false), public.marketing_subscription_access(u.id, p_at)
+    s.status, coalesce(s.cancel_at_period_end,false), public.marketing_subscription_access(u.id, p_at), NULL::timestamptz, false
   FROM u CROSS JOIN cfg
   LEFT JOIN public.acquisition_events e ON e.user_id=u.id
   LEFT JOIN LATERAL (SELECT t.started_at, t.ends_at FROM public.trial_conversion_periods t WHERE t.user_id=u.id ORDER BY t.started_at LIMIT 1) tp ON true
@@ -88,7 +88,7 @@ LANGUAGE plpgsql IMMUTABLE SET search_path TO '' AS $$
 BEGIN
   RETURN coalesce(CASE p_metric
     WHEN 'signups' THEN true
-    WHEN 'verified' THEN c.verified_at IS NOT NULL
+    WHEN 'verified' THEN c.verified_at <= p_at
     WHEN 'offer_seen' THEN c.ui_measured AND c.offer_seen_at IS NOT NULL
     WHEN 'trial_clicked' THEN c.ui_measured AND c.trial_clicked_at IS NOT NULL
     WHEN 'pricing_shown' THEN c.ui_measured AND c.pricing_at IS NOT NULL
@@ -102,7 +102,8 @@ BEGIN
     WHEN 'mature_48h' THEN c.signup_at <= p_at - interval '48 hours'
     WHEN 'trial_48h' THEN c.signup_at <= p_at - interval '48 hours' AND c.trial_start <= c.signup_at + interval '48 hours'
     WHEN 'd7_mature' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' <= p_at
-    WHEN 'd7_paid' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' <= p_at AND c.first_paid_at <= c.trial_end + interval '7 days'
+    WHEN 'd7_paid' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' <= p_at AND c.trial_paid_at IS NOT NULL
+    WHEN 'd7_unknown' THEN c.trial_end + interval '7 days' <= p_at AND c.trial_paid_at IS NULL AND c.trial_time_unknown
     WHEN 'd7_pending' THEN c.trial_end IS NOT NULL AND c.trial_end + interval '7 days' > p_at AND c.first_paid_at IS NULL
     WHEN 'active_paid' THEN c.has_access AND c.sub_status='active' AND c.first_paid_at IS NOT NULL
     WHEN 'renewal_off_access' THEN c.has_access AND c.renewal_off
@@ -116,7 +117,7 @@ REVOKE ALL ON FUNCTION public.revenue_metric_match(text,record,timestamptz) FROM
 CREATE OR REPLACE FUNCTION public.admin_revenue_overview(p_from date, p_to date, p_include_tests boolean DEFAULT false)
 RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
 DECLARE at timestamptz := now(); counts jsonb := '{}'; n bigint; cash jsonb; refunds jsonb;
-  metrics text[] := ARRAY['signups','verified','offer_seen','trial_clicked','pricing_shown','continue_clicked','checkout_created','trial_started','first_paid','first_renewal','mature_24h','trial_24h','mature_48h','trial_48h','d7_mature','d7_paid','d7_pending','active_paid','renewal_off_access','past_due','trialing','lost_paid'];
+  metrics text[] := ARRAY['signups','verified','offer_seen','trial_clicked','pricing_shown','continue_clicked','checkout_created','trial_started','first_paid','first_renewal','mature_24h','trial_24h','mature_48h','trial_48h','d7_mature','d7_paid','d7_pending','d7_unknown','active_paid','renewal_off_access','past_due','trialing','lost_paid'];
 BEGIN
   IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
   WITH c AS MATERIALIZED (SELECT * FROM public.revenue_cohort(p_from,p_to,p_include_tests,at)),
@@ -148,38 +149,41 @@ END $$;
 REVOKE ALL ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.admin_revenue_detail(text,date,date,boolean,integer,integer) TO authenticated;
 
-CREATE OR REPLACE FUNCTION public.admin_user_directory(p_search text DEFAULT NULL, p_limit integer DEFAULT 25, p_offset integer DEFAULT 0)
+CREATE OR REPLACE FUNCTION public.admin_user_directory(p_search text DEFAULT NULL, p_limit integer DEFAULT 25, p_offset integer DEFAULT 0, p_access text DEFAULT NULL)
 RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
 DECLARE q text := nullif(trim(coalesce(p_search,'')),''); total bigint; rows jsonb;
 BEGIN
   IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Not authorized'; END IF;
   WITH base AS (
-    SELECT a.id, a.email::text email, a.created_at FROM auth.users a
-    WHERE q IS NULL OR a.email ILIKE '%'||q||'%'
-       OR EXISTS (SELECT 1 FROM public.player_profiles pp WHERE pp.user_id=a.id AND upper(replace(pp.player_tag,'#','')) = upper(replace(q,'#','')))
-  ), page AS (SELECT * FROM base ORDER BY created_at DESC LIMIT least(greatest(p_limit,1),100) OFFSET greatest(p_offset,0))
+    SELECT a.id, a.email::text email, a.created_at, a.email_confirmed_at, sub.access, sub.renewal_off
+    FROM auth.users a
+    LEFT JOIN public.user_subscriptions s ON s.user_id=a.id
+    CROSS JOIN LATERAL (SELECT CASE
+      WHEN public.marketing_subscription_access(a.id) THEN CASE WHEN s.status='trialing' THEN 'trialing' ELSE 'paid' END
+      WHEN s.status='past_due' THEN 'past_due'
+      WHEN s.user_id IS NOT NULL OR EXISTS(SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=a.id) THEN 'ended'
+      ELSE 'never_subscribed' END AS access, coalesce(s.cancel_at_period_end,false) AS renewal_off) sub
+    WHERE (p_access IS NULL OR sub.access=p_access) AND (q IS NULL OR a.email ILIKE '%'||q||'%'
+       OR EXISTS (SELECT 1 FROM public.player_profiles pp WHERE pp.user_id=a.id AND upper(replace(pp.player_tag,'#','')) = upper(replace(q,'#',''))))
+  ), page AS (SELECT * FROM base ORDER BY created_at DESC, id LIMIT least(greatest(p_limit,1),100) OFFSET greatest(p_offset,0))
   SELECT (SELECT count(*) FROM base), coalesce(jsonb_agg(jsonb_build_object(
       'user_id', p.id, 'email', p.email, 'signup_at', p.created_at,
       'last_step', CASE
          WHEN EXISTS (SELECT 1 FROM public.polar_orders o WHERE o.user_id=p.id AND o.status='paid' AND o.amount-coalesce(o.refunded_net_cents,0)>0) THEN 'first_paid'
          WHEN EXISTS (SELECT 1 FROM public.trial_conversion_periods t WHERE t.user_id=p.id) THEN 'trial_started'
-         ELSE (SELECT e.step FROM public.acquisition_events e WHERE e.user_id=p.id ORDER BY e.created_at DESC LIMIT 1) END,
-      'access', CASE
-         WHEN public.marketing_subscription_access(p.id) THEN CASE WHEN s.status='trialing' THEN 'trialing' ELSE 'paid' END
-         WHEN s.status='past_due' THEN 'past_due'
-         WHEN s.user_id IS NOT NULL THEN 'ended'
-         ELSE 'never_subscribed' END,
-      'renewal_off', coalesce(s.cancel_at_period_end,false),
+         ELSE coalesce((SELECT e.step FROM public.acquisition_events e WHERE e.user_id=p.id ORDER BY e.created_at DESC LIMIT 1),
+                       CASE WHEN p.email_confirmed_at IS NULL THEN 'signups' ELSE 'verified' END) END,
+      'access', p.access, 'renewal_off', p.renewal_off,
       'marketing', coalesce((SELECT st.state FROM public.marketing_state_at(p.id) st), 'none'),
-      'security', CASE WHEN f.status IN ('blocked','suspended') THEN 'blocked' WHEN f.status IN ('flagged','review','restricted') THEN 'review' ELSE 'ok' END,
+      'security', CASE WHEN f.status='blocked' THEN 'blocked' WHEN f.status='soft_blocked' THEN 'limited' WHEN f.status IN ('warning','flagged','review','restricted') THEN 'review' ELSE 'ok' END,
       'tags', (SELECT coalesce(jsonb_agg(pp.player_tag ORDER BY pp.created_at),'[]') FROM public.player_profiles pp WHERE pp.user_id=p.id)
     ) ORDER BY p.created_at DESC),'[]')
   INTO total, rows
-  FROM page p LEFT JOIN public.user_subscriptions s ON s.user_id=p.id LEFT JOIN public.user_fraud_status f ON f.user_id=p.id;
+  FROM page p LEFT JOIN public.user_fraud_status f ON f.user_id=p.id;
   RETURN jsonb_build_object('total', total, 'rows', rows);
 END $$;
-REVOKE ALL ON FUNCTION public.admin_user_directory(text,integer,integer) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.admin_user_directory(text,integer,integer) TO authenticated;
+REVOKE ALL ON FUNCTION public.admin_user_directory(text,integer,integer,text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_user_directory(text,integer,integer,text) TO authenticated;
 
 CREATE OR REPLACE FUNCTION public.admin_unstarted_audience(p_include_tests boolean DEFAULT false)
 RETURNS jsonb LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path TO '' AS $$
