@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
-  }
   public: {
     Tables: {
       achievement_progress: {
@@ -1055,6 +1050,7 @@ export type Database = {
       }
       marketing_deliveries: {
         Row: {
+          accepted_at: string | null
           campaign_key: string
           created_at: string
           email: string
@@ -1068,6 +1064,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accepted_at?: string | null
           campaign_key: string
           created_at?: string
           email: string
@@ -1081,6 +1078,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accepted_at?: string | null
           campaign_key?: string
           created_at?: string
           email?: string
@@ -3048,6 +3046,10 @@ export type Database = {
             Returns: Json
           }
       update_user_fraud_score: { Args: { p_user_id: string }; Returns: number }
+      winback_cooldown_at: {
+        Args: { p_at: string; p_campaign?: string; p_user: string }
+        Returns: Json
+      }
       write_player_cache: {
         Args: { p_data: Json; p_tag: string; p_type: string }
         Returns: undefined
@@ -3188,3 +3190,4 @@ export const Constants = {
     },
   },
 } as const
+
