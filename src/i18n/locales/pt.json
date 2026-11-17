@@ -1,4 +1,29 @@
 {
+  "conversion": {
+    "scope": "{{trials}} testes · {{accounts}} contas distintas. Contas de teste interno marcadas são excluídas.",
+    "unclassified": "Assinaturas excluídas porque não foi possível confirmar o início do teste: {{count}}.",
+    "payment_review": "Pagamento a conciliar",
+    "unknownPayments": "Contas com data de pagamento incerta: {{count}}",
+    "payment_recovery": "Pagamento pendente",
+    "recoveryBody": "Atualize na Polar a forma de pagamento da sua assinatura atual.",
+    "updatePayment": "Atualizar forma de pagamento",
+    "portalError": "Não foi possível abrir o portal de pagamentos. Tente novamente.",
+    "superseded": "Assinatura anterior",
+    "customer": "Cliente pagante",
+    "trial_renewal_off": "Teste · renovação desativada",
+    "trial_renewal_on": "Teste · renovação ativada",
+    "expired_winback": "Pode receber oferta ao voltar",
+    "other": "Nenhuma ação identificada",
+    "cardSeen": "Viu o cartão de treino",
+    "requested": "Pediu uma recomendação",
+    "recommendationSeen": "Viu a recomendação",
+    "match": "Primeira partida identificada",
+    "waitD7": "Nenhum teste completou os sete dias de observação.",
+    "pendingOrders": "Pedidos de valor positivo pendentes",
+    "firstPaid": "Primeiro pagamento",
+    "afterCancel": "Atividade após o cancelamento",
+    "returnedAfterEnd": "Primeiro retorno observado após o teste"
+  },
   "trialFollowup": {
     "survey": "Por que você desativou a renovação? (Opcional)",
     "avoid_charge": "Evitar uma cobrança enquanto continuo testando",
@@ -3409,6 +3434,7 @@
       "rejected": "Recusada"
     },
     "reason": {
+      "ineligible": "esta conta já não atende aos critérios da campanha de reativação",
       "sending_off": "envio desativado",
       "market_rule_pending": "regra de mercado pendente",
       "no_account": "sem conta",

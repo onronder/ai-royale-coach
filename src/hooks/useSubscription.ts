@@ -61,6 +61,7 @@ export function useSubscription() {
 
 
   interface CheckoutParams {
+    recovery?: boolean;
     accountSlots?: number;
     successUrl?: string;
     cancelUrl?: string;
@@ -68,12 +69,13 @@ export function useSubscription() {
   }
 
   const createCheckoutMutation = useMutation({
-    mutationFn: async ({ accountSlots = 1, successUrl, cancelUrl, discountId }: CheckoutParams) => {
+    mutationFn: async ({ accountSlots = 1, successUrl, cancelUrl, discountId, recovery }: CheckoutParams) => {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { accountSlots, successUrl, cancelUrl, discountId },
+        body: { accountSlots, successUrl, cancelUrl, discountId, recovery },
       });
       
       if (error) throw error;
+      if (recovery && data?.kind !== 'recovery') throw new Error('Billing portal unavailable');
       return data.checkoutUrl;
     },
   });

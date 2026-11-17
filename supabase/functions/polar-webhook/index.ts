@@ -33,6 +33,7 @@ function getAccountSlotsFromProductId(productId: string | undefined | null): num
 // Subscription data structure from Polar webhook
 interface PolarSubscription {
   id?: string;
+  modified_at?: string;
   customer?: {
     id?: string;
     external_id?: string;
@@ -44,16 +45,33 @@ interface PolarSubscription {
     id?: string;
   };
   status?: string;
+  cancel_at_period_end?: boolean;
   product_id?: string;
   current_period_start?: string;
   current_period_end?: string;
 }
 
-// Webhook event structure
-interface WebhookEvent {
-  type: string;
-  data: PolarSubscription;
+interface PolarOrder extends Pick<PolarSubscription, 'id' | 'customer' | 'metadata' | 'status'> {
+  customer_id?: string;
+  subscription_id?: string;
+  created_at?: string;
+  modified_at?: string;
+  net_amount?: number;
+  amount?: number;
+  total_amount?: number;
+  tax_amount?: number;
+  refunded_amount?: number;
+  discount_amount?: number;
+  currency?: string;
+  billing_reason?: string;
+  paid?: boolean;
 }
+
+type WebhookEvent = { timestamp?: string } & (
+  | { type: `subscription.${string}`; data: PolarSubscription }
+  | { type: `order.${string}`; data: PolarOrder }
+  | { type: `checkout.${string}`; data: { id?: string } }
+);
 
 // Extract user ID from subscription data with multiple fallbacks
 function extractUserId(subscription: PolarSubscription): string | null {
@@ -853,10 +871,17 @@ serve(async (req) => {
             tax_amount: order.tax_amount ?? null,
             currency: order.currency || null,
             billing_reason: order.billing_reason || null,
-            status: event.type === 'order.refunded' ? 'refunded' : (order.status || (order.paid ? 'paid' : null)),
+            status: order.status || (event.type === 'order.refunded' ? 'refunded' : order.paid ? 'paid' : null),
+            discount_amount_cents: order.discount_amount ?? null,
+            refunded_net_cents: order.refunded_amount ?? null,
+            provider_updated_at: order.modified_at || event.timestamp || order.created_at || null,
+            ...(event.type === 'order.paid' && event.timestamp ? { paid_at: event.timestamp } : {}),
             created_at: order.created_at || new Date().toISOString(),
           }, { onConflict: 'order_id' });
-          if (oErr) log('warn', 'Failed to record order', { error: oErr.message });
+          if (oErr) {
+            await logWebhookEvent(supabase, event.type, order.id, orderUserId, 'failed', oErr.message);
+            throw new Error('Failed to record Polar order');
+          }
         }
         await logWebhookEvent(supabase, event.type, order?.id, orderUserId, 'processed', undefined, {
           orderId: order?.id, amount: order?.net_amount ?? order?.amount, billingReason: order?.billing_reason,
@@ -875,17 +900,28 @@ serve(async (req) => {
 
         log('warn', 'Subscription past due', { userId, subscriptionId: subscription?.id });
 
-        const { error: pastDueError } = await supabase
+        if (!subscription.id) throw new Error('Missing past-due subscription ID');
+        const eventTime = subscription.modified_at || event.timestamp;
+        if (!eventTime || !Number.isFinite(Date.parse(eventTime))) throw new Error('Missing past-due event time');
+        const timestamp = new Date(eventTime).toISOString();
+        const { data: updated, error: pastDueError } = await supabase
           .from('user_subscriptions')
           .update({
             status: 'past_due',
+            last_event_at: timestamp,
             updated_at: new Date().toISOString(),
           })
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .eq('polar_subscription_id', subscription.id)
+          .or('last_event_at.is.null,last_event_at.lte.' + timestamp)
+          .select('user_id').maybeSingle();
 
         if (pastDueError) {
           log('error', 'Error updating past_due status', { error: pastDueError.message, userId });
           await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', pastDueError.message);
+          throw new Error('Failed to record past-due subscription');
+        } else if (!updated) {
+          await logWebhookEvent(supabase, event.type, subscription.id, userId, 'skipped', 'not current');
         } else {
           log('info', 'Subscription marked as past_due', { userId });
           await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
