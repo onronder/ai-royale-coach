@@ -127,3 +127,6 @@ verify_jwt = false
 
 [functions.backfill-polar-orders]
 verify_jwt = true
+
+[functions.polar-mrr]
+verify_jwt = true

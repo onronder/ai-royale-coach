@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock, Timer } from "lucide-react";
+import { Trash2, Plus, Trophy, Users, Crown, Loader2, Clock, Sparkles, GitCompare, Brain, Lock, Timer, ExternalLink } from "lucide-react";
 import { formatDistanceToNow, type Locale } from "date-fns";
 import { tr, es, fr, pt, enUS } from "date-fns/locale";
 
@@ -15,7 +15,6 @@ import { usePlayerProfiles, PlayerProfile, getClanBadgeUrl } from "@/hooks/usePl
 import { useUserAIProfiles } from "@/hooks/usePlayerAIAccess";
 import { useSubscription } from "@/hooks/useSubscription";
 import { DataLoader } from "@/components/ui/data-loader";
-import { EmptyState } from "@/components/ui/empty-state";
 import { AccountComparison } from "./AccountComparison";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -27,6 +26,8 @@ interface PlayerTagSelectorProps {
 
 export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) {
   const { t, i18n } = useTranslation();
+  const guideLanguage = ['en', 'tr', 'es', 'fr', 'pt'].includes(i18n.language.split('-')[0])
+    ? i18n.language.split('-')[0] : 'en';
   const navigate = useNavigate();
   const [newTag, setNewTag] = useState("");
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -116,7 +117,7 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
       )}
 
       {/* Player Tag Cards */}
-      {profiles.length > 0 ? (
+      {profiles.length > 0 && (
         <div className="grid gap-4">
           {profiles.map((profile, index) => (
             <PlayerTagCard
@@ -133,23 +134,34 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
             />
           ))}
         </div>
-      ) : (
-        <Card variant="arena" className="p-8">
-          <EmptyState
-            icon={Users}
-            title={t('selectPlayer.noTagsTitle')}
-            description={t('selectPlayer.noTagsDescription')}
-            variant="compact"
-          />
-        </Card>
       )}
 
       {/* Add New Tag */}
       {canAddMore && (
         <Card variant="arena" className="border-dashed border-2 border-gold/30">
-          <CardContent className="pt-6">
-            {isAddingNew ? (
+          <CardContent className="pt-6 md:pt-6">
+            {isAddingNew || profiles.length === 0 ? (
               <form onSubmit={handleAddTag} className="space-y-4">
+                {profiles.length === 0 && (
+                  <p className="text-sm text-muted-foreground">{t('selectPlayer.noTagsDescription')}</p>
+                )}
+                <div id="player-tag-guide" className="rounded-lg bg-muted/40 p-4 space-y-2">
+                  <h2 className="font-semibold">{t('selectPlayer.tagGuideTitle')}</h2>
+                  <ol className="list-decimal pl-5 space-y-2 text-sm leading-relaxed text-muted-foreground">
+                    <li>{t('selectPlayer.tagGuideOpen')}</li>
+                    <li>{t('selectPlayer.tagGuideCopy')}</li>
+                    <li>{t('selectPlayer.tagGuidePaste')}</li>
+                  </ol>
+                  <a
+                    href={`https://support.supercell.com/clash-royale/${guideLanguage}/articles/player-tag.html`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-11 items-center gap-2 text-sm text-primary underline underline-offset-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {t('selectPlayer.tagGuideOfficial')}
+                    <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  </a>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="newTag" className="text-sm font-semibold">{t('selectPlayer.playerTagLabel')}</Label>
                   <Input
@@ -157,15 +169,16 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
                     placeholder={t('selectPlayer.tagPlaceholder')}
                     value={newTag}
                     onChange={(e) => setNewTag(e.target.value)}
-                    className="font-mono h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                    aria-describedby="player-tag-guide"
+                    className="font-mono text-base h-12 bg-background/50 border-border/50 focus:border-gold focus:ring-gold/30"
                     disabled={isAdding}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {t('selectPlayer.tagHelp')}
-                  </p>
                 </div>
-                <div className="flex gap-2">
-                  <Button type="submit" variant="golden" disabled={isAdding || !newTag.trim()}>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="submit" variant="golden" className="min-h-11" disabled={isAdding || !newTag.trim()}>
                     {isAdding ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -178,14 +191,14 @@ export function PlayerTagSelector({ userId, onSelect }: PlayerTagSelectorProps) 
                       </>
                     )}
                   </Button>
-                  <Button 
+                  {profiles.length > 0 && <Button
                     type="button" 
                     variant="outline" 
                     onClick={() => setIsAddingNew(false)}
                     disabled={isAdding}
                   >
                     {t('common.cancel')}
-                  </Button>
+                  </Button>}
                 </div>
               </form>
             ) : (

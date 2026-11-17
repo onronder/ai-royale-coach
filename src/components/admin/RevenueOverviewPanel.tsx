@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useRevenueDetail, useRevenueOverview, type RevenueFilter } from '@/hooks/useRevenueReports';
 import { FUNNEL_STEPS, biggestLoss, formatCents, formatRate, istanbulDate, rate, shiftDate } from '@/lib/revenueFunnel';
+import { PolarMrrCard } from './PolarMrrCard';
 import { ReportError, ReportLoading } from './ReportState';
 
 type Section = 'overview' | 'trials' | 'revenue';
@@ -33,7 +34,7 @@ function Kpi({ label, value, hint, onOpen }: { label: string; value: string; hin
     : <div className="flex flex-col gap-1 rounded-md border bg-card p-3">{body}</div>;
 }
 
-export function RevenueOverviewPanel({ section = 'overview' }: { section?: Section }) {
+export function RevenueOverviewPanel({ section = 'overview', adminId }: { section?: Section; adminId?: string }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const { range, setRange, includeTests, setIncludeTests, filter } = useFilter();
@@ -101,13 +102,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
         hint={loss ? `${label(loss.from)} → ${label(loss.to)}` : t('admin.revenue.noLoss')} />
     );
 
-    const mrr = (
-      <div className="rounded-md border bg-card p-3">
-        <span className="text-xs text-muted-foreground">{t('admin.revenue.mrr')}</span>
-        <p className="text-sm font-medium">{t('admin.revenue.noData')}</p>
-        <p className="text-xs text-muted-foreground">{t(`admin.revenue.mrrReason.${q.data.mrr.reason ?? 'unknown'}`)}</p>
-      </div>
-    );
+    const mrr = adminId && <PolarMrrCard adminId={adminId} />;
 
     const cash = (
       <div className="rounded-md border bg-card p-3">
