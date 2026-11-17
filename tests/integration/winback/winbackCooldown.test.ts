@@ -59,7 +59,7 @@ beforeAll(() => {
   if (r.exitCode !== 0) throw new Error(r.stderr.toString());
 });
 afterAll(() => { psql(`DROP DATABASE IF EXISTS ${DB} WITH (FORCE)`, 'postgres'); expect(netCalls).toEqual([]); });
-beforeEach(() => { psql(`DELETE FROM marketing_deliveries; DELETE FROM marketing_suppressions; DELETE FROM marketing_consent_events WHERE event <> 'granted'; UPDATE profiles SET winback_email_sent_at = NULL`); });
+beforeEach(() => { psql(`DELETE FROM marketing_deliveries; DELETE FROM marketing_suppressions; INSERT INTO marketing_consent_events(user_id,email,event,source,text_version,language) SELECT u.id,u.email,'granted','preferences','2026-11-v1','tr' FROM auth.users u WHERE (SELECT e.event FROM marketing_consent_events e WHERE e.user_id=u.id ORDER BY e.id DESC LIMIT 1) <> 'granted'; UPDATE profiles SET winback_email_sent_at = NULL`); });
 
 describe('720-hour boundary (UTC instants, fixed clock)', () => {
   const LAST = '2026-10-20T09:00:00Z';                // New York leaves DST on 2026-11-01: 30 calendar days ≠ 720 h there
