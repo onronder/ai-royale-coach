@@ -62,7 +62,8 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
   else {
     const c = q.data.counts;
     const measured = q.data.ui_measured_signups;
-    const loss = biggestLoss(c, measured);
+    const trialToPaid = q.data.transitions.first_paid;
+    const loss = biggestLoss(q.data.transitions);
     const open = (k: string) => () => setDetail(k);
     const pct = (a: string, b: string) => formatRate(rate(c[a], c[b]), lang);
     const currencies = Object.keys(q.data.cash_net_cents);
@@ -75,7 +76,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
           <ol className="divide-y">
             {FUNNEL_STEPS.map((s, i) => {
               const unmeasured = s.ui && measured === 0;
-              const prev = i > 0 ? FUNNEL_STEPS[i - 1] : null;
+              const transition = q.data.transitions[s.key];
               const base = s.ui ? measured : c.signups;
               return <li key={s.key} className="flex flex-wrap items-center justify-between gap-2 py-2">
                 <span className="text-sm">{label(s.key)} {s.ui && <Badge variant="outline" className="ml-1 text-[10px]">{t('admin.revenue.screenStep')}</Badge>}</span>
@@ -84,7 +85,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
                   : <span className="flex items-center gap-3 text-sm tabular-nums">
                       <button type="button" className="font-semibold underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded" onClick={open(s.key)}>{n(c[s.key])}</button>
                       <span className="text-muted-foreground w-16 text-right" title={t('admin.revenue.ofCohort')}>{formatRate(rate(c[s.key], base), lang)}</span>
-                      <span className="text-muted-foreground w-20 text-right" title={t('admin.revenue.fromPrevious')}>{prev && !(prev.ui && measured === 0) ? `↳ ${formatRate(rate(c[s.key], c[prev.key]), lang)}` : ''}</span>
+                      <span className="text-muted-foreground w-20 text-right" title={t('admin.revenue.fromPrevious')}>{i > 0 ? `↳ ${formatRate(transition ? rate(transition.advanced, transition.entered) : null, lang)}` : ''}</span>
                     </span>}
               </li>;
             })}
@@ -110,7 +111,8 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
     const cash = (
       <div className="rounded-md border bg-card p-3">
         <span className="text-xs text-muted-foreground">{t('admin.revenue.cash')}</span>
-        {currencies.length === 0 ? <p className="text-sm text-muted-foreground">{t('admin.revenue.noPayments')}</p>
+        {q.data.incomplete_orders > 0 && <p className="text-xs text-muted-foreground">{t('admin.revenue.incompleteOrders', { count: q.data.incomplete_orders })}</p>}
+        {currencies.length === 0 && !q.data.incomplete_orders ? <p className="text-sm text-muted-foreground">{t('admin.revenue.noPayments')}</p>
           : currencies.map(cur => <p key={cur} className="text-lg font-semibold tabular-nums">{formatCents(q.data!.cash_net_cents[cur], cur, lang)}</p>)}
         {Object.entries(q.data.refunded_cents).map(([cur, v]) => <p key={cur} className="text-xs text-muted-foreground">{t('admin.revenue.refunded')}: {formatCents(v, cur, lang)}</p>)}
       </div>
@@ -120,7 +122,7 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi label={label('signups')} value={n(c.signups)} onOpen={open('signups')} />
         <Kpi label={label('trial_started')} value={n(c.trial_started)} hint={pct('trial_started', 'signups')} onOpen={open('trial_started')} />
-        <Kpi label={label('first_paid')} value={n(c.first_paid)} hint={pct('first_paid', 'trial_started')} onOpen={open('first_paid')} />
+        <Kpi label={label('first_paid')} value={n(c.first_paid)} hint={trialToPaid && t('admin.revenue.paidFromTrials', { n: n(trialToPaid.advanced), d: n(trialToPaid.entered), rate: formatRate(rate(trialToPaid.advanced, trialToPaid.entered), lang) })} onOpen={open('first_paid')} />
         {lossCard}
       </div>
       <div className="grid gap-3 sm:grid-cols-2">{mrr}{cash}</div>
@@ -129,7 +131,8 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
     else if (section === 'trials') content = <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <Kpi label={label('trial_24h')} value={formatRate(rate(c.trial_24h, c.mature_24h), lang)} hint={t('admin.revenue.ofMature', { n: n(c.trial_24h), d: n(c.mature_24h) })} onOpen={open('trial_24h')} />
       <Kpi label={label('trial_48h')} value={formatRate(rate(c.trial_48h, c.mature_48h), lang)} hint={t('admin.revenue.ofMature', { n: n(c.trial_48h), d: n(c.mature_48h) })} onOpen={open('trial_48h')} />
-      <Kpi label={label('d7_paid')} value={formatRate(rate(c.d7_paid, c.d7_mature), lang)} hint={t('admin.revenue.ofMature', { n: n(c.d7_paid), d: n(c.d7_mature) })} onOpen={open('d7_paid')} />
+      <Kpi label={label('d7_paid')} value={formatRate(rate(c.d7_paid, c.d7_mature - c.d7_unknown), lang)} hint={t('admin.revenue.ofMature', { n: n(c.d7_paid), d: n(c.d7_mature - c.d7_unknown) })} onOpen={open('d7_paid')} />
+      {c.d7_unknown > 0 && <Kpi label={label('d7_unknown')} value={n(c.d7_unknown)} onOpen={open('d7_unknown')} />}
       <Kpi label={label('d7_pending')} value={n(c.d7_pending)} onOpen={open('d7_pending')} />
       <Kpi label={label('trialing')} value={n(c.trialing)} onOpen={open('trialing')} />
       <Kpi label={label('renewal_off_access')} value={n(c.renewal_off_access)} onOpen={open('renewal_off_access')} />
@@ -150,15 +153,15 @@ export function RevenueOverviewPanel({ section = 'overview' }: { section?: Secti
   return <div className="space-y-4">
     {filters}
     {content}
-    <DetailDialog metric={detail} filter={filter} onClose={() => setDetail(null)} />
+    <DetailDialog asOf={q.data?.generated_at} metric={detail} filter={filter} onClose={() => setDetail(null)} />
   </div>;
 }
 
-function DetailDialog({ metric, filter, onClose }: { metric: string | null; filter: RevenueFilter; onClose: () => void }) {
+function DetailDialog({ metric, filter, onClose, asOf }: { asOf?: string; metric: string | null; filter: RevenueFilter; onClose: () => void }) {
   const { t, i18n } = useTranslation();
   const [page, setPage] = useState(0);
   const size = 25;
-  const q = useRevenueDetail(metric, filter, page, size);
+  const q = useRevenueDetail(metric, filter, page, asOf, size);
   const fmt = (d: string | null) => d ? new Date(d).toLocaleString(i18n.language, { timeZone: 'Europe/Istanbul', dateStyle: 'short', timeStyle: 'short' }) : t('admin.revenue.notObserved');
   const pages = q.data ? Math.max(1, Math.ceil(q.data.total / size)) : 1;
   return <Dialog open={!!metric} onOpenChange={o => { if (!o) { onClose(); setPage(0); } }}>

@@ -48,13 +48,23 @@ const Auth = () => {
   const [oauthProvider, setOauthProvider] = useState<string | null>(null);
   const [marketingKey] = useState(newRequestKey);
   // The optional box is only offered while consent collection is open (market and age rules approved).
-  const [collectionOpen, setCollectionOpen] = useState(false);
-  useEffect(() => { getCollectionOpen().then(setCollectionOpen); }, []);
+  const [consentScope, setConsentScope] = useState<{ userId: string | null; open: boolean } | null>(null);
   
   // Google OAuth terms modal state
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [oauthTermsAccepted, setOauthTermsAccepted] = useState(false);
   const [pendingOAuthUser, setPendingOAuthUser] = useState<string | null>(null);
+  const collectionOpen = consentScope?.userId === pendingOAuthUser && consentScope.open;
+  useEffect(() => {
+    let current = true;
+    void getCollectionOpen().then(open => {
+      if (current) setConsentScope({ userId: pendingOAuthUser, open });
+    }).catch(() => {
+      if (current) setConsentScope(null);
+    });
+    return () => { current = false; };
+  }, [pendingOAuthUser]);
+
 
   // Capture promo code from URL and store in localStorage
   useEffect(() => {

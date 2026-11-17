@@ -27,21 +27,18 @@ export function formatRate(value: number | null, locale: string) {
 
 export type StepLoss = { from: string; to: string; lost: number; rate: number };
 
-/**
- * Largest measured drop between consecutive steps. UI steps use only the measured part of the cohort,
- * so steps that were not measured never create a fake loss.
- */
-export function biggestLoss(counts: FunnelCounts, uiMeasured: number): StepLoss | null {
-  const usable = FUNNEL_STEPS.filter(s => !s.ui || uiMeasured > 0);
+export type Transitions = Record<string, { entered: number; advanced: number }>;
+
+export function biggestLoss(transitions: Transitions): StepLoss | null {
   let best: StepLoss | null = null;
-  for (let i = 1; i < usable.length; i++) {
-    const a = usable[i - 1], b = usable[i];
-    // Comparing a whole-cohort step with a measured-only step is not a like-for-like drop.
-    if (a.ui !== b.ui && (a.ui || b.ui) && uiMeasured !== (counts.signups ?? 0)) continue;
-    const from = counts[a.key] ?? 0, to = counts[b.key] ?? 0;
-    const lost = Math.max(0, from - to);
-    const r = rate(lost, from);
-    if (r !== null && lost > 0 && (!best || lost > best.lost)) best = { from: a.key, to: b.key, lost, rate: r };
+  for (let i = 1; i < FUNNEL_STEPS.length; i++) {
+    const to = FUNNEL_STEPS[i].key;
+    const pair = transitions[to];
+    if (!pair || pair.entered <= 0) continue;
+    const lost = pair.entered - pair.advanced;
+    if (lost > 0 && (!best || lost > best.lost)) {
+      best = { from: FUNNEL_STEPS[i - 1].key, to, lost, rate: lost / pair.entered };
+    }
   }
   return best;
 }
