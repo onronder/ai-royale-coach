@@ -2965,7 +2965,11 @@
       "trials": "Pruebas",
       "winback": "Reactivación",
       "webhooks": "Webhooks",
-      "admin": "Administración"
+      "admin": "Administración",
+      "overview": "Resumen",
+      "revenue": "Miembros de pago e ingresos",
+      "campaigns": "Campañas y consentimiento",
+      "operations": "Operaciones"
     },
     "trials": {
       "paid": "Pagó",
@@ -3139,6 +3143,144 @@
       "uncertainSent": "Incierto: revisa el registro del proveedor",
       "unverifiedTime": "hora sin verificar",
       "until": "disponible después del {{date}} (en ese momento exacto aún espera)"
+    },
+    "revenue": {
+      "loading": "Cargando…",
+      "error": "No se pudo cargar el informe. Nada se muestra como cero.",
+      "retry": "Reintentar",
+      "range": "Período de registro",
+      "ranges": {
+        "7": "Últimos 7 días",
+        "30": "Últimos 30 días",
+        "90": "Últimos 90 días",
+        "all": "Todo"
+      },
+      "includeTests": "Incluir cuentas de prueba y admin",
+      "timezoneNote": "Fechas en Europe/Istanbul; guardadas en UTC.",
+      "funnelTitle": "Del registro a los ingresos",
+      "funnelNote": "Misma cohorte de registro en cada paso. Los pasos de pantalla se miden para {{measured}} de {{total}} registros.",
+      "screenStep": "pantalla",
+      "notMeasured": "no medido",
+      "ofCohort": "Parte de la cohorte",
+      "fromPrevious": "Desde el paso anterior",
+      "biggestLoss": "Mayor caída medida",
+      "noLoss": "Aún sin caída medida",
+      "mrr": "MRR",
+      "noData": "Sin datos",
+      "cash": "Cobro neto (por moneda)",
+      "noPayments": "Sin pedidos pagados positivos",
+      "refunded": "Reembolsado",
+      "ofMature": "{{n}} de {{d}} maduros",
+      "detailTotal": "{{count}} cuentas",
+      "empty": "No hay cuentas.",
+      "notObserved": "no medido",
+      "test": "prueba",
+      "renewalOff": "renovación desactivada",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "directoryTitle": "Cuentas",
+      "directoryNote": "Una fila por cuenta. Busca por email o etiqueta de jugador.",
+      "searchPlaceholder": "Email o etiqueta de jugador",
+      "unstartedTitle": "Verificados hace 24–48 h, sin prueba",
+      "unstartedNote": "Solo lectura. “Enviable” es la decisión actual del servidor; es 0 mientras el envío está desactivado.",
+      "metric": {
+        "signups": "Nuevos registros",
+        "verified": "Email verificado",
+        "offer_seen": "Oferta de prueba vista",
+        "trial_clicked": "Clic en “Iniciar prueba”",
+        "pricing_shown": "Ventana de precios mostrada",
+        "continue_clicked": "Continuó a Polar",
+        "checkout_created": "Enlace de pago de Polar creado",
+        "trial_started": "Prueba iniciada",
+        "first_paid": "Primer pedido pagado",
+        "first_renewal": "Primera renovación",
+        "mature_24h": "Registros con más de 24 h",
+        "trial_24h": "Prueba en 24 h",
+        "mature_48h": "Registros con más de 48 h",
+        "trial_48h": "Prueba en 48 h",
+        "d7_mature": "Pruebas pasado fin + 7 días",
+        "d7_paid": "Primer pago en fin de prueba + 7 días",
+        "d7_pending": "Esperando resultado D7",
+        "active_paid": "Miembros de pago activos",
+        "renewal_off_access": "Renovación desactivada, aún con acceso",
+        "past_due": "Pago atrasado",
+        "trialing": "En prueba ahora",
+        "lost_paid": "Pagó y se perdió"
+      },
+      "step": {
+        "trial_offer_seen": "Oferta de prueba vista",
+        "trial_start_clicked": "Clic en “Iniciar prueba”",
+        "pricing_shown": "Ventana de precios mostrada",
+        "polar_continue_clicked": "Continuó a Polar",
+        "checkout_created": "Enlace de pago de Polar creado",
+        "trial_started": "Prueba iniciada",
+        "first_paid": "Primer pedido pagado"
+      },
+      "col": {
+        "account": "Cuenta",
+        "signup": "Registro",
+        "trial": "Inicio de prueba",
+        "firstPaid": "Primer pago",
+        "status": "Suscripción",
+        "lastStep": "Último paso observado",
+        "access": "Acceso",
+        "marketing": "Email de campañas",
+        "security": "Seguridad"
+      },
+      "access": {
+        "paid": "De pago",
+        "trialing": "Prueba",
+        "past_due": "Pago atrasado",
+        "ended": "Finalizada",
+        "never_subscribed": "Nunca suscrito"
+      },
+      "security": {
+        "ok": "Correcto",
+        "review": "En revisión",
+        "blocked": "Bloqueado"
+      },
+      "marketing": {
+        "granted": "Aceptó",
+        "withdrawn": "Retiró",
+        "none": "Sin elección",
+        "pending": "Pendiente"
+      },
+      "unstarted": {
+        "total": "Total",
+        "consented": "Consentimiento válido",
+        "sendable": "Enviable según el servidor"
+      },
+      "mrrReason": {
+        "no_verified_polar_mrr_source": "No hay MRR de Polar verificado ni fuente de precio recurrente probada; el MRR no se calcula.",
+        "unknown": "Fuente no disponible."
+      },
+      "sub": {
+        "active": "Activa",
+        "trialing": "Prueba",
+        "past_due": "Pago atrasado",
+        "canceled": "Cancelada",
+        "revoked": "Revocada",
+        "cancelled": "Cancelada"
+      },
+      "reach": {
+        "title": "Alcance de emails de campaña (cuentas con acceso)",
+        "note": "Según las reglas de consentimiento del servidor. Un conteo por cuenta. No se deriva del embudo de registro.",
+        "active_paid": "De pago activos",
+        "active_trial": "En prueba",
+        "already_chose": "Ya eligieron",
+        "invitable": "Se pueden invitar",
+        "waiting_missing_info": "Esperando información",
+        "reasons": "Motivos de espera",
+        "reason": {
+          "email_unverified": "Email no verificado",
+          "market_unknown": "Mercado desconocido",
+          "market_closed": "Mercado cerrado",
+          "age_unknown": "Edad desconocida",
+          "age_rule_pending": "Regla de edad pendiente",
+          "iys_not_ready": "İYS no listo",
+          "closed": "Recogida cerrada"
+        }
+      }
     }
   },
   "oraclePage": {

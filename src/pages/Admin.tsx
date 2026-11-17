@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, AlertTriangle, Search, LayoutDashboard, Activity, Users, Webhook, Gift, FlaskConical } from 'lucide-react';
+import { Shield, AlertTriangle, Search, LayoutDashboard, Activity, Users, Webhook, Gift, FlaskConical, Wallet } from 'lucide-react';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { FraudOverviewDashboard } from '@/components/admin/FraudOverviewDashboard';
 import { FraudCasesList } from '@/components/admin/FraudCasesList';
@@ -13,6 +13,11 @@ import { BlockedUsersPanel } from '@/components/admin/BlockedUsersPanel';
 import { WebhookEventsPanel } from '@/components/admin/WebhookEventsPanel';
 import { WinbackCampaignPanel } from '@/components/admin/WinbackCampaignPanel';
 import { TrialAnalyticsPanel } from '@/components/admin/TrialAnalyticsPanel';
+import { RevenueOverviewPanel } from '@/components/admin/RevenueOverviewPanel';
+import { UserDirectoryPanel } from '@/components/admin/UserDirectoryPanel';
+import { UnstartedAudienceCard } from '@/components/admin/UnstartedAudienceCard';
+import { PrivacyRequestsPanel } from '@/components/admin/PrivacyRequestsPanel';
+import { MarketingReachCard } from '@/components/admin/MarketingReachCard';
 import { Navbar } from '@/components/layout/Navbar';
 
 /**
@@ -72,71 +77,56 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:text-center [&_svg]:shrink-0">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <LayoutDashboard className="h-4 w-4" />
-              {t('dashboard.subtabs.overview')}
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              {t('admin.navigation.users')}
-            </TabsTrigger>
-            <TabsTrigger value="cases" className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4" />
-              {t('admin.fraudCases.title')}
-            </TabsTrigger>
-            <TabsTrigger value="lookup" className="flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              {t('admin.userLookup.title')}
-            </TabsTrigger>
-            <TabsTrigger value="trials" className="flex items-center gap-2">
-              <FlaskConical className="h-4 w-4" />
-              {t('admin.navigation.trials')}
-            </TabsTrigger>
-            <TabsTrigger value="winback" className="flex items-center gap-2">
-              <Gift className="h-4 w-4" />
-              {t('admin.navigation.winback')}
-            </TabsTrigger>
-            <TabsTrigger value="webhooks" className="flex items-center gap-2">
-              <Webhook className="h-4 w-4" />
-              {t('admin.navigation.webhooks')}
-            </TabsTrigger>
-            <TabsTrigger value="metrics" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              {t('admin.apiMetrics.title')}
-            </TabsTrigger>
+          <TabsList className="grid h-auto w-full grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:text-center [&_svg]:shrink-0">
+            <TabsTrigger value="overview" className="flex items-center gap-2"><LayoutDashboard className="h-4 w-4" />{t('admin.navigation.overview')}</TabsTrigger>
+            <TabsTrigger value="users" className="flex items-center gap-2"><Users className="h-4 w-4" />{t('admin.navigation.users')}</TabsTrigger>
+            <TabsTrigger value="trials" className="flex items-center gap-2"><FlaskConical className="h-4 w-4" />{t('admin.navigation.trials')}</TabsTrigger>
+            {isAdmin && <TabsTrigger value="revenue" className="flex items-center gap-2"><Wallet className="h-4 w-4" />{t('admin.navigation.revenue')}</TabsTrigger>}
+            <TabsTrigger value="campaigns" className="flex items-center gap-2"><Gift className="h-4 w-4" />{t('admin.navigation.campaigns')}</TabsTrigger>
+            <TabsTrigger value="operations" className="flex items-center gap-2"><Activity className="h-4 w-4" />{t('admin.navigation.operations')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
-            <FraudOverviewDashboard />
+            {isAdmin ? <RevenueOverviewPanel section="overview" /> : <FraudOverviewDashboard />}
           </TabsContent>
 
-          <TabsContent value="users">
+          <TabsContent value="users" className="space-y-6">
+            {isAdmin && <UserDirectoryPanel />}
             <BlockedUsersPanel />
+            <section aria-labelledby="lookup-heading" className="space-y-3">
+              <h2 id="lookup-heading" className="text-lg font-semibold flex items-center gap-2"><Search className="h-5 w-5" />{t('admin.userLookup.title')}</h2>
+              <UserLookup />
+            </section>
           </TabsContent>
 
-          <TabsContent value="cases">
-            <FraudCasesList />
-          </TabsContent>
-
-          <TabsContent value="lookup">
-            <UserLookup />
-          </TabsContent>
-
-          <TabsContent value="trials">
+          <TabsContent value="trials" className="space-y-6">
+            {isAdmin && <RevenueOverviewPanel section="trials" />}
             <TrialAnalyticsPanel />
           </TabsContent>
 
-          <TabsContent value="winback">
+          {isAdmin && <TabsContent value="revenue"><RevenueOverviewPanel section="revenue" /></TabsContent>}
+
+          <TabsContent value="campaigns" className="space-y-6">
+            {isAdmin && <MarketingReachCard />}
+            {isAdmin && <UnstartedAudienceCard />}
             <WinbackCampaignPanel />
           </TabsContent>
 
-          <TabsContent value="webhooks">
-            <WebhookEventsPanel />
-          </TabsContent>
-
-          <TabsContent value="metrics">
-            <ApiMetricsDashboard />
+          <TabsContent value="operations" className="space-y-8">
+            {isAdmin && <FraudOverviewDashboard />}
+            <section aria-labelledby="cases-heading" className="space-y-3">
+              <h2 id="cases-heading" className="text-lg font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5" />{t('admin.fraudCases.title')}</h2>
+              <FraudCasesList />
+            </section>
+            <PrivacyRequestsPanel />
+            <section aria-labelledby="webhooks-heading" className="space-y-3">
+              <h2 id="webhooks-heading" className="text-lg font-semibold flex items-center gap-2"><Webhook className="h-5 w-5" />{t('admin.navigation.webhooks')}</h2>
+              <WebhookEventsPanel />
+            </section>
+            <section aria-labelledby="metrics-heading" className="space-y-3">
+              <h2 id="metrics-heading" className="text-lg font-semibold flex items-center gap-2"><Activity className="h-5 w-5" />{t('admin.apiMetrics.title')}</h2>
+              <ApiMetricsDashboard />
+            </section>
           </TabsContent>
         </Tabs>
       </main>

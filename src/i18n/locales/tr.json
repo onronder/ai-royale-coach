@@ -2965,7 +2965,11 @@
       "trials": "Denemeler",
       "winback": "Geri kazanım",
       "webhooks": "Webhook’lar",
-      "admin": "Yönetim"
+      "admin": "Yönetim",
+      "overview": "Genel Bakış",
+      "revenue": "Ücretli Üyeler / Gelir",
+      "campaigns": "Kampanyalar / İzinler",
+      "operations": "Operasyon"
     },
     "trials": {
       "paid": "Ödeme yaptı",
@@ -3139,6 +3143,144 @@
       "uncertainSent": "Belirsiz — sağlayıcı kaydını kontrol edin",
       "unverifiedTime": "zaman doğrulanmadı",
       "until": "{{date}} sonrasında uygun (tam bu anda hâlâ bekler)"
+    },
+    "revenue": {
+      "loading": "Yükleniyor…",
+      "error": "Rapor yüklenemedi. Hiçbir değer sıfır olarak gösterilmiyor.",
+      "retry": "Tekrar dene",
+      "range": "Kayıt dönemi",
+      "ranges": {
+        "7": "Son 7 gün",
+        "30": "Son 30 gün",
+        "90": "Son 90 gün",
+        "all": "Tüm zamanlar"
+      },
+      "includeTests": "Test ve yönetici hesaplarını dahil et",
+      "timezoneNote": "Tarihler Europe/Istanbul; kayıtlar UTC.",
+      "funnelTitle": "Kayıttan gelire",
+      "funnelNote": "Her adım aynı kayıt kohortu. Ekran adımları {{total}} kaydın {{measured}} tanesi için ölçülüyor (ölçüm başladıktan sonra).",
+      "screenStep": "ekran",
+      "notMeasured": "ölçülmedi",
+      "ofCohort": "Kohort içindeki pay",
+      "fromPrevious": "Önceki adımdan",
+      "biggestLoss": "En büyük ölçülmüş kayıp",
+      "noLoss": "Henüz ölçülmüş kayıp yok",
+      "mrr": "MRR",
+      "noData": "Veri yok",
+      "cash": "Net tahsilat (para birimine göre)",
+      "noPayments": "Pozitif ödenmiş sipariş yok",
+      "refunded": "İade",
+      "ofMature": "{{d}} olgun kayıttan {{n}}",
+      "detailTotal": "{{count}} hesap",
+      "empty": "Eşleşen hesap yok.",
+      "notObserved": "ölçülmedi",
+      "test": "test",
+      "renewalOff": "yenileme kapalı",
+      "prev": "Önceki",
+      "next": "Sonraki",
+      "directoryTitle": "Hesaplar",
+      "directoryNote": "Hesap başına tek satır. E-posta veya oyuncu etiketiyle ara.",
+      "searchPlaceholder": "E-posta veya oyuncu etiketi",
+      "unstartedTitle": "24–48 saat önce doğrulandı, henüz deneme yok",
+      "unstartedNote": "Salt okunur. Gönderilebilir, sunucunun güncel kampanya kararıdır; gönderim kapalıyken 0’dır.",
+      "metric": {
+        "signups": "Yeni kayıt",
+        "verified": "E-posta doğrulandı",
+        "offer_seen": "Deneme teklifi görüldü",
+        "trial_clicked": "“Denemeyi başlat” tıklandı",
+        "pricing_shown": "Fiyat penceresi görüldü",
+        "continue_clicked": "Polar’a devam edildi",
+        "checkout_created": "Polar ödeme bağlantısı oluştu",
+        "trial_started": "Deneme başladı",
+        "first_paid": "İlk ödenmiş sipariş",
+        "first_renewal": "İlk yenileme",
+        "mature_24h": "24 saati geçen kayıtlar",
+        "trial_24h": "24 saat içinde deneme",
+        "mature_48h": "48 saati geçen kayıtlar",
+        "trial_48h": "48 saat içinde deneme",
+        "d7_mature": "Bitişi + 7 günü geçen denemeler",
+        "d7_paid": "Deneme bitişi + 7 gün içinde ilk ödeme",
+        "d7_pending": "D7 sonucu bekleniyor",
+        "active_paid": "Aktif ücretli üye",
+        "renewal_off_access": "Yenileme kapalı, erişim sürüyor",
+        "past_due": "Ödeme gecikmiş",
+        "trialing": "Şu an denemede",
+        "lost_paid": "Ödedi, sonra kaybedildi"
+      },
+      "step": {
+        "trial_offer_seen": "Deneme teklifi görüldü",
+        "trial_start_clicked": "“Denemeyi başlat” tıklandı",
+        "pricing_shown": "Fiyat penceresi görüldü",
+        "polar_continue_clicked": "Polar’a devam edildi",
+        "checkout_created": "Polar ödeme bağlantısı oluştu",
+        "trial_started": "Deneme başladı",
+        "first_paid": "İlk ödenmiş sipariş"
+      },
+      "col": {
+        "account": "Hesap",
+        "signup": "Kayıt",
+        "trial": "Deneme başlangıcı",
+        "firstPaid": "İlk ödeme",
+        "status": "Abonelik",
+        "lastStep": "Son gözlenen adım",
+        "access": "Erişim",
+        "marketing": "Kampanya e-postası",
+        "security": "Güvenlik"
+      },
+      "access": {
+        "paid": "Ücretli",
+        "trialing": "Deneme",
+        "past_due": "Ödeme gecikmiş",
+        "ended": "Sona ermiş",
+        "never_subscribed": "Hiç abone olmamış"
+      },
+      "security": {
+        "ok": "Sorun yok",
+        "review": "İncelemede",
+        "blocked": "Engelli"
+      },
+      "marketing": {
+        "granted": "İzin verdi",
+        "withdrawn": "İzni geri çekti",
+        "none": "Seçim yok",
+        "pending": "Bekliyor"
+      },
+      "unstarted": {
+        "total": "Toplam",
+        "consented": "Geçerli kampanya izni",
+        "sendable": "Sunucuya göre gönderilebilir"
+      },
+      "mrrReason": {
+        "no_verified_polar_mrr_source": "Doğrulanmış Polar MRR’ı veya kanıtlanmış dönemsel fiyat kaynağı bağlı değil; MRR hesaplanmıyor.",
+        "unknown": "Kaynak yok."
+      },
+      "sub": {
+        "active": "Aktif",
+        "trialing": "Deneme",
+        "past_due": "Ödeme gecikmiş",
+        "canceled": "İptal",
+        "revoked": "Kapatıldı",
+        "cancelled": "İptal"
+      },
+      "reach": {
+        "title": "Kampanya e-postası erişimi (erişimi olan hesaplar)",
+        "note": "Sunucunun izin kurallarından. Hesap başına tek sayım. Kayıt hunisinden türetilmez.",
+        "active_paid": "Aktif ücretli",
+        "active_trial": "Denemede",
+        "already_chose": "Karar vermiş",
+        "invitable": "Davet edilebilir",
+        "waiting_missing_info": "Eksik bilgiyle bekleyen",
+        "reasons": "Bekleme gerekçeleri",
+        "reason": {
+          "email_unverified": "E-posta doğrulanmamış",
+          "market_unknown": "Pazar bilinmiyor",
+          "market_closed": "Pazar kapalı",
+          "age_unknown": "Yaş bilinmiyor",
+          "age_rule_pending": "Yaş kuralı bekliyor",
+          "iys_not_ready": "İYS hazır değil",
+          "closed": "İzin toplama kapalı"
+        }
+      }
     }
   },
   "oraclePage": {
