@@ -12,7 +12,7 @@ import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
 import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
 import { PaymentFailedEmail } from './_templates/payment-failed-email.tsx'
 import { CancellationEmail } from './_templates/cancellation-email.tsx'
-import { deliverPromo, sqlPromoStore, type PromoMail } from '../_shared/marketing-gate.ts'
+import { deliverPromo, sqlPromoStore, winbackCampaignKey, winbackRpc, type PromoMail } from '../_shared/marketing-gate.ts'
 import { signUnsubscribe } from '../_shared/unsubscribe-token.ts'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
