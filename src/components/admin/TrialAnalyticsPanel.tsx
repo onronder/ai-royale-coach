@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, AlertCircle, Inbox } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PrivacyRequestsPanel } from './PrivacyRequestsPanel';
+import { consentStateKey, emailWinback, inAppWinback, type WinbackCandidateLite } from '@/lib/winbackAudience';
 
 type MarketingRow = { user_id: string; subscription_id: string; trial_start: string; at_start: string; current: string; sendable: boolean; reason: string | null };
 type MarketingReport = { sendingEnabled: boolean; approvedMarkets: string[]; requireIys: boolean; rows: MarketingRow[];
@@ -77,6 +78,15 @@ export function TrialAnalyticsPanel() {
       return data as unknown as MarketingReport;
     },
   });
+  const candidates = useQuery({
+    queryKey: ['winback-eligible-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('admin_winback_candidates');
+      if (error) throw error;
+      return ((data ?? []) as unknown as (WinbackCandidateLite & { activity_score: number })[]).sort((a, b) => b.activity_score - a.activity_score);
+    },
+    staleTime: 30 * 1000,
+  });
   const consentFor = (r: Row) => marketing.data?.rows.find(m => m.user_id === r.user_id && m.subscription_id === r.subscription_id);
 
   const total = data.length;
@@ -106,8 +116,8 @@ export function TrialAnalyticsPanel() {
   ];
   const activeFilter = filters.find(f => f.key === filter) ?? filters[0];
   const visible = data.filter(activeFilter.match);
-  const inAppRows = data.filter(r => r.segment === 'expired_winback');
-  const emailRows = (marketing.data?.rows ?? []).filter(m => m.sendable).map(m => ({ key: m.subscription_id, email: data.find(r => r.subscription_id === m.subscription_id)?.email ?? null }));
+  const inAppRows = inAppWinback(data);
+  const emailRows = candidates.data ? emailWinback(inAppRows, candidates.data) : [];
   const canceled = data.filter(r => r.canceled_at !== null);
   const within1h = canceled.filter(r => (cancelHours(r) ?? 99) <= 1).length;
   const avgCancel = canceled.length ? canceled.reduce((a, r) => a + (cancelHours(r) ?? 0), 0) / canceled.length : null;
@@ -195,23 +205,32 @@ export function TrialAnalyticsPanel() {
           </Card>
           <div className="grid gap-4 md:grid-cols-2">
             {[
-              { title: t('conversion.overview.inApp'), note: t('conversion.overview.inAppNote'), rows: inAppRows.map(r => ({ key: r.subscription_id, email: r.email })) },
-              { title: t('conversion.overview.email'), note: t('conversion.overview.emailNote'), rows: emailRows },
+              { id: 'inapp', title: t('conversion.overview.inApp'), note: t('conversion.overview.inAppNote'), rows: inAppRows, state: 'ok' as const, retry: undefined },
+              { id: 'email', title: t('conversion.overview.email'), note: t('conversion.overview.emailNote'), rows: emailRows,
+                state: candidates.isError ? 'error' as const : candidates.data ? 'ok' as const : 'loading' as const, retry: () => void candidates.refetch() },
             ].map(g => (
-              <Card key={g.title}>
+              <Card key={g.id} data-testid={`winback-${g.id}`} className="min-w-0">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <CardTitle className="text-base">{g.title}</CardTitle>
-                    <Badge variant="secondary">{t('conversion.overview.listCount', { count: g.rows.length })}</Badge>
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <CardTitle className="min-w-0 text-base">{g.title}</CardTitle>
+                    {g.state === 'ok' ? <Badge variant="secondary" className="shrink-0">{t('conversion.overview.listCount', { count: g.rows.length })}</Badge>
+                      : g.state === 'loading' ? <Skeleton className="h-5 w-16 rounded-full" aria-label={t('common.loading')} /> : null}
                   </div>
                   <p className="text-xs text-muted-foreground">{g.note}</p>
                 </CardHeader>
                 <CardContent>
-                  {g.rows.length ? (
+                  {g.state === 'loading' ? <div className="space-y-2" aria-busy="true"><Skeleton className="h-8" /><Skeleton className="h-8" /></div>
+                    : g.state === 'error' ? (
+                      <div role="alert" className="flex flex-wrap items-center gap-2 text-sm">
+                        <AlertCircle className="h-4 w-4 text-destructive" />
+                        <span className="flex-1">{t('conversion.overview.emailLoadError')}</span>
+                        <Button size="sm" variant="outline" onClick={g.retry}>{t('conversion.overview.retry')}</Button>
+                      </div>
+                    ) : g.rows.length ? (
                     <ul className="max-h-48 divide-y overflow-y-auto rounded-md border text-sm">
-                      {g.rows.map(r => <li key={r.key} className="truncate px-3 py-2">{r.email ?? '—'}</li>)}
+                      {g.rows.map(r => <li key={r.user_id ?? r.subscription_id ?? undefined} className="truncate px-3 py-2" title={r.email ?? undefined}>{r.email ?? '—'}</li>)}
                     </ul>
-                  ) : <p className="text-sm text-muted-foreground">{g.title === t('conversion.overview.email') && !marketing.data ? (marketing.isError ? t('conversion.overview.loadError') : '…') : t('conversion.overview.none')}</p>}
+                  ) : <p className="text-sm text-muted-foreground">{t('conversion.overview.none')}</p>}
                 </CardContent>
               </Card>
             ))}
@@ -311,8 +330,8 @@ export function TrialAnalyticsPanel() {
                     <li key={r.subscription_id} className="p-3">
                       <div className="truncate text-sm font-medium">{r.email ?? '—'}</div>
                       <dl className="mt-2 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
-                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.atStart')}</dt><dd>{t('marketing.state.' + (m?.at_start ?? 'unknown'))}</dd></div>
-                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.today')}</dt><dd>{m ? t('marketing.state.' + m.current) : '—'}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.atStart')}</dt><dd>{t(consentStateKey(m?.at_start))}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.today')}</dt><dd>{m ? t(consentStateKey(m.current)) : '—'}</dd></div>
                         <div><dt className="text-xs text-muted-foreground">{t('marketing.admin.sendableToday')}</dt><dd>{m ? (m.sendable ? t('marketing.admin.yes') : <>{t('marketing.admin.no')} <span className="text-muted-foreground">({t('marketing.reason.' + (m.reason ?? 'unknown'))})</span></>) : '—'}</dd></div>
                       </dl>
                     </li>); })}
