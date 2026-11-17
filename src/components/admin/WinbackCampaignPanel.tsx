@@ -1,6 +1,7 @@
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { canResendWinback } from '@/lib/winbackAudience';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -227,13 +228,7 @@ export function WinbackCampaignPanel() {
     setConfirmBulkSend(false);
     
     // Filter users who haven't received email in last 30 days
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    const usersToEmail = displayedUsers.filter(user => {
-      if (!user.winback_email_sent_at) return true;
-      return new Date(user.winback_email_sent_at) < thirtyDaysAgo;
-    });
+    const usersToEmail = displayedUsers.filter(user => canResendWinback(user.winback_email_sent_at));
 
     let successCount = 0;
     let failCount = 0;
@@ -260,10 +255,7 @@ export function WinbackCampaignPanel() {
 
   // Check if user can receive email (not sent in last 30 days)
   const canSendToUser = (user: EligibleUser) => {
-    if (!user.winback_email_sent_at) return true;
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return new Date(user.winback_email_sent_at) < thirtyDaysAgo;
+    return canResendWinback(user.winback_email_sent_at);
   };
 
   // Count eligible users who can receive email (based on current filter)
