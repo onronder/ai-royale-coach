@@ -5,9 +5,12 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright')
 const base = process.env.FIRST_VALUE_URL || 'http://127.0.0.1:5183'
 assert(/^http:\/\/(127\.0\.0\.1|localhost):/.test(base), 'Only local fixture server is allowed')
 const out = process.env.FIRST_VALUE_EVIDENCE || '/private/tmp/royale-first-value-browser'
+const preview = process.argv.includes('--preview')
+const languages = preview ? ['tr'] : ['en', 'tr', 'es', 'fr', 'pt']
+const widths = preview ? [1280] : [390, 1280]
 await mkdir(out, { recursive: true })
 const browser = await chromium.launch({
-  headless: true,
+  headless: !preview,
   channel: process.env.PLAYWRIGHT_CHANNEL || 'chrome',
 })
 let checks = 0
@@ -24,8 +27,18 @@ const deck = Array.from({ length: 8 }, (_, i) => ({
   },
 }))
 const added = { ...deck[0], id: 26000010, name: 'Skeletons' }
-for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
-  for (const width of [390, 1280]) {
+const labelPreview = async (page) => {
+  if (!preview) return
+  await page.evaluate(() => {
+    const banner = document.createElement('p')
+    banner.textContent = 'YEREL ÖRNEK • Oyuncu, öneri, maç ve rapor verileri sahtedir. Canlı AI, ödeme ve e-posta bağlantıları kapalıdır.'
+    banner.style.cssText = 'position:sticky;top:0;z-index:99999;margin:0;padding:12px;background:#713f12;color:white;text-align:center;font:14px sans-serif'
+    document.body.prepend(banner)
+    document.title = 'AI Royale — yerel örnek'
+  })
+}
+for (const lang of languages)
+  for (const width of widths) {
     const ctx = await browser.newContext({
       viewport: { width, height: 900 },
       locale: lang,
@@ -41,6 +54,7 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
       unexpected = []
     let task = null,
       surveyClaimed = false
+    let accountMode = 'free'
     let failState=lang==='tr'&&width===390
     const actions = []
     page.on('pageerror', (e) => faults.push(e.message))
@@ -82,9 +96,9 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
       { user, lang },
     )
     const state = () => ({
-      reason: 'open',
-      enabled: true,
-      can_start: !task,
+      reason: accountMode === 'closed' ? 'closed' : accountMode === 'free' ? 'open' : 'history',
+      enabled: accountMode !== 'closed',
+      can_start: accountMode === 'free' && !task,
       can_read: !!task,
       outcome: task ? 'ready' : 'available',
       task,
@@ -96,7 +110,7 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
         headers: { 'access-control-allow-origin': '*' },
         body: JSON.stringify(data),
       })
-    await page.route('**/*', async (route) => {
+    await ctx.route('**/*', async (route) => {
       const req = route.request(),
         url = new URL(req.url())
       if (url.origin === base) return route.continue()
@@ -107,10 +121,13 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
         const body = req.postDataJSON()
         if (fn === 'get-subscription-status')
           return json(route, {
-            hasAccess: false,
-            subscription: null,
-            trial: { isActive: false, hasUsedTrial: false, daysRemaining: 0 },
-            accountSlots: 0,
+            hasAccess: ['active', 'trialing'].includes(accountMode),
+            subscription: ['free', 'closed'].includes(accountMode) ? null : {
+              status: accountMode, accountSlots: 1, needsAISelection: false,
+              currentPeriodEnd: new Date(Date.now() + 86400000).toISOString(),
+            },
+            trial: { isActive: accountMode === 'trialing', hasUsedTrial: !['free', 'closed'].includes(accountMode), daysRemaining: accountMode === 'trialing' ? 1 : 0 },
+            accountSlots: ['free', 'closed'].includes(accountMode) ? 0 : 1,
           })
         if (fn !== 'first-value-coaching') {
           unexpected.push(fn)
@@ -151,6 +168,10 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
           task.battle_result = { outcome: 'win', score: [3, 0], trophy_change: 20 }
           data = state()
         }
+        if (body.action === 'translate') {
+          const translated = labels[body.language] || labels.en
+          data = { translation: { reason: translated.yourAdvice, practice: translated.matchNote } }
+        }
         return route.fulfill({
           status: 200,
           contentType: 'application/x-ndjson',
@@ -179,6 +200,11 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
       base +
         (lang === 'en' ? '/select-player' : lang === 'tr' ? '/player/P0LY' : '/first-coaching'),
     )
+    if (preview) {
+      await page.getByRole('heading', { name: labels[lang].title, exact: true }).waitFor()
+      await labelPreview(page)
+      continue
+    }
     if(lang==='tr'&&width===390){await page.getByRole('alert').waitFor();assert.equal(actions.length,0);await page.getByRole('button',{name:labels[lang].retry,exact:true}).click();}
     await page.getByRole('heading', { name: labels[lang].title, exact: true }).waitFor()
     await page.locator('#first-tag').fill('#P0LY')
@@ -228,17 +254,41 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
     assert.deepEqual(faults, [])
     assert.equal(await page.getByText(/firstValue\.|marketing\.state\./).count(), 0)
     evidence.push({ lang, width, actions, unexpected, faults })
+    if (lang === 'en' && width === 1280) {
+      // Exercise the real route boundary and existing selection/paywall screens.
+      const savedTask = task
+      task = null
+      accountMode = 'closed'
+      await page.goto(base + '/select-player')
+      await page.getByRole('heading', { name: 'Subscription Required', exact: true }).waitFor()
+      assert.equal(await page.locator('#first-tag').count(), 0)
+      task = savedTask
+      await page.goto(base + '/first-coaching')
+      await page.getByRole('heading', { name: labels.en.result, exact: true }).waitFor()
+      for (const status of ['active', 'trialing', 'past_due', 'canceled']) {
+        accountMode = status
+        await page.goto(base + '/first-coaching')
+        await page.locator('#newTag').waitFor()
+        assert.equal(new URL(page.url()).pathname, '/select-player')
+        assert.equal(await page.locator('#first-tag').count(), 0)
+        assert.equal(await page.getByRole('heading', { name: labels.en.title, exact: true }).count(), 0)
+      }
+      assert.equal(actions.filter((x) => x === 'start').length, 1)
+      assert.deepEqual(unexpected, [])
+      assert.deepEqual(faults, [])
+      evidence.push({ routeBoundaries: ['closed-paywall', 'closed-saved-result', 'active', 'trialing', 'past_due', 'canceled'], generationCalls: 1 })
+    }
     checks++
     await ctx.close()
   }
-for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
-  for (const width of [390, 1280]) {
+for (const lang of languages)
+  for (const width of widths) {
     const ctx = await browser.newContext({ viewport: { width, height: 900 }, locale: lang })
     const page = await ctx.newPage()
     const faults = []
     page.on('pageerror', (e) => faults.push(e.message))
     await page.addInitScript((lang) => localStorage.setItem('i18nextLng', lang), lang)
-    await page.route('**/*', async (route) => {
+    await ctx.route('**/*', async (route) => {
       const url = new URL(route.request().url())
       if (url.origin === base) return route.continue()
       if (url.hostname !== 'fixture.supabase.co') return route.abort()
@@ -305,6 +355,10 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
     })
     await page.goto(base + '/tests/integration/firstValue/admin.html')
     await page.getByText(labels[lang].admin.closed, { exact: true }).waitFor()
+    if (preview) {
+      await labelPreview(page)
+      continue
+    }
     await page.screenshot({ path: `${out}/${lang}-${width}-admin.png`, fullPage: true })
     assert.equal(
       await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
@@ -315,6 +369,11 @@ for (const lang of ['en', 'tr', 'es', 'fr', 'pt'])
     evidence.push({ lang, width, admin: true, faults })
     await ctx.close()
   }
+if (preview) {
+  console.log('Local interactive preview opened: player and admin windows. All external requests are intercepted; no live services. Close Chrome to stop.')
+  await new Promise((resolve) => browser.on('disconnected', resolve))
+  process.exit(0)
+}
 await browser.close()
 await writeFile(out + '/results.json', JSON.stringify(evidence, null, 2))
 console.log(

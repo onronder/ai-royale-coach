@@ -37,3 +37,10 @@ node tests/integration/firstValue/browser.mjs
 Optional `PLAYWRIGHT_MODULE` points to an existing Playwright module; `PLAYWRIGHT_CHANNEL` defaults to `chrome`. Set `FIRST_VALUE_EVIDENCE` to choose the screenshot/output directory. The base URL must be localhost. External requests are aborted, and `fixture.supabase.co` requests are mocked. This verifies the real page/components, not a real backend or provider. Mobile uses a touch/iPhone user-agent, desktop uses the QR link. One journey exercises a simulated visibility return and automatic match check. Both `/select-player` and player links are exercised. `admin.html`/`admin.tsx` are local-only harness files and are not Vite production entries.
 
 After tests, stop the disposable PostgreSQL process with `pg_ctl -D /tmp/first-value-pg/data stop`.
+
+For an interactive preview, keep the fixture Vite server above running and run
+`node tests/integration/firstValue/browser.mjs --preview`. This opens player and
+admin windows in Chrome with a visible example-data banner and intercepted
+requests. Try the player flow with `#P0LY`; translations and the example match
+work without live services. Close those Chrome windows to stop the preview.
+Do not open `admin.html` as a `file://` URL: it needs Vite and these fixtures.

@@ -50,7 +50,7 @@ Yönetim → Genel Bakış içindeki yeni bölüm hesap sayar, tıklama saymaz. 
 
 Yerel kabul: 59 kontrol; mevcut uygulama 141 test; kampanya izni 41 test; gönderim güvenliği 25 test; gelir 93 kontrol; mevcut dönüşüm kabulü geçti. Tür denetimi, iki işlevin Deno kontrolü, değişen ön yüz dosyalarının lint kontrolü ve üretim derlemesi geçti. Derlemenin mevcut büyük paket uyarısı devam eder. Yeni sayfa ayrı yüklenir; kendi paketi yaklaşık 11 KB / gzip 3.8 KB'dir. 1000 sentetik hesaplı yeni rapor yerelde yaklaşık 232 ms sürdü; bu canlı performans garantisi değildir.
 
-EN/TR/ES/FR/PT için 10 mobil/masaüstü kullanıcı akışı ve 10 yönetici görünümü sahte ağ yanıtlarıyla kontrol edildi. Gerçek AI yanıt kalitesi, sağlayıcı gecikmesi ve doğal ödeme dönüşümü canlı kabulde açık kalır. Ekran kayıtları örnek hesaplar içerir.
+EN/TR/ES/FR/PT için 10 mobil/masaüstü kullanıcı akışı ve 10 yönetici görünümü sahte ağ yanıtlarıyla kontrol edildi. Kapalı özellikte normal ödeme ekranı, kapalıyken kayıtlı sonuç erişimi ve active/trialing/past_due/canceled hesapların mevcut ekrana dönüşü de gerçek tarayıcıda sahte servislerle geçti. Yerel etkileşimli önizleme komutu kabul README dosyasındadır; test dosyası doğrudan file:// adresinden açılmaz. Gerçek AI yanıt kalitesi, sağlayıcı gecikmesi ve doğal ödeme dönüşümü canlı kabulde açık kalır. Ekran kayıtları örnek hesaplar içerir.
 
 ## Yayın sırası ve kayıt
 
