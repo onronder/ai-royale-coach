@@ -54,7 +54,7 @@ beforeAll(() => {
   if (psql('show listen_addresses', 'postgres') !== '') throw new Error('test Postgres must be socket-only');
   psql(`CREATE DATABASE ${DB}`, 'postgres');
   const f = (p: string) => readFileSync(new URL(p, import.meta.url), 'utf8');
-  const sql = [f('../marketing/base.sql'), f('../conversion/fixture.sql'), f('../revenue/platform.sql'),
+  const sql = [f('../marketing/base.sql'), f('../conversion/fixture.sql'), f('../revenue/platform.sql'),f('../firstValue/platform.sql'),f('../../../drizzle/migrations/0006_first_session_coaching.sql'),f('../../../drizzle/migrations/0014_coaching_translations.sql'),
     ...['0020_marketing_consent', '0021_marketing_collection_rules_and_provider_blocks', '0022_marketing_market_scope_and_unresolved_sends',
       '0023_marketing_hidden_box_and_single_invite_claim', '0024_trial_conversion', '0026_winback_account_cooldown', '0027_winback_verified_first_acceptance']
       .map(m => f(`../../../drizzle/migrations/${m}.sql`)), f('fixture.sql')].join('\n;\n');

@@ -24,6 +24,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const SelectPlayer = lazy(() => import("./pages/SelectPlayer"));
+const FirstCoaching = lazy(() => import("./pages/FirstCoaching"));
 const Settings = lazy(() => import("./pages/Settings"));
 const EmailPreferences = lazy(() => import("./pages/EmailPreferences"));
 const Help = lazy(() => import("./pages/Help"));
@@ -102,6 +103,7 @@ const App = () => {
                       <Route path="/changelog" element={<Changelog />} />
                       <Route path="/maintenance" element={<Maintenance />} />
                       {/* Signed-in only: stays reachable after a subscription ends */}
+                      <Route path="/first-coaching" element={<FirstCoaching />} />
                       <Route path="/settings/email" element={<EmailPreferences />} />
                       
                       {/* PROTECTED ROUTES - Subscription required */}

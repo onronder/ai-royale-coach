@@ -1,3 +1,4 @@
+import { FirstValueEntry } from '@/components/coaching/FirstValueEntry';
 import { PaymentRecovery } from './PaymentRecovery';
 import { observeTrialStep } from '@/lib/trialObservation';
 import { coachingReturnTag } from '@/lib/coachingReturnTag';
@@ -75,6 +76,11 @@ export function RequireSubscription({ children, allowReadOnlyAfterTrial = false 
 
   if (allowReadOnlyAfterTrial && subscriptionStatus) {
     return (<><TrialEndedBanner />{children}</>);
+  }
+
+  if ((location.pathname === '/select-player' || location.pathname.startsWith('/player/')) &&
+      !hasUsedTrial && !subscriptionStatus && !new URLSearchParams(location.search).has('skipFirstValue')) {
+    return <FirstValueEntry playerTag={coachingReturnTag(location.pathname.split('/')[2] || null)} />;
   }
 
   // Authenticated but no access - show paywall

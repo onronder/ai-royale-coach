@@ -130,3 +130,6 @@ verify_jwt = true
 
 [functions.polar-mrr]
 verify_jwt = true
+
+[functions.first-value-coaching]
+verify_jwt = true

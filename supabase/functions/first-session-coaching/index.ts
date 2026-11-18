@@ -4,14 +4,12 @@ import { coachingReading, readingFields, type ReadingText } from '../_shared/coa
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { z } from 'npm:zod@3';
-import { Output, streamText } from 'npm:ai@6';
-import { createOpenAI } from 'npm:@ai-sdk/openai@3';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { checkAiAccess } from '../_shared/ai-access.ts';
 import { coachingCard, coachingSwap, formatCoachingAdvice } from '../_shared/coaching-advice.ts';
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, latestLadderTrophies, normalizeTag } from '../_shared/coaching-match.ts';
-import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayResponseHeaders } from '../_shared/run-id.ts';
+import { createCoachingAI } from '../_shared/coaching-ai.ts';
 const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up','translate']), language:z.string().optional().transform(productLanguage), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
 const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
@@ -33,6 +31,10 @@ async function handleRequest(req: Request): Promise<Response> {
  if(readError) return reply({error:'Unable to load task'},503);
  let task=storedTask;
  if(action==='get') return reply({task,read_only:!access.allowed});
+ if(action==='translate'&&!access.allowed) {
+   const {data:free,error}=await db.rpc('first_value_state',{p_user:user.id});
+   if(error || (task && free?.task?.id===task.id)) return reply({error:'Use the first coaching screen',subscription_required:true},403);
+ }
  if(action !== 'translate' && !access.allowed) return reply({error:'Subscription required',subscription_required:true},403);
  if(action !== 'translate' && !access.isTrial&&!access.isAdmin&&!owner.ai_enabled) return reply({error:'AI not enabled for this player'},403);
  let generationOwned=false; let followUpOwned=false;
@@ -43,14 +45,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if((action==='start' || action==='follow-up') && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;
  };
- const ai=async<T>(prompt:string,schema:z.ZodType<T>,system=`You are a Clash Royale coach. Respond in ${language}. Select card IDs using displayLevel, the level in the game. In reason, practice and answer give tactical advice only. Use {card} to refer to the incoming card. Do not write any card names, numbers, levels or swap instructions in prose. The app supplies the exact names and levels. Logs do not reveal placement, elixir use or timing: never invent observed gameplay. Give short, specific advice; do not promise wins or trophies.`)=>{
-   const run=createLovableAiGatewayRunIdFetch();
-   const provider=createOpenAI({apiKey:aiKey,baseURL:'https://ai.gateway.lovable.dev/v1',headers:{'Lovable-API-Key':aiKey,'X-Lovable-AIG-SDK':'vercel-ai-sdk'},fetch:run.fetch});
-   const result=streamText({model:provider.responses('openai/gpt-6-astra'),system,messages:[{role:'user',content:prompt}],output:Output.object({schema}),abortSignal:req.signal,maxRetries:0,providerOptions:{openai:{store:false,forceReasoning:true,reasoningEffort:'low',reasoningSummary:'auto',include:['reasoning.encrypted_content']}}});
-   const output=await result.output; const usage=await result.usage; const response=await result.response;
-   if(!output) throw new Error('AI returned no coaching advice');
-   return {output,usage,runId:run.getRunId(),headers:getLovableAiGatewayResponseHeaders(response.headers,corsHeaders)};
- };
+ const ai=createCoachingAI(aiKey,req.signal,language);
  try {
    if (action === 'translate') {
      const reading = task && coachingReading(task, language);

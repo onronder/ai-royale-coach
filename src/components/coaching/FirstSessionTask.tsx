@@ -21,7 +21,7 @@ import { coachingReading, readingText, type ReadingText } from '../../../supabas
 import { coachingSwap } from '../../../supabase/functions/_shared/coaching-advice';
 
 interface MatchResult { outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
-interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
+export interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{remove_id:number;add_id:number;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
 interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  userId:string;playerTag:string;onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;

@@ -9,6 +9,7 @@ import pt from './locales/pt.json';
 import tr from './locales/tr.json';
 import fr from './locales/fr.json';
 import { coachingTranslations } from './coaching';
+import { firstValueTranslations } from './firstValue';
 
 import enHelp from './locales/en.help.json';
 import esHelp from './locales/es.help.json';
@@ -30,11 +31,11 @@ const i18nInit = i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { translation: { ...en, ...enHelp, coaching: coachingTranslations.en } },
-      es: { translation: { ...es, ...esHelp, coaching: coachingTranslations.es } },
-      pt: { translation: { ...pt, ...ptHelp, coaching: coachingTranslations.pt } },
-      tr: { translation: { ...tr, ...trHelp, coaching: coachingTranslations.tr } },
-      fr: { translation: { ...fr, ...frHelp, coaching: coachingTranslations.fr } },
+      en: { translation: { ...en, ...enHelp, coaching: coachingTranslations.en, firstValue: firstValueTranslations.en } },
+      es: { translation: { ...es, ...esHelp, coaching: coachingTranslations.es, firstValue: firstValueTranslations.es } },
+      pt: { translation: { ...pt, ...ptHelp, coaching: coachingTranslations.pt, firstValue: firstValueTranslations.pt } },
+      tr: { translation: { ...tr, ...trHelp, coaching: coachingTranslations.tr, firstValue: firstValueTranslations.tr } },
+      fr: { translation: { ...fr, ...frHelp, coaching: coachingTranslations.fr, firstValue: firstValueTranslations.fr } },
     },
     supportedLngs: languages.map(language => language.code),
     load: 'languageOnly',
