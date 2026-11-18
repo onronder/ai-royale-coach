@@ -267,6 +267,13 @@
       "when": 1794966616650,
       "tag": "0037_apply_pending_first_value_noop",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1794993867482,
+      "tag": "0038_player_battle_history",
+      "breakpoints": true
     }
   ]
 }
