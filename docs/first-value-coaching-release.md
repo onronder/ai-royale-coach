@@ -65,12 +65,12 @@ Bu PR'ı birleştirmek veya Lovable'da yayımlamak tek başına ücretsiz üreti
 
 | Aşama | Durum / sürüm / UTC |
 | --- | --- |
-| GitHub birleşmesi | Bekliyor |
-| Canlı 0035–0036 | Bekliyor |
-| İki koçluk işlevinin dağıtımı | Bekliyor |
-| Lovable site yayını | Bekliyor |
-| Ücretsiz üretimin açılması | Bekliyor; varsayılan kapalı |
-| Kampanya gönderimi | Kapalı kalacak; bu çalışma değiştirmez |
+| GitHub birleşmesi | PR #21, `f09468c8560b63ad8f7e45e7d603e6b123eb8273`, 2026-11-18 01:48:23 UTC; test edilen uç `53ede99` |
+| Canlı 0035–0036 | 2026-11-18 01:50:26 UTC itibarıyla doğrulandı. Platformun geçişi çalıştırması için boş `0037` makbuzu eklendi; otomatik tip/journal kaydı `c8e7dc6` |
+| İki koçluk işlevinin dağıtımı | `f09468c` kaynağı, 2026-11-18 01:50:26–01:50:52 UTC |
+| Lovable site yayını | Kullanıcının Publish → Update işlemi bekleniyor |
+| Ücretsiz üretimin açılması | Bekliyor; canlıda `enabled=false`, `launched_at=NULL` |
+| Kampanya gönderimi | Canlı geçiş kontrolünde `sending_enabled=false`; değiştirilmedi |
 
 Salt okunur geçiş kontrolü:
 
@@ -84,3 +84,12 @@ GROUP BY user_id HAVING count(*)>1;
 ```
 
 Sorunda yeni üretimi durdurmak için yalnızca `first_value_settings.enabled=false` yapılır. Haklar ve belirsiz çağrılar silinmez; tekrar üretime çevrilmez. Kaydedilmiş öneri/maç erişimi ve normal abonelik akışı devam eder.
+
+## 18 Kasım yayın kabul kaydı
+
+- Lovable Cloud dağıtım raporu: geçiş öncesi yeni nesneler yoktu; sonrasında altı tablonun RLS/yetkileri ve 19 SQL işlevinin gövde parmak izleri kaynakla eşleşti. Bu SQL karşılaştırması platformun raporudur. Yeni hesap/çağrı/olay/hata/hız sınırı tabloları boş; veritabanı ekranında satır sayıları ayrıca gözlendi.
+- Gönderilen kaynak makbuzları: first-value `1558bb6081a036e7cd5769cf3a41d0bb3a8719601c519e035e7fd81c1101a395`, first-session `349403fbb603e2d32fd68de7bb440dde621a77cfd1c80716afad70eb80d365fd`. Platform dağıtım sürümü/kimliği ve çalışan kodu geri okuma olanağı vermedi.
+- Bağımsız canlı kontrol, 01:52:31 UTC: iki işlevin CORS ön isteği 200; oturumsuz istekler reddedildi. first-value dış HTTP 401, first-session mevcut akış protokolünde dış HTTP 200 içinde son durum 401 döndürdü. Yeni durum/rapor RPC'leri ve iki yeni tabloya anonim erişim 401/izin reddi. Gerçek AI, ödeme veya e-posta çağrılmadı.
+- Otomatik tipleri içeren `c8e7dc6` temiz kopyasında `npm ci`, tür denetimi, üretim derlemesi ve 59 kabul kontrolü yeniden geçti. Bağımlılıklar değiştirilmedi; mevcut npm taraması 27 uyarı (10 orta, 17 yüksek), Vite mevcut büyük paket uyarısı verdi. Bu çalışma bağımlılık güvenliği denetimini tamamladığı iddiasında değildir.
+- Etkileşimli örnek önizlemede oyuncu ve yönetici pencereleri açıldı. Güncel Lovable giriş önizlemesi yenilendi ve görüntülendi. Eski GitHub içe aktarma kartlarında kalan “Build unsuccessful” işaretinin barındırılan derleme kaydı/yeniden deneme kontrolü erişilebilir değildi; yalnızca çalışan önizleme ve temiz yerel üretim derlemesi doğrulandı.
+- Site henüz yayınlanmadı. Ücretsiz üretim açılmadı. Gerçek öneri kalitesi, gerçek oyun verisiyle ilk doğal maç ve yayın sonrası abonelik ekranı kabulü sonraki aşamadır.
