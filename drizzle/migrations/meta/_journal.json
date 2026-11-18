@@ -267,6 +267,13 @@
       "when": 1794966616650,
       "tag": "0037_apply_pending_first_value_noop",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1795017761367,
+      "tag": "0039_protect_profile_entitlements",
+      "breakpoints": true
     }
   ]
 }
