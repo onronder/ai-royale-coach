@@ -913,6 +913,204 @@ export type Database = {
         }
         Relationships: []
       }
+      first_value_accounts: {
+        Row: {
+          anchor_at: string
+          cohort: string
+          feedback: string | null
+          feedback_prompted_at: string | null
+          first_seen_at: string
+          player_tag: string | null
+          task_id: string | null
+          user_id: string
+        }
+        Insert: {
+          anchor_at: string
+          cohort: string
+          feedback?: string | null
+          feedback_prompted_at?: string | null
+          first_seen_at?: string
+          player_tag?: string | null
+          task_id?: string | null
+          user_id: string
+        }
+        Update: {
+          anchor_at?: string
+          cohort?: string
+          feedback?: string | null
+          feedback_prompted_at?: string | null
+          first_seen_at?: string
+          player_tag?: string | null
+          task_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "first_value_accounts_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "first_value_accounts_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
+      }
+      first_value_calls: {
+        Row: {
+          completed_at: string | null
+          cost_usd: number | null
+          duration_ms: number | null
+          error_code: string | null
+          id: string
+          input_tokens: number | null
+          kind: string
+          language: string
+          model: string
+          output_tokens: number | null
+          run_id: string | null
+          source_hash: string
+          started_at: string
+          status: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          cost_usd?: number | null
+          duration_ms?: number | null
+          error_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          kind: string
+          language: string
+          model: string
+          output_tokens?: number | null
+          run_id?: string | null
+          source_hash?: string
+          started_at?: string
+          status?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          cost_usd?: number | null
+          duration_ms?: number | null
+          error_code?: string | null
+          id?: string
+          input_tokens?: number | null
+          kind?: string
+          language?: string
+          model?: string
+          output_tokens?: number | null
+          run_id?: string | null
+          source_hash?: string
+          started_at?: string
+          status?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "first_value_calls_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "coaching_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "first_value_calls_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "current_trial_coaching"
+            referencedColumns: ["task_id"]
+          },
+        ]
+      }
+      first_value_errors: {
+        Row: {
+          action: string
+          code: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          code: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          code?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      first_value_events: {
+        Row: {
+          created_at: string
+          step: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          step: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          step?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      first_value_rate_limits: {
+        Row: {
+          requests: number
+          user_id: string
+          window_started_at: string
+        }
+        Insert: {
+          requests?: number
+          user_id: string
+          window_started_at?: string
+        }
+        Update: {
+          requests?: number
+          user_id?: string
+          window_started_at?: string
+        }
+        Relationships: []
+      }
+      first_value_settings: {
+        Row: {
+          enabled: boolean
+          launched_at: string | null
+          singleton: boolean
+        }
+        Insert: {
+          enabled?: boolean
+          launched_at?: string | null
+          singleton?: boolean
+        }
+        Update: {
+          enabled?: boolean
+          launched_at?: string | null
+          singleton?: boolean
+        }
+        Relationships: []
+      }
       fraud_signals: {
         Row: {
           created_at: string
@@ -2681,6 +2879,17 @@ export type Database = {
     }
     Functions: {
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
+      admin_first_value_report: {
+        Args: {
+          p_at?: string
+          p_cohort?: string
+          p_from?: string
+          p_metric?: string
+          p_offset?: number
+          p_to?: string
+        }
+        Returns: Json
+      }
       admin_marketing_reach: { Args: never; Returns: Json }
       admin_privacy_requests: {
         Args: never
@@ -2843,6 +3052,24 @@ export type Database = {
           user_id: string
         }[]
       }
+      claim_first_value: {
+        Args: {
+          p_language: string
+          p_model: string
+          p_tag: string
+          p_user: string
+        }
+        Returns: Json
+      }
+      claim_first_value_translation: {
+        Args: {
+          p_hash: string
+          p_language: string
+          p_model: string
+          p_user: string
+        }
+        Returns: Json
+      }
       claim_marketing_delivery: {
         Args: { p_campaign: string; p_payload: Json; p_user: string }
         Returns: Json
@@ -2924,6 +3151,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      fail_first_value: {
+        Args: { p_call: string; p_code: string; p_usage?: Json; p_user: string }
+        Returns: undefined
+      }
+      finish_first_value: {
+        Args: { p_call: string; p_result: Json; p_usage: Json; p_user: string }
+        Returns: undefined
+      }
       finish_polar_order_sync: {
         Args: { p_more: boolean; p_ticket: string }
         Returns: boolean
@@ -2932,6 +3167,42 @@ export type Database = {
         Args: { p_id: string; p_success: boolean }
         Returns: undefined
       }
+      first_value_cohort: {
+        Args: { p_at: string; p_cohort: string; p_from: string; p_to: string }
+        Returns: {
+          ai_calls: number
+          anchor_at: string
+          cohort: string
+          cost_usd: number
+          email: string
+          feedback: string
+          input_tokens: number
+          output_tokens: number
+          paid_at: string
+          renewal_at: string
+          steps: Json
+          trial_at: string
+          uncertain_calls: number
+          undated_payment: boolean
+          unknown_cost_calls: number
+          user_id: string
+        }[]
+      }
+      first_value_feedback: { Args: { p_reason?: string }; Returns: boolean }
+      first_value_metric: {
+        Args: { p_at: string; p_metric: string; p_row: Json }
+        Returns: boolean
+      }
+      first_value_observe: {
+        Args: { p_step: string; p_user: string }
+        Returns: undefined
+      }
+      first_value_reason: { Args: { p_user: string }; Returns: string }
+      first_value_request_allowed: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
+      first_value_state: { Args: { p_user: string }; Returns: Json }
       freeze_reminder_attempt: {
         Args: {
           p_payload: Json
@@ -2974,6 +3245,7 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      get_my_first_value: { Args: never; Returns: Json }
       get_my_marketing_consent: {
         Args: { p_claim_invite?: boolean }
         Returns: Json
@@ -3010,6 +3282,7 @@ export type Database = {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
       }
+      mark_first_value_shown: { Args: { p_user: string }; Returns: Json }
       mark_marketing_delivery_uncertain: {
         Args: { p_campaign: string; p_key: string; p_user: string }
         Returns: undefined
@@ -3083,6 +3356,15 @@ export type Database = {
         Args: { p_message: string; p_user: string }
         Returns: boolean
       }
+      record_first_value_error: {
+        Args: { p_action: string; p_code: string; p_user: string }
+        Returns: undefined
+      }
+      record_first_value_match: {
+        Args: { p_match: Json; p_shown: string; p_user: string }
+        Returns: Json
+      }
+      record_first_value_step: { Args: { p_step: string }; Returns: undefined }
       record_marketing_delivery: {
         Args: {
           p_campaign: string

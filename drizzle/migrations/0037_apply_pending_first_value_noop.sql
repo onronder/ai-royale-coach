@@ -1,0 +1,1 @@
+-- No-op receipt: apply only the already-synced reviewed pending migrations 0035 and 0036.

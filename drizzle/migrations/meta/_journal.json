@@ -260,6 +260,13 @@
       "when": 1794943145245,
       "tag": "0036_first_value_reporting",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1794966616650,
+      "tag": "0037_apply_pending_first_value_noop",
+      "breakpoints": true
     }
   ]
 }
