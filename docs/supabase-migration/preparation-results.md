@@ -2,6 +2,8 @@
 
 Kayıt zamanı: 10:44 UTC / 13:44 Türkiye. Kaynak inceleme tabanı: `bb618be1ad53c118e0293009320f34465b411e97`.
 
+Bu ilk hazırlık kaydından sonra kullanıcı kaynak yedeğini indirdi. Sonraki aşama için [gerçek arşiv incelemesine](export-inspection-2026-11-18.md) bakın; aşağıdaki test sayıları ilk sentetik hazırlığın sonuçlarıdır.
+
 ## Yapılanlar
 
 - Ayrı `codex/supabase-migration-rehearsal` dalı ve çalışma kopyası hazırlandı. Uygulamanın `.env`, `supabase/config.toml`, runtime kodu, migration journal veya mevcut migrations dosyaları değiştirilmedi. PR #22 bu çalışmaya dahil değil.

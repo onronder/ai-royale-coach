@@ -64,7 +64,7 @@ Oturumlar yeniden kullanılmayacak. Henüz kullanılmamış doğrulama, şifre s
 
 ## 5. Gerçek kaynak yedeği ve geri yükleme sırası
 
-**Gerekli girdi:** Lovable'ın tam veritabanı dışa aktarımı, bunun kaynak proje kimliği/sürümü/zamanı ve ayrı Storage dosyaları. Kullanıcıdan arşivin yerel dosya yolu istendi; bu hazırlıkta kaynak yedeği indirilmedi. Arşiv parola özetleri ve kişisel veriler içerebilir; özel klasörde, sınırlı erişimle tutulur, sohbete/Git'e yüklenmez. Prova tamamlanınca kopyaların silinme zamanı kaydedilir.
+**Gerekli girdi:** Lovable'ın tam veritabanı dışa aktarımı, bunun kaynak proje kimliği/sürümü/zamanı ve ayrı Storage dosyaları. Kullanıcının indirdiği 18 Kasım arşivi yerelde bulundu ve bütün veri bölümü açıldı; [ilk gerçek yedek incelemesi](export-inspection-2026-11-18.md) 900 kullanıcıyı, hesap ilişkilerini, hedef Auth şema karşılaştırmasını ve 74 tablonun yerel geri yükleme sonucunu kaydeder. Gerçek veriler yeni Supabase'e henüz yüklenmedi. Arşiv parola özetleri ve kişisel veriler içerir; özel klasörde, sınırlı erişimle tutulur, sohbete/Git'e yüklenmez. Prova tamamlanınca kopyaların silinme zamanı kaydedilir.
 
 1. Arşivin SHA-256 değeri ve boyutu kaydedilir. PostgreSQL sürümü, arşiv biçimi ve sıkıştırması doğrulanır. `inspect_archive.py` yalnızca içindekiler listesini okur; veri açma başarısı veya güvenli geri yükleme onayı vermez.
 2. Kaynak arşiviyle Supabase ve Drizzle uygulanmış migration kayıtları karşılaştırılır. Kaynakta olup Git'te olmayan nesneler ayrı fark listesine girer. `0037` gibi boş tetikleyici makbuzlar tekrar çalıştırılacak iş gibi yorumlanmaz.
@@ -144,7 +144,7 @@ Tercih edilen yaklaşım, prova süresinde ölçülen kısa bir son yazma pencer
 | E — uygulama kabulü | Beş dil ve üç hak yolu, admin gelir, performans ve kurtarma ölçümü | Kaynakla kabul edilen eşdeğerlik |
 | F — canlı geçiş | Ayrı onay, final delta, yayın ve iş açma makbuzları | Kampanya kapalı, tek çalışan sistem, rollback planı hazır |
 
-Bir sonraki somut ihtiyaç gerçek Lovable arşividir. Mevcut sözleşme/bölge bilgileriyle veri kopyasının saklanacağı yer ve erişim sahipleri kaydedilir. Bu işlemden önce kaynak proje silinmez, bağlantısı kesilmez veya anahtarları değiştirilmez. Kaynakta yapılacak gelecekteki salt okunur sayımların zamanı ve kullanılan snapshot rapora yazılır.
+Gerçek Lovable arşivi alındı; sıradaki iş incelenmiş geri yükleme listesi ve hedef karantinasıdır. Mevcut sözleşme/bölge bilgileriyle veri kopyasının saklanacağı yer ve erişim sahipleri kaydedilir. Bu işlemden önce kaynak proje silinmez, bağlantısı kesilmez veya anahtarları değiştirilmez. Kaynakta yapılacak gelecekteki salt okunur sayımların zamanı ve kullanılan snapshot rapora yazılır.
 
 ## 11. Resmî kaynaklar ve yorum sınırı
 
