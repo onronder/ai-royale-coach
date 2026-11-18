@@ -1,0 +1,1269 @@
+{
+  "format": 1,
+  "evidence": "source only, not deployed inventory",
+  "source_revision": "bb618be1ad53c118e0293009320f34465b411e97",
+  "function_count": 39,
+  "functions": [
+    {
+      "path": "supabase/functions/admin-fraud-action/index.ts",
+      "sha256": "b1b2c17883f09f4546548b78c2bf5bfd74cad5f3f68754f533cf74fc16a7e4f9"
+    },
+    {
+      "path": "supabase/functions/analyze-deck/index.ts",
+      "sha256": "5bbd8327240cfea30e2b641aaff9aaaaad62c3b84879e601a7a7936b92876a1e"
+    },
+    {
+      "path": "supabase/functions/analyze-deck-advanced/index.ts",
+      "sha256": "abf633796e86e62c3681b533b1bd3aed1a66fe8192d81105ce2ede39e1e0588c"
+    },
+    {
+      "path": "supabase/functions/analyze-deck-builder/index.ts",
+      "sha256": "457606c15ba795ee0fe9d13dbda5067850b2c4834c32c11d5e910c5d9acf6f79"
+    },
+    {
+      "path": "supabase/functions/analyze-match/index.ts",
+      "sha256": "9878c9ba5a97a66a430e5851bb91649c84f236e4ae00160a3b78d70b1ff01f8d"
+    },
+    {
+      "path": "supabase/functions/analyze-meta-trends/index.ts",
+      "sha256": "5b783a058484caba49a6a6df581bc4e04f908acc2c426a6704f05e8afa0c5740"
+    },
+    {
+      "path": "supabase/functions/analyze-player/index.ts",
+      "sha256": "326fb26f3084b1fed5bb20555634da1716b6ccb693818a077f9977d52d804066"
+    },
+    {
+      "path": "supabase/functions/backfill-polar-orders/index.ts",
+      "sha256": "e1ebf2fcaab506d5424df9b9ce118cc1920504505f90c09579927452f5c27d19"
+    },
+    {
+      "path": "supabase/functions/calculate-card-mastery/index.ts",
+      "sha256": "28dddd968773d7657f6c7cd4e05651fc3d28c006aaaa4be96e34d841d3c1326b"
+    },
+    {
+      "path": "supabase/functions/calculate-player-stats/index.ts",
+      "sha256": "4f68157bf7b3c16000656ccff4861f1e34230e5e1c9e4029fa9c638896b5384b"
+    },
+    {
+      "path": "supabase/functions/cancel-subscription/index.ts",
+      "sha256": "302b1cdc9fe5648df81a13cd7e1e32bb0f2638b09ffd29d542514e54f696adc6"
+    },
+    {
+      "path": "supabase/functions/check-grace-period-expiry/index.ts",
+      "sha256": "a5cf82cacfd7093a85eab58037b2f6ff640771e30124f7ca3541f54193368278"
+    },
+    {
+      "path": "supabase/functions/clash-royale-api/index.ts",
+      "sha256": "0be1f0bfdbafc1f04aadf4920bf3ada287c4771d39788c5e2052712901a51ebe"
+    },
+    {
+      "path": "supabase/functions/cleanup-old-messages/index.ts",
+      "sha256": "38a917c701ccbaa450767ead486f5b44796c1c48a2970e4ebe1731a7afa0913f"
+    },
+    {
+      "path": "supabase/functions/coach-chat/index.ts",
+      "sha256": "94efe45d0c88161906f297934a5621018035a9ec0f4c5f64cfd420663e8331c5"
+    },
+    {
+      "path": "supabase/functions/confirmed-welcome/index.ts",
+      "sha256": "bf04ef0ad0f4e84ec9ac80c83434b9afa1351266bf79f61dd05d8d27a55dc0bd"
+    },
+    {
+      "path": "supabase/functions/create-checkout/index.ts",
+      "sha256": "6728546a9274d31fbb00f582d09b00393572c7ceb8e028c3f1bed15eb22359f3"
+    },
+    {
+      "path": "supabase/functions/first-session-coaching/index.ts",
+      "sha256": "1987b1a3e3c2e2aec4434c08c5a90eca56df3f7b282c8a01ac015dc93fe2b0e5"
+    },
+    {
+      "path": "supabase/functions/first-value-coaching/index.ts",
+      "sha256": "243d12e59e3eff6665064b6a271f34df21662e3247578c7618c0fdf30135c802"
+    },
+    {
+      "path": "supabase/functions/generate-card-tips/index.ts",
+      "sha256": "6ff03ad77bbac86fc350e529e612212ce0371792c625fe59511eac5802086f51"
+    },
+    {
+      "path": "supabase/functions/get-subscription-status/index.ts",
+      "sha256": "f5bed10694ed82f546bfccc91997b1977514f044b1fd76d674cfd83c6011037a"
+    },
+    {
+      "path": "supabase/functions/lookup-discount/index.ts",
+      "sha256": "79f525eab460839ae4c2b7fe1c5e303e312563bf62dac20e2cd727b157bf2a77"
+    },
+    {
+      "path": "supabase/functions/manage-ai-accounts/index.ts",
+      "sha256": "7d9176f813c8347bbacd0004885b3059804b5f54cf54b6cbc5d4574f2c650c3b"
+    },
+    {
+      "path": "supabase/functions/marketing-unsubscribe/index.ts",
+      "sha256": "67145aaadbee71c63aaa75bfbd1e999b84a5b5eabe2a3583d33e2ab2d78323e5"
+    },
+    {
+      "path": "supabase/functions/polar-mrr/index.ts",
+      "sha256": "f79fa681b569d8d0114e29a2b8c8ebb4a56a2e6a3876e112966e7b81a96622f8"
+    },
+    {
+      "path": "supabase/functions/polar-webhook/index.ts",
+      "sha256": "7497307ceed0c04c48c297dc5f48590f9c2fa53aa1ff2fed6a79f450830e0594"
+    },
+    {
+      "path": "supabase/functions/predict-deck-matchup/index.ts",
+      "sha256": "eb38475686f207f9b8781e97da1145c0798b91006ffdb6e32607b6f6af67dd2d"
+    },
+    {
+      "path": "supabase/functions/predict-deck-performance/index.ts",
+      "sha256": "61c5beb4c5235a7cc749ae59ab69542ee1fed7704e0ece83f9e24487c6effd02"
+    },
+    {
+      "path": "supabase/functions/recommend-deck/index.ts",
+      "sha256": "2bab5ddb7225fd6018fad66fa2b65fc789533b525e04445f53de9a8029e41201"
+    },
+    {
+      "path": "supabase/functions/resend-webhook/index.ts",
+      "sha256": "e3b5ce53f228581af8ee11d0bb5fbe829f365ac79fc121dd87afcec0e6f4c41e"
+    },
+    {
+      "path": "supabase/functions/search-clans/index.ts",
+      "sha256": "d38659fc21e58d80d3f55b91056f544c4247901dec5c5ce53af048b96d303579"
+    },
+    {
+      "path": "supabase/functions/send-email/index.ts",
+      "sha256": "94569988ab3ab4cbd431d079cd042e98d379638b8fe465f3abbed51fdd134b97"
+    },
+    {
+      "path": "supabase/functions/suggest-card-replacements/index.ts",
+      "sha256": "72d6b8e93708ffab85fb6682852970efe523d94392814c33748d3e4226683c08"
+    },
+    {
+      "path": "supabase/functions/sync-achievements/index.ts",
+      "sha256": "bed1b216f3a7e0ae5ec4e463f47a3afcb04b063ad67262876e2683064a49310e"
+    },
+    {
+      "path": "supabase/functions/sync-card-collection/index.ts",
+      "sha256": "34eeab01e8d9bad552f45f8c6bfe263ccbdf68dcaac109b2d591df4cfda93c6f"
+    },
+    {
+      "path": "supabase/functions/sync-leaderboard/index.ts",
+      "sha256": "c5a59c3bd572669870f55195566549a2a775616a9ca40134692aafbf18cb33c3"
+    },
+    {
+      "path": "supabase/functions/track-deck-stats/index.ts",
+      "sha256": "a5dc40518968defb9ba00ec1b94dcbb8c158b70eb6bf189973b872df7783d102"
+    },
+    {
+      "path": "supabase/functions/trial-coaching-reminder/index.ts",
+      "sha256": "8135e62f9b005c5ea28f9853031b7c4b3c55773558868565e96f4efd52591399"
+    },
+    {
+      "path": "supabase/functions/trial-coaching-summary/index.ts",
+      "sha256": "d21c474bee9b3a156ce0ea6bf9cd4828eff3557a2148758ba71e0be8072528bc"
+    }
+  ],
+  "dependencies": [
+    {
+      "path": "supabase/functions/_shared/coaching-ai.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev"
+      ]
+    },
+    {
+      "path": "supabase/functions/_shared/email-attempt.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "api.resend.com"
+      ]
+    },
+    {
+      "path": "supabase/functions/_shared/logger.ts",
+      "env_names_or_prefixes": [
+        "LOG_LEVEL"
+      ],
+      "literal_hosts": []
+    },
+    {
+      "path": "supabase/functions/_shared/trial-usage.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/admin-fraud-action/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-deck/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-deck-advanced/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-deck-builder/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-match/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-meta-trends/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/analyze-player/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/backfill-polar-orders/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_PRODUCT_ID_",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "api.polar.sh",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/calculate-card-mastery/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/calculate-player-stats/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/cancel-subscription/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_ACCESS_TOKEN",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "api.polar.sh",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/check-grace-period-expiry/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/clash-royale-api/index.ts",
+      "env_names_or_prefixes": [
+        "CLASH_ROYALE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh",
+        "proxy.royaleapi.dev"
+      ]
+    },
+    {
+      "path": "supabase/functions/cleanup-old-messages/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/coach-chat/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/confirmed-welcome/index.ts",
+      "env_names_or_prefixes": [
+        "APP_URL",
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai-royale.com",
+        "api.resend.com",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/create-checkout/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_PRODUCT_ID_1",
+        "POLAR_PRODUCT_ID_2",
+        "POLAR_PRODUCT_ID_3",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "api.polar.sh",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/create-checkout/recovery.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "api.polar.sh",
+        "polar.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/first-session-coaching/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/first-value-coaching/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/generate-card-tips/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/get-subscription-status/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/lookup-discount/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_ACCESS_TOKEN"
+      ],
+      "literal_hosts": [
+        "api.polar.sh",
+        "deno.land"
+      ]
+    },
+    {
+      "path": "supabase/functions/manage-ai-accounts/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/marketing-unsubscribe/index.ts",
+      "env_names_or_prefixes": [
+        "MARKETING_UNSUBSCRIBE_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/polar-mrr/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_ACCESS_TOKEN",
+        "POLAR_PRODUCT_ID_",
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/polar-mrr/metrics.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "api.polar.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/polar-webhook/index.ts",
+      "env_names_or_prefixes": [
+        "POLAR_PRODUCT_ID_1",
+        "POLAR_PRODUCT_ID_2",
+        "POLAR_PRODUCT_ID_3",
+        "POLAR_WEBHOOK_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh",
+        "polar.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/predict-deck-matchup/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/predict-deck-performance/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/recommend-deck/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/resend-webhook/index.ts",
+      "env_names_or_prefixes": [
+        "RESEND_WEBHOOK_SECRET",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/search-clans/index.ts",
+      "env_names_or_prefixes": [
+        "CLASH_ROYALE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh",
+        "proxy.royaleapi.dev"
+      ]
+    },
+    {
+      "path": "supabase/functions/send-email/index.ts",
+      "env_names_or_prefixes": [
+        "APP_URL",
+        "MARKETING_UNSUBSCRIBE_SECRET",
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai-royale.com",
+        "api.resend.com",
+        "esm.sh",
+        "polar.sh",
+        "vraqbzokccvqhthixoof.lovableproject.com"
+      ]
+    },
+    {
+      "path": "supabase/functions/suggest-card-replacements/index.ts",
+      "env_names_or_prefixes": [
+        "LOVABLE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "ai.gateway.lovable.dev",
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/sync-achievements/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_ANON_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/sync-card-collection/index.ts",
+      "env_names_or_prefixes": [
+        "CLASH_ROYALE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh",
+        "proxy.royaleapi.dev"
+      ]
+    },
+    {
+      "path": "supabase/functions/sync-leaderboard/index.ts",
+      "env_names_or_prefixes": [
+        "CLASH_ROYALE_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh",
+        "proxy.royaleapi.dev"
+      ]
+    },
+    {
+      "path": "supabase/functions/track-deck-stats/index.ts",
+      "env_names_or_prefixes": [
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "deno.land",
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/trial-coaching-reminder/delivery.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "ai-royale.com"
+      ]
+    },
+    {
+      "path": "supabase/functions/trial-coaching-reminder/index.ts",
+      "env_names_or_prefixes": [
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/trial-coaching-summary/index.ts",
+      "env_names_or_prefixes": [
+        "RESEND_API_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "SUPABASE_URL"
+      ],
+      "literal_hosts": [
+        "esm.sh"
+      ]
+    },
+    {
+      "path": "supabase/functions/trial-coaching-summary/summary.ts",
+      "env_names_or_prefixes": [],
+      "literal_hosts": [
+        "ai-royale.com"
+      ]
+    }
+  ],
+  "migrations": {
+    "supabase/migrations": [
+      {
+        "path": "supabase/migrations/20251118105315_06cf775d-5db4-4698-9b03-1749a6b687f4.sql",
+        "sha256": "d5deacfe1f20272ca71b7e620af3efd13925b2bc030728366fcb0420e1272a0d"
+      },
+      {
+        "path": "supabase/migrations/20251126153829_c472c5bf-c728-44f2-b0e1-3460bd203ba5.sql",
+        "sha256": "c64280f32cdb08e04045bd1cade295a57bf7adac6411b49fbf003e17d9501b2a"
+      },
+      {
+        "path": "supabase/migrations/20251126154619_075b40c6-b9a4-48d5-ba4c-89a0846451a2.sql",
+        "sha256": "16b994c8fe6b0603b6e0d37030de9682dd9c3607ea04f4e0cdc189ffcc3dac78"
+      },
+      {
+        "path": "supabase/migrations/20251126154951_ebfe7c50-d957-495f-a98d-2e546fc53a42.sql",
+        "sha256": "f6bf3115f73ebcc04c94049be2d163c78ffdf96e5a31b599451a3f518f0c8d0c"
+      },
+      {
+        "path": "supabase/migrations/20251126162444_e9382c2d-2e72-4f56-a410-e2b510fbdd7b.sql",
+        "sha256": "96a8784ed108c1969a3952c54d4d61294af26bfe0dcc4e714dcac2fa37c7bb30"
+      },
+      {
+        "path": "supabase/migrations/20251126163240_b3a5aeb0-5b50-48d7-b560-dfe78e64fac1.sql",
+        "sha256": "57b0462fd19ebcece71862e57102834843fa0ef25af5577f127edcc22ccd0f44"
+      },
+      {
+        "path": "supabase/migrations/20251126175113_cf28d7da-d847-404d-86bc-9cdb9161da19.sql",
+        "sha256": "59db1645a73cb430c67035cc0a8d405d5aa58b48213a5a46f95933ec33ef13ca"
+      },
+      {
+        "path": "supabase/migrations/20251126175138_6947d7fa-ba7d-4c34-b9d5-0ca9b77a7592.sql",
+        "sha256": "6a9ea6d8cbdc9cd331225059b54b57c4455ceacacfe809a374d43f958e49ace8"
+      },
+      {
+        "path": "supabase/migrations/20251126180949_a7980bd5-998e-4951-ac89-1d1aa11671d5.sql",
+        "sha256": "567bbeacefe8623e63c23d95ceb4c894e1b52cae885a78f1f88e3dd3bee56ad9"
+      },
+      {
+        "path": "supabase/migrations/20251126182511_17cb62b4-ca1b-4f67-b5c4-139552cf837d.sql",
+        "sha256": "9803ef7ccadfdb702ff93948bb163f7f0a2c8320880b18027550b80c173d770e"
+      },
+      {
+        "path": "supabase/migrations/20251126182530_a28de3bb-4462-4c5f-a299-7ba7a3a52ad7.sql",
+        "sha256": "15f34af3f37ddec73bb49a1da91d28addfbd51085df099181075f0cf59173fcb"
+      },
+      {
+        "path": "supabase/migrations/20251126182723_5845ee66-d2dd-4563-9caa-adaa6a108f58.sql",
+        "sha256": "642bdb682b822b10f98385f4a6d6e7da70df433942c1dab130dfb7a6cad794bf"
+      },
+      {
+        "path": "supabase/migrations/20251126183421_57fe2131-31ca-4bdf-b39b-0446ec704aea.sql",
+        "sha256": "cf626273ab79dbf45f62c866e796199018ee8cb1216f2d0cd05bfa5e2ce4f3be"
+      },
+      {
+        "path": "supabase/migrations/20251127051109_9e9ca29f-2c5c-438e-8824-207e2a2e9727.sql",
+        "sha256": "3d5754da758bc5a78a0902d5d7b665a3c05bb78a6cfe137ff0b4bbca3263863f"
+      },
+      {
+        "path": "supabase/migrations/20251127063124_05da39cd-1722-4c04-9653-86d90854a5e3.sql",
+        "sha256": "ef413ac7f1af545f0cb2e5d0a64f33ab74c7342713d83d7b9218a466c6130c06"
+      },
+      {
+        "path": "supabase/migrations/20251127092521_fd5a46d7-f69c-4b9a-942e-b85f08bf30e8.sql",
+        "sha256": "8e2025d0f57204cf2f8235b0e2cafc3845ff323e7228d2aa4d738308f92b1e24"
+      },
+      {
+        "path": "supabase/migrations/20251127160318_e8baba13-5693-4cc1-af73-78ebf7ab0ec3.sql",
+        "sha256": "2960c687979582e08610dc49b127c279405ab46524c0c27e8261ab2249be1dc5"
+      },
+      {
+        "path": "supabase/migrations/20251127223549_a3f8a1fc-ee0c-4b44-9097-733a2528029c.sql",
+        "sha256": "fbb6658be16897d1dd3e549fd80477aa78192c400a3ac8c6430ec101878e88ad"
+      },
+      {
+        "path": "supabase/migrations/20251128000704_6ae5bc6b-eadd-43b0-90c5-38bb6220333c.sql",
+        "sha256": "b2468aa2c01b206437d24787f3b4b4fdbd896c797296c4ac4662fe3875bf1d78"
+      },
+      {
+        "path": "supabase/migrations/20251128003830_0ccfb725-cc2e-45c4-97ac-02470a31e49b.sql",
+        "sha256": "71977c5e6f6d7d083c3510942a06538d6ac014191056ff486b17fbe0d2ec6863"
+      },
+      {
+        "path": "supabase/migrations/20251128155525_dd19b3b6-05a9-4a87-8781-d18fbf89d29a.sql",
+        "sha256": "4e42134c4853a023ab5ae0cf25e3a9c50677088dc1796f362ac54aee24d21a9d"
+      },
+      {
+        "path": "supabase/migrations/20251128220743_7463a598-281c-4d6c-9483-d1bae98bff35.sql",
+        "sha256": "948a9790ad970591ed03f38cd285566fd83e41bb656ad03b260ef7f908a25eb0"
+      },
+      {
+        "path": "supabase/migrations/20251129131858_410208a0-42fa-4218-8d7a-e1af62f35bb4.sql",
+        "sha256": "3c90e6cf77b845f450e0392a388ffd6e00721a9f6eab9fdeabd3cebab056e171"
+      },
+      {
+        "path": "supabase/migrations/20251129133256_e0d44230-31bc-4a9e-bc9a-7dde55af41f7.sql",
+        "sha256": "9e87c10f06ff7b547564f1cfdf878606c61dcf2a1a6498ecb11cdd107c1b472d"
+      },
+      {
+        "path": "supabase/migrations/20251129191717_233872ee-8240-4a16-afd5-f7f5f5831dcc.sql",
+        "sha256": "97a0e5bf3a655a7ee2a0c2a3354abd1cc57c9b31e24bc1ce6a14f50c3d492766"
+      },
+      {
+        "path": "supabase/migrations/20251129194515_2e5aaefe-2804-42bc-83c3-43a8772cb8fc.sql",
+        "sha256": "8412323d6f56e7c074619b2b058b197fddecc18d717a6838e1fe856f3fdf46aa"
+      },
+      {
+        "path": "supabase/migrations/20251130171751_ceb1c20a-ffab-492c-8fa8-885bcf36dc18.sql",
+        "sha256": "8d9b7e1ecae5bbf31c77f64ab86e78d6e498df209daf63e15f81a6b826c9dc86"
+      },
+      {
+        "path": "supabase/migrations/20251203134134_79844a3b-7348-4ae9-b7d1-1c6e87a98569.sql",
+        "sha256": "58ae925515b2af6302f6e64161a2a191ee20145f391d7d56f95c252da0498fb5"
+      },
+      {
+        "path": "supabase/migrations/20251203145902_80d0692a-1109-43b0-b186-57b74c6c7d88.sql",
+        "sha256": "5aecda62893a97bc7074bcd73a40ee55e377d04d4c7ca10b40a735de97138268"
+      },
+      {
+        "path": "supabase/migrations/20251203154101_1f38001e-454e-4036-aff8-e27294b90ab2.sql",
+        "sha256": "91dbdac01462e93276466c266db5d75b48fac2658f42d86fb25af2d08f753d99"
+      },
+      {
+        "path": "supabase/migrations/20251203175043_9d4ac03d-5dd5-4091-ae03-088b465aa20c.sql",
+        "sha256": "ded8e2fb63fa5df0df67051e18bb8cda1280dc14d09a8f5805c8d5fcfccd46d0"
+      },
+      {
+        "path": "supabase/migrations/20251203221349_c79a28ee-ef46-40ac-98db-db39b0edb8a7.sql",
+        "sha256": "edefbbb67d67d2e4ae56a230ed63d7c1ba46d034ed9631033d5fb593024dfd4c"
+      },
+      {
+        "path": "supabase/migrations/20251205051554_de62228a-061b-4e06-9bde-27d9f819ebb4.sql",
+        "sha256": "f9de8bca586306c1fab156e86fd2a85480aff18907cdf1c90747607745f7c7d3"
+      },
+      {
+        "path": "supabase/migrations/20251205064815_fe3a5872-4e48-465e-81db-f04d2f83303c.sql",
+        "sha256": "c3aa85abf7a3e0c0540d670c465e181578fa745534377b732092e3e82bb9e803"
+      },
+      {
+        "path": "supabase/migrations/20251205065949_f490193a-f064-4046-9ce9-4afa477e51fd.sql",
+        "sha256": "d1fa5a8831cf8a36d334345dd339989353577b3561919048cf58e8bcc4d8cab4"
+      },
+      {
+        "path": "supabase/migrations/20251213203818_b21f0766-59bb-4788-93f6-91358b24e12c.sql",
+        "sha256": "83f4c5dcfd280e9c2a735e9a5e7da3f9cc4ec1bfd7f7a95e75ead008f89ec704"
+      },
+      {
+        "path": "supabase/migrations/20251217143608_325b9e12-c64c-40d8-b320-5c16abadcd66.sql",
+        "sha256": "7a97ee9659aa7dc2bd058d6c68665264d1e7dea4e4230177ee41cce5f08b927f"
+      },
+      {
+        "path": "supabase/migrations/20260107155133_41ef4f7b-63ac-4574-9347-bf5348f53004.sql",
+        "sha256": "7579dc98d963ec0b773abd9411af2aa7159ba4eabe7dda78f1d341255f05d1a6"
+      },
+      {
+        "path": "supabase/migrations/20260107160158_23f092d3-4bdb-4bd2-b5a8-9d91b7e87f9d.sql",
+        "sha256": "cf7631e5a77e79b74363d394e55b834f0cca87d75a3a58279db3f943af801eed"
+      },
+      {
+        "path": "supabase/migrations/20260107213500_41e57d9b-a73e-4c3d-a4f6-3c3de3ff733c.sql",
+        "sha256": "9bad67605b179cf5c99e46378974b31f0ab940ee97ed3297436e8ed25d0e4b95"
+      },
+      {
+        "path": "supabase/migrations/20260108072327_6490899f-7b78-43f3-83a2-2d52857adf96.sql",
+        "sha256": "44339335b713b2ec103ec2914aff662f7e8edff02c27cc6ab097b81511c658ab"
+      },
+      {
+        "path": "supabase/migrations/20260108075758_a628099c-93f1-467b-80a1-05b9e1b58f96.sql",
+        "sha256": "082238922e3168f5d100bee45a08f7938cf7f06200971e8aecd37060ac9a2e5d"
+      },
+      {
+        "path": "supabase/migrations/20260108182637_fce125cd-bb4c-4454-97a1-b77c05e0ea6e.sql",
+        "sha256": "df43dc252afea39c45d172b6ffe43c5c5b692f8b7c6c69e22e76d72b093a0fce"
+      },
+      {
+        "path": "supabase/migrations/20260108183233_615e9ac5-ce68-4d46-8790-49baf35a20aa.sql",
+        "sha256": "ec8459b887af6035500b852e3b44011dc0d461d0f12608b7ccdbc7f1d9dada43"
+      },
+      {
+        "path": "supabase/migrations/20260110142714_a5dbd731-b8c0-4cdf-a936-d86e1b1dbc2b.sql",
+        "sha256": "4faf29ed127e2149caa49ef6287c49e52abb467e643781e69b7146c703559246"
+      },
+      {
+        "path": "supabase/migrations/20260110172220_d2fa26e0-0f74-4be3-94c4-ba0347d58436.sql",
+        "sha256": "85c1dafc73cbb34728536418861b8055f99333d7dad19a56a9a9b49c8acf96c7"
+      },
+      {
+        "path": "supabase/migrations/20260110182352_e2d9dd5e-7e96-410b-8080-386a896a260e.sql",
+        "sha256": "576b3c8a2c57670292d2862bb5342d8ec285d957b6231b66a0229873b8c8d09a"
+      },
+      {
+        "path": "supabase/migrations/20260110193558_1c30b00d-4fbb-4eb3-9b2b-a4a95b6574b9.sql",
+        "sha256": "92dc44b1a9d0c20f2699af4ee1846e9028a0327c1640ce885bb6e88d210d041c"
+      },
+      {
+        "path": "supabase/migrations/20260110212629_d922ca00-b907-4fec-be1d-3a84b5363b48.sql",
+        "sha256": "ae906b142b416c9d20a557f0421093b57ae6130c3222e9aadf80db247eb208d7"
+      },
+      {
+        "path": "supabase/migrations/20260110224325_f696d70c-a5f4-482c-be40-2ba66dc03c02.sql",
+        "sha256": "f8ac5ac32e2c9bf087cd00569c51d5cb96e11fcd44b49091f55a57c388a11400"
+      },
+      {
+        "path": "supabase/migrations/20260111003645_bb032c68-9758-4beb-8940-38c7bb57b725.sql",
+        "sha256": "d655409eba6478d0e38b191a1a7ef14f4372fcbf496ef56746ab7fd1988ba8ba"
+      },
+      {
+        "path": "supabase/migrations/20260112182253_a2367780-315a-4f66-8f52-eabbe8e79e0f.sql",
+        "sha256": "f5083e253a67f395627a68111547496480433518c585654cf9f9913108f89c57"
+      },
+      {
+        "path": "supabase/migrations/20260112183222_f0909678-b1bf-4ffb-9546-bb808e447941.sql",
+        "sha256": "7a052028f6a9c41e4c145f73a0b017d61434d8848cb644c3e85a3aff7d6c415d"
+      },
+      {
+        "path": "supabase/migrations/20260112185044_8b71acb7-84be-4376-8b1e-9ca27589bfac.sql",
+        "sha256": "33dfe7732f011fef37c8949ec53140c80a208e193f28e444805228810b1a7627"
+      },
+      {
+        "path": "supabase/migrations/20260112190017_37808d7a-ccf5-4267-9218-71af448a3b81.sql",
+        "sha256": "2fa330280f1f2bdfadda8fa51ef233ac4006489dcd08f19ad0a52867750338b4"
+      },
+      {
+        "path": "supabase/migrations/20260112195329_49593aca-faa8-4b9a-9166-ec8e15a284aa.sql",
+        "sha256": "f7a776043df45be163fb1dd7dbdadca4804ecccd6e6e7fd43359ea911a02af24"
+      },
+      {
+        "path": "supabase/migrations/20260112201653_a7419342-da2d-47cc-b0e7-321ef100d717.sql",
+        "sha256": "5eea76110cd71541322e59841116b41786597ad647a0501a8ea0330219eff17c"
+      },
+      {
+        "path": "supabase/migrations/20260112204135_e8fb20fa-c710-4d46-a34a-cd91f3d91b40.sql",
+        "sha256": "db5f8c1619c4d425f46c0658a52d98cc1a3b59858446dafc40fdebc63d9ff203"
+      },
+      {
+        "path": "supabase/migrations/20260112214326_eb0cbb7a-d615-459c-9805-6d5b8a3860c7.sql",
+        "sha256": "48fcab95751d1e03ce49f9961854e214f52a37909dedfb5d3de673bfadf84a99"
+      }
+    ],
+    "drizzle/migrations": [
+      {
+        "path": "drizzle/migrations/0000_scope_logs_and_claims_policies.sql",
+        "sha256": "67f8841634b637a6750d59dec0c5da94ac47c5713d12a5ad9ac16881fe5c30ee"
+      },
+      {
+        "path": "drizzle/migrations/0001_protect_ai_trial_usage_logs.sql",
+        "sha256": "e4520018d68cc0a3b8e27561781547fde8180134ddd88b0330029a95e040935f"
+      },
+      {
+        "path": "drizzle/migrations/0002_trial_funnel_function.sql",
+        "sha256": "aa45879480bb1f42292db7b6ad09576591abb2e10aa62faff0a728f2751fc644"
+      },
+      {
+        "path": "drizzle/migrations/0003_whats_new_seen_version.sql",
+        "sha256": "6a3c800880b7c8a20df111f8718c0a0b3bfa7ffc79ba5a4d50bb84d040b7c422"
+      },
+      {
+        "path": "drizzle/migrations/0004_subscription_period_end_cancel.sql",
+        "sha256": "80aa422c2c724bb1cf9a7e4a54956a816730cc7b7e4ee98f6083d3404eaa20eb"
+      },
+      {
+        "path": "drizzle/migrations/0005_trial_revenue_metrics.sql",
+        "sha256": "a37bff20e47be340bf964b0b98408e5a1d606fe04bd6819c8132fddfa249b629"
+      },
+      {
+        "path": "drizzle/migrations/0006_first_session_coaching.sql",
+        "sha256": "002acd75b66140a410d86f9db5f777f2308bd4565e46282ec72380a9e782f1ef"
+      },
+      {
+        "path": "drizzle/migrations/0007_coaching_atomic_cache.sql",
+        "sha256": "8adb8f4e918a02c4b2ae1a7a2c8f597c96c6ee257cd5795a7fcbd211da6c5871"
+      },
+      {
+        "path": "drizzle/migrations/0008_revenue_net_paid_only.sql",
+        "sha256": "6e399375c544b079c38c1043bd978da766399c33810ce08acabe251e87e5cc0e"
+      },
+      {
+        "path": "drizzle/migrations/0009_trial_coaching_followup.sql",
+        "sha256": "df52e03ae35fe14695ede4813f4598987f1f8fd90a7ea5fc0fdb756805bbd880"
+      },
+      {
+        "path": "drizzle/migrations/0010_reconcile_trial_coaching_history.sql",
+        "sha256": "81a2f89a4afdb5f078f2bf7a21738ab65c82094edf1ae908532406099c82cbf3"
+      },
+      {
+        "path": "drizzle/migrations/0011_retain_completed_coaching_match.sql",
+        "sha256": "1304d05ea6f49eca635f0ff025c80af9d8721280970a96d00cee01d874d92db8"
+      },
+      {
+        "path": "drizzle/migrations/0012_record_reviewed_match_retention.sql",
+        "sha256": "6e57ddfc3f47e6eb5bc4bcd9e6b6c5e08e5069456cdf5cb8eb10acad4588a25c"
+      },
+      {
+        "path": "drizzle/migrations/0013_recommendation_language.sql",
+        "sha256": "4840b97f723b1dda78cdd6fc47444526392a476e4ce40e24fb3b379158dda095"
+      },
+      {
+        "path": "drizzle/migrations/0014_coaching_translations.sql",
+        "sha256": "c86c7875aa0f7b62a2044d6f49d7358341c37fc2be6c8b585ec1a3caa49acfe1"
+      },
+      {
+        "path": "drizzle/migrations/0015_trial_coaching_summary.sql",
+        "sha256": "e8c89ce2b5f91ce396cbf19298dbd2516fc2d0bd57d123031736e3d8daaccad0"
+      },
+      {
+        "path": "drizzle/migrations/0016_trial_summary_frozen_payload.sql",
+        "sha256": "5cc832b4db7f8c7a5caf4c4ddbd4c37beebdadd473cbd4d27efe5d950c460a20"
+      },
+      {
+        "path": "drizzle/migrations/0017_trial_reminder_frozen_payload.sql",
+        "sha256": "2dd4ec431b8804da38adf8bb2436a2ca680e8849cb499ef7d1e946d5f6aae387"
+      },
+      {
+        "path": "drizzle/migrations/0018_trial_email_send_gate.sql",
+        "sha256": "161858b8b608f92f5176cbcc0a5efe95a45a5ba916336dc7be1eb82566c5b3d4"
+      },
+      {
+        "path": "drizzle/migrations/0019_confirmed_welcome.sql",
+        "sha256": "613e5cded02855d203ab0f36e78901ca5b1b269e79b7a9d015bfaf572b3c1483"
+      },
+      {
+        "path": "drizzle/migrations/0020_marketing_consent.sql",
+        "sha256": "e84fa30b340d935ae5bda4ac35cf58007e722c4317139ce329452aecb1828dfe"
+      },
+      {
+        "path": "drizzle/migrations/0021_marketing_collection_rules_and_provider_blocks.sql",
+        "sha256": "b3ee45b21fcdf862c360c278ea1e08cbafac361fb3e7860ce569e380e609dd3e"
+      },
+      {
+        "path": "drizzle/migrations/0022_marketing_market_scope_and_unresolved_sends.sql",
+        "sha256": "3779e0f2a73fae8834d3f658711e6a3ebab760f637b2e79685017f75947cd2ed"
+      },
+      {
+        "path": "drizzle/migrations/0023_marketing_hidden_box_and_single_invite_claim.sql",
+        "sha256": "f883dec61d93f5188ee1acdd9545e6443979642ec1d6ecabe711a08dfa10da95"
+      },
+      {
+        "path": "drizzle/migrations/0024_trial_conversion.sql",
+        "sha256": "a4f71a270a6053375598ae640638003e9155619e46e16415272593b01a4f3bd5"
+      },
+      {
+        "path": "drizzle/migrations/0025_apply_pending_trial_conversion.sql",
+        "sha256": "17db4fd369edb9244b9f91d9aeed145c3d04ad8ba6e95d06247f07a63527d11a"
+      },
+      {
+        "path": "drizzle/migrations/0026_winback_account_cooldown.sql",
+        "sha256": "d62ecf9585d62d57963618a20b0d16cc4e96e64c94485d5677c46c94703925ad"
+      },
+      {
+        "path": "drizzle/migrations/0027_winback_verified_first_acceptance.sql",
+        "sha256": "654c5203466a70aca7c31e4ee853170bdd0e65b98a6b44db431965394e4be2d6"
+      },
+      {
+        "path": "drizzle/migrations/0028_consent_invite_access_and_winback_time_verification.sql",
+        "sha256": "9b7f3c5216b3d7466230492bb93aff1eb7c65a5698547acdd6875b900eb15b96"
+      },
+      {
+        "path": "drizzle/migrations/0029_admin_revenue_funnel.sql",
+        "sha256": "7ad2fdb710cfaa04cd6f7bf56f5d70345c2c935127fc5ab700723cb351b1b72c"
+      },
+      {
+        "path": "drizzle/migrations/0030_admin_revenue_as_of.sql",
+        "sha256": "5e31c8f478cd48399f88b4edc620e9f8a856aef819d89327653b3a788df69c70"
+      },
+      {
+        "path": "drizzle/migrations/0031_campaign_recheck_account_age.sql",
+        "sha256": "06c7591345145baef2cb768e304a63abdf71f39e5b189d82722151b1bcf09437"
+      },
+      {
+        "path": "drizzle/migrations/0032_admin_reporting_reconciliation.sql",
+        "sha256": "c3170ad7b545a942e2dc10a0ca3fa61044731c2ed6e5ca0fefdac4a073a9e4ef"
+      },
+      {
+        "path": "drizzle/migrations/0033_polar_payment_reconciliation.sql",
+        "sha256": "d7e00e68c860c6097764e6e7ff31a48bc0df8f4ac788bd069699da162628b649"
+      },
+      {
+        "path": "drizzle/migrations/0034_apply_pending_0033_noop.sql",
+        "sha256": "17db4fd369edb9244b9f91d9aeed145c3d04ad8ba6e95d06247f07a63527d11a"
+      },
+      {
+        "path": "drizzle/migrations/0035_first_value_coaching.sql",
+        "sha256": "02eddb72703bbc9d9e96de67887155b9fff6d595f30aefad1cb7ddf413e900c1"
+      },
+      {
+        "path": "drizzle/migrations/0036_first_value_reporting.sql",
+        "sha256": "4dcf8baf305fb6e34f8c916da89d948cebf2fd9d30eb09ab24cfbd407e732ba4"
+      },
+      {
+        "path": "drizzle/migrations/0037_apply_pending_first_value_noop.sql",
+        "sha256": "59b4114f92e492da54d03cb57c984a3ed76c56c1d36cf2bc1d1bb8c86cd73b98"
+      }
+    ]
+  },
+  "review_locations": [
+    {
+      "path": "supabase/migrations/20251118105315_06cf775d-5db4-4698-9b03-1749a6b687f4.sql",
+      "locations": [
+        {
+          "line": 107,
+          "kinds": [
+            "auth_trigger"
+          ]
+        },
+        {
+          "line": 109,
+          "kinds": [
+            "auth_trigger"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "supabase/migrations/20260110182352_e2d9dd5e-7e96-410b-8080-386a896a260e.sql",
+      "locations": [
+        {
+          "line": 14,
+          "kinds": [
+            "secret_store"
+          ]
+        },
+        {
+          "line": 21,
+          "kinds": [
+            "secret_store"
+          ]
+        },
+        {
+          "line": 28,
+          "kinds": [
+            "scheduler"
+          ]
+        },
+        {
+          "line": 32,
+          "kinds": [
+            "outbound_http"
+          ]
+        },
+        {
+          "line": 33,
+          "kinds": [
+            "secret_store"
+          ]
+        },
+        {
+          "line": 36,
+          "kinds": [
+            "secret_store"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "supabase/migrations/20260112195329_49593aca-faa8-4b9a-9166-ec8e15a284aa.sql",
+      "locations": [
+        {
+          "line": 6,
+          "kinds": [
+            "scheduler"
+          ]
+        },
+        {
+          "line": 10,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0009_trial_coaching_followup.sql",
+      "locations": [
+        {
+          "line": 120,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0015_trial_coaching_summary.sql",
+      "locations": [
+        {
+          "line": 106,
+          "kinds": [
+            "outbound_http"
+          ]
+        },
+        {
+          "line": 122,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0018_trial_email_send_gate.sql",
+      "locations": [
+        {
+          "line": 233,
+          "kinds": [
+            "outbound_http"
+          ]
+        },
+        {
+          "line": 251,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0019_confirmed_welcome.sql",
+      "locations": [
+        {
+          "line": 36,
+          "kinds": [
+            "auth_trigger"
+          ]
+        },
+        {
+          "line": 54,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0020_marketing_consent.sql",
+      "locations": [
+        {
+          "line": 144,
+          "kinds": [
+            "auth_trigger"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "drizzle/migrations/0033_polar_payment_reconciliation.sql",
+      "locations": [
+        {
+          "line": 227,
+          "kinds": [
+            "outbound_http"
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Dynamic environment names/URLs need manual review",
+    "No secret values collected",
+    "No current Cloud schema, jobs, settings or data were read"
+  ]
+}
