@@ -3737,6 +3737,11 @@
     "metaCatalog": "Template catalog: popularity is a catalog score. Global usage, win rates and weekly changes are not measured here.",
     "predictionScope": "Only matching 1v1 Ladder battles after the prediction are counted. Samples do not establish calibrated accuracy. Legacy outcome counts are unverified; the same match may be associated with more than one prediction.",
     "recommendationScope": "Only matching 1v1 Ladder battles with the same eight base cards after the recommendation was seen are counted. This is not a before/after effect measurement.",
-    "legacyData": "Legacy record — measurement unverified"
+    "legacyData": "Legacy record — measurement unverified",
+    "draw": "Draw",
+    "unsupportedMatch": "This match format cannot be analysed reliably yet.",
+    "teamMatch": "Team results are shown; individual AI matchup analysis is available for supported 1v1 matches.",
+    "ownTeamDecks": "Your team’s decks",
+    "otherTeamDecks": "Opposing team’s decks"
   }
 }

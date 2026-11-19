@@ -12,11 +12,19 @@ serve(async (req) => {
   if (corsResponse) return corsResponse;
 
   try {
+    const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+    if (!token) return errorResponse('Unauthorized', 401);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) return errorResponse('Unauthorized', 401);
+    const { data: allowed, error: rateError } = await supabase.rpc('check_rate_limit', {
+      p_identifier: `sync-leaderboard:${user.id}`, p_max_requests: 6, p_window_seconds: 60,
+    });
+    if (rateError) return errorResponse('Rate limit unavailable', 503);
+    if (!allowed) return errorResponse('Too many requests', 429);
     if (!CLASH_API_KEY) {
       throw new Error('CLASH_ROYALE_API_KEY not configured');
     }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Fetch global top 200 players
     const response = await fetch('https://proxy.royaleapi.dev/v1/locations/global/rankings/players?limit=200', {

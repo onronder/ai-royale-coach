@@ -68,6 +68,7 @@ const registerIys = (uid: string) => psql(`INSERT INTO marketing_iys_registratio
 const SCHEMA = ['tests/integration/marketing/base.sql', 'tests/integration/marketing/platform.sql', 'tests/integration/revenue/platform.sql','tests/integration/firstValue/platform.sql','tests/integration/correctness/platform.sql','drizzle/migrations/0006_first_session_coaching.sql','drizzle/migrations/0014_coaching_translations.sql',
   ...readdirSync('drizzle/migrations').filter(f => /^00(2[0-9]|[3-9][0-9])_.*\.sql$/.test(f)).sort().map(f => 'drizzle/migrations/' + f)];
 const ready = (() => { try { return !!PG && psql('SELECT 1', 'postgres') === '1'; } catch { return false; } })();
+if (PG && !ready) throw new Error('MARKETING_PG was set but the disposable database or psql is unavailable');
 const results: string[] = [];
 const ok = (name: string) => results.push('PASS ' + name);
 

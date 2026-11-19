@@ -1,3 +1,6 @@
+import {MatchDetailView} from '../../../src/components/matches/MatchDetailView';
+import {MatchDiscussionProvider} from '../../../src/contexts/MatchDiscussionContext';
+import captured from '../../fixtures/provider/battles-2026-11-18.json';
 import {PredictionAccuracyDashboard} from '../../../src/components/analytics/PredictionAccuracyDashboard';
 // Local-only harness: production components, synthetic observations, blocked network.
 import React, {useState} from 'react';
@@ -20,13 +23,16 @@ import {recentStatistics} from '../../../supabase/functions/_shared/recent-stati
 import '../../../src/i18n';
 import '../../../src/index.css';
 const user='11111111-2222-4333-8444-555555555555';
+for(const match of Object.values(captured))for(const side of [match.team,match.opponent])for(const p of side)for(const c of p.cards)(c as any).iconUrls={medium:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50"/>'};
 const qc=new QueryClient({defaultOptions:{queries:{retry:false}}});
 qc.setQueryData(['subscription-status',user],{hasAccess:true,accountSlots:3,subscription:{status:'active',accountSlots:3},trial:{isActive:false,hasUsedTrial:true}});
 const sample=recentStatistics([battle(),battle('20251119T120000.000Z',0,1)],tag);
 const card={...sample.cards[0],id:'c',best_partner_cards:[],worst_matchup_cards:[],ai_tips:null,ai_tips_language:null,last_updated:'2026-11-19T12:00:00Z',win_rate:0.5,crown_avg:1};
 function Screen(){
  const location=useLocation(),navigate=useNavigate();const p=new URLSearchParams(location.search),scene=p.get('scene')||'observations';const [rank,setRank]=useState('waiting');const [snapshot,setSnapshot]=useState('collection-a');
+ const match=scene==='match-team'?captured.two_v_two:scene==='match-series'?captured.duel:scene==='match-invalid'?{team:[null]}:{...captured.ladder,team:captured.ladder.team.map(p=>({...p,crowns:1})),opponent:captured.ladder.opponent.map(p=>({...p,crowns:1}))};
  return <main className="max-w-6xl mx-auto p-4 space-y-5">
+  {scene.startsWith('match-')&&<MatchDiscussionProvider><MatchDetailView battle={match as any} playerTag={scene==='match-team'?'#Q1':'#Q0'} open onOpenChange={()=>{}}/></MatchDiscussionProvider>}
   {scene==='observations'&&<><section data-testid="mastery"><CardMasteryCard card={card as any} playerTag={tag}/></section><ProDNACard dna={calculatePlayerDNA([battle()],tag)} playerName="Fixture" playerTag={tag}/><DeckTrendChart stats={sample.decks as any}/></>}
   {scene==='builder'&&<DeckBuilder key={`${p.get('account')}:${p.get('deck')}`} userId={p.get('account')||user} playerTag={tag} currentDeck={cards} availableCards={cards} importedNames={p.get('deck')}/>}
   {scene==='recommendations'&&<><button onClick={()=>setSnapshot('collection-b')}>Change fixture collection</button><RecommendedDecksPanel snapshotKey={snapshot} playerTag={tag} trophies={6000} onImportDeck={names=>navigate('/tests/integration/correctness/ui.html?scene=builder&'+deckBuilderUrl(tag,names).split('?')[1])}/></>}

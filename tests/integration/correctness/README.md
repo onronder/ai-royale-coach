@@ -49,5 +49,6 @@ Regression suites also required: firstValue (59 checks), marketing (41), winback
 (25), revenue (93), conversion SQL, AI measurement (24), and the actual coaching
 SDK fake stream test (Deno without network permission). Each has its own README.
 
-See `docs/correctness-inventory-review.md` for all 35 items and the still-open
-real-provider, deployed-platform and physical-mobile acceptance gates.
+See `docs/correctness-inventory-review.md` for all 35 items and the remaining hosted/OAuth, provider-billing and physical-mobile acceptance gates.
+The real local Supabase runtime suite and historical provider probe are in
+`../platformAcceptance/README.md`; they do not replace those external gates.

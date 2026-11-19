@@ -10,7 +10,7 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('Missing authorization header');
+      return errorResponse('Unauthorized', 401);
     }
 
     const supabaseClient = createClient(
@@ -21,12 +21,12 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      throw new Error('Unauthorized');
+      return errorResponse('Unauthorized', 401);
     }
 
     const { playerTag } = await req.json();
-    if (!playerTag) {
-      throw new Error('Missing playerTag');
+    if (typeof playerTag !== 'string' || !playerTag.trim()) {
+      return errorResponse('Missing playerTag', 400);
     }
 
     logger.info('Syncing achievements', { userId: user.id, playerTag });

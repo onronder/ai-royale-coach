@@ -33,3 +33,5 @@ test('player summary uses identical W/L/D denominator',async()=>{
  game=[battle(),battle('20261119T130000.000Z',0,1),battle('20261119T140000.000Z',1,1)];
  const result=await (await summary(req())).json();expect(result.totalBattles).toBe(3);expect(result.wins).toBe(1);expect(result.losses).toBe(1);expect(result.draws).toBe(1);expect(result.winRate).toBeCloseTo(100/3);expect(network).toBe(0);
 });
+
+test('player summary refuses missing identity before a provider request',async()=>{expect((await summary(req(false))).status).toBe(401);expect(network).toBe(0);});

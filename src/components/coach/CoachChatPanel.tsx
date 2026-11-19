@@ -1,3 +1,4 @@
+import { observeBattle, canonicalTag } from '../../../supabase/functions/_shared/battle-observation';
 import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
 import { useState, useRef, useEffect } from "react";
@@ -139,22 +140,26 @@ export function CoachChatPanel({
   // Auto-send match context when it's set and user is loaded
   useEffect(() => {
     if (matchContext && userId && !hasAutoSentMatchContext && !isLoading) {
+      const observed = observeBattle(matchContext.battle, matchContext.playerTag);
+      if (!observed) return;
       setHasAutoSentMatchContext(true);
       startNewConversation();
       
       // Build the match context message
       const outcome = t(matchContext.playerCrowns === matchContext.opponentCrowns ? 'dashboard.draw' : matchContext.isWin ? 'dashboard.victory' : 'dashboard.defeat');
-      const opponent = matchContext.battle.opponent[0];
-      const playerCards = matchContext.battle.team.find(p => p.tag === matchContext.playerTag)?.cards || [];
-      const opponentCards = opponent?.cards || [];
-      
+      const ownSide = [matchContext.battle.team, matchContext.battle.opponent].find(side => side.some(p => canonicalTag(p.tag) === canonicalTag(matchContext.playerTag)))!;
+      const decks = (side: typeof ownSide) => side.map(p => `${p.name}: ${p.cards.map(c => cardLabel(c.name)).join(', ')}`).join('; ');
+      const playerDeck = observed.format === '2v2' ? decks(ownSide) : observed.player.cards.map(c => cardLabel(c.name)).join(', ');
+      const opposingSide = [matchContext.battle.team, matchContext.battle.opponent].find(side => side !== ownSide)!;
+      const opponentDeck = decks(opposingSide);
+
       const contextMessage = [
         t('coach.reviewMatch', { result: outcome }),
-        `${t('matchDetail.yourDeck')}: ${playerCards.map(c => cardLabel(c.name)).join(', ')}`,
-        `${t('matchDetail.opponentDeck')}: ${opponentCards.map(c => cardLabel(c.name)).join(', ')}`,
+        `${t(observed.format === '2v2' ? 'correctness.ownTeamDecks' : 'matchDetail.yourDeck')}: ${playerDeck}`,
+        `${t('correctness.otherTeamDecks')}: ${opponentDeck}`,
         `${t('matchDetail.crowns')}: ${matchContext.playerCrowns} – ${matchContext.opponentCrowns}`,
-        `${t('coaching.trophies')}: ${matchContext.trophyChange > 0 ? '+' : ''}${matchContext.trophyChange}`,
-        `${t('coach.gameMode')}: ${gameLabel(matchContext.battle.gameMode.name, t)}`,
+        ...(observed.trophyChange === null ? [] : [`${t('coaching.trophies')}: ${observed.trophyChange > 0 ? '+' : ''}${observed.trophyChange}`]),
+        `${t('coach.gameMode')}: ${gameLabel(matchContext.battle.gameMode?.name ?? matchContext.battle.type ?? '—', t)}`,
         ...(matchContext.analysis ? [matchContext.analysis.deckMatchup, ...matchContext.analysis.recommendations] : []),
         t('coach.reviewQuestion'),
       ].join('\n\n');
@@ -759,15 +764,15 @@ export function CoachChatPanel({
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <span className={cn(
                               "font-bold",
-                              matchContext.isWin ? "text-green-500" : "text-red-500"
+                              matchContext.playerCrowns === matchContext.opponentCrowns ? "text-muted-foreground" : matchContext.isWin ? "text-green-500" : "text-red-500"
                             )}>
-                              {matchContext.isWin ? t('coach.victory') : t('coach.defeat')}
+                              {matchContext.playerCrowns === matchContext.opponentCrowns ? t('correctness.draw') : matchContext.isWin ? t('coach.victory') : t('coach.defeat')}
                             </span>
                             <span className="flex items-center gap-1">
                               <Crown className="h-3 w-3" />
                               {matchContext.playerCrowns} - {matchContext.opponentCrowns}
                             </span>
-                            <span>{gameLabel(matchContext.battle.gameMode.name, t)}</span>
+                            <span>{gameLabel(matchContext.battle.gameMode?.name ?? matchContext.battle.type ?? '—', t)}</span>
                           </div>
                         </div>
                       )}

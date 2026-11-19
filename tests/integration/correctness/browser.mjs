@@ -14,11 +14,12 @@ for(const language of (process.env.CORRECTNESS_LANGUAGE ? [process.env.CORRECTNE
  await page.addInitScript(({language,user})=>{localStorage.setItem('i18nextLng',language);const token=btoa(JSON.stringify({alg:'HS256'}))+'.'+btoa(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600}))+'.fixture';localStorage.setItem('sb-fixture-auth-token',JSON.stringify({access_token:token,refresh_token:'fixture',expires_at:Math.floor(Date.now()/1000)+3600,user}));},{language,user});
  await context.route('**/*',async route=>{
   const req=route.request(),url=new URL(req.url());if(url.origin===base)return route.continue();
-  if(url.hostname!=='fixture.supabase.co'){if(!['fonts.googleapis.com','fonts.gstatic.com'].includes(url.hostname))unexpected.push(url.href);return route.abort();}
+  if(url.hostname!=='fixture.supabase.co'){if(!['fonts.googleapis.com','fonts.gstatic.com'].includes(url.hostname)&&!(url.hostname==='api-assets.clashroyale.com'&&new URL(page.url()).searchParams.get('scene')?.startsWith('match-')))unexpected.push(url.href);return route.abort();}
   const headers={'access-control-allow-origin':'*','access-control-allow-headers':'*','access-control-allow-methods':'POST,GET,OPTIONS'};
   if(req.method()==='OPTIONS')return route.fulfill({status:200,headers});
   let data;
   if(url.pathname.startsWith('/auth/'))data=user;
+  else if(url.pathname.endsWith('/analyze-match'))data={analysis:'Draw: 1–1',deckMatchup:'Practice fixture.',recommendations:[]};
   else if(url.pathname.endsWith('/recommend-deck')){recommendationCalls++;data={recommendations:[{historyId:'22222222-2222-4222-8222-222222222222',deckId:'d',deckName:'Fixture recommendation',cards:names,archetype:'Custom / mixed',avgElixir:4,difficulty:'intermediate',matchScore:75,readiness:{state:'investment',cards:[{name:names[0],level:11,gap:4}]},reason:'Practice fixture.',recommendationType:'standard'}]};}
   else if(url.pathname.endsWith('/recommendation_history'))data=[];
   else if(url.pathname.endsWith('/matchup_predictions'))data=[{id:'p1',observation_mode:'1v1:PvP:Ladder',deck_a_cards:names,deck_b_cards:names,actual_battles_total:3,actual_wins_deck_a:1,actual_losses_deck_a:1,predicted_win_rate_a:65,predicted_win_rate_b:35,prediction_error:null,confidence:'low',created_at:'2026-11-19T12:00:00Z'},{id:'legacy',observation_mode:null,deck_a_cards:names,deck_b_cards:names,actual_battles_total:99,actual_wins_deck_a:99,predicted_win_rate_a:100,predicted_win_rate_b:0,prediction_error:0,confidence:'high',created_at:'2025-11-19T12:00:00Z'}];
@@ -49,8 +50,13 @@ for(const language of (process.env.CORRECTNESS_LANGUAGE ? [process.env.CORRECTNE
  await go('completed');await page.getByText(locale.correctness.completedPractice).waitFor();await page.getByText(locale.correctness.singleResult).waitFor();await page.screenshot({path:`${output}/${language}-${width}-completed.png`,fullPage:true});
  await go('predictions');await page.getByText(locale.correctness.predictionScope).first().waitFor();await page.getByText(locale.correctness.legacyData).waitFor();assert(!(await page.locator('body').innerText()).includes('±0.0%'));assert(!(await page.locator('body').innerText()).includes('99 '));await page.mouse.move(0,0);await page.waitForFunction(()=>document.querySelectorAll('.recharts-bar-rectangle path').length===2);await page.screenshot({path:`${output}/${language}-${width}-predictions.png`,fullPage:true});
  await go('rankings');for(const status of [429,503,0,200]){rankingStatus=status;await page.getByRole('button',{name:'Load ranking fixture'}).click();await page.getByRole('status').filter({hasText:status===200?'empty':'error'}).waitFor();}
+ for(const scene of ['match-draw','match-team','match-series','match-invalid']){await go(scene);await page.getByRole('dialog').waitFor();
+  if(scene==='match-draw')await page.getByText(locale.correctness.draw,{exact:true}).waitFor();
+  else if(scene==='match-team'){await page.getByText(locale.correctness.teamMatch).first().waitFor();for(const who of ['Fixture P0','Fixture P1','Fixture Q0','Fixture Q1'])assert((await page.getByRole('dialog').innerText()).includes(who));}
+  else await page.getByText(locale.correctness.unsupportedMatch).waitFor();
+  await page.screenshot({path:`${output}/${language}-${width}-${scene}.png`,fullPage:true});}
  assert.deepEqual(faults,[]);assert.deepEqual(unexpected,[]);assert(seen>0);
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);assert(!overflow);
- results.push({language,width,scenes:7,draftReload:true,accountIsolation:true,transferRefresh:true,snapshotRefresh:true,keepAndHistory:true,rankErrors:[429,503,'timeout'],seen,externalCalls:0});await context.close();
+ results.push({language,width,scenes:11,draftReload:true,accountIsolation:true,transferRefresh:true,snapshotRefresh:true,keepAndHistory:true,rankErrors:[429,503,'timeout'],seen,externalCalls:0});await context.close();
 }
-await browser.close();await writeFile(output+'/results.json',JSON.stringify(results,null,2));console.log(JSON.stringify({viewports:results.length,scenes:results.length*7,externalCalls:0,output}));
+await browser.close();await writeFile(output+'/results.json',JSON.stringify(results,null,2));console.log(JSON.stringify({viewports:results.length,scenes:results.length*11,externalCalls:0,output}));

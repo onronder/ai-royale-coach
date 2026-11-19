@@ -3737,6 +3737,11 @@
     "metaCatalog": "Deste kataloğu: popülerlik bir katalog puanıdır. Genel kullanım, kazanma oranı ve haftalık değişim burada ölçülmez.",
     "predictionScope": "Yalnız tahminden sonraki eşleşen 1v1 Ladder maçları sayılır. Bu örnekler modelin kalibre edilmiş doğruluğunu göstermez. Eski sonuç sayıları doğrulanmamıştır; aynı maç birden fazla tahminle eşleşebilir.",
     "recommendationScope": "Yalnız öneri görüldükten sonra aynı sekiz temel kartla oynanan eşleşen 1v1 Ladder maçları sayılır. Bu, önce/sonra etki ölçümü değildir.",
-    "legacyData": "Eski kayıt — ölçümü doğrulanmadı"
+    "legacyData": "Eski kayıt — ölçümü doğrulanmadı",
+    "draw": "Beraberlik",
+    "unsupportedMatch": "Bu maç biçimi henüz güvenilir şekilde analiz edilemiyor.",
+    "teamMatch": "Takım sonucu gösteriliyor; kişisel AI eşleşme analizi desteklenen 1v1 maçlarda kullanılabilir.",
+    "ownTeamDecks": "Takımının desteleri",
+    "otherTeamDecks": "Rakip takımın desteleri"
   }
 }

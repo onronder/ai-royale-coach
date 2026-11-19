@@ -32,7 +32,7 @@ serve(async (req) => {
       );
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        return errorResponse('Clan rankings unavailable', response.status === 429 ? 429 : 503);
       }
 
       const data = await response.json();
@@ -50,8 +50,8 @@ serve(async (req) => {
       return jsonResponse({ clans });
     }
     
-    if (!query || query.trim().length === 0) {
-      throw new Error('Search query is required');
+    if (typeof query !== 'string' || query.trim().length === 0) {
+      return errorResponse('Search query is required', 400);
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -73,6 +73,7 @@ serve(async (req) => {
           },
         });
 
+        if (!response.ok && response.status !== 404) return errorResponse('Clan search unavailable', response.status === 429 ? 429 : 503);
         if (response.ok) {
           const clanData = await response.json();
           clans = [clanData];
@@ -89,6 +90,7 @@ serve(async (req) => {
           },
         });
 
+        if (!response.ok && response.status !== 404) return errorResponse('Clan search unavailable', response.status === 429 ? 429 : 503);
         if (response.ok) {
           const data = await response.json();
           clans = data.items || [];
@@ -118,7 +120,7 @@ serve(async (req) => {
 
     } catch (apiError) {
       logger.warn('API search failed', { error: apiError instanceof Error ? apiError.message : 'Unknown' });
-      // Fallback to database search
+      return errorResponse('Clan search unavailable', 503);
     }
 
     // If API returned no results, try database

@@ -35,10 +35,11 @@ export function observeBattle(raw: any, tag: string): BattleObservation | null {
   const time = observedTime(raw?.battleTime);
   if (!time || !Array.isArray(raw.team) || !Array.isArray(raw.opponent)) return null;
   // Duel series need an explicit game adapter; never interpret the series as one game.
-  if (/duel/i.test(`${raw.type} ${raw.gameMode?.name}`)) return null;
+  if (/duel|multideck|boatbattle/i.test(`${raw.type} ${raw.gameMode?.name}`)) return null;
   const teams = [raw.team, raw.opponent] as Participant[][];
   if (![1, 2].includes(teams[0].length) || teams[0].length !== teams[1].length) return null;
   const participants = teams.flat();
+  if (participants.some(p => p && Array.isArray(p.rounds))) return null;
   if (participants.some(p => !p || typeof p.tag !== 'string' || !Number.isInteger(p.crowns) || p.crowns < 0 || p.crowns > 3 ||
     !Array.isArray(p.cards) || p.cards.length !== 8 || p.cards.some(c => !c || !Number.isSafeInteger(c.id) || typeof c.name !== 'string') ||
     new Set(p.cards.map(c => c.id)).size !== 8)) return null;

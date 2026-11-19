@@ -1,4 +1,4 @@
-import { resultOnlyAdvice } from '../_shared/match-advice.ts';
+import { safeMatchAdvice, observedMatchResult } from '../_shared/match-advice.ts';
 import { observeBattle } from '../_shared/battle-observation.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -88,6 +88,7 @@ serve(async (req) => {
 
     const { battle, playerTag, language: requestedLanguage }: MatchAnalysisRequest & { language?: string } = await req.json();
     const language = productLanguage(requestedLanguage);
+    if (typeof playerTag !== 'string' || !/^#?[A-Z0-9]{3,15}$/i.test(playerTag)) return errorResponse('Invalid player tag', 400);
 
     // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
@@ -119,7 +120,7 @@ serve(async (req) => {
     };
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
-    const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+    const normalizedTag = `#${normalizePlayerTag(playerTag)}`;
     logger.info('Analyzing match', { playerTag: normalizedTag });
 
     const observation = observeBattle(battle, normalizedTag);
@@ -134,7 +135,7 @@ serve(async (req) => {
 
 **Battle Outcome:** ${observation.outcome}
 **Final Score:** ${playerTeam.crowns} - ${opponent.crowns} crowns
-**Game Mode:** ${battle.gameMode.name}
+**Game Mode:** ${observation.mode}
 
 **Your Deck:** ${playerCards}
 **Opponent's Deck:** ${opponentCards}
@@ -201,30 +202,16 @@ No timestamps, phases, placements, elixir history, disconnects, intent, or causa
       return errorResponse('Invalid analysis response',502);
     }
 
-    // Validate and normalize the response
-    const result = {
-      deckMatchup: resultOnlyAdvice(parsedAnalysis.deckMatchup),
-      analysis: resultOnlyAdvice(parsedAnalysis.analysis),
-      recommendations: Array.isArray(parsedAnalysis.recommendations) 
-        ? parsedAnalysis.recommendations.map(resultOnlyAdvice).filter(Boolean).slice(0,5)
-        : [],
-      pivotalInteractions: Array.isArray(parsedAnalysis.pivotalInteractions)
-        ? parsedAnalysis.pivotalInteractions.filter((i: any) => playerTeam.cards.some(c => c.name === i.yourCard) && opponent.cards.some(c => c.name === i.opponentCard) && typeof i.description === 'string' && !/\d|\b(seconds?|overtime|saniye|segundos?|secondes?)\b/iu.test(i.description)).slice(0, 4).map((i: any) => ({
-            yourCard: i.yourCard || 'Unknown',
-            opponentCard: i.opponentCard || 'Unknown',
-            evidence: "hypothesis",
-            description: resultOnlyAdvice(i.description),
-            impact: i.impact === 'high' ? 'high' : 'medium',
-          }))
-        : [],
-      counterDeck: parsedAnalysis.counterDeck ? {
-        cards: Array.isArray(parsedAnalysis.counterDeck.cards) 
-          ? parsedAnalysis.counterDeck.cards.slice(0, 8)
-          : [],
-        explanations: parsedAnalysis.counterDeck.explanations || {},
-        overallStrategy: resultOnlyAdvice(parsedAnalysis.counterDeck.overallStrategy),
-      } : null,
-    };
+    // Public collection facts constrain candidate cards; no collection means no
+    // counter deck claim. The observed outcome is always calculated, not narrated.
+    const { data: cached } = await supabase.from('player_cache').select('player_data')
+      .in('player_tag', [normalizedTag, normalizedTag.slice(1)]).maybeSingle();
+    const collection = Array.isArray(cached?.player_data?.cards)
+      ? cached.player_data.cards.map((c: any) => c.name).filter((name: unknown) => typeof name === 'string') : [];
+    let advice;
+    try { advice = safeMatchAdvice(parsedAnalysis, playerTeam.cards.map(c => c.name), opponent.cards.map(c => c.name), collection); }
+    catch { return errorResponse('Invalid analysis response', 502); }
+    const result = { ...advice, analysis: observedMatchResult(playerTeam.crowns, opponent.crowns, language) };
 
     if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'analyze-match');
     return jsonResponse(result);

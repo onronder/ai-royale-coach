@@ -19,8 +19,8 @@ aşağıdaki düzeltmeler Git'teki kaynak ve bu dal üzerinde doğrulandı.
   Yaşam boyu geçmiş değildir. `W/(W+L+D)` kullanılır. Oyuncusu bulunamayan,
   bozuk zamanlı/eksik/çelişkili kayıtlar hariç tutulur; hariç sayısı ayrı tutulur.
 - 1v1 ve doğrulanabilen 2v2 takım sonuçları ayrıdır. Duel serileri bir maç sayılmaz.
-  Bilinmeyen mod ayrı etikettedir. Gerçek Hero/duel/2v2 sağlayıcı örneklerinin
-  sözleşme doğrulaması ERR35 kapsamında açık kalır.
+  Bilinmeyen mod ayrı etikettedir. Geri yüklenmiş gerçek sağlayıcı verisindeki 1v1/2v2/duel/çoklu deste/kule
+  örnekleri doğrulandı. Hero/aktif slot sinyali bulunmadı; bilinmeyen kalır.
 - Kimlik: hesap + oyuncu etiketi + mod + kapsam; deste kimliği temel kart,
   seviye, sıra/slot, ham biçim sinyali ve kule kartını taşır. Açılmış EVO/Hero,
   aktif EVO/Hero sayılmaz. Kanıt yoksa `unknown`.
@@ -52,7 +52,7 @@ aşağıdaki düzeltmeler Git'teki kaynak ve bu dal üzerinde doğrulandı.
 | ERR08 | Mevcut deste dolu başlar; sıfırdan oluşturma açık eylemdir. Taslak hesap+etiket bazında saklanır. | Dolu/boş taslak, yenileme ve hesap izolasyonu tarayıcıda. |
 | ERR09 | Yürürlük tarihli kart kopyası tablosu; eksik maliyet NULL. | Level16 kopya testleri; altın veya tüm kaynaklar yeterli iddiası yapılmaz. Kaynak `src/lib/upgradeCost.ts` içinde. |
 | ERR10 | Profil/koleksiyon/deste/seviye/biçim/kule/maç/kural sürümü anahtarı; önerilerde katalog da anahtara dahil. Hesap cache'i oturum değişiminde ayrılır. | Yeni snapshot yeni sorgu; aynı sağlayıcı isteği replay. Eski public profil özetleri bağlı oyuncu için okunabilir, başka hesabın yeni cache'i okunmaz. |
-| ERR11 | Kart gözlem sözleşmesi ve taktik deste kimliği; eksik maxLevel bilinmeyen. | Slot/kule/biçim farkı farklı kimlik; EVO sahipliği aktif slot sayılmaz. Gerçek sağlayıcı biçim doğrulaması açık. |
+| ERR11 | Kart gözlem sözleşmesi ve taktik deste kimliği; eksik maxLevel bilinmeyen. | Slot/kule/biçim farkı farklı kimlik; EVO sahipliği aktif slot sayılmaz. Gerçek geçmiş payloadlarında kule/2v2/duel ayrımı doğrulandı; aktif Hero sinyali yok. |
 | ERR12 | Maç zamanına göre tekilleştirme; atomik pencere değişimi. | Aynı 10 maç iki kez = 10; sırasız/paralel yenileme, çelişkili sonuç/karşı deste ve rollback testleri. |
 | ERR13 | Deste istatistik anahtarına oyuncu, mod ve kapsam eklendi. | Gerçek SQL'de iki hesap/iki etiket ayrımı; eski karışık kayıtlar korunup işaretlendi. |
 | ERR14 | Etikete göre taraf/katılımcı; beraberlik ve geçersiz kayıt ayrımı. | team[1], karşı taraf, null katılımcı/kart, eksik rakip/taç ve bozuk tarih testleri. Gerçek üç handler aynı paydayı üretir. |
@@ -76,7 +76,7 @@ aşağıdaki düzeltmeler Git'teki kaynak ve bu dal üzerinde doğrulandı.
 | ERR32 | Main'deki korumalı cleanup endpoint/cron korunur; SQL batch üst sınırı 5.000'e sabitlenir. | Normal kullanıcı ret; keep-forever/yeni mesaj korunur; 5.100 eski mesaj iki batch. Canlı cron çalıştırılmadı. |
 | ERR33 | Ranking 429/timeout/5xx gerçek hata olur; başarılı boş yanıtla karışmaz. | Gerçek istemci servisi + sahte HTTP tarayıcı testleri. |
 | ERR34 | Oyun API ve Supabase client tek URL; URL/project/JWT-ref uyumsuzluğunda build/runtime ret. | Birim testleri ve dış ağı kapalı browser. Opaque publishable key'in uzak projeyle aidiyeti yalnız yerel kontrolden kanıtlanamaz; hedefte doğrulanacak. |
-| ERR35 | Kabul açığı görünür bırakıldı; aşağıdaki geçiş kapısı. | 39 Edge girişinin tür kontrolü geçer; bu tüm platformun canlı runtime onayı değildir. **AÇIK: hedef kabulü.** |
+| ERR35 | 39 gerçek Edge girişi yerel Supabase runtime üzerinde; gerçek Auth/RLS, yedi erişim türü ve ücretsiz akış. Güvenlik/sonuç hataları aşağıda kapatıldı. | **Yerel platform kabulü geçti.** Bulut dağıtım eşliği, gerçek Google/cihaz/sağlayıcı faturası kabulü açık. |
 
 ## As-is ekran karşılıkları (ERR27)
 
@@ -111,12 +111,14 @@ Bu PR otomatik migration/deploy/activation başlatmaz. Ayrı onaylı sürümde:
    İki geçişin özeti/SQL hash'i kaydedilir. `drizzle generate` çalıştırılmaz:
    projenin `drizzle/schema.ts` dosyası tam şemayı içermiyor. Canlı içe aktarma
    öncesi tam şema introspection/journal eşliği ayrıca kontrol edilir.
-2. Aynı commit'ten 18 işlev: analyze-player, analyze-match, analyze-deck,
+2. Aynı commit'ten 21 işlev: analyze-player, analyze-match, analyze-deck,
    analyze-deck-advanced, analyze-deck-builder, analyze-meta-trends,
    calculate-card-mastery, calculate-player-stats, coach-chat,
    first-session-coaching, first-value-coaching, generate-card-tips,
    predict-deck-matchup, predict-deck-performance, recommend-deck,
-   suggest-card-replacements, sync-achievements, track-deck-stats.
+   suggest-card-replacements, sync-achievements, track-deck-stats,
+   sync-leaderboard, search-clans, send-email. `first-session-coaching` için açık
+   `verify_jwt=true` yapılandırması da uygulanır.
 3. Önce izole hedefte eski tabloların değişmemesi, yeni kapsamın ayrılması,
    account/consent/subscription/free haklarının içerik karşılaştırması yapılır.
    Açıklanamayan farkta yayın durur. 0041 eski satırların kapsam/meta alanlarını
@@ -137,3 +139,49 @@ Geri alma: yeni kanıt/ölçüm tabloları düşürülmez, belirsiz AI iş kayd�
 profil yetkileri gevşetilmez. 0041 sonrası eski conflict anahtarıyla yazan işlevler
 kör geri yüklenmez; uyumlu sürüm veya geçici yeni-analiz durdurma uygulanır.
 Mevcut kayıtlı sonuçların okunması ve satın alınmış erişim korunur.
+
+
+## ERR35 ek kabulü — 19 Kasım 2026
+
+Yeni çalışma bu PR üzerinde; ayrı PR veya canlı dağıtım yapılmadı. Ayrıntılı
+makine kaydı `correctness-platform-acceptance.json`, yeniden çalıştırma yolu
+`tests/integration/platformAcceptance/README.md` içindedir.
+
+- Gerçek, geri yüklenmiş sağlayıcı önbelleği salt okunur incelendi: 112 kayıt,
+  2.485 maç payloadı. 2.358 gözlem kapsama alındı, 127 seri/uygunsuz kayıt hariç
+  tutuldu. Bunlar global tekil maç veya ömür boyu geçmiş sayıları değildir.
+- Maç detayında karşı taraftaki/ikinci oyuncu doğru seçilir; beraberlik ayrı
+  gösterilir. 2v2 iki takımın dört destesini gösterir, 1v1 AI yorumu çağırmaz.
+  Duel/çoklu deste/boat/round dizileri tek maç diye yorumlanmaz. Maç analizi
+  önbelleği hesap ve tam maç kanıtı bazında ayrılır.
+- Gözlenen sonuç metnini model yazamaz; skor ve dil üzerinden oluşturulur.
+  Bozuk/null AI nesneleri ve ilgisiz kart etkileşimleri ayıklanır; karşı deste
+  yalnız koleksiyonda bulunan sekiz tekil karttan oluşabilir. Bu kontrol aktif
+  biçim veya mod uygunluğunu kanıtlamaz; metinler olası pratik önerisidir.
+- `sync-leaderboard` ve `calculate-player-stats` gerçek kullanıcı kimliğini
+  ayrıca kontrol eder. Projenin herkese açık anonim anahtarı kullanıcı değildir.
+  `sync-achievements` yetkisiz isteklerde doğru 401/400 sonucunu döndürür.
+- **Ek güvenlik düzeltmesi:** genel `send-email` işlevindeki kampanya dışı
+  gönderimler yalnız sunucu anahtarıyla çalışır. Normal/yönetici oturumu veya
+  anonim anahtar bu yolu kullanamaz. Meşru sunucu bildirimi sahte sağlayıcıyla
+  geçti. Eski `welcome` isteği yalnız onay döndürür; gerçek hoş geldin tekil
+  doğrulama kuyruğunda kalır. Kampanya kapısı değişmedi ve kapalı tutuldu.
+- Klan API 429/503/zaman aşımı boş başarılı listeye dönüşmez. Kayıt formu
+  öncesinde kullanılan halka açık klan/indirim uçları yanlışlıkla kilitlenmedi.
+- Gerçek yerel Auth/PostgREST/RLS ve Edge Runtime ile yedi sentetik hesap türü,
+  yönetici yetkisi, per-player ücretli gate ve ücretsiz uçtan uca akış geçti.
+  Ücretsiz tekrar aynı görevi okudu; AI iş tablosunda yalnız bir tamamlanmış
+  üretim var. Hiçbir gerçek oyun, ödeme, e-posta veya AI çağrısı yapılmadı.
+- 39 giriş OPTIONS/kimliksiz/anonim-token yollarından çağrıldı. Sunucu/ticket
+  callback'lerinin OPTIONS reddetmesi tarayıcı CORS başarısı diye sunulmadı.
+  Bu matris her işlevin bütün iş dallarını çalıştırdığı anlamına gelmez.
+- Beş dil × iki ekran genişliğinde 110 tarayıcı senaryosu geçti. Gerçek fiziksel
+  telefonda kullanım ve ekran okuyucu cihaz testi yerine geçmez.
+- Bulut prova salt okunur kontrolünde kampanya kapalı, `pg_cron`/cron şeması yok;
+  dağıtılmış Edge işlevi yok. Bu izolasyon kanıtıdır, platformun bulutta
+  tamamlandığına dair kanıt değildir. Üretim cron/deploy eşliği değişmedi.
+
+**Kalan dış kabul:** aynı sürümün bulut hedefte dağıtımı ve cron envanterinin
+onaylı geçişte doğrulanması; gerçek Google OAuth ve fiziksel mobil kritik akış;
+sağlayıcı run-ID/fatura eşleştirmesi. Bunlar tamamlanmadan ERR35'e 35/35 canlı
+onay verilmez. Kod düzeltmeleri yayınlanmadan üretimde kapanmış sayılmaz.

@@ -3737,6 +3737,11 @@
     "metaCatalog": "Catálogo de mazos: la popularidad es una puntuación del catálogo. Aquí no se miden el uso global, las victorias ni los cambios semanales.",
     "predictionScope": "Solo se cuentan partidas 1v1 Ladder coincidentes posteriores a la predicción. Las muestras no demuestran precisión calibrada. Los recuentos antiguos no están verificados; una partida puede corresponder a varias predicciones.",
     "recommendationScope": "Solo se cuentan partidas 1v1 Ladder con las mismas ocho cartas base después de ver la recomendación. No mide un efecto antes/después.",
-    "legacyData": "Registro antiguo — medición no verificada"
+    "legacyData": "Registro antiguo — medición no verificada",
+    "draw": "Empate",
+    "unsupportedMatch": "Este formato de partida aún no se puede analizar con fiabilidad.",
+    "teamMatch": "Se muestra el resultado del equipo; el análisis individual con IA está disponible para partidas 1v1 compatibles.",
+    "ownTeamDecks": "Mazos de tu equipo",
+    "otherTeamDecks": "Mazos del equipo rival"
   }
 }

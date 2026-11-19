@@ -3737,6 +3737,11 @@
     "metaCatalog": "Catálogo de decks: a popularidade é uma pontuação do catálogo. O uso global, as vitórias e as alterações semanais não são medidos aqui.",
     "predictionScope": "Só contam partidas 1v1 Ladder correspondentes após a previsão. As amostras não demonstram precisão calibrada. Os totais antigos não estão verificados; uma partida pode corresponder a várias previsões.",
     "recommendationScope": "Só contam partidas 1v1 Ladder com as mesmas oito cartas base após ver a recomendação. Não mede um efeito antes/depois.",
-    "legacyData": "Registo antigo — medição não verificada"
+    "legacyData": "Registo antigo — medição não verificada",
+    "draw": "Empate",
+    "unsupportedMatch": "Este formato de batalha ainda não pode ser analisado com segurança.",
+    "teamMatch": "O resultado da equipa é apresentado; a análise individual com IA está disponível para batalhas 1v1 compatíveis.",
+    "ownTeamDecks": "Decks da sua equipe",
+    "otherTeamDecks": "Decks da equipe adversária"
   }
 }

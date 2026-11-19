@@ -1,6 +1,7 @@
+import { canonicalTag, observeBattle } from '../../../supabase/functions/_shared/battle-observation';
 import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { useMatchDiscussion } from "@/contexts/MatchDiscussionContext";
 import { CounterDeckModal } from "@/components/deck/CounterDeckModal";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionUserContext } from "@/hooks/useSubscription";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { AnalysisServiceError, readAnalysisServiceError, retryAnalysisError } from "@/lib/analysisError";
@@ -185,6 +186,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
   const { t, i18n } = useTranslation();
   const language = i18n.resolvedLanguage ?? 'en';
   const { hasAccess } = useSubscription();
+  const accountId = useContext(SubscriptionUserContext);
   const [showCelebration, setShowCelebration] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [counterDeckOpen, setCounterDeckOpen] = useState(false);
@@ -192,17 +194,22 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
   const { setMatchContext } = useMatchDiscussion();
   
   // Normalize player tag - ensure it has # prefix
-  const normalizedPlayerTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+  const normalizedPlayerTag = canonicalTag(playerTag);
   
   // Compute player/opponent data early (before hooks)
-  const playerTeam = battle?.team.find(p => p.tag === normalizedPlayerTag);
-  const opponent = battle?.opponent[0];
-  const isWin = playerTeam && opponent ? playerTeam.crowns > opponent.crowns : false;
+  const observation = observeBattle(battle, normalizedPlayerTag);
+  const sides = observation && battle ? [battle.team, battle.opponent] : [];
+  const ownSide = sides.find(side => side.some(p => canonicalTag(p.tag) === normalizedPlayerTag));
+  const otherSide = sides.find(side => side !== ownSide);
+  const playerTeam = ownSide?.find(p => canonicalTag(p.tag) === normalizedPlayerTag);
+  const opponent = otherSide?.[0];
+  const isWin = observation?.outcome === 'win';
+  const isDraw = observation?.outcome === 'draw';
   const trophyChange = playerTeam?.trophyChange || 0;
 
   // IMPORTANT: useQuery MUST be called unconditionally (before any returns)
   const { data: analysis, isLoading, error: analysisError } = useQuery({
-    queryKey: ['match-analysis', battle?.battleTime, normalizedPlayerTag, language],
+    queryKey: ['match-analysis', accountId, observation?.key, observation?.evidence, normalizedPlayerTag, language],
     queryFn: async () => {
       if (!battle) throw new Error('No battle data');
       
@@ -235,7 +242,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
       }
       return data as MatchAnalysis;
     },
-    enabled: open && !!battle && hasAccess,
+    enabled: open && observation?.format === '1v1' && hasAccess,
     staleTime: 24 * 60 * 60 * 1000,
     retry: (failureCount, error) => {
       // Don't retry auth or subscription errors
@@ -284,7 +291,12 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
 
   // Early returns AFTER all hooks
   if (!battle) return null;
-  if (!playerTeam || !opponent) return null;
+  if (!observation || !playerTeam || !opponent) return (
+    <Dialog open={open} onOpenChange={onOpenChange}><DialogContent>
+      <DialogTitle>{t('matchDetail.crowns')}</DialogTitle>
+      <DialogDescription>{t('correctness.unsupportedMatch')}</DialogDescription>
+    </DialogContent></Dialog>
+  );
 
   return (
     <>
@@ -295,13 +307,13 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
           
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <Badge variant={isWin ? "default" : "destructive"} className="text-base">
-                {isWin ? t('matchDetail.victory') : t('matchDetail.defeat')}
+              <Badge variant={isDraw ? "secondary" : isWin ? "default" : "destructive"} className="text-base">
+                {isDraw ? t('correctness.draw') : isWin ? t('matchDetail.victory') : t('matchDetail.defeat')}
               </Badge>
-              <span className="text-muted-foreground">{gameLabel(battle.gameMode.name, t)}</span>
+              <span className="text-muted-foreground">{gameLabel(battle.gameMode?.name ?? battle.type ?? '—', t)}</span>
             </DialogTitle>
             <DialogDescription>
-              {t('matchDetail.description', { opponent: opponent.name })}
+              {observation.format === '2v2' ? t('correctness.teamMatch') : t('matchDetail.description', { opponent: opponent.name })}
             </DialogDescription>
           </DialogHeader>
 
@@ -333,7 +345,7 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               )}
               <div className="text-center">
                 <Swords className="w-6 h-6 mx-auto mb-1 text-primary" />
-                <p className="text-sm font-medium">{gameLabel(battle.arena.name, t)}</p>
+                <p className="text-sm font-medium">{gameLabel(battle.arena?.name ?? '—', t)}</p>
                 <p className="text-xs text-muted-foreground">{t('matchDetail.arena')}</p>
               </div>
             </div>
@@ -342,22 +354,24 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-green-500">●</span> {t('matchDetail.yourDeck')}
+                  <span className="text-green-500">●</span> {observation.format === '2v2' ? t('correctness.ownTeamDecks') : t('matchDetail.yourDeck')}
                 </h3>
-                <DeckGrid cards={playerTeam.cards} size="sm" />
+                {ownSide?.map(p => <div key={p.tag}><p className="text-sm">{p.name}</p><DeckGrid cards={p.cards} size="sm" /></div>)}
               </div>
               <div>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-red-500">●</span> {t('matchDetail.opponentDeck', { name: opponent.name })}
+                  <span className="text-red-500">●</span> {observation.format === '2v2' ? t('correctness.otherTeamDecks') : t('matchDetail.opponentDeck', { name: opponent.name })}
                 </h3>
-                <DeckGrid cards={opponent.cards} size="sm" />
+                {otherSide?.map(p => <div key={p.tag}><p className="text-sm">{p.name}</p><DeckGrid cards={p.cards} size="sm" /></div>)}
               </div>
             </div>
 
             {/* AI Analysis */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">{t('matchDetail.matchAnalysis')}</h3>
-              {!hasAccess ? (
+              {observation.format !== '1v1' ? (
+                <p className="text-sm text-muted-foreground">{t('correctness.teamMatch')}</p>
+              ) : !hasAccess ? (
                 <div className="p-6 bg-primary/5 border border-primary/20 rounded-lg text-center space-y-3">
                   <Lock className="w-8 h-8 text-primary mx-auto" />
                   <p className="text-sm text-muted-foreground">{t('subscription.featureRequiresPro', { feature: t('subscription.features.matchupAnalysis') })}</p>

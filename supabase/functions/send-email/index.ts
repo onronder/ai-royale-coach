@@ -5,7 +5,6 @@ import { renderAsync } from 'https://esm.sh/@react-email/components@0.0.22?deps=
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts'
 import { logger } from '../_shared/logger.ts'
-import { WelcomeEmail, getWelcomeSubject } from './_templates/welcome-email.tsx'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
 import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
@@ -49,6 +48,12 @@ Deno.serve(async (req) => {
     const body: EmailRequest = await req.json()
     // Promotions never trust the caller's address or role: admin check, consent gate and one message per campaign/recipient.
     if (body.type === 'winback_promo') return await sendPromo(req, body)
+    // Confirmed-welcome owns this flow. Old browser tabs get an acknowledgement,
+    // never a second message or a way to bypass the verification queue.
+    if (body.type === 'welcome') return jsonResponse({ success: true })
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
+    if (!serviceKey || token !== serviceKey) return errorResponse('Unauthorized', 401)
     const { email, type, name, language: requestedLanguage, subscriptionData, resetUrl, promoCode, discountPercent, updatePaymentUrl, accessEndDate, wasTrial } = body
     const language = productLanguage(requestedLanguage);
 
@@ -62,32 +67,6 @@ Deno.serve(async (req) => {
       return errorResponse('Invalid email format', 400)
     }
 
-    // For welcome emails, verify the user exists in our database
-    if (type === 'welcome') {
-      const supabaseAdmin = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-      )
-      
-      // During the staged deployment the old site still sends this request.
-      // Once the confirmed-account queue owns welcomes it is only an acknowledgement.
-      const { data: cutover, error: cutoverError } = await supabaseAdmin
-        .from('welcome_cutover').select('activated_at').eq('singleton', true).maybeSingle()
-      if (cutoverError) throw cutoverError
-      if (cutover) return jsonResponse({ success: true })
-
-      const { data: profile, error: profileError } = await supabaseAdmin
-        .from('profiles')
-        .select('id, email')
-        .eq('email', email)
-        .single()
-      
-      if (profileError || !profile) {
-        logger.error('User not found in profiles', { email })
-        return errorResponse('User not found', 404)
-      }
-    }
-
     logger.info('Processing email', { type, email, language })
 
     let html: string
@@ -95,17 +74,6 @@ Deno.serve(async (req) => {
     const appUrl = Deno.env.get('APP_URL') || 'https://vraqbzokccvqhthixoof.lovableproject.com'
 
     switch (type) {
-      case 'welcome':
-        subject = getWelcomeSubject(language)
-        html = await renderAsync(
-          React.createElement(WelcomeEmail, {
-            name,
-            language,
-            appUrl,
-          })
-        )
-        break
-
       case 'subscription':
         subject = getSubscriptionSubject(language)
         html = await renderAsync(

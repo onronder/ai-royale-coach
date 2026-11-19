@@ -10,7 +10,7 @@ verify_jwt = false
 [functions.polar-webhook]
 verify_jwt = false
 
-# Email sending - handles auth internally (welcome emails don't have JWT yet)
+# Email sending - server authority for transactional mail; admin + SQL gate for campaigns
 [functions.send-email]
 verify_jwt = false
 
@@ -132,4 +132,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.first-value-coaching]
+verify_jwt = true
+
+[functions.first-session-coaching]
 verify_jwt = true

@@ -11,13 +11,18 @@ serve(async (req) => {
   try {
     const { playerTag } = await req.json();
     
-    if (!playerTag) {
+    if (typeof playerTag !== 'string' || !playerTag.trim()) {
       return errorResponse('Player tag required', 400);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '');
+    if (!token) return errorResponse('Unauthorized', 401);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !user) return errorResponse('Unauthorized', 401);
 
     // Fetch player's battle log from API
     const { data: battles, error: battleError } = await supabase.functions.invoke('clash-royale-api', {
