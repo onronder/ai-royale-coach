@@ -1,7 +1,7 @@
 -- Rehearsal first. No schedules, entitlements, email settings or historical costs changed.
 CREATE TABLE public.ai_generation_attempts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   feature text NOT NULL CHECK (length(feature) BETWEEN 1 AND 120),
   request_hash text NOT NULL CHECK (request_hash ~ '^[a-f0-9]{64}$'),
   model text NOT NULL,
@@ -33,9 +33,9 @@ CREATE TABLE public.ai_generation_attempts (
 CREATE UNIQUE INDEX ai_generation_single_result ON public.ai_generation_attempts(user_id,feature,request_hash)
   WHERE status <> 'rejected';
 CREATE INDEX ai_generation_started ON public.ai_generation_attempts(started_at DESC);
-ALTER TABLE public.ai_generation_attempts ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.ai_generation_attempts FROM PUBLIC, anon, authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.ai_generation_attempts TO service_role;
+ALTER TABLE public.ai_generation_attempts ENABLE ROW LEVEL SECURITY;
 
 CREATE FUNCTION public.claim_ai_generation(p_user uuid,p_feature text,p_hash text,p_model text,p_tier text)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public,pg_temp AS $$

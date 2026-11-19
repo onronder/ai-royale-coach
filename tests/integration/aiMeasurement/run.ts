@@ -45,12 +45,19 @@ try {
     DO $$ BEGIN CREATE ROLE service_role BYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
     CREATE SCHEMA auth; GRANT USAGE ON SCHEMA public,auth TO anon,authenticated,service_role;
     CREATE TABLE auth.users(id uuid PRIMARY KEY);
+    CREATE TABLE public.profiles(id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE);
     CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$ SELECT nullif(current_setting('test.uid',true),'')::uuid $$;
     CREATE FUNCTION public.is_admin(uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT $1='${uid}'::uuid $$;
     CREATE TABLE public.api_request_logs(id uuid DEFAULT gen_random_uuid(),user_id uuid,endpoint text,query_key text,method text,
       duration_ms integer,cache_hit boolean,metadata jsonb DEFAULT '{}',created_at timestamptz DEFAULT now());`)
   await sql`insert into auth.users values(${uid}),(${other})`
+  await sql`insert into public.profiles values(${uid}),(${other})`
   await sql.unsafe(await readFile(new URL('../../../drizzle/migrations/0040_ai_attempt_measurement.sql', import.meta.url), 'utf8'))
+  const unprofiled = crypto.randomUUID()
+  await sql`insert into auth.users values(${unprofiled})`
+  await assert.rejects(rpc('claim_ai_generation', {p_user:unprofiled,p_feature:'missing-profile',p_hash:'b'.repeat(64),p_model:'fixture',p_tier:'free'}), /foreign key/)
+  assert.equal((await sql`select count(*)::int n from ai_generation_attempts where user_id=${unprofiled}`)[0].n,0)
+  ok('an auth identity without an application profile cannot acquire an AI generation')
   const pair = await Promise.all([measured('parallel')(url, body()), measured('parallel')(url, body())])
   assert.deepEqual(pair.map(r => r.status).sort(), [200,409])
   await pair.find(r => r.ok)!.text()
