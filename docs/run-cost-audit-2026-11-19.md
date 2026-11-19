@@ -1,5 +1,10 @@
 # Run maliyeti: kanıt ve uygulama sırası
 
+Bu dosyanın aşağıdaki bölümleri yayın öncesi incelemenin tarihsel kaydıdır.
+19 Kasım akşamındaki canlı kontrol ve yeni optimizasyon taslağının durumu için
+[güncel kontrol notuna](coaching-prompt-cost-release.md) bakın. Eski iki grace işi
+artık kaldırılmıştır; parasal fatura mutabakatı hâlâ tamamlanmış değildir.
+
 Bu kayıt önce 35 maddelik doğruluk çalışmasının yerel kabulünü tamamlar; maliyet
 değişiklikleri ayrı bakım sürümündedir. Üretimde ayar, cron, model, hak, ödeme
 veya e-posta değişikliği yapılmadı. Gerçek AI çağrısı başlatılmadı.

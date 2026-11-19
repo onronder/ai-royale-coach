@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFile, readdir } from 'node:fs/promises'
 import postgres from 'postgres'
+import { coachingCard } from '../../../supabase/functions/_shared/coaching-advice'
 import {
   handleFirstValue,
   type FreeDependencies,
@@ -90,7 +91,18 @@ const deps = (id: string): FreeDependencies => ({
           cards: [...deck, added],
         }
   },
-  generate: async () => {
+  generate: async (prompt, language) => {
+    assert(['en', 'tr', 'es', 'fr', 'pt'].includes(language))
+    const tables = prompt.match(/Current deck: (.+)\. Collection: (.+)\.$/)
+    assert(tables, 'the real handler supplies both card tables')
+    for (const [encoded, expected] of [[tables[1], deck], [tables[2], [...deck, added]]] as const) {
+      const table = JSON.parse(encoded)
+      assert.deepEqual(table.columns, ['id', 'name', 'displayLevel', 'elixirCost'])
+      assert.deepEqual(table.rows, expected.map(card => {
+        const value = coachingCard(card)
+        return [value.id, value.name, value.displayLevel, value.elixirCost ?? null]
+      }))
+    }
     calls++
     await new Promise((r) => setTimeout(r, 10))
     if (providerTimeout) throw new Error('accepted then connection lost')
@@ -445,6 +457,13 @@ try {
     'large cohort still returns only one page of account details',
   )
   console.log('1000-account local report: ' + Math.round(performance.now() - started) + ' ms')
+  for (const language of ['en', 'tr', 'es', 'fr', 'pt']) {
+    const id = await account(), before = calls
+    const first = await request(id, 'start', { language })
+    await request(id, 'start', { language })
+    ok(first.status === 200 && first.data.task.recommendation.language === language && calls === before + 1,
+      language + ': compact input saves one personal suggestion; repeat reuses it')
+  }
   ok(
     !(await sql`SELECT sending_enabled FROM marketing_settings`)[0].sending_enabled,
     'campaign sending remains off',

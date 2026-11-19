@@ -8,6 +8,15 @@ export function coachingCard(card: Card) {
   return { id: card.id, name: card.name, displayLevel: cardDisplayLevel(card), elixirCost: card.elixirCost };
 }
 
+// Repeat the field names once, preserving every card and the game's displayed level.
+// Null remains unknown; it must never become a zero level or elixir cost.
+export function coachingCardTable(cards: Card[]) {
+  return { columns: ['id', 'name', 'displayLevel', 'elixirCost'], rows: cards.map(card => {
+    const value = coachingCard(card);
+    return [value.id, value.name, value.displayLevel, value.elixirCost ?? null];
+  }) };
+}
+
 // The outgoing card belongs to the original deck, including after an alternative is chosen.
 export function coachingSwap<T extends Card>(source: T[], proposed: T[], removeId: number) {
   const removed = source.find(card => card.id === removeId);
