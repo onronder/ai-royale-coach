@@ -131,7 +131,7 @@
     "new": "YENİ",
     "oracle": {
       "title": "Kahin",
-      "description": "Maçtan önce rakip destelerini tahmin et",
+      "description": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
       "cta": "Dene"
     },
     "proDna": {
@@ -3302,9 +3302,9 @@
   },
   "oraclePage": {
     "title": "Kahin",
-    "subtitle": "Maç başlamadan önce rakibinin destesini tahmin et",
+    "subtitle": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
     "proFeature": "PRO Özellik",
-    "proUpgradeMessage": "Canlı Maç Tahminlerinin kilidini açmak için PRO'ya yükseltin."
+    "proUpgradeMessage": "PRO ile bilinen bir oyuncunun son deste gözlemlerini görebilirsin. Sıradaki rakibini göstermez."
   },
   "commonExtra": {
     "vs": "karşı",
@@ -3722,8 +3722,9 @@
     "entertainment": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
     "uncalibrated": "AI yorumu; kalibre edilmiş olasılık değildir",
     "readiness": {
-      "ready": "Temel seviyeler mevcut desteyle uyumlu",
-      "investment": "Düşük seviyeli kartlar: yükseltme gerekiyor",
+      "reference": "Referans: mevcut destenin ortanca seviyesi {{level}}. Farklar tek bir değiştirilecek karta göre değil, bu referansa göredir.",
+      "ready": "Karşılaştırma seviyesinin altında kart yok",
+      "investment": "Bazı kartlar karşılaştırma seviyesinin altında",
       "unknown": "Uygunluk bilinmiyor",
       "unavailable": "Kullanılamayan kartlar"
     },

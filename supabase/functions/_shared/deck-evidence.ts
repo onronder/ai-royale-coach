@@ -20,9 +20,11 @@ export function classifyDeck<T extends { name: string; key_cards: string[] }>(na
 }
 
 export function deckReadiness(names: string[], collection: Array<{name: string; level: number; maxLevel?: number}>, currentDeck: Array<{level: number; maxLevel?: number}>) {
-  const currentLevels = currentDeck.map(cardDisplayLevel);
+  const currentLevels = currentDeck.map(cardDisplayLevel).sort((a,b) => (a ?? 0) - (b ?? 0));
+  // One low-level support card must not make a much weaker deck appear equivalent.
+  // This explicit median is a comparison reference, not proof of battle readiness.
   const reference = currentLevels.length === 8 && currentLevels.every(l => l !== null)
-    ? Math.min(...currentLevels as number[]) : null;
+    ? (currentLevels[3]! + currentLevels[4]!) / 2 : null;
   const cards = names.map(name => {
     const card = collection.find(c => c.name === name);
     const level = card ? cardDisplayLevel(card) : null;

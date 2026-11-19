@@ -157,8 +157,9 @@ const RecommendationCard = memo(({
       <CardContent className="space-y-4">
         <SimpleCardGrid cards={recommendation.cards} />
         <p className="text-sm">{t(`correctness.readiness.${recommendation.readiness?.state || 'unknown'}`)}</p>
+        {recommendation.readiness?.reference != null && <p className="text-xs text-muted-foreground">{t('correctness.readiness.reference', {level: recommendation.readiness.reference.toLocaleString(i18n.language)})}</p>}
         <p className="text-xs text-muted-foreground">{t('correctness.formsUnknown')}</p>
-        {recommendation.readiness?.cards.map(c => <p key={c.name} className="text-xs">{c.name}: {c.level ?? '—'}{c.gap ? ` (−${c.gap})` : ''}</p>)}
+        {recommendation.readiness?.cards.map(c => <p key={c.name} className="text-xs">{c.name}: {c.level ?? '—'}{c.gap ? ` (−${c.gap.toLocaleString(i18n.language)})` : ''}</p>)}
         
         <p className="text-sm text-muted-foreground italic">
           "{recommendation.reason}"
