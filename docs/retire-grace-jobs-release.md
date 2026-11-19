@@ -20,12 +20,25 @@ gerçek migration ile 5 kontrol. Welcome, trial reminder, Polar ve mesaj temizli
 satırları birebir korunur; tekrar/eksik cron/tek kalan iş/yeniden kullanılmış iş
 ve transaction geri alma kontrol edilir. Zamanlayıcı taşıyıcısı sahtedir.
 
+19 Kasım 2026 ek bulut kabulü: `jmdtjtpymxjkprugqoqu` üzerinde
+`e22f91e689115db5b4b3886e462394a3216ad850` kaynağındaki 0042 çalıştırıldı.
+Cron'suz izole hedefte işlem yapmadı. Ayrı, geri alınan bir transaction içinde
+gerçek `pg_cron` kuruldu; üç inert test işi commit edilmeden pasif yapıldı.
+Migration iki eski adı kaldırdı, ilgisiz pasif işi korudu; ikinci çalıştırma
+da geçti. Transaction geri alındı: hiçbir iş çalışmadı, cron eklentisi/job
+bırakılmadı. PR #26 ile aynı prova sonunda 75 tablonun 25.160 eski satırı
+başlangıçla aynı, kampanya kapalı. Detaylar #26'nın
+`docs/correctness-cloud-rehearsal.md` ve `correctness-cloud-acceptance.json`
+kayıtlarında. Gerçek üretim zamanlayıcıları bu tur değiştirilmedi.
+
 ## Sıra
 
-Önce doğruluk PR #26 ve dış kabul kapıları tamamlanır; bu bakım ayrı uygulanır.
+Önce doğruluk PR #26'nın onaylı prova kabulü tamamlanır; bu bakım ayrı uygulanır.
+Prova sonrası birleşme kullanıcı tarafından onaylıdır; üretim geçişi ayrı kalır.
 0042, 0040/0041'e teknik olarak bağımlı değildir; numara çakışmasını önler.
 
-1. GitHub birleşmesi: **bekliyor**; kesin SHA ve UTC zamanını kaydet.
+1. GitHub birleşmesi: prova kabulünden sonra #27 üzerinde yapılır; kesin merge SHA
+   ve UTC zamanı GitHub PR kaydında tutulur. Birleşme üretim SQL uygulaması değildir.
 2. Üretim SQL uygulaması: **bekliyor**. Önce iki işin ve diğer dört işin özel
    yedeğini al (komutlarda gizli değer bulunabilir; Git'e veya loga yazma).
    İncelenen 0042'yi tek işlem olarak uygula. Kampanya anahtarına dokunma.
