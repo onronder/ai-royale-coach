@@ -131,7 +131,7 @@
     "new": "NOVO",
     "oracle": {
       "title": "O Oráculo",
-      "description": "Preveja os decks do oponente antes da partida",
+      "description": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
       "cta": "Testar"
     },
     "proDna": {
@@ -3302,9 +3302,9 @@
   },
   "oraclePage": {
     "title": "O Oráculo",
-    "subtitle": "Preveja o deck do seu oponente antes da partida começar",
+    "subtitle": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
     "proFeature": "Recurso PRO",
-    "proUpgradeMessage": "Atualize para PRO para desbloquear Previsões de Partida ao Vivo."
+    "proUpgradeMessage": "PRO inclui os decks recentes observados de um jogador conhecido. Não revela seu próximo adversário."
   },
   "commonExtra": {
     "vs": "vs",
@@ -3722,8 +3722,9 @@
     "entertainment": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
     "uncalibrated": "Opinião da IA; não é probabilidade calibrada",
     "readiness": {
-      "ready": "Níveis base compatíveis com o deck atual",
-      "investment": "Cartas de nível menor: precisam de melhoria",
+      "reference": "Referência: o nível mediano do seu deck atual é {{level}}. As diferenças usam essa referência, não uma carta a substituir.",
+      "ready": "Nenhuma carta abaixo do nível de referência",
+      "investment": "Algumas cartas estão abaixo do nível de referência",
       "unknown": "Disponibilidade desconhecida",
       "unavailable": "Cartas indisponíveis"
     },

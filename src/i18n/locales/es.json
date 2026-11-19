@@ -131,7 +131,7 @@
     "new": "NUEVO",
     "oracle": {
       "title": "El Oráculo",
-      "description": "Predice los mazos del oponente antes del combate",
+      "description": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
       "cta": "Probar"
     },
     "proDna": {
@@ -3302,9 +3302,9 @@
   },
   "oraclePage": {
     "title": "El Oráculo",
-    "subtitle": "Predice el mazo de tu oponente antes de que comience la partida",
+    "subtitle": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
     "proFeature": "Función PRO",
-    "proUpgradeMessage": "Actualiza a PRO para desbloquear Predicciones de Partida en Vivo."
+    "proUpgradeMessage": "PRO incluye los mazos recientes observados de un jugador conocido. No revela a tu próximo rival."
   },
   "commonExtra": {
     "vs": "vs",
@@ -3722,8 +3722,9 @@
     "entertainment": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
     "uncalibrated": "Opinión de IA; no probabilidad calibrada",
     "readiness": {
-      "ready": "Niveles base acordes al mazo actual",
-      "investment": "Cartas de menor nivel: requieren mejora",
+      "reference": "Referencia: la mediana de nivel de tu mazo actual es {{level}}. Las diferencias se comparan con ella, no con una carta que se sustituya.",
+      "ready": "Ninguna carta por debajo del nivel de referencia",
+      "investment": "Algunas cartas están por debajo del nivel de referencia",
       "unknown": "Disponibilidad desconocida",
       "unavailable": "Cartas no disponibles"
     },

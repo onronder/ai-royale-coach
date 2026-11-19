@@ -83,6 +83,23 @@ describe('inventory correctness contracts',()=>{
   assert.equal(deckReadiness(cards.map(c=>c.name),cards.map(c=>({...c,maxLevel:undefined})),cards).state,'unknown');
   assert.equal(deckReadiness(cards.map(c=>c.name),cards,cards).formsVerified,false);
  });
+ it('ERR06: one weak current card cannot hide an under-levelled recommendation',()=>{
+  const current=[15,14,11,15,12,12,12,16].map((level,i)=>({...cards[i],level,maxLevel:16}));
+  const proposed=current.map(c=>({...c,level:11}));
+  const result=deckReadiness(proposed.map(c=>c.name),proposed,current);
+  assert.equal(result.reference,13);assert.equal(result.state,'investment');
+  assert(result.cards.every(c=>c.gap===2));
+ });
+ it('ERR06: median comparison preserves fractional levels and unknown evidence',()=>{
+  const current=[11,12,12,13,14,15,15,16].map((level,i)=>({...cards[i],level,maxLevel:16}));
+  const proposed=current.map(c=>({...c,level:14}));
+  assert.equal(deckReadiness(proposed.map(c=>c.name),proposed,current).reference,13.5);
+  assert.equal(deckReadiness(proposed.map(c=>c.name),proposed,current).state,'ready');
+  proposed[0].level=13;
+  assert.equal(deckReadiness(proposed.map(c=>c.name),proposed,current).cards[0].gap,0.5);
+  assert.equal(deckReadiness(proposed.map(c=>c.name),proposed,current.slice(1)).state,'unknown');
+  assert.equal(deckReadiness(proposed.map(c=>c.name),proposed,current.map(c=>({...c,maxLevel:undefined}))).reference,null);
+ });
  it('ERR07: transferred deck uses canonical tab and survives URL round-trip',()=>{
   const url=new URL(deckBuilderUrl(tag,cards.map(c=>c.name)),'https://fixture.invalid');assert.deepEqual(dashboardDestination(url.search),{tab:'deck',subtab:'builder'});
   assert.deepEqual(importedDeck(url.searchParams.get('deck'),cards),cards);assert.deepEqual(dashboardDestination('?tab=builder'),{tab:'deck',subtab:'builder'});

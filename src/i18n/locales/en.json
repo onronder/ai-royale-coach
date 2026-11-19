@@ -131,7 +131,7 @@
     "new": "NEW",
     "oracle": {
       "title": "The Oracle",
-      "description": "Predict opponent decks before the match",
+      "description": "View a known player’s recent decks; this cannot reveal your next opponent.",
       "cta": "Try It"
     },
     "proDna": {
@@ -3291,9 +3291,9 @@
   },
   "oraclePage": {
     "title": "The Oracle",
-    "subtitle": "Predict your opponent's deck before the match begins",
+    "subtitle": "View a known player’s recent decks; this cannot reveal your next opponent.",
     "proFeature": "PRO Feature",
-    "proUpgradeMessage": "Upgrade to PRO to unlock Live Match Predictions."
+    "proUpgradeMessage": "PRO includes recent deck observations for a known player. It cannot reveal your next opponent."
   },
   "pagination": {
     "previous": "Previous",
@@ -3722,8 +3722,9 @@
     "entertainment": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
     "uncalibrated": "AI opinion; not a calibrated probability",
     "readiness": {
-      "ready": "Base levels match current deck",
-      "investment": "Lower-level cards: upgrades needed",
+      "reference": "Reference: your current deck’s median level is {{level}}. Gaps compare with this reference, not an individual replacement.",
+      "ready": "No card below the comparison level",
+      "investment": "Some cards are below the comparison level",
       "unknown": "Readiness unknown",
       "unavailable": "Unavailable cards"
     },
