@@ -8,8 +8,10 @@ maç geçmişi ve eski 0038/0039 numaraları bu dala taşınmadı. Main üzerind
 0038 profil izinleri ve 0039 mesaj temizliği korundu.
 
 Bu belge **kod + yalıtılmış kabul** kaydıdır. Canlıda 35/35 kapanış onayı değildir.
-Bu çalışmada canlıya veya bulut prova projesine veri/şema/işlev uygulanmadı,
-hiçbir gerçek e-posta, ödeme veya AI isteği yapılmadı. Kampanya anahtarı açılmadı.
+İlk yerel kabulde canlıya veya bulut prova projesine veri/şema/işlev uygulanmadı.
+Sonraki onaylı [bulut prova kabulü](correctness-cloud-rehearsal.md) aynı kodla
+tamamlandı; yalnız izole hedefe şema/işlev uygulandı. Hiçbir gerçek e-posta,
+ödeme veya AI isteği yapılmadı. Kampanya anahtarı açılmadı.
 Lovable'da commit edilmemiş ve Git'e aktarılmamış içerik incelenmiş sayılmaz;
 aşağıdaki düzeltmeler Git'teki kaynak ve bu dal üzerinde doğrulandı.
 
@@ -76,7 +78,7 @@ aşağıdaki düzeltmeler Git'teki kaynak ve bu dal üzerinde doğrulandı.
 | ERR32 | Main'deki korumalı cleanup endpoint/cron korunur; SQL batch üst sınırı 5.000'e sabitlenir. | Normal kullanıcı ret; keep-forever/yeni mesaj korunur; 5.100 eski mesaj iki batch. Canlı cron çalıştırılmadı. |
 | ERR33 | Ranking 429/timeout/5xx gerçek hata olur; başarılı boş yanıtla karışmaz. | Gerçek istemci servisi + sahte HTTP tarayıcı testleri. |
 | ERR34 | Oyun API ve Supabase client tek URL; URL/project/JWT-ref uyumsuzluğunda build/runtime ret. | Birim testleri ve dış ağı kapalı browser. Opaque publishable key'in uzak projeyle aidiyeti yalnız yerel kontrolden kanıtlanamaz; hedefte doğrulanacak. |
-| ERR35 | 39 gerçek Edge girişi yerel Supabase runtime üzerinde; gerçek Auth/RLS, yedi erişim türü ve ücretsiz akış. Güvenlik/sonuç hataları aşağıda kapatıldı. | **Yerel platform kabulü geçti.** Bulut dağıtım eşliği, gerçek Google/cihaz/sağlayıcı faturası kabulü açık. |
+| ERR35 | 39 gerçek Edge girişi yerel runtime ve izole Supabase hedefinde; gerçek Auth/RLS ve yedi erişim türü. Tam ücretsiz akış yerel sahte sağlayıcıyla geçti. | **Yerel ve bulut prova kabulü geçti.** Uzak bundle geri okuma, bu sürümün tam Google/cihaz/sağlayıcı faturası kabulü açık; ayrıntı bulut raporunda. |
 
 ## As-is ekran karşılıkları (ERR27)
 
@@ -202,9 +204,13 @@ makine kaydı `correctness-platform-acceptance.json`, yeniden çalıştırma yol
   sayılmaz. İki eski grace işi hâlâ etkin ve önceki 24 saatte toplam 48 kez
   zamanlayıcıda çalışmıştı. Ayrıntı: `run-cost-audit-2026-11-19.md`.
 
-**Kalan dış kabul:** aynı sürümün bulut hedefte dağıtımı ve cron envanterinin
-onaylı geçişte doğrulanması; bu sürümle tam Google/e-posta giriş akışı ve fiziksel
-mobil kritik akış; sağlayıcı run-ID/fatura eşleştirmesi. Bir mevcut gateway
+**Güncel durum:** aynı sürüm bulut prova hedefine dağıtıldı; gerçek parola girişi,
+haklar, eski kayıtların korunumu ve gerçek pg_cron davranışı doğrulandı.
+[Ayrıntılı kabul ve sınırlar](correctness-cloud-rehearsal.md).
+
+**Kalan dış kabul:** üretim dağıtım/cron eşliği; uzak bundle geri okuma;
+bu sürümle tam Google giriş akışı ve fiziksel mobil kritik akış;
+sağlayıcı run-ID/fatura eşleştirmesi. Bir mevcut gateway
 yanıtının kullanım alanlarının okunması fatura mutabakatı değildir. Aktif
 Hero/slot verisi kaynakta yoksa sonuç bilinmeyen kalır; bu veri icat edilerek
 kapatılmaz. Bunlar tamamlanmadan ERR35'e 35/35 canlı onay verilmez. Kod

@@ -1,0 +1,737 @@
+{
+  "recorded_at_utc": "2026-11-19T17:48:38.169878+00:00",
+  "target": "jmdtjtpymxjkprugqoqu",
+  "production_changes": false,
+  "production_deployment": false,
+  "site_publication": false,
+  "code_revision_pr26": "3c4c54313ed9c7bf53a9fcfc8b8a05def9139f81",
+  "code_revision_pr27": "e22f91e689115db5b4b3886e462394a3216ad850",
+  "migrations": {
+    "0040_ai_attempt_measurement.sql": {
+      "sha256": "32ca7f5e94078894764b6e3cef6a3b7708958498904a96465b53b7f1881bb23a",
+      "rehearsal": "Previously applied final content verified"
+    },
+    "0041_recent_observation_correctness.sql": {
+      "sha256": "ac438ac544ceb1f88fba3d2fb6e9aa304a253ac6ffb865e51443ddd459fb3d3c",
+      "rehearsal": "Applied, old columns preserved"
+    },
+    "0042_retire_expired_grace_jobs.sql": {
+      "sha256": "b15e270f10634885392199fe7e945370d3c53da42a754ff42230664dcefb6294",
+      "rehearsal": "Applied cron-less no-op; actual pg_cron exercise rolled back"
+    }
+  },
+  "preservation": {
+    "original_tables": 75,
+    "original_rows": 25160,
+    "original_column_hashes_equal": true,
+    "added_columns_excluded_from_old_row_hash": [
+      "deck_usage_stats: observation_scope, mode, battles_drawn, trophy_samples",
+      "card_mastery: observation_scope, mode, battles_drawn",
+      "recommendation_history: input_fingerprint, seen_at, observation_mode",
+      "matchup_predictions: input_fingerprint, observation_mode"
+    ],
+    "new_tables_empty": true
+  },
+  "runtime": {
+    "functions": 39,
+    "rights": [
+      "free",
+      "trial",
+      "paid",
+      "expired",
+      "past_due",
+      "admin",
+      "renewal_off"
+    ],
+    "campaignsOff": true,
+    "realProviderCalls": 0,
+    "passed": true
+  },
+  "sql_checks": [
+    "profile entitlement writes refused; language allowed",
+    "repeated window counted once on battle dates",
+    "older window refused",
+    "account and player windows isolated",
+    "unchanged evidence retains advice",
+    "client cannot forge counts or adoption",
+    "cannot mark another account recommendation seen",
+    "observed win/draw counted once; pre-analysis battle excluded",
+    "adoption derives from observed results without invented before-rate",
+    "unknown cache measurement default remains null",
+    "normal user cannot clean chat history",
+    "campaign sending remains off"
+  ],
+  "ai_ledger": {
+    "real_sql_claim_pending_replay_uncertain": true,
+    "privileges": true,
+    "cost_reconciliation": "Synthetic 0.012 USD fixture only, transaction rolled back; no real billing verification"
+  },
+  "cron": {
+    "actual_pg_cron": true,
+    "removed_obsolete_jobs": 2,
+    "preserved_inactive_jobs": 1,
+    "idempotent": true,
+    "test_transaction_rolled_back": true,
+    "jobs_executed": 0,
+    "persistent_cron_extension": false
+  },
+  "browser": [
+    {
+      "kind": "free",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "trial",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "paid",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "expired",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "past_due",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "admin",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    },
+    {
+      "kind": "renewal_off",
+      "login": true,
+      "preferences": true,
+      "errors": [],
+      "forbiddenDestinations": [],
+      "physicalDevice": false
+    }
+  ],
+  "edge_metadata": [
+    {
+      "name": "resend-webhook",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "sync-leaderboard",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-match",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "search-clans",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-meta-trends",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "trial-coaching-summary",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "cleanup-old-messages",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "lookup-discount",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "first-session-coaching",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "first-value-coaching",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "track-deck-stats",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "coach-chat",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "create-checkout",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "predict-deck-performance",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "send-email",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "generate-card-tips",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "manage-ai-accounts",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "get-subscription-status",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-player",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "sync-card-collection",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "clash-royale-api",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "polar-mrr",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-deck-builder",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "recommend-deck",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "backfill-polar-orders",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "cancel-subscription",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "suggest-card-replacements",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "calculate-card-mastery",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "confirmed-welcome",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "check-grace-period-expiry",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-deck",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "trial-coaching-reminder",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "calculate-player-stats",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "analyze-deck-advanced",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "polar-webhook",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "sync-achievements",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "admin-fraud-action",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "marketing-unsubscribe",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "updated_at": 1795109638992
+    },
+    {
+      "name": "predict-deck-matchup",
+      "version": 2,
+      "status": "ACTIVE",
+      "verify_jwt": true,
+      "updated_at": 1795109638992
+    }
+  ],
+  "deployed_input_file_sha256": {
+    "marketing-unsubscribe/index.ts": "67145aaadbee71c63aaa75bfbd1e999b84a5b5eabe2a3583d33e2ab2d78323e5",
+    "backfill-polar-orders/reconcile.ts": "484198168693a3f4e9a6c2975b4aa6346603363b7660e9a1c0f752f1cf1567e8",
+    "backfill-polar-orders/index.ts": "e1ebf2fcaab506d5424df9b9ce118cc1920504505f90c09579927452f5c27d19",
+    "confirmed-welcome/index.ts": "bf04ef0ad0f4e84ec9ac80c83434b9afa1351266bf79f61dd05d8d27a55dc0bd",
+    "confirmed-welcome/delivery.ts": "231f946b00b0232cd3b16279b26d1658e2adcb15ceeb35d799bb1df682462d63",
+    "first-session-coaching/index.ts": "4ed6b3152e6591d6979fe06a0e24e0d80bec97b740b6397dbb8c0afbc693a84b",
+    "calculate-player-stats/index.ts": "4beb0e5fef842e00ed20ee194004646372bb87cb7786cf91d54a1f8e0e203151",
+    "first-value-coaching/index.ts": "431a09a1ff575f7ca8f4e38b8e6317ef50900d2b74a7468cf1e546f1349422b5",
+    "first-value-coaching/handler.ts": "cf47f0813943b37f8ac85ee80729b031a101827c5131b0003ffee3e4a06b327b",
+    "trial-coaching-summary/summary.ts": "4f4436b8bb28e210be10af14aa6951d8c6fc6f87af7b970597233aa35846382e",
+    "trial-coaching-summary/index.ts": "d21c474bee9b3a156ce0ea6bf9cd4828eff3557a2148758ba71e0be8072528bc",
+    "admin-fraud-action/index.ts": "b1b2c17883f09f4546548b78c2bf5bfd74cad5f3f68754f533cf74fc16a7e4f9",
+    "analyze-deck/index.ts": "884a49dd924c6747eec160b8cbb2ef94aa6d1f4e334f932069c712caef0e044d",
+    "clash-royale-api/index.ts": "0be1f0bfdbafc1f04aadf4920bf3ada287c4771d39788c5e2052712901a51ebe",
+    "resend-webhook/index.ts": "e3b5ce53f228581af8ee11d0bb5fbe829f365ac79fc121dd87afcec0e6f4c41e",
+    "coach-chat/index.ts": "61b980340f1d2aa8edcdf3939978851c2a1b75932366d01a33ee25f433590913",
+    "get-subscription-status/index.ts": "f5bed10694ed82f546bfccc91997b1977514f044b1fd76d674cfd83c6011037a",
+    "manage-ai-accounts/index.ts": "7d9176f813c8347bbacd0004885b3059804b5f54cf54b6cbc5d4574f2c650c3b",
+    "track-deck-stats/index.ts": "76f709bc8c7031f5dd0ec03d55ae43363c05b47c9248e1f212d4b19dc29b4ef3",
+    "analyze-deck-advanced/index.ts": "ae00d041ba5745a5b63e26b99da9e31d70bbdfb4319724571a281fe6d38ebe13",
+    "analyze-meta-trends/index.ts": "a38e6593468afac5880478d4dabfae854e463c942aa341a93e81a3dc4e6ac351",
+    "lookup-discount/index.ts": "79f525eab460839ae4c2b7fe1c5e303e312563bf62dac20e2cd727b157bf2a77",
+    "polar-mrr/index.ts": "f79fa681b569d8d0114e29a2b8c8ebb4a56a2e6a3876e112966e7b81a96622f8",
+    "polar-mrr/metrics.ts": "31c729c210aeabdd579cf9f0abf8c1055772ed5a5f60d547405a53764a6a7a44",
+    "create-checkout/index.ts": "6728546a9274d31fbb00f582d09b00393572c7ceb8e028c3f1bed15eb22359f3",
+    "create-checkout/recovery.ts": "fb22aa9ce409c826ca19344c9ec2a9563efdf0154011cd224de6656fa0f5dcc8",
+    "send-email/index.ts": "82acedfe737de1267208054fdd9eb2d9dfb64db648abe50eda463e7a16238da6",
+    "polar-webhook/index.ts": "7497307ceed0c04c48c297dc5f48590f9c2fa53aa1ff2fed6a79f450830e0594",
+    "search-clans/index.ts": "eddaac4bec20e18566fdac1b9f71459eeb74a12112fb5b72d1cc0b5128817aea",
+    "predict-deck-matchup/index.ts": "7b4110e63f272915a5aae80c7c81a8f85e2bb01808f2d2521dad6432bc971c0c",
+    "calculate-card-mastery/index.ts": "f75db071a0a1286ad5fd5c5cdc630e66972aad858b72e53d10dd8463ab2f7469",
+    "sync-achievements/index.ts": "c3233e0601f009e41d4a81926cc90dd18e60aac37dc57bef4971e48e4874b922",
+    "_shared/recommendation-reasons.ts": "7c0531b5dcdca4a56f343e46ff91282ac935e67bfa98934b877f1e0cbcf3fe38",
+    "_shared/analysis-error.ts": "719d1a11931fdcd76efeb62e512afae24ab4a29ec84c4e2af58774c7504703b6",
+    "_shared/coaching-reading.ts": "dc05f5eea3d870d756910a5bbf257aa9de021cdc8ef5e41646a3757cc3313c0e",
+    "_shared/coaching-ai.ts": "f6371af6ee3b464f7c720b50b18881b5c908f2c20714eee672cddd850245efa2",
+    "_shared/ai-access.ts": "c6b20d8f6c2b922efbcc4aea98063726a72dc594d40e3b6e0ade251db05ac105",
+    "_shared/ai-generation.ts": "108cacda8336a4601533ad757806ae356f2254732cf75d771b620efa93e649e7",
+    "_shared/card-observation.ts": "45d020f305b5271364acff3be4ec33aa044ee69fdb8d1f690234d5021351d308",
+    "_shared/marketing-gate.ts": "920a198331cb5db4c01e352113ada3248773012f715cf2c1d52b11e143704ccb",
+    "_shared/unsubscribe-token.ts": "6887c1ba32b8544465e08d26acbe6c667425f51b9a79338a9d2545fd3f149574",
+    "_shared/trial-usage.ts": "746fc7ba2967ede7d797f42de3b1dca1152332a39ff1d819e3d9f26b547131b1",
+    "_shared/language.ts": "0ca7c8be4761805acce36312d5b7c99c2180f7c175ee5617eba178f3e0c8b1db",
+    "_shared/run-id.ts": "0379abdeb7e4e655d5c8e16bb41a61a461d64b56f4c9cb4a69a6061cf92eb1d2",
+    "_shared/coach-evidence.ts": "406f5daea77d50620cd25ea845226f9f0ddace2b4678598210f85d502d4dc8a8",
+    "_shared/welcome-email.tsx": "03766bb94b264b6d2ab104cf96d35adb081acdac8731dd3fec02132cadc004ea",
+    "_shared/email-attempt.ts": "347b5f76265b3376c83dc4e6381c079ea7f2f32f59d6e96a0312c9ee175239e9",
+    "_shared/match-advice.ts": "eff80e6c52505989814fa25bd6d76aa467604f43f76836e7e5dd97e135ee233e",
+    "_shared/logger.ts": "4276c47118e4b25e7f69c60e84330f2a88a1aa715f0478333c9d69aaf3189059",
+    "_shared/deck-evidence.ts": "0ea66bcc4aa566f2636beef79cfeae8fd62029d2bf6e58bcf48a3274efc2a3c3",
+    "_shared/coaching-match.ts": "7a422267a58873fdae90983967a80da26378c0c43ddffafaee30753e79aec33c",
+    "_shared/battle-observation.ts": "8e661eecbdfa5f00fc363d595bdd022ad743bcf46be6750e05d7d6b8fbeff42c",
+    "_shared/cors.ts": "f3f0128a43fdc846f280dbd33680a9c8796e1b6d57236dfc1fade98a2ab350f0",
+    "_shared/coaching-source-deck.ts": "c6d63ad38d1989bdd4701b2d5283d5107d5883cf05d9a8fbdc6aebb4f44749b4",
+    "_shared/subscription-access.ts": "1e8df61720cad842d1bbce3ee0fb794d6d7e50c41e32c3f2cddaea3f2c21cd96",
+    "_shared/recent-statistics.ts": "d09f558c03fa3a0119f818ca3ce00ef7daa8f76b151ea0cffa1252f3a1781710",
+    "_shared/coaching-advice.ts": "47f94abe990fbfbcf4e321ae2f6f294ad1966a2d1f61274f79018fc000a5e4cf",
+    "_shared/responses.ts": "00f9b2e4c4626c9c4fbd0599f90fb50c98e1bcf875e00986c7f26575829a11ba",
+    "_shared/card-names.ts": "cee7755c42fa7029d29ce69913b64db5d81c59fbee9850177a1e528bd3d34d89",
+    "_shared/card-display-level.ts": "e18e835a5128e06d8bbb8ffe2123b62b5092051bc83241f7efa7f8d5f29ca835",
+    "_shared/resend-events.ts": "63d38797075d839c45b3e8343b1fca28b62672a0b936f88867093f3ecfe0c636",
+    "_shared/subscription-events.ts": "9eb2dc17a1d45e1f7d28b0b19af218bc4ef6caf9713cb1311e79e3231a37b495",
+    "_shared/trial-stream.ts": "8eaaaf5d3e75fa466a276dc760d8afabcd769b4bdafacf575074203782b2eecf",
+    "sync-card-collection/index.ts": "34eeab01e8d9bad552f45f8c6bfe263ccbdf68dcaac109b2d591df4cfda93c6f",
+    "trial-coaching-reminder/index.ts": "8135e62f9b005c5ea28f9853031b7c4b3c55773558868565e96f4efd52591399",
+    "trial-coaching-reminder/delivery.ts": "3e50863c68bd480821484f8b91f6b2000c201977ad24f37413018a4e792ef05e",
+    "sync-leaderboard/index.ts": "8b82fcd026ce5015ee7fd7eb72e9c86787bf021d8237d6f4e88cfdf63bb99785",
+    "cleanup-old-messages/index.ts": "cdefd7f0021883cdfa4a42273ee1e64c5e5066a14f18e541ccb946d460458530",
+    "analyze-match/index.ts": "fdef488da7b8152bd97d4fce24a16b98842e20c06cd884cd1e8eeab5025b5c58",
+    "analyze-deck-builder/index.ts": "7caffb714c055be03d6dd11dada6d2638bbfbadea421f7ff4b852c83c8e798df",
+    "predict-deck-performance/index.ts": "968d02207f038831a7f8d01bf0cf70219930096c2aa3cabd8597dfb28cfaf1b5",
+    "suggest-card-replacements/index.ts": "c819cc1aa5c6d85f9c9aa17165f2f3fa43411e059796b2d61fd0debe17d0decd",
+    "recommend-deck/index.ts": "f7b4b6f72656610b35d5907e4a0b93fc52c9c1bf46bfeddf129dbe5e9437e2b4",
+    "check-grace-period-expiry/index.ts": "a5cf82cacfd7093a85eab58037b2f6ff640771e30124f7ca3541f54193368278",
+    "cancel-subscription/index.ts": "302b1cdc9fe5648df81a13cd7e1e32bb0f2638b09ffd29d542514e54f696adc6",
+    "analyze-player/index.ts": "bf996eb15c540efda63c8a5356c9e16332f6eaa71b72d3cd76d0942b6c2acd72",
+    "generate-card-tips/index.ts": "1f39b7f4d33c06eb7e64c1ceb6686d3610e0e6169b56f5555485ae08c73dd3b4",
+    "send-email/_templates/trial-expired-email.tsx": "fbaea2d128c553552a868bece69988d06034c068ffee086061f6bdc0452435b0",
+    "send-email/_templates/winback-promo-email.tsx": "d34d05721c98fff7abc55750b4cb9f941443854c8e9424d8e2fe2057f79c50a7",
+    "send-email/_templates/cancellation-email.tsx": "3ba35946e2208a0d738196743834cc1609b3d0eaeb453994018038b9f07d7b72",
+    "send-email/_templates/password-reset-email.tsx": "0f7764adb422b77b18d0115111529e2b8c1b332e6d9a020d2729e6724339bf78",
+    "send-email/_templates/subscription-email.tsx": "95a78c9e05cfb7d87e28c89124b3edb1725cac18ed3a9723d2c1d8ba4e917fa1",
+    "send-email/_templates/welcome-email.tsx": "1828e63ac5b38f11cb93659f4434b6660f25a5efbb2f8b75a8686f2c8fa3390c",
+    "send-email/_templates/verification-email.tsx": "dcc39032cbf7b6a945674b20d58605f36b17d9c4ffbbc37a0689daa4159dacd9",
+    "send-email/_templates/payment-failed-email.tsx": "b27d6810991bbc5067e23bcee6369d49280ea66807b23adca13e132ab9cc58fe"
+  },
+  "function_matrix_scope": "Existence/preflight, not full business paths. Six missing-provider-configuration failures are documented in the Markdown record.",
+  "initial_no_provider_configuration_matrix": [
+    {
+      "name": "marketing-unsubscribe",
+      "options": 400,
+      "guest": 400
+    },
+    {
+      "name": "backfill-polar-orders",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "confirmed-welcome",
+      "options": 405,
+      "guest": 401
+    },
+    {
+      "name": "first-session-coaching",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "calculate-player-stats",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "first-value-coaching",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "trial-coaching-summary",
+      "options": 405,
+      "guest": 401
+    },
+    {
+      "name": "admin-fraud-action",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-deck",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "clash-royale-api",
+      "options": 200,
+      "guest": 500
+    },
+    {
+      "name": "resend-webhook",
+      "options": 405,
+      "guest": 503
+    },
+    {
+      "name": "coach-chat",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "get-subscription-status",
+      "options": 200,
+      "guest": 200
+    },
+    {
+      "name": "manage-ai-accounts",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "track-deck-stats",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-deck-advanced",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-meta-trends",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "lookup-discount",
+      "options": 200,
+      "guest": 500
+    },
+    {
+      "name": "polar-mrr",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "create-checkout",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "send-email",
+      "options": 500,
+      "guest": 500
+    },
+    {
+      "name": "polar-webhook",
+      "options": 200,
+      "guest": 500
+    },
+    {
+      "name": "search-clans",
+      "options": 200,
+      "guest": 500
+    },
+    {
+      "name": "predict-deck-matchup",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "calculate-card-mastery",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "sync-achievements",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "sync-card-collection",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "trial-coaching-reminder",
+      "options": 405,
+      "guest": 401
+    },
+    {
+      "name": "sync-leaderboard",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "cleanup-old-messages",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-match",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-deck-builder",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "predict-deck-performance",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "suggest-card-replacements",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "recommend-deck",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "check-grace-period-expiry",
+      "options": 200,
+      "guest": 200
+    },
+    {
+      "name": "cancel-subscription",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "analyze-player",
+      "options": 200,
+      "guest": 401
+    },
+    {
+      "name": "generate-card-tips",
+      "options": 200,
+      "guest": 401
+    }
+  ],
+  "final_isolation": {
+    "ai_attempts": 0,
+    "allowed": 0,
+    "free_generation_enabled": false,
+    "identities": 901,
+    "observation_windows": 0,
+    "outbound_extensions": 0,
+    "outcome_observations": 0,
+    "refresh_tokens": 0,
+    "rest_overrides": [],
+    "sending_enabled": false,
+    "sessions": 0,
+    "users": 900
+  },
+  "final_network_isolation": {
+    "signupDisabled": true,
+    "googleEnabled": false,
+    "publicRestStatus": 406,
+    "publicRestError": "PGRST106"
+  },
+  "remaining_custom_provider_secrets": 0,
+  "evidence_sha256": {
+    "baseline.json": "da72d8f04d7fdcc82bb615888a61f9a3a059a12b145347fd5c12e1d66c50d289",
+    "after-migration.json": "b56dd902b5b5c4c8106c70cd993a773b7ed0b76786d2338960603ee9a7ac33b5",
+    "correctness-sql.json": "f880dd2f6b151e48a21439b4b4fc2892172b51211b6aaa3ba1d73aa4393bd5d2",
+    "cloud-ai-ledger.json": "2eb24b8f242c91387cc61688cd5387298bf28271c23080902d4abef7a17c1d20",
+    "cron-real-transaction.json": "394020a91585e82e337746378398959f8e46336072005d50fab5e6d7c9a39a0f",
+    "runtime-result.json": "cbc9a78f4122fb12ce733f98cdbf4166b2112623fc704ff8e1846984bbeafe4e",
+    "browser-results.json": "035561c25026bc560e101bec7c149da9f70001dd641095b36663903e460e8555",
+    "functions-list.json": "8408f79f50e97786a4233432fe4e123a7cd88fed56649c0e003b8bc6d7114c70",
+    "final-isolation.json": "9c050ea4b9352eca311f3c0b03a2ff7d9e1fdcca644bf61fdfd34c860f8f1fd6",
+    "final-network-isolation.json": "efc8533ed408ba6e1c3286e5c932ff8d9a9c896539953c6b49cbf6f168bdaee5",
+    "deployed-source-manifest.json": "40263dd811c03de8094fd997affd4582dde978f3326fb56f1e030e962420818d"
+  },
+  "limits": [
+    "No production acceptance or deployment",
+    "Full Google OAuth on current app and physical mobile remain external acceptance",
+    "No actual AI/game/email/payment request or invoice reconciliation",
+    "Hosted source read-back unavailable: CLI expected multipart but endpoint returned octet-stream; deployment input hash, remote ACTIVE/JWT configuration and runtime were verified",
+    "Cloud full free generation deliberately disabled; positive full flow remains proven by local actual runtime with fake providers"
+  ]
+}
