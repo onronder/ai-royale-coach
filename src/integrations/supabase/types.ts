@@ -379,6 +379,9 @@ export type Database = {
       }
       card_mastery: {
         Row: {
+          observation_scope: string
+          mode: string
+          battles_drawn: number
           ai_tips: string | null
           ai_tips_language: string | null
           avg_elixir_decks: number | null
@@ -398,6 +401,9 @@ export type Database = {
           worst_matchup_cards: string[] | null
         }
         Insert: {
+          observation_scope?: string
+          mode?: string
+          battles_drawn?: number
           ai_tips?: string | null
           ai_tips_language?: string | null
           avg_elixir_decks?: number | null
@@ -417,6 +423,9 @@ export type Database = {
           worst_matchup_cards?: string[] | null
         }
         Update: {
+          observation_scope?: string
+          mode?: string
+          battles_drawn?: number
           ai_tips?: string | null
           ai_tips_language?: string | null
           avg_elixir_decks?: number | null
@@ -813,6 +822,10 @@ export type Database = {
       }
       deck_usage_stats: {
         Row: {
+          observation_scope: string
+          mode: string
+          battles_drawn: number
+          trophy_samples: number
           archetype: string | null
           avg_elixir: number | null
           battles_lost: number | null
@@ -833,6 +846,10 @@ export type Database = {
           wins_by_opponent_archetype: Json | null
         }
         Insert: {
+          observation_scope?: string
+          mode?: string
+          battles_drawn?: number
+          trophy_samples?: number
           archetype?: string | null
           avg_elixir?: number | null
           battles_lost?: number | null
@@ -853,6 +870,10 @@ export type Database = {
           wins_by_opponent_archetype?: Json | null
         }
         Update: {
+          observation_scope?: string
+          mode?: string
+          battles_drawn?: number
+          trophy_samples?: number
           archetype?: string | null
           avg_elixir?: number | null
           battles_lost?: number | null
@@ -1477,6 +1498,8 @@ export type Database = {
       }
       matchup_predictions: {
         Row: {
+          input_fingerprint: string | null
+          observation_mode: string | null
           actual_battles_total: number | null
           actual_losses_deck_a: number | null
           actual_wins_deck_a: number | null
@@ -1498,6 +1521,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          input_fingerprint?: string | null
+          observation_mode?: string | null
           actual_battles_total?: number | null
           actual_losses_deck_a?: number | null
           actual_wins_deck_a?: number | null
@@ -1519,6 +1544,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          input_fingerprint?: string | null
+          observation_mode?: string | null
           actual_battles_total?: number | null
           actual_losses_deck_a?: number | null
           actual_wins_deck_a?: number | null
@@ -1912,6 +1939,9 @@ export type Database = {
       }
       recommendation_history: {
         Row: {
+          input_fingerprint: string | null
+          seen_at: string | null
+          observation_mode: string | null
           adopted: boolean | null
           adopted_at: string | null
           ai_explanation: string | null
@@ -1937,6 +1967,9 @@ export type Database = {
           wins_after_adoption: number | null
         }
         Insert: {
+          input_fingerprint?: string | null
+          seen_at?: string | null
+          observation_mode?: string | null
           adopted?: boolean | null
           adopted_at?: string | null
           ai_explanation?: string | null
@@ -1962,6 +1995,9 @@ export type Database = {
           wins_after_adoption?: number | null
         }
         Update: {
+          input_fingerprint?: string | null
+          seen_at?: string | null
+          observation_mode?: string | null
           adopted?: boolean | null
           adopted_at?: string | null
           ai_explanation?: string | null
@@ -2878,6 +2914,9 @@ export type Database = {
       }
     }
     Functions: {
+      mark_recommendations_seen: { Args: { p_ids: string[] }; Returns: undefined }
+
+      admin_api_measurements: { Args: { p_minutes?: number }; Returns: Json }
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
       admin_first_value_report: {
         Args: {

@@ -52,6 +52,10 @@ try{
  await sql`insert into deck_usage_stats(id,user_id,player_tag,deck_hash,deck_cards,date,battles_played) values(${legacyDeck},${uid},${tag},'legacy','[]','2026-11-01',97)`;
  await sql`insert into card_mastery(id,user_id,player_tag,card_id,card_name,times_used,mastery_level,ai_tips) values(${legacyCard},${uid},${tag},26000000,'Card 0',97,7,'Legacy advice')`;
  await sql.unsafe(await source('drizzle/migrations/0041_recent_observation_correctness.sql'));
+ const unprofiled=crypto.randomUUID();await sql`insert into auth.users values(${unprofiled})`;
+ await assert.rejects(sql`insert into player_observation_windows values(${unprofiled},'#MISSING','decks',now(),0,0)`,/foreign key/);
+ await assert.rejects(sql`insert into analysis_outcome_observations values(${unprofiled},'prediction',${crypto.randomUUID()},'missing',now(),'fixture','draw')`,/foreign key/);
+ ok('new observation records require an application profile, not only an auth identity');
  assert.deepEqual(await sql`select * from profiles order by id`,profilesBefore);ok('migration leaves trial rights and account fields unchanged');
  await assert.rejects(asUser(`UPDATE profiles SET trial_ends_at=now()+interval '10 years' WHERE id='${uid}'`),/permission denied/);
  await assert.rejects(asUser(`UPDATE profiles SET trial_used=false,winback_email_sent_at=null WHERE id='${uid}'`),/permission denied/);

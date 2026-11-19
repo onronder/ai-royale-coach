@@ -13,15 +13,16 @@ ALTER TABLE public.deck_usage_stats ADD UNIQUE(user_id,player_tag,deck_hash,date
 ALTER TABLE public.card_mastery ADD UNIQUE(user_id,player_tag,card_id,mode,observation_scope);
 
 CREATE TABLE public.player_observation_windows (
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   player_tag text NOT NULL, feature text NOT NULL CHECK(feature IN ('decks','cards')),
   fetched_at timestamptz NOT NULL, sample_count integer NOT NULL, excluded_count integer NOT NULL,
   PRIMARY KEY(user_id,player_tag,feature)
 );
-ALTER TABLE public.player_observation_windows ENABLE ROW LEVEL SECURITY;
-CREATE POLICY own_observation_windows ON public.player_observation_windows FOR SELECT TO authenticated USING(user_id=auth.uid());
+REVOKE ALL ON public.player_observation_windows FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.player_observation_windows TO authenticated;
 GRANT ALL ON public.player_observation_windows TO service_role;
+ALTER TABLE public.player_observation_windows ENABLE ROW LEVEL SECURITY;
+CREATE POLICY own_observation_windows ON public.player_observation_windows FOR SELECT TO authenticated USING(user_id=auth.uid());
 
 CREATE FUNCTION public.replace_recent_observations(p_user uuid,p_tag text,p_feature text,p_started timestamptz,p_rows jsonb,p_samples integer,p_excluded integer)
 RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
@@ -63,14 +64,15 @@ CREATE INDEX prediction_evidence_lookup ON public.matchup_predictions(user_id,pl
 ALTER TABLE public.matchup_predictions DROP CONSTRAINT unique_deck_matchup;
 ALTER TABLE public.matchup_predictions ADD UNIQUE(user_id,player_tag,deck_hash,language);
 CREATE TABLE public.analysis_outcome_observations (
-  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   kind text NOT NULL CHECK(kind IN ('prediction','recommendation')), analysis_id uuid NOT NULL,
   battle_key text NOT NULL, battle_time timestamptz NOT NULL, mode text NOT NULL,
   outcome text NOT NULL CHECK(outcome IN ('win','loss','draw')),
   PRIMARY KEY(user_id,kind,analysis_id,battle_key)
 );
-ALTER TABLE public.analysis_outcome_observations ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.analysis_outcome_observations FROM PUBLIC, anon, authenticated;
 GRANT ALL ON public.analysis_outcome_observations TO service_role;
+ALTER TABLE public.analysis_outcome_observations ENABLE ROW LEVEL SECURITY;
 CREATE FUNCTION public.mark_recommendations_seen(p_ids uuid[]) RETURNS void
 LANGUAGE sql SECURITY DEFINER SET search_path='' AS $$
   UPDATE public.recommendation_history SET seen_at=now()
