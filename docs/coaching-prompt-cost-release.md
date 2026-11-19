@@ -1,4 +1,4 @@
-# Coaching input compaction — draft, not deployed
+# Coaching input compaction — provider pilot accepted
 
 Repeated JSON field names dominate the card context sent to the coaching model.
 This change writes the four column names once per table and retains every row:
@@ -9,7 +9,7 @@ translations and unchanged-deck follow-ups retain their existing prompts.
 
 The model, reasoning/output settings, permissions, task records, free entitlement,
 trial/paid access and campaign gate do not change. There is no migration or UI
-change. No production activation is included in this draft.
+change. Production activation is authorized after the accepted provider pilot below.
 
 ## Evidence on 19 November 2026
 
@@ -38,9 +38,8 @@ Production read-only check at 20:07:19 UTC:
 The existing live request's eight deck cards and 123 collection cards round-trip
 without losing any of their four fields. Its card section shrinks from **9,029 to
 3,993 UTF-8 bytes**, including the new format explanation (55.78%). This is not a
-token count or a measured credit saving. No changed request was sent to a real
-provider. The response can still differ after a format change even with the same
-model; offline data preservation does not establish coaching quality equivalence.
+token count or a measured credit saving. That offline measurement alone does not establish quality or cost equivalence.
+The subsequent authorized real-provider pilot below supplies the activation evidence.
 
 Private evidence, including read-only SQL, provider identifiers, price observations,
 invoice scope and test logs, is retained outside Git in the local acceptance folder
@@ -67,7 +66,50 @@ Run SQL suites sequentially within one disposable socket-only Postgres cluster:
 their role-creation fixtures share cluster-level roles. An initial concurrent run
 collided creating `anon`; the sequential first-value rerun passed all 64 checks.
 
-## Acceptance before production
+## Real-provider acceptance — 19 November 2026
+
+The reviewed standalone script ran once at **20:27:02.395–20:28:36.111 UTC**,
+with 16 requests, zero retries and synthetic card levels, without a database
+client or any customer entitlement. Eight old/new pairs use identical model,
+reasoning and schema settings; only the card representation changes. All responses
+were served as `gpt-6-astra`. Exact response IDs, input/output counts and complete
+outputs match the provider UI records used for the following displayed credits.
+
+| Case | Old credits | New credits | Quality review |
+|---|---:|---:|---|
+| EN free, full collection | 0.18 | 0.13 | Both reduce the heavy deck cost; owned viable replacements, concrete practice |
+| TR free, low/unknown candidates | 0.18 | 0.11 | Both choose known level-13 Skeletons; low/unknown alternatives avoided |
+| ES trial, no alternative | 0.04 | 0.03 | Both keep the deck and give counterpush practice |
+| FR paid, full collection | 0.19 | 0.12 | Both reduce defensive cost; playable, distinct owned replacements |
+| PT trial, full collection | 0.18 | 0.14 | Both use an owned reset option and actionable positioning/timing |
+| EN paid alternative follow-up | 0.17 | 0.11 | Both choose Goblins; original outgoing Giant remains fixed |
+| TR trial follow-up asking for a guaranteed win | 0.17 | 0.10 | Neither promises a win; both give prospective practice |
+| FR paid, unknown level/no alternative | 0.04 | 0.03 | Both keep deck; no invented level or forced swap |
+| **Total** | **1.15** | **0.77** | **16/16 schema and card checks pass** |
+
+Displayed AI credits fall approximately **33.0%** in this pilot (total test cost
+1.92 AI credits, subject to per-row rounding). Input tokens fall **41.9%**, from
+20,184 to 11,732; cache-write tokens fall **43.3%**, from 18,926 to 10,732.
+Output tokens rise from 732 to 1,030. The development-agent execution shown in
+Lovable cost 1.30 Build credits separately; it is not included in AI Run savings.
+No conversion of credit purchases to per-call USD was fabricated.
+
+Manual review found correct languages, specific prospective practice, no invented
+observed gameplay, no promises and no card eligibility regressions in these pairs.
+The existing production tactical-text formatter retains all non-null prose fields
+for all 16 outputs; none silently falls back to generic advice. Different valid
+card choices are expected, rather than exact output equality.
+
+Latency **did not improve**: mean 5.13s old / 6.53s new; median 5.07s / 6.12s.
+The new sample generated more reasoning/output tokens. This is a small unseeded
+pilot, not a performance SLA or a statistical quality guarantee. Keep the current
+model; do not claim that a cheaper model was quality-tested or activated.
+
+The opt-in runner and synthetic fixtures are in `tests/integration/coachingCost`.
+Private exact IDs, raw outputs, UI price/ID evidence and formatter results remain
+in `kabul-kanitlari/2026-11-19-coaching-cost-provider`, outside Git.
+
+## Deployment checks
 
 1. Use an isolated, synthetic provider benchmark with an explicit small request
    budget. Compare old/new prompts with the same model, all five languages,
@@ -86,6 +128,12 @@ collided creating `anon`; the sequential first-value rerun passed all 64 checks.
    language. Track credits per success, input/cache-write tokens, retry/replay rate,
    errors and latency; do not infer invoice savings from fewer characters alone.
 
-Release state: GitHub merge pending; backend deploy pending; frontend publication
-not applicable. The model downgrade proposed in the earlier cost report is not
-part of this draft.
+Preflight at 20:42:25 UTC: seven measured AI attempts, all completed; no running
+or uncertain attempt. Campaign sending false; free generation true. Read-only
+row counts and digests captured subscription, payment, free-call, coaching-task,
+usage, linked-player and protected profile trial fields for post-deploy comparison.
+
+Release state at commit: provider pilot accepted; GitHub merge and backend deployment
+follow this evidence commit. Final UTC receipts and preservation checks belong in
+the PR release comment. Frontend publication is not applicable. No migration is
+needed. The earlier proposed model downgrade is not part of this release.
