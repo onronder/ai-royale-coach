@@ -1,5 +1,8 @@
 # Email releases
 
+## Dependency checks
+- Declare the npm AI SDK packages imported by edge functions in root package.json and synchronize both dependency locks so preview checks can resolve them from node_modules.
+
 For a PR that changes a customer email, record the GitHub merge, production backend deployment/activation and website publication as separate events with UTC timestamps and revisions. Mark pending or inapplicable steps explicitly. Preview shares production services. Run send/retry acceptance with a disposable database and fake provider; reconcile natural production messages read-only. The confirmed welcome rollout is in `docs/confirmed-welcome-release.md`.
 
 ## Page layout
