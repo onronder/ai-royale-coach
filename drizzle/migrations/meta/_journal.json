@@ -281,6 +281,13 @@
       "when": 1795089274507,
       "tag": "0039_chat_retention_cleanup_in_sql",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1795089600000,
+      "tag": "0040_ai_attempt_measurement",
+      "breakpoints": true
     }
   ]
 }

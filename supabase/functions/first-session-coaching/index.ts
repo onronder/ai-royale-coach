@@ -45,7 +45,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if((action==='start' || action==='follow-up') && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;
  };
- const ai=createCoachingAI(aiKey,req.signal,language);
+ const ai=createCoachingAI(aiKey,req.signal,language,false,{db,userId:user.id,tier:access.isAdmin?'admin':access.isTrial?'trial':access.isPaid?'paid':'inactive',feature:'first-session-coaching:'+action+':'+tag});
  try {
    if (action === 'translate') {
      const reading = task && coachingReading(task, language);
@@ -172,7 +172,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if (action !== 'translate') await event('ai_generation_failed',{task_id:task?.id,action});
    const status=typeof e==='object'&&e!==null&&'statusCode'in e?Number(e.statusCode):500;
    const message=e instanceof Error?e.message:'Coaching unavailable';
-   return reply({error:message,deck_unavailable:message==='Current deck and collection required'},[400,401,402,403,404,429].includes(status)?status:500);
+   return reply({error:message,deck_unavailable:message==='Current deck and collection required'},[400,401,402,403,404,409,429].includes(status)?status:500);
  }
 }
 

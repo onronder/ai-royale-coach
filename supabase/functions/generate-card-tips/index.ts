@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -105,7 +107,7 @@ Generate 2-3 concise, actionable tips (each 1-2 sentences) to help the player im
 
 Keep tips practical and specific to this card's performance data.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'generate-card-tips' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -120,6 +122,7 @@ Keep tips practical and specific to this card's performance data.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Lovable AI error', { status: response.status, error: errorText });
@@ -129,7 +132,7 @@ Keep tips practical and specific to this card's performance data.`;
     const data = await response.json();
     const tips = data.choices[0].message.content;
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'generate-card-tips');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'generate-card-tips');
     return jsonResponse({ tips });
 
   } catch (error) {

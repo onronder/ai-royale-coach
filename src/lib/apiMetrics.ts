@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 
 interface ApiRequestLog {
+  id?: string;
   endpoint: string;
   query_key?: string;
   method: string;
@@ -30,6 +31,7 @@ class ApiMetricsLogger {
   }
 
   enable(userId: string) {
+    if (this.userId !== userId) this.buffer = [];
     this.isEnabled = true;
     this.userId = userId;
   }
@@ -37,6 +39,7 @@ class ApiMetricsLogger {
   disable() {
     this.isEnabled = false;
     this.userId = null;
+    this.buffer = [];
   }
 
   private startFlushInterval() {
@@ -57,6 +60,7 @@ class ApiMetricsLogger {
     
     this.buffer.push({
       ...request,
+      id: crypto.randomUUID(),
       metadata: {
         ...existingMetadata,
         timestamp: Date.now(),
@@ -72,26 +76,28 @@ class ApiMetricsLogger {
   async flush() {
     if (this.buffer.length === 0 || !this.userId) return;
 
+    const owner = this.userId;
     const logsToSend = [...this.buffer];
     this.buffer = [];
 
     try {
-      const { error } = await supabase.from('api_request_logs').insert(
+      const { error } = await supabase.from('api_request_logs').upsert(
         logsToSend.map((log) => ({
-          user_id: this.userId,
+          id: log.id,
+          user_id: owner,
           endpoint: log.endpoint,
           query_key: log.query_key,
           method: log.method,
           duration_ms: log.duration_ms,
           cache_hit: log.cache_hit ?? null,
           metadata: log.metadata ?? {},
-        }))
+        })), { onConflict: 'id', ignoreDuplicates: true }
       );
 
       if (error) {
         console.error('[ApiMetrics] Failed to flush logs:', error);
         // Re-add failed logs to buffer (up to limit)
-        if (this.buffer.length < 100) {
+        if (this.userId === owner && this.isEnabled && this.buffer.length < 100) {
           this.buffer = [...logsToSend.slice(0, 50), ...this.buffer];
         }
       }

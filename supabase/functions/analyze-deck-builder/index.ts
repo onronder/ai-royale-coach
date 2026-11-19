@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -109,7 +111,7 @@ Provide tactical analysis:
 
 Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-deck-builder' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -159,6 +161,7 @@ Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Lovable AI error', { status: response.status, error: errorText });
@@ -174,7 +177,7 @@ Focus on playstyle, win conditions, and defensive capabilities. Be specific.`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'analyze-deck-builder');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'analyze-deck-builder');
     return jsonResponse({
       synergy_score: null,
       meta_score: null,

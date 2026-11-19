@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { successfulChatStream } from '../_shared/trial-stream.ts';
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
@@ -189,7 +191,7 @@ Guidelines:
 - Use gaming terminology but stay professional
 - Provide personalized strategies based on their playstyle`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'coach-chat' })("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
@@ -205,6 +207,7 @@ Guidelines:
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       if (response.status === 429) {
         return errorResponse("Rate limit exceeded. Please wait a moment and try again.", 429);
@@ -218,7 +221,7 @@ Guidelines:
     }
 
     let body = response.body;
-    if (aiAccess.isTrial && body) {
+    if (aiAccess.isTrial && body && response.headers.get('X-AI-Response-Replayed') !== 'true') {
       const decoder = new TextDecoder();
       let text = '';
       body = body.pipeThrough(new TransformStream({

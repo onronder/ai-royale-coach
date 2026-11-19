@@ -2827,6 +2827,8 @@
   },
   "admin": {
     "apiMetrics": {
+      "measurementScope": "Admin browser queries only. Duration measured for {{measured}} / {{total}} records. — means not measured. Retry waiting is included; cache hits are not inferred.",
+      "loadError": "Measurements could not be loaded. Use Refresh to retry.",
       "title": "API Metrics",
       "subtitle": "Monitor query frequency and identify redundant calls",
       "totalRequests": "Total Requests",

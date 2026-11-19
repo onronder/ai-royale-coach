@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -134,7 +136,7 @@ Provide tactical insights based on card roles and known interactions only.
 
 Respond with structured data only.`;
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-deck-advanced' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -197,6 +199,7 @@ Respond with structured data only.`;
       }),
     });
 
+    if (aiResponse.status === 409) return analysisErrorResponse(409, await aiResponse.text());
     if (!aiResponse.ok) {
       if (aiResponse.status === 429) {
         return errorResponse('Rate limit exceeded. Please try again later.', 429);
@@ -226,7 +229,7 @@ Respond with structured data only.`;
     analysisData.synergyMatrix = null;
     analysisData.matchupPredictions = null;
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'analyze-deck-advanced');
+    if (aiAccess.isTrial && aiResponse.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'analyze-deck-advanced');
     return jsonResponse(analysisData);
 
   } catch (error) {
