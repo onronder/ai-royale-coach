@@ -6,7 +6,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { z } from 'npm:zod@3';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { checkAiAccess } from '../_shared/ai-access.ts';
-import { coachingCard, coachingSwap, formatCoachingAdvice, tacticalText, keepDeckAdvice, validCoachingChoice } from '../_shared/coaching-advice.ts';
+import { coachingCard, coachingCardTable, coachingSwap, formatCoachingAdvice, tacticalText, keepDeckAdvice, validCoachingChoice } from '../_shared/coaching-advice.ts';
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, latestLadderTrophies, normalizeTag } from '../_shared/coaching-match.ts';
 import { createCoachingAI } from '../_shared/coaching-ai.ts';
@@ -132,7 +132,7 @@ async function handleRequest(req: Request): Promise<Response> {
      }
      if (!currentSwap || !Array.isArray(player?.cards)) throw new Error('Coaching deck unavailable');
      const candidates = player.cards.filter((card: {id:number}) => !original.some((c: {id:number}) => c.id === card.id));
-     const generated=await ai(`Answer one follow-up about the current swap. If unrelated, redirect to the recommendation. If choosing another incoming card, select an available alternative and provide a new tactical reason and practice. Otherwise set alternative_id, reason and practice to null. The outgoing card is fixed: ${JSON.stringify(coachingCard(currentSwap.removed))}. Current incoming card: ${JSON.stringify(coachingCard(currentSwap.added))}. Original deck: ${JSON.stringify(original.map(coachingCard))}. Available alternatives: ${JSON.stringify(candidates.map(coachingCard))}. Question: ${question}`,Answer);
+     const generated=await ai(`Answer one follow-up about the current swap. If unrelated, redirect to the recommendation. If choosing another incoming card, select an available alternative and provide a new tactical reason and practice. Otherwise set alternative_id, reason and practice to null. Card tables use the named columns in order; null means unknown. The outgoing card is fixed: ${JSON.stringify(coachingCard(currentSwap.removed))}. Current incoming card: ${JSON.stringify(coachingCard(currentSwap.added))}. Original deck: ${JSON.stringify(coachingCardTable(original))}. Available alternatives: ${JSON.stringify(coachingCardTable(candidates))}. Question: ${question}`,Answer);
      const a=generated.output.alternative_id;
      const changed = a !== null && a !== currentSwap.added.id;
      const added = changed ? candidates.find((c: {id:number}) => c.id === a) : currentSwap.added;
@@ -165,7 +165,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if(!task){const {data:created,error}=await db.from('coaching_tasks').insert({user_id:user.id,player_tag:tag,language,generation_started_at:stamp}).select('*').single();if(error)return reply({error:'Task already in progress'},409);task=created;}
    else {let claim=db.from('coaching_tasks').update({status:'generating',generation_started_at:stamp}).eq('id',task.id).eq('status',task.status);claim=task.generation_started_at?claim.eq('generation_started_at',task.generation_started_at):claim.is('generation_started_at',null);const {data:locked,error}=await claim.select('*').maybeSingle();if(error)throw error;if(!locked)return reply({error:'Task already in progress'},409);task=locked;}
    generationOwned=true;
-   const generated=await ai(`Choose a one-match practice task using this deck and owned collection with known levels. A change is optional: return BOTH remove_id and add_id null to keep the deck when there is no supported improvement. Otherwise propose exactly one owned replacement with known level, never force a swap. Give a concise prospective reason and practice tip, no claims about unseen actions. Avoid numbers or card names in prose; use {card} only if swapping. Current deck: ${JSON.stringify(sourceDeck.map(coachingCard))}. Collection: ${JSON.stringify(player.cards.map(coachingCard))}.`,Suggestion);
+   const generated=await ai(`Choose a one-match practice task using this deck and owned collection with known levels. A change is optional: return BOTH remove_id and add_id null to keep the deck when there is no supported improvement. Otherwise propose exactly one owned replacement with known level, never force a swap. Give a concise prospective reason and practice tip, no claims about unseen actions. Avoid numbers or card names in prose; use {card} only if swapping. Card tables use the named columns in order; null means unknown. Current deck: ${JSON.stringify(coachingCardTable(sourceDeck))}. Collection: ${JSON.stringify(coachingCardTable(player.cards))}.`,Suggestion);
    const suggestion=generated.output;
    const choice = validCoachingChoice(sourceDeck, player.cards, suggestion.remove_id, suggestion.add_id);
    if (!choice) throw new Error('AI suggested an invalid card swap');

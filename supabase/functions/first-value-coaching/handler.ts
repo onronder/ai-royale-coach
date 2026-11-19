@@ -1,6 +1,6 @@
 import { normalizeTag, firstTaskBattle } from '../_shared/coaching-match.ts'
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts'
-import { coachingCard, formatCoachingAdvice } from '../_shared/coaching-advice.ts'
+import { coachingCardTable, formatCoachingAdvice } from '../_shared/coaching-advice.ts'
 import { coachingReading, readingFields } from '../_shared/coaching-reading.ts'
 import { localizedCardName } from '../_shared/card-names.ts'
 import { productLanguage } from '../_shared/language.ts'
@@ -154,7 +154,7 @@ export async function handleFirstValue(req: Request, d: FreeDependencies): Promi
     callId = claim.call_id
     const started = Date.now()
     const result = await d.generate(
-      `Choose exactly one card change for a one-match practice task using current deck and available collection, considering real levels. Return remove_id from deck and add_id from owned collection outside deck, concise reason, and one practice tip. Current deck: ${JSON.stringify(source.cards.map(coachingCard))}. Collection: ${JSON.stringify(player.cards.map(coachingCard))}.`,
+      `Choose exactly one card change for a one-match practice task using current deck and available collection, considering real levels. Return remove_id from deck and add_id from owned collection outside deck, concise reason, and one practice tip. Card tables use the named columns in order; null means unknown. Current deck: ${JSON.stringify(coachingCardTable(source.cards))}. Collection: ${JSON.stringify(coachingCardTable(player.cards))}.`,
       language,
     )
     usage = {
