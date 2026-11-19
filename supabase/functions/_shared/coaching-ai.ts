@@ -1,3 +1,4 @@
+import { createMeasuredAIFetch, type AIContext } from './ai-generation.ts'
 import { z } from 'npm:zod@3'
 import { Output, streamText } from 'npm:ai@6'
 import { createOpenAI } from 'npm:@ai-sdk/openai@3'
@@ -11,13 +12,15 @@ export function createCoachingAI(
   signal: AbortSignal,
   language: string,
   bounded = false,
+  context?: AIContext,
 ) {
   return async <T>(
     prompt: string,
     schema: z.ZodType<T>,
     system = `You are a Clash Royale coach. Respond in ${language}. Select card IDs using displayLevel, the level in the game. In reason, practice and answer give tactical advice only. Use {card} to refer to the incoming card. Do not write any card names, numbers, levels or swap instructions in prose. The app supplies the exact names and levels. Logs do not reveal placement, elixir use or timing: never invent observed gameplay. Give short, specific advice; do not promise wins or trophies.`,
   ) => {
-    const run = createLovableAiGatewayRunIdFetch()
+    if (!context) throw new Error('Missing AI measurement context')
+    const run = createLovableAiGatewayRunIdFetch(undefined, createMeasuredAIFetch(context))
     const provider = createOpenAI({
       apiKey: aiKey,
       baseURL: 'https://ai.gateway.lovable.dev/v1',

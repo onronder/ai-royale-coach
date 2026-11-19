@@ -10,7 +10,7 @@ interface ProDNACardProps {
 
 const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: { 
   label: string; 
-  value: number; 
+  value: number | null;
   icon: React.ElementType;
   gradientFrom: string;
   gradientTo: string;
@@ -25,7 +25,7 @@ const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: {
     <div className="flex-1 min-w-0">
       <div className="flex justify-between items-center mb-0.5">
         <span className="text-[8px] font-bold uppercase tracking-wider" style={{ color: '#d4af37' }}>{label}</span>
-        <span className="text-[10px] font-black text-white tabular-nums">{value}</span>
+        <span className="text-[10px] font-black text-white tabular-nums">{value === null ? '—' : `${value ?? 0}%`}</span>
       </div>
       <div 
         className="h-1 rounded-full overflow-hidden"
@@ -34,7 +34,7 @@ const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: {
         <div 
           className="h-full rounded-full transition-all duration-500"
           style={{ 
-            width: `${value}%`,
+            width: `${value ?? 0}%`,
             background: `linear-gradient(90deg, ${gradientFrom}, ${gradientTo})`
           }}
         />
@@ -45,8 +45,9 @@ const StatBar = ({ label, value, icon: Icon, gradientFrom, gradientTo }: {
 
 export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
   const { t } = useTranslation();
-  const { stats, archetype, similarPro } = dna;
-  const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
+  const { stats } = dna;
+  const archetype = t(dna.sampleCount ? 'correctness.observedPreferences' : 'common.unknown');
+  const avgScore = `n=${dna.sampleCount}`;
 
   return (
     // Fixed size card - 280x400 (full height to fit all content)
@@ -98,7 +99,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
           {/* Archetype Title */}
           <div className="text-center mb-1">
             <h2 
-              className="text-base font-black uppercase tracking-wide truncate"
+              className="text-sm leading-tight font-black uppercase tracking-wide"
               style={{ 
                 color: '#d4af37',
                 textShadow: '0 0 15px rgba(212, 175, 55, 0.5), 0 2px 4px rgba(0,0,0,0.8)',
@@ -190,17 +191,7 @@ export function ProDNACard({ dna, playerName, playerTag }: ProDNACardProps) {
             />
           </div>
 
-          {/* Similar Pro Section */}
-          <div 
-            className="flex items-center justify-center py-1 mt-1.5 rounded-md"
-            style={{ 
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(212, 175, 55, 0.2)'
-            }}
-          >
-            <span className="text-[9px]" style={{ color: 'rgba(212, 175, 55, 0.6)' }}>{t('proDna.similarTo')}: </span>
-            <span className="text-[10px] font-bold ml-1" style={{ color: '#d4af37' }}>{similarPro}</span>
-          </div>
+          <p className="mt-2 text-xs text-center text-muted-foreground">{t('correctness.noProSimilarity')}</p>
 
           {/* Footer Branding */}
           <div className="flex items-center justify-end gap-1 mt-1.5">

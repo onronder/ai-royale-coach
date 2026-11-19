@@ -45,11 +45,12 @@ export interface CardLevelInput {
   level: number;
   maxLevel?: number;
   evolutionLevel?: number;
+  activeForm?: "base" | "evolution" | "hero" | "unknown";
   rarity?: string;
 }
 
 export interface CardLevelResult {
-  displayLevel: number;
+  displayLevel: number | null;
   isEvolved: boolean;
   isMaxLevel: boolean;
   isChampion: boolean;
@@ -73,17 +74,17 @@ export function calculateDisplayLevel(card: CardLevelInput): CardLevelResult {
   const { level, evolutionLevel, maxLevel } = card;
   
   // Universal formula: level + (16 - maxLevel)
-  // If maxLevel not provided, assume Common (maxLevel = 16, offset = 0)
+  // Missing or invalid maxLevel leaves the displayed level unknown.
   const displayLevel = cardDisplayLevel({ level, maxLevel });
   
   // Check if this is a champion (maxLevel = 6 in API)
   const isChampion = maxLevel === CHAMPION_MAX_LEVEL;
   
   // Check if card has evolution unlocked (visual indicator only)
-  const isEvolved = (evolutionLevel ?? 0) > 0;
+  const isEvolved = card.activeForm === 'evolution';
   
   // Check if at max display level (16)
-  const isMaxLevel = displayLevel >= GAME_MAX_DISPLAY_LEVEL;
+  const isMaxLevel = displayLevel !== null && displayLevel >= GAME_MAX_DISPLAY_LEVEL;
   
   return {
     displayLevel,
@@ -96,7 +97,7 @@ export function calculateDisplayLevel(card: CardLevelInput): CardLevelResult {
 /**
  * Simple helper to get just the display level number
  */
-export function getDisplayLevel(card: CardLevelInput): number {
+export function getDisplayLevel(card: CardLevelInput): number | null {
   return calculateDisplayLevel(card).displayLevel;
 }
 
@@ -105,7 +106,7 @@ export function getDisplayLevel(card: CardLevelInput): number {
  */
 export function formatDisplayLevel(card: CardLevelInput): string {
   const { displayLevel } = calculateDisplayLevel(card);
-  return displayLevel.toString();
+  return displayLevel === null ? "—" : displayLevel.toString();
 }
 
 /**
@@ -113,5 +114,5 @@ export function formatDisplayLevel(card: CardLevelInput): string {
  */
 export function getLevelProgress(card: CardLevelInput): number {
   const { displayLevel } = calculateDisplayLevel(card);
-  return Math.min((displayLevel / GAME_MAX_DISPLAY_LEVEL) * 100, 100);
+  return displayLevel === null ? 0 : Math.min((displayLevel / GAME_MAX_DISPLAY_LEVEL) * 100, 100);
 }

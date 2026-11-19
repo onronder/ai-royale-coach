@@ -1,3 +1,4 @@
+import { evidenceKey } from '../../../supabase/functions/_shared/deck-evidence';
 import { ClashRoyalePlayer, ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ export function DeckAnalysisPanel({ player, battles }: DeckAnalysisPanelProps) {
   const [showPricing, setShowPricing] = useState(false);
   
   const { data: analysis, isLoading, error } = useQuery({
-    queryKey: ['deck-analysis', player.tag, language],
+    queryKey: ['deck-analysis', player.tag, language, evidenceKey(player, battles)],
     queryFn: async () => {
       const { data, error } = await supabase.functions.invoke<DeckAnalysisResult>('analyze-deck', {
         body: { playerData: player, battles, language }

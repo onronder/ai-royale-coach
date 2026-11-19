@@ -1,3 +1,5 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
+import { predictionEvidence } from '@/lib/predictionEvidence';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -20,7 +22,7 @@ export function usePredictionHistory(playerTag: string | null) {
       const { data, error } = await supabase
         .from('matchup_predictions')
         .select('*')
-        .eq('player_tag', playerTag)
+        .in('player_tag', [canonicalTag(playerTag), canonicalTag(playerTag).slice(1)])
         .eq('language', language)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -32,10 +34,6 @@ export function usePredictionHistory(playerTag: string | null) {
       }
 
       return (data || []).map((entry): PredictionHistoryEntry => {
-        const actualWinRateA = (entry.actual_battles_total || 0) > 0
-          ? Math.round(((entry.actual_wins_deck_a || 0) / (entry.actual_battles_total || 1)) * 100)
-          : null;
-
         const deckACards = entry.deck_a_cards as string[] | null;
         const deckBCards = entry.deck_b_cards as string[] | null;
         const keyMatchups = (entry.key_matchups as unknown as KeyMatchup[] | null) || [];
@@ -51,11 +49,7 @@ export function usePredictionHistory(playerTag: string | null) {
           explanation: entry.explanation,
           keyMatchups,
           tips,
-          actualWinsA: entry.actual_wins_deck_a || 0,
-          actualLossesA: entry.actual_losses_deck_a || 0,
-          actualBattlesTotal: entry.actual_battles_total || 0,
-          actualWinRateA,
-          predictionError: entry.prediction_error,
+          ...predictionEvidence(entry),
           createdAt: entry.created_at || '',
           lastBattleAt: entry.last_battle_at,
         };

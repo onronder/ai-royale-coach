@@ -1,3 +1,5 @@
+import { fixedElixir } from '../../../supabase/functions/_shared/battle-observation';
+import { importedDeck } from '@/lib/deckNavigation';
 import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,6 +31,8 @@ interface SavedDeck {
 
 interface DeckBuilderProps {
   availableCards: ClashRoyaleCard[];
+  playerTag: string;
+  importedNames?: string | null;
   userId: string;
   savedDecks?: SavedDeck[];
   currentDeck?: ClashRoyaleCard[] | null;
@@ -57,7 +61,8 @@ import {
 type LocalAdvancedDeckAnalysis = AdvancedDeckAnalysis;
 
 export function DeckBuilder({ 
-  availableCards, 
+  availableCards,
+  playerTag, importedNames,
   userId, 
   savedDecks = [], 
   currentDeck = null,
@@ -67,7 +72,24 @@ export function DeckBuilder({
   const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { hasAccess } = useSubscription();
-  const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>([]);
+  const draftKey = `deck-draft:${userId}:${playerTag}:${importedNames || "current"}`;
+  const [selectedCards, setSelectedCards] = useState<ClashRoyaleCard[]>(() => {
+    const linked = importedDeck(importedNames || null, availableCards);
+    try {
+      const stored = sessionStorage.getItem(draftKey);
+      if (stored) {
+        const ids = JSON.parse(stored);
+        if (Array.isArray(ids) && ids.length <= 8 && new Set(ids).size === ids.length) {
+          const cards = ids.map(id => availableCards.find(c => c.id === id));
+          if (cards.every(Boolean)) return cards;
+        }
+      }
+    } catch { /* A private browser may disable local drafts. */ }
+    return linked || (currentDeck?.length === 8 ? currentDeck : []);
+  });
+  useEffect(() => {
+    try { sessionStorage.setItem(draftKey, JSON.stringify(selectedCards.map(c => c.id))); } catch { /* Draft remains in memory. */ }
+  }, [draftKey, selectedCards]);
   const [deckName, setDeckName] = useState("");
   const [deckDescription, setDeckDescription] = useState("");
   const [analysis, setAnalysis] = useState<DeckAnalysis | null>(null);
@@ -106,10 +128,8 @@ export function DeckBuilder({
   };
 
   const importDeck = (cards: string[]) => {
-    const importedCards = cards
-      .map(cardName => availableCards.find(c => c.name === cardName))
-      .filter((c): c is ClashRoyaleCard => c !== undefined);
-    
+    const importedCards = importedDeck(cards.join(','),availableCards);
+    if (!importedCards) { toast.error(t('correctness.invalidDeck')); return; }
     setSelectedCards(importedCards);
     setAnalysis(null);
     setAdvancedAnalysis(null);
@@ -203,10 +223,15 @@ export function DeckBuilder({
     }
   };
 
-  const avgElixir = selectedCards.length === 0 ? null : selectedCards.reduce((sum, card) => sum + (card.elixirCost || 0), 0) / selectedCards.length;
+  const avgElixir = fixedElixir(selectedCards);
 
   return (
     <div className="space-y-6">
+      {importedNames && !importedDeck(importedNames, availableCards) && <p role="alert">{t('correctness.invalidDeck')}</p>}
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" onClick={() => { setSelectedCards(currentDeck?.length === 8 ? currentDeck : []); setAnalysis(null); setAdvancedAnalysis(null); }}>{t('correctness.editCurrentDeck')}</Button>
+        <Button variant="outline" onClick={() => { setSelectedCards([]); setAnalysis(null); setAdvancedAnalysis(null); }}>{t('correctness.startBlank')}</Button>
+      </div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid h-auto w-full grid-cols-3 [&>button]:min-h-11 [&>button]:whitespace-normal [&>button]:px-1">
           <TabsTrigger value="builder">{t('deck.builder')}</TabsTrigger>

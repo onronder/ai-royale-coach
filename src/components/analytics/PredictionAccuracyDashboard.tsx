@@ -1,6 +1,6 @@
+import { measuredPredictionErrors } from '@/lib/predictionEvidence';
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PredictionAccuracyChart } from "@/components/deck/PredictionAccuracyChart";
 import { usePredictionHistory } from "@/hooks/usePredictionHistory";
@@ -24,18 +24,18 @@ export function PredictionAccuracyDashboard({ playerTag }: PredictionAccuracyDas
   
   // Calculate stats
   const totalPredictions = predictionsArray.length;
-  const trackedPredictions = predictionsWithActuals.length;
   const totalBattlesTracked = predictionsWithActuals.reduce((sum, p) => sum + p.actualBattlesTotal, 0);
   
-  const avgError = trackedPredictions > 0
-    ? predictionsWithActuals.reduce((sum, p) => sum + Math.abs(p.predictionError || 0), 0) / trackedPredictions
+  const measured = measuredPredictionErrors(predictionsWithActuals);
+  const avgError = measured.length > 0
+    ? measured.reduce((sum, p) => sum + Math.abs(p.predictionError!), 0) / measured.length
     : null;
 
-  const highAccuracyCount = predictionsWithActuals.filter(p => Math.abs(p.predictionError || 0) <= 10).length;
-  const accuracyRate = trackedPredictions > 0 ? (highAccuracyCount / trackedPredictions) * 100 : null;
+  const highAccuracyCount = measured.filter(p => Math.abs(p.predictionError!) <= 10).length;
+  const accuracyRate = measured.length > 0 ? (highAccuracyCount / measured.length) * 100 : null;
 
   // Best and worst predictions
-  const sortedByError = [...predictionsWithActuals].sort((a, b) => 
+  const sortedByError = [...measured].sort((a, b) =>
     Math.abs(a.predictionError || 0) - Math.abs(b.predictionError || 0)
   );
   const bestPrediction = sortedByError[0];
@@ -43,6 +43,7 @@ export function PredictionAccuracyDashboard({ playerTag }: PredictionAccuracyDas
 
   return (
     <div className="space-y-6">
+      <p className="text-sm text-muted-foreground">{t('correctness.predictionScope')}</p>
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card variant="arena" className="border-primary/30">
@@ -110,7 +111,7 @@ export function PredictionAccuracyDashboard({ playerTag }: PredictionAccuracyDas
       <PredictionAccuracyChart predictions={predictionsArray} isLoading={isLoading} />
 
       {/* Best/Worst Predictions */}
-      {trackedPredictions >= 2 && (
+      {measured.length >= 2 && (
         <div className="grid md:grid-cols-2 gap-4">
           {bestPrediction && (
             <Card variant="arena" className="border-emerald-500/30">

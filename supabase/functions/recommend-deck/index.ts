@@ -1,3 +1,8 @@
+import { recentStatistics } from '../_shared/recent-statistics.ts';
+import { canonicalTag } from '../_shared/battle-observation.ts';
+import { deckReadiness, evidenceKey, evidenceHash } from '../_shared/deck-evidence.ts';
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { recommendationReasons } from '../_shared/recommendation-reasons.ts';
 import { productLanguage, type Language } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
@@ -12,13 +17,13 @@ import { checkAiAccess } from '../_shared/ai-access.ts';
 interface PlayerProfile {
   skillLevel: 'beginner' | 'intermediate' | 'advanced';
   trophies: number;
-  archetypeWinRates: Record<string, { wins: number; losses: number; rate: number }>;
+  archetypeWinRates: Record<string, { wins: number; losses: number; draws: number; rate: number }>;
   bestArchetypes: string[];
   weakArchetypes: string[];
   troubleMatchups: string[];
   masteredCards: string[];
   strugglingCards: string[];
-  recentWinRate: number;
+  recentWinRate: number | null;
   totalBattles: number;
 }
 
@@ -299,6 +304,14 @@ serve(async (req) => {
 
     logger.info('Starting deck recommendation', { userId: user.id, playerTag });
 
+    const { data: freshPlayer, error: profileError } = await supabase.functions.invoke('clash-royale-api', { body: { endpoint: 'player', playerTag } });
+    if (profileError || !Array.isArray(freshPlayer?.cards) || freshPlayer.cards.length === 0) return errorResponse('Current collection is unavailable', 503);
+    const {data:freshBattles,error:battlesError} = await supabase.functions.invoke('clash-royale-api',{body:{endpoint:'battles',playerTag}});
+    if (battlesError || !Array.isArray(freshBattles)) return errorResponse('Recent matches unavailable',503);
+    const { data: deckTemplates, error: templatesError } = await supabase.from('deck_templates').select('*').order('popularity_score', { ascending: false }).order('id');
+    const { data: archetypes, error: archetypesError } = await supabase.from('deck_archetypes').select('name, counters, countered_by').order('name');
+    if (templatesError || archetypesError) return errorResponse('Deck catalog unavailable', 503);
+    const inputFingerprint = await evidenceHash(JSON.stringify([evidenceKey(freshPlayer,freshBattles),deckTemplates,archetypes]));
     // ============= Step 1: Check Cache =============
     if (!forceRefresh) {
       const cacheExpiry = new Date(Date.now() - CACHE_TTL_HOURS * 60 * 60 * 1000).toISOString();
@@ -306,22 +319,24 @@ serve(async (req) => {
         .from('recommendation_history')
         .select('*')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
+        .eq('player_tag', canonicalTag(playerTag))
         .gte('created_at', cacheExpiry)
-        .eq('adopted', false)
-        .eq('language', language)
+                .eq('language', language)
+        .eq('input_fingerprint', inputFingerprint)
         .order('recommendation_score', { ascending: false })
         .limit(MAX_RECOMMENDATIONS);
 
-      if (cachedRecs && cachedRecs.length >= MAX_RECOMMENDATIONS) {
+      if (cachedRecs && cachedRecs.length > 0) {
         logger.info('Returning cached recommendations', { count: cachedRecs.length });
         return jsonResponse({
           recommendations: cachedRecs.map(r => ({
+            historyId: r.id,
+            readiness: deckReadiness(r.recommended_cards, freshPlayer.cards, freshPlayer.currentDeck || []),
             deckId: r.recommended_deck_id,
             deckName: r.deck_name || r.archetype,
             cards: r.recommended_cards,
             archetype: r.archetype,
-            avgElixir: r.avg_elixir || 0,
+            avgElixir: r.avg_elixir ?? null,
             difficulty: r.difficulty || 'intermediate',
             matchScore: r.recommendation_score * 100,
             reason: r.recommendation_reason,
@@ -337,49 +352,32 @@ serve(async (req) => {
     // ============= Step 2: Build Player Profile =============
     logger.info('Building player profile');
 
-    // Get deck usage stats for archetype analysis
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const { data: deckStats } = await supabase
-      .from('deck_usage_stats')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('player_tag', playerTag)
-      .gte('date', thirtyDaysAgo.split('T')[0]);
-
-    // Get card mastery data
-    const { data: cardMastery } = await supabase
-      .from('card_mastery')
-      .select('card_name, mastery_level, times_used, battles_won, battles_lost')
-      .eq('user_id', user.id)
-      .eq('player_tag', playerTag);
-
-    // Get card collection
-    const { data: cardCollection } = await supabase
-      .from('card_collection')
-      .select('card_name')
-      .eq('user_id', user.id)
-      .eq('player_tag', playerTag);
+    const deckStats = recentStatistics(freshBattles,playerTag).decks;
+    const cardCollection = freshPlayer.cards.map((c: any) => ({ card_name: c.name }));
 
     // Calculate archetype win rates
-    const archetypeWinRates: Record<string, { wins: number; losses: number; rate: number }> = {};
+    const archetypeWinRates: Record<string, { wins: number; losses: number; draws: number; rate: number }> = {};
     let totalWins = 0;
     let totalLosses = 0;
+    let totalDraws = 0;
 
     (deckStats || []).forEach(stat => {
       const archetype = stat.archetype || 'Unknown';
       if (!archetypeWinRates[archetype]) {
-        archetypeWinRates[archetype] = { wins: 0, losses: 0, rate: 0 };
+        archetypeWinRates[archetype] = { wins: 0, losses: 0, draws:0, rate: 0 };
       }
       archetypeWinRates[archetype].wins += stat.battles_won || 0;
       archetypeWinRates[archetype].losses += stat.battles_lost || 0;
       totalWins += stat.battles_won || 0;
       totalLosses += stat.battles_lost || 0;
+      totalDraws += stat.battles_drawn || 0;
+      archetypeWinRates[archetype].draws += stat.battles_drawn || 0;
     });
 
     // Calculate win rates
     Object.keys(archetypeWinRates).forEach(arch => {
       const data = archetypeWinRates[arch];
-      const total = data.wins + data.losses;
+      const total = data.wins + data.losses + data.draws;
       data.rate = total > 0 ? (data.wins / total) * 100 : 0;
     });
 
@@ -389,28 +387,23 @@ serve(async (req) => {
       .sort((a, b) => b[1].rate - a[1].rate);
 
     // Identify mastered and struggling cards
-    const masteredCards = (cardMastery || [])
-      .filter(cm => cm.mastery_level >= 7)
-      .map(cm => cm.card_name);
+    const masteredCards: string[] = []; // Recent appearances do not measure skill.
     
-    const strugglingCards = (cardMastery || [])
-      .filter(cm => cm.mastery_level <= 3 && cm.times_used >= 20)
-      .map(cm => cm.card_name);
+    const strugglingCards: string[] = [];
 
     // Build player profile
     const profile: PlayerProfile = {
-      skillLevel: getSkillLevel(trophies),
-      trophies,
+      skillLevel: getSkillLevel(freshPlayer.trophies),
+      trophies:freshPlayer.trophies,
       archetypeWinRates,
       bestArchetypes: sortedArchetypes.slice(0, 3).map(([arch]) => arch),
       weakArchetypes: sortedArchetypes.slice(-3).map(([arch]) => arch),
       troubleMatchups: [], // Will be populated from opponent_archetype tracking
       masteredCards,
       strugglingCards,
-      recentWinRate: totalWins + totalLosses > 0 
-        ? (totalWins / (totalWins + totalLosses)) * 100 
-        : 50,
-      totalBattles: totalWins + totalLosses
+      recentWinRate: totalWins + totalLosses + totalDraws > 0
+        ? totalWins / (totalWins + totalLosses + totalDraws) * 100 : null,
+      totalBattles: totalWins + totalLosses + totalDraws
     };
 
     // Extract trouble matchups from deck stats
@@ -431,32 +424,23 @@ serve(async (req) => {
       skillLevel: profile.skillLevel,
       bestArchetypes: profile.bestArchetypes,
       totalBattles: profile.totalBattles,
-      recentWinRate: profile.recentWinRate.toFixed(1)
+      recentWinRate: profile.recentWinRate === null ? 'unknown' : profile.recentWinRate.toFixed(1)
     });
 
     // ============= Step 3: Get Candidate Decks =============
     logger.info('Fetching candidate decks');
-
-    const { data: deckTemplates } = await supabase
-      .from('deck_templates')
-      .select('*')
-      .order('popularity_score', { ascending: false });
 
     if (!deckTemplates || deckTemplates.length === 0) {
       return jsonResponse({ error: 'No deck templates available', recommendations: [] });
     }
 
     // Get archetype counter relationships
-    const { data: archetypes } = await supabase
-      .from('deck_archetypes')
-      .select('name, counters, countered_by');
-
     const archetypeCounters: Record<string, string[]> = {};
     (archetypes || []).forEach(arch => {
       archetypeCounters[arch.name] = arch.counters || [];
     });
 
-    const ownedCards = (cardCollection || []).map(c => c.card_name);
+    const ownedCards = (cardCollection || []).map((c: {card_name:string}) => c.card_name);
 
     // ============= Step 4: Score Candidates =============
     logger.info('Scoring candidates');
@@ -466,6 +450,8 @@ serve(async (req) => {
     for (const deck of deckTemplates) {
       const cards = Array.isArray(deck.cards) ? deck.cards : JSON.parse(deck.cards || '[]');
       
+      const readiness = deckReadiness(cards, freshPlayer.cards, freshPlayer.currentDeck || []);
+      if (readiness.state === 'unavailable') continue;
       const scores = {
         ownership: calculateOwnershipScore(cards, ownedCards),
         skillMatch: calculateSkillMatchScore(deck.difficulty || 'intermediate', profile.skillLevel),
@@ -510,6 +496,7 @@ serve(async (req) => {
     // ============= Step 5: AI Enhancement (Optional) =============
     let topCandidates = candidates.slice(0, 5);
     let aiEnhanced = false;
+    let aiReplayed = false;
 
     // Check AI usage limit before making AI call
     const canUseAI = await checkAIUsageLimit(supabase, user.id);
@@ -518,8 +505,6 @@ serve(async (req) => {
       const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
       
       if (LOVABLE_API_KEY) {
-        // Increment AI usage counter
-        await incrementAIUsage(supabase, user.id);
         logger.info('Enhancing with AI');
         
         const languageInstructions: Record<string, string> = {
@@ -538,7 +523,7 @@ serve(async (req) => {
 - Best Archetypes: ${profile.bestArchetypes.join(', ') || 'Unknown'}
 - Struggling Against: ${profile.troubleMatchups.join(', ') || 'None identified'}
 - Mastered Cards: ${profile.masteredCards.slice(0, 5).join(', ') || 'None yet'}
-- Recent Win Rate: ${profile.recentWinRate.toFixed(1)}%
+- Recent Win Rate: ${profile.recentWinRate === null ? 'unknown' : profile.recentWinRate.toFixed(1)}%
 - Total Battles Analyzed: ${profile.totalBattles}
 
 ## Candidate Decks to Rank
@@ -553,7 +538,7 @@ ${i + 1}. ${c.deck.name} (${c.deck.archetype}, ${c.deck.difficulty})
 Rank these decks for this player and provide personalized explanations. Consider their strengths, weaknesses, and what they struggle against. Focus on why each deck fits or doesn't fit their playstyle.`;
 
         try {
-          const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          const aiResponse = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'recommend-deck' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -592,7 +577,10 @@ Rank these decks for this player and provide personalized explanations. Consider
             }),
           });
 
+          if (aiResponse.status === 409) return analysisErrorResponse(409, await aiResponse.text());
           if (aiResponse.ok) {
+            aiReplayed = aiResponse.headers.get('X-AI-Response-Replayed') === 'true';
+            if (!aiReplayed) await incrementAIUsage(supabase, user.id);
             const result = await aiResponse.json();
             const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
             
@@ -603,7 +591,7 @@ Rank these decks for this player and provide personalized explanations. Consider
               const enhancedCandidates: typeof topCandidates = [];
               (aiData.rankings || []).forEach((ranking: { deckIndex: number; explanation: string; fitScore: number }) => {
                 const idx = ranking.deckIndex - 1;
-                if (idx >= 0 && idx < topCandidates.length) {
+                if (Number.isInteger(idx) && idx >= 0 && idx < topCandidates.length && !enhancedCandidates.some(c=>c.deck.id===topCandidates[idx].deck.id) && Number.isFinite(ranking.fitScore)) {
                   const candidate = topCandidates[idx];
                   candidate.totalScore = ranking.fitScore / 100;
                   enhancedCandidates.push({
@@ -636,7 +624,8 @@ Rank these decks for this player and provide personalized explanations. Consider
       archetype: c.deck.archetype,
       avgElixir: c.deck.avg_elixir,
       difficulty: c.deck.difficulty,
-      matchScore: Math.round(c.totalScore * 100),
+      matchScore: Math.max(0, Math.min(100, Math.round(c.totalScore * 100))),
+      readiness: deckReadiness(c.deck.cards, freshPlayer.cards, freshPlayer.currentDeck || []),
       reason: c.reason,
       aiExplanation: c.aiExplanation,
       recommendationType: c.scores.counterPotential >= 0.8 ? 'counter' : 
@@ -644,30 +633,31 @@ Rank these decks for this player and provide personalized explanations. Consider
     }));
 
     // Store recommendations in history (including new deck_name, avg_elixir, difficulty fields)
-    const insertPromises = recommendations.map(rec => 
-      supabase.from('recommendation_history').insert({
+    const {error: saveError} = await supabase.from('recommendation_history').upsert(recommendations.map(rec => ({
         user_id: user.id,
-        player_tag: playerTag,
+        player_tag: canonicalTag(playerTag),
         recommended_deck_id: rec.deckId,
         recommended_cards: rec.cards,
         recommendation_reason: rec.reason,
-        language,
+        language, input_fingerprint: inputFingerprint, observation_mode: '1v1:PvP:Ladder',
         recommendation_score: rec.matchScore / 100,
         ai_explanation: rec.aiExplanation,
         archetype: rec.archetype,
         recommendation_type: rec.recommendationType,
-        win_rate_before: profile.recentWinRate,
+        win_rate_before: null,
         deck_name: rec.deckName,
         avg_elixir: rec.avgElixir,
         difficulty: rec.difficulty
-      })
-    );
-
-    await Promise.all(insertPromises);
+      })), {onConflict:'user_id,player_tag,input_fingerprint,recommended_deck_id,language',ignoreDuplicates:true});
+    if (saveError) throw saveError;
+    const {data: stored, error: storedError} = await supabase.from('recommendation_history').select('id,recommended_deck_id')
+      .eq('user_id',user.id).eq('player_tag',canonicalTag(playerTag)).eq('input_fingerprint',inputFingerprint).eq('language',language);
+    if (storedError) throw storedError;
+    recommendations.forEach(rec => { (rec as any).historyId = stored?.find(r => r.recommended_deck_id === rec.deckId)?.id; });
 
     logger.info('Returning recommendations', { count: recommendations.length, aiEnhanced });
 
-    if (aiAccess.isTrial && aiEnhanced) await recordTrialUsage(supabase, user.id, 'recommend-deck');
+    if (aiAccess.isTrial && aiEnhanced && !aiReplayed) await recordTrialUsage(supabase, user.id, 'recommend-deck');
     return jsonResponse({
       recommendations,
       profile: {

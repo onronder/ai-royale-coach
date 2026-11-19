@@ -17,8 +17,8 @@ interface CardMasteryTrackerProps {
 
 export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
   const { t } = useTranslation();
-  const [sortBy, setSortBy] = useState<'level' | 'usage' | 'winrate'>('level');
-  const { data: cards, isLoading, refetch } = useCardMastery(playerTag);
+  const [sortBy, setSortBy] = useState<'level' | 'usage' | 'winrate'>('usage');
+  const { data: cards, isLoading, error, refetch } = useCardMastery(playerTag);
   const calculateMastery = useCalculateCardMastery(playerTag);
 
   const handleSync = async () => {
@@ -36,6 +36,8 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
     return <DataLoader context="mastery" variant="card" />;
   }
 
+  if (error) return <div role="alert"><p>{t('common.error')}</p><Button onClick={()=>void refetch()}>{t('common.retry')}</Button></div>;
+
   const sortedCards = [...(cards || [])].sort((a, b) => {
     switch (sortBy) {
       case 'usage':
@@ -47,26 +49,12 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
     }
   });
 
-  const getMasteryTier = (level: number) => {
-    if (level >= 9) return 'Master';
-    if (level >= 7) return 'Diamond';
-    if (level >= 5) return 'Gold';
-    if (level >= 3) return 'Silver';
-    return 'Bronze';
-  };
-
-  const tierCounts = cards?.reduce((acc, card) => {
-    const tier = getMasteryTier(card.mastery_level);
-    acc[tier] = (acc[tier] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-heading text-foreground">{t('mastery.title')}</h2>
-          <p className="text-muted-foreground">{t('mastery.description')}</p>
+          <h2 className="text-3xl font-heading text-foreground">{t('correctness.cardObservations')}</h2>
+          <p className="text-muted-foreground">{t('correctness.noSkillInference')}</p>
         </div>
         <Button onClick={handleSync} variant="outline" size="sm" disabled={calculateMastery.isPending}>
           <RefreshCw className={`h-4 w-4 mr-2 ${calculateMastery.isPending ? 'animate-spin' : ''}`} />
@@ -86,24 +74,7 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
         />
       )}
 
-      {/* Mastery Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {['Master', 'Diamond', 'Gold', 'Silver', 'Bronze'].map(tier => (
-          <Card key={tier}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Trophy className="h-4 w-4" />
-                {tier}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">
-                {tierCounts?.[tier] || 0}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <p className="text-sm text-muted-foreground">{t('correctness.observationScope')}</p>
 
       {/* Sort Controls */}
       <div className="flex items-center gap-4">
@@ -113,7 +84,6 @@ export function CardMasteryTracker({ playerTag }: CardMasteryTrackerProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="level">{t('mastery.masteryLevel')}</SelectItem>
             <SelectItem value="usage">{t('mastery.mostUsed')}</SelectItem>
             <SelectItem value="winrate">{t('mastery.bestWinRate')}</SelectItem>
           </SelectContent>

@@ -1,3 +1,6 @@
+import { evidenceKey } from '../../../supabase/functions/_shared/deck-evidence';
+import { deckBuilderUrl } from '@/lib/deckNavigation';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageTransition } from "@/components/ui/loading-states";
@@ -25,10 +28,9 @@ export function DeckTab({
 }: DeckTabProps) {
   const { t } = useTranslation();
 
+  const navigate = useNavigate();
   const handleImportDeck = (cards: string[]) => {
-    // Navigate to deck builder with the selected deck
-    const deckParam = encodeURIComponent(cards.join(','));
-    window.location.href = `/player/${playerTag}?tab=builder&deck=${deckParam}`;
+    navigate(deckBuilderUrl(playerTag, cards));
   };
 
   return (
@@ -40,6 +42,7 @@ export function DeckTab({
             <RecommendedDecksPanel
               playerTag={playerTag}
               trophies={player.trophies || 0}
+              snapshotKey={evidenceKey(player,battles)}
               onImportDeck={handleImportDeck}
             />
           </FeatureGate>

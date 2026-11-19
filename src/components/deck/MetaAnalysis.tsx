@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataLoader } from "@/components/ui/data-loader";
-import { TrendingUp, TrendingDown, Flame, Snowflake, Lock } from "lucide-react";
+import { TrendingUp, Flame, Snowflake, Lock } from "lucide-react";
 import { AIFeaturePreview } from "@/components/subscription/AIFeaturePreview";
 import { PricingModal } from "@/components/subscription/PricingModal";
 import { MetaAnalysisPreview } from "@/components/subscription/AIPreviewContent";
@@ -15,8 +15,8 @@ interface MetaTrend {
   archetype: string;
   win_rate?: number;
   usage_rate?: number;
-  trend: "hot" | "cold" | "stable";
-  change_7d: number;
+  trend: "hot" | "cold" | "stable" | "unknown";
+  change_7d: number | null;
   popularity: number;
 }
 
@@ -100,7 +100,8 @@ export function MetaAnalysis() {
     switch (trend) {
       case "hot": return t('metaAnalysis.hotTrend');
       case "cold": return t('metaAnalysis.coldTrend');
-      default: return t('metaAnalysis.stableTrend');
+      case 'stable': return t('metaAnalysis.stableTrend');
+      default: return t('common.unknown');
     }
   };
 
@@ -113,6 +114,7 @@ export function MetaAnalysis() {
         <div>
           <h2 className="text-2xl font-heading text-foreground">{t('metaAnalysis.title')}</h2>
           <p className="text-sm text-muted-foreground">{t('metaAnalysis.subtitle')}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{t('correctness.metaCatalog')}</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -139,16 +141,7 @@ export function MetaAnalysis() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">{t('metaAnalysis.change7d')}</span>
-                    <div className="flex items-center gap-1">
-                      {trend.change_7d > 0 ? (
-                        <TrendingUp className="h-4 w-4 text-success" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4 text-destructive" />
-                      )}
-                      <span className={trend.change_7d > 0 ? "text-success" : "text-destructive"}>
-                        {trend.change_7d > 0 ? "+" : ""}{trend.change_7d.toFixed(1)}%
-                      </span>
-                    </div>
+                    <span>{trend.change_7d === null ? t('common.unknown') : `${trend.change_7d > 0 ? '+' : ''}${trend.change_7d.toFixed(1)}%`}</span>
                   </div>
                   <div className="pt-2 border-t">
                     <div className="flex items-center justify-between">

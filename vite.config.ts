@@ -1,10 +1,14 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
+import { validateBackendEnvironment } from "./src/lib/backendEnvironment";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = { ...loadEnv(mode, process.cwd(), "VITE_"), ...process.env };
+  validateBackendEnvironment(env.VITE_SUPABASE_URL!, env.VITE_SUPABASE_PROJECT_ID, env.VITE_SUPABASE_PUBLISHABLE_KEY!);
+  return ({
   server: {
     host: "::",
     port: 8080,
@@ -22,4 +26,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+});
+});

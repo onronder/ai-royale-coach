@@ -197,7 +197,7 @@
       },
       "achievements": {
         "title": "Tableau de Bord des Succès",
-        "intro": "Suivez vos jalons et débloquez des badges de succès à mesure que vous progressez. Les succès sont catégorisés par domaine de compétence et niveau."
+        "intro": "Badges historiques de l’application ; pas des compétences de jeu vérifiées."
       }
     },
     "collection": {
@@ -288,7 +288,8 @@
         "step1": "Entrez le tag du joueur adversaire (trouvé après un match)",
         "step2": "L'Oracle analyse ses 25 dernières batailles",
         "step3": "Visualisez le deck prédit, les taux de victoire et les stratégies de contre"
-      }
+      },
+      "intro": "Decks récents d’un joueur connu ; ne révèle pas le prochain adversaire."
     },
     "dreamArena": {
       "title": "Arène de Rêve",
@@ -318,7 +319,8 @@
       "overview": {
         "title": "Suivez Votre Progression",
         "intro": "Débloquez des badges à mesure que vous progressez et atteignez des jalons. Les succès sont catégorisés par domaine de compétence (attaque, défense, stratégie) et niveau (Bronze, Argent, Or, Platine, Diamant). Complétez des défis pour gagner des points et grimper au classement des succès !"
-      }
+      },
+      "intro": "Badges historiques de l’application ; pas des compétences de jeu vérifiées."
     },
     "coach": {
       "title": "Coach IA",
@@ -382,7 +384,7 @@
       "q4": "Puis-je utiliser AI Royale sur mobile ?",
       "a4": "Oui ! AI Royale est entièrement responsive et fonctionne sur tous les appareils. L'interface s'adapte à la taille de votre écran.",
       "q5": "Mes données sont-elles sécurisées ?",
-      "a5": "Oui. Nous accédons uniquement aux données publiques disponibles depuis l'API Clash Royale. Votre mot de passe de jeu n'est jamais partagé avec nous.",
+      "a5": "Avis de l’IA ; pas une probabilité calibrée",
       "q6": "Comment délier un compte ?",
       "a6": "Allez à l'écran de Sélection du Joueur et cliquez sur le bouton supprimer à côté du compte que vous souhaitez délier.",
       "q7": "Comment modifier mon e-mail ou mon mot de passe ?",

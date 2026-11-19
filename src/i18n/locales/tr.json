@@ -226,7 +226,7 @@
         "battleHistory": "Savaş Geçmişi Analizi",
         "battleHistoryDesc": "Yapay zeka destekli içgörülerle son maçlarınızı derinlemesine inceleyin",
         "matchReplay": "Maç Tekrarı İçgörüleri",
-        "matchReplayDesc": "Yapay zeka kilit anları ve dönüm noktalarını belirler",
+        "matchReplayDesc": "Desteler ve maç sonucundan olası eşleşme yorumları.",
         "counterDeck": "Counter-Deste Analizi",
         "counterDeckDesc": "Rakibinizin destesini tam olarak neyin yendiğini bilin",
         "matchupPredictions": "Eşleşme Tahminleri",
@@ -902,18 +902,18 @@
           },
           "personalCoaching": {
             "title": "Kişisel Koçluk",
-            "description": "Yapay zeka koçunuz oyununuz, desteleriniz ve ilerlemeniz hakkında tam bağlama sahiptir.",
+            "description": "Koçluk mevcut deste, koleksiyon ve son maç kanıtlarını kullanır; eksik ayrıntılar bilinmiyor kalır.",
             "count": "{{count}} özellik"
           }
         },
         "features": {
           "battleAnalysis": {
             "title": "Savaş Analizi",
-            "description": "Yapay zeka her maçta kazanan kalıpları ve kritik hataları tespit eder"
+            "description": "Deste ve sonuç gözlemleri, olası eşleşme yorumlarıyla birlikte."
           },
           "playerProfile": {
             "title": "Oyuncu Profil Analizi",
-            "description": "Oyun tarzınız ve beceri seviyenizin kapsamlı değerlendirmesi"
+            "description": "Gözlenen deste tercihleri ve son maç sonuçları."
           },
           "pivotalMoments": {
             "title": "Kritik Anların Tespiti",
@@ -925,7 +925,7 @@
           },
           "matchupPredictions": {
             "title": "Eşleşme Tahminleri",
-            "description": "Herhangi iki deste arasında güven seviyeleriyle kazanma oranı tahminleri"
+            "description": "Yapay zekâ eşleşme yorumu; kalibre edilmiş kazanma olasılığı değildir."
           },
           "trophyPerformance": {
             "title": "Kupa Performans Analizi",
@@ -2248,7 +2248,7 @@
     "usedTimes": "{{count}} kez kullanıldı",
     "predictions": {
       "total": "Toplam tahmin",
-      "battlesTracked": "Takip edilen maç",
+      "battlesTracked": "Tahmin–sonuç eşleşmeleri",
       "avgError": "Ortalama hata",
       "accuracyRate": "Yüksek isabet oranı",
       "mostAccurate": "En isabetli tahmin",
@@ -2393,13 +2393,13 @@
     "predictionFailed": "Eşleşme tahmini başarısız"
   },
   "predictionHistory": {
-    "title": "Tahmin Doğruluk Geçmişi",
-    "description": "AI tahminlerinin gerçek savaş sonuçlarınızla ne kadar doğru olduğunu takip edin",
+    "title": "Model tahminleri ve gözlenen sonuçlar",
+    "description": "Yalnız tahminden sonraki eşleşen 1v1 Ladder maçları sayılır. Bu örnekler modelin kalibre edilmiş doğruluğunu göstermez. Eski sonuç sayıları doğrulanmamıştır; aynı maç birden fazla tahminle eşleşebilir.",
     "viewHistory": "Tahmin Geçmişini Görüntüle",
     "hideHistory": "Geçmişi Gizle",
     "predictedWinRate": "Tahmin",
     "actualWinRate": "Gerçek",
-    "battlesTracked": "Savaşlar",
+    "battlesTracked": "Maç",
     "battles": "savaş",
     "accuracy": "Doğruluk",
     "accuracyScore": "Doğruluk Puanı",
@@ -2407,8 +2407,8 @@
     "mediumAccuracy": "Orta Doğruluk",
     "lowAccuracy": "Düşük Doğruluk",
     "noPredictions": "Henüz tahmin yok. Başlamak için AI Eşleşme Tahminini deneyin!",
-    "noBattlesYet": "Doğruluk takibini görmek için bazı savaşlar yapın",
-    "noActualResults": "Henüz savaş sonucu izlenmedi. Doğruluğu görmek için birkaç oyun oynayın!",
+    "noBattlesYet": "Henüz tahmin sonrasında eşleşen maç sonucu gözlenmedi.",
+    "noActualResults": "Henüz tahmin sonrasında eşleşen maç sonucu gözlenmedi.",
     "noActualData": "henüz savaş yok",
     "recentPredictions": "Son Tahminler",
     "cachedResult": "Önbellekten",
@@ -2484,7 +2484,7 @@
     "aiEnhanced": "Yapay Zeka Destekli",
     "refresh": "Yenile",
     "yourProfile": "Profiliniz",
-    "skillLevel": "Beceri Seviyesi",
+    "skillLevel": "Kupa kategorisi",
     "bestArchetypes": "En İyi Arketipler",
     "recentWinRate": "Son Kazanma Oranı",
     "battlesAnalyzed": "Analiz Edilen Savaşlar",
@@ -2691,25 +2691,25 @@
     "iosStep3": "Sağ üst köşedeki \"Ekle\" seçeneğine dokunun"
   },
   "oracle": {
-    "title": "Kahin",
-    "subtitle": "Düşman Deste Tahmin Sistemi",
+    "title": "Gözlenen deste tercihleri",
+    "subtitle": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
     "placeholder": "Rakip etiketini girin...",
     "pasteClipboard": "Panodan yapıştır",
     "scan": "Tara",
     "scanning": "DÜŞMAN VERİLERİ ŞİFRE ÇÖZÜLÜYOR...",
-    "threatDetected": "TEHDİT TESPİT EDİLDİ",
+    "threatDetected": "En çok gözlenen deste",
     "awaitingTarget": "Hedef Koordinatları Bekleniyor...",
-    "enterTagPrompt": "Destesini tahmin etmek için rakibin oyuncu etiketini girin",
+    "enterTagPrompt": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
     "targetNotFound": "Hedef Bulunamadı",
     "targetNotFoundDesc": "Bu oyuncu için savaş verileri alınamadı",
-    "confidence": "Güven",
-    "playstyle": "Oyun Tarzı",
+    "confidence": "Gözlenen deste oranı",
+    "playstyle": "İksir sınıfı",
     "aggressive": "Agresif",
     "defensive": "Savunmacı",
     "lastSeen": "Son görülme",
-    "matchesAnalyzed": "{{count}}/{{total}} maç analiz edildi",
-    "predictedDeck": "Tahmin Edilen Deste",
-    "opponentPrefers": "Rakip bu desteyi oynamayı tercih ediyor",
+    "matchesAnalyzed": "{{count}} / {{total}}",
+    "predictedDeck": "En çok gözlenen deste",
+    "opponentPrefers": "En çok gözlenen deste",
     "watchOutFor": "Dikkat edin",
     "matchupAnalysis": "Eşleşme Analizi",
     "analyzingMatchup": "Eşleşme analiz ediliyor...",
@@ -2720,8 +2720,8 @@
     "evenMatchup": "Dengeli eşleşme",
     "quickTips": "Hızlı İpuçları",
     "signInForMatchup": "Eşleşme analizini görmek için giriş yapın",
-    "helpTooltip": "En olası destelerini ve oyun tarzlarını tahmin etmek için rakibin son 25 maçını analiz ediyoruz.",
-    "helperText": "Destesini ve stratejisini tahmin etmek için rakibin oyuncu etiketini girin (örn. #ABC12).",
+    "helpTooltip": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
+    "helperText": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez.",
     "tryExample": "Dene",
     "errors": {
       "noDeck": "Etkin deste bulunamadı. Oyunda bir deste seç.",
@@ -2729,18 +2729,18 @@
       "predictionFailed": "Eşleşme tahmini yapılamadı. Tekrar dene."
     },
     "result": {
-      "confidence": "Güven düzeyi",
+      "confidence": "AI yorumu; kalibre edilmiş olasılık değildir",
       "keyMatchups": "Önemli eşleşmeler",
       "opponentDeck": "Rakibin destesi",
       "tips": "Strateji ipuçları",
       "title": "Eşleşme sonucu",
       "yourDeck": "Desten",
-      "yourWinChance": "Kazanma olasılığın"
+      "yourWinChance": "AI yorumu; kalibre edilmiş olasılık değildir"
     },
-    "scanButton": "Eşleşmeyi tahmin et"
+    "scanButton": "En çok gözlenen deste"
   },
   "proDna": {
-    "title": "Pro DNA'nız",
+    "title": "Gözlenen deste tercihleri",
     "styles": {
       "Bridge Spammer": "Köprüde baskı ustası",
       "The Great Wall": "Aşılmaz duvar",
@@ -2748,10 +2748,10 @@
       "Balanced Warrior": "Dengeli savaşçı",
       "Tactical Mastermind": "Taktik ustası"
     },
-    "playerDna": "Oyuncu DNA'sı",
-    "aggression": "SAL",
-    "defense": "SAV",
-    "versatility": "ÇYÖ",
+    "playerDna": "Gözlenen deste tercihleri",
+    "aggression": "Galibiyet oranı",
+    "defense": "Taç verilmedi",
+    "versatility": "Deste çeşitliliği",
     "similarTo": "Benzer oyuncu",
     "branding": "AI Royale Koç",
     "download": "İndir",
@@ -2760,15 +2760,15 @@
     "downloadFailed": "Kart indirilemedi",
     "shared": "Başarıyla paylaşıldı!",
     "shareFailed": "Kart paylaşılamadı",
-    "noData": "DNA'nızı oluşturmak için yeterli savaş verisi yok.",
+    "noData": "API’nin son maç penceresi; modlar ayrı gösterilir. Tam geçmiş değildir.",
     "noDataHint": "Önce birkaç maç oynayın!",
-    "shareText": "Clash Royale Pro DNA'ma göz atın!",
+    "shareText": "Yalnızca yakın dönem gözlemleri",
     "adaptability": "Uyum yeteneği",
     "consistency": "Tutarlılık",
     "downloadError": "Görsel indirilemedi.",
     "downloadSuccess": "Görsel indirildi.",
     "generating": "Görsel hazırlanıyor…",
-    "noDataDescription": "DNA profilini oluşturmak için birkaç maç daha oyna.",
+    "noDataDescription": "API’nin son maç penceresi; modlar ayrı gösterilir. Tam geçmiş değildir.",
     "shareError": "Görsel paylaşılamadı.",
     "shareNotSupported": "Bu tarayıcı paylaşımı desteklemiyor."
   },
@@ -2779,19 +2779,19 @@
     "amazingWork": "Harika iş, Şampiyon!",
     "achievements": {
       "elixirMaster": {
-        "title": "İksir Ustası",
-        "hint": "Kule kaybetmeden ağır deste (4.0+ iksir) ile kazan",
-        "earned": "Ağır desteyle kazandın ve tüm kulelerini korudun."
+        "title": "Ağır desteyle galibiyet",
+        "hint": "Bilinen ortalama en az dört iksirle ve taç vermeden kazanıldı.",
+        "earned": "Bilinen ortalama en az dört iksirle ve taç vermeden kazanıldı."
       },
       "comebackKing": {
-        "title": "Geri Dönüş Kralı",
-        "hint": "Önce kule kaybettikten sonra maçı kazan",
-        "earned": "Maçı geriden gelerek kazandın."
+        "title": "Kule kaybıyla galibiyet",
+        "hint": "En az bir taç vererek kazanıldı; olay sırası bilinmiyor.",
+        "earned": "En az bir taç vererek kazanıldı; olay sırası bilinmiyor."
       },
       "perfectDefense": {
-        "title": "Mükemmel Savunma",
-        "hint": "Hiç kule kaybetmeden maç kazan",
-        "earned": "Tek bir taç vermeden kulelerini savundun."
+        "title": "Taç vermeden galibiyet",
+        "hint": "Taç verilmedi; alınan hasar ölçülmüyor.",
+        "earned": "Taç verilmedi; alınan hasar ölçülmüyor."
       },
       "winStreakWarrior": {
         "title": "Seri Galip",
@@ -2838,6 +2838,8 @@
   },
   "admin": {
     "apiMetrics": {
+      "measurementScope": "Yalnızca yönetici tarayıcısındaki sorgular. {{total}} kaydın {{measured}} tanesinde süre ölçüldü. — ölçülmedi demektir. Yeniden deneme beklemesi süreye dahildir; önbellek isabeti varsayılmaz.",
+      "loadError": "Ölçümler yüklenemedi. Yenile düğmesiyle tekrar dene.",
       "title": "API Metrikleri",
       "subtitle": "Sorgu sıklığını izle ve gereksiz çağrıları belirle",
       "totalRequests": "Toplam İstek",
@@ -3371,24 +3373,24 @@
     "play": "Oynat",
     "victory": "Zafer!",
     "defeat": "Yenilgi",
-    "youWon": "{{proName}} yendin!",
-    "youLost": "{{proName}} kazandı!",
+    "youWon": "KURGUSAL MAÇ · EĞLENCE · {{proName}}",
+    "youLost": "KURGUSAL MAÇ · EĞLENCE · {{proName}}",
     "finalScore": "Final Skor",
-    "winProbability": "Kazanma Olasılığı",
+    "winProbability": "Eğlence ağırlığı",
     "playAgain": "Tekrar Oyna",
     "close": "Kapat",
-    "iDefeated": "{{proName}} OYUNCUSUNU YENDİM!",
-    "iLostTo": "ÇOK YAKINIDI! {{proName}} kazandı",
+    "iDefeated": "KURGUSAL MAÇ · EĞLENCE · {{proName}}",
+    "iLostTo": "KURGUSAL MAÇ · EĞLENCE · {{proName}}",
     "myDeck": "Destem",
     "upsetAlert": "SÜRPRİZ!",
     "shareResult": "Sonucu Paylaş",
     "downloadImage": "Resmi İndir",
     "imageSaved": "Resim kaydedildi!",
     "downloadFailed": "İndirme başarısız",
-    "aiSimulation": "YAPAY ZEKA KOÇU SİMÜLASYONU",
+    "aiSimulation": "KURGUSAL MAÇ · EĞLENCE",
     "finalHp": "Son Can",
-    "subtitle": "Yapay zeka destekli rüya maçlarında efsanevi profesyonellere meydan oku",
-    "liveSubtitle": "Gerçek zamanlı verilerle Global Top 10'a meydan oku",
+    "subtitle": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
+    "liveSubtitle": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
     "selectOpponent": "Rakibini Seç",
     "globalTop10": "Dünya sıralamasında ilk 10",
     "live": "CANLI",
@@ -3399,11 +3401,11 @@
     "unlimitedMatches": "Sınırsız maç mevcut",
     "howItWorks": "Nasıl Çalışır",
     "step1": "Meydan okumak için aşağıdaki listeden bir Pro Oyuncu seçin.",
-    "step2": "Yapay zekamız destenize, istatistiklerinize ve profesyonelin oyun tarzına göre bir maç simüle eder.",
+    "step2": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
     "step3": "Savaşı izleyin ve şansı yenip yenemeyeceğinizi görün!",
     "liveStep1": "Canlı Global Top 10 sıralamasından bir oyuncu seçin",
     "liveStep2": "Mevcut destelerini Supercell sunucularından gerçek zamanlı olarak alıyoruz",
-    "liveStep3": "Yapay zekamız gerçek oyun stillerine ve metaya göre maçı simüle eder",
+    "liveStep3": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
     "connecting": "SUPERCELL SUNUCULARINA BAĞLANIYOR...",
     "scouting": "{{name}} KEŞFEDİLİYOR...",
     "ready": "VERİLER ALINDI",
@@ -3501,7 +3503,7 @@
       },
       "oracle": {
         "title": "Kahin",
-        "description": "Maç başlamadan önce rakibinizin destesini tahmin edin! Kahin size stratejik avantaj sağlamak için AI kullanır."
+        "description": "Bilinen oyuncunun yakın zamanda gözlenen destelerini incele; gelecek rakipler tahmin edilemez."
       },
       "aiRoyalePro": {
         "title": "AI Royale Pro Lansmanı",
@@ -3693,5 +3695,53 @@
     "withdrawnOk": "Kampanya e-postaları kapatıldı. Sana kampanya göndermeyeceğiz.",
     "collectionPaused": "Kampanya e-postası kaydı henüz açık değil. Hesabın ve koçluğun etkilenmez.",
     "blockedNote": "E-posta hizmetimiz bu adrese kampanya teslim edemiyor (geri dönme veya spam bildirimi); bu yüzden gönderilmeyecek."
+  },
+  "correctness": {
+    "observationScope": "API’nin son maç penceresi; modlar ayrı gösterilir. Tam geçmiş değildir.",
+    "noSkillInference": "Destede bulunma ve sonuçlar kart becerisini, yerleşimi veya zamanlamayı ölçmez.",
+    "cardObservations": "Kart gözlemleri",
+    "deckAppearances": "Gözlenen {{count}} maçın destesinde",
+    "rankingScore": "Öneri sıralama puanı / 100; kazanma olasılığı değildir",
+    "formsUnknown": "Yalnızca temel kart seviyeleri. Aktif biçimler, kule birliği ve mod uygunluğu doğrulanmadı.",
+    "unknownCost": "Gereken kart kopyası bilinmiyor",
+    "invalidDeck": "Deste bağlantısı eksik veya kullanılamayan kart içeriyor.",
+    "editCurrentDeck": "Mevcut desteyi düzenle",
+    "startBlank": "Boş başla",
+    "observedPreferences": "Gözlenen deste tercihleri",
+    "noProSimilarity": "Profesyonel oyuncularla doğrulanmış karşılaştırma yok.",
+    "observationOnly": "Yalnızca yakın dönem gözlemleri",
+    "appBadges": "Uygulama rozetleri",
+    "sample": "{{count}} geçerli maç · {{wins}} galibiyet · {{losses}} mağlubiyet · {{draws}} beraberlik",
+    "lightDeck": "Düşük iksirli deste",
+    "heavyDeck": "Yüksek iksirli deste",
+    "hypotheticalPractice": "Olası eşleşme fikirleri ve sonraki çalışma; maç tekrarı veya olay zaman çizelgesi bulunmuyor.",
+    "completedPractice": "Tamamlanan çalışma · geçmiş",
+    "singleResult": "Tek sonuç, tavsiyenin galibiyete veya mağlubiyete neden olduğunu göstermez.",
+    "keepDeck": "Desteyi koru",
+    "copyCostOnly": "Yalnızca kart kopyaları. Altın ve diğer yükseltme şartları kontrol edilmedi.",
+    "entertainment": "Rastgele olaylar içeren eğlence senaryosu. Gerçek maç, tekrar, beceri değerlendirmesi veya ölçülmüş kazanma olasılığı değildir.",
+    "uncalibrated": "AI yorumu; kalibre edilmiş olasılık değildir",
+    "readiness": {
+      "ready": "Temel seviyeler mevcut desteyle uyumlu",
+      "investment": "Düşük seviyeli kartlar: yükseltme gerekiyor",
+      "unknown": "Uygunluk bilinmiyor",
+      "unavailable": "Kullanılamayan kartlar"
+    },
+    "legacyBadge": "Geçmiş uygulama rozetleri; doğrulanmış oyun becerileri değildir.",
+    "practiceTitle": "Bir çalışma. Bir maç.",
+    "practiceQuestion": "Bu desteyle neye çalışmalıyım?",
+    "askPractice": "Bu çalışma hakkında sor",
+    "observedAt": "Güncelleme: {{time}}",
+    "excluded": "Dışlanan geçersiz veya çelişkili kayıt: {{count}}.",
+    "savedSummary": "{{date}} tarihli kayıtlı özet. Geçmiş kapsamı, güncel API penceresinden farklı olabilir.",
+    "metaCatalog": "Deste kataloğu: popülerlik bir katalog puanıdır. Genel kullanım, kazanma oranı ve haftalık değişim burada ölçülmez.",
+    "predictionScope": "Yalnız tahminden sonraki eşleşen 1v1 Ladder maçları sayılır. Bu örnekler modelin kalibre edilmiş doğruluğunu göstermez. Eski sonuç sayıları doğrulanmamıştır; aynı maç birden fazla tahminle eşleşebilir.",
+    "recommendationScope": "Yalnız öneri görüldükten sonra aynı sekiz temel kartla oynanan eşleşen 1v1 Ladder maçları sayılır. Bu, önce/sonra etki ölçümü değildir.",
+    "legacyData": "Eski kayıt — ölçümü doğrulanmadı",
+    "draw": "Beraberlik",
+    "unsupportedMatch": "Bu maç biçimi henüz güvenilir şekilde analiz edilemiyor.",
+    "teamMatch": "Takım sonucu gösteriliyor; kişisel AI eşleşme analizi desteklenen 1v1 maçlarda kullanılabilir.",
+    "ownTeamDecks": "Takımının desteleri",
+    "otherTeamDecks": "Rakip takımın desteleri"
   }
 }

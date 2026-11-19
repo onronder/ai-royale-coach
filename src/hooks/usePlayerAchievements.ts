@@ -6,14 +6,14 @@ import { checkAchievements } from "@/utils/achievementSystem";
 /**
  * Hook to compute achievements from battle history
  */
-export function usePlayerAchievements(battles: ClashRoyaleBattle[] | null) {
+export function usePlayerAchievements(battles: ClashRoyaleBattle[] | null, playerTag: string) {
   const { t } = useTranslation();
   const achievements = useMemo(() => {
     if (!battles || battles.length === 0) {
       return [];
     }
-    return checkAchievements(battles, t);
-  }, [battles, t]);
+    return checkAchievements(battles, t, playerTag);
+  }, [battles, t, playerTag]);
 
   return {
     achievements,

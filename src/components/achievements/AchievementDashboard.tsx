@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Award, Trophy, RefreshCw, Target, Clock, Zap, Brain, TrendingUp, GraduationCap, Crown } from 'lucide-react';
+import { Award, Trophy, RefreshCw, GraduationCap, Crown } from 'lucide-react';
 import { useAchievements, useAchievementProgress, useSyncAchievements } from '@/hooks/useAchievements';
 import { DataLoader } from '@/components/ui/data-loader';
 import * as LucideIcons from 'lucide-react';
@@ -49,14 +49,6 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
     milestone: achievements?.filter(a => a.achievements.category === 'milestone') || [],
   };
 
-  const skillIcons: Record<string, any> = {
-    cardPlacement: Target,
-    timing: Clock,
-    elixirManagement: Zap,
-    prediction: Brain,
-    adaptation: TrendingUp,
-  };
-
   if (achievementsLoading || progressLoading) {
     return <DataLoader context="achievements" variant="card" />;
   }
@@ -73,7 +65,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
               </div>
               <div>
                 <CardTitle className="font-rajdhani text-2xl">{t('achievements.title')}</CardTitle>
-                <CardDescription>{t('achievements.description')}</CardDescription>
+                <CardDescription>{t('correctness.appBadges')}</CardDescription><p className="text-xs text-muted-foreground">{t('correctness.legacyBadge')}</p>
               </div>
             </div>
             <Button
@@ -121,7 +113,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
             <div className="flex items-center justify-between mb-2">
               <GraduationCap className="h-8 w-8 text-success" />
               <span className="text-2xl font-bold font-rajdhani text-success capitalize">
-                {t('achievements.' + (progress?.learning_phase || 'beginner'))}
+                {t('common.unknown')}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">{t('achievements.learningPhase')}</p>
@@ -141,42 +133,7 @@ export function AchievementDashboard({ playerTag }: AchievementDashboardProps) {
         </Card>
       </div>
 
-      {/* Skill Levels */}
-      {progress?.skill_levels && (
-        <Card className="bg-card/50 backdrop-blur border-primary/20">
-          <CardHeader>
-            <CardTitle className="font-rajdhani">{t('achievements.skillBreakdown')}</CardTitle>
-            <CardDescription>{t('achievements.skillBreakdownDescription')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {Object.entries(progress.skill_levels).map(([skill, level]) => {
-                const Icon = skillIcons[skill] || Target;
-                const tierInfo = getTierInfo(
-                  level >= 9 ? 'master' : level >= 7 ? 'diamond' : level >= 5 ? 'gold' : level >= 3 ? 'silver' : 'bronze'
-                );
-                
-                return (
-                  <div key={skill}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-rajdhani font-semibold text-foreground capitalize">
-                          {skill.replace(/([A-Z])/g, ' $1')}
-                        </span>
-                      </div>
-                      <Badge variant="outline" className={tierInfo.text}>
-                        {level}/10
-                      </Badge>
-                    </div>
-                    <Progress value={level * 10} className="h-2" />
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <p className="text-sm text-muted-foreground">{t('correctness.noSkillInference')}</p>
 
       {/* Achievement Categories */}
       <Tabs defaultValue="all" className="w-full">

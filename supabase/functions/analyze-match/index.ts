@@ -1,3 +1,6 @@
+import { safeMatchAdvice, observedMatchResult } from '../_shared/match-advice.ts';
+import { observeBattle } from '../_shared/battle-observation.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -85,6 +88,7 @@ serve(async (req) => {
 
     const { battle, playerTag, language: requestedLanguage }: MatchAnalysisRequest & { language?: string } = await req.json();
     const language = productLanguage(requestedLanguage);
+    if (typeof playerTag !== 'string' || !/^#?[A-Z0-9]{3,15}$/i.test(playerTag)) return errorResponse('Invalid player tag', 400);
 
     // Helper to normalize player tags
     const normalizePlayerTag = (tag: string): string => {
@@ -116,26 +120,22 @@ serve(async (req) => {
     };
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
-    const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
+    const normalizedTag = `#${normalizePlayerTag(playerTag)}`;
     logger.info('Analyzing match', { playerTag: normalizedTag });
 
-    const playerTeam = battle.team.find((p: any) => p.tag === normalizedTag);
-    const opponent = battle.opponent[0];
-    
-    if (!playerTeam || !opponent) {
-      logger.error('Player not found', { lookingFor: normalizedTag, available: battle.team?.map((p: any) => p.tag) });
-      throw new Error('Player or opponent not found in battle data');
-    }
-
-    const isWin = playerTeam.crowns > opponent.crowns;
+    const observation = observeBattle(battle, normalizedTag);
+    if (!observation || observation.format !== '1v1') return errorResponse('This battle format cannot be analyzed reliably yet', 422);
+    const playerTeam = observation.player;
+    const opponent = observation.opponents[0];
+    const isWin = observation.outcome === 'win';
     const playerCards = playerTeam.cards.map((c: any) => c.name).join(', ');
     const opponentCards = opponent.cards.map((c: any) => c.name).join(', ');
 
     const prompt = `Analyze this Clash Royale match and provide structured insights:
 
-**Battle Outcome:** ${isWin ? 'Victory' : 'Defeat'}
+**Battle Outcome:** ${observation.outcome}
 **Final Score:** ${playerTeam.crowns} - ${opponent.crowns} crowns
-**Game Mode:** ${battle.gameMode.name}
+**Game Mode:** ${observation.mode}
 
 **Your Deck:** ${playerCards}
 **Opponent's Deck:** ${opponentCards}
@@ -149,8 +149,7 @@ Provide your analysis in the following JSON format:
     {
       "yourCard": "card name from your deck",
       "opponentCard": "card name from opponent deck",
-      "phase": "early|mid|late|overtime",
-      "description": "Brief description of this key interaction",
+      "description": "A hypothetical matchup to practise, never an event claimed to have happened",
       "impact": "high|medium"
     }
   ],
@@ -161,9 +160,9 @@ Provide your analysis in the following JSON format:
   }
 }
 
-Return ONLY valid JSON, no markdown or extra text.`;
+No timestamps, phases, placements, elixir history, disconnects, intent, or causal explanation of why this game was won/lost can be inferred. Use prospective practice advice only. Return ONLY valid JSON.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-match' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -182,6 +181,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Lovable AI error', { status: response.status, error: errorText });
@@ -198,43 +198,22 @@ Return ONLY valid JSON, no markdown or extra text.`;
     try {
       const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       parsedAnalysis = JSON.parse(cleanedText);
-    } catch (parseError) {
-      logger.warn('JSON parse error, falling back to text parsing');
-      parsedAnalysis = {
-        deckMatchup: analysisText.slice(0, 300),
-        analysis: analysisText,
-        recommendations: [],
-        pivotalInteractions: [],
-        counterDeck: null,
-      };
+    } catch {
+      return errorResponse('Invalid analysis response',502);
     }
 
-    // Validate and normalize the response
-    const result = {
-      deckMatchup: parsedAnalysis.deckMatchup || 'Unable to analyze deck matchup.',
-      analysis: parsedAnalysis.analysis || analysisText,
-      recommendations: Array.isArray(parsedAnalysis.recommendations) 
-        ? parsedAnalysis.recommendations.slice(0, 5) 
-        : [],
-      pivotalInteractions: Array.isArray(parsedAnalysis.pivotalInteractions)
-        ? parsedAnalysis.pivotalInteractions.slice(0, 4).map((i: any) => ({
-            yourCard: i.yourCard || 'Unknown',
-            opponentCard: i.opponentCard || 'Unknown',
-            phase: ['early', 'mid', 'late', 'overtime'].includes(i.phase) ? i.phase : 'mid',
-            description: i.description || '',
-            impact: i.impact === 'high' ? 'high' : 'medium',
-          }))
-        : [],
-      counterDeck: parsedAnalysis.counterDeck ? {
-        cards: Array.isArray(parsedAnalysis.counterDeck.cards) 
-          ? parsedAnalysis.counterDeck.cards.slice(0, 8)
-          : [],
-        explanations: parsedAnalysis.counterDeck.explanations || {},
-        overallStrategy: parsedAnalysis.counterDeck.overallStrategy || '',
-      } : null,
-    };
+    // Public collection facts constrain candidate cards; no collection means no
+    // counter deck claim. The observed outcome is always calculated, not narrated.
+    const { data: cached } = await supabase.from('player_cache').select('player_data')
+      .in('player_tag', [normalizedTag, normalizedTag.slice(1)]).maybeSingle();
+    const collection = Array.isArray(cached?.player_data?.cards)
+      ? cached.player_data.cards.map((c: any) => c.name).filter((name: unknown) => typeof name === 'string') : [];
+    let advice;
+    try { advice = safeMatchAdvice(parsedAnalysis, playerTeam.cards.map(c => c.name), opponent.cards.map(c => c.name), collection); }
+    catch { return errorResponse('Invalid analysis response', 502); }
+    const result = { ...advice, analysis: observedMatchResult(playerTeam.crowns, opponent.crowns, language) };
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'analyze-match');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'analyze-match');
     return jsonResponse(result);
 
   } catch (error) {

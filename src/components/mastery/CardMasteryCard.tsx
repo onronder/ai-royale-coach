@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CardMastery, useGenerateCardTips } from "@/hooks/useCardMastery";
-import { MasteryProgressRing } from "./MasteryProgressRing";
-import { MasteryLevelBadge } from "./MasteryLevelBadge";
 import { ChevronDown, ChevronUp, Sparkles, Lock } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -40,6 +38,7 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
         worstMatchups: card.worst_matchup_cards,
         cardId: card.card_id,
         playerTag,
+        mode: card.mode,
       });
     } catch (error) {
       // Error handling is done in the hook, but check for subscription error
@@ -58,18 +57,12 @@ export function CardMasteryCard({ card, playerTag }: CardMasteryCardProps) {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <h3 className="font-heading text-foreground mb-1">{cardLabel(card.card_name)}</h3>
-              <p className="text-xs text-muted-foreground">{t('cardMastery.used', { count: card.times_used })}</p>
+              <p className="text-xs text-muted-foreground">{t('correctness.deckAppearances', { count: card.times_used })}</p>
             </div>
-            <MasteryLevelBadge level={card.mastery_level} />
+            <Badge variant="outline">{card.mode}</Badge>
           </div>
 
-          {/* Progress Ring */}
-          <div className="flex justify-center">
-            <MasteryProgressRing 
-              level={card.mastery_level} 
-              progress={card.mastery_progress} 
-            />
-          </div>
+          <p className="text-xs text-muted-foreground">{t('correctness.noSkillInference')}</p><p className="text-xs text-muted-foreground">{t('correctness.observedAt', {time:new Date(card.last_updated).toLocaleString(i18n.language)})}</p>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-2 text-sm">

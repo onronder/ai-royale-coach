@@ -1,0 +1,1215 @@
+{
+  "ladder": {
+    "type": "PvP",
+    "gameMode": {
+      "id": 72000006,
+      "name": "Ladder"
+    },
+    "deckSelection": "collection",
+    "battleTime": "20261118T120000.000Z",
+    "team": [
+      {
+        "tag": "#P0",
+        "name": "Fixture P0",
+        "crowns": 0,
+        "cards": [
+          {
+            "id": 26000000,
+            "name": "Knight",
+            "level": 15,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 26000018,
+            "name": "Mini P.E.K.K.A",
+            "level": 12,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000103,
+            "name": "Boss Bandit",
+            "level": 5,
+            "maxLevel": 6,
+            "elixirCost": 6,
+            "rarity": "champion"
+          },
+          {
+            "id": 26000017,
+            "name": "Wizard",
+            "level": 13,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 28000009,
+            "name": "Poison",
+            "level": 7,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000035,
+            "name": "Lumberjack",
+            "level": 4,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000024,
+            "name": "Royal Giant",
+            "level": 13,
+            "maxLevel": 16,
+            "elixirCost": 6,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000023,
+            "name": "Ice Wizard",
+            "level": 2,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 2,
+            "rarity": "legendary"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 13,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      }
+    ],
+    "opponent": [
+      {
+        "tag": "#Q0",
+        "name": "Fixture Q0",
+        "crowns": 3,
+        "cards": [
+          {
+            "id": 26000047,
+            "name": "Royal Recruits",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 7,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000069,
+            "name": "Skeleton King",
+            "level": 1,
+            "maxLevel": 6,
+            "elixirCost": 4,
+            "rarity": "champion"
+          },
+          {
+            "id": 26000074,
+            "name": "Golden Knight",
+            "level": 1,
+            "maxLevel": 6,
+            "elixirCost": 4,
+            "rarity": "champion"
+          },
+          {
+            "id": 26000015,
+            "name": "Baby Dragon",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000012,
+            "name": "Skeleton Army",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000022,
+            "name": "Minion Horde",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000006,
+            "name": "Balloon",
+            "level": 7,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 2,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000026,
+            "name": "Princess",
+            "level": 3,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 12,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      }
+    ]
+  },
+  "duel": {
+    "type": "riverRaceDuel",
+    "gameMode": {
+      "id": 72000267,
+      "name": "CW_Duel_1v1"
+    },
+    "deckSelection": "warDeckPick",
+    "battleTime": "20261118T120000.000Z",
+    "team": [
+      {
+        "tag": "#P0",
+        "name": "Fixture P0",
+        "crowns": 0,
+        "cards": [
+          {
+            "id": 27000013,
+            "name": "Goblin Drill",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000023,
+            "name": "Ice Wizard",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "legendary"
+          },
+          {
+            "id": 28000017,
+            "name": "Giant Snowball",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000000,
+            "name": "Knight",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 28000009,
+            "name": "Poison",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000013,
+            "name": "Bomber",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000010,
+            "name": "Skeletons",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 27000006,
+            "name": "Tesla",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000056,
+            "name": "Skeleton Barrel",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000002,
+            "name": "Goblins",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "common"
+          },
+          {
+            "id": 27000002,
+            "name": "Mortar",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000054,
+            "name": "Cannon Cart",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000000,
+            "name": "Fireball",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000005,
+            "name": "Minions",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 26000053,
+            "name": "Rascals",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 5,
+            "rarity": "common"
+          },
+          {
+            "id": 28000015,
+            "name": "Barbarian Barrel",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "epic"
+          }
+        ],
+        "supportCards": [],
+        "rounds": [
+          {
+            "crowns": 0
+          },
+          {
+            "crowns": 0
+          }
+        ]
+      }
+    ],
+    "opponent": [
+      {
+        "tag": "#Q0",
+        "name": "Fixture Q0",
+        "crowns": 4,
+        "cards": [
+          {
+            "id": 26000024,
+            "name": "Royal Giant",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 6,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000062,
+            "name": "Magic Archer",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000064,
+            "name": "Firecracker",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000012,
+            "name": "Skeleton Army",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000000,
+            "name": "Fireball",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000021,
+            "name": "Hog Rider",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000022,
+            "name": "Minion Horde",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000049,
+            "name": "Bats",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000055,
+            "name": "Mega Knight",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 7,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000014,
+            "name": "Musketeer",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000059,
+            "name": "Royal Hogs",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000005,
+            "name": "Minions",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 26000050,
+            "name": "Royal Ghost",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 27000009,
+            "name": "Tombstone",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000025,
+            "name": "Guards",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000001,
+            "name": "Arrows",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "rarity": "common"
+          }
+        ],
+        "supportCards": [],
+        "rounds": [
+          {
+            "crowns": 1
+          },
+          {
+            "crowns": 3
+          }
+        ]
+      }
+    ]
+  },
+  "two_v_two": {
+    "type": "clanMate2v2",
+    "gameMode": {
+      "id": 72000014,
+      "name": "TeamVsTeam"
+    },
+    "deckSelection": "collection",
+    "battleTime": "20261118T120000.000Z",
+    "team": [
+      {
+        "tag": "#P0",
+        "name": "Fixture P0",
+        "crowns": 1,
+        "cards": [
+          {
+            "id": 26000011,
+            "name": "Valkyrie",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000019,
+            "name": "Spear Goblins",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "rarity": "common"
+          },
+          {
+            "id": 26000008,
+            "name": "Barbarians",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000018,
+            "name": "Mini P.E.K.K.A",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000036,
+            "name": "Battle Ram",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000017,
+            "name": "Wizard",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000021,
+            "name": "Hog Rider",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 27000003,
+            "name": "Inferno Tower",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "rarity": "rare"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 11,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      },
+      {
+        "tag": "#P1",
+        "name": "Fixture P1",
+        "crowns": 1,
+        "cards": [
+          {
+            "id": 26000007,
+            "name": "Witch",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000018,
+            "name": "Mini P.E.K.K.A",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000017,
+            "name": "Wizard",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000011,
+            "name": "Valkyrie",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000015,
+            "name": "Baby Dragon",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000012,
+            "name": "Skeleton Army",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000008,
+            "name": "Zap",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 28000004,
+            "name": "Goblin Barrel",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 11,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      }
+    ],
+    "opponent": [
+      {
+        "tag": "#Q0",
+        "name": "Fixture Q0",
+        "crowns": 3,
+        "cards": [
+          {
+            "id": 26000024,
+            "name": "Royal Giant",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 6,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000016,
+            "name": "Prince",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000007,
+            "name": "Witch",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000015,
+            "name": "Baby Dragon",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000049,
+            "name": "Bats",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000012,
+            "name": "Skeleton Army",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000000,
+            "name": "Fireball",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 28000008,
+            "name": "Zap",
+            "level": 11,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 11,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      },
+      {
+        "tag": "#Q1",
+        "name": "Fixture Q1",
+        "crowns": 3,
+        "cards": [
+          {
+            "id": 26000016,
+            "name": "Prince",
+            "level": 6,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "rarity": "epic"
+          },
+          {
+            "id": 27000012,
+            "name": "Goblin Cage",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000021,
+            "name": "Hog Rider",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000017,
+            "name": "Wizard",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 28000000,
+            "name": "Fireball",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000039,
+            "name": "Mega Minion",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000011,
+            "name": "Valkyrie",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000018,
+            "name": "Mini P.E.K.K.A",
+            "level": 9,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          }
+        ],
+        "supportCards": [
+          {
+            "id": 159000000,
+            "name": "Tower Princess",
+            "level": 11,
+            "maxLevel": 16,
+            "rarity": "common"
+          }
+        ]
+      }
+    ]
+  },
+  "multi_deck": {
+    "type": "unknown",
+    "gameMode": {
+      "id": 72000513,
+      "name": "Competitive_Multideck"
+    },
+    "deckSelection": "quadDeckPick",
+    "battleTime": "20261118T120000.000Z",
+    "team": [
+      {
+        "tag": "#P0",
+        "name": "Fixture P0",
+        "crowns": 0,
+        "cards": [
+          {
+            "id": 26000059,
+            "name": "Royal Hogs",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000027,
+            "name": "Dark Prince",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 4,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "epic"
+          },
+          {
+            "id": 27000010,
+            "name": "Furnace",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000010,
+            "name": "Skeletons",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 28000015,
+            "name": "Barbarian Barrel",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000102,
+            "name": "Berserker",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "common"
+          },
+          {
+            "id": 27000000,
+            "name": "Cannon",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 28000014,
+            "name": "Earthquake",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000047,
+            "name": "Royal Recruits",
+            "level": 15,
+            "maxLevel": 16,
+            "elixirCost": 7,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000018,
+            "name": "Mini P.E.K.K.A",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000035,
+            "name": "Lumberjack",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 28000001,
+            "name": "Arrows",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 26000050,
+            "name": "Royal Ghost",
+            "level": 7,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000036,
+            "name": "Battle Ram",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000042,
+            "name": "Electro Wizard",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 2,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000083,
+            "name": "Mother Witch",
+            "level": 7,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "rarity": "legendary"
+          }
+        ],
+        "supportCards": [],
+        "rounds": [
+          {
+            "crowns": 0
+          },
+          {
+            "crowns": 0
+          }
+        ]
+      }
+    ],
+    "opponent": [
+      {
+        "tag": "#Q0",
+        "name": "Fixture Q0",
+        "crowns": 4,
+        "cards": [
+          {
+            "id": 27000002,
+            "name": "Mortar",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000099,
+            "name": "Goblinstein",
+            "level": 6,
+            "maxLevel": 6,
+            "elixirCost": 5,
+            "rarity": "champion"
+          },
+          {
+            "id": 26000022,
+            "name": "Minion Horde",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 5,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000054,
+            "name": "Cannon Cart",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 5,
+            "rarity": "epic"
+          },
+          {
+            "id": 28000000,
+            "name": "Fireball",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000010,
+            "name": "Skeletons",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "common"
+          },
+          {
+            "id": 26000083,
+            "name": "Mother Witch",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "rarity": "legendary"
+          },
+          {
+            "id": 28000015,
+            "name": "Barbarian Barrel",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 2,
+            "maxEvolutionLevel": 2,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000036,
+            "name": "Battle Ram",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000017,
+            "name": "Wizard",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 5,
+            "evolutionLevel": 2,
+            "maxEvolutionLevel": 3,
+            "rarity": "rare"
+          },
+          {
+            "id": 26000035,
+            "name": "Lumberjack",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 4,
+            "evolutionLevel": 1,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 26000020,
+            "name": "Giant Skeleton",
+            "level": 11,
+            "maxLevel": 11,
+            "elixirCost": 6,
+            "rarity": "epic"
+          },
+          {
+            "id": 26000050,
+            "name": "Royal Ghost",
+            "level": 8,
+            "maxLevel": 8,
+            "elixirCost": 3,
+            "maxEvolutionLevel": 1,
+            "rarity": "legendary"
+          },
+          {
+            "id": 27000010,
+            "name": "Furnace",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 4,
+            "maxEvolutionLevel": 1,
+            "rarity": "rare"
+          },
+          {
+            "id": 28000001,
+            "name": "Arrows",
+            "level": 16,
+            "maxLevel": 16,
+            "elixirCost": 3,
+            "rarity": "common"
+          },
+          {
+            "id": 28000016,
+            "name": "Heal Spirit",
+            "level": 14,
+            "maxLevel": 14,
+            "elixirCost": 1,
+            "rarity": "rare"
+          }
+        ],
+        "supportCards": [],
+        "rounds": [
+          {
+            "crowns": 1
+          },
+          {
+            "crowns": 3
+          }
+        ]
+      }
+    ]
+  }
+}

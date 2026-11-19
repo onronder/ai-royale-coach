@@ -13,7 +13,7 @@ interface ApiLog {
   endpoint: string;
   method: string;
   duration_ms: number | null;
-  cache_hit: boolean;
+  cache_hit: boolean | null;
   created_at: string;
 }
 

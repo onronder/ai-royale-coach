@@ -1,3 +1,4 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,6 +13,8 @@ export interface CardMastery {
   times_used: number;
   battles_won: number;
   battles_lost: number;
+  battles_drawn: number;
+  mode: string;
   total_crowns: number;
   avg_elixir_decks: number | null;
   best_partner_cards: string[];
@@ -35,8 +38,9 @@ export const useCardMastery = (playerTag: string) => {
       const { data, error } = await supabase
         .from('card_mastery')
         .select('*')
+          .eq('observation_scope', 'recent-battles-v2')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
+        .eq('player_tag', canonicalTag(playerTag))
         .order('mastery_level', { ascending: false })
         .order('times_used', { ascending: false });
 
@@ -44,8 +48,8 @@ export const useCardMastery = (playerTag: string) => {
 
       return (data || []).map(card => ({
         ...card,
-        win_rate: card.battles_won / (card.battles_won + card.battles_lost),
-        crown_avg: card.total_crowns / card.times_used,
+        win_rate: card.times_used ? card.battles_won / card.times_used : 0,
+        crown_avg: card.times_used ? card.total_crowns / card.times_used : 0,
       }));
     },
     enabled: !!playerTag,
@@ -106,6 +110,7 @@ export const useGenerateCardTips = () => {
       worstMatchups,
       cardId,
       playerTag,
+      mode,
     }: { 
       cardName: string;
       winRate: number;
@@ -114,6 +119,7 @@ export const useGenerateCardTips = () => {
       worstMatchups: string[];
       cardId: number;
       playerTag: string;
+      mode: string;
     }) => {
       const language = i18n.resolvedLanguage ?? 'en';
       toast.loading(i18n.t('cardMastery.generatingFor', { card: cardName }), { id: `card-tips-${cardId}` });
@@ -147,7 +153,9 @@ export const useGenerateCardTips = () => {
           .update({ ai_tips: data.tips, ai_tips_language: language })
           .eq('user_id', user.id)
           .eq('card_id', cardId)
-          .eq('player_tag', playerTag);
+          .eq('observation_scope', 'recent-battles-v2')
+          .eq('mode', mode)
+          .eq('player_tag', canonicalTag(playerTag));
         if (saveError) throw saveError;
       }
       

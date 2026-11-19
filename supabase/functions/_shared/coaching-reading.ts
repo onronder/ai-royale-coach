@@ -1,4 +1,4 @@
-import { coachingSwap, swapStatement, tacticalText } from './coaching-advice.ts';
+import { coachingSwap, swapStatement, tacticalText, keptDeckStatement } from './coaching-advice.ts';
 import { containsCardName } from './card-names.ts';
 import { productLanguage } from './language.ts';
 
@@ -8,7 +8,7 @@ export interface SavedAdvice {
   source_deck: Deck;
   recommended_deck: Deck;
   recommendation: {
-    remove_id: number; add_id: number; reason: string; practice: string;
+    decision?: 'keep' | 'swap'; remove_id: number | null; add_id: number | null; reason: string; practice: string;
     language?: string; follow_up_language?: string; verified_swap?: boolean; follow_up_verified?: boolean;
   } | null;
   follow_up_question: string | null;
@@ -20,8 +20,17 @@ export type ReadingText = Record<typeof readingFields[number], string>;
 // Translate tactical prose only. Rebuild the card swap and its levels from the saved decks.
 export function coachingReading(task: SavedAdvice, target: string) {
   const rec = task.recommendation;
-  const swap = rec && coachingSwap(task.source_deck, task.recommended_deck, rec.remove_id);
-  if (!rec || !swap) return null;
+  const swap = rec && rec.remove_id !== null && coachingSwap(task.source_deck, task.recommended_deck, rec.remove_id);
+  if (!rec || (!swap && rec.decision !== 'keep')) return null;
+  if (rec.decision === 'keep') {
+    const adviceLanguage = productLanguage(rec.language ?? task.language);
+    const followUpLanguage = productLanguage(rec.follow_up_language ?? task.language);
+    const originals: ReadingText = { reason:rec.reason,practice:rec.practice,question:task.follow_up_answer ? task.follow_up_question ?? '' : '',answer:task.follow_up_answer ?? '' };
+    const needed: Partial<ReadingText> = {};
+    for (const key of readingFields) if (originals[key] && (key === 'question' || key === 'answer' ? followUpLanguage : adviceLanguage) !== target) needed[key] = originals[key];
+    return { originals,needed,facts:keptDeckStatement(target),adviceLanguage,followUpLanguage };
+  }
+  if (!swap) return null;
   const adviceLanguage = productLanguage(rec.language ?? task.language);
   const followUpLanguage = productLanguage(rec.follow_up_language ?? task.language);
   const known = [...task.source_deck, ...task.recommended_deck];

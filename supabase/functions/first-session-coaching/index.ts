@@ -6,12 +6,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { z } from 'npm:zod@3';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { checkAiAccess } from '../_shared/ai-access.ts';
-import { coachingCard, coachingSwap, formatCoachingAdvice } from '../_shared/coaching-advice.ts';
+import { coachingCard, coachingSwap, formatCoachingAdvice, tacticalText, keepDeckAdvice, validCoachingChoice } from '../_shared/coaching-advice.ts';
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, latestLadderTrophies, normalizeTag } from '../_shared/coaching-match.ts';
 import { createCoachingAI } from '../_shared/coaching-ai.ts';
 const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up','translate']), language:z.string().optional().transform(productLanguage), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
-const Suggestion = z.object({ remove_id:z.number(), add_id:z.number(), reason:z.string(), practice:z.string() });
+const Suggestion = z.object({ remove_id:z.number().nullable(), add_id:z.number().nullable(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
 async function handleRequest(req: Request): Promise<Response> {
@@ -45,7 +45,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if((action==='start' || action==='follow-up') && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;
  };
- const ai=createCoachingAI(aiKey,req.signal,language);
+ const ai=createCoachingAI(aiKey,req.signal,language,false,{db,userId:user.id,tier:access.isAdmin?'admin':access.isTrial?'trial':access.isPaid?'paid':'inactive',feature:'first-session-coaching:'+action+':'+tag});
  try {
    if (action === 'translate') {
      const reading = task && coachingReading(task, language);
@@ -120,6 +120,16 @@ async function handleRequest(req: Request): Promise<Response> {
      const player=await gameData('player',true);
      const original = task.source_deck;
      const currentSwap = coachingSwap(original, task.recommended_deck, task.recommendation.remove_id);
+     if (task.recommendation.decision === 'keep') {
+       if (!Array.isArray(player?.cards)) throw new Error('Coaching deck unavailable');
+       const generated = await ai(`Answer one follow-up about practising with the unchanged deck. Do not suggest a swap, claim unseen actions or infer skill from a result. Set alternative_id, reason and practice to null. Deck: ${JSON.stringify(original.map(coachingCard))}. Question: ${question}`,Answer);
+       const answer = tacticalText(generated.output.answer,original[0],player.cards,language);
+       if (!answer) throw new Error('Unverifiable coaching answer');
+       const saved = await db.from('coaching_tasks').update({follow_up_answer:answer,recommendation:{...task.recommendation,follow_up_language:language},ai_calls:task.ai_calls+1,prompt_tokens:task.prompt_tokens+(generated.usage.inputTokens||0),completion_tokens:task.completion_tokens+(generated.usage.outputTokens||0)}).eq('id',task.id).select('*').single();
+       if (saved.error) throw saved.error;
+       await event('coaching_follow_up',{task_id:task.id,gateway_run_id:generated.runId});
+       return reply({task:saved.data},200,generated.headers);
+     }
      if (!currentSwap || !Array.isArray(player?.cards)) throw new Error('Coaching deck unavailable');
      const candidates = player.cards.filter((card: {id:number}) => !original.some((c: {id:number}) => c.id === card.id));
      const generated=await ai(`Answer one follow-up about the current swap. If unrelated, redirect to the recommendation. If choosing another incoming card, select an available alternative and provide a new tactical reason and practice. Otherwise set alternative_id, reason and practice to null. The outgoing card is fixed: ${JSON.stringify(coachingCard(currentSwap.removed))}. Current incoming card: ${JSON.stringify(coachingCard(currentSwap.added))}. Original deck: ${JSON.stringify(original.map(coachingCard))}. Available alternatives: ${JSON.stringify(candidates.map(coachingCard))}. Question: ${question}`,Answer);
@@ -155,13 +165,14 @@ async function handleRequest(req: Request): Promise<Response> {
    if(!task){const {data:created,error}=await db.from('coaching_tasks').insert({user_id:user.id,player_tag:tag,language,generation_started_at:stamp}).select('*').single();if(error)return reply({error:'Task already in progress'},409);task=created;}
    else {let claim=db.from('coaching_tasks').update({status:'generating',generation_started_at:stamp}).eq('id',task.id).eq('status',task.status);claim=task.generation_started_at?claim.eq('generation_started_at',task.generation_started_at):claim.is('generation_started_at',null);const {data:locked,error}=await claim.select('*').maybeSingle();if(error)throw error;if(!locked)return reply({error:'Task already in progress'},409);task=locked;}
    generationOwned=true;
-   const generated=await ai(`Choose exactly one card change for a one-match practice task using current deck and available collection, considering real levels. Return remove_id from deck and add_id from owned collection outside deck, concise reason, and one practice tip. Current deck: ${JSON.stringify(sourceDeck.map(coachingCard))}. Collection: ${JSON.stringify(player.cards.map(coachingCard))}.`,Suggestion);
+   const generated=await ai(`Choose a one-match practice task using this deck and owned collection with known levels. A change is optional: return BOTH remove_id and add_id null to keep the deck when there is no supported improvement. Otherwise propose exactly one owned replacement with known level, never force a swap. Give a concise prospective reason and practice tip, no claims about unseen actions. Avoid numbers or card names in prose; use {card} only if swapping. Current deck: ${JSON.stringify(sourceDeck.map(coachingCard))}. Collection: ${JSON.stringify(player.cards.map(coachingCard))}.`,Suggestion);
    const suggestion=generated.output;
-   const removed=sourceDeck.find((c:{id:number})=>c.id===suggestion.remove_id);const added=player.cards.find((c:{id:number})=>c.id===suggestion.add_id);
-   if(!removed||!added||sourceDeck.some((c:{id:number})=>c.id===added.id)) throw new Error('AI suggested an invalid card swap');
-   const advice=formatCoachingAdvice(removed,added,player.cards,language,suggestion.reason,suggestion.practice);
-   const deck=sourceDeck.map((c:{id:number})=>c.id===removed.id?added:c);
-   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:sourceDeck,recommended_deck:deck,recommendation:{...suggestion,language,reason:advice.reason,practice:advice.practice,verified_swap:true},prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
+   const choice = validCoachingChoice(sourceDeck, player.cards, suggestion.remove_id, suggestion.add_id);
+   if (!choice) throw new Error('AI suggested an invalid card swap');
+   const { keep, deck } = choice;
+   const advice = keep ? keepDeckAdvice(sourceDeck, player.cards, language, suggestion.reason, suggestion.practice)
+     : formatCoachingAdvice(choice.removed!, choice.added!, player.cards, language, suggestion.reason, suggestion.practice);
+   const {data:updated,error}=await db.from('coaching_tasks').update({status:'ready',source_deck:sourceDeck,recommended_deck:deck,recommendation:{...suggestion,decision:keep?'keep':'swap',language,reason:advice.reason,practice:advice.practice,verified_swap:!keep},prompt_tokens:generated.usage.inputTokens||0,completion_tokens:generated.usage.outputTokens||0,ai_calls:1}).eq('id',task.id).select('*').single();
    if(error) throw error;
    if(access.isTrial) await recordTrialUsage(db,user.id,'first-session-coaching');
    await event('coaching_generated',{task_id:task.id,gateway_run_id:generated.runId,model:'openai/gpt-6-astra',input_tokens:generated.usage.inputTokens,output_tokens:generated.usage.outputTokens});
@@ -172,7 +183,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if (action !== 'translate') await event('ai_generation_failed',{task_id:task?.id,action});
    const status=typeof e==='object'&&e!==null&&'statusCode'in e?Number(e.statusCode):500;
    const message=e instanceof Error?e.message:'Coaching unavailable';
-   return reply({error:message,deck_unavailable:message==='Current deck and collection required'},[400,401,402,403,404,429].includes(status)?status:500);
+   return reply({error:message,deck_unavailable:message==='Current deck and collection required'},[400,401,402,403,404,409,429].includes(status)?status:500);
  }
 }
 

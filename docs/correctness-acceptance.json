@@ -1,0 +1,80 @@
+{
+  "recorded_at_utc": "2026-11-19T16:53:19.744193+00:00",
+  "baseline_main": "7696d68a3da4071c323526d9064b8059040f830b",
+  "code_and_test_content_sha256": "2527a237ae81c41b423573088798f15360fa26c444f98b08173f0496be13c3b8",
+  "source_hash_definition": "sorted unique git ls-files -c -o --exclude-standard under src, supabase/functions, drizzle/migrations, tests plus supabase/config.toml, package.json, package-lock.json and vite.config.ts; path NUL content NUL",
+  "application_tests": 189,
+  "real_sql_correctness_checks": 19,
+  "actual_edge_handler_tests_with_fake_transport": 8,
+  "ai_ledger_checks": 24,
+  "coaching_sdk_stream_tests": 1,
+  "free_flow_checks": 59,
+  "marketing_checks": 41,
+  "winback_checks": 25,
+  "revenue_checks": 93,
+  "conversion_sql": "passed",
+  "app_typecheck": "passed",
+  "edge_typechecks": 39,
+  "fixture_build": "passed; existing chunk-size warning",
+  "browser": {
+    "languages": [
+      "en",
+      "tr",
+      "es",
+      "fr",
+      "pt"
+    ],
+    "widths": [
+      390,
+      1280
+    ],
+    "scenes": 110,
+    "metrics_combinations": 10,
+    "real_external_calls": 0,
+    "physical_mobile_device": false,
+    "chat_context_scenarios": 70
+  },
+  "real_email_payment_ai_calls": 0,
+  "production_changes": false,
+  "cloud_rehearsal_changes_this_task": false,
+  "campaign_sending_enabled": false,
+  "open_acceptance": [
+    "Hosted revision/Auth/cron deployment parity and full-app login on this revision; prior isolated Google OAuth passed on bb618be",
+    "Active Hero/slot capability absent in observed API data; intentionally unknown",
+    "Real provider run-ID/billing reconciliation",
+    "Physical mobile acceptance"
+  ],
+  "log_sha256": {
+    "app": "ae3ebe5cb39c917c04925cde6366ad5fe06cac0dc303c00aa5eb9f7dde8a77fb",
+    "sql": "a9ba278f490c236bd04671137764290a0146ac890efee5fa004790799a119ffe",
+    "handlers": "cf0cbe72531428d50222a666c62fab338a642198d07a7ced0780b866f84cdd5a",
+    "ai": "7aad440ea9b26d2d9e339f4c4b6e705f2889b231269afb5e220a2d3bfe4c1bc0",
+    "sdk": "2179a7b26e3374dc47cfbae1627939659939dd81ff08d91513d8ae5ad9bbfc59",
+    "free": "0fc6a8d9edb14197eb9cd34688b16306d44d5ae672b7261c4398625cf813223e",
+    "marketing": "b803d6be9d944444c48f7917cd07732929050f0e65d70a449b80ff0821e80ce7",
+    "winback": "c7a0b12cf88aed0004bd87a5893bd119d64eaeb79d463ab8c4ee7e364a4bc964",
+    "revenue": "6361f4de858259ff87e17d51dbeebd60f63b28178a88eb19cad3c3d0cb510ca1",
+    "conversion": "1bfe54db361256cd8f1b0a5d5cc8f4cdcf649303a99e139649d7d014e13d0bf0",
+    "types": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "edge": "8a9e02a6211d9dd70050104b09243c571695ca845d7d381a33e5ac332d502150",
+    "build": "48ef41aa73d27162a45562dffc54b2651ae5a4f282e20c8a8993e4123c3e9712",
+    "browser": "e3f3db10cafdbc449b67e1c1baff49b797bb82a492f3e72680d245ee0708b854",
+    "metrics-ui": "bf63adb0eecb2be582cca51740bb9f808702df2b8b6d1df5bafcb975d72406de",
+    "chat-browser": "58425fc3d04b1738182c84bfbae255c81a254b1d2f3a1d67f3b6b44bd7eb1228"
+  },
+  "local_platform": {
+    "functions": 39,
+    "account_access_cases": 7,
+    "flow_checks": 12,
+    "artifact": "correctness-platform-acceptance.json"
+  },
+  "backend_validation_revision": "3078f62fb12133fef1aaaf5e24a1f3b4fa96c04c; backend unchanged since local platform acceptance",
+  "production_read_only_audit": {
+    "at_utc": "2026-11-19T16:38:58.047766Z",
+    "campaign_sending_enabled": false,
+    "ai_generation_table_present": false,
+    "obsolete_grace_jobs_active": 2,
+    "obsolete_grace_job_runs_last_24h": 48,
+    "record": "run-cost-audit-2026-11-19.md"
+  }
+}

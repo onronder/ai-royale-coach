@@ -1,3 +1,4 @@
+import { deckTrend } from '@/lib/deckTrend';
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -14,26 +15,7 @@ interface DeckTrendChartProps {
 export function DeckTrendChart({ stats, isLoading }: DeckTrendChartProps) {
   const { t, i18n } = useTranslation();
   
-  // Group stats by date and calculate daily win rates
-  const dailyStats = stats?.reduce((acc, stat) => {
-    const date = new Date(stat.date).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
-    
-    if (!acc[date]) {
-      acc[date] = { date, totalWins: 0, totalBattles: 0, trophyChange: 0 };
-    }
-    
-    acc[date].totalWins += stat.battles_won || 0;
-    acc[date].totalBattles += stat.battles_played || 0;
-    acc[date].trophyChange += stat.total_trophy_change || 0;
-    
-    return acc;
-  }, {} as Record<string, { date: string; totalWins: number; totalBattles: number; trophyChange: number }>) || {};
-
-  const chartData = Object.values(dailyStats).map((day) => ({
-    date: day.date,
-    winRate: day.totalBattles > 0 ? (day.totalWins / day.totalBattles) * 100 : 0,
-    trophyChange: day.trophyChange,
-  }));
+  const chartData = deckTrend(stats);
 
   return (
     <Card>
@@ -57,14 +39,16 @@ export function DeckTrendChart({ stats, isLoading }: DeckTrendChartProps) {
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis 
-                  dataKey="date" 
+                  dataKey="date"
+                  tickFormatter={date => new Date(`${date}T00:00:00Z`).toLocaleDateString(i18n.language, { timeZone: "UTC", year: "numeric", month: "short", day: "numeric" })}
                   stroke="hsl(var(--muted-foreground))"
                   style={{ fontSize: '12px' }}
                 />
-                <YAxis 
+                <YAxis yAxisId="rate" domain={[0, 100]} unit="%"
                   stroke="hsl(var(--muted-foreground))"
                   style={{ fontSize: '12px' }}
                 />
+                <YAxis yAxisId="trophies" orientation="right" stroke="hsl(var(--muted-foreground))" />
                 <Tooltip 
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
@@ -74,17 +58,17 @@ export function DeckTrendChart({ stats, isLoading }: DeckTrendChartProps) {
                   labelStyle={{ color: 'hsl(var(--foreground))' }}
                 />
                 <Legend />
-                <Line 
+                <Line isAnimationActive={false}
                   type="monotone" 
-                  dataKey="winRate" 
+                  dataKey="winRate" yAxisId="rate"
                   stroke="hsl(var(--primary))" 
                   strokeWidth={2}
                   name={t('analytics.winRatePercent')}
                   dot={{ fill: 'hsl(var(--primary))' }}
                 />
-                <Line 
+                <Line isAnimationActive={false}
                   type="monotone" 
-                  dataKey="trophyChange" 
+                  dataKey="trophyChange" yAxisId="trophies"
                   stroke="hsl(var(--accent))" 
                   strokeWidth={2}
                   name={t('analytics.trophyChange')}

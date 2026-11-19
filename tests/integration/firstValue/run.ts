@@ -142,6 +142,7 @@ try {
     '../marketing/platform.sql',
     '../revenue/platform.sql',
     'platform.sql',
+    '../correctness/platform.sql',
     '../../../drizzle/migrations/0006_first_session_coaching.sql',
     '../../../drizzle/migrations/0014_coaching_translations.sql',
   ])

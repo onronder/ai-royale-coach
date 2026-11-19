@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useCardName } from '@/i18n/useCardName';
 import React, { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -29,6 +31,7 @@ import { cn } from "@/lib/utils";
 interface RecommendedDecksPanelProps {
   playerTag: string;
   trophies: number;
+  snapshotKey?: string;
   onImportDeck?: (cards: string[]) => void;
   className?: string;
 }
@@ -85,6 +88,24 @@ const RecommendationCard = memo(({
   playerTag: string;
 }) => {
   const { t, i18n } = useTranslation();
+  const viewedCard = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const id = recommendation.historyId;
+    const element = viewedCard.current;
+    if (!id || !element) return;
+    let recorded = false;
+    const observer = new IntersectionObserver(entries => {
+      if (recorded || document.visibilityState !== 'visible' || !entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.25)) return;
+      recorded = true;
+      void supabase.rpc('mark_recommendations_seen', { p_ids: [id] }).then(({ error }) => {
+        if (!error) observer.disconnect(); else recorded = false;
+      });
+    }, { threshold: 0.25 });
+    const observe = () => { if (!recorded && document.visibilityState === 'visible') { observer.unobserve(element); observer.observe(element); } };
+    observe();
+    document.addEventListener('visibilitychange', observe);
+    return () => { observer.disconnect(); document.removeEventListener('visibilitychange', observe); };
+  }, [recommendation.historyId]);
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
@@ -108,7 +129,7 @@ const RecommendationCard = memo(({
   };
   
   return (
-    <Card 
+    <Card ref={viewedCard}
       className="bg-card/50 border-border/50 hover:border-primary/30 transition-all duration-300"
       style={{ animationDelay: `${index * 100}ms` }}
     >
@@ -120,21 +141,24 @@ const RecommendationCard = memo(({
               <RecommendationTypeBadge type={recommendation.recommendationType} />
             </CardTitle>
             <CardDescription className="text-sm">
-              {t(`landing.demo.cards.archetypes.${recommendation.archetype}`, { defaultValue: recommendation.archetype })} • {t('cards.elixirCost', { cost: recommendation.avgElixir?.toLocaleString(i18n.language, { maximumFractionDigits: 1 }) })} • {t(`templates.difficulty.${recommendation.difficulty}`, { defaultValue: recommendation.difficulty })}
+              {t(`landing.demo.cards.archetypes.${recommendation.archetype}`, { defaultValue: recommendation.archetype })} • {t('cards.elixirCost', { cost: recommendation.avgElixir?.toLocaleString(i18n.language, { maximumFractionDigits: 1 }) ?? "—" })} • {t(`templates.difficulty.${recommendation.difficulty}`, { defaultValue: recommendation.difficulty })}
             </CardDescription>
           </div>
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-1 text-primary font-semibold">
               <Trophy className="h-4 w-4" />
-              <span>{recommendation.matchScore}%</span>
+              <span>{recommendation.matchScore}/100</span>
             </div>
-            <span className="text-xs text-muted-foreground">{t("recommendations.matchScore")}</span>
+            <span className="text-xs text-muted-foreground">{t("correctness.rankingScore")}</span>
           </div>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-4">
         <SimpleCardGrid cards={recommendation.cards} />
+        <p className="text-sm">{t(`correctness.readiness.${recommendation.readiness?.state || 'unknown'}`)}</p>
+        <p className="text-xs text-muted-foreground">{t('correctness.formsUnknown')}</p>
+        {recommendation.readiness?.cards.map(c => <p key={c.name} className="text-xs">{c.name}: {c.level ?? '—'}{c.gap ? ` (−${c.gap})` : ''}</p>)}
         
         <p className="text-sm text-muted-foreground italic">
           "{recommendation.reason}"
@@ -223,7 +247,7 @@ const PlayerProfileCard = memo(({ profile }: {
           </div>
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.recentWinRate")}</div>
-            <div className="font-medium">{(profile.recentWinRate / 100).toLocaleString(i18n.language, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
+            <div className="font-medium">{profile.recentWinRate == null ? '—' : (profile.recentWinRate / 100).toLocaleString(i18n.language, { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 })}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">{t("recommendations.battlesAnalyzed")}</div>
@@ -238,16 +262,17 @@ PlayerProfileCard.displayName = "PlayerProfileCard";
 
 export const RecommendedDecksPanel = memo(({ 
   playerTag, 
-  trophies, 
+  trophies,
+  snapshotKey = '',
   onImportDeck,
   className 
 }: RecommendedDecksPanelProps) => {
   const { t } = useTranslation();
-  const { data, isLoading, error } = useRecommendations(playerTag, trophies);
+  const { data, isLoading, error } = useRecommendations(playerTag, trophies, snapshotKey);
   const { mutate: refresh, isPending: isRefreshing } = useRefreshRecommendations();
   
   const handleRefresh = () => {
-    refresh({ playerTag, trophies });
+    refresh({ playerTag, trophies, snapshotKey });
   };
   
   if (isLoading) {
