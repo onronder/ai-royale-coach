@@ -206,6 +206,101 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_generation_attempts: {
+        Row: {
+          access_tier: string
+          cache_write_tokens: number | null
+          cached_input_tokens: number | null
+          cost_amount: number | null
+          cost_currency: string | null
+          cost_source: string | null
+          cost_verified_at: string | null
+          duration_ms: number | null
+          feature: string
+          finished_at: string | null
+          id: string
+          input_tokens: number | null
+          model: string
+          output_tokens: number | null
+          provider_response_id: string | null
+          provider_run_id: string | null
+          reasoning_tokens: number | null
+          replay_count: number
+          request_hash: string
+          response_body: string | null
+          response_headers: Json | null
+          response_status: number | null
+          started_at: string
+          status: string
+          usage: Json | null
+          user_id: string
+        }
+        Insert: {
+          access_tier: string
+          cache_write_tokens?: number | null
+          cached_input_tokens?: number | null
+          cost_amount?: number | null
+          cost_currency?: string | null
+          cost_source?: string | null
+          cost_verified_at?: string | null
+          duration_ms?: number | null
+          feature: string
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number | null
+          model: string
+          output_tokens?: number | null
+          provider_response_id?: string | null
+          provider_run_id?: string | null
+          reasoning_tokens?: number | null
+          replay_count?: number
+          request_hash: string
+          response_body?: string | null
+          response_headers?: Json | null
+          response_status?: number | null
+          started_at?: string
+          status?: string
+          usage?: Json | null
+          user_id: string
+        }
+        Update: {
+          access_tier?: string
+          cache_write_tokens?: number | null
+          cached_input_tokens?: number | null
+          cost_amount?: number | null
+          cost_currency?: string | null
+          cost_source?: string | null
+          cost_verified_at?: string | null
+          duration_ms?: number | null
+          feature?: string
+          finished_at?: string | null
+          id?: string
+          input_tokens?: number | null
+          model?: string
+          output_tokens?: number | null
+          provider_response_id?: string | null
+          provider_run_id?: string | null
+          reasoning_tokens?: number | null
+          replay_count?: number
+          request_hash?: string
+          response_body?: string | null
+          response_headers?: Json | null
+          response_status?: number | null
+          started_at?: string
+          status?: string
+          usage?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_generation_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_trial_reservations: {
         Row: {
           completed_at: string | null
@@ -265,6 +360,44 @@ export type Database = {
           player_tag?: string
         }
         Relationships: []
+      }
+      analysis_outcome_observations: {
+        Row: {
+          analysis_id: string
+          battle_key: string
+          battle_time: string
+          kind: string
+          mode: string
+          outcome: string
+          user_id: string
+        }
+        Insert: {
+          analysis_id: string
+          battle_key: string
+          battle_time: string
+          kind: string
+          mode: string
+          outcome: string
+          user_id: string
+        }
+        Update: {
+          analysis_id?: string
+          battle_key?: string
+          battle_time?: string
+          kind?: string
+          mode?: string
+          outcome?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analysis_outcome_observations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       api_rate_limits: {
         Row: {
@@ -382,6 +515,7 @@ export type Database = {
           ai_tips: string | null
           ai_tips_language: string | null
           avg_elixir_decks: number | null
+          battles_drawn: number
           battles_lost: number | null
           battles_won: number | null
           best_partner_cards: string[] | null
@@ -391,6 +525,8 @@ export type Database = {
           last_updated: string | null
           mastery_level: number | null
           mastery_progress: number | null
+          mode: string
+          observation_scope: string
           player_tag: string
           times_used: number | null
           total_crowns: number | null
@@ -401,6 +537,7 @@ export type Database = {
           ai_tips?: string | null
           ai_tips_language?: string | null
           avg_elixir_decks?: number | null
+          battles_drawn?: number
           battles_lost?: number | null
           battles_won?: number | null
           best_partner_cards?: string[] | null
@@ -410,6 +547,8 @@ export type Database = {
           last_updated?: string | null
           mastery_level?: number | null
           mastery_progress?: number | null
+          mode?: string
+          observation_scope?: string
           player_tag: string
           times_used?: number | null
           total_crowns?: number | null
@@ -420,6 +559,7 @@ export type Database = {
           ai_tips?: string | null
           ai_tips_language?: string | null
           avg_elixir_decks?: number | null
+          battles_drawn?: number
           battles_lost?: number | null
           battles_won?: number | null
           best_partner_cards?: string[] | null
@@ -429,6 +569,8 @@ export type Database = {
           last_updated?: string | null
           mastery_level?: number | null
           mastery_progress?: number | null
+          mode?: string
+          observation_scope?: string
           player_tag?: string
           times_used?: number | null
           total_crowns?: number | null
@@ -815,6 +957,7 @@ export type Database = {
         Row: {
           archetype: string | null
           avg_elixir: number | null
+          battles_drawn: number
           battles_lost: number | null
           battles_played: number | null
           battles_won: number | null
@@ -824,10 +967,13 @@ export type Database = {
           deck_hash: string
           id: string
           losses_by_opponent_archetype: Json | null
+          mode: string
+          observation_scope: string
           opponent_archetypes: Json | null
           player_tag: string
           total_crowns: number | null
           total_trophy_change: number | null
+          trophy_samples: number
           updated_at: string | null
           user_id: string
           wins_by_opponent_archetype: Json | null
@@ -835,6 +981,7 @@ export type Database = {
         Insert: {
           archetype?: string | null
           avg_elixir?: number | null
+          battles_drawn?: number
           battles_lost?: number | null
           battles_played?: number | null
           battles_won?: number | null
@@ -844,10 +991,13 @@ export type Database = {
           deck_hash: string
           id?: string
           losses_by_opponent_archetype?: Json | null
+          mode?: string
+          observation_scope?: string
           opponent_archetypes?: Json | null
           player_tag: string
           total_crowns?: number | null
           total_trophy_change?: number | null
+          trophy_samples?: number
           updated_at?: string | null
           user_id: string
           wins_by_opponent_archetype?: Json | null
@@ -855,6 +1005,7 @@ export type Database = {
         Update: {
           archetype?: string | null
           avg_elixir?: number | null
+          battles_drawn?: number
           battles_lost?: number | null
           battles_played?: number | null
           battles_won?: number | null
@@ -864,10 +1015,13 @@ export type Database = {
           deck_hash?: string
           id?: string
           losses_by_opponent_archetype?: Json | null
+          mode?: string
+          observation_scope?: string
           opponent_archetypes?: Json | null
           player_tag?: string
           total_crowns?: number | null
           total_trophy_change?: number | null
+          trophy_samples?: number
           updated_at?: string | null
           user_id?: string
           wins_by_opponent_archetype?: Json | null
@@ -1487,9 +1641,11 @@ export type Database = {
           deck_hash: string
           explanation: string | null
           id: string
+          input_fingerprint: string | null
           key_matchups: Json | null
           language: string | null
           last_battle_at: string | null
+          observation_mode: string | null
           player_tag: string
           predicted_win_rate_a: number
           predicted_win_rate_b: number
@@ -1508,9 +1664,11 @@ export type Database = {
           deck_hash: string
           explanation?: string | null
           id?: string
+          input_fingerprint?: string | null
           key_matchups?: Json | null
           language?: string | null
           last_battle_at?: string | null
+          observation_mode?: string | null
           player_tag: string
           predicted_win_rate_a: number
           predicted_win_rate_b: number
@@ -1529,9 +1687,11 @@ export type Database = {
           deck_hash?: string
           explanation?: string | null
           id?: string
+          input_fingerprint?: string | null
           key_matchups?: Json | null
           language?: string | null
           last_battle_at?: string | null
+          observation_mode?: string | null
           player_tag?: string
           predicted_win_rate_a?: number
           predicted_win_rate_b?: number
@@ -1654,6 +1814,41 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      player_observation_windows: {
+        Row: {
+          excluded_count: number
+          feature: string
+          fetched_at: string
+          player_tag: string
+          sample_count: number
+          user_id: string
+        }
+        Insert: {
+          excluded_count: number
+          feature: string
+          fetched_at: string
+          player_tag: string
+          sample_count: number
+          user_id: string
+        }
+        Update: {
+          excluded_count?: number
+          feature?: string
+          fetched_at?: string
+          player_tag?: string
+          sample_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_observation_windows_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       player_profiles: {
         Row: {
@@ -1923,7 +2118,9 @@ export type Database = {
           difficulty: string | null
           expires_at: string | null
           id: string
+          input_fingerprint: string | null
           language: string | null
+          observation_mode: string | null
           outcome_tracked_at: string | null
           player_tag: string
           recommendation_reason: string
@@ -1931,6 +2128,7 @@ export type Database = {
           recommendation_type: string | null
           recommended_cards: Json | null
           recommended_deck_id: string | null
+          seen_at: string | null
           user_id: string
           win_rate_after: number | null
           win_rate_before: number | null
@@ -1948,7 +2146,9 @@ export type Database = {
           difficulty?: string | null
           expires_at?: string | null
           id?: string
+          input_fingerprint?: string | null
           language?: string | null
+          observation_mode?: string | null
           outcome_tracked_at?: string | null
           player_tag: string
           recommendation_reason: string
@@ -1956,6 +2156,7 @@ export type Database = {
           recommendation_type?: string | null
           recommended_cards?: Json | null
           recommended_deck_id?: string | null
+          seen_at?: string | null
           user_id: string
           win_rate_after?: number | null
           win_rate_before?: number | null
@@ -1973,7 +2174,9 @@ export type Database = {
           difficulty?: string | null
           expires_at?: string | null
           id?: string
+          input_fingerprint?: string | null
           language?: string | null
+          observation_mode?: string | null
           outcome_tracked_at?: string | null
           player_tag?: string
           recommendation_reason?: string
@@ -1981,6 +2184,7 @@ export type Database = {
           recommendation_type?: string | null
           recommended_cards?: Json | null
           recommended_deck_id?: string | null
+          seen_at?: string | null
           user_id?: string
           win_rate_after?: number | null
           win_rate_before?: number | null
@@ -2879,6 +3083,7 @@ export type Database = {
     }
     Functions: {
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
+      admin_api_measurements: { Args: { p_minutes?: number }; Returns: Json }
       admin_first_value_report: {
         Args: {
           p_at?: string
@@ -3043,6 +3248,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      claim_ai_generation: {
+        Args: {
+          p_feature: string
+          p_hash: string
+          p_model: string
+          p_tier: string
+          p_user: string
+        }
+        Returns: Json
+      }
       claim_confirmed_welcome: {
         Args: { p_ticket: string }
         Returns: {
@@ -3157,6 +3372,10 @@ export type Database = {
       }
       fail_first_value: {
         Args: { p_call: string; p_code: string; p_usage?: Json; p_user: string }
+        Returns: undefined
+      }
+      finish_ai_generation: {
+        Args: { p_id: string; p_result: Json }
         Returns: undefined
       }
       finish_first_value: {
@@ -3292,6 +3511,10 @@ export type Database = {
         Returns: undefined
       }
       mark_marketing_prompt: { Args: { p_action: string }; Returns: undefined }
+      mark_recommendations_seen: {
+        Args: { p_ids: string[] }
+        Returns: undefined
+      }
       marketing_collection_open: { Args: never; Returns: boolean }
       marketing_collection_open_for: {
         Args: { p_user: string }
@@ -3354,6 +3577,16 @@ export type Database = {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
       }
+      reconcile_ai_generation_cost: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_id: string
+          p_run_id: string
+          p_source: string
+        }
+        Returns: undefined
+      }
       record_acquisition_step: { Args: { p_step: string }; Returns: undefined }
       record_checkout_created: { Args: { p_user: string }; Returns: undefined }
       record_confirmed_welcome: {
@@ -3392,6 +3625,10 @@ export type Database = {
         Args: { p_email: string; p_reason: string }
         Returns: undefined
       }
+      record_observed_outcomes: {
+        Args: { p_battles: Json; p_tag: string; p_user: string }
+        Returns: undefined
+      }
       record_polar_payment_dates: { Args: { p_dates: Json }; Returns: number }
       record_provider_email_event: {
         Args: {
@@ -3421,6 +3658,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      refresh_observed_achievement_totals: {
+        Args: { p_tag: string }
+        Returns: Json
+      }
       release_reminder_attempt: {
         Args: { p_attempt: string; p_subscription: string; p_user: string }
         Returns: undefined
@@ -3428,6 +3669,18 @@ export type Database = {
       release_summary_attempt: {
         Args: { p_attempt: string; p_subscription: string; p_user: string }
         Returns: undefined
+      }
+      replace_recent_observations: {
+        Args: {
+          p_excluded: number
+          p_feature: string
+          p_rows: Json
+          p_samples: number
+          p_started: string
+          p_tag: string
+          p_user: string
+        }
+        Returns: boolean
       }
       reserve_trial_ai: {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
