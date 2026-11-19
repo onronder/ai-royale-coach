@@ -1,3 +1,4 @@
+import { observeBattles } from "../../supabase/functions/_shared/battle-observation";
 import { useMemo } from "react";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
@@ -30,34 +31,9 @@ export function useWinRate(
       };
     }
 
-    // Normalize player tag for comparison
-    const normalizedPlayerTag = playerTag.startsWith("#")
-      ? playerTag
-      : `#${playerTag}`;
-
-    let wins = 0;
-    let losses = 0;
-    let draws = 0;
-
-    battles.forEach((battle) => {
-      const playerTeam = battle.team.find(
-        (p) => p.tag === normalizedPlayerTag
-      );
-      const opponentCrowns = battle.opponent[0]?.crowns || 0;
-
-      if (playerTeam) {
-        if (playerTeam.crowns > opponentCrowns) {
-          wins++;
-        } else if (playerTeam.crowns < opponentCrowns) {
-          losses++;
-        } else {
-          draws++;
-        }
-      }
-    });
-
-    const total = battles.length;
-    const winRate = total > 0 ? (wins / total) * 100 : 0;
+    const summary = observeBattles(battles, playerTag);
+    const { wins, losses, draws, total } = summary;
+    const winRate = summary.winRate ?? 0;
 
     return {
       winRate,

@@ -127,7 +127,7 @@ export function VirtualCardGrid({
                           {!isMaxLevel && nextLevelReq && (
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <ArrowUp className="w-3 h-3" />
-                              <span>{card.card_count}/{nextLevelReq}</span>
+                              <span>{card.card_count}/{nextLevelReq ?? "—"}</span>
                             </div>
                           )}
                         </div>
@@ -136,7 +136,7 @@ export function VirtualCardGrid({
                           <div className="space-y-1">
                             <Progress value={progress} className="h-1.5" />
                             <p className="text-xs text-center text-muted-foreground">
-                              {t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
+                              {nextLevelReq === null ? t('correctness.unknownCost') : t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
                             </p>
                           </div>
                         ) : (

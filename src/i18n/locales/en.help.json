@@ -197,7 +197,7 @@
       },
       "achievements": {
         "title": "Achievements Dashboard",
-        "intro": "Track your milestones and unlock achievement badges as you improve. Achievements are categorized by skill area and tier."
+        "intro": "Historical app badges; not verified gameplay skills."
       }
     },
     "collection": {
@@ -288,7 +288,8 @@
         "step1": "Enter the opponent's player tag (found after a match)",
         "step2": "The Oracle scans their last 25 battles",
         "step3": "View predicted deck, win rates, and counter strategies"
-      }
+      },
+      "intro": "View a known player’s recent decks; this cannot reveal your next opponent."
     },
     "dreamArena": {
       "title": "Dream Arena",
@@ -318,7 +319,8 @@
       "overview": {
         "title": "Track Your Progress",
         "intro": "Unlock badges as you improve and reach milestones. Achievements are categorized by skill area (offense, defense, strategy) and tier (Bronze, Silver, Gold, Platinum, Diamond). Complete challenges to earn points and climb the achievement leaderboard!"
-      }
+      },
+      "intro": "Historical app badges; not verified gameplay skills."
     },
     "coach": {
       "title": "AI Coach",
@@ -382,7 +384,7 @@
       "q4": "Can I use AI Royale on mobile?",
       "a4": "Yes! AI Royale is fully responsive and works on all devices. The interface adapts to your screen size.",
       "q5": "How accurate are the AI matchup predictions?",
-      "a5": "Predictions are based on deck composition analysis and historical data. Actual results may vary based on skill level and card levels.",
+      "a5": "AI opinion; not a calibrated probability",
       "q6": "Why can't I add more than 3 accounts?",
       "a6": "The 3-account limit ensures fair usage of our AI services and API resources for all users.",
       "q7": "How do I change my email or password?",

@@ -226,7 +226,7 @@
         "battleHistory": "Análisis de Historial de Batallas",
         "battleHistoryDesc": "Analiza en profundidad tus partidas recientes con insights de IA",
         "matchReplay": "Insights de Repetición de Partidas",
-        "matchReplayDesc": "La IA identifica momentos clave y puntos de inflexión",
+        "matchReplayDesc": "Posibles explicaciones del enfrentamiento según los mazos y el resultado.",
         "counterDeck": "Análisis de Counter-Mazos",
         "counterDeckDesc": "Sabe exactamente qué vence al mazo de tu oponente",
         "matchupPredictions": "Predicciones de Enfrentamientos",
@@ -902,18 +902,18 @@
           },
           "personalCoaching": {
             "title": "Coaching Personal",
-            "description": "Tu coach de IA tiene contexto completo de tu juego, mazos y progreso.",
+            "description": "El coaching usa evidencia disponible de mazos, colección y resultados recientes; los detalles ausentes son desconocidos.",
             "count": "{{count}} función"
           }
         },
         "features": {
           "battleAnalysis": {
             "title": "Análisis de Batalla",
-            "description": "La IA identifica patrones ganadores y errores críticos en cada partida"
+            "description": "Observaciones de mazos y resultados con posibles explicaciones."
           },
           "playerProfile": {
             "title": "Análisis de Perfil de Jugador",
-            "description": "Evaluación completa de tu estilo de juego y nivel de habilidad"
+            "description": "Preferencias de mazo observadas y resultados recientes."
           },
           "pivotalMoments": {
             "title": "Detección de Momentos Clave",
@@ -925,7 +925,7 @@
           },
           "matchupPredictions": {
             "title": "Predicciones de Enfrentamiento",
-            "description": "Predicciones de tasa de victoria entre cualquier dos mazos con niveles de confianza"
+            "description": "Opinión de IA, no una probabilidad de victoria calibrada."
           },
           "trophyPerformance": {
             "title": "Análisis de Rendimiento por Trofeos",
@@ -2248,7 +2248,7 @@
     "usedTimes": "Usada {{count}} veces",
     "predictions": {
       "total": "Total de Predicciones",
-      "battlesTracked": "Batallas Rastreadas",
+      "battlesTracked": "Coincidencias predicción–resultado",
       "avgError": "Error Promedio",
       "accuracyRate": "Tasa de Alta Precisión",
       "mostAccurate": "Predicción Más Precisa",
@@ -2393,8 +2393,8 @@
     "predictionFailed": "Error al predecir enfrentamiento"
   },
   "predictionHistory": {
-    "title": "Historial de Precisión de Predicciones",
-    "description": "Rastrea qué tan precisas son las predicciones de IA comparadas con tus resultados reales",
+    "title": "Estimaciones y resultados observados",
+    "description": "Solo se cuentan partidas 1v1 Ladder coincidentes posteriores a la predicción. Las muestras no demuestran precisión calibrada. Los recuentos antiguos no están verificados; una partida puede corresponder a varias predicciones.",
     "viewHistory": "Ver Historial de Predicciones",
     "hideHistory": "Ocultar Historial",
     "predictedWinRate": "Predicho",
@@ -2407,8 +2407,8 @@
     "mediumAccuracy": "Precisión Moderada",
     "lowAccuracy": "Baja Precisión",
     "noPredictions": "¡Sin predicciones aún. Prueba la Predicción de Enfrentamiento IA para comenzar!",
-    "noBattlesYet": "Juega algunas batallas para ver el seguimiento de precisión",
-    "noActualResults": "Aún no hay resultados de batalla rastreados. ¡Juega algunos juegos para ver la precisión!",
+    "noBattlesYet": "Aún no se ha observado un resultado coincidente posterior a la predicción.",
+    "noActualResults": "Aún no se ha observado un resultado coincidente posterior a la predicción.",
     "noActualData": "sin batallas aún",
     "recentPredictions": "Predicciones Recientes",
     "cachedResult": "En Caché",
@@ -2484,7 +2484,7 @@
     "aiEnhanced": "Mejorado por IA",
     "refresh": "Actualizar",
     "yourProfile": "Tu Perfil",
-    "skillLevel": "Nivel de Habilidad",
+    "skillLevel": "Categoría de trofeos",
     "bestArchetypes": "Mejores Arquetipos",
     "recentWinRate": "Tasa de Victoria Reciente",
     "battlesAnalyzed": "Batallas Analizadas",
@@ -2691,15 +2691,15 @@
     "iosStep3": "Toca \"Agregar\" en la esquina superior derecha"
   },
   "oracle": {
-    "title": "Escáner del Oráculo",
-    "subtitle": "Predice enfrentamientos contra cualquier mazo oponente",
+    "title": "Preferencias de mazo observadas",
+    "subtitle": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
     "placeholder": "ej., Gólem, Bruja Nocturna, Rayo...",
-    "scanButton": "Predecir Enfrentamiento",
+    "scanButton": "Mazo más observado",
     "scanning": "Analizando enfrentamiento...",
     "result": {
       "title": "Resultado del Enfrentamiento",
-      "yourWinChance": "Tu Probabilidad de Victoria",
-      "confidence": "Confianza",
+      "yourWinChance": "Opinión de IA; no probabilidad calibrada",
+      "confidence": "Opinión de IA; no probabilidad calibrada",
       "keyMatchups": "Enfrentamientos Clave",
       "tips": "Consejos Estratégicos",
       "yourDeck": "Tu Mazo",
@@ -2710,24 +2710,24 @@
       "parseError": "No se pudieron analizar las cartas del oponente. Por favor intenta de nuevo.",
       "predictionFailed": "La predicción del enfrentamiento falló. Por favor intenta de nuevo."
     },
-    "helpTooltip": "Analizamos las últimas 25 batallas del oponente para predecir su mazo y estilo de juego más probable.",
-    "helperText": "Ingresa el tag del oponente (ej. #ABC12) para predecir su mazo y estrategia.",
+    "helpTooltip": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
+    "helperText": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
     "tryExample": "Probar",
     "pasteClipboard": "Pegar del portapapeles",
     "scan": "Escanear",
-    "threatDetected": "AMENAZA DETECTADA",
+    "threatDetected": "Mazo más observado",
     "awaitingTarget": "Esperando la etiqueta del rival…",
-    "enterTagPrompt": "Introduce la etiqueta del rival para predecir su mazo.",
+    "enterTagPrompt": "Mazos recientes de un jugador conocido; no revela tu próximo rival.",
     "targetNotFound": "Rival no encontrado",
     "targetNotFoundDesc": "No se pudieron obtener las batallas de este jugador.",
-    "confidence": "Confianza",
-    "playstyle": "Estilo de juego",
+    "confidence": "Frecuencia observada",
+    "playstyle": "Categoría de elixir",
     "aggressive": "Agresivo",
     "defensive": "Defensivo",
     "lastSeen": "Última vez",
-    "matchesAnalyzed": "Partidas analizadas: {{count}} de {{total}}",
-    "predictedDeck": "Mazo previsto",
-    "opponentPrefers": "El rival suele jugar con este mazo",
+    "matchesAnalyzed": "{{count}} / {{total}}",
+    "predictedDeck": "Mazo más observado",
+    "opponentPrefers": "Mazo más observado",
     "watchOutFor": "Ten cuidado con",
     "matchupAnalysis": "Análisis del enfrentamiento",
     "analyzingMatchup": "Analizando el enfrentamiento…",
@@ -2740,7 +2740,7 @@
     "signInForMatchup": "Inicia sesión para ver el análisis"
   },
   "proDna": {
-    "title": "ADN del Jugador",
+    "title": "Preferencias de mazo observadas",
     "styles": {
       "Bridge Spammer": "Especialista en presión al puente",
       "The Great Wall": "La gran muralla",
@@ -2748,18 +2748,18 @@
       "Balanced Warrior": "Guerrero equilibrado",
       "Tactical Mastermind": "Maestro de la táctica"
     },
-    "playerDna": "ADN del Jugador",
-    "aggression": "Agresión",
-    "defense": "Defensa",
-    "versatility": "Versatilidad",
+    "playerDna": "Preferencias de mazo observadas",
+    "aggression": "Tasa de victorias",
+    "defense": "Sin ceder coronas",
+    "versatility": "Variedad de mazos",
     "consistency": "Consistencia",
     "adaptability": "Adaptabilidad",
     "similarTo": "Estilo Similar a",
     "branding": "AI Royale",
     "download": "Descargar como Imagen",
     "share": "Compartir Carta ADN",
-    "noData": "No hay datos de ADN del jugador disponibles",
-    "noDataDescription": "Juega más batallas para generar tu perfil de ADN único.",
+    "noData": "Ventana reciente de la API; los modos se muestran por separado. No es un historial completo.",
+    "noDataDescription": "Ventana reciente de la API; los modos se muestran por separado. No es un historial completo.",
     "generating": "Generando imagen...",
     "downloadSuccess": "¡Imagen descargada exitosamente!",
     "downloadError": "Error al descargar la imagen",
@@ -2770,7 +2770,7 @@
     "shared": "Se ha compartido",
     "shareFailed": "No se pudo compartir la tarjeta",
     "noDataHint": "Primero juega algunas partidas.",
-    "shareText": "¡Mira mi ADN Pro de Clash Royale!"
+    "shareText": "Solo observaciones recientes"
   },
   "achievementShowcase": {
     "trophyCase": "Vitrina de Trofeos",
@@ -2779,19 +2779,19 @@
     "amazingWork": "¡Increíble trabajo, Campeón!",
     "achievements": {
       "elixirMaster": {
-        "title": "Maestro del Elixir",
-        "hint": "Gana con un mazo pesado (4.0+ elixir) sin perder torres",
-        "earned": "Ganaste con un mazo pesado sin perder ninguna torre."
+        "title": "Victoria con mazo pesado",
+        "hint": "Victoria con media conocida de al menos cuatro de elixir y sin ceder coronas.",
+        "earned": "Victoria con media conocida de al menos cuatro de elixir y sin ceder coronas."
       },
       "comebackKing": {
-        "title": "Rey del Regreso",
-        "hint": "Gana una partida después de perder una torre primero",
-        "earned": "Remontaste la batalla y ganaste."
+        "title": "Victoria cediendo una torre",
+        "hint": "Victoria tras ceder al menos una corona; orden desconocido.",
+        "earned": "Victoria tras ceder al menos una corona; orden desconocido."
       },
       "perfectDefense": {
-        "title": "Defensa Perfecta",
-        "hint": "Gana una partida sin perder ninguna torre",
-        "earned": "Defendiste tus torres sin perder una sola corona."
+        "title": "Victoria sin ceder coronas",
+        "hint": "Sin ceder coronas; daño no medido.",
+        "earned": "Sin ceder coronas; daño no medido."
       },
       "winStreakWarrior": {
         "title": "Guerrero de Racha",
@@ -3373,24 +3373,24 @@
     "play": "Reproducir",
     "victory": "¡Victoria!",
     "defeat": "Derrota",
-    "youWon": "¡Derrotaste a {{proName}}!",
-    "youLost": "¡{{proName}} gana!",
+    "youWon": "PARTIDA FICTICIA · ENTRETENIMIENTO · {{proName}}",
+    "youLost": "PARTIDA FICTICIA · ENTRETENIMIENTO · {{proName}}",
     "finalScore": "Puntuación Final",
-    "winProbability": "Probabilidad de Victoria",
+    "winProbability": "Peso lúdico",
     "playAgain": "Jugar de Nuevo",
     "close": "Cerrar",
-    "iDefeated": "¡DERROTÉ A {{proName}}!",
-    "iLostTo": "¡TAN CERCA! Perdí contra {{proName}}",
+    "iDefeated": "PARTIDA FICTICIA · ENTRETENIMIENTO · {{proName}}",
+    "iLostTo": "PARTIDA FICTICIA · ENTRETENIMIENTO · {{proName}}",
     "myDeck": "Mi Mazo",
     "upsetAlert": "¡SORPRESA!",
     "shareResult": "Compartir Resultado",
     "downloadImage": "Descargar Imagen",
     "imageSaved": "¡Imagen guardada!",
     "downloadFailed": "Descarga fallida",
-    "aiSimulation": "SIMULACIÓN DE COACH IA",
+    "aiSimulation": "PARTIDA FICTICIA · ENTRETENIMIENTO",
     "finalHp": "PV Final",
-    "subtitle": "Desafía a leyendas pros en combates de ensueño con IA",
-    "liveSubtitle": "Desafía al Top 10 Global con datos en tiempo real",
+    "subtitle": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
+    "liveSubtitle": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
     "selectOpponent": "Selecciona Tu Oponente",
     "globalTop10": "Top 10 Global",
     "live": "EN VIVO",
@@ -3401,11 +3401,11 @@
     "unlimitedMatches": "Combates ilimitados disponibles",
     "howItWorks": "Cómo Funciona",
     "step1": "Selecciona un Jugador Pro de la lista de abajo para desafiar.",
-    "step2": "Nuestra IA simula un combate basándose en tu mazo, estadísticas y el estilo de juego del pro.",
+    "step2": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
     "step3": "¡Mira cómo se desarrolla la batalla y ve si puedes vencer las probabilidades!",
     "liveStep1": "Selecciona un jugador del ranking Top 10 Global en vivo",
     "liveStep2": "Obtenemos su mazo actual en tiempo real de los servidores de Supercell",
-    "liveStep3": "Nuestra IA simula el combate basándose en estilos de juego reales y el meta",
+    "liveStep3": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
     "connecting": "CONECTANDO A SERVIDORES DE SUPERCELL...",
     "scouting": "ESPIANDO A {{name}}...",
     "ready": "DATOS ADQUIRIDOS",
@@ -3503,7 +3503,7 @@
       },
       "oracle": {
         "title": "El Oráculo",
-        "description": "¡Predice el mazo de tu oponente antes de que comience la partida! El Oráculo usa IA para darte una ventaja estratégica."
+        "description": "Consulta los mazos recientes de un jugador conocido; no se pueden predecir rivales futuros."
       },
       "aiRoyalePro": {
         "title": "Lanzamiento de AI Royale Pro",
@@ -3695,5 +3695,48 @@
     "withdrawnOk": "Los correos de campañas están desactivados. No te enviaremos campañas.",
     "collectionPaused": "La suscripción a correos de campañas aún no está abierta. Tu cuenta y tu coaching no se ven afectados.",
     "blockedNote": "Nuestro servicio de correo no puede entregar campañas a esta dirección (rebote o denuncia de spam), así que no se enviarán."
+  },
+  "correctness": {
+    "observationScope": "Ventana reciente de la API; los modos se muestran por separado. No es un historial completo.",
+    "noSkillInference": "La presencia en el mazo y los resultados no miden habilidad, colocación ni tiempos.",
+    "cardObservations": "Observaciones de cartas",
+    "deckAppearances": "En el mazo en {{count}} partidas observadas",
+    "rankingScore": "Puntuación de recomendación / 100; no probabilidad de ganar",
+    "formsUnknown": "Solo niveles de cartas base. Formas activas, tropa de torre y reglas del modo sin verificar.",
+    "unknownCost": "Copias necesarias desconocidas",
+    "invalidDeck": "El enlace del mazo está incompleto o contiene cartas no disponibles.",
+    "editCurrentDeck": "Editar mazo actual",
+    "startBlank": "Empezar vacío",
+    "observedPreferences": "Preferencias de mazo observadas",
+    "noProSimilarity": "Sin comparación validada con profesionales.",
+    "observationOnly": "Solo observaciones recientes",
+    "appBadges": "Insignias de la aplicación",
+    "sample": "{{count}} partidas válidas · {{wins}} victorias · {{losses}} derrotas · {{draws}} empates",
+    "lightDeck": "Mazo de menor elixir",
+    "heavyDeck": "Mazo de mayor elixir",
+    "hypotheticalPractice": "Ideas posibles y práctica futura; no hay repetición ni cronología de eventos.",
+    "completedPractice": "Práctica completada · historial",
+    "singleResult": "Un resultado no demuestra que el consejo haya causado la victoria o derrota.",
+    "keepDeck": "Mantener mazo",
+    "copyCostOnly": "Solo copias de cartas. No se comprueban oro ni otros requisitos.",
+    "entertainment": "Escenario de entretenimiento con eventos aleatorios. No es una partida real, repetición, evaluación ni probabilidad medida.",
+    "uncalibrated": "Opinión de IA; no probabilidad calibrada",
+    "readiness": {
+      "ready": "Niveles base acordes al mazo actual",
+      "investment": "Cartas de menor nivel: requieren mejora",
+      "unknown": "Disponibilidad desconocida",
+      "unavailable": "Cartas no disponibles"
+    },
+    "legacyBadge": "Insignias históricas de la app; no son habilidades de juego verificadas.",
+    "practiceTitle": "Una práctica. Una partida.",
+    "practiceQuestion": "¿Qué debo practicar con este mazo?",
+    "askPractice": "Pregunta sobre esta práctica",
+    "observedAt": "Actualizado: {{time}}",
+    "excluded": "Registros inválidos o contradictorios excluidos: {{count}}.",
+    "savedSummary": "Resumen guardado del {{date}}. Su alcance histórico puede diferir de la ventana actual de la API.",
+    "metaCatalog": "Catálogo de mazos: la popularidad es una puntuación del catálogo. Aquí no se miden el uso global, las victorias ni los cambios semanales.",
+    "predictionScope": "Solo se cuentan partidas 1v1 Ladder coincidentes posteriores a la predicción. Las muestras no demuestran precisión calibrada. Los recuentos antiguos no están verificados; una partida puede corresponder a varias predicciones.",
+    "recommendationScope": "Solo se cuentan partidas 1v1 Ladder con las mismas ocho cartas base después de ver la recomendación. No mide un efecto antes/después.",
+    "legacyData": "Registro antiguo — medición no verificada"
   }
 }

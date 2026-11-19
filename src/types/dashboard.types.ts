@@ -40,6 +40,7 @@ export interface AggregatedDeckStat {
   id: string;
   deck_cards: string[];
   deck_hash: string;
+  mode?: string;
   battles_played: number;
   battles_won: number;
   battles_lost: number;

@@ -40,6 +40,7 @@ export const CardImage = memo(function CardImage({
     level: card.level,
     maxLevel: card.maxLevel,
     evolutionLevel: card.evolutionLevel,
+    activeForm: card.activeForm,
     rarity: card.rarity,
   });
   const displayLevel = levelResult.displayLevel;
@@ -110,7 +111,7 @@ export const CardImage = memo(function CardImage({
             ? "bg-gradient-to-r from-[hsl(45_100%_45%)] to-[hsl(35_100%_50%)] text-background shadow-[0_0_10px_hsl(45_100%_55%/0.6)]" 
             : "bg-primary text-primary-foreground shadow-glow"
         )}>
-          {displayLevel}
+          {displayLevel ?? "—"}
         </div>
       )}
 
@@ -168,6 +169,7 @@ export const CardImage = memo(function CardImage({
     prevProps.card.id === nextProps.card.id &&
     prevProps.card.level === nextProps.card.level &&
     prevProps.card.evolutionLevel === nextProps.card.evolutionLevel &&
+    prevProps.card.activeForm === nextProps.card.activeForm &&
     prevProps.size === nextProps.size &&
     prevProps.showLevel === nextProps.showLevel &&
     prevProps.showElixir === nextProps.showElixir

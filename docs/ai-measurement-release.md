@@ -1,8 +1,11 @@
 # AI measurement and duplicate generation guard
 
-Draft PR based on `bb618be1ad53c118e0293009320f34465b411e97`.
-Production Cloud, live schedules, Google, Polar, Resend and live app are unchanged.
-Migration **0040** is separate from the pending 0038 history and 0039 rights PRs.
+Originally prepared in PR #25 at `bb618be1ad53c118e0293009320f34465b411e97`.
+Now included in the correctness inventory PR on main `7696d68a3da4071c323526d9064b8059040f830b`.
+Main 0038/0039 are profile permissions/chat cleanup; do not apply the old
+conflicting history/right-PR migration numbers. The current release order is
+0040 then 0041; see [inventory acceptance](correctness-inventory-review.md).
+No production Cloud, schedule, Google, Polar, Resend or live app change is made here.
 
 ## Behaviour
 
@@ -52,7 +55,8 @@ new ledger as the provider-call source.
 ## Release boundaries
 
 This PR is for review and rehearsal, not permission to deploy to production.
-Only isolated target `jmdtjtpymxjkprugqoqu` may receive 0040 during this task.
+The earlier task allowed isolated target `jmdtjtpymxjkprugqoqu` to receive 0040.
+The correctness inventory task makes no cloud deployment.
 No Edge functions, provider secrets, crons or app pages are deployed there here.
 
 A future approved release must apply 0040 before deploying all affected functions
@@ -75,7 +79,11 @@ not implemented in this PR. [Re-run instructions](../tests/integration/aiMeasure
 Usage field interpretation: [OpenAI Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create).
 SQL privilege model: [Supabase database functions](https://supabase.com/docs/guides/database/functions).
 
-## Acceptance recorded 19 November 2026
+## Earlier PR #25 acceptance recorded 19 November 2026
+
+The following includes the earlier rehearsal run; it was not repeated against
+the cloud during the correctness inventory task. Current local suite results
+are in `correctness-acceptance.json`.
 
 - Application unit suite: **142 passed**.
 - Real SQL + actual provider wrapper + fake provider: **24 checks passed**, zero network attempts.

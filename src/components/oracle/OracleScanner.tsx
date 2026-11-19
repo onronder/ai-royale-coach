@@ -258,7 +258,7 @@ export function OracleScanner({
   }, prediction.likelyDeck[0]);
 
   const getPlaystyleText = (playstyle: string) => {
-    return playstyle === 'Aggressive' ? t('oracle.aggressive') : t('oracle.defensive');
+    return playstyle === 'Unknown' ? t('common.unknown') : playstyle === 'Light' ? t('correctness.lightDeck') : t('correctness.heavyDeck');
   };
 
   return (
@@ -456,7 +456,7 @@ export function OracleScanner({
                     <span className="text-muted-foreground">{t('oracle.playstyle')}:</span>
                     <span className={cn(
                       'font-mono font-bold',
-                      prediction.playstyle === 'Aggressive' ? 'text-destructive' : 'text-royal'
+                      prediction.playstyle === 'Light' ? 'text-destructive' : 'text-royal'
                     )}>
                       {getPlaystyleText(prediction.playstyle)}
                     </span>
@@ -501,7 +501,7 @@ export function OracleScanner({
               >
                 <p className="text-xs text-muted-foreground">
                   {t('oracle.opponentPrefers')}{' '}
-                  <span className={prediction.playstyle === 'Aggressive' ? 'text-destructive' : 'text-royal'}>
+                  <span className={prediction.playstyle === 'Light' ? 'text-destructive' : 'text-royal'}>
                     {getPlaystyleText(prediction.playstyle).toLowerCase()}
                   </span>
                   .{' '}

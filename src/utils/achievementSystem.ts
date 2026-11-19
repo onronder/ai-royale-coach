@@ -1,3 +1,4 @@
+import { observeBattle, observeBattles, fixedElixir } from '../../supabase/functions/_shared/battle-observation';
 import type { TFunction } from 'i18next';
 import type { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 
@@ -15,10 +16,8 @@ export interface Achievement {
 /**
  * Calculate average elixir cost of a deck
  */
-function calculateAvgElixir(cards: { elixirCost?: number }[]): number {
-  const costs = cards.filter(c => c.elixirCost !== undefined).map(c => c.elixirCost!);
-  if (costs.length === 0) return 0;
-  return costs.reduce((sum, cost) => sum + cost, 0) / costs.length;
+function calculateAvgElixir(cards: { elixirCost?: number }[]): number | null {
+  return fixedElixir(cards);
 }
 
 /**
@@ -47,8 +46,8 @@ function checkElixirMaster(battle: ClashRoyaleBattle, index: number, t: TFunctio
   const avgElixir = calculateAvgElixir(teamCards);
   const opponentCrowns = battle.opponent?.[0]?.crowns ?? 0;
   
-  // Won with heavy deck (> 4.0 avg) and took no damage (0 crowns lost)
-  if (avgElixir > 4.0 && opponentCrowns === 0) {
+  // Won with heavy deck (> 4.0 avg) and lost no crown; tower damage is not available
+  if (avgElixir !== null && avgElixir >= 4.0 && opponentCrowns === 0) {
     return {
       id: 'elixir-master',
       title: t('achievementShowcase.achievements.elixirMaster.title'),
@@ -63,7 +62,7 @@ function checkElixirMaster(battle: ClashRoyaleBattle, index: number, t: TFunctio
 
 /**
  * Check for Comeback King achievement
- * Won a match after losing a tower first (opponent scored first but you won)
+ * Won a match with crowns conceded; order is unknown
  */
 function checkComebackKing(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
@@ -113,7 +112,7 @@ function checkWinStreakWarrior(battles: ClashRoyaleBattle[], t: TFunction): Achi
   let maxStreak = 0;
   
   // Battles are usually newest first, so we reverse to check chronologically
-  const chronological = [...battles].reverse();
+  const chronological = [...battles].sort((a,b) => a.battleTime.localeCompare(b.battleTime));
   
   for (const battle of chronological) {
     if (isWin(battle)) {
@@ -143,8 +142,9 @@ function checkWinStreakWarrior(battles: ClashRoyaleBattle[], t: TFunction): Achi
 function checkUnderdog(battle: ClashRoyaleBattle, index: number, t: TFunction): Achievement | null {
   if (!isWin(battle)) return null;
   
-  const teamTrophies = battle.team?.[0]?.startingTrophies ?? 0;
-  const opponentTrophies = battle.opponent?.[0]?.startingTrophies ?? 0;
+  const teamTrophies = battle.team?.[0]?.startingTrophies;
+  const opponentTrophies = battle.opponent?.[0]?.startingTrophies;
+  if (!Number.isFinite(teamTrophies) || !Number.isFinite(opponentTrophies)) return null;
   
   // Opponent had at least 100 more trophies
   if (opponentTrophies > teamTrophies && (opponentTrophies - teamTrophies) >= 100) {
@@ -187,11 +187,21 @@ function checkThreeCrownMaster(battle: ClashRoyaleBattle, index: number, t: TFun
  * Main function to check all achievements from battle history
  * Returns unique achievements (no duplicates by id)
  */
-export function checkAchievements(battles: ClashRoyaleBattle[], t: TFunction): Achievement[] {
+export function checkAchievements(battles: ClashRoyaleBattle[], t: TFunction, playerTag: string): Achievement[] {
+  const original = battles;
+  const observed = observeBattles(battles, playerTag);
+  const valid = observed.battles.filter(b => b.format === '1v1').map(b => {
+    const index = original.findIndex(raw => observeBattle(raw, playerTag)?.key === b.key);
+    const raw = original[index];
+    const own = raw.team.find(p => p.tag.replace(/^#/, '').toUpperCase() === playerTag.replace(/^#/, '').toUpperCase());
+    return { index, battle: own ? raw : { ...raw, team: raw.opponent, opponent: raw.team } };
+  });
+  battles = valid.map(v => v.battle);
   const achievementsMap = new Map<string, Achievement>();
   
   // Check per-battle achievements
-  battles.forEach((battle, index) => {
+  battles.forEach((battle, position) => {
+    const index = valid[position].index;
     const perBattleChecks = [
       checkElixirMaster(battle, index, t),
       checkComebackKing(battle, index, t),

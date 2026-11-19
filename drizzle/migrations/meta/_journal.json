@@ -288,6 +288,13 @@
       "when": 1795089600000,
       "tag": "0040_ai_attempt_measurement",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1795093200000,
+      "tag": "0041_recent_observation_correctness",
+      "breakpoints": true
     }
   ]
 }

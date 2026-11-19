@@ -226,7 +226,7 @@
         "battleHistory": "Battle History Analysis",
         "battleHistoryDesc": "Deep dive into your recent matches with AI-powered insights",
         "matchReplay": "Match Replay Insights",
-        "matchReplayDesc": "AI identifies key moments and turning points",
+        "matchReplayDesc": "Possible matchup explanations from decks and the final score.",
         "counterDeck": "Counter-Deck Analysis",
         "counterDeckDesc": "Know exactly what beats your opponent's deck",
         "matchupPredictions": "Matchup Predictions",
@@ -903,18 +903,18 @@
           },
           "personalCoaching": {
             "title": "Personal Coaching",
-            "description": "Your AI coach has full context of your gameplay, decks, and progress.",
+            "description": "Coaching uses available deck, collection and recent-result evidence; missing details stay unknown.",
             "count": "{{count}} feature"
           }
         },
         "features": {
           "battleAnalysis": {
             "title": "Battle Analysis",
-            "description": "AI identifies winning patterns and critical mistakes in every match"
+            "description": "Deck and result observations, with possible matchup explanations."
           },
           "playerProfile": {
             "title": "Player Profile Analysis",
-            "description": "Complete assessment of your gameplay style and skill level"
+            "description": "Observed deck preferences and recent results."
           },
           "pivotalMoments": {
             "title": "Pivotal Moments Detection",
@@ -926,7 +926,7 @@
           },
           "matchupPredictions": {
             "title": "Matchup Predictions",
-            "description": "Win rate predictions between any two decks with confidence levels"
+            "description": "AI matchup opinion, not a calibrated win probability."
           },
           "trophyPerformance": {
             "title": "Trophy Performance Analysis",
@@ -2237,7 +2237,7 @@
     "usedTimes": "Used {{count}} times",
     "predictions": {
       "total": "Total Predictions",
-      "battlesTracked": "Battles Tracked",
+      "battlesTracked": "Prediction–result matches",
       "avgError": "Avg. Error",
       "accuracyRate": "High Accuracy Rate",
       "mostAccurate": "Most Accurate Prediction",
@@ -2382,8 +2382,8 @@
     "predictionFailed": "Failed to predict matchup"
   },
   "predictionHistory": {
-    "title": "Prediction Accuracy History",
-    "description": "Track how accurate AI predictions are compared to your actual battle results",
+    "title": "Model estimates and observed outcomes",
+    "description": "Only matching 1v1 Ladder battles after the prediction are counted. Samples do not establish calibrated accuracy. Legacy outcome counts are unverified; the same match may be associated with more than one prediction.",
     "viewHistory": "View Prediction History",
     "hideHistory": "Hide History",
     "predictedWinRate": "Predicted",
@@ -2396,8 +2396,8 @@
     "mediumAccuracy": "Moderate Accuracy",
     "lowAccuracy": "Low Accuracy",
     "noPredictions": "No predictions yet. Try the AI Matchup Prediction to get started!",
-    "noBattlesYet": "Play some battles to see accuracy tracking",
-    "noActualResults": "No battle results tracked yet. Play some games to see accuracy!",
+    "noBattlesYet": "No matching post-prediction result has been observed yet.",
+    "noActualResults": "No matching post-prediction result has been observed yet.",
     "noActualData": "no battles yet",
     "recentPredictions": "Recent Predictions",
     "cachedResult": "Cached",
@@ -2473,7 +2473,7 @@
     "aiEnhanced": "AI Enhanced",
     "refresh": "Refresh",
     "yourProfile": "Your Profile",
-    "skillLevel": "Skill Level",
+    "skillLevel": "Trophy category",
     "bestArchetypes": "Best Archetypes",
     "recentWinRate": "Recent Win Rate",
     "battlesAnalyzed": "Battles Analyzed",
@@ -2680,25 +2680,25 @@
     "iosStep3": "Tap \"Add\" in the top right corner"
   },
   "oracle": {
-    "title": "The Oracle",
-    "subtitle": "Enemy Deck Prediction System",
+    "title": "Observed deck preferences",
+    "subtitle": "View a known player’s recent decks; this cannot reveal your next opponent.",
     "placeholder": "Enter opponent tag...",
     "pasteClipboard": "Paste from clipboard",
     "scan": "Scan",
     "scanning": "DECRYPTING ENEMY DATA...",
-    "threatDetected": "THREAT DETECTED",
+    "threatDetected": "Most observed deck",
     "awaitingTarget": "Awaiting Target Coordinates...",
-    "enterTagPrompt": "Enter an opponent's player tag to predict their deck",
+    "enterTagPrompt": "View a known player’s recent decks; this cannot reveal your next opponent.",
     "targetNotFound": "Target Not Found",
     "targetNotFoundDesc": "Could not retrieve battle data for this player",
-    "confidence": "Confidence",
-    "playstyle": "Playstyle",
+    "confidence": "Observed deck share",
+    "playstyle": "Elixir category",
     "aggressive": "Aggressive",
     "defensive": "Defensive",
     "lastSeen": "Last seen",
-    "matchesAnalyzed": "{{count}}/{{total}} matches analyzed",
-    "predictedDeck": "Predicted Deck",
-    "opponentPrefers": "Opponent prefers playing this deck",
+    "matchesAnalyzed": "{{count}} / {{total}}",
+    "predictedDeck": "Most observed deck",
+    "opponentPrefers": "Most observed deck",
     "watchOutFor": "Watch out for",
     "matchupAnalysis": "Matchup Analysis",
     "analyzingMatchup": "Analyzing matchup...",
@@ -2709,8 +2709,8 @@
     "evenMatchup": "Even matchup",
     "quickTips": "Quick Tips",
     "signInForMatchup": "Sign in to see matchup analysis",
-    "helpTooltip": "We analyze the opponent's last 25 battles to predict their most likely deck and playstyle.",
-    "helperText": "Enter an opponent's player tag (e.g. #ABC12) to predict their deck and strategy.",
+    "helpTooltip": "View a known player’s recent decks; this cannot reveal your next opponent.",
+    "helperText": "View a known player’s recent decks; this cannot reveal your next opponent.",
     "tryExample": "Try",
     "errors": {
       "noDeck": "No active deck found. Select a deck in the game.",
@@ -2718,18 +2718,18 @@
       "predictionFailed": "Matchup prediction failed. Please try again."
     },
     "result": {
-      "confidence": "Confidence",
+      "confidence": "AI opinion; not a calibrated probability",
       "keyMatchups": "Key matchups",
       "opponentDeck": "Opponent’s deck",
       "tips": "Strategy tips",
       "title": "Matchup result",
       "yourDeck": "Your deck",
-      "yourWinChance": "Your chance of winning"
+      "yourWinChance": "AI opinion; not a calibrated probability"
     },
-    "scanButton": "Predict matchup"
+    "scanButton": "Most observed deck"
   },
   "proDna": {
-    "title": "Your Pro DNA",
+    "title": "Observed deck preferences",
     "styles": {
       "Bridge Spammer": "Bridge Spammer",
       "The Great Wall": "The Great Wall",
@@ -2737,10 +2737,10 @@
       "Balanced Warrior": "Balanced Warrior",
       "Tactical Mastermind": "Tactical Mastermind"
     },
-    "playerDna": "Player DNA",
-    "aggression": "AGG",
-    "defense": "DEF",
-    "versatility": "VER",
+    "playerDna": "Observed deck preferences",
+    "aggression": "Win rate",
+    "defense": "No crown conceded",
+    "versatility": "Deck variety",
     "similarTo": "Similar to",
     "branding": "AI Royale Coach",
     "download": "Download",
@@ -2749,15 +2749,15 @@
     "downloadFailed": "Failed to download card",
     "shared": "Shared successfully!",
     "shareFailed": "Failed to share card",
-    "noData": "Not enough battle data to generate your DNA.",
+    "noData": "Recent API window; modes are listed separately. This is not a complete history.",
     "noDataHint": "Play some matches first!",
-    "shareText": "Check out my Clash Royale Pro DNA!",
+    "shareText": "Recent observations only",
     "adaptability": "Adaptability",
     "consistency": "Consistency",
     "downloadError": "Image download failed.",
     "downloadSuccess": "Image downloaded.",
     "generating": "Creating image…",
-    "noDataDescription": "Play more battles to generate your DNA profile.",
+    "noDataDescription": "Recent API window; modes are listed separately. This is not a complete history.",
     "shareError": "Could not share the image.",
     "shareNotSupported": "This browser does not support sharing."
   },
@@ -2768,19 +2768,19 @@
     "amazingWork": "Amazing work, Champion!",
     "achievements": {
       "elixirMaster": {
-        "title": "Elixir Master",
-        "hint": "Win with a heavy deck (4.0+ elixir) without losing towers",
-        "earned": "You dominated with a heavy deck and kept all your towers safe!"
+        "title": "Win with a heavy deck",
+        "hint": "Won with a known average of at least four elixir and no crown conceded.",
+        "earned": "Won with a known average of at least four elixir and no crown conceded."
       },
       "comebackKing": {
-        "title": "Comeback King",
-        "hint": "Win a match after losing a tower first",
-        "earned": "Never give up! You turned the battle around like a true champion!"
+        "title": "Observed win with a tower lost",
+        "hint": "Won after conceding at least one crown; order is unknown.",
+        "earned": "Won after conceding at least one crown; order is unknown."
       },
       "perfectDefense": {
-        "title": "Perfect Defense",
-        "hint": "Win a match without losing any towers",
-        "earned": "You defended your towers like a pro! Not a single crown lost!"
+        "title": "Win without conceding a crown",
+        "hint": "No crown conceded; damage is not measured.",
+        "earned": "No crown conceded; damage is not measured."
       },
       "winStreakWarrior": {
         "title": "Win Streak Warrior",
@@ -3362,24 +3362,24 @@
     "play": "Play",
     "victory": "Victory!",
     "defeat": "Defeat",
-    "youWon": "You defeated {{proName}}!",
-    "youLost": "{{proName}} wins!",
+    "youWon": "FICTIONAL MATCH · ENTERTAINMENT · {{proName}}",
+    "youLost": "FICTIONAL MATCH · ENTERTAINMENT · {{proName}}",
     "finalScore": "Final Score",
-    "winProbability": "Win Probability",
+    "winProbability": "Entertainment weight",
     "playAgain": "Play Again",
     "close": "Close",
-    "iDefeated": "I DEFEATED {{proName}}!",
-    "iLostTo": "SO CLOSE! Lost to {{proName}}",
+    "iDefeated": "FICTIONAL MATCH · ENTERTAINMENT · {{proName}}",
+    "iLostTo": "FICTIONAL MATCH · ENTERTAINMENT · {{proName}}",
     "myDeck": "My Deck",
     "upsetAlert": "UPSET!",
     "shareResult": "Share Result",
     "downloadImage": "Download Image",
     "imageSaved": "Image saved!",
     "downloadFailed": "Download failed",
-    "aiSimulation": "AI COACH SIMULATION",
+    "aiSimulation": "FICTIONAL MATCH · ENTERTAINMENT",
     "finalHp": "Final HP",
-    "subtitle": "Challenge legendary pros in AI-powered dream matches",
-    "liveSubtitle": "Challenge the Global Top 10 with real-time data",
+    "subtitle": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
+    "liveSubtitle": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
     "selectOpponent": "Select Your Opponent",
     "globalTop10": "Global Top 10",
     "live": "LIVE",
@@ -3390,11 +3390,11 @@
     "unlimitedMatches": "Unlimited matches available",
     "howItWorks": "How it Works",
     "step1": "Select a Pro Player from the list below to challenge.",
-    "step2": "Our AI simulates a match based on your deck, stats, and the pro's playstyle.",
+    "step2": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
     "step3": "Watch the battle unfold and see if you can beat the odds!",
     "liveStep1": "Select a player from the live Global Top 10 leaderboard",
     "liveStep2": "We fetch their current deck in real-time from Supercell servers",
-    "liveStep3": "Our AI simulates the match based on real playstyles and meta",
+    "liveStep3": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
     "connecting": "CONNECTING TO SUPERCELL SERVERS...",
     "scouting": "SCOUTING {{name}}...",
     "ready": "DATA ACQUIRED",
@@ -3492,7 +3492,7 @@
       },
       "oracle": {
         "title": "The Oracle",
-        "description": "Predict your opponent's deck before the match starts! The Oracle uses AI to analyze trophy ranges and meta trends to give you a strategic advantage."
+        "description": "View a known player’s recently observed decks; future opponents cannot be predicted."
       },
       "aiRoyalePro": {
         "title": "AI Royale Pro Launch",
@@ -3695,5 +3695,48 @@
     "withdrawnOk": "Campaign emails are off. We won't send you campaigns.",
     "collectionPaused": "Campaign email sign-up is not open yet. Your account and coaching are not affected.",
     "blockedNote": "Our email service can't deliver campaigns to this address (bounce or spam report), so none will be sent."
+  },
+  "correctness": {
+    "observationScope": "Recent API window; modes are listed separately. This is not a complete history.",
+    "noSkillInference": "Deck appearances and results do not measure card skill, placement or timing.",
+    "cardObservations": "Card observations",
+    "deckAppearances": "In the deck for {{count}} observed matches",
+    "rankingScore": "Recommendation ranking / 100; not win probability",
+    "formsUnknown": "Base-card levels only. Active forms, tower troop and mode eligibility are not verified.",
+    "unknownCost": "Required copies unknown",
+    "invalidDeck": "This deck link is incomplete or contains unavailable cards.",
+    "editCurrentDeck": "Edit current deck",
+    "startBlank": "Start empty",
+    "observedPreferences": "Observed deck preferences",
+    "noProSimilarity": "No validated comparison with professional players.",
+    "observationOnly": "Recent observations only",
+    "appBadges": "App badges",
+    "sample": "{{count}} valid matches · {{wins}} wins · {{losses}} losses · {{draws}} draws",
+    "lightDeck": "Lower elixir deck",
+    "heavyDeck": "Higher elixir deck",
+    "hypotheticalPractice": "Possible matchup ideas and future practice; no replay or event timeline is available.",
+    "completedPractice": "Completed practice · history",
+    "singleResult": "One result does not establish whether the advice caused a win or loss.",
+    "keepDeck": "Keep deck",
+    "copyCostOnly": "Card copies only. Gold and other upgrade requirements are not checked.",
+    "entertainment": "Entertainment scenario with random events. This is not a real match, replay, training assessment or measured win probability.",
+    "uncalibrated": "AI opinion; not a calibrated probability",
+    "readiness": {
+      "ready": "Base levels match current deck",
+      "investment": "Lower-level cards: upgrades needed",
+      "unknown": "Readiness unknown",
+      "unavailable": "Unavailable cards"
+    },
+    "legacyBadge": "Historical app badges; not verified gameplay skills.",
+    "practiceTitle": "One practice. One match.",
+    "practiceQuestion": "What should I practise with this deck?",
+    "askPractice": "Ask about this practice",
+    "observedAt": "Updated: {{time}}",
+    "excluded": "Excluded invalid or conflicting records: {{count}}.",
+    "savedSummary": "Saved summary from {{date}}. Its historical scope may differ from the current API window.",
+    "metaCatalog": "Template catalog: popularity is a catalog score. Global usage, win rates and weekly changes are not measured here.",
+    "predictionScope": "Only matching 1v1 Ladder battles after the prediction are counted. Samples do not establish calibrated accuracy. Legacy outcome counts are unverified; the same match may be associated with more than one prediction.",
+    "recommendationScope": "Only matching 1v1 Ladder battles with the same eight base cards after the recommendation was seen are counted. This is not a before/after effect measurement.",
+    "legacyData": "Legacy record — measurement unverified"
   }
 }

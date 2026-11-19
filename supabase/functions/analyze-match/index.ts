@@ -1,3 +1,5 @@
+import { resultOnlyAdvice } from '../_shared/match-advice.ts';
+import { observeBattle } from '../_shared/battle-observation.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
@@ -120,21 +122,17 @@ serve(async (req) => {
     const normalizedTag = playerTag.startsWith('#') ? playerTag : `#${playerTag}`;
     logger.info('Analyzing match', { playerTag: normalizedTag });
 
-    const playerTeam = battle.team.find((p: any) => p.tag === normalizedTag);
-    const opponent = battle.opponent[0];
-    
-    if (!playerTeam || !opponent) {
-      logger.error('Player not found', { lookingFor: normalizedTag, available: battle.team?.map((p: any) => p.tag) });
-      throw new Error('Player or opponent not found in battle data');
-    }
-
-    const isWin = playerTeam.crowns > opponent.crowns;
+    const observation = observeBattle(battle, normalizedTag);
+    if (!observation || observation.format !== '1v1') return errorResponse('This battle format cannot be analyzed reliably yet', 422);
+    const playerTeam = observation.player;
+    const opponent = observation.opponents[0];
+    const isWin = observation.outcome === 'win';
     const playerCards = playerTeam.cards.map((c: any) => c.name).join(', ');
     const opponentCards = opponent.cards.map((c: any) => c.name).join(', ');
 
     const prompt = `Analyze this Clash Royale match and provide structured insights:
 
-**Battle Outcome:** ${isWin ? 'Victory' : 'Defeat'}
+**Battle Outcome:** ${observation.outcome}
 **Final Score:** ${playerTeam.crowns} - ${opponent.crowns} crowns
 **Game Mode:** ${battle.gameMode.name}
 
@@ -150,8 +148,7 @@ Provide your analysis in the following JSON format:
     {
       "yourCard": "card name from your deck",
       "opponentCard": "card name from opponent deck",
-      "phase": "early|mid|late|overtime",
-      "description": "Brief description of this key interaction",
+      "description": "A hypothetical matchup to practise, never an event claimed to have happened",
       "impact": "high|medium"
     }
   ],
@@ -162,7 +159,7 @@ Provide your analysis in the following JSON format:
   }
 }
 
-Return ONLY valid JSON, no markdown or extra text.`;
+No timestamps, phases, placements, elixir history, disconnects, intent, or causal explanation of why this game was won/lost can be inferred. Use prospective practice advice only. Return ONLY valid JSON.`;
 
     const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-match' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -200,30 +197,23 @@ Return ONLY valid JSON, no markdown or extra text.`;
     try {
       const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       parsedAnalysis = JSON.parse(cleanedText);
-    } catch (parseError) {
-      logger.warn('JSON parse error, falling back to text parsing');
-      parsedAnalysis = {
-        deckMatchup: analysisText.slice(0, 300),
-        analysis: analysisText,
-        recommendations: [],
-        pivotalInteractions: [],
-        counterDeck: null,
-      };
+    } catch {
+      return errorResponse('Invalid analysis response',502);
     }
 
     // Validate and normalize the response
     const result = {
-      deckMatchup: parsedAnalysis.deckMatchup || 'Unable to analyze deck matchup.',
-      analysis: parsedAnalysis.analysis || analysisText,
+      deckMatchup: resultOnlyAdvice(parsedAnalysis.deckMatchup),
+      analysis: resultOnlyAdvice(parsedAnalysis.analysis),
       recommendations: Array.isArray(parsedAnalysis.recommendations) 
-        ? parsedAnalysis.recommendations.slice(0, 5) 
+        ? parsedAnalysis.recommendations.map(resultOnlyAdvice).filter(Boolean).slice(0,5)
         : [],
       pivotalInteractions: Array.isArray(parsedAnalysis.pivotalInteractions)
-        ? parsedAnalysis.pivotalInteractions.slice(0, 4).map((i: any) => ({
+        ? parsedAnalysis.pivotalInteractions.filter((i: any) => playerTeam.cards.some(c => c.name === i.yourCard) && opponent.cards.some(c => c.name === i.opponentCard) && typeof i.description === 'string' && !/\d|\b(seconds?|overtime|saniye|segundos?|secondes?)\b/iu.test(i.description)).slice(0, 4).map((i: any) => ({
             yourCard: i.yourCard || 'Unknown',
             opponentCard: i.opponentCard || 'Unknown',
-            phase: ['early', 'mid', 'late', 'overtime'].includes(i.phase) ? i.phase : 'mid',
-            description: i.description || '',
+            evidence: "hypothesis",
+            description: resultOnlyAdvice(i.description),
             impact: i.impact === 'high' ? 'high' : 'medium',
           }))
         : [],
@@ -232,7 +222,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
           ? parsedAnalysis.counterDeck.cards.slice(0, 8)
           : [],
         explanations: parsedAnalysis.counterDeck.explanations || {},
-        overallStrategy: parsedAnalysis.counterDeck.overallStrategy || '',
+        overallStrategy: resultOnlyAdvice(parsedAnalysis.counterDeck.overallStrategy),
       } : null,
     };
 

@@ -31,7 +31,7 @@ interface MatchDetailViewProps {
 interface PivotalInteraction {
   yourCard: string;
   opponentCard: string;
-  phase: 'early' | 'mid' | 'late' | 'overtime';
+  evidence?: 'hypothesis';
   description: string;
   impact: 'high' | 'medium';
 }
@@ -142,127 +142,6 @@ function ConfettiBurst() {
   );
 }
 
-// Phase badge colors and timeline positions
-const phaseColors = {
-  early: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  mid: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  late: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-  overtime: 'bg-red-500/20 text-red-400 border-red-500/30',
-};
-
-const phaseDotColors = {
-  early: 'bg-blue-500',
-  mid: 'bg-yellow-500',
-  late: 'bg-orange-500',
-  overtime: 'bg-red-500',
-};
-
-const phasePositions = {
-  early: '12.5%',
-  mid: '37.5%',
-  late: '62.5%',
-  overtime: '87.5%',
-};
-
-// Match Timeline visualization
-function MatchTimeline({ interactions, t }: { interactions: PivotalInteraction[]; t: (key: string) => string }) {
-  if (!interactions || interactions.length === 0) return null;
-
-  // Group interactions by phase
-  const phases = ['early', 'mid', 'late', 'overtime'] as const;
-  
-  return (
-    <div className="space-y-3">
-      <h3 className="font-semibold text-lg flex items-center gap-2">
-        <Clock className="w-5 h-5 text-primary" />
-        {t('matchDetail.matchTimeline')}
-      </h3>
-      <div className="relative bg-card/50 rounded-lg border p-4">
-        {/* Timeline bar */}
-        <div className="relative h-3 bg-muted rounded-full overflow-hidden">
-          <div className="absolute inset-0 flex">
-            <div className="flex-1 bg-blue-500/30" />
-            <div className="flex-1 bg-yellow-500/30" />
-            <div className="flex-1 bg-orange-500/30" />
-            <div className="flex-1 bg-red-500/30" />
-          </div>
-        </div>
-        
-        {/* Phase labels */}
-        <div className="flex justify-between mt-1 px-1">
-          <span className="text-[10px] text-blue-400">{t('matchDetail.phases.early')}</span>
-          <span className="text-[10px] text-yellow-400">{t('matchDetail.phases.mid')}</span>
-          <span className="text-[10px] text-orange-400">{t('matchDetail.phases.late')}</span>
-          <span className="text-[10px] text-red-400">{t('matchDetail.phases.overtime')}</span>
-        </div>
-        
-        {/* Interaction dots on timeline */}
-        <div className="relative h-16 mt-4">
-          <TooltipProvider>
-            {interactions.map((interaction, idx) => {
-              // Offset within phase for multiple interactions in same phase
-              const samePhaseCount = interactions.filter((i, j) => j < idx && i.phase === interaction.phase).length;
-              const offsetY = samePhaseCount * 20;
-              
-              return (
-                <Tooltip key={idx}>
-                  <TooltipTrigger asChild>
-                    <div 
-                      className={cn(
-                        "absolute flex items-center gap-1 cursor-pointer transition-all hover:scale-110",
-                        "animate-fade-in"
-                      )}
-                      style={{ 
-                        left: phasePositions[interaction.phase],
-                        top: `${offsetY}px`,
-                        transform: 'translateX(-50%)',
-                        animationDelay: `${idx * 100}ms`
-                      }}
-                    >
-                      <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center border-2 overflow-hidden",
-                        interaction.impact === 'high' 
-                          ? "border-primary shadow-[0_0_8px_rgba(var(--primary),0.5)]" 
-                          : "border-muted-foreground/50"
-                      )}>
-                        <CardIcon cardName={interaction.yourCard} className="w-full h-full" />
-                      </div>
-                      <Swords className="w-3 h-3 text-muted-foreground" />
-                      <div className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center border-2 overflow-hidden",
-                        "border-destructive/50"
-                      )}>
-                        <CardIcon cardName={interaction.opponentCard} className="w-full h-full" />
-                      </div>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-xs">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={cn("text-xs", phaseColors[interaction.phase])}>
-                          {interaction.phase.charAt(0).toUpperCase() + interaction.phase.slice(1)}
-                        </Badge>
-                        {interaction.impact === 'high' && (
-                          <Badge className="bg-primary/20 text-primary text-xs">{t('matchDetail.highImpact')}</Badge>
-                        )}
-                      </div>
-                      <p className="text-xs font-medium">
-                        {interaction.yourCard} vs {interaction.opponentCard}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{interaction.description}</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </TooltipProvider>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Key Moments component with card icons
 function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t: (key: string) => string }) {
   if (!interactions || interactions.length === 0) return null;
 
@@ -270,7 +149,7 @@ function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t
     <div className="space-y-3">
       <h3 className="font-semibold text-lg flex items-center gap-2">
         <Zap className="w-5 h-5 text-primary" />
-        {t('matchDetail.keyMoments')}
+        {t('correctness.hypotheticalPractice')}
       </h3>
       <div className="grid gap-3">
         {interactions.map((interaction, idx) => (
@@ -281,16 +160,6 @@ function KeyMoments({ interactions, t }: { interactions: PivotalInteraction[]; t
               interaction.impact === 'high' && "ring-1 ring-primary/50 shadow-[0_0_10px_rgba(var(--primary),0.2)]"
             )}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={cn("text-xs", phaseColors[interaction.phase])}>
-                  {t(`matchDetail.phases.${interaction.phase}`)} {t('matchDetail.game')}
-                </Badge>
-                {interaction.impact === 'high' && (
-                  <Badge className="bg-primary/20 text-primary text-xs">{t('matchDetail.highImpact')}</Badge>
-                )}
-              </div>
-            </div>
             <div className="flex items-center gap-3 mb-2">
               {/* Your Card with Icon */}
               <div className="flex items-center gap-2 px-2 py-1 bg-success/20 rounded">
@@ -564,14 +433,9 @@ export function MatchDetailView({ battle, playerTag, open, onOpenChange, onOpenC
               ) : null}
             </div>
 
-            {/* Match Timeline */}
-            {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
-              <MatchTimeline interactions={analysis.pivotalInteractions} t={t} />
-            )}
-
             {/* Key Moments */}
             {analysis?.pivotalInteractions && analysis.pivotalInteractions.length > 0 && (
-              <KeyMoments interactions={analysis.pivotalInteractions} t={t} />
+              <KeyMoments interactions={analysis.pivotalInteractions.filter(i => i.evidence === "hypothesis")} t={t} />
             )}
 
             {/* Action Buttons */}

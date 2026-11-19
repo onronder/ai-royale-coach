@@ -1,3 +1,4 @@
+import { observeBattles } from '../../../supabase/functions/_shared/battle-observation';
 import { gameLabel } from '@/i18n/gameLabel';
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +38,7 @@ export function OverviewTab({
   analysisError,
 }: OverviewTabProps) {
   const { t, i18n } = useTranslation();
+  const sample = observeBattles(battles, playerTag);
   const statTooltips = useStatTooltips();
 
   return (
@@ -71,8 +73,8 @@ export function OverviewTab({
                 title={t('dashboard.winRate')}
                 value={formattedWinRate}
                 icon={Swords}
-                description={battles?.length ? t('dashboard.trophyProgress.lastBattles', { count: battles.length }) : t('dashboard.noBattles')}
-                trend={!battles?.length ? 'neutral' : winRate >= 50 ? 'up' : 'down'}
+                description={t('correctness.sample', { count: sample.total, wins: sample.wins, losses: sample.losses, draws: sample.draws })}
+                trend={!sample.total ? 'neutral' : winRate >= 50 ? 'up' : 'down'}
                 tooltip={statTooltips.winRate}
               />
               <StatCard
@@ -84,6 +86,8 @@ export function OverviewTab({
             </>
           ) : null}
         </div>
+
+        {sample.excluded > 0 && <p className="text-xs text-muted-foreground">{t('correctness.excluded', { count: sample.excluded })}</p>}
 
         {/* Trophy Progress Chart */}
         <TrophyProgressChart 
@@ -151,6 +155,7 @@ function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysis
           <p className="text-sm text-muted-foreground">{t('dashboard.aiCoach.error')}</p>
         ) : analysis ? (
           <div className="space-y-4">
+            {analysis.read_only && <p className="text-xs text-muted-foreground">{t('correctness.savedSummary', { date: analysis.analyzed_at ? new Date(analysis.analyzed_at).toLocaleString(i18n.language) : t('common.unknown') })}</p>}
             <div className="prose prose-sm max-w-none">
               {analysis.read_only && analysis.language && analysis.language !== i18n.resolvedLanguage &&
                 <p className="mb-2 text-xs text-muted-foreground">{t('coachingHistory.language', { language: new Intl.DisplayNames([i18n.language], { type: 'language' }).of(analysis.language) })}</p>}
@@ -162,7 +167,7 @@ function AIAnalysisCard({ analysis, analysisLoading, analysisError }: AIAnalysis
             </div>
             <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3 border-t border-border">
               <div className="text-center p-3 rounded-lg bg-success/10 border border-success/20">
-                <p className="text-2xl font-bold text-success">{analysis.stats.winRate}%</p>
+                <p className="text-2xl font-bold text-success">{Number.isFinite(Number(analysis.stats.winRate)) ? `${analysis.stats.winRate}%` : '—'}</p>
                 <p className="text-xs text-muted-foreground">{t('dashboard.winRate')}</p>
               </div>
               <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">

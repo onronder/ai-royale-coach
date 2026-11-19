@@ -24,14 +24,14 @@ const COLORS = [
 export function DeckUsageBreakdown({ decks, isLoading }: DeckUsageBreakdownProps) {
   const { t } = useTranslation();
   
-  const chartData = (decks || [])
+  const chartData = [...(decks || [])]
     .sort((a, b) => (b.battles_played || 0) - (a.battles_played || 0))
     .slice(0, 6)
     .map((deck, index) => {
       const deckCards = deck.deck_cards as string[] | null;
       const winRate = deck.battles_played ? (deck.battles_won || 0) / deck.battles_played : 0;
       return {
-        name: t('analytics.deckNumber', { number: index + 1 }),
+        name: `${t('analytics.deckNumber', { number: index + 1 })} · ${deck.mode || 'unknown'}`,
         value: deck.battles_played || 0,
         winRate: (winRate * 100).toFixed(1),
         cards: deckCards ? deckCards.slice(0, 3).join(', ') + '...' : '',

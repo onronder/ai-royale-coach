@@ -1,3 +1,5 @@
+import { classifyDeck, evidenceKey, evidenceHash } from '../_shared/deck-evidence.ts';
+import { observeBattles } from '../_shared/battle-observation.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
@@ -130,75 +132,26 @@ serve(async (req) => {
     const currentDeck = playerData.currentDeck || [];
     const deckCards = currentDeck.map((c: any) => c.name);
 
-    // Detect player's archetype
-    let detectedArchetype = archetypes[0]; // default
-    let maxMatches = 0;
-
-    for (const archetype of archetypes) {
-      const matches = archetype.key_cards.filter((card: string) => 
-        deckCards.some((deckCard: string) => deckCard.toLowerCase().includes(card.toLowerCase()))
-      ).length;
-      
-      if (matches > maxMatches) {
-        maxMatches = matches;
-        detectedArchetype = archetype;
-      }
+    const detectedArchetype = classifyDeck(deckCards, archetypes) || { name: 'Custom / mixed', playstyle: 'Not classified', description: 'No verified archetype match', tips: [] };
+    const observed = observeBattles(battles, playerData.tag);
+    const groups = new Map<string, { wins: number; losses: number; draws: number; total: number }>();
+    for (const b of observed.battles) {
+      if (b.format !== '1v1') continue;
+      const name = classifyDeck(b.opponents[0].cards.map(c => c.name), archetypes)?.name || 'Custom / mixed';
+      const key = `${b.mode} / ${name}`;
+      const stats = groups.get(key) || { wins: 0, losses: 0, draws: 0, total: 0 };
+      stats.total++;
+      if (b.outcome === 'win') stats.wins++; else if (b.outcome === 'loss') stats.losses++; else stats.draws++;
+      groups.set(key, stats);
     }
-
-    // Analyze win rates vs different archetypes
-    const archetypeStats = new Map<string, { wins: number; losses: number }>();
-
-    for (const battle of battles.slice(0, 25)) {
-      const playerTeam = battle.team.find((p: any) => p.tag === playerData.tag);
-      const opponent = battle.opponent[0];
-      
-      if (!playerTeam || !opponent) continue;
-
-      const isWin = playerTeam.crowns > opponent.crowns;
-      const opponentCards = opponent.cards.map((c: any) => c.name);
-
-      // Detect opponent archetype
-      let opponentArchetype = 'Unknown';
-      let maxOpponentMatches = 0;
-
-      for (const archetype of archetypes) {
-        const matches = archetype.key_cards.filter((card: string) =>
-          opponentCards.some((opCard: string) => opCard.toLowerCase().includes(card.toLowerCase()))
-        ).length;
-
-        if (matches > maxOpponentMatches) {
-          maxOpponentMatches = matches;
-          opponentArchetype = archetype.name;
-        }
-      }
-
-      const stats = archetypeStats.get(opponentArchetype) || { wins: 0, losses: 0 };
-      if (isWin) {
-        stats.wins++;
-      } else {
-        stats.losses++;
-      }
-      archetypeStats.set(opponentArchetype, stats);
-    }
-
-    const archetypeWinRates = Array.from(archetypeStats.entries())
-      .map(([archetype, stats]) => ({
-        archetype,
-        wins: stats.wins,
-        losses: stats.losses,
-        winRate: stats.wins + stats.losses > 0 
-          ? (stats.wins / (stats.wins + stats.losses)) * 100 
-          : 0
-      }))
-      .filter(a => a.wins + a.losses >= 2)
-      .sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses));
+    const archetypeWinRates = [...groups].map(([archetype, stats]) => ({ archetype, ...stats, winRate: stats.wins / stats.total * 100 }));
 
     // Get AI recommendations using structured tool calling
     const prompt = `Analyze this Clash Royale deck:
 
 **Archetype:** ${detectedArchetype.name} (${detectedArchetype.playstyle})
 **Current Deck:** ${deckCards.join(', ')}
-**Win Rate Data:** ${archetypeWinRates.map(a => `${a.archetype}: ${a.winRate.toFixed(0)}% (${a.wins}W-${a.losses}L)`).join(', ')}
+**Win Rate Data:** ${archetypeWinRates.map(a => `${a.archetype}: ${a.winRate.toFixed(0)}% (${a.wins}W-${a.losses}L-${a.draws}D n=${a.total})`).join(', ')}
 
 Based on the detected archetype and performance data, analyze:
 1. 3 key strengths of this deck

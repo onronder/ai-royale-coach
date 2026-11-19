@@ -1,3 +1,4 @@
+import { nextUpgradeCopies } from '@/lib/upgradeCost';
 import { useEffect, useState } from "react";
 import { Translation, useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,14 +42,6 @@ const RARITY_COLORS = {
   epic: "bg-purple-500",
   legendary: "bg-yellow-500",
   champion: "bg-pink-500"
-};
-
-const UPGRADE_REQUIREMENTS: Record<string, number[]> = {
-  common: [0, 2, 4, 10, 20, 50, 100, 200, 400, 800, 1600, 3000, 5000, 10000],
-  rare: [0, 2, 4, 10, 20, 50, 100, 200, 400, 800, 1600, 3000, 5000],
-  epic: [0, 2, 4, 10, 20, 50, 100, 200, 400, 800, 1600],
-  legendary: [0, 2, 4, 10, 20, 50, 100, 200, 400],
-  champion: [0, 2, 4, 10, 20, 50, 100, 200]
 };
 
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
@@ -121,20 +114,11 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       return 100;
     }
 
-    const requirements = UPGRADE_REQUIREMENTS[card.rarity.toLowerCase()] || [];
-    const currentLevelReq = requirements[card.card_level] || 0;
-    
-    if (currentLevelReq === 0) return 0;
-    return Math.min((card.card_count / currentLevelReq) * 100, 100);
+    const required = nextUpgradeCopies(card);
+    return required === null ? 0 : Math.min(card.card_count / required * 100, 100);
   };
 
-  const getNextLevelRequirement = (card: CardCollectionItem) => {
-    if (card.card_level >= card.max_level) {
-      return null;
-    }
-    const requirements = UPGRADE_REQUIREMENTS[card.rarity.toLowerCase()] || [];
-    return requirements[card.card_level] || 0;
-  };
+  const getNextLevelRequirement = nextUpgradeCopies;
 
   const filteredCards = selectedRarity === "all" 
     ? collection 
@@ -177,6 +161,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
+        <p className="text-xs text-muted-foreground">{t("correctness.copyCostOnly")}</p>
         {/* Progress Indicator */}
         {syncProgress && (
           <ProgressIndicator
@@ -256,7 +241,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                       {!isMaxLevel && (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <ArrowUp className="w-3 h-3" />
-                          <span>{card.card_count}/{nextLevelReq}</span>
+                          <span>{card.card_count}/{nextLevelReq ?? "—"}</span>
                         </div>
                       )}
                     </div>
@@ -265,7 +250,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
                       <div className="space-y-1">
                         <Progress value={progress} className="h-1.5" />
                         <p className="text-xs text-center text-muted-foreground">
-                          {t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
+                          {nextLevelReq === null ? t('correctness.unknownCost') : t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
                         </p>
                       </div>
                     ) : (

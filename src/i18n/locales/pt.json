@@ -226,7 +226,7 @@
         "battleHistory": "Análise de Histórico de Batalhas",
         "battleHistoryDesc": "Mergulhe fundo nas suas partidas recentes com insights de IA",
         "matchReplay": "Insights de Replay de Partidas",
-        "matchReplayDesc": "A IA identifica momentos-chave e pontos de virada",
+        "matchReplayDesc": "Possíveis explicações do confronto com base nos decks e no placar final.",
         "counterDeck": "Análise de Counter-Decks",
         "counterDeckDesc": "Saiba exatamente o que vence o deck do seu oponente",
         "matchupPredictions": "Previsões de Confrontos",
@@ -902,18 +902,18 @@
           },
           "personalCoaching": {
             "title": "Coaching Pessoal",
-            "description": "Seu coach de IA tem contexto completo do seu jogo, decks e progresso.",
+            "description": "O coaching usa evidências disponíveis de decks, coleção e resultados recentes; detalhes ausentes continuam desconhecidos.",
             "count": "{{count}} recurso"
           }
         },
         "features": {
           "battleAnalysis": {
             "title": "Análise de Batalha",
-            "description": "IA identifica padrões vencedores e erros críticos em cada partida"
+            "description": "Observações de decks e resultados, com possíveis explicações do confronto."
           },
           "playerProfile": {
             "title": "Análise de Perfil do Jogador",
-            "description": "Avaliação completa do seu estilo de jogo e nível de habilidade"
+            "description": "Preferências de decks observadas e resultados recentes."
           },
           "pivotalMoments": {
             "title": "Detecção de Momentos Decisivos",
@@ -925,7 +925,7 @@
           },
           "matchupPredictions": {
             "title": "Previsões de Confronto",
-            "description": "Previsões de taxa de vitória entre quaisquer dois decks com níveis de confiança"
+            "description": "Opinião de IA, não uma probabilidade de vitória calibrada."
           },
           "trophyPerformance": {
             "title": "Análise de Desempenho por Troféus",
@@ -2248,7 +2248,7 @@
     "usedTimes": "Usada {{count}} vezes",
     "predictions": {
       "total": "Total de previsões",
-      "battlesTracked": "Batalhas acompanhadas",
+      "battlesTracked": "Correspondências previsão–resultado",
       "avgError": "Erro médio",
       "accuracyRate": "Taxa de alta precisão",
       "mostAccurate": "Previsão mais precisa",
@@ -2393,8 +2393,8 @@
     "predictionFailed": "Falha ao prever confronto"
   },
   "predictionHistory": {
-    "title": "Histórico de Precisão de Previsões",
-    "description": "Acompanhe quão precisas são as previsões de IA comparadas com seus resultados reais",
+    "title": "Estimativas e resultados observados",
+    "description": "Só contam partidas 1v1 Ladder correspondentes após a previsão. As amostras não demonstram precisão calibrada. Os totais antigos não estão verificados; uma partida pode corresponder a várias previsões.",
     "viewHistory": "Ver Histórico de Previsões",
     "hideHistory": "Ocultar Histórico",
     "predictedWinRate": "Previsto",
@@ -2407,8 +2407,8 @@
     "mediumAccuracy": "Precisão Moderada",
     "lowAccuracy": "Baixa Precisão",
     "noPredictions": "Sem previsões ainda. Experimente a Previsão de Confronto IA para começar!",
-    "noBattlesYet": "Jogue algumas batalhas para ver o rastreamento de precisão",
-    "noActualResults": "Nenhum resultado de batalha rastreado ainda. Jogue alguns jogos para ver a precisão!",
+    "noBattlesYet": "Ainda não foi observado um resultado correspondente após a previsão.",
+    "noActualResults": "Ainda não foi observado um resultado correspondente após a previsão.",
     "noActualData": "sem batalhas ainda",
     "recentPredictions": "Previsões Recentes",
     "cachedResult": "Em Cache",
@@ -2484,7 +2484,7 @@
     "aiEnhanced": "Aprimorado por IA",
     "refresh": "Atualizar",
     "yourProfile": "Seu Perfil",
-    "skillLevel": "Nível de Habilidade",
+    "skillLevel": "Categoria de troféus",
     "bestArchetypes": "Melhores Arquétipos",
     "recentWinRate": "Taxa de Vitória Recente",
     "battlesAnalyzed": "Batalhas Analisadas",
@@ -2691,15 +2691,15 @@
     "iosStep3": "Toque em \"Adicionar\" no canto superior direito"
   },
   "oracle": {
-    "title": "Scanner Oráculo",
-    "subtitle": "Preveja confrontos contra qualquer deck adversário",
+    "title": "Preferências de deck observadas",
+    "subtitle": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
     "placeholder": "ex., Golem, Bruxa Noturna, Relâmpago...",
-    "scanButton": "Prever Confronto",
+    "scanButton": "Deck mais observado",
     "scanning": "Analisando confronto...",
     "result": {
       "title": "Resultado do Confronto",
-      "yourWinChance": "Sua Chance de Vitória",
-      "confidence": "Confiança",
+      "yourWinChance": "Opinião da IA; não é probabilidade calibrada",
+      "confidence": "Opinião da IA; não é probabilidade calibrada",
       "keyMatchups": "Confrontos Chave",
       "tips": "Dicas Estratégicas",
       "yourDeck": "Seu Deck",
@@ -2710,24 +2710,24 @@
       "parseError": "Não foi possível analisar as cartas do adversário. Por favor, tente novamente.",
       "predictionFailed": "A previsão do confronto falhou. Por favor, tente novamente."
     },
-    "helpTooltip": "Analisamos as últimas 25 batalhas do oponente para prever seu deck e estilo de jogo mais provável.",
-    "helperText": "Digite a tag do oponente (ex. #ABC12) para prever seu deck e estratégia.",
+    "helpTooltip": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
+    "helperText": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
     "tryExample": "Experimente",
     "pasteClipboard": "Colar da área de transferência",
     "scan": "Escanear",
-    "threatDetected": "AMEAÇA DETECTADA",
+    "threatDetected": "Deck mais observado",
     "awaitingTarget": "Aguardando a tag do adversário…",
-    "enterTagPrompt": "Digite a tag do adversário para prever o deck dele.",
+    "enterTagPrompt": "Decks recentes de jogador conhecido; não revela seu próximo adversário.",
     "targetNotFound": "Adversário não encontrado",
     "targetNotFoundDesc": "Não foi possível carregar as batalhas desse jogador.",
-    "confidence": "Confiança",
-    "playstyle": "Estilo de jogo",
+    "confidence": "Frequência observada",
+    "playstyle": "Categoria de elixir",
     "aggressive": "Agressivo",
     "defensive": "Defensivo",
     "lastSeen": "Última aparição",
-    "matchesAnalyzed": "Batalhas analisadas: {{count}} de {{total}}",
-    "predictedDeck": "Deck previsto",
-    "opponentPrefers": "O adversário costuma usar este deck",
+    "matchesAnalyzed": "{{count}} / {{total}}",
+    "predictedDeck": "Deck mais observado",
+    "opponentPrefers": "Deck mais observado",
     "watchOutFor": "Atenção a",
     "matchupAnalysis": "Análise do confronto",
     "analyzingMatchup": "Analisando o confronto…",
@@ -2740,7 +2740,7 @@
     "signInForMatchup": "Entre para ver a análise"
   },
   "proDna": {
-    "title": "DNA do Jogador",
+    "title": "Preferências de deck observadas",
     "styles": {
       "Bridge Spammer": "Especialista em pressão na ponte",
       "The Great Wall": "A grande muralha",
@@ -2748,18 +2748,18 @@
       "Balanced Warrior": "Guerreiro equilibrado",
       "Tactical Mastermind": "Mestre da tática"
     },
-    "playerDna": "DNA do Jogador",
-    "aggression": "Agressão",
-    "defense": "Defesa",
-    "versatility": "Versatilidade",
+    "playerDna": "Preferências de deck observadas",
+    "aggression": "Taxa de vitórias",
+    "defense": "Sem ceder coroas",
+    "versatility": "Variedade de decks",
     "consistency": "Consistência",
     "adaptability": "Adaptabilidade",
     "similarTo": "Estilo Similar a",
     "branding": "AI Royale",
     "download": "Baixar como Imagem",
     "share": "Compartilhar Cartão DNA",
-    "noData": "Nenhum dado de DNA do jogador disponível",
-    "noDataDescription": "Jogue mais batalhas para gerar seu perfil DNA único.",
+    "noData": "Janela recente da API; modos separados. Não é um histórico completo.",
+    "noDataDescription": "Janela recente da API; modos separados. Não é um histórico completo.",
     "generating": "Gerando imagem...",
     "downloadSuccess": "Imagem baixada com sucesso!",
     "downloadError": "Falha ao baixar imagem",
@@ -2770,7 +2770,7 @@
     "shared": "Compartilhado",
     "shareFailed": "Não foi possível compartilhar o cartão",
     "noDataHint": "Jogue algumas partidas primeiro.",
-    "shareText": "Confira meu DNA Pro do Clash Royale!"
+    "shareText": "Somente observações recentes"
   },
   "achievementShowcase": {
     "trophyCase": "Vitrine de Troféus",
@@ -2779,19 +2779,19 @@
     "amazingWork": "Trabalho incrível, Campeão!",
     "achievements": {
       "elixirMaster": {
-        "title": "Mestre do Elixir",
-        "hint": "Vença com um deck pesado (4.0+ elixir) sem perder torres",
-        "earned": "Você venceu com um deck pesado sem perder torres."
+        "title": "Vitória com deck pesado",
+        "hint": "Vitória com média conhecida de ao menos quatro de elixir e sem ceder coroas.",
+        "earned": "Vitória com média conhecida de ao menos quatro de elixir e sem ceder coroas."
       },
       "comebackKing": {
-        "title": "Rei da Virada",
-        "hint": "Vença uma partida depois de perder uma torre primeiro",
-        "earned": "Você virou a partida e venceu."
+        "title": "Vitória com torre perdida",
+        "hint": "Vitória cedendo ao menos uma coroa; ordem desconhecida.",
+        "earned": "Vitória cedendo ao menos uma coroa; ordem desconhecida."
       },
       "perfectDefense": {
-        "title": "Defesa Perfeita",
-        "hint": "Vença uma partida sem perder nenhuma torre",
-        "earned": "Você defendeu suas torres sem perder uma coroa."
+        "title": "Vitória sem ceder coroas",
+        "hint": "Sem ceder coroas; dano não medido.",
+        "earned": "Sem ceder coroas; dano não medido."
       },
       "winStreakWarrior": {
         "title": "Guerreiro de Sequência",
@@ -3373,24 +3373,24 @@
     "play": "Reproduzir",
     "victory": "Vitória!",
     "defeat": "Derrota",
-    "youWon": "Você derrotou {{proName}}!",
-    "youLost": "{{proName}} vence!",
+    "youWon": "PARTIDA FICTÍCIA · ENTRETENIMENTO · {{proName}}",
+    "youLost": "PARTIDA FICTÍCIA · ENTRETENIMENTO · {{proName}}",
     "finalScore": "Pontuação Final",
-    "winProbability": "Probabilidade de Vitória",
+    "winProbability": "Peso lúdico",
     "playAgain": "Jogar Novamente",
     "close": "Fechar",
-    "iDefeated": "EU DERROTEI {{proName}}!",
-    "iLostTo": "TÃO PERTO! Perdi para {{proName}}",
+    "iDefeated": "PARTIDA FICTÍCIA · ENTRETENIMENTO · {{proName}}",
+    "iLostTo": "PARTIDA FICTÍCIA · ENTRETENIMENTO · {{proName}}",
     "myDeck": "Meu Deck",
     "upsetAlert": "SURPRESA!",
     "shareResult": "Compartilhar Resultado",
     "downloadImage": "Baixar Imagem",
     "imageSaved": "Imagem salva!",
     "downloadFailed": "Falha no download",
-    "aiSimulation": "SIMULAÇÃO COACH IA",
+    "aiSimulation": "PARTIDA FICTÍCIA · ENTRETENIMENTO",
     "finalHp": "PV Final",
-    "subtitle": "Desafie lendas profissionais em partidas dos sonhos com IA",
-    "liveSubtitle": "Desafie o Top 10 Global com dados em tempo real",
+    "subtitle": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
+    "liveSubtitle": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
     "selectOpponent": "Selecione Seu Oponente",
     "globalTop10": "Top 10 Global",
     "live": "AO VIVO",
@@ -3401,11 +3401,11 @@
     "unlimitedMatches": "Partidas ilimitadas disponíveis",
     "howItWorks": "Como Funciona",
     "step1": "Selecione um Jogador Pro da lista abaixo para desafiar.",
-    "step2": "Nossa IA simula uma partida baseada no seu deck, estatísticas e no estilo de jogo do pro.",
+    "step2": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
     "step3": "Assista a batalha se desenrolar e veja se você consegue superar as probabilidades!",
     "liveStep1": "Selecione um jogador do ranking Top 10 Global ao vivo",
     "liveStep2": "Buscamos o deck atual em tempo real dos servidores da Supercell",
-    "liveStep3": "Nossa IA simula a partida baseada em estilos de jogo reais e o meta",
+    "liveStep3": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
     "connecting": "CONECTANDO AOS SERVIDORES DA SUPERCELL...",
     "scouting": "ESPIANDO {{name}}...",
     "ready": "DADOS ADQUIRIDOS",
@@ -3503,7 +3503,7 @@
       },
       "oracle": {
         "title": "O Oráculo",
-        "description": "Preveja o deck do seu oponente antes da partida começar! O Oráculo usa IA para te dar uma vantagem estratégica."
+        "description": "Veja decks recentes de um jogador conhecido; não é possível prever adversários futuros."
       },
       "aiRoyalePro": {
         "title": "Lançamento do AI Royale Pro",
@@ -3695,5 +3695,48 @@
     "withdrawnOk": "Os e-mails de campanha estão desativados. Não enviaremos campanhas para você.",
     "collectionPaused": "A inscrição em e-mails de campanha ainda não está aberta. Sua conta e seu coaching não são afetados.",
     "blockedNote": "Nosso serviço de e-mail não consegue entregar campanhas neste endereço (devolução ou denúncia de spam), então nenhuma será enviada."
+  },
+  "correctness": {
+    "observationScope": "Janela recente da API; modos separados. Não é um histórico completo.",
+    "noSkillInference": "A presença no deck e os resultados não medem habilidade, posicionamento ou tempo.",
+    "cardObservations": "Observações de cartas",
+    "deckAppearances": "No deck em {{count}} partidas observadas",
+    "rankingScore": "Pontuação de recomendação / 100; não é probabilidade de vitória",
+    "formsUnknown": "Somente níveis das cartas base. Formas ativas, tropa de torre e regras do modo não verificadas.",
+    "unknownCost": "Quantidade de cópias necessária desconhecida",
+    "invalidDeck": "O link do deck está incompleto ou contém cartas indisponíveis.",
+    "editCurrentDeck": "Editar deck atual",
+    "startBlank": "Começar vazio",
+    "observedPreferences": "Preferências de deck observadas",
+    "noProSimilarity": "Sem comparação validada com profissionais.",
+    "observationOnly": "Somente observações recentes",
+    "appBadges": "Emblemas do aplicativo",
+    "sample": "{{count}} partidas válidas · {{wins}} vitórias · {{losses}} derrotas · {{draws}} empates",
+    "lightDeck": "Deck de menor elixir",
+    "heavyDeck": "Deck de maior elixir",
+    "hypotheticalPractice": "Ideias possíveis e treino futuro; sem replay nem cronologia de eventos.",
+    "completedPractice": "Treino concluído · histórico",
+    "singleResult": "Um resultado não prova que o conselho causou a vitória ou derrota.",
+    "keepDeck": "Manter deck",
+    "copyCostOnly": "Somente cópias de cartas. Ouro e outros requisitos não verificados.",
+    "entertainment": "Cenário de entretenimento com eventos aleatórios. Não é partida real, replay, avaliação nem probabilidade medida.",
+    "uncalibrated": "Opinião da IA; não é probabilidade calibrada",
+    "readiness": {
+      "ready": "Níveis base compatíveis com o deck atual",
+      "investment": "Cartas de nível menor: precisam de melhoria",
+      "unknown": "Disponibilidade desconhecida",
+      "unavailable": "Cartas indisponíveis"
+    },
+    "legacyBadge": "Medalhas históricas do app; não são habilidades de jogo verificadas.",
+    "practiceTitle": "Um treino. Uma partida.",
+    "practiceQuestion": "O que devo treinar com este deck?",
+    "askPractice": "Pergunte sobre este treino",
+    "observedAt": "Atualizado: {{time}}",
+    "excluded": "Registos inválidos ou contraditórios excluídos: {{count}}.",
+    "savedSummary": "Resumo guardado de {{date}}. O seu âmbito histórico pode diferir da janela atual da API.",
+    "metaCatalog": "Catálogo de decks: a popularidade é uma pontuação do catálogo. O uso global, as vitórias e as alterações semanais não são medidos aqui.",
+    "predictionScope": "Só contam partidas 1v1 Ladder correspondentes após a previsão. As amostras não demonstram precisão calibrada. Os totais antigos não estão verificados; uma partida pode corresponder a várias previsões.",
+    "recommendationScope": "Só contam partidas 1v1 Ladder com as mesmas oito cartas base após ver a recomendação. Não mede um efeito antes/depois.",
+    "legacyData": "Registo antigo — medição não verificada"
   }
 }

@@ -6,6 +6,7 @@
 export interface PlayerAnalysis {
   language?: string;
   read_only?: boolean;
+  analyzed_at?: string;
   analysis: string;
   stats: {
     winRate: string;
@@ -105,6 +106,7 @@ export interface PredictionHistoryEntry {
   explanation: string | null;
   keyMatchups: KeyMatchup[];
   tips: { forDeckA: string[]; forDeckB: string[] } | null;
+  observationMode?: string | null;
   actualWinsA: number;
   actualLossesA: number;
   actualBattlesTotal: number;

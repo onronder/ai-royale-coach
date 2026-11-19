@@ -1,3 +1,5 @@
+import { dashboardDestination } from '@/lib/deckNavigation';
+import { useSearchParams } from 'react-router-dom';
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { useTranslation } from "react-i18next";
@@ -63,6 +65,8 @@ const Dashboard = () => {
   
   const { state: destination } = useLocation();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const route = dashboardDestination(searchParams.has('tab') ? searchParams.toString() : new URLSearchParams({ tab: destination?.tab || 'coach', subtab: destination?.subtab || '' }).toString());
   // State for dialogs and interactions
   const [selectedBattle, setSelectedBattle] = useState<ClashRoyaleBattle | null>(null);
   const [matchDetailOpen, setMatchDetailOpen] = useState(false);
@@ -71,11 +75,14 @@ const Dashboard = () => {
   const [achievementsOpen, setAchievementsOpen] = useState(destination?.panel === "achievements");
   const [helpOpen, setHelpOpen] = useState(destination?.panel === "help");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState(
-    destination?.tab === "deck" || destination?.tab === "social" ? String(destination.tab) : "coach"
-  );
-  const [activeSubTab, setActiveSubTab] = useState("overview");
-  
+  const activeTab = route.tab;
+  const activeSubTab = route.subtab;
+  const setActiveTab = (tab: string) => setSearchParams({ tab });
+  const setActiveSubTab = (subtab: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', activeTab); next.set('subtab', subtab); setSearchParams(next);
+  };
+
   // Custom hooks for data management
   const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
@@ -90,7 +97,7 @@ const Dashboard = () => {
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const player = useMemo(() => profile && battles ? withRecentLadderTrophies(profile, battles) : profile, [profile, battles]);
   const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
-  const { achievements: battleAchievements } = usePlayerAchievements(battles || null);
+  const { achievements: battleAchievements } = usePlayerAchievements(battles || null, playerTag || '');
   
   // Background sync for first-time visitors
   useBackgroundSync(user?.id || null, playerTag);
@@ -118,16 +125,6 @@ const Dashboard = () => {
       updateLastSeen(playerTag);
     }
   }, [user?.id, playerTag, updateLastSeen]);
-
-  // Reset sub-tab to default when switching main tabs
-  useEffect(() => {
-    const defaultSubTabs: Record<string, string> = {
-      coach: "overview",
-      deck: "current",
-      social: "clans",
-    };
-    setActiveSubTab(defaultSubTabs[activeTab] || "overview");
-  }, [activeTab]);
 
   // Event handlers
   const handleRefreshData = useCallback(async () => {
@@ -301,6 +298,9 @@ const Dashboard = () => {
                             <DataLoader context="deck" variant="inline" />
                           ) : player?.cards && user ? (
                             <DeckBuilder
+                              key={`${user.id}:${playerTag}:${searchParams.get('deck') || ''}`}
+                              playerTag={playerTag || ''}
+                              importedNames={searchParams.get('deck')}
                               availableCards={player.cards}
                               userId={user.id}
                               savedDecks={playerContext.savedDecks?.map(d => {

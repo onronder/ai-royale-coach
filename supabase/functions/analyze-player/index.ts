@@ -1,3 +1,6 @@
+import { cardDisplayLevel as getDisplayLevel } from '../_shared/card-display-level.ts';
+import { observeBattles } from '../_shared/battle-observation.ts';
+import { evidenceKey, evidenceHash, savedProfileFilter } from '../_shared/deck-evidence.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -7,11 +10,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
-
-function getDisplayLevel(card: { level: number; maxLevel?: number; evolutionLevel?: number }): number {
-  const maxLevel = card.maxLevel ?? 16;
-  return card.level + (16 - maxLevel);
-}
 
 serve(async (req) => {
   const corsResp = handleCors(req);
@@ -65,6 +63,8 @@ serve(async (req) => {
     if (!playerData || typeof playerData.tag !== 'string' || !Array.isArray(battles)) {
       return errorResponse('Player data and battles are required', 400);
     }
+    const savedFilter = savedProfileFilter(user.id, playerData.tag);
+    if (!savedFilter) return errorResponse('Invalid player tag', 400);
 
     // Validate access before reading a saved result, without consuming another analysis.
     const aiAccess = await checkAiAccess(supabase, user.id);
@@ -83,6 +83,7 @@ serve(async (req) => {
             .from('analyses').select('output, created_at, input_fingerprint')
             .in('player_tag', [playerData.tag, `#${tagKey}`, tagKey])
             .eq('analysis_type', 'profile_summary')
+            .or(savedFilter)
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
           if (last) {
             const savedLanguage = /_(en|tr|es|fr|pt)(?:-[a-z]{2})?$/i.exec(last.input_fingerprint ?? '')?.[1];
@@ -124,8 +125,7 @@ serve(async (req) => {
     const languageInstruction = languageInstructions[language] || languageInstructions.en;
 
     // Create fingerprint for caching
-    const recentBattleIds = battles.slice(0, 5).map((b: any) => b.battleTime).join(',');
-    const fingerprint = `profile_${playerData.tag}_${playerData.trophies}_${recentBattleIds}_${language}`;
+    const fingerprint = `profile_${user.id}_${await evidenceHash(evidenceKey(playerData, battles))}_${language}`;
 
     // Check cache
     const { data: cached } = await supabase
@@ -142,16 +142,12 @@ serve(async (req) => {
       return jsonResponse(cached.output);
     }
 
-    // Calculate stats
-    const recentBattles = battles.slice(0, 20);
-    const wins = recentBattles.filter((b: any) => 
-      (b.team[0]?.crowns || 0) > (b.opponent[0]?.crowns || 0)
-    ).length;
-    const winRate = recentBattles.length ? (wins / recentBattles.length) * 100 : 0;
-    
-    const avgTrophyChange = recentBattles.reduce((sum: number, b: any) => 
-      sum + (b.team[0]?.trophyChange || 0), 0
-    ) / (recentBattles.length || 1);
+    const recentBattles = battles;
+    const observed = observeBattles(battles, playerData.tag);
+    const { wins, losses, draws, total } = observed;
+    const winRate = observed.winRate;
+    const trophySamples = observed.battles.filter(b => b.trophyChange !== null);
+    const avgTrophyChange = trophySamples.length ? trophySamples.reduce((s, b) => s + b.trophyChange!, 0) / trophySamples.length : null;
 
     // Prepare prompt
     const prompt = `Analyze this Clash Royale player's profile and provide insights:
@@ -162,13 +158,13 @@ Trophies: ${playerData.trophies} (Best: ${playerData.bestTrophies})
 Arena: ${playerData.arena?.name || 'Unknown'}
 ${playerData.clan ? `Clan: ${playerData.clan.name}` : 'No clan'}
 
-Recent Performance (last 20 battles):
-- Win Rate: ${winRate.toFixed(1)}%
-- Average Trophy Change: ${avgTrophyChange >= 0 ? '+' : ''}${avgTrophyChange.toFixed(1)}
-- Wins: ${wins}, Losses: ${recentBattles.length - wins}
+Recent API window (${total} valid unique battles; ${observed.excluded} excluded; mixed modes):
+- Win Rate: ${winRate === null ? 'unknown' : winRate.toFixed(1) + '%'}
+- Average Trophy Change: ${avgTrophyChange === null ? 'unknown' : avgTrophyChange.toFixed(1)}
+- Wins: ${wins}, Losses: ${losses}; Draws: ${draws}
 
 Current Deck:
-${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${getDisplayLevel(c)}${c.evolutionLevel ? ' EVO' : ''})`).join('\n') || 'No deck data'}
+${playerData.currentDeck?.map((c: any) => `- ${c.name} (Lv ${getDisplayLevel(c) ?? 'unknown'}; active form unverified)`).join('\n') || 'No deck data'}
 
 Battle Types Distribution:
 ${Object.entries(
@@ -230,10 +226,10 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
       language,
       analysis,
       stats: {
-        winRate: winRate.toFixed(1),
-        avgTrophyChange: avgTrophyChange.toFixed(1),
+        winRate: winRate === null ? '—' : winRate.toFixed(1),
+        avgTrophyChange: avgTrophyChange === null ? '—' : avgTrophyChange.toFixed(1),
         recentWins: wins,
-        recentLosses: recentBattles.length - wins,
+        recentLosses: losses, recentDraws: draws, sampleCount: total, scope: observed.scope,
       }
     };
 

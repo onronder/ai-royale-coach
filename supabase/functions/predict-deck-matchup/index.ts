@@ -1,3 +1,4 @@
+import { DECK_RULE_VERSION, evidenceHash } from '../_shared/deck-evidence.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -33,8 +34,7 @@ interface MatchupPredictionResult {
 function generateDeckHash(deckA: string[], deckB: string[]): string {
   const sortedDeckA = [...deckA].sort().join('|');
   const sortedDeckB = [...deckB].sort().join('|');
-  const [first, second] = [sortedDeckA, sortedDeckB].sort();
-  return `${first}::${second}`;
+  return `${DECK_RULE_VERSION}:${sortedDeckA}::${sortedDeckB}`;
 }
 
 const CACHE_DURATION_DAYS = 7;
@@ -119,7 +119,7 @@ serve(async (req) => {
     }
 
     // Generate deck hash for caching
-    const deckHash = generateDeckHash(deckA, deckB);
+    const deckHash = await evidenceHash(generateDeckHash(deckA, deckB));
     logger.debug('Deck hash for caching', { deckHash });
 
     // Check cache for existing prediction
@@ -130,10 +130,12 @@ serve(async (req) => {
       .from('matchup_predictions')
       .select('*')
       .eq('user_id', user.id)
-      .eq('deck_hash', deckHash)
+      .eq('input_fingerprint', deckHash)
+      .eq('player_tag', playerTag ? `#${normalizePlayerTag(playerTag)}` : '')
+      .eq('observation_mode', '1v1:PvP:Ladder')
       .eq('language', language)
       .gte('created_at', cacheExpiry.toISOString())
-      .single();
+      .order('created_at', {ascending:false}).limit(1).maybeSingle();
 
     if (cachedPrediction) {
       logger.info('Returning cached prediction');
@@ -212,7 +214,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
         messages: [
           { 
             role: 'system', 
-            content: `You are an expert Clash Royale analyst specializing in deck matchups. Provide accurate win rate predictions based on card interactions, meta knowledge, and strategic analysis. ${languageInstruction}` 
+            content: `You are a Clash Royale deck analyst. Provide heuristic matchup estimates based on the supplied cards. These are uncalibrated model estimates, not measured win probabilities. Do not claim replay observations, verified active forms or known opponent behaviour. ${languageInstruction}`
           },
           { role: 'user', content: prompt }
         ],
@@ -293,12 +295,14 @@ Return ONLY valid JSON, no markdown or extra text.`;
     
     await supabase
       .from('matchup_predictions')
-      .upsert({
+      .insert({
         user_id: user.id,
         player_tag: normalizedPlayerTag,
         deck_a_cards: deckA,
         deck_b_cards: deckB,
-        deck_hash: deckHash,
+        deck_hash: `${deckHash}:${crypto.randomUUID()}`,
+        input_fingerprint: deckHash,
+        observation_mode: '1v1:PvP:Ladder',
         predicted_win_rate_a: result.deckAWinRate,
         predicted_win_rate_b: result.deckBWinRate,
         confidence: result.confidence,
@@ -307,8 +311,6 @@ Return ONLY valid JSON, no markdown or extra text.`;
         tips: result.tips,
         language: language,
         created_at: new Date().toISOString(),
-      }, {
-        onConflict: 'user_id,deck_hash,language',
       });
 
     logger.info('Prediction cached successfully');

@@ -128,7 +128,7 @@ export default function DreamArena() {
   // Get player data
   const { data: playerData, isLoading: isPlayerLoading, refetch: refetchPlayer, isFetching: isRefreshing } = useClashRoyalePlayer(playerTag);
   const { data: battles } = useClashRoyaleBattles(playerTag || null);
-  const { achievements } = usePlayerAchievements(battles || null);
+  const { achievements } = usePlayerAchievements(battles || null, playerTag || '');
   const { winRate } = useWinRate(battles || [], playerTag);
 
   const handleSignOut = async () => {
