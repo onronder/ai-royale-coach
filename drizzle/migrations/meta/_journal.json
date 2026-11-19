@@ -267,6 +267,20 @@
       "when": 1794966616650,
       "tag": "0037_apply_pending_first_value_noop",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1795089221728,
+      "tag": "0038_profiles_column_update_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1795089274507,
+      "tag": "0039_chat_retention_cleanup_in_sql",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,10 @@ import { useApiMetrics, EndpointGroup } from '@/hooks/useApiMetrics';
 import { ApiMetricsChart } from './ApiMetricsChart';
 import { ApiRequestLog } from './ApiRequestLog';
 
+// Unmeasured values render as an em dash, never as 0.
+const fmtMs = (v: number | null) => (v === null ? '—' : `${Math.round(v)}ms`);
+const fmtPct = (v: number | null) => (v === null ? '—' : `${Math.round(v)}%`);
+
 function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string) => string }) {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -28,9 +32,9 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
           </div>
           <div className="flex items-center gap-4 text-sm">
             <span className="font-semibold">{group.totalCount} {t('admin.apiMetrics.calls')}</span>
-            <span className="text-muted-foreground">{group.avgDuration}ms</span>
-            <span className={group.cacheHitRate >= 70 ? 'text-green-500' : group.cacheHitRate >= 40 ? 'text-yellow-500' : 'text-muted-foreground'}>
-              {group.cacheHitRate}% {t('admin.apiMetrics.cache')}
+            <span className="text-muted-foreground">{fmtMs(group.avgDuration)}</span>
+            <span className={group.cacheHitRate === null ? 'text-muted-foreground' : group.cacheHitRate >= 70 ? 'text-green-500' : group.cacheHitRate >= 40 ? 'text-yellow-500' : 'text-muted-foreground'}>
+              {fmtPct(group.cacheHitRate)} {t('admin.apiMetrics.cache')}
             </span>
           </div>
         </div>
@@ -46,14 +50,14 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
                 <span className="font-mono text-xs truncate max-w-[200px]">
                   {ep.endpoint}
                 </span>
-                {ep.avgDuration > 500 && (
+                {(ep.avgDuration ?? 0) > 500 && (
                   <Badge variant="destructive" className="text-[10px] px-1">{t('admin.apiMetrics.slow')}</Badge>
                 )}
               </div>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span>{ep.count}</span>
-                <span>{ep.avgDuration}ms</span>
-                <span>{ep.cacheHitRate}%</span>
+                <span>{fmtMs(ep.avgDuration)}</span>
+                <span>{fmtPct(ep.cacheHitRate)}</span>
               </div>
             </div>
           ))}
@@ -124,7 +128,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.cacheHitRate')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : `${stats?.cacheHitRate.toFixed(0)}%`}
+              {isLoading ? '...' : fmtPct(stats?.cacheHitRate ?? null)}
             </p>
           </CardContent>
         </Card>
@@ -136,7 +140,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.avgDuration')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : `${stats?.avgDuration.toFixed(0)}ms`}
+              {isLoading ? '...' : fmtMs(stats?.avgDuration ?? null)}
             </p>
           </CardContent>
         </Card>
@@ -215,14 +219,14 @@ export function ApiMetricsDashboard() {
                       <span className="font-mono text-sm truncate max-w-[200px]">
                         {ep.endpoint}
                       </span>
-                      {ep.avgDuration > 500 && (
+                      {(ep.avgDuration ?? 0) > 500 && (
                         <Badge variant="destructive" className="text-xs">{t('admin.apiMetrics.slow')}</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <span>{ep.count} {t('admin.apiMetrics.calls')}</span>
-                      <span>{ep.avgDuration}ms</span>
-                      <span>{ep.cacheHitRate}% {t('admin.apiMetrics.cache')}</span>
+                      <span>{fmtMs(ep.avgDuration)}</span>
+                      <span>{fmtPct(ep.cacheHitRate)} {t('admin.apiMetrics.cache')}</span>
                     </div>
                   </div>
                 ))

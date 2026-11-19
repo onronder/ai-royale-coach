@@ -92,7 +92,7 @@ verify_jwt = true
 
 # Cron jobs - no JWT (called by pg_cron)
 [functions.cleanup-old-messages]
-verify_jwt = false
+verify_jwt = true
 
 [functions.check-grace-period-expiry]
 verify_jwt = false

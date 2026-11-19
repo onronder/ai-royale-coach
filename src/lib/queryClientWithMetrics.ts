@@ -30,7 +30,7 @@ export function createQueryClientWithMetrics(): QueryClient {
         endpoint,
         query_key: queryKey,
         method: 'SELECT',
-        cache_hit: false,
+        // Cache status is not observed here; leave it unknown.
       });
     }
   });

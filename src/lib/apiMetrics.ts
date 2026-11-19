@@ -83,7 +83,7 @@ class ApiMetricsLogger {
           query_key: log.query_key,
           method: log.method,
           duration_ms: log.duration_ms,
-          cache_hit: log.cache_hit ?? false,
+          cache_hit: log.cache_hit ?? null,
           metadata: log.metadata ?? {},
         }))
       );
@@ -116,7 +116,6 @@ class ApiMetricsLogger {
         method,
         query_key: queryKey,
         duration_ms: duration,
-        cache_hit: false,
       });
       return result;
     } catch (err) {
@@ -126,7 +125,6 @@ class ApiMetricsLogger {
         method,
         query_key: queryKey,
         duration_ms: duration,
-        cache_hit: false,
         metadata: { error: true },
       });
       throw err;

@@ -3137,6 +3137,10 @@ export type Database = {
         Args: { p_campaign: string; p_payload: Json; p_user: string }
         Returns: Json
       }
+      cleanup_expired_chat_messages: {
+        Args: { p_limit?: number }
+        Returns: number
+      }
       cleanup_old_api_logs: { Args: never; Returns: undefined }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }

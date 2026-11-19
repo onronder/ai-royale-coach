@@ -2,20 +2,26 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminAccess } from './useAdminAccess';
+import { combineMeasured, measuredAverage, measuredRate } from '@/lib/metricSummary';
 
 export interface ApiMetricsStats {
   totalRequests: number;
   requestsPerMinute: number;
-  cacheHitRate: number;
+  /** null = no request recorded a cache flag */
+  cacheHitRate: number | null;
   slowQueries: number;
-  avgDuration: number;
+  /** null = no request recorded a duration */
+  avgDuration: number | null;
+  durationMeasured: number;
 }
 
 export interface EndpointStats {
   endpoint: string;
   count: number;
-  avgDuration: number;
-  cacheHitRate: number;
+  avgDuration: number | null;
+  cacheHitRate: number | null;
+  durationMeasured: number;
+  cacheMeasured: number;
 }
 
 export interface EndpointGroup {
@@ -23,8 +29,8 @@ export interface EndpointGroup {
   pattern: string;
   endpoints: EndpointStats[];
   totalCount: number;
-  avgDuration: number;
-  cacheHitRate: number;
+  avgDuration: number | null;
+  cacheHitRate: number | null;
 }
 
 export interface TimelinePoint {
@@ -69,16 +75,16 @@ function groupEndpoints(endpoints: EndpointStats[]): EndpointGroup[] {
       if (eps.length === 0) return null;
       
       const totalCount = eps.reduce((sum, e) => sum + e.count, 0);
-      const weightedDuration = eps.reduce((sum, e) => sum + e.avgDuration * e.count, 0);
-      const weightedCache = eps.reduce((sum, e) => sum + e.cacheHitRate * e.count, 0);
+      const duration = combineMeasured(eps.map(e => ({ average: e.avgDuration, measured: e.durationMeasured, total: e.count })));
+      const cache = combineMeasured(eps.map(e => ({ average: e.cacheHitRate, measured: e.cacheMeasured, total: e.count })));
       
       return {
         name: g.name,
         pattern: g.pattern.source,
         endpoints: eps.sort((a, b) => b.count - a.count),
         totalCount,
-        avgDuration: totalCount > 0 ? Math.round(weightedDuration / totalCount) : 0,
-        cacheHitRate: totalCount > 0 ? Math.round(weightedCache / totalCount) : 0,
+        avgDuration: duration.average === null ? null : Math.round(duration.average),
+        cacheHitRate: cache.average === null ? null : Math.round(cache.average),
       };
     })
     .filter((g): g is EndpointGroup => g !== null && g.totalCount > 0)
@@ -110,16 +116,17 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
 
       const logs = data || [];
       const total = logs.length;
-      const cacheHits = logs.filter((l) => l.cache_hit).length;
-      const slowQueries = logs.filter((l) => (l.duration_ms ?? 0) > 1000).length;
-      const totalDuration = logs.reduce((sum, l) => sum + (l.duration_ms ?? 0), 0);
+      const cache = measuredRate(logs.map((l) => l.cache_hit));
+      const slowQueries = logs.filter((l) => typeof l.duration_ms === 'number' && l.duration_ms > 1000).length;
+      const duration = measuredAverage(logs.map((l) => l.duration_ms));
 
       return {
         totalRequests: total,
         requestsPerMinute: total / timeframeMins,
-        cacheHitRate: total > 0 ? (cacheHits / total) * 100 : 0,
+        cacheHitRate: cache.average,
         slowQueries,
-        avgDuration: total > 0 ? totalDuration / total : 0,
+        avgDuration: duration.average,
+        durationMeasured: duration.measured,
       };
     },
     enabled: isAdmin,
@@ -142,23 +149,28 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
       const grouped = (data || []).reduce(
         (acc, log) => {
           if (!acc[log.endpoint]) {
-            acc[log.endpoint] = { count: 0, totalDuration: 0, cacheHits: 0 };
+            acc[log.endpoint] = { durations: [], flags: [] };
           }
-          acc[log.endpoint].count++;
-          acc[log.endpoint].totalDuration += log.duration_ms ?? 0;
-          if (log.cache_hit) acc[log.endpoint].cacheHits++;
+          acc[log.endpoint].durations.push(log.duration_ms);
+          acc[log.endpoint].flags.push(log.cache_hit);
           return acc;
         },
-        {} as Record<string, { count: number; totalDuration: number; cacheHits: number }>
+        {} as Record<string, { durations: (number | null)[]; flags: (boolean | null)[] }>
       );
 
       return Object.entries(grouped)
-        .map(([endpoint, stats]) => ({
-          endpoint,
-          count: stats.count,
-          avgDuration: Math.round(stats.totalDuration / stats.count),
-          cacheHitRate: Math.round((stats.cacheHits / stats.count) * 100),
-        }))
+        .map(([endpoint, stats]) => {
+          const d = measuredAverage(stats.durations);
+          const c = measuredRate(stats.flags);
+          return {
+            endpoint,
+            count: stats.durations.length,
+            avgDuration: d.average === null ? null : Math.round(d.average),
+            cacheHitRate: c.average === null ? null : Math.round(c.average),
+            durationMeasured: d.measured,
+            cacheMeasured: c.measured,
+          };
+        })
         .sort((a, b) => b.count - a.count);
     },
     enabled: isAdmin,
