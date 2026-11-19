@@ -17,7 +17,7 @@ export function coachingSwap<T extends Card>(source: T[], proposed: T[], removeI
 }
 
 export function swapStatement(removed: Card, added: Card, language: string) {
-  const from = cardDisplayLevel(removed), to = cardDisplayLevel(added);
+  const from = cardDisplayLevel(removed) ?? '—', to = cardDisplayLevel(added) ?? '—';
   const fromName = localizedCardName(removed.name, language), toName = localizedCardName(added.name, language);
   switch (productLanguage(language)) {
     case 'tr': return `${fromName} (seviye ${from}) yerine ${toName} (seviye ${to}) kullan.`;
@@ -56,4 +56,26 @@ export function formatCoachingAdvice(removed: Card, added: Card, collection: Car
     practice: tacticalText(tip, added, collection, language) || practice[language],
     answer: answer === undefined ? undefined : withFacts(answer),
   };
+}
+
+export function keptDeckStatement(language: string) {
+  const text: Record<Language,string> = {
+    en:'Keep your current deck for this practice. No card change is recommended.',
+    tr:'Bu çalışma için mevcut desteni koru. Kart değişikliği önerilmiyor.',
+    es:'Conserva tu mazo para esta práctica. No se recomienda cambiar cartas.',
+    fr:'Gardez votre deck pour cet exercice. Aucun changement de carte n’est recommandé.',
+    pt:'Mantenha seu deck neste treino. Nenhuma troca de carta é recomendada.',
+  };
+  return text[productLanguage(language)];
+}
+
+export function keepDeckAdvice(deck: Card[], collection: Card[], language: Language, reason: string, tip: string) {
+  return { reason: tacticalText(reason, deck[0], collection, language) || keptDeckStatement(language),
+    practice: tacticalText(tip, deck[0], collection, language) || practice[language] };
+}
+export function validCoachingChoice(source: Card[], collection: Card[], removeId: number | null, addId: number | null) {
+  if (removeId === null && addId === null) return { keep: true, deck: source };
+  const removed = source.find(c => c.id === removeId), added = collection.find(c => c.id === addId);
+  if (!removed || !added || source.some(c => c.id === addId) || cardDisplayLevel(removed) === null || cardDisplayLevel(added) === null) return null;
+  return { keep: false, removed, added, deck: source.map(c => c.id === removeId ? added : c) };
 }

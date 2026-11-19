@@ -55,22 +55,17 @@ export function ProDNAView({ open, onOpenChange, playerTag, playerName, battles:
   const { data: fetchedBattles, isLoading } = useClashRoyaleBattles(battlesProp ? null : playerTag);
   const battles = battlesProp || fetchedBattles;
   
-  const [dna, setDna] = useState<PlayerDNA | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Calculate DNA when battles are available
   const calculatedDna = battles ? calculatePlayerDNA(battles, playerTag) : null;
-  const sourceDna = calculatedDna || dna;
+  const sourceDna = calculatedDna;
   const displayDna = sourceDna && {
     ...sourceDna,
-    archetype: sourceDna.archetype === 'Unknown' ? t('common.unknown') : t(`proDna.styles.${sourceDna.archetype}`),
+    archetype: sourceDna.archetype === 'Unknown' ? t('common.unknown') : t('correctness.observedPreferences'),
     similarPro: sourceDna.similarPro === 'Unknown' ? t('common.unknown') : sourceDna.similarPro,
   };
 
-  // Update local state when calculated
-  if (calculatedDna && !dna) {
-    setDna(calculatedDna);
-  }
 
   const handleDownload = async () => {
     if (!displayDna) return;

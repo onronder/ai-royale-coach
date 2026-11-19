@@ -1,3 +1,4 @@
+import { validateBackendEnvironment } from '@/lib/backendEnvironment';
 interface CardIconUrls {
   medium: string;
   evolutionMedium?: string;
@@ -13,6 +14,8 @@ export interface ClashRoyaleCard {
   rarity?: string;
   iconUrls: CardIconUrls;
   evolutionLevel?: number;
+  heroLevel?: number;
+  activeForm?: "base" | "evolution" | "hero" | "unknown";
   starLevel?: number;
 }
 
@@ -52,6 +55,7 @@ export interface ClashRoyalePlayer {
   };
   cards?: ClashRoyaleCard[];
   currentDeck?: ClashRoyaleCard[];
+  currentDeckSupportCards?: ClashRoyaleCard[];
   wins: number;
   losses: number;
   battleCount: number;
@@ -106,10 +110,8 @@ export interface GlobalRankingsResponse {
 
 class ClashRoyaleApiService {
   private async callEdgeFunction<T>(endpoint: string, playerTag?: string, params?: Record<string, string>): Promise<T> {
-    const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-    const url = new URL(
-      `https://${projectId}.supabase.co/functions/v1/clash-royale-api`
-    );
+    const origin = validateBackendEnvironment(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_PROJECT_ID, import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+    const url = new URL(`${origin}/functions/v1/clash-royale-api`);
     url.searchParams.set('endpoint', endpoint);
     if (playerTag) {
       url.searchParams.set('playerTag', playerTag);
@@ -145,16 +147,9 @@ class ClashRoyaleApiService {
   }
 
   async getGlobalTopLadder(limit: number = 10): Promise<LadderPlayer[]> {
-    try {
-      const response = await this.callEdgeFunction<GlobalRankingsResponse>('rankings', undefined, { 
-        limit: limit.toString() 
-      });
-      return response.items || [];
-    } catch (error) {
-      // Return empty array on error - let the UI handle fallback
-      console.warn('Global leaderboard fetch failed, using fallback:', error);
-      return [];
-    }
+    const response = await this.callEdgeFunction<GlobalRankingsResponse>('rankings', undefined, { limit: limit.toString() });
+    if (!Array.isArray(response.items)) throw new Error('Invalid leaderboard response');
+    return response.items;
   }
 
   normalizeTag(tag: string): string {

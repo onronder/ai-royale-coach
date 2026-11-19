@@ -1,7 +1,7 @@
 import { restoreAccountLanguage } from '@/i18n/changeLanguage';
 import { SubscriptionUserContext } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy, useState, useEffect, useMemo } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,10 +38,10 @@ const Oracle = lazy(() => import("./pages/Oracle"));
 const Admin = lazy(() => import("./pages/Admin"));
 const DreamArena = lazy(() => import("./pages/DreamArena"));
 
-const queryClient = createQueryClientWithMetrics();
 
 const App = () => {
   const [accountId, setAccountId] = useState<string | null | undefined>();
+  const queryClient = useMemo(() => createQueryClientWithMetrics(), [accountId]);
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => setAccountId(session?.user.id ?? null));
     return () => data.subscription.unsubscribe();

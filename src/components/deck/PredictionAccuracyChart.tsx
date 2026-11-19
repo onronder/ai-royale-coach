@@ -1,3 +1,4 @@
+import { measuredPredictionErrors } from '@/lib/predictionEvidence';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,12 +77,12 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
       actual: p.actualWinRateA || 0,
       battles: p.actualBattlesTotal,
       error: p.predictionError !== null ? Math.abs(p.predictionError) : null,
-      date: new Date(p.createdAt).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' }),
+      date: new Date(p.createdAt).toLocaleDateString(i18n.language, { year: 'numeric', month: 'short', day: 'numeric' }),
       deckA: p.deckACards.slice(0, 3).join(', '),
     }));
 
   // Calculate overall accuracy
-  const predictionsWithActuals = predictions.filter(p => p.actualBattlesTotal > 0);
+  const predictionsWithActuals = measuredPredictionErrors(predictions);
   const avgError = predictionsWithActuals.length > 0
     ? predictionsWithActuals.reduce((sum, p) => sum + Math.abs(p.predictionError || 0), 0) / predictionsWithActuals.length
     : null;
@@ -175,8 +176,8 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
                   }}
                 />
                 <ReferenceLine y={50} stroke="hsl(var(--muted-foreground))" strokeDasharray="5 5" />
-                <Bar dataKey="predicted" name="predicted" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} opacity={0.7} />
-                <Bar dataKey="actual" name="actual" radius={[4, 4, 0, 0]}>
+                <Bar isAnimationActive={false} dataKey="predicted" name="predicted" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} opacity={0.7} />
+                <Bar isAnimationActive={false} dataKey="actual" name="actual" radius={[4, 4, 0, 0]}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getAccuracyColor(entry.error)} />
                   ))}
@@ -202,17 +203,17 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
             {predictions.slice(0, 5).map((prediction) => (
               <div
                 key={prediction.id}
-                className="flex items-center justify-between p-2 rounded-lg bg-muted/30 text-sm"
+                className="grid grid-cols-1 gap-2 p-2 rounded-lg bg-muted/30 text-sm sm:grid-cols-2"
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <Badge variant="outline" className="text-xs shrink-0">
-                    {prediction.confidence}
+                    {t(`deckComparison.confidence${prediction.confidence.charAt(0).toUpperCase()+prediction.confidence.slice(1)}`)}
                   </Badge>
                   <span className="truncate text-muted-foreground">
                     {prediction.deckACards.slice(0, 2).join(', ')}...
                   </span>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center justify-between gap-3 min-w-0">
                   <div className="text-right">
                     <div className="font-medium">{prediction.predictedWinRateA}%</div>
                     <div className="text-xs text-muted-foreground">
@@ -231,7 +232,7 @@ export function PredictionAccuracyChart({ predictions, isLoading }: PredictionAc
                   ) : (
                     <div className="text-right text-muted-foreground">
                       <div className="text-xs">-</div>
-                      <div className="text-xs">0 {t('predictionHistory.battlesTracked').toLocaleLowerCase(i18n.language)}</div>
+                      <div className="text-xs">{prediction.observationMode ? `0 ${t('predictionHistory.battlesTracked').toLocaleLowerCase(i18n.language)}` : t('correctness.legacyData')}</div>
                     </div>
                   )}
                 </div>

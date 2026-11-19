@@ -1,3 +1,5 @@
+import { recentStatistics } from '../_shared/recent-statistics.ts';
+import { canonicalTag } from '../_shared/battle-observation.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
@@ -11,7 +13,8 @@ serve(async (req) => {
   let playerTag: string;
   try {
     const body = await req.json();
-    playerTag = body.playerTag;
+    if (typeof body.playerTag !== 'string' || !body.playerTag.trim()) return errorResponse('Player tag required', 400);
+    playerTag = canonicalTag(body.playerTag);
   } catch (e) {
     return errorResponse('Invalid request body', 400);
   }
@@ -34,6 +37,7 @@ serve(async (req) => {
   }
 
   try {
+    const startedAt = new Date().toISOString();
     // Helper function to check for cancellation
     const checkCancellation = async () => {
       try {
@@ -91,7 +95,7 @@ serve(async (req) => {
       }
     });
 
-    if (battleError || !battles) {
+    if (battleError || !Array.isArray(battles)) {
       logger.error('Failed to fetch battle log', { error: battleError });
       await updateProgress(0, 100, 'Failed to fetch battles', 'failed');
       throw new Error('Failed to fetch battle log');
@@ -108,133 +112,21 @@ serve(async (req) => {
 
     await updateProgress(20, 100, 'Processing battles...');
 
-    // Aggregate card stats
-    const cardStats = new Map<number, any>();
-    const totalBattles = battles.length;
-    
-    for (let i = 0; i < battles.length; i++) {
-      const battle = battles[i];
-      if (!battle.team || !battle.team[0] || !battle.team[0].cards) continue;
-      
-      const isWin = battle.team[0].crowns > (battle.opponent?.[0]?.crowns || 0);
-      const crowns = battle.team[0].crowns || 0;
-      const deckCards = battle.team[0].cards.map((c: any) => c.name);
-      
-      for (const card of battle.team[0].cards) {
-        if (!cardStats.has(card.id)) {
-          cardStats.set(card.id, {
-            card_id: card.id,
-            card_name: card.name,
-            times_used: 0,
-            battles_won: 0,
-            battles_lost: 0,
-            total_crowns: 0,
-            partner_cards: new Map<string, number>(),
-            opponent_cards: new Map<string, number>(),
-          });
-        }
-        
-        const stats = cardStats.get(card.id);
-        stats.times_used++;
-        stats.total_crowns += crowns;
-        
-        if (isWin) {
-          stats.battles_won++;
-          deckCards.forEach((partnerName: string) => {
-            if (partnerName !== card.name) {
-              stats.partner_cards.set(partnerName, (stats.partner_cards.get(partnerName) || 0) + 1);
-            }
-          });
-        } else {
-          stats.battles_lost++;
-          battle.opponent?.[0]?.cards?.forEach((oppCard: any) => {
-            stats.opponent_cards.set(oppCard.name, (stats.opponent_cards.get(oppCard.name) || 0) + 1);
-          });
-        }
-      }
-
-      // Update progress periodically
-      if (i % 5 === 0) {
-        const progressPercent = 20 + Math.floor((i / totalBattles) * 40);
-        await updateProgress(progressPercent, 100, `Processing battle ${i + 1}/${totalBattles}...`);
-        
-        if (await checkCancellation()) {
-          logger.info('Operation cancelled by user');
-          await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-          return jsonResponse({ success: false, message: 'Operation cancelled' });
-        }
-      }
-    }
-
-    // Check for cancellation
-    if (await checkCancellation()) {
-      logger.info('Operation cancelled by user');
-      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return jsonResponse({ success: false, message: 'Operation cancelled' });
-    }
-
-    await updateProgress(60, 100, 'Calculating mastery levels...');
-
-    // Calculate mastery levels and prepare upserts
-    const upsertPromises = Array.from(cardStats.values()).map(stats => {
-      const winRate = stats.battles_won / (stats.battles_won + stats.battles_lost);
-      const crownAvg = stats.total_crowns / stats.times_used;
-      
-      const usageScore = Math.min(stats.times_used / 500, 1) * 40;
-      const winScore = winRate * 35;
-      const crownScore = (crownAvg / 3) * 25;
-      const totalScore = usageScore + winScore + crownScore;
-      
-      const masteryLevel = Math.max(1, Math.min(10, Math.ceil(totalScore / 10)));
-      const masteryProgress = Math.round((totalScore % 10) * 10);
-      
-      const bestPartners = (Array.from(stats.partner_cards.entries()) as Array<[string, number]>)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([name]) => name);
-      
-      const worstMatchups = (Array.from(stats.opponent_cards.entries()) as Array<[string, number]>)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([name]) => name);
-
-      return supabase.from('card_mastery').upsert({
-        user_id: user.id,
-        player_tag: playerTag,
-        card_id: stats.card_id,
-        card_name: stats.card_name,
-        times_used: stats.times_used,
-        battles_won: stats.battles_won,
-        battles_lost: stats.battles_lost,
-        total_crowns: stats.total_crowns,
-        best_partner_cards: bestPartners,
-        worst_matchup_cards: worstMatchups,
-        mastery_level: masteryLevel,
-        mastery_progress: masteryProgress,
-        last_updated: new Date().toISOString(),
-      }, {
-        onConflict: 'user_id,card_id'
-      });
+    const result = recentStatistics(battles, playerTag);
+    if (await checkCancellation()) return jsonResponse({ success: false, message: 'Operation cancelled' });
+    const { error: saveError } = await supabase.rpc('replace_recent_observations', {
+      p_user: user.id, p_tag: playerTag, p_feature: 'cards', p_started: startedAt,
+      p_rows: result.cards, p_samples: result.summary.total, p_excluded: result.summary.excluded,
     });
-
-    // Check for cancellation before saving
-    if (await checkCancellation()) {
-      logger.info('Operation cancelled by user');
-      await updateProgress(0, 100, 'Cancelled by user', 'cancelled');
-      return jsonResponse({ success: false, message: 'Operation cancelled' });
-    }
-
-    await updateProgress(80, 100, 'Saving mastery data...');
-    
-    await Promise.all(upsertPromises);
+    if (saveError) throw saveError;
 
     await updateProgress(100, 100, 'Completed!', 'completed');
 
-    logger.info('Successfully calculated mastery', { cardsProcessed: cardStats.size });
+    logger.info('Successfully calculated mastery', { cardsProcessed: result.cards.length });
 
     return jsonResponse({ 
       success: true, 
-      cards_processed: cardStats.size 
+      cards_processed: result.cards.length
     });
 
   } catch (error) {

@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -112,7 +114,7 @@ Consider:
 
 Provide predictions for 3-4 trophy ranges including the target range.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'predict-deck-performance' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -160,6 +162,7 @@ Provide predictions for 3-4 trophy ranges including the target range.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       if (response.status === 429) {
         return errorResponse('Rate limit exceeded. Please try again later.', 429);
@@ -181,7 +184,7 @@ Provide predictions for 3-4 trophy ranges including the target range.`;
 
     const result = JSON.parse(toolCall.function.arguments);
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'predict-deck-performance');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'predict-deck-performance');
     return jsonResponse(result);
 
   } catch (error) {

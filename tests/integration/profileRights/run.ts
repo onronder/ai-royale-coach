@@ -17,7 +17,8 @@ assert.equal((await root`SHOW listen_addresses`)[0].listen_addresses, '');
 await root.unsafe(`CREATE DATABASE ${name}`);
 const sql = postgres({ ...options, database: name });
 const read = (f: string) => readFile(new URL(f, import.meta.url), 'utf8');
-const migration = await read('../../../drizzle/migrations/0039_protect_profile_entitlements.sql');
+const baseline = await read('../../../drizzle/migrations/0038_profiles_column_update_guard.sql');
+const migration = await read('../../../drizzle/migrations/0043_complete_profile_write_boundary.sql');
 const id = '44444444-2222-4333-8444-555555555555';
 const client = {
   rpc: async () => ({ data: false }),
@@ -39,10 +40,25 @@ try {
   });
   assert.equal((await checkAiAccess(client,id)).isTrial,true);
   console.log('PASS before fix: own profile mutation grants AI trial (real checkAiAccess)');
-  const before = await sql`SELECT to_jsonb(p) AS profile FROM profiles p ORDER BY id`;
+  await sql.unsafe(baseline);
+  const extendTrial = () => sql.begin(async tx => {
+    await tx`SELECT set_config('request.jwt.claim.sub',${id},true)`;
+    await tx.unsafe('SET LOCAL ROLE authenticated');
+    await tx`UPDATE profiles SET trial_ends_at=now()+interval '1 year' WHERE id=auth.uid()`;
+  });
+  await assert.rejects(extendTrial, (e: any) => e.code === '42501');
+  console.log('PASS current 0038 blocks the ordinary table UPDATE path');
+  await sql.unsafe('GRANT UPDATE(trial_ends_at) ON profiles TO authenticated');
+  await sql.unsafe(baseline);
+  await assert.rejects(extendTrial, (e: any) => e.code === '42501');
+  console.log('PASS current 0038 also clears the direct column UPDATE grant on this PostgreSQL version');
   // Exercise inherited PUBLIC and old per-column grants as well as normal table grants.
   await sql.unsafe('GRANT UPDATE(trial_ends_at), INSERT(id), REFERENCES(id) ON profiles TO PUBLIC, anon, authenticated');
   await sql.unsafe('GRANT UPDATE ON profiles TO PUBLIC');
+  await sql.unsafe(baseline);
+  await extendTrial();
+  console.log('PASS reproduced: 0038 alone leaves inherited PUBLIC UPDATE');
+  const before = await sql`SELECT to_jsonb(p) AS profile FROM profiles p ORDER BY id`;
   await sql.unsafe(migration);
   await sql.unsafe(migration);
   assert.deepEqual(await sql`SELECT to_jsonb(p) AS profile FROM profiles p ORDER BY id`,before);

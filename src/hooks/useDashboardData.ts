@@ -1,3 +1,4 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -59,7 +60,7 @@ export function useDashboardData(playerTag: string | undefined) {
       // Batch all context queries with Promise.all for better performance
       const [decksResult, masteryResult, achievementsResult, collectionResult] = await Promise.all([
         supabase.from('saved_decks').select('*').eq('user_id', user.id),
-        supabase.from('card_mastery').select('*').eq('player_tag', playerTag),
+        supabase.from('card_mastery').select('*').eq('observation_scope', 'recent-battles-v2').eq('player_tag', canonicalTag(playerTag)),
         supabase.from('user_achievements').select('*, achievement:achievements(*)').eq('player_tag', playerTag),
         supabase.from('card_collection').select('*').eq('player_tag', playerTag),
       ]);

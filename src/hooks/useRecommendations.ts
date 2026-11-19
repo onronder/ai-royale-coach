@@ -1,3 +1,4 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,10 +6,12 @@ import { toast } from "sonner";
 
 export interface DeckRecommendation {
   deckId: string;
+  historyId?: string;
+  readiness?: {state: string; reference: number | null; cards: {name: string; owned: boolean; level: number | null; gap: number | null}[]};
   deckName: string;
   cards: string[];
   archetype: string;
-  avgElixir: number;
+  avgElixir: number | null;
   difficulty: string;
   matchScore: number;
   reason: string;
@@ -20,7 +23,7 @@ export interface DeckRecommendation {
 export interface PlayerRecommendationProfile {
   skillLevel: 'beginner' | 'intermediate' | 'advanced';
   bestArchetypes: string[];
-  recentWinRate: number;
+  recentWinRate: number | null;
   totalBattles: number;
 }
 
@@ -31,12 +34,12 @@ export interface RecommendationResponse {
   fromCache: boolean;
 }
 
-export const useRecommendations = (playerTag: string, trophies: number) => {
+export const useRecommendations = (playerTag: string, trophies: number, snapshotKey = '') => {
   const { i18n } = useTranslation();
   const language = i18n.resolvedLanguage ?? 'en';
 
   return useQuery({
-    queryKey: ['deck-recommendations', playerTag, language],
+    queryKey: ['deck-recommendations', playerTag, language, snapshotKey],
     queryFn: async (): Promise<RecommendationResponse> => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -71,7 +74,7 @@ export const useRecommendations = (playerTag: string, trophies: number) => {
       return data as RecommendationResponse;
     },
     enabled: !!playerTag && trophies > 0,
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    staleTime: 0, // Revalidate the source snapshot on entry; provider work is idempotent.
     gcTime: 48 * 60 * 60 * 1000, // 48 hours
     retry: (failureCount, error) => {
       // Don't retry subscription errors
@@ -87,7 +90,7 @@ export const useRefreshRecommendations = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ playerTag, trophies }: { playerTag: string; trophies: number }) => {
+    mutationFn: async ({ playerTag, trophies, snapshotKey }: { playerTag: string; trophies: number; snapshotKey: string }) => {
       const language = i18n.resolvedLanguage ?? 'en';
       toast.loading(t('recommendations.refreshing'), { id: 'refresh-recommendations' });
 
@@ -126,7 +129,7 @@ export const useRefreshRecommendations = () => {
     },
     onSuccess: ({ recommendations, language }, variables) => {
       queryClient.setQueryData(
-        ['deck-recommendations', variables.playerTag, language],
+        ['deck-recommendations', variables.playerTag, language, variables.snapshotKey],
         recommendations
       );
       toast.success(t('recommendations.refreshed'), { id: 'refresh-recommendations' });
@@ -161,7 +164,7 @@ export const useRecommendationHistory = (playerTag: string) => {
         .from('recommendation_history')
         .select('*')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
+        .in('player_tag', [canonicalTag(playerTag),canonicalTag(playerTag).slice(1)])
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -180,14 +183,8 @@ export const useMarkRecommendationAdopted = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('recommendation_history')
-        .update({
-          adopted: true,
-          adopted_at: new Date().toISOString()
-        })
-        .eq('id', recommendationId)
-        .eq('user_id', user.id);
+      // A button press records exposure; only a later matching battle proves adoption.
+      const { error } = await supabase.rpc('mark_recommendations_seen', {p_ids:[recommendationId]});
 
       if (error) throw error;
       return { recommendationId, playerTag };

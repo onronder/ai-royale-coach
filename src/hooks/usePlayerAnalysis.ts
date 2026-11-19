@@ -1,3 +1,4 @@
+import { evidenceKey } from '../../supabase/functions/_shared/deck-evidence';
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +24,7 @@ export function usePlayerAnalysis(
   const language = i18n.resolvedLanguage ?? 'en';
   
   return useQuery({
-    queryKey: ['player-analysis', player?.tag, language],
+    queryKey: ['player-analysis', player?.tag, language, evidenceKey(player, battles)],
     queryFn: async () => {
       if (!player || !battles) {
         throw new Error('Player data and battles are required');

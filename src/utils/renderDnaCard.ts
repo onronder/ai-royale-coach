@@ -13,8 +13,9 @@ interface RenderOptions {
 
 export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTMLCanvasElement> {
   const { dna, playerName, playerTag, t, language, scale = 2 } = options;
-  const { stats, archetype, similarPro } = dna;
-  const avgScore = Math.round((stats.aggression + stats.defense + stats.versatility) / 3);
+  const { stats } = dna;
+  const archetype = t(dna.sampleCount ? 'correctness.observedPreferences' : 'common.unknown');
+  const avgScore = `n=${dna.sampleCount}`;
 
   const width = 280 * scale;
   const height = 400 * scale;
@@ -166,11 +167,11 @@ export async function renderDnaCardToCanvas(options: RenderOptions): Promise<HTM
   ctx.font = '9px system-ui';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(`${t('proDna.similarTo')}:`, 105, similarY + 12, 100);
+  ctx.fillText(`${t('correctness.noProSimilarity')}:`, 105, similarY + 12, 100);
   
   ctx.fillStyle = '#d4af37';
   ctx.font = 'bold 10px system-ui';
-  ctx.fillText(similarPro, 175, similarY + 12);
+  ctx.fillText(t('correctness.observationOnly'), 140, similarY + 12);
 
   // Footer branding
   ctx.fillStyle = 'rgba(212, 175, 55, 0.5)';
@@ -231,7 +232,7 @@ function drawStatBar(
   ctx: CanvasRenderingContext2D, 
   label: string,
   icon: string,
-  value: number, 
+  value: number | null,
   colorFrom: string, 
   colorTo: string, 
   y: number
@@ -265,7 +266,7 @@ function drawStatBar(
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 10px system-ui';
   ctx.textAlign = 'right';
-  ctx.fillText(value.toString(), x + barWidth + 25, y + 2);
+  ctx.fillText(value === null ? '—' : `${value}%`, x + barWidth + 25, y + 2);
   
   // Bar background
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -280,7 +281,7 @@ function drawStatBar(
   barFillGrad.addColorStop(0, colorFrom);
   barFillGrad.addColorStop(1, colorTo);
   ctx.fillStyle = barFillGrad;
-  const fillWidth = (value / 100) * barWidth;
+  const fillWidth = ((value ?? 0) / 100) * barWidth;
   roundRect(ctx, x + 28, y + 14, fillWidth, 6, 3);
   ctx.fill();
 }

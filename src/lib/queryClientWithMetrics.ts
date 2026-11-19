@@ -1,9 +1,10 @@
 import { QueryClient } from '@tanstack/react-query';
 import { apiMetrics } from './apiMetrics';
+import { observeQueryTiming } from './queryTiming';
 
 /**
  * Creates a QueryClient with API metrics tracking for admin monitoring.
- * Tracks all query executions with timing and cache status.
+ * Records completed query timing; unknown cache status is not inferred.
  */
 export function createQueryClientWithMetrics(): QueryClient {
   const queryClient = new QueryClient({
@@ -17,39 +18,6 @@ export function createQueryClientWithMetrics(): QueryClient {
     },
   });
 
-  // Track query cache events
-  const queryCache = queryClient.getQueryCache();
-
-  queryCache.subscribe((event) => {
-    if (event.type === 'updated' && event.action?.type === 'fetch') {
-      const queryKey = JSON.stringify(event.query.queryKey);
-      const endpoint = extractEndpoint(event.query.queryKey);
-      
-      // Log the fetch
-      apiMetrics.log({
-        endpoint,
-        query_key: queryKey,
-        method: 'SELECT',
-        cache_hit: false,
-      });
-    }
-  });
-
+  observeQueryTiming(queryClient, entry => apiMetrics.log(entry));
   return queryClient;
-}
-
-/**
- * Extract a readable endpoint name from query key
- */
-function extractEndpoint(queryKey: unknown): string {
-  if (Array.isArray(queryKey)) {
-    const first = queryKey[0];
-    if (typeof first === 'string') {
-      return first;
-    }
-  }
-  if (typeof queryKey === 'string') {
-    return queryKey;
-  }
-  return 'unknown';
 }

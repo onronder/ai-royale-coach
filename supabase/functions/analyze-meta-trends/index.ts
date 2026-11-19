@@ -80,7 +80,7 @@ serve(async (req) => {
 
     if (templatesError) throw templatesError;
 
-    // Calculate real trends from actual data
+    // Catalog coverage is not a measured population trend or historical series.
     const trends = archetypes.map((arch: any) => {
       const relatedTemplates = templates.filter((t: any) => t.archetype === arch.name);
       
@@ -91,8 +91,8 @@ serve(async (req) => {
         archetype: arch.name,
         template_count: templateCount,
         popularity,
-        trend: 'stable',
-        change_7d: 0,
+        trend: 'unknown',
+        change_7d: null,
         note: 'Historical trend data not available - requires time-series snapshots'
       };
     });

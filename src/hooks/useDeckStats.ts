@@ -1,3 +1,4 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,9 +12,12 @@ export interface DeckStat {
   battles_played: number;
   battles_won: number;
   battles_lost: number;
+  battles_drawn: number;
+  mode: string;
   total_crowns: number;
   total_trophy_change: number;
-  avg_elixir: number;
+  avg_elixir: number | null;
+  trophy_samples: number;
   date: string;
   win_rate: number;
 }
@@ -25,15 +29,12 @@ export const useDeckStats = (playerTag: string, days = 30) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const fromDate = new Date();
-      fromDate.setDate(fromDate.getDate() - days);
-
       const { data, error } = await supabase
         .from('deck_usage_stats')
         .select('*')
+          .eq('observation_scope', 'recent-battles-v2')
         .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
-        .gte('date', fromDate.toISOString().split('T')[0])
+        .eq('player_tag', canonicalTag(playerTag))
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -44,20 +45,23 @@ export const useDeckStats = (playerTag: string, days = 30) => {
       data?.forEach(stat => {
         const deckCards = Array.isArray(stat.deck_cards) ? stat.deck_cards as string[] : [];
         
-        if (!deckMap.has(stat.deck_hash)) {
-          deckMap.set(stat.deck_hash, {
+        const key = `${stat.mode}:${stat.deck_hash}`;
+        if (!deckMap.has(key)) {
+          deckMap.set(key, {
             ...stat,
             deck_cards: deckCards,
-            win_rate: stat.battles_won / (stat.battles_won + stat.battles_lost),
+            win_rate: stat.battles_played ? stat.battles_won / stat.battles_played : 0,
           });
         } else {
-          const existing = deckMap.get(stat.deck_hash)!;
+          const existing = deckMap.get(key)!;
           existing.battles_played += stat.battles_played;
           existing.battles_won += stat.battles_won;
           existing.battles_lost += stat.battles_lost;
           existing.total_crowns += stat.total_crowns;
           existing.total_trophy_change += stat.total_trophy_change;
-          existing.win_rate = existing.battles_won / (existing.battles_won + existing.battles_lost);
+          existing.battles_drawn += stat.battles_drawn;
+          existing.trophy_samples += stat.trophy_samples;
+          existing.win_rate = existing.battles_played ? existing.battles_won / existing.battles_played : 0;
         }
       });
 

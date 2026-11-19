@@ -197,7 +197,7 @@
       },
       "achievements": {
         "title": "Başarılar Paneli",
-        "intro": "Kilometre taşlarınızı takip edin ve geliştikçe başarı rozetleri açın. Başarılar beceri alanı ve seviyeye göre kategorize edilir."
+        "intro": "Geçmiş uygulama rozetleri; doğrulanmış oyun becerileri değildir."
       }
     },
     "collection": {
@@ -288,7 +288,8 @@
         "step1": "Rakibin oyuncu etiketini girin (maç sonrasında bulunur)",
         "step2": "Kahin son 25 maçını tarar",
         "step3": "Tahmin edilen deste, kazanma oranları ve karşı stratejileri görüntüleyin"
-      }
+      },
+      "intro": "Bilinen oyuncunun son destelerini gösterir; sıradaki rakibini bilemez."
     },
     "dreamArena": {
       "title": "Rüya Arenası",
@@ -318,7 +319,8 @@
       "overview": {
         "title": "İlerlemenizi Takip Edin",
         "intro": "Geliştikçe ve kilometre taşlarına ulaştıkça rozetler açın. Başarılar beceri alanına (saldırı, savunma, strateji) ve seviyeye (Bronz, Gümüş, Altın, Platin, Elmas) göre kategorize edilir. Puan kazanmak ve başarı liderlik tablosunda yükselmek için görevleri tamamlayın!"
-      }
+      },
+      "intro": "Geçmiş uygulama rozetleri; doğrulanmış oyun becerileri değildir."
     },
     "coach": {
       "title": "AI Koç",
@@ -382,7 +384,7 @@
       "q4": "AI Royale'i mobilde kullanabilir miyim?",
       "a4": "Evet! AI Royale tamamen duyarlıdır ve tüm cihazlarda çalışır. Arayüz ekran boyutunuza uyum sağlar.",
       "q5": "AI eşleşme tahminleri ne kadar doğru?",
-      "a5": "Tahminler deste kompozisyon analizi ve geçmiş verilere dayanır. Gerçek sonuçlar beceri seviyesi ve kart seviyelerine göre değişebilir.",
+      "a5": "AI yorumu; kalibre edilmiş olasılık değildir",
       "q6": "Neden 3'ten fazla hesap ekleyemiyorum?",
       "a6": "3 hesap sınırı, tüm kullanıcılar için AI hizmetlerimizin ve API kaynaklarımızın adil kullanımını sağlar.",
       "q7": "Email veya şifremi nasıl değiştiririm?",

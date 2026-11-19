@@ -1,3 +1,4 @@
+import { cardDisplayLevel } from '../../supabase/functions/_shared/card-display-level';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
 
 export interface SimulationFrame {
@@ -48,9 +49,9 @@ function calculateWinProbability(
   // Base Elo probability
   const eloProbability = 1 / (1 + Math.pow(10, (proTrophies - userTrophies) / 400));
 
-  // Card level adjustment (assume pro is max level 14)
-  const avgUserLevel = userDeck.reduce((sum, card) => sum + (card.level || 14), 0) / userDeck.length;
-  const levelPenalty = (14 - avgUserLevel) * 0.02; // 2% penalty per level below max
+  // Entertainment weighting only; unavailable levels make no claimed level adjustment.
+  const levels = userDeck.map(cardDisplayLevel);
+  const levelPenalty = levels.length === 8 && levels.every(v=>v!==null) ? (16 - levels.reduce((sum,v)=>sum+v!,0)/8)*0.02 : 0; // 2% penalty per level below max
 
   // Clamp between 5% and 95%
   return Math.max(0.05, Math.min(0.95, eloProbability - levelPenalty));

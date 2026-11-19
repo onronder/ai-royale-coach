@@ -1,82 +1,74 @@
-# Protect profile entitlements — rehearsal-only acceptance
+# Complete profile write protection — PR #24
 
-An authenticated account could update its own `profiles.trial_ends_at` and
-`trial_used` through the existing broad table grant. The AI access fallback
-trusted those fields, so this could grant trial access without a legitimate
-trial. Row-level security restricted whose profile could change, not which fields.
+Updated 19 November 2026 against main `777328e2b280dc908cae13c3e69ec5291da92941`.
+The original draft used migration 0039 on `bb618be`. Main now has 0038 profile
+protection and 0039 chat retention. Neither historical migration is overwritten.
 
-`0039_protect_profile_entitlements.sql` removes profile write privileges from
-PUBLIC, anon and authenticated, including pre-existing column grants, then grants
-authenticated UPDATE on the eight fields the browser actually uses:
+## Purpose and boundary
 
-`preferred_language`, `language_selected_at`, `terms_accepted_at`, `terms_version`,
-`onboarding_completed_at`, `chat_retention_days`, `whats_new_seen_version`,
-`acquisition_source`.
+Main's 0038 correctly rejects normal client trial-date/usage updates and removes
+direct column UPDATE grants for anon/authenticated. The original draft comment
+claiming table revocation leaves corresponding column grants was incorrect:
+[PostgreSQL REVOKE](https://www.postgresql.org/docs/17/sql-revoke.html) specifies
+that they are revoked together. Tests now explicitly verify that behavior.
 
-Existing SELECT/RLS rules, table-owner/security-definer operations and service-role
-privileges remain. No rows, access calculations, subscriptions, free quotas,
-marketing choices, sender switches or frontend code change. Future profile fields
-are not automatically browser-writable. Legitimate legacy trials remain valid.
-PostgreSQL table-level UPDATE overrides column restrictions, hence the explicit
-table revoke before the allowlist ([Supabase documentation](https://supabase.com/docs/guides/database/postgres/column-level-security)).
+0038 does not revoke inherited PUBLIC UPDATE or unnecessary INSERT/DELETE/TRUNCATE/
+REFERENCES/TRIGGER privileges. A deliberately introduced PUBLIC grant still
+allowed the owner's trial-date update after 0038 in a disposable database.
+**This is a legacy-grant reproduction, not evidence of a current live bypass.**
+
+`0043_complete_profile_write_boundary.sql` removes those privileges from PUBLIC,
+anon and authenticated, then grants UPDATE on the same eight preferences:
+preferred_language, language_selected_at, terms_accepted_at, terms_version,
+onboarding_completed_at, chat_retention_days, whats_new_seen_version,
+acquisition_source. Existing SELECT/RLS, owner/security-definer and service-role
+privileges remain. No row, entitlement, subscription, quota, payment, consent
+or campaign setting is updated by the migration.
+
+## Migration order
+
+- Register existing 0042: #27 added the SQL but omitted its journal entry.
+  A journal-driven runner could skip it.
+- Register 0043 after 0042 with increasing journal timestamps.
+- Preserve all 0000–0041 entries/files; do not add a second 0039.
+- Journal tests check file/entry parity, unique numbers, ordering and timestamps.
+- #22 still has a conflicting old 0038 number and remains a separate, deferred
+  history feature. It is not a prerequisite for this security fix.
+
+## Current acceptance
+
+- Real `checkAiAccess` reproduced the original broad-grant issue. 0038 blocked
+  ordinary/direct-column updates, the PUBLIC fixture reproduced the remaining
+  condition, and 0043 blocked it. Reapplication preserves existing data/rights.
+- Ten profile authorization cases passed locally and on isolated Supabase
+  `jmdtjtpymxjkprugqoqu`: system fields/NULL/mixed updates, replacement/deletion,
+  eight preferences, two accounts, metadata, Auth language trigger, anonymous
+  writes and legitimate backend trial writes.
+- Hosted 0043 and all probes ran in **one rolled-back transaction**. Full hashes
+  matched across **77 tables / 25,160 rows** before/after. No permanent cloud
+  migration, customer mutation, new account, session or job remains. Campaign
+  false, allowlist empty, outbound extensions zero.
+- 191 app tests, 59 free-flow, 41 marketing, 25 win-back, 93 revenue, 19 correctness
+  SQL, 5 cron checks and conversion acceptance passed. Typecheck/build passed;
+  the existing bundle-size warning remains.
+- External provider transports are fake; no email, payment or AI request was
+  made. This is not real OAuth, physical-device or billing acceptance.
+
+The two old integration-fixture edits in #24 are no longer needed: #26's shared
+prerequisite schema now supplies those columns. Current main fixtures are kept
+so columns are not defined twice. Commands are in
+`tests/integration/profileRights/README.md` and the existing suite READMEs.
 
 ## Release boundaries
 
-| Event | State |
-|---|---|
-| Application base | `bb618be1ad53c118e0293009320f34465b411e97` |
-| Separate security PR | `codex/protect-profile-entitlements`; not merged |
-| Rehearsal migration | Applied only to `jmdtjtpymxjkprugqoqu`, 2026-11-18 16:07:02 UTC |
-| Production migration | **Not applied; production remains unchanged** |
-| Edge deployment / site publication | Not performed; no function/UI changes required |
-| Campaign sending | Remained disabled in the rehearsal; never enabled by this change |
+The original stronger guard was applied/tested on the rehearsal on 18 November;
+that record belongs to the old source revision. The updated 0043 was exercised
+by rollback only on 19 November. This work performs **no production SQL, Edge
+deployment or site publication**. GitHub merge and production application remain
+separate. Edge/UI deployment is not required for 0043; campaign sending stays off.
 
-Migration number `0038` is reserved by the separate unmerged battle-history PR
-#22, so this independent security migration uses `0039` (next journal entry idx
-38). It does not depend on that feature. When #22 is later rebased, reconcile its
-journal order/timestamp against the then-current main so its migration cannot be
-skipped by a timestamp-based runner. Do not overwrite either journal entry or
-bring the history feature into this security release.
-
-## Verification
-
-The disposable local database reproduced the vulnerability before the fix, then
-rejected it after the fix. The same 10 authorization scenarios passed on the
-real-data rehearsal, under authenticated, anon and service roles. The rehearsal
-Data API remains restricted to its empty rehearsal schema; no public API exposure
-or Edge deployment was needed for these database tests.
-
-Within one transaction (same clock instant), before/after comparison proved:
-
-- All 74 snapshot tables / 25,160 rows retained identical canonical content hashes.
-- All 900 accounts retained identical entitlement inputs. The actual application
-  access function returned identical decisions for all 900 at the captured instant.
-- All free-state outputs and 11 readable saved recommendations remained identical.
-- All 100 order records, 60 subscription records, payment aggregates and consent
-  decisions remained identical. These are rehearsal snapshot figures, not current
-  production metrics.
-- The test transaction was rolled back; a second 74-table comparison also matched.
-- No synthetic accounts, auth sessions, refresh tokens, login allowlist entries
-  or exposed probe functions remained. The email-block hook still returns 403.
-  Campaign sending and real AI generation remain disabled in the rehearsal.
-
-Local regression checks passed: 141 application tests, 59 first-value checks,
-41 marketing tests, 25 win-back tests, 93 revenue checks, the existing conversion
-suite and TypeScript checking. Provider-backed tests used fakes and reported zero
-external network attempts. An initial combined app/integration run had two app
-initialization failures because integration tests clear Supabase environment
-variables; rerunning those suites in separate processes with fixture-only app
-settings passed. No product fix was needed for that test invocation issue.
-
-Account records, dump files, credentials and detailed per-account evidence are
-kept outside Git in the private rehearsal evidence folder. These checks do not
-claim a new real email, OAuth login, checkout or end-to-end browser test.
-
-## Later production release (requires separate authorization)
-
-Review and merge this isolated PR, then apply only its migration to the intended
-application backend and verify the eight-column allowlist, unchanged service-role
-trial writes and campaign flag. A website publish alone does not install SQL
-privileges. Do not apply the whole rehearsal restore or enable its disabled jobs.
-If an omitted legitimate preference write is found, add only that reviewed column;
-do not restore blanket client UPDATE or alter existing trial dates as a workaround.
+On an authorized production release, inspect actual privileges and apply missing
+migrations in order. 0042 affects only two obsolete cron schedules; 0043 only
+profile privileges. Verify exactly eight writable preferences, backend writes,
+unchanged customer rows and disabled sending. Do not restore blanket UPDATE to
+work around an omitted preference or apply the whole rehearsal restore.

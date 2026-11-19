@@ -197,7 +197,7 @@
       },
       "achievements": {
         "title": "Painel de Conquistas",
-        "intro": "Acompanhe seus marcos e desbloqueie emblemas de conquistas conforme você melhora. Conquistas são categorizadas por área de habilidade e nível."
+        "intro": "Medalhas históricas do app; não são habilidades de jogo verificadas."
       }
     },
     "collection": {
@@ -288,7 +288,8 @@
         "step1": "Insira a tag de jogador do oponente (encontrada após uma batalha)",
         "step2": "O Oráculo analisa suas últimas 25 batalhas",
         "step3": "Veja o deck previsto, taxas de vitória e estratégias de contra-ataque"
-      }
+      },
+      "intro": "Decks recentes de jogador conhecido; não revela seu próximo adversário."
     },
     "dreamArena": {
       "title": "Arena dos Sonhos",
@@ -318,7 +319,8 @@
       "overview": {
         "title": "Acompanhe Seu Progresso",
         "intro": "Desbloqueie emblemas conforme você melhora e alcança marcos. Conquistas são categorizadas por área de habilidade (ataque, defesa, estratégia) e nível (Bronze, Prata, Ouro, Platina, Diamante). Complete desafios para ganhar pontos e subir na classificação de conquistas!"
-      }
+      },
+      "intro": "Medalhas históricas do app; não são habilidades de jogo verificadas."
     },
     "coach": {
       "title": "Coach IA",
@@ -382,7 +384,7 @@
       "q4": "Posso usar o AI Royale no celular?",
       "a4": "Sim! O AI Royale é totalmente responsivo e funciona em todos os dispositivos. A interface se adapta ao tamanho da sua tela.",
       "q5": "Meus dados estão seguros?",
-      "a5": "Sim. Só acessamos dados públicos disponíveis da API do Clash Royale. Sua senha do jogo nunca é compartilhada conosco.",
+      "a5": "Opinião da IA; não é probabilidade calibrada",
       "q6": "Como desvincular uma conta?",
       "a6": "Vá para a tela de Seleção de Jogador e clique no botão de excluir ao lado da conta que deseja desvincular.",
       "q7": "Como altero meu e-mail ou senha?",

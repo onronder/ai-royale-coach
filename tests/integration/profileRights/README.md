@@ -13,9 +13,12 @@ pg_ctl -D /tmp/profile-rights-pg/data stop
 The runner refuses a network-listening database, creates/drops its own database,
 removes provider credentials from its environment and traps `fetch`. It loads
 the real original profile schema/RLS/updated-at trigger, the full real `0013`
-language migration, and the proposed `0039` migration. Platform dependencies are
-schema-only stubs. It reproduces the exploit before applying the fix and uses
-the actual `checkAiAccess` function to show the resulting trial access.
+language migration, the current `0038` guard, and the follow-up `0043` migration. Platform dependencies are
+schema-only stubs. It reproduces the original broad-grant exploit and uses the actual `checkAiAccess`
+function to show the resulting trial access. It then proves 0038 blocks ordinary
+and direct-column updates, but a synthetic inherited PUBLIC grant survives 0038.
+0043 removes that grant and unnecessary non-preference write privileges. This
+is a controlled legacy-grant reproduction, not proof of a current live bypass.
 
 It then checks repeated migration application, row preservation, old PUBLIC and
 per-column grants, the exact preference allowlist and the following 10 scenarios
@@ -51,3 +54,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=fixture-test-key bun test ./tests/*.test.ts
 
 Do not combine the application and provider-isolated suites in one Bun process:
 the latter intentionally remove all Supabase environment variables.
+
+The journal regression in `tests/migrationJournal.test.ts` ensures every Drizzle
+SQL file is registered once, with unique ordered numbers and increasing timestamps.
+It caught the missing 0042 entry. Historical 0038/0039 are not rewritten; #22 must
+be renumbered separately before any future merge. Run it with `bun test tests/migrationJournal.test.ts`.

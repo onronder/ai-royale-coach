@@ -1,3 +1,4 @@
+import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -52,7 +53,8 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
         const { count: masteryCount } = await supabase
           .from('card_mastery')
           .select('*', { count: 'exact', head: true })
-          .eq('player_tag', playerTag);
+          .eq('observation_scope', 'recent-battles-v2')
+          .eq('player_tag', canonicalTag(playerTag));
 
         if (masteryCount === 0) {
           try {
@@ -70,7 +72,8 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
         const { count: deckStatsCount } = await supabase
           .from('deck_usage_stats')
           .select('*', { count: 'exact', head: true })
-          .eq('player_tag', playerTag);
+          .eq('observation_scope', 'recent-battles-v2')
+          .eq('player_tag', canonicalTag(playerTag));
 
         if (deckStatsCount === 0) {
           try {
