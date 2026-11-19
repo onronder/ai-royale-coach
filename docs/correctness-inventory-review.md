@@ -181,7 +181,31 @@ makine kaydı `correctness-platform-acceptance.json`, yeniden çalıştırma yol
   dağıtılmış Edge işlevi yok. Bu izolasyon kanıtıdır, platformun bulutta
   tamamlandığına dair kanıt değildir. Üretim cron/deploy eşliği değişmedi.
 
+### Son kapanış kontrolü
+
+- Maçtan sohbete geçişte ek bir hata tekrar üretildi: gerçek 1–1 beraberlik,
+  ekrandan taşınan eski özet alanları yüzünden 0–3 mağlubiyet diye gönderiliyordu.
+  Sohbet kartı ve AI isteği artık aynı doğrulanmış maç gözlemini kullanır.
+  Yanlış oyuncu, bozuk/seri maç, kapalı panel veya AI erişimi olmayan etiket
+  otomatik gönderim başlatamaz. Yeni maç isteğine önceki sohbet eklenmez.
+- Bu geçiş için 70 yeni tarayıcı senaryosu; mevcut 110 senaryo; 189 uygulama
+  testi, tür kontrolü ve derleme geçti. Yeni kullanım testi, önceden oluşmuş
+  gerçek gateway yanıtındaki cache-write biçimini JSON ve SSE olarak sınar;
+  kredi tutarını parasal bedel veya cache-write tokenlarını ek input saymaz.
+- Google girişi tamamen sınanmamış değildir: ayrı geçiş deposundaki
+  `docs/supabase-migration/auth-payments-performance-2026-11-18.md`, önceki
+  `bb618be` tabanında gerçek operatör OAuth giriş/yenileme/çıkış ve aynı UUID/hak
+  kontrolünü kaydeder. Bu, buradaki yeni uygulama sürümünün tam OAuth kabulü
+  değildir. Prova Google sağlayıcısı testten sonra yeniden kapatılmıştır.
+- 19 Kasım 16:38:58 UTC canlı salt okunur kontrolde kampanya gönderimi kapalı,
+  `ai_generation_attempts` tablosu yoktu. Ölçüm/tekil üretim kodu canlıya alınmış
+  sayılmaz. İki eski grace işi hâlâ etkin ve önceki 24 saatte toplam 48 kez
+  zamanlayıcıda çalışmıştı. Ayrıntı: `run-cost-audit-2026-11-19.md`.
+
 **Kalan dış kabul:** aynı sürümün bulut hedefte dağıtımı ve cron envanterinin
-onaylı geçişte doğrulanması; gerçek Google OAuth ve fiziksel mobil kritik akış;
-sağlayıcı run-ID/fatura eşleştirmesi. Bunlar tamamlanmadan ERR35'e 35/35 canlı
-onay verilmez. Kod düzeltmeleri yayınlanmadan üretimde kapanmış sayılmaz.
+onaylı geçişte doğrulanması; bu sürümle tam Google/e-posta giriş akışı ve fiziksel
+mobil kritik akış; sağlayıcı run-ID/fatura eşleştirmesi. Bir mevcut gateway
+yanıtının kullanım alanlarının okunması fatura mutabakatı değildir. Aktif
+Hero/slot verisi kaynakta yoksa sonuç bilinmeyen kalır; bu veri icat edilerek
+kapatılmaz. Bunlar tamamlanmadan ERR35'e 35/35 canlı onay verilmez. Kod
+düzeltmeleri yayınlanmadan üretimde kapanmış sayılmaz.

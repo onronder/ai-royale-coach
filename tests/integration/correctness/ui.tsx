@@ -1,5 +1,6 @@
 import {MatchDetailView} from '../../../src/components/matches/MatchDetailView';
 import {MatchDiscussionProvider} from '../../../src/contexts/MatchDiscussionContext';
+import {CoachChatPanel} from '../../../src/components/coach/CoachChatPanel';
 import captured from '../../fixtures/provider/battles-2026-11-18.json';
 import {PredictionAccuracyDashboard} from '../../../src/components/analytics/PredictionAccuracyDashboard';
 // Local-only harness: production components, synthetic observations, blocked network.
@@ -30,8 +31,9 @@ const sample=recentStatistics([battle(),battle('20251119T120000.000Z',0,1)],tag)
 const card={...sample.cards[0],id:'c',best_partner_cards:[],worst_matchup_cards:[],ai_tips:null,ai_tips_language:null,last_updated:'2026-11-19T12:00:00Z',win_rate:0.5,crown_avg:1};
 function Screen(){
  const location=useLocation(),navigate=useNavigate();const p=new URLSearchParams(location.search),scene=p.get('scene')||'observations';const [rank,setRank]=useState('waiting');const [snapshot,setSnapshot]=useState('collection-a');
- const match=scene==='match-team'?captured.two_v_two:scene==='match-series'?captured.duel:scene==='match-invalid'?{team:[null]}:{...captured.ladder,team:captured.ladder.team.map(p=>({...p,crowns:1})),opponent:captured.ladder.opponent.map(p=>({...p,crowns:1}))};
+ const match=scene.endsWith('-team')?captured.two_v_two:scene.endsWith('-series')?captured.duel:scene.endsWith('-invalid')?{team:[null]}:{...captured.ladder,team:captured.ladder.team.map(p=>({...p,crowns:1})),opponent:captured.ladder.opponent.map(p=>({...p,crowns:1}))};
  return <main className="max-w-6xl mx-auto p-4 space-y-5">
+  {scene.startsWith('chat-')&&<CoachChatPanel isOpen={scene!=='chat-closed'} onClose={()=>{}} playerTag={scene==='chat-other-player'?'#P0':scene==='chat-team'?'#Q1':'#Q0'} matchContext={{battle:match as any,playerTag:scene==='chat-team'?'#Q1':'#Q0',isWin:false,playerCrowns:0,opponentCrowns:3,trophyChange:-99}}/>}
   {scene.startsWith('match-')&&<MatchDiscussionProvider><MatchDetailView battle={match as any} playerTag={scene==='match-team'?'#Q1':'#Q0'} open onOpenChange={()=>{}}/></MatchDiscussionProvider>}
   {scene==='observations'&&<><section data-testid="mastery"><CardMasteryCard card={card as any} playerTag={tag}/></section><ProDNACard dna={calculatePlayerDNA([battle()],tag)} playerName="Fixture" playerTag={tag}/><DeckTrendChart stats={sample.decks as any}/></>}
   {scene==='builder'&&<DeckBuilder key={`${p.get('account')}:${p.get('deck')}`} userId={p.get('account')||user} playerTag={tag} currentDeck={cards} availableCards={cards} importedNames={p.get('deck')}/>}

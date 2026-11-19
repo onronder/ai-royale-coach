@@ -32,6 +32,7 @@ For the browser harness, use the existing Vite project with a synthetic backend:
 ```sh
 VITE_SUPABASE_URL=https://fixture.supabase.co VITE_SUPABASE_PROJECT_ID=fixture VITE_SUPABASE_PUBLISHABLE_KEY=fixture npm run dev -- --host 127.0.0.1 --port 5189
 PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node tests/integration/correctness/browser.mjs
+PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node tests/integration/correctness/chat-browser.mjs
 ```
 
 Run these in separate terminals. The harness uses real production components,
@@ -40,6 +41,12 @@ Font requests are aborted as well. It checks EN/TR/ES/FR/PT at 390 and 1280 px.
 Evidence defaults to `/tmp/royale-correctness-browser`; override
 `CORRECTNESS_EVIDENCE` if desired. Screens are not real customer sessions or
 physical-device tests. The test HTML entrypoints are not production build inputs.
+
+The chat runner covers 70 cases: five languages, two widths, observed draw/2v2,
+existing history, wrong player, malformed/series battles and AI-disabled tags.
+It deliberately supplies stale summary fields to the actual component: only
+the observed battle may supply the outcome/crowns; a new match request must not
+include the previous conversation. Requests and message writes are intercepted.
 
 The fixture build must use the same three environment overrides as the dev
 command. Do not silently build these tests against the tracked live `.env`.
