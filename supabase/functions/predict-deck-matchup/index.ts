@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -199,7 +201,7 @@ Rules:
 
 Return ONLY valid JSON, no markdown or extra text.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'predict-deck-matchup' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -217,6 +219,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       if (response.status === 429) {
         return errorResponse('Rate limit exceeded. Please try again later.', 429);
@@ -310,7 +313,7 @@ Return ONLY valid JSON, no markdown or extra text.`;
 
     logger.info('Prediction cached successfully');
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'predict-deck-matchup');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'predict-deck-matchup');
     return jsonResponse(result);
 
   } catch (error) {

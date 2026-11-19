@@ -22,6 +22,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   const db = createClient(url, key)
+  let measuredUserId = ''
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
     async start(controller) {
@@ -32,12 +33,11 @@ Deno.serve(async (req) => {
       try {
         const result = await handleFirstValue(req, {
           model: COACHING_MODEL,
-          authenticate: async (request) =>
-            (
-              await db.auth.getUser(
-                request.headers.get('authorization')?.replace(/^Bearer /i, '') || '',
-              )
-            ).data.user,
+          authenticate: async (request) => {
+            const { data: { user } } = await db.auth.getUser(request.headers.get('authorization')?.replace(/^Bearer /i, '') || '')
+            measuredUserId = user?.id || ''
+            return user
+          },
           rpc: async (name, args) => {
             const { data, error } = await db.rpc(name, args)
             if (error) throw error
@@ -54,13 +54,14 @@ Deno.serve(async (req) => {
             return data
           },
           generate: async (prompt, language) =>
-            createCoachingAI(aiKey, AbortSignal.timeout(90000), language, true)(prompt, Suggestion),
+            createCoachingAI(aiKey, AbortSignal.timeout(90000), language, true, { db, userId: measuredUserId, tier: 'free', feature: 'first-value-coaching:generate' })(prompt, Suggestion),
           translate: async (prompt, language) =>
             createCoachingAI(
               aiKey,
               AbortSignal.timeout(90000),
               language,
               true,
+              { db, userId: measuredUserId, tier: 'free', feature: 'first-value-coaching:translate' },
             )(
               prompt,
               Translation,

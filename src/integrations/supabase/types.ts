@@ -2878,6 +2878,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_api_measurements: { Args: { p_minutes?: number }; Returns: Json }
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
       admin_first_value_report: {
         Args: {

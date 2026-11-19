@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -184,7 +186,7 @@ Provide a concise analysis (max 150 words) covering:
 Be specific, competitive, and encouraging. Focus on actionable insights.`;
 
     // Call Lovable AI
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-player' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -205,6 +207,7 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
       }),
     });
 
+    if (aiResponse.status === 409) return analysisErrorResponse(409, await aiResponse.text());
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
       logger.error('AI gateway error', { status: aiResponse.status, error: errorText });

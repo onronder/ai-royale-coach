@@ -10,6 +10,8 @@ import { useApiMetrics, EndpointGroup } from '@/hooks/useApiMetrics';
 import { ApiMetricsChart } from './ApiMetricsChart';
 import { ApiRequestLog } from './ApiRequestLog';
 
+const measured = (value: number | null | undefined, unit: string) => value == null ? '—' : `${value.toFixed(0)}${unit}`;
+
 function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string) => string }) {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -28,9 +30,9 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
           </div>
           <div className="flex items-center gap-4 text-sm">
             <span className="font-semibold">{group.totalCount} {t('admin.apiMetrics.calls')}</span>
-            <span className="text-muted-foreground">{group.avgDuration}ms</span>
+            <span className="text-muted-foreground">{measured(group.avgDuration, 'ms')}</span>
             <span className={group.cacheHitRate >= 70 ? 'text-green-500' : group.cacheHitRate >= 40 ? 'text-yellow-500' : 'text-muted-foreground'}>
-              {group.cacheHitRate}% {t('admin.apiMetrics.cache')}
+              {measured(group.cacheHitRate, '%')} {t('admin.apiMetrics.cache')}
             </span>
           </div>
         </div>
@@ -52,8 +54,8 @@ function EndpointGroupCard({ group, t }: { group: EndpointGroup; t: (key: string
               </div>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
                 <span>{ep.count}</span>
-                <span>{ep.avgDuration}ms</span>
-                <span>{ep.cacheHitRate}%</span>
+                <span>{measured(ep.avgDuration, 'ms')}</span>
+                <span>{measured(ep.cacheHitRate, '%')}</span>
               </div>
             </div>
           ))}
@@ -67,7 +69,7 @@ export function ApiMetricsDashboard() {
   const { t, i18n } = useTranslation();
   const [timeframe, setTimeframe] = useState<'15min' | '1hr' | '24hr'>('1hr');
   const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
-  const { stats, endpoints, endpointGroups, timeline, recentLogs, isLoading, refetch } = useApiMetrics(timeframe);
+  const { stats, endpoints, endpointGroups, timeline, recentLogs, isLoading, error, refetch } = useApiMetrics(timeframe);
 
   return (
     <div className="space-y-6">
@@ -91,6 +93,8 @@ export function ApiMetricsDashboard() {
         </div>
       </div>
 
+      <p className="text-sm text-muted-foreground">{t('admin.apiMetrics.measurementScope', { measured: stats?.durationSamples ?? 0, total: stats?.totalRequests ?? 0 })}</p>
+      {error && <p role="alert">{t('admin.apiMetrics.loadError')}</p>}
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
@@ -124,7 +128,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.cacheHitRate')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : `${stats?.cacheHitRate.toFixed(0)}%`}
+              {isLoading ? '...' : measured(stats?.cacheHitRate, '%')}
             </p>
           </CardContent>
         </Card>
@@ -136,7 +140,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.avgDuration')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : `${stats?.avgDuration.toFixed(0)}ms`}
+              {isLoading ? '...' : measured(stats?.avgDuration, 'ms')}
             </p>
           </CardContent>
         </Card>
@@ -148,7 +152,7 @@ export function ApiMetricsDashboard() {
               {t('admin.apiMetrics.slowQueries')}
             </div>
             <p className="text-2xl font-bold mt-1">
-              {isLoading ? '...' : stats?.slowQueries}
+              {isLoading ? '...' : (stats?.slowQueries ?? '—')}
             </p>
           </CardContent>
         </Card>
@@ -221,8 +225,8 @@ export function ApiMetricsDashboard() {
                     </div>
                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                       <span>{ep.count} {t('admin.apiMetrics.calls')}</span>
-                      <span>{ep.avgDuration}ms</span>
-                      <span>{ep.cacheHitRate}% {t('admin.apiMetrics.cache')}</span>
+                      <span>{measured(ep.avgDuration, 'ms')}</span>
+                      <span>{measured(ep.cacheHitRate, '%')} {t('admin.apiMetrics.cache')}</span>
                     </div>
                   </div>
                 ))

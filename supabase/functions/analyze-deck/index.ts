@@ -1,3 +1,4 @@
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -207,7 +208,7 @@ Based on the detected archetype and performance data, analyze:
 Be specific about card interactions and matchups. Each point should be 1-2 sentences.
 ${languageInstruction}`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'analyze-deck' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -261,6 +262,7 @@ ${languageInstruction}`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Lovable AI error', { status: response.status, error: errorText });
@@ -276,7 +278,7 @@ ${languageInstruction}`;
 
     const analysis = JSON.parse(toolCall.function.arguments);
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'analyze-deck');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'analyze-deck');
     return jsonResponse({
       archetype: {
         name: detectedArchetype.name,

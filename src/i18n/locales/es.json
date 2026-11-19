@@ -2838,6 +2838,8 @@
   },
   "admin": {
     "apiMetrics": {
+      "measurementScope": "Solo consultas del navegador del administrador. Duración medida en {{measured}} / {{total}} registros. — significa sin medir. Incluye espera de reintentos; no se infieren aciertos de caché.",
+      "loadError": "No se pudieron cargar las mediciones. Usa Actualizar para reintentar.",
       "title": "Métricas de API",
       "subtitle": "Monitorear frecuencia de consultas e identificar llamadas redundantes",
       "totalRequests": "Total de Solicitudes",

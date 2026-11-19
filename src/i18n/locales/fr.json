@@ -2838,6 +2838,8 @@
   },
   "admin": {
     "apiMetrics": {
+      "measurementScope": "Requêtes du navigateur administrateur uniquement. Durée mesurée pour {{measured}} / {{total}} entrées. — signifie non mesuré. Les attentes de nouvelle tentative sont incluses ; le cache n’est pas déduit.",
+      "loadError": "Impossible de charger les mesures. Utilisez Actualiser pour réessayer.",
       "title": "Métriques API",
       "subtitle": "Surveiller la fréquence des requêtes et identifier les appels redondants",
       "totalRequests": "Total des Requêtes",

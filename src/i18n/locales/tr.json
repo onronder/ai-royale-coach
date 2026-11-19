@@ -2838,6 +2838,8 @@
   },
   "admin": {
     "apiMetrics": {
+      "measurementScope": "Yalnızca yönetici tarayıcısındaki sorgular. {{total}} kaydın {{measured}} tanesinde süre ölçüldü. — ölçülmedi demektir. Yeniden deneme beklemesi süreye dahildir; önbellek isabeti varsayılmaz.",
+      "loadError": "Ölçümler yüklenemedi. Yenile düğmesiyle tekrar dene.",
       "title": "API Metrikleri",
       "subtitle": "Sorgu sıklığını izle ve gereksiz çağrıları belirle",
       "totalRequests": "Toplam İstek",

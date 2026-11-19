@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { recommendationReasons } from '../_shared/recommendation-reasons.ts';
 import { productLanguage, type Language } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
@@ -510,6 +512,7 @@ serve(async (req) => {
     // ============= Step 5: AI Enhancement (Optional) =============
     let topCandidates = candidates.slice(0, 5);
     let aiEnhanced = false;
+    let aiReplayed = false;
 
     // Check AI usage limit before making AI call
     const canUseAI = await checkAIUsageLimit(supabase, user.id);
@@ -518,8 +521,6 @@ serve(async (req) => {
       const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
       
       if (LOVABLE_API_KEY) {
-        // Increment AI usage counter
-        await incrementAIUsage(supabase, user.id);
         logger.info('Enhancing with AI');
         
         const languageInstructions: Record<string, string> = {
@@ -553,7 +554,7 @@ ${i + 1}. ${c.deck.name} (${c.deck.archetype}, ${c.deck.difficulty})
 Rank these decks for this player and provide personalized explanations. Consider their strengths, weaknesses, and what they struggle against. Focus on why each deck fits or doesn't fit their playstyle.`;
 
         try {
-          const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          const aiResponse = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'recommend-deck' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -592,7 +593,10 @@ Rank these decks for this player and provide personalized explanations. Consider
             }),
           });
 
+          if (aiResponse.status === 409) return analysisErrorResponse(409, await aiResponse.text());
           if (aiResponse.ok) {
+            aiReplayed = aiResponse.headers.get('X-AI-Response-Replayed') === 'true';
+            if (!aiReplayed) await incrementAIUsage(supabase, user.id);
             const result = await aiResponse.json();
             const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
             
@@ -667,7 +671,7 @@ Rank these decks for this player and provide personalized explanations. Consider
 
     logger.info('Returning recommendations', { count: recommendations.length, aiEnhanced });
 
-    if (aiAccess.isTrial && aiEnhanced) await recordTrialUsage(supabase, user.id, 'recommend-deck');
+    if (aiAccess.isTrial && aiEnhanced && !aiReplayed) await recordTrialUsage(supabase, user.id, 'recommend-deck');
     return jsonResponse({
       recommendations,
       profile: {

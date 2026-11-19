@@ -1,3 +1,5 @@
+import { analysisErrorResponse } from '../_shared/analysis-error.ts';
+import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -111,7 +113,7 @@ For each suggestion, provide:
 
 Focus on practical, viable replacements that improve the deck.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await createMeasuredAIFetch({ db: supabase, userId: user.id, tier: aiAccess.isAdmin ? 'admin' : aiAccess.isTrial ? 'trial' : 'paid', feature: 'suggest-card-replacements' })('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
@@ -156,6 +158,7 @@ Focus on practical, viable replacements that improve the deck.`;
       }),
     });
 
+    if (response.status === 409) return analysisErrorResponse(409, await response.text());
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('AI API error', { status: response.status, error: errorText });
@@ -166,7 +169,7 @@ Focus on practical, viable replacements that improve the deck.`;
     const toolCall = data.choices[0].message.tool_calls?.[0];
     const result = JSON.parse(toolCall.function.arguments);
 
-    if (aiAccess.isTrial) await recordTrialUsage(supabase, user.id, 'suggest-card-replacements');
+    if (aiAccess.isTrial && response.headers.get('X-AI-Response-Replayed') !== 'true') await recordTrialUsage(supabase, user.id, 'suggest-card-replacements');
     return jsonResponse(result);
   } catch (error) {
     logger.error('Error in suggest-card-replacements', { error: error instanceof Error ? error.message : 'Unknown error' });

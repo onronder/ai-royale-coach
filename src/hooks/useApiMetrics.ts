@@ -6,16 +6,19 @@ import { useAdminAccess } from './useAdminAccess';
 export interface ApiMetricsStats {
   totalRequests: number;
   requestsPerMinute: number;
-  cacheHitRate: number;
-  slowQueries: number;
-  avgDuration: number;
+  cacheHitRate: number | null;
+  slowQueries: number | null;
+  durationSamples: number;
+  avgDuration: number | null;
 }
 
 export interface EndpointStats {
+  durationSamples: number;
+  cacheSamples: number;
   endpoint: string;
   count: number;
-  avgDuration: number;
-  cacheHitRate: number;
+  avgDuration: number | null;
+  cacheHitRate: number | null;
 }
 
 export interface EndpointGroup {
@@ -23,8 +26,8 @@ export interface EndpointGroup {
   pattern: string;
   endpoints: EndpointStats[];
   totalCount: number;
-  avgDuration: number;
-  cacheHitRate: number;
+  avgDuration: number | null;
+  cacheHitRate: number | null;
 }
 
 export interface TimelinePoint {
@@ -69,16 +72,18 @@ function groupEndpoints(endpoints: EndpointStats[]): EndpointGroup[] {
       if (eps.length === 0) return null;
       
       const totalCount = eps.reduce((sum, e) => sum + e.count, 0);
-      const weightedDuration = eps.reduce((sum, e) => sum + e.avgDuration * e.count, 0);
-      const weightedCache = eps.reduce((sum, e) => sum + e.cacheHitRate * e.count, 0);
+      const weightedDuration = eps.reduce((sum, e) => sum + (e.avgDuration ?? 0) * e.durationSamples, 0);
+      const weightedCache = eps.reduce((sum, e) => sum + (e.cacheHitRate ?? 0) * e.cacheSamples, 0);
       
+      const durationSamples = eps.reduce((sum, e) => sum + e.durationSamples, 0);
+      const cacheSamples = eps.reduce((sum, e) => sum + e.cacheSamples, 0);
       return {
         name: g.name,
         pattern: g.pattern.source,
         endpoints: eps.sort((a, b) => b.count - a.count),
         totalCount,
-        avgDuration: totalCount > 0 ? Math.round(weightedDuration / totalCount) : 0,
-        cacheHitRate: totalCount > 0 ? Math.round(weightedCache / totalCount) : 0,
+        avgDuration: durationSamples > 0 ? Math.round(weightedDuration / durationSamples) : null,
+        cacheHitRate: cacheSamples > 0 ? Math.round(weightedCache / cacheSamples) : null,
       };
     })
     .filter((g): g is EndpointGroup => g !== null && g.totalCount > 0)
@@ -95,115 +100,23 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
     '24hr': 1440,
   }[timeframe];
 
-  const since = new Date(Date.now() - timeframeMins * 60 * 1000).toISOString();
-
-  // Fetch overall stats
-  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
-    queryKey: ['api-metrics-stats', timeframe],
-    queryFn: async (): Promise<ApiMetricsStats> => {
-      const { data, error } = await supabase
-        .from('api_request_logs')
-        .select('duration_ms, cache_hit, created_at')
-        .gte('created_at', since);
-
+  const { data: report, isLoading: statsLoading, error, refetch: refetchStats } = useQuery({
+    queryKey: ['api-metrics-report', timeframe],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('admin_api_measurements', { p_minutes: timeframeMins });
       if (error) throw error;
-
-      const logs = data || [];
-      const total = logs.length;
-      const cacheHits = logs.filter((l) => l.cache_hit).length;
-      const slowQueries = logs.filter((l) => (l.duration_ms ?? 0) > 1000).length;
-      const totalDuration = logs.reduce((sum, l) => sum + (l.duration_ms ?? 0), 0);
-
-      return {
-        totalRequests: total,
-        requestsPerMinute: total / timeframeMins,
-        cacheHitRate: total > 0 ? (cacheHits / total) * 100 : 0,
-        slowQueries,
-        avgDuration: total > 0 ? totalDuration / total : 0,
-      };
+      return data as unknown as { stats: ApiMetricsStats; endpoints: EndpointStats[]; timeline: TimelinePoint[] };
     },
     enabled: isAdmin,
-    staleTime: 30 * 1000,
-    refetchInterval: 30 * 1000,
+    staleTime: 30_000,
+    refetchInterval: 30_000,
   });
-
-  // Fetch endpoint breakdown
-  const { data: endpointsRaw, isLoading: endpointsLoading } = useQuery({
-    queryKey: ['api-metrics-endpoints', timeframe],
-    queryFn: async (): Promise<EndpointStats[]> => {
-      const { data, error } = await supabase
-        .from('api_request_logs')
-        .select('endpoint, duration_ms, cache_hit')
-        .gte('created_at', since);
-
-      if (error) throw error;
-
-      // Group by endpoint
-      const grouped = (data || []).reduce(
-        (acc, log) => {
-          if (!acc[log.endpoint]) {
-            acc[log.endpoint] = { count: 0, totalDuration: 0, cacheHits: 0 };
-          }
-          acc[log.endpoint].count++;
-          acc[log.endpoint].totalDuration += log.duration_ms ?? 0;
-          if (log.cache_hit) acc[log.endpoint].cacheHits++;
-          return acc;
-        },
-        {} as Record<string, { count: number; totalDuration: number; cacheHits: number }>
-      );
-
-      return Object.entries(grouped)
-        .map(([endpoint, stats]) => ({
-          endpoint,
-          count: stats.count,
-          avgDuration: Math.round(stats.totalDuration / stats.count),
-          cacheHitRate: Math.round((stats.cacheHits / stats.count) * 100),
-        }))
-        .sort((a, b) => b.count - a.count);
-    },
-    enabled: isAdmin,
-    staleTime: 30 * 1000,
-  });
-
-  // Compute grouped endpoints
-  const endpointGroups = endpointsRaw ? groupEndpoints(endpointsRaw) : [];
-  const endpoints = endpointsRaw?.slice(0, 20);
-
-  // Fetch timeline data
-  const { data: timeline, isLoading: timelineLoading } = useQuery({
-    queryKey: ['api-metrics-timeline', timeframe, i18n.language],
-    queryFn: async (): Promise<TimelinePoint[]> => {
-      const { data, error } = await supabase
-        .from('api_request_logs')
-        .select('created_at, cache_hit')
-        .gte('created_at', since)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      // Group by minute
-      const grouped = (data || []).reduce(
-        (acc, log) => {
-          const minute = new Date(log.created_at).toISOString().slice(0, 16);
-          if (!acc[minute]) {
-            acc[minute] = { count: 0, cacheHits: 0 };
-          }
-          acc[minute].count++;
-          if (log.cache_hit) acc[minute].cacheHits++;
-          return acc;
-        },
-        {} as Record<string, { count: number; cacheHits: number }>
-      );
-
-      return Object.entries(grouped).map(([time, stats]) => ({
-        time: new Date(time).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
-        count: stats.count,
-        cacheHits: stats.cacheHits,
-      }));
-    },
-    enabled: isAdmin,
-    staleTime: 30 * 1000,
-  });
+  const stats = report?.stats;
+  const endpointGroups = groupEndpoints(report?.endpoints ?? []);
+  const endpoints = report?.endpoints.slice(0, 20);
+  const timeline = report?.timeline.map(point => ({ ...point,
+    time: new Date(point.time).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
+  }));
 
   // Fetch recent logs
   const { data: recentLogs, isLoading: logsLoading, refetch: refetchLogs } = useQuery({
@@ -229,7 +142,8 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
     endpointGroups,
     timeline,
     recentLogs,
-    isLoading: statsLoading || endpointsLoading || timelineLoading || logsLoading,
+    isLoading: statsLoading || logsLoading,
+    error,
     refetch: () => {
       refetchStats();
       refetchLogs();
