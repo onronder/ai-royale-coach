@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { fixedElixir } from '../../../supabase/functions/_shared/battle-observation';
 import { importedDeck } from '@/lib/deckNavigation';
 import { useCardName } from '@/i18n/useCardName';
@@ -69,6 +70,7 @@ export function DeckBuilder({
   userCollection = [],
   playerTrophies = 0
 }: DeckBuilderProps) {
+  const queryClient = useQueryClient();
   const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { hasAccess } = useSubscription();
@@ -212,6 +214,7 @@ export function DeckBuilder({
       }]);
 
       if (error) throw error;
+      void queryClient.invalidateQueries({ queryKey: ['player-context', userId] });
       toast.success(t('deck.savedSuccess'));
       setDeckName("");
       setDeckDescription("");

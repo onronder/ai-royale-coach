@@ -1,3 +1,4 @@
+import { PlayerContextStatus } from './PlayerContextStatus';
 import { observeBattle, canonicalTag } from '../../../supabase/functions/_shared/battle-observation';
 import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
@@ -77,6 +78,9 @@ interface CoachChatPanelProps {
     losses: number;
     avgTrophyChange: string;
   };
+  contextReady?: boolean;
+  contextError?: boolean;
+  retryContext?: () => unknown;
   savedDecks?: SavedDeckRow[];
   cardMastery?: CardMasteryRow[];
   achievements?: UserAchievementWithDetails[];
@@ -91,6 +95,7 @@ export function CoachChatPanel({
   playerTag, 
   playerStats, 
   recentMatches,
+  contextReady = true, contextError = false, retryContext,
   savedDecks,
   cardMastery,
   achievements,
@@ -141,7 +146,7 @@ export function CoachChatPanel({
 
   // Auto-send match context when it's set and user is loaded
   useEffect(() => {
-    if (isOpen && hasSubscriptionAccess && hasAIAccess && canAccess && matchContext && discussedMatch && userId && !hasAutoSentMatchContext && !isLoading) {
+    if (contextReady && isOpen && hasSubscriptionAccess && hasAIAccess && canAccess && matchContext && discussedMatch && userId && !hasAutoSentMatchContext && !isLoading) {
       const observed = discussedMatch;
       setHasAutoSentMatchContext(true);
       startNewConversation();
@@ -168,7 +173,7 @@ export function CoachChatPanel({
       // Auto-send the context message
       handleAutoSend(contextMessage);
     }
-  }, [matchContext, playerTag, userId, hasAutoSentMatchContext, isLoading, isOpen, hasSubscriptionAccess, hasAIAccess, canAccess]);
+  }, [contextReady, matchContext, playerTag, userId, hasAutoSentMatchContext, isLoading, isOpen, hasSubscriptionAccess, hasAIAccess, canAccess]);
 
   // Reset auto-send flag when match context clears
   useEffect(() => {
@@ -178,7 +183,7 @@ export function CoachChatPanel({
   }, [matchContext]);
 
   const handleAutoSend = async (message: string) => {
-    if (!userId) return;
+    if (!contextReady || !userId) return;
     setIsLoading(true);
     
     try {
@@ -538,6 +543,7 @@ export function CoachChatPanel({
   };
 
   const handleSend = async () => {
+    if (!contextReady) return;
     if (!input.trim() || isLoading || !userId) return;
 
     const userMessage = input.trim();
@@ -708,6 +714,7 @@ export function CoachChatPanel({
           </Button>
         </div>
 
+        {!contextReady && <PlayerContextStatus failed={contextError} retry={retryContext} />}
         {/* Tabs: Active Chat & Recent Chats */}
         <Tabs defaultValue="chat" className="flex-1 flex flex-col min-h-0">
           <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent p-0">
@@ -838,12 +845,12 @@ export function CoachChatPanel({
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                       placeholder={t('coach.inputPlaceholder')}
-                      disabled={isLoading}
+                      disabled={isLoading || !contextReady}
                       className="flex-1 bg-input border-border/50 focus:border-primary"
                     />
                     <Button
                       onClick={handleSend}
-                      disabled={isLoading || !input.trim()}
+                      disabled={isLoading || !contextReady || !input.trim()}
                       className="bg-gradient-primary hover:shadow-glow"
                     >
                       {isLoading ? (

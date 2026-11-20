@@ -1,0 +1,44 @@
+name: Isolated quality checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  quality:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      VITE_SUPABASE_URL: https://fixture.supabase.co
+      VITE_SUPABASE_PROJECT_ID: fixture
+      VITE_SUPABASE_PUBLISHABLE_KEY: fixture-test-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.3.3'
+      - run: npm ci
+      - run: bun test ./tests/*.test.ts
+      - run: npx tsc -b
+      - run: npm run build
+      - name: Install isolated browser runner
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser-tools" playwright@1.56.1
+          "$RUNNER_TEMP/browser-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Run browser acceptance (real services blocked)
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5193 --strictPort > /tmp/fixture-vite.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for n in $(seq 1 60); do curl -fsS http://127.0.0.1:5193/tests/integration/maintenance/ui.html > /dev/null && break; sleep 1; done
+          export PLAYWRIGHT_MODULE="$RUNNER_TEMP/browser-tools/node_modules/playwright/index.mjs"
+          node tests/integration/maintenance/browser.mjs
+          node tests/integration/playerAnalysis/browser.mjs

@@ -1,3 +1,4 @@
+import { PlayerContextStatus } from '@/components/coach/PlayerContextStatus';
 import { dashboardDestination } from '@/lib/deckNavigation';
 import { useSearchParams } from 'react-router-dom';
 import { useLocation, useParams } from "react-router-dom";
@@ -84,7 +85,7 @@ const Dashboard = () => {
   };
 
   // Custom hooks for data management
-  const { user, playerContext, handleSignOut } = useDashboardData(playerTag);
+  const { user, playerContext, contextReady, contextError, retryContext, handleSignOut } = useDashboardData(playerTag);
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
   const { showWhatsNew, dismissWhatsNew } = useWhatsNew();
@@ -296,7 +297,9 @@ const Dashboard = () => {
                     <TabsContent value="builder" className="mt-4">
                       <Suspense fallback={<DataLoader context="deck" variant="inline" />}>
                         <PageTransition delay={100}>
-                          {playerLoading ? (
+                          {!contextReady ? (
+                            <PlayerContextStatus failed={contextError} retry={retryContext} />
+                          ) : playerLoading ? (
                             <DataLoader context="deck" variant="inline" />
                           ) : player?.cards && user ? (
                             <DeckBuilder
@@ -390,6 +393,9 @@ const Dashboard = () => {
                   losses,
                   avgTrophyChange
                 }}
+                contextReady={contextReady}
+                contextError={contextError}
+                retryContext={retryContext}
                 savedDecks={playerContext.savedDecks}
                 cardMastery={playerContext.cardMastery}
                 achievements={playerContext.achievements}
