@@ -3511,6 +3511,19 @@ export type Database = {
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
       get_my_card_collection_sync: { Args: { p_tag: string }; Returns: Json }
+      get_my_chat_days: {
+        Args: {
+          p_before?: string
+          p_limit?: number
+          p_tag: string
+          p_timezone: string
+        }
+        Returns: {
+          day: string
+          last_message_at: string
+          message_count: number
+        }[]
+      }
       get_my_first_value: { Args: never; Returns: Json }
       get_my_marketing_consent: {
         Args: { p_claim_invite?: boolean }
