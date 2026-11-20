@@ -55,7 +55,7 @@ function Screen() {
   const [mounted, setMounted] = useState(true);
   const full = params.get('full') === 'true';
   return <>
-    <nav className="sticky top-0 z-50 bg-background p-2 flex flex-wrap gap-2" aria-label="Fixture controls">
+    <nav style={{ marginLeft: window.innerWidth >= 768 ? "16rem" : 0 }} className="bg-background p-2 flex flex-wrap gap-2" aria-label="Fixture controls">
       {['coach:overview', 'coach:matches', 'coach:analytics', 'coach:leaderboard', 'deck:current', 'deck:builder', 'deck:collection', 'social:clans', 'social:tournaments'].map(destination => {
         const [tab, subtab] = destination.split(':');
         return <button key={destination} onClick={() => navigate('/player/UQRCGQJR2?' + new URLSearchParams({ tab, subtab }))}>Fixture {destination}</button>;

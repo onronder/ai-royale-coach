@@ -1,3 +1,4 @@
+import { DeferredPanel } from '@/components/ui/deferred-panel';
 import { PlayerContextStatus } from '@/components/coach/PlayerContextStatus';
 import { dashboardDestination } from '@/lib/deckNavigation';
 import { useSearchParams } from 'react-router-dom';
@@ -43,17 +44,17 @@ import {
 import { AppSidebar } from "@/components/layout/AppSidebar";
 
 // Feature components
-import { MatchDetailView } from "@/components/matches/MatchDetailView";
-import { LeaderboardView } from "@/components/leaderboard/LeaderboardView";
-import { CardCollectionTracker } from "@/components/cards/CardCollectionTracker";
-import { ClanSearch } from "@/components/clans/ClanSearch";
+const MatchDetailView = lazy(() => import("@/components/matches/MatchDetailView").then(m => ({ default: m.MatchDetailView })));
+const LeaderboardView = lazy(() => import("@/components/leaderboard/LeaderboardView").then(m => ({ default: m.LeaderboardView })));
+const CardCollectionTracker = lazy(() => import("@/components/cards/CardCollectionTracker").then(m => ({ default: m.CardCollectionTracker })));
+const ClanSearch = lazy(() => import("@/components/clans/ClanSearch").then(m => ({ default: m.ClanSearch })));
 import { FloatingCoachButton } from "@/components/coach/FloatingCoachButton";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
-import { ProDNAView } from "@/components/social/ProDNAView";
-import { WhatsNewModal } from "@/components/announcements/WhatsNewModal";
-import { AchievementsTab } from "@/components/gamification/AchievementsTab";
+const ProDNAView = lazy(() => import("@/components/social/ProDNAView").then(m => ({ default: m.ProDNAView })));
+const WhatsNewModal = lazy(() => import("@/components/announcements/WhatsNewModal").then(m => ({ default: m.WhatsNewModal })));
+const AchievementsTab = lazy(() => import("@/components/gamification/AchievementsTab").then(m => ({ default: m.AchievementsTab })));
 import { SoftBlockWarning } from "@/components/fraud/SoftBlockWarning";
-import { HelpDialog } from "@/components/help/HelpDialog";
+const HelpDialog = lazy(() => import("@/components/help/HelpDialog").then(m => ({ default: m.HelpDialog })));
 import { FirstSessionTask } from "@/components/coaching/FirstSessionTask";
 import { MarketingInvite } from "@/components/marketing/MarketingInvite";
 const AnalyticsTab = lazy(() => import("@/components/dashboard/AnalyticsTab").then(m => ({ default: m.AnalyticsTab })));
@@ -267,11 +268,13 @@ const Dashboard = () => {
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-4">
                       <PageTransition delay={100}>
-                        <LeaderboardView 
+                        <Suspense fallback={<DataLoader context="analytics" variant="inline" />}>
+                          <LeaderboardView
                           userClanTag={player?.clan?.tag} 
                           userId={user?.id}
                           currentPlayerTag={playerTag}
                         />
+                        </Suspense>
                       </PageTransition>
                     </TabsContent>
                   </Tabs>
@@ -332,10 +335,12 @@ const Dashboard = () => {
                     </TabsContent>
                     <TabsContent value="collection" className="mt-4">
                       <PageTransition delay={100}>
-                        <CardCollectionTracker 
+                        <Suspense fallback={<DataLoader context="analytics" variant="inline" />}>
+                          <CardCollectionTracker
                           playerTag={playerTag} 
                           userId={user.id}
                         />
+                        </Suspense>
                       </PageTransition>
                     </TabsContent>
                   </Tabs>
@@ -350,10 +355,12 @@ const Dashboard = () => {
                     </TabsList>
                     <TabsContent value="clans" className="mt-4">
                       <PageTransition delay={100}>
-                        <ClanSearch 
+                        <Suspense fallback={<DataLoader context="analytics" variant="inline" />}>
+                          <ClanSearch
                           onSelectClan={() => {}} 
                           userPlayerTag={playerTag}
                         />
+                        </Suspense>
                       </PageTransition>
                     </TabsContent>
                     <TabsContent value="tournaments" className="mt-4">
@@ -370,13 +377,15 @@ const Dashboard = () => {
             </main>
 
             {/* Match Detail Dialog */}
-            <MatchDetailView
+            <DeferredPanel open={matchDetailOpen}>
+<MatchDetailView
               battle={selectedBattle}
               playerTag={playerTag}
               open={matchDetailOpen}
               onOpenChange={setMatchDetailOpen}
               onOpenCoach={() => setCoachOpen(true)}
             />
+            </DeferredPanel>
 
             {/* Floating AI Coach Widget */}
             {player && battles && (
@@ -406,12 +415,14 @@ const Dashboard = () => {
             )}
 
             {/* Pro DNA Modal */}
-            <ProDNAView
+            <DeferredPanel open={dnaOpen}>
+<ProDNAView
               open={dnaOpen}
               onOpenChange={setDnaOpen}
               playerTag={playerTag}
               playerName={player?.name || t('leaderboard.player')}
             />
+            </DeferredPanel>
 
             {/* Achievements Modal */}
             <Dialog open={achievementsOpen} onOpenChange={setAchievementsOpen}>
@@ -419,12 +430,14 @@ const Dashboard = () => {
                 <DialogHeader>
                   <DialogTitle className="sr-only">{t('achievements.title')}</DialogTitle>
                 </DialogHeader>
-                <AchievementsTab
+                <Suspense fallback={<DataLoader context="analytics" variant="inline" />}>
+                          <AchievementsTab
                   playerTag={playerTag}
                   playerName={player?.name}
                   battles={battles || null}
                   unlockedAchievements={battleAchievements}
                 />
+                        </Suspense>
               </DialogContent>
             </Dialog>
 
@@ -437,14 +450,18 @@ const Dashboard = () => {
             )}
 
             {/* What's New Modal */}
-            <WhatsNewModal
+            <DeferredPanel open={showWhatsNew}>
+<WhatsNewModal
               open={showWhatsNew}
               onDismiss={dismissWhatsNew}
               playerTag={playerTag}
             />
+            </DeferredPanel>
 
             {/* Help Dialog */}
-            <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+            <DeferredPanel open={helpOpen}>
+<HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+            </DeferredPanel>
           </SidebarInset>
           
           {/* Mobile Bottom Navigation */}

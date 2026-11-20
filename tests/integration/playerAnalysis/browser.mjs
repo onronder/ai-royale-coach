@@ -13,8 +13,8 @@ async function setup(params = {}, { status = 200, delay = 20, dropped = false, w
   const page = await context.newPage();
   page.setDefaultTimeout(6000);
   page.setDefaultNavigationTimeout(30000);
-  const calls = [], unexpected = [], faults = [];
-  active = { context, page, calls, unexpected, faults };
+  const calls = [], unexpected = [], faults = [], modules = [];
+  active = { context, page, calls, unexpected, faults, modules };
   page.on('pageerror', e => faults.push(e.message));
   await context.routeWebSocket('**', socket => socket.close());
   await page.addInitScript(user => {
@@ -25,7 +25,7 @@ async function setup(params = {}, { status = 200, delay = 20, dropped = false, w
   }, user);
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
-    if (url.origin === base) return route.continue();
+    if (url.origin === base) { modules.push(url.pathname); if (params.brokenHelp && url.pathname.endsWith('/HelpDialog.tsx')) return route.abort(); return route.continue(); }
     if (url.hostname !== 'fixture.supabase.co') {
       if (!['fonts.googleapis.com', 'fonts.gstatic.com'].includes(url.hostname)) unexpected.push(url.href);
       return route.abort();
@@ -51,7 +51,10 @@ async function setup(params = {}, { status = 200, delay = 20, dropped = false, w
     }
     if (name === 'get_my_marketing_consent') return send({ state: 'not_asked', invite: false, collection_reason: 'closed' });
     if (name === 'get_daily_feature_usage') return send(0);
-    if (['detect_multi_account_abuse', 'record_journey_measurement', 'observe_trial_step'].includes(name)) return send(null);
+    if (['detect_multi_account_abuse', 'detect_velocity_abuse', 'record_journey_measurement', 'observe_trial_step'].includes(name)) return send(null);
+    if (name === 'get_my_chat_days') return send([]);
+    if (params.panelTest && name === 'player_profiles' && request.method() === 'GET') return send({ id: 'fixture', ai_enabled: true });
+    if (params.panelTest && name === 'user_fraud_status') return send({ user_id: user.id, status: 'clean', feature_limits: {} });
     if (name === 'get_my_card_collection_sync') return send(null);
     if (name === 'sync-card-collection') return send({ success: true, status: 'completed', run_id: 'fixture', operation_id: 'fixture', synced: 0, claimed: false, joined: false, reuse: 'fresh' });
     if (name === 'get-subscription-status') return send({ hasAccess: ['trial', 'paid'].includes(params.tier || 'paid'), accountSlots: 3, trial: { isActive: params.tier === 'trial' } });
@@ -85,6 +88,7 @@ async function waitForCall(f) {
   assert.equal(f.calls.length, 1);
 }
 async function test(name, fn) {
+  if (process.env.BROWSER_CASE && !name.includes(process.env.BROWSER_CASE)) return;
   try {
     await fn();
     assert.deepEqual(active.unexpected, [], 'unexpected external route');
@@ -97,6 +101,24 @@ async function test(name, fn) {
   } finally { await active?.context.close(); active = undefined; }
 }
 try {
+  for (const width of [390,1280]) await test('Dashboard lazy chat preserves draft ' + width, async () => {
+    const f = await setup({full:true,tab:'coach',subtab:'matches',panelTest:true},{width});
+    await noCall(f); assert(!f.modules.some(m=>/CoachChatPanel|HelpDialog|ProDNAView/.test(m)));
+    await f.page.getByRole('button',{name:'Personal AI Coach',exact:true}).click();
+    const input=f.page.getByPlaceholder('Ask your coach anything...');
+    await input.waitFor(); await input.fill('Unsent draft');
+    await f.page.getByRole('button',{name:'Close',exact:true}).click();
+    await f.page.getByRole('button',{name:'Personal AI Coach',exact:true}).click();
+    assert.equal(await input.inputValue(),'Unsent draft'); assert.equal(f.calls.length,0);
+  });
+  await test('Dashboard lazy help failure preserves surrounding screen', async () => {
+    const f=await setup({full:true,tab:'coach',subtab:'matches',brokenHelp:true});
+    await f.page.getByRole('button',{name:'Help',exact:true}).first().click();
+    await f.page.getByRole('alert').waitFor(); await f.page.getByRole('button',{name:/reload/i}).waitFor();
+    assert.equal(await f.page.getByRole('button',{name:'Fixture coach:matches',exact:true}).count(),1);
+    // React dev mode also reports the caught import rejection to window.onerror.
+    f.faults.splice(0, f.faults.length, ...f.faults.filter(m=>!m.includes('dynamically imported module')));
+  });
   // Actual Dashboard, not a copy of its visibility condition.
   for (const [tab, subtab] of [['deck', 'current'], ['deck', 'builder'], ['deck', 'collection'], ['coach', 'matches'], ['coach', 'analytics'], ['coach', 'leaderboard'], ['social', 'clans'], ['social', 'tournaments']]) {
     await test('Dashboard direct ' + tab + '/' + subtab, async () => {
