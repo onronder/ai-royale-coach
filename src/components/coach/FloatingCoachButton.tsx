@@ -77,8 +77,8 @@ export function FloatingCoachButton({
   // Proactive recommendations for struggling players
   const proactiveSuggestion = useProactiveRecommendations({
     playerTag: normalizedPlayerTag,
-    trophies: playerStats?.trophies || 5000,
-    recentWinRate: playerStats?.winRate || 50,
+    trophies: playerStats?.trophies ?? 0,
+    recentWinRate: playerStats?.winRate ?? 0,
     totalBattles: (recentMatches?.wins || 0) + (recentMatches?.losses || 0)
   });
 

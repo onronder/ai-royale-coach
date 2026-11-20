@@ -34,7 +34,7 @@ export interface RecommendationResponse {
   fromCache: boolean;
 }
 
-export const useRecommendations = (playerTag: string, trophies: number, snapshotKey = '') => {
+export const useRecommendations = (playerTag: string, trophies: number, snapshotKey = '', enabled = true) => {
   const { i18n } = useTranslation();
   const language = i18n.resolvedLanguage ?? 'en';
 
@@ -73,7 +73,7 @@ export const useRecommendations = (playerTag: string, trophies: number, snapshot
       
       return data as RecommendationResponse;
     },
-    enabled: !!playerTag && trophies > 0,
+    enabled: enabled && !!playerTag && trophies > 0,
     staleTime: 0, // Revalidate the source snapshot on entry; provider work is idempotent.
     gcTime: 48 * 60 * 60 * 1000, // 48 hours
     retry: (failureCount, error) => {
