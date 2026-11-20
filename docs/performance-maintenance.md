@@ -50,3 +50,7 @@ Commands: `CHAT_PG=/path/to/socket CHAT_PORT=55458 bun tests/integration/chatHis
 ## On-demand translations
 Initial rendering waits for selected-language/core fallback resources. Help is requested on opening Help or answering a matched help question; failed help loading never falls through to a paid AI request. Navigation labels remain in core resources. All five languages, account restoration, switching and failed help loads have isolated browser acceptance.
 Local production build: main chunk 1,538.38 KB / gzip 490.88 KB before, 736.82 KB / gzip 227.35 KB after; selected language and English load separately, so this is not a measured end-to-end speed claim.
+
+## Secondary panels
+Dashboard helper dialogs and chat defer code until first opening. Closing chat preserves its mounted state/draft. A failed helper import is contained to that panel and offers a user-triggered reload rather than silently reloading/losing other UI state. Ranking/collection/clan code loads with its selected tab.
+Local build Dashboard gzip: 190.65 KB before / 171.80 KB after. Actual Dashboard browser acceptance includes no closed-panel module requests, chat draft close/reopen at 390/1280 widths and a failed Help import.

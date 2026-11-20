@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy } from 'react';
+import { DeferredPanel } from '@/components/ui/deferred-panel';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Crown, Lightbulb } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { CoachChatPanel } from './CoachChatPanel';
+const CoachChatPanel = lazy(() => import('./CoachChatPanel').then(m => ({ default: m.CoachChatPanel })));
 import { useMatchDiscussion } from '@/contexts/MatchDiscussionContext';
 import { useProactiveRecommendations } from '@/hooks/useProactiveRecommendations';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
@@ -206,6 +207,7 @@ export function FloatingCoachButton({
       )}
 
       {/* Slide-out Chat Panel */}
+      <DeferredPanel open={isOpen}>
       <CoachChatPanel
         isOpen={isOpen}
         onClose={() => handleOpenChange(false)}
@@ -222,6 +224,7 @@ export function FloatingCoachButton({
         matchContext={matchContext}
         proactiveSuggestion={hasProactiveSuggestion ? proactiveSuggestion : undefined}
       />
+      </DeferredPanel>
 
       <PricingModal 
         open={showPricingModal} 
