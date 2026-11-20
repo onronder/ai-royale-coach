@@ -342,10 +342,12 @@ export default function FirstCoaching() {
       {canShow && task && !task.recommendation && (
         <Card>
           <CardContent className="space-y-3 pt-6" role="status">
-            <p>{t('firstValue.errors.uncertain')}</p>
-            <Button variant="outline" onClick={() => q.refetch()}>
-              {t('firstValue.reloadResult')}
-            </Button>
+            <p>{t(q.data?.outcome === 'failed' ? 'firstValue.errors.failed' : 'firstValue.errors.uncertain')}</p>
+            {q.data?.outcome !== 'failed' && (
+              <Button variant="outline" onClick={() => q.refetch()}>
+                {t('firstValue.reloadResult')}
+              </Button>
+            )}
             <a className="block text-primary underline" href="mailto:support@fittechs.com">
               support@fittechs.com
             </a>

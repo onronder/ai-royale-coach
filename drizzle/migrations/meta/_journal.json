@@ -309,6 +309,13 @@
       "when": 1795111433263,
       "tag": "0043_complete_profile_write_boundary",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1795166185281,
+      "tag": "0044_verified_free_coaching_failure",
+      "breakpoints": true
     }
   ]
 }

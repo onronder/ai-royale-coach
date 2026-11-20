@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1'
-import { z } from 'npm:zod@3'
+import { z } from 'npm:zod@4.6.7'
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 import { createCoachingAI, COACHING_MODEL } from '../_shared/coaching-ai.ts'
 import { handleFirstValue } from './handler.ts'

@@ -44,3 +44,5 @@ admin windows in Chrome with a visible example-data banner and intercepted
 requests. Try the player flow with `#P0LY`; translations and the example match
 work without live services. Close those Chrome windows to stop the preview.
 Do not open `admin.html` as a `file://` URL: it needs Vite and these fixtures.
+
+The 0044 reconciliation checks cover service-only access, terminal evidence, provider correlation, immutable entitlement and cost fields, no new generation, late callbacks and report separation. `failed.html` is a local-only visual harness for the real page: `?uncertain=1` keeps the existing uncertain-state path. Its network calls are synthetic and its CSP blocks external services.

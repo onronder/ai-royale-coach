@@ -988,6 +988,8 @@ export type Database = {
           cost_usd: number | null
           duration_ms: number | null
           error_code: string | null
+          failure_evidence: Json | null
+          resolved_at: string | null
           id: string
           input_tokens: number | null
           kind: string
@@ -1006,6 +1008,8 @@ export type Database = {
           cost_usd?: number | null
           duration_ms?: number | null
           error_code?: string | null
+          failure_evidence?: Json | null
+          resolved_at?: string | null
           id?: string
           input_tokens?: number | null
           kind: string
@@ -1024,6 +1028,8 @@ export type Database = {
           cost_usd?: number | null
           duration_ms?: number | null
           error_code?: string | null
+          failure_evidence?: Json | null
+          resolved_at?: string | null
           id?: string
           input_tokens?: number | null
           kind?: string
@@ -3243,6 +3249,10 @@ export type Database = {
       first_value_reason: { Args: { p_user: string }; Returns: string }
       first_value_request_allowed: {
         Args: { p_user: string }
+        Returns: boolean
+      }
+      resolve_failed_first_value: {
+        Args: { p_call: string; p_provider_response_id: string; p_evidence: Json }
         Returns: boolean
       }
       first_value_state: { Args: { p_user: string }; Returns: Json }
