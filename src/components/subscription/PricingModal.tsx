@@ -1,3 +1,4 @@
+import { BlackFridayPricingNote } from "@/components/campaign/BlackFridayBanner";
 import { PaymentRecovery } from './PaymentRecovery';
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -155,6 +156,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
           </DialogHeader>
 
           <div className="space-y-6 py-4">
+            <BlackFridayPricingNote />
             {/* Promo code banner */}
             {pendingPromo && (
               <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">

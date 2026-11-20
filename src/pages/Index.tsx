@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AnnouncementBanner } from "@/components/layout/AnnouncementBanner";
+import { BlackFridayHero } from "@/components/campaign/BlackFridayBanner";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { ValueHighlights } from "@/components/landing/ValueHighlights";
 import { FeatureShowcase } from "@/components/landing/FeatureShowcase";
@@ -41,6 +42,7 @@ const Index = () => {
       </Helmet>
       <AnnouncementBanner />
       <Navbar user={user} />
+      <BlackFridayHero signedIn={!!user} />
 
       {/* Hero Section - Full Impact First Impression */}
       <HeroSection user={user} />

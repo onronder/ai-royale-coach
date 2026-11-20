@@ -1,3 +1,4 @@
+import { BlackFridayStrip } from "@/components/campaign/BlackFridayBanner";
 import { changeLanguage } from '@/i18n/changeLanguage';
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useState } from "react";
@@ -110,6 +111,7 @@ export function DashboardHeader({
   };
 
   return (
+    <>
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 safe-area-top">
       <div className="container mx-auto px-3 md:px-4 h-14 flex items-center justify-between gap-2">
         
@@ -326,5 +328,7 @@ export function DashboardHeader({
         </div>
       </div>
     </header>
+    <BlackFridayStrip />
+    </>
   );
 }
