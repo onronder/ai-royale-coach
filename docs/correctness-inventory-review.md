@@ -1,5 +1,10 @@
 # Hata envanteri: düzeltmeler ve kabul kaydı
 
+**20 Kasım yeniden açılış:** `8808899a` kaynağında ERR17/ERR35 kapsamındaki
+tahmin yanıt doğrulama, kayıt hatası ve Oracle gösterim senaryoları eksik bulundu.
+Bu belgenin aşağıdaki tarihsel kabulü tam canlı kapanış olarak okunmamalı.
+[Yeni bulgular, düzeltmeler ve güncel açık işler](matchup-audit-2026-11-20.md).
+
 19 Kasım 2026. Kaynak: `01_Hata_Envanteri.md` sürüm 1.0, 35 kayıt.
 Başlangıç `main`: `7696d68a3da4071c323526d9064b8059040f830b`.
 Dal: `codex/correctness-inventory`. PR #25'in ölçüm/tekil üretim çalışması bu

@@ -1,4 +1,5 @@
 import { DECK_RULE_VERSION, evidenceHash } from '../_shared/deck-evidence.ts';
+import { parseMatchupPrediction, type MatchupPredictionResult } from '../_shared/matchup-prediction.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -17,24 +18,13 @@ interface MatchupPredictionRequest {
   language?: string;
 }
 
-interface MatchupPredictionResult {
-  deckAWinRate: number;
-  deckBWinRate: number;
-  confidence: 'high' | 'medium' | 'low';
-  explanation: string;
-  keyMatchups: any[];
-  tips: {
-    forDeckA: string[];
-    forDeckB: string[];
-  };
-  fromCache?: boolean;
-}
-
 // Generate consistent deck hash for caching
 function generateDeckHash(deckA: string[], deckB: string[]): string {
   const sortedDeckA = [...deckA].sort().join('|');
   const sortedDeckB = [...deckB].sort().join('|');
-  return `${DECK_RULE_VERSION}:${sortedDeckA}::${sortedDeckB}`;
+  // Leave old rows intact, but don't reuse their fallback/zero-corrupted percentages.
+  // The provider request is unchanged, so its durable raw response can still replay.
+  return `${DECK_RULE_VERSION}:matchup-result-v2:${sortedDeckA}::${sortedDeckB}`;
 }
 
 const CACHE_DURATION_DAYS = 7;
@@ -126,7 +116,7 @@ serve(async (req) => {
     const cacheExpiry = new Date();
     cacheExpiry.setDate(cacheExpiry.getDate() - CACHE_DURATION_DAYS);
 
-    const { data: cachedPrediction } = await supabase
+    const { data: cachedPrediction, error: cacheError } = await supabase
       .from('matchup_predictions')
       .select('*')
       .eq('user_id', user.id)
@@ -137,18 +127,26 @@ serve(async (req) => {
       .gte('created_at', cacheExpiry.toISOString())
       .order('created_at', {ascending:false}).limit(1).maybeSingle();
 
+    if (cacheError) {
+      logger.error('Prediction cache lookup failed', { code: cacheError.code });
+      return errorResponse('Unable to load the saved prediction.', 503, { type: 'matchup_prediction_load_failed' });
+    }
+
     if (cachedPrediction) {
       logger.info('Returning cached prediction');
-      const result: MatchupPredictionResult = {
-        deckAWinRate: cachedPrediction.predicted_win_rate_a,
-        deckBWinRate: cachedPrediction.predicted_win_rate_b,
-        confidence: cachedPrediction.confidence,
-        explanation: cachedPrediction.explanation || '',
-        keyMatchups: cachedPrediction.key_matchups || [],
-        tips: cachedPrediction.tips || { forDeckA: [], forDeckB: [] },
-        fromCache: true,
-      };
-      return jsonResponse(result);
+      try {
+        const result = parseMatchupPrediction({
+          deckAWinRate: cachedPrediction.predicted_win_rate_a,
+          deckBWinRate: cachedPrediction.predicted_win_rate_b,
+          confidence: cachedPrediction.confidence,
+          explanation: cachedPrediction.explanation,
+          keyMatchups: cachedPrediction.key_matchups,
+          tips: cachedPrediction.tips,
+        });
+        return jsonResponse({ ...result, fromCache: true });
+      } catch {
+        return errorResponse('The saved prediction is invalid.', 502, { type: 'invalid_matchup_prediction' });
+      }
     }
 
     logger.info('No cache found, generating new prediction');
@@ -235,65 +233,25 @@ Return ONLY valid JSON, no markdown or extra text.`;
     }
 
     const aiData = await response.json();
-    const analysisText = aiData.choices[0].message.content;
+    const analysisText = aiData?.choices?.[0]?.message?.content;
     
     logger.debug('AI Response received');
 
     // Parse JSON response
-    let parsedAnalysis: MatchupPredictionResult;
+    let result: MatchupPredictionResult;
     try {
+      if (typeof analysisText !== 'string') throw new Error('Missing prediction content');
       const cleanedText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      parsedAnalysis = JSON.parse(cleanedText);
-    } catch (parseError) {
-      logger.warn('JSON parse error');
-      parsedAnalysis = {
-        deckAWinRate: 50,
-        deckBWinRate: 50,
-        confidence: 'low',
-        explanation: 'Unable to parse detailed analysis. These decks appear evenly matched.',
-        keyMatchups: [],
-        tips: { forDeckA: [], forDeckB: [] },
-      };
-    }
-
-    // Validate and normalize the response
-    const result: MatchupPredictionResult = {
-      deckAWinRate: Math.max(0, Math.min(100, parsedAnalysis.deckAWinRate || 50)),
-      deckBWinRate: Math.max(0, Math.min(100, parsedAnalysis.deckBWinRate || 50)),
-      confidence: ['high', 'medium', 'low'].includes(parsedAnalysis.confidence) 
-        ? parsedAnalysis.confidence 
-        : 'medium',
-      explanation: parsedAnalysis.explanation || 'Analysis unavailable.',
-      keyMatchups: Array.isArray(parsedAnalysis.keyMatchups)
-        ? parsedAnalysis.keyMatchups.slice(0, 4).map((m: any) => ({
-            deckACard: m.deckACard || 'Unknown',
-            deckBCard: m.deckBCard || 'Unknown',
-            advantage: ['deckA', 'deckB', 'even'].includes(m.advantage) ? m.advantage : 'even',
-            reason: m.reason || '',
-          }))
-        : [],
-      tips: {
-        forDeckA: Array.isArray(parsedAnalysis.tips?.forDeckA) 
-          ? parsedAnalysis.tips.forDeckA.slice(0, 3) 
-          : [],
-        forDeckB: Array.isArray(parsedAnalysis.tips?.forDeckB) 
-          ? parsedAnalysis.tips.forDeckB.slice(0, 3) 
-          : [],
-      },
-      fromCache: false,
-    };
-
-    // Ensure win rates sum to 100
-    const total = result.deckAWinRate + result.deckBWinRate;
-    if (total !== 100) {
-      result.deckAWinRate = Math.round((result.deckAWinRate / total) * 100);
-      result.deckBWinRate = 100 - result.deckAWinRate;
+      result = { ...parseMatchupPrediction(JSON.parse(cleanedText)), fromCache: false };
+    } catch {
+      logger.warn('Invalid AI matchup prediction');
+      return errorResponse('Unable to validate the matchup analysis.', 502, { type: 'invalid_matchup_prediction' });
     }
 
     // Store prediction in cache
-    const normalizedPlayerTag = playerTag ? (playerTag.startsWith('#') ? playerTag : `#${playerTag}`) : '';
+    const normalizedPlayerTag = playerTag ? `#${normalizePlayerTag(playerTag)}` : '';
     
-    await supabase
+    const { error: saveError } = await supabase
       .from('matchup_predictions')
       .insert({
         user_id: user.id,
@@ -312,6 +270,11 @@ Return ONLY valid JSON, no markdown or extra text.`;
         language: language,
         created_at: new Date().toISOString(),
       });
+
+    if (saveError) {
+      logger.error('Prediction could not be saved', { code: saveError.code });
+      return errorResponse('The prediction could not be saved for result tracking.', 503, { type: 'matchup_prediction_save_failed' });
+    }
 
     logger.info('Prediction cached successfully');
 

@@ -9,6 +9,7 @@ The runners create and drop their own databases and reject TCP Postgres.
 node tests/integration/correctness/platform.mjs --check
 CORRECTNESS_PG=/absolute/disposable/socket CORRECTNESS_PORT=55444 bun tests/integration/correctness/run.ts
 bun test tests/integration/correctness/handlers.test.ts
+bun test tests/integration/correctness/matchup-handler.test.ts
 bun test tests/*.test.ts
 npx tsc --noEmit -p tsconfig.app.json
 deno check --node-modules-dir=none $(rg --files supabase/functions | rg "/index.ts$")
@@ -26,6 +27,22 @@ Supabase transport and game API transport are mocked. It checks missing auth,
 malformed upstream payloads (no destructive empty replacement), canonical player,
 unique W/L/D and the same denominator. SQL semantics are tested separately.
 It is not a deployed-edge runtime test. The runner blocks unmocked fetch calls.
+
+`matchup-handler.test.ts` imports the actual prediction entrypoint, access check,
+and measured AI wrapper. Run it in its own process (it replaces the Edge listener).
+Its 22 cases cover valid endpoints, malformed content, failed persistence,
+cache errors, old cache invalidation with raw-response replay, and access gates.
+Only database/provider transports are mocked. The separate AI measurement and
+profile-rights SQL suites verify real claims, replay, RLS and entitlement rules.
+
+For manual Oracle acceptance, start Vite with the fixture environment above on
+port **5192**, then visit
+`http://127.0.0.1:5192/tests/integration/correctness/matchup-ui.html?case=zero&lang=tr`.
+Cases are `zero`, `hundred`, `save-error`, and `invalid`; `lang` selects the locale.
+The actual Oracle component must show 0/100, 100/0, or a translated failure with
+no invented percentages, respectively. All data is synthetic; fetch is blocked
+and CSP excludes external destinations. This entrypoint is not a production
+build input. This check does not replace physical-device or hosted acceptance.
 
 For the browser harness, use the existing Vite project with a synthetic backend:
 
