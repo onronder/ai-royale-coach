@@ -1,8 +1,9 @@
+import { CHAT_PAGE_SIZE, CHAT_DAY_PAGE_SIZE, chatDayBounds, chatDayKey, chatCursorFilter, type ChatCursor } from '@/lib/chatHistory';
 import { PlayerContextStatus } from './PlayerContextStatus';
 import { observeBattle, canonicalTag } from '../../../supabase/functions/_shared/battle-observation';
 import { gameLabel } from '@/i18n/gameLabel';
 import { useCardName } from '@/i18n/useCardName';
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { DataLoader } from "@/components/ui/data-loader";
 import { ClashRoyaleBattle } from "@/services/clashRoyaleApi";
 import { matchHelpTopic, generateHelpResponse } from "@/utils/helpTopicMatcher";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionUserContext } from "@/hooks/useSubscription";
 import { usePlayerAIAccess } from "@/hooks/usePlayerAIAccess";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { AIFeatureGate } from "@/components/subscription/AIFeatureGate";
@@ -25,7 +26,6 @@ import { useNavigate } from "react-router-dom";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { SavedDeckRow, CardMasteryRow, UserAchievementWithDetails, CardCollectionRow } from "@/types/dashboard.types";
 
-const MESSAGES_PER_PAGE = 50;
 
 interface Message {
   id: string;
@@ -109,6 +109,7 @@ export function CoachChatPanel({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [loadingDays, setLoadingDays] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -116,7 +117,15 @@ export function CoachChatPanel({
   const [hasAutoSentMatchContext, setHasAutoSentMatchContext] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(false);
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
-  const [oldestMessageTimestamp, setOldestMessageTimestamp] = useState<string | null>(null);
+  const [oldestMessage, setOldestMessage] = useState<ChatCursor | null>(null);
+  const [hasMoreDays, setHasMoreDays] = useState(false);
+  const [historyError, setHistoryError] = useState(false);
+  const accountId = useContext(SubscriptionUserContext);
+  const historyScope = (accountId || '') + ':' + canonicalTag(playerTag);
+  const scopeRef = useRef(historyScope); scopeRef.current = historyScope;
+  const messageRequest = useRef(0);
+  const dayRequest = useRef(0);
+  const selectedDay = useRef(currentConversationId); selectedDay.current = currentConversationId;
   
   // Feature access control - uses the new 3-layer check
   const { logUsage, canAccess, remainingUses } = useFeatureAccess('ai_coach', playerTag);
@@ -133,16 +142,16 @@ export function CoachChatPanel({
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen) {
-      loadConversations();
-    }
-  }, [isOpen, playerTag]);
-
-  useEffect(() => {
-    if (currentConversationId) {
-      loadMessages(currentConversationId);
-    }
-  }, [currentConversationId]);
+    messageRequest.current++; dayRequest.current++;
+    setMessages([]); setConversations([]); setCurrentConversationId(null);
+    selectedDay.current = null;
+    setOldestMessage(null); setHasMoreMessages(false); setHasMoreDays(false);
+    setHistoryError(false); setLoadingHistory(true); setInput(''); setUserId(null);
+    setHasAutoSentMatchContext(false);
+    return () => { messageRequest.current++; dayRequest.current++; };
+  }, [historyScope]);
+  useEffect(() => { if (isOpen) void loadConversations(); }, [isOpen, historyScope]);
+  useEffect(() => { if (currentConversationId) void loadMessages(currentConversationId); }, [currentConversationId, historyScope]);
 
   // Auto-send match context when it's set and user is loaded
   useEffect(() => {
@@ -201,7 +210,7 @@ export function CoachChatPanel({
       if (userError) throw userError;
       setMessages([userMsg as Message]);
       
-      const newDate = new Date().toLocaleDateString();
+      const newDate = chatDayKey();
       setCurrentConversationId(newDate);
       
       await streamChat(message, []);
@@ -213,159 +222,73 @@ export function CoachChatPanel({
     }
   };
 
-  const loadConversations = async () => {
+  const loadConversations = async (older = false) => {
+    const version = ++dayRequest.current, scope = historyScope;
+    const current = () => scopeRef.current === scope && dayRequest.current === version;
+    setLoadingDays(true); setHistoryError(false);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
+      if (!user || !current() || (accountId && user.id !== accountId)) return;
       setUserId(user.id);
-
-      // Get all unique conversation sessions (grouped by created_at date)
-      const { data, error } = await supabase
-        .from("chat_messages")
-        .select("*")
-        .eq("player_tag", playerTag)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
+      const { data, error } = await supabase.rpc('get_my_chat_days', {
+        p_tag: playerTag, p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        p_limit: CHAT_DAY_PAGE_SIZE + 1,
+        ...(older && conversations.length ? { p_before: conversations.at(-1)!.id } : {}),
+      });
       if (error) throw error;
-
-      if (data && data.length > 0) {
-        // Group messages by conversation (using date as conversation identifier)
-        const grouped = data.reduce((acc: Record<string, { id: string; last_message_at: string; messages: typeof data }>, msg) => {
-          const date = new Date(msg.created_at).toLocaleDateString();
-          if (!acc[date]) {
-            acc[date] = {
-              id: date,
-              last_message_at: msg.created_at,
-              messages: []
-            };
-          }
-          acc[date].messages.push(msg);
-          return acc;
-        }, {});
-
-        const convos = Object.values(grouped).map((conv) => ({
-          id: conv.id,
-          last_message_at: conv.last_message_at,
-          message_count: conv.messages.length
-        }));
-
-        setConversations(convos);
-        
-        // Auto-select most recent conversation
-        if (convos.length > 0 && !currentConversationId) {
-          setCurrentConversationId(convos[0].id);
-        }
-      } else {
-        // Start new conversation
-        setCurrentConversationId("new");
-        setMessages([]);
-      }
+      if (!current()) return;
+      const days = (data || []).slice(0, CHAT_DAY_PAGE_SIZE).map(row => ({
+        id: row.day, last_message_at: row.last_message_at, message_count: Number(row.message_count),
+      }));
+      setHasMoreDays((data?.length || 0) > CHAT_DAY_PAGE_SIZE);
+      setConversations(previous => older ? [...previous, ...days.filter(d => !previous.some(p => p.id === d.id))] : days);
+      if (!selectedDay.current) setCurrentConversationId(days[0]?.id || 'new');
     } catch (error) {
-      console.error("Error loading conversations:", error);
-    } finally {
-      setLoadingHistory(false);
-    }
+      if (current()) setHistoryError(true);
+      console.error('Error loading conversations:', error);
+    } finally { if (current()) { setLoadingDays(false); if (!selectedDay.current) setLoadingHistory(false); } }
   };
 
-  const loadMessages = async (conversationId: string) => {
-    if (conversationId === "new") {
-      setMessages([]);
-      setHasMoreMessages(false);
-      setOldestMessageTimestamp(null);
-      return;
+  const loadMessages = async (conversationId: string, older = false) => {
+    const version = ++messageRequest.current, scope = historyScope;
+    const current = () => scopeRef.current === scope && messageRequest.current === version && selectedDay.current === conversationId;
+    if (conversationId === 'new') {
+      setMessages([]); setHasMoreMessages(false); setOldestMessage(null); setLoadingHistory(false); return;
     }
-
+    if (older && !oldestMessage) return;
+    setHistoryError(false);
+    if (older) setLoadingMoreMessages(true);
+    else { setLoadingHistory(true); setMessages([]); setOldestMessage(null); }
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Get total count first for this conversation date
-      const { data: allData } = await supabase
-        .from("chat_messages")
-        .select("created_at")
-        .eq("player_tag", playerTag)
-        .eq("user_id", user.id);
-
-      // Filter by conversation date
-      const conversationMessages = allData?.filter((msg) => {
-        const msgDate = new Date(msg.created_at).toLocaleDateString();
-        return msgDate === conversationId;
-      }) || [];
-
-      const totalCount = conversationMessages.length;
-
-      // Fetch most recent 50 messages for this conversation
-      const { data, error } = await supabase
-        .from("chat_messages")
-        .select("*")
-        .eq("player_tag", playerTag)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(MESSAGES_PER_PAGE);
-
+      if (!user || !current() || (accountId && user.id !== accountId)) return;
+      const bounds = chatDayBounds(conversationId), tag = canonicalTag(playerTag);
+      let query = supabase.from('chat_messages').select('id,role,content,created_at')
+        .eq('user_id', user.id).in('player_tag', [tag, tag.slice(1)])
+        .gte('created_at', bounds.start).lt('created_at', bounds.end)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .limit(CHAT_PAGE_SIZE + 1);
+      if (older && oldestMessage) query = query.or(chatCursorFilter(oldestMessage));
+      const { data, error } = await query;
       if (error) throw error;
-
-      // Filter messages for this conversation (by date) and reverse for display
-      const filtered = data?.filter((msg) => {
-        const msgDate = new Date(msg.created_at).toLocaleDateString();
-        return msgDate === conversationId;
-      }).reverse() || [];
-
-      setMessages(filtered as Message[]);
-      setHasMoreMessages(totalCount > filtered.length);
-      
-      if (filtered.length > 0) {
-        setOldestMessageTimestamp(filtered[0].created_at);
-      }
+      if (!current()) return;
+      const page = (data || []).slice(0, CHAT_PAGE_SIZE).reverse() as Message[];
+      setHasMoreMessages((data?.length || 0) > CHAT_PAGE_SIZE);
+      setOldestMessage(page[0] || null);
+      setMessages(previous => older ? [...page.filter(m => !previous.some(p => p.id === m.id)), ...previous] : page);
     } catch (error) {
-      console.error("Error loading messages:", error);
-    }
+      if (current()) setHistoryError(true);
+      console.error('Error loading messages:', error);
+    } finally { if (current()) { setLoadingHistory(false); setLoadingMoreMessages(false); } }
   };
-
-  const loadOlderMessages = async () => {
-    if (!oldestMessageTimestamp || !currentConversationId || currentConversationId === "new") return;
-    
-    setLoadingMoreMessages(true);
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("chat_messages")
-        .select("*")
-        .eq("player_tag", playerTag)
-        .eq("user_id", user.id)
-        .lt("created_at", oldestMessageTimestamp)
-        .order("created_at", { ascending: false })
-        .limit(MESSAGES_PER_PAGE);
-
-      if (error) throw error;
-
-      // Filter by conversation date and reverse for display
-      const filtered = (data?.filter((msg) => {
-        const msgDate = new Date(msg.created_at).toLocaleDateString();
-        return msgDate === currentConversationId;
-      }).reverse() || []) as Message[];
-
-      if (filtered.length > 0) {
-        setMessages(prev => [...filtered, ...prev]);
-        setOldestMessageTimestamp(filtered[0].created_at);
-        setHasMoreMessages(filtered.length === MESSAGES_PER_PAGE);
-      } else {
-        setHasMoreMessages(false);
-      }
-    } catch (error) {
-      console.error("Error loading older messages:", error);
-    } finally {
-      setLoadingMoreMessages(false);
-    }
+  const loadOlderMessages = () => {
+    if (currentConversationId && !loadingMoreMessages) void loadMessages(currentConversationId, true);
   };
 
   const startNewConversation = () => {
+    messageRequest.current++; selectedDay.current = "new";
     setCurrentConversationId("new");
+    setOldestMessage(null); setHasMoreMessages(false);
     setMessages([]);
   };
 
@@ -590,7 +513,7 @@ export function CoachChatPanel({
         
         // Update conversation ID if new
         if (currentConversationId === "new") {
-          const newDate = new Date().toLocaleDateString();
+          const newDate = chatDayKey();
           setCurrentConversationId(newDate);
         }
         
@@ -622,7 +545,7 @@ export function CoachChatPanel({
       
       // If this is a new conversation, update the conversation ID
       if (currentConversationId === "new") {
-        const newDate = new Date().toLocaleDateString();
+        const newDate = chatDayKey();
         setCurrentConversationId(newDate);
       }
       
@@ -715,6 +638,9 @@ export function CoachChatPanel({
         </div>
 
         {!contextReady && <PlayerContextStatus failed={contextError} retry={retryContext} />}
+        {historyError && <PlayerContextStatus failed retry={() => {
+          void loadConversations(); if (currentConversationId) void loadMessages(currentConversationId);
+        }} />}
         {/* Tabs: Active Chat & Recent Chats */}
         <Tabs defaultValue="chat" className="flex-1 flex flex-col min-h-0">
           <TabsList className="w-full justify-start rounded-none border-b border-border bg-transparent p-0">
@@ -877,7 +803,8 @@ export function CoachChatPanel({
                 {t('coach.startNewConversation')}
               </Button>
 
-              {conversations.length === 0 ? (
+              {hasMoreDays && <Button variant="outline" disabled={loadingDays} onClick={() => void loadConversations(true)}>{t("common.next")}</Button>}
+              {conversations.length === 0 && !historyError ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <MessageSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
                   <p className="text-sm">{t('coach.noRecentConversations')}</p>
@@ -886,7 +813,8 @@ export function CoachChatPanel({
                 conversations.map((conv) => (
                   <Card
                     key={conv.id}
-                    onClick={() => setCurrentConversationId(conv.id)}
+                    data-chat-day={conv.id}
+                    onClick={() => { selectedDay.current = conv.id; setCurrentConversationId(conv.id); }}
                     className={cn(
                       "p-4 cursor-pointer transition-all hover:shadow-md",
                       currentConversationId === conv.id && "border-primary bg-primary/5"

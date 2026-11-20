@@ -330,6 +330,13 @@
       "when": 1795204334650,
       "tag": "0046_journey_measurements",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1795214466437,
+      "tag": "0047_bounded_chat_history",
+      "breakpoints": true
     }
   ]
 }

@@ -2,9 +2,9 @@
 import assert from 'node:assert/strict';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const base = 'http://127.0.0.1:5189', output = '/tmp/royale-chat-context-browser';
+const base = process.env.FIXTURE_URL || 'http://127.0.0.1:5189', output = '/tmp/royale-chat-context-browser';
 await mkdir(output, { recursive: true });
-const browser = await chromium.launch({ headless: true, channel: 'chrome' });
+const browser = await chromium.launch({ headless: true });
 const user = { id: '11111111-2222-4333-8444-555555555555', email: 'fixture@example.invalid', aud: 'authenticated', role: 'authenticated' };
 const results = [];
 try {
@@ -31,6 +31,8 @@ try {
     else if (url.pathname.endsWith('/coach-chat')) {
      requests.push(req.postDataJSON());
      return route.fulfill({status:200,headers,contentType:'text/event-stream',body:'data: '+JSON.stringify({choices:[{delta:{content:'Fixture coaching answer'}}]})+'\n\ndata: [DONE]\n\n'});
+    } else if (url.pathname.endsWith('/get_my_chat_days')) {
+     data = [];
     } else if (url.pathname.endsWith('/chat_messages')) {
      if (req.method() === 'POST') { data = {...req.postDataJSON(),id:'message-'+saved.length,created_at:new Date().toISOString()}; saved.push(data); }
      else {

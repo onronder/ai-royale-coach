@@ -41,3 +41,8 @@ build: `npm run build`. GitHub quality checks use the same fixture backend.
 Performance claims require before/after foreground samples with build, flow,
 account segment, reuse, sample count, p50/p95 and error/unobserved counts.
 Function calls and actual provider generations are different measurements.
+
+## Chat history
+Migration 0047 adds an invoker/own-account day-list RPC and stable page index; message bodies are limited to 51 rows per request after local-day filtering. Day pages return at most 31 aggregate rows. Time/id cursors preserve ties. Message retention and entitlements are unchanged. Deploy 0047 before publishing this UI.
+Validation: socket-only real SQL migration/permissions/day pagination, browser history with 70 tied messages and 35 days in UTC/Istanbul/New York, DST unit tests, and existing five-language chat acceptance.
+Commands: `CHAT_PG=/path/to/socket CHAT_PORT=55458 bun tests/integration/chatHistory/sql.ts`; `node tests/integration/chatHistory/browser.mjs` with fixture browser variables.
