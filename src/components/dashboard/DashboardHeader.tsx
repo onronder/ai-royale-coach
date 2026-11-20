@@ -327,8 +327,8 @@ export function DashboardHeader({
           </Popover>
         </div>
       </div>
+      <BlackFridayStrip />
     </header>
-    <BlackFridayStrip />
     </>
   );
 }

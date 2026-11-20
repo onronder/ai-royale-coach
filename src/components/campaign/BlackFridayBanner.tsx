@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Check, Copy, Flame, X } from "lucide-react";
+import { Check, Copy, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BLACK_FRIDAY, isBlackFridayActive, timeLeft } from "@/lib/campaign";
-
-const DISMISS_KEY = "bf2026-strip-dismissed";
 
 function useNow() {
   const [now, setNow] = useState(Date.now());
@@ -80,20 +78,15 @@ export function BlackFridayHero({ signedIn }: { signedIn: boolean }) {
   );
 }
 
-/** Thin dismissible strip for the signed-in app. */
+/** Thin always-visible strip (placed inside sticky headers). */
 export function BlackFridayStrip() {
   const { t } = useTranslation();
-  const [hidden, setHidden] = useState(() => { try { return localStorage.getItem(DISMISS_KEY) === "1"; } catch { return false; } });
-  if (hidden || !isBlackFridayActive()) return null;
+  if (!isBlackFridayActive()) return null;
   return (
-    <div className="relative flex items-center justify-center gap-2 border-b border-gold/30 bg-gradient-to-r from-gold/15 via-accent/10 to-gold/15 px-10 py-1.5 text-center text-xs md:text-sm">
+    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 border-b border-gold/30 bg-gradient-to-r from-gold/20 via-accent/15 to-gold/20 bg-card px-3 py-1.5 text-center text-xs md:text-sm">
       <Flame className="hidden h-4 w-4 shrink-0 text-gold sm:block" />
       <span className="font-semibold text-foreground">{t("campaign.strip")}</span>
       <CodeChip compact />
-      <button type="button" aria-label={t("campaign.dismiss")} className="absolute right-2 rounded p-1 text-muted-foreground hover:text-foreground"
-        onClick={() => { setHidden(true); try { localStorage.setItem(DISMISS_KEY, "1"); } catch { /* ignore */ } }}>
-        <X className="h-4 w-4" />
-      </button>
     </div>
   );
 }
