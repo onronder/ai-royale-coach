@@ -125,7 +125,8 @@
     "locked": "Verrouillé",
     "thisMayTakeMoment": "Cela peut prendre un moment",
     "dismiss": "Fermer",
-    "today": "Aujourd’hui"
+    "today": "Aujourd’hui",
+    "navigation": "Navigation"
   },
   "announcement": {
     "new": "NOUVEAU",

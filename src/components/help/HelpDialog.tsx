@@ -1,5 +1,6 @@
+import { useHelpTranslations } from '@/i18n/useHelpTranslations';
+import { ContentLoadStatus } from '@/components/ui/content-load-status';
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { 
   BookOpen, ChevronRight, Home, User, BarChart3, Swords, 
   Wrench, TrendingUp, Wallet, Trophy, Users, Shield,
@@ -59,7 +60,7 @@ const HelpCard = ({ title, icon: Icon, children }: { title: string; icon: React.
 );
 
 export function HelpDialog({ open, onOpenChange, initialSection }: HelpDialogProps) {
-  const { t } = useTranslation();
+  const { t, ready: helpReady, failed: helpFailed } = useHelpTranslations(open);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSection, setActiveSection] = useState(initialSection || "getting-started");
 
@@ -197,6 +198,8 @@ export function HelpDialog({ open, onOpenChange, initialSection }: HelpDialogPro
       setTimeout(() => scrollToSection(initialSection), 100);
     }
   }, [initialSection, open]);
+
+  if (open && !helpReady) return <ContentLoadStatus failed={helpFailed} />;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

@@ -42,5 +42,6 @@ jobs:
           export PLAYWRIGHT_MODULE="$RUNNER_TEMP/browser-tools/node_modules/playwright/index.mjs"
           node tests/integration/maintenance/browser.mjs
           node tests/integration/chatHistory/browser.mjs
+          node tests/integration/loading/browser.mjs
           FIXTURE_URL=http://127.0.0.1:5193 node tests/integration/correctness/chat-browser.mjs
           node tests/integration/playerAnalysis/browser.mjs

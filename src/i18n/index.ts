@@ -3,20 +3,29 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-import en from './locales/en.json';
-import es from './locales/es.json';
-import pt from './locales/pt.json';
-import tr from './locales/tr.json';
-import fr from './locales/fr.json';
+import type { BackendModule } from 'i18next';
 import { coachingTranslations } from './coaching';
 import { firstValueTranslations } from './firstValue';
 import { campaignTranslations } from './campaign';
 
-import enHelp from './locales/en.help.json';
-import esHelp from './locales/es.help.json';
-import ptHelp from './locales/pt.help.json';
-import trHelp from './locales/tr.help.json';
-import frHelp from './locales/fr.help.json';
+const translations = {
+  en: () => import('./locales/en.json'), es: () => import('./locales/es.json'),
+  pt: () => import('./locales/pt.json'), tr: () => import('./locales/tr.json'), fr: () => import('./locales/fr.json'),
+};
+const help = {
+  en: () => import('./locales/en.help.json'), es: () => import('./locales/es.help.json'),
+  pt: () => import('./locales/pt.help.json'), tr: () => import('./locales/tr.help.json'), fr: () => import('./locales/fr.help.json'),
+};
+const backend: BackendModule = {
+  type: 'backend', init() {},
+  read(language, namespace, done) {
+    const lng = baseLanguage(language) as keyof typeof translations;
+    const source = namespace === 'help' ? help : translations;
+    source[lng]().then(({default: data}) => done(null, namespace === 'help' ? data : {
+      ...data, coaching: coachingTranslations[lng], firstValue: firstValueTranslations[lng], campaign: campaignTranslations[lng],
+    })).catch(error => done(error, false));
+  },
+};
 
 export const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -26,18 +35,14 @@ export const languages = [
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ];
 
-// Initialize i18n with all translations
+// Load only the selected language and English fallback; help is requested separately.
 const i18nInit = i18n
+  .use(backend)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      en: { translation: { ...en, ...enHelp, coaching: coachingTranslations.en, firstValue: firstValueTranslations.en, campaign: campaignTranslations.en } },
-      es: { translation: { ...es, ...esHelp, coaching: coachingTranslations.es, firstValue: firstValueTranslations.es, campaign: campaignTranslations.es } },
-      pt: { translation: { ...pt, ...ptHelp, coaching: coachingTranslations.pt, firstValue: firstValueTranslations.pt, campaign: campaignTranslations.pt } },
-      tr: { translation: { ...tr, ...trHelp, coaching: coachingTranslations.tr, firstValue: firstValueTranslations.tr, campaign: campaignTranslations.tr } },
-      fr: { translation: { ...fr, ...frHelp, coaching: coachingTranslations.fr, firstValue: firstValueTranslations.fr, campaign: campaignTranslations.fr } },
-    },
+    ns: ['translation'],
+    defaultNS: 'translation',
     supportedLngs: languages.map(language => language.code),
     load: 'languageOnly',
     fallbackLng: 'en',
@@ -65,3 +70,9 @@ void i18nInit.then(syncDocumentLanguage);
 
 export { i18nInit };
 export default i18n;
+
+export async function ensureHelp() {
+  await i18n.loadNamespaces('help');
+  const language = i18n.resolvedLanguage || 'en';
+  if (!i18n.hasResourceBundle(language, 'help')) throw new Error('Help content unavailable');
+}

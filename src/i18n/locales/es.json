@@ -125,7 +125,8 @@
     "locked": "Bloqueado",
     "thisMayTakeMoment": "Esto puede tomar un momento",
     "dismiss": "Cerrar",
-    "today": "Hoy"
+    "today": "Hoy",
+    "navigation": "Navegación"
   },
   "announcement": {
     "new": "NUEVO",

@@ -1,5 +1,6 @@
+import { useHelpTranslations } from '@/i18n/useHelpTranslations';
+import { ContentLoadStatus } from '@/components/ui/content-load-status';
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,7 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const Help = () => {
-  const { t } = useTranslation();
+  const { t, ready: helpReady, failed: helpFailed } = useHelpTranslations(true);
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -282,6 +283,8 @@ const Help = () => {
       setIsResettingTour(false);
     }
   };
+
+  if (true && !helpReady) return <ContentLoadStatus failed={helpFailed} />;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
