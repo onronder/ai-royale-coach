@@ -18,7 +18,8 @@ interface PlayerAnalysisResult {
 
 export function usePlayerAnalysis(
   player: ClashRoyalePlayer | undefined,
-  battles: ClashRoyaleBattle[] | undefined
+  battles: ClashRoyaleBattle[] | undefined,
+  enabled = true
 ) {
   const { i18n } = useTranslation();
   const language = i18n.resolvedLanguage ?? 'en';
@@ -52,7 +53,9 @@ export function usePlayerAnalysis(
 
       return data;
     },
-    enabled: !!player && !!battles,
+    // A tab return must not retry a failed/uncertain request for this cached key.
+    // Changing player, evidence or language still selects its own query.
+    enabled: query => enabled && !!player && !!battles && query.state.status !== 'error',
     staleTime: 24 * 60 * 60 * 1000, // 24 hours
     retry: false,
   });
