@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { SubscriptionUserContext } from './useSubscription';
+import { achievementOptions } from '@/lib/playerQueries';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,24 +69,10 @@ interface AchievementProgress {
 }
 
 export function useAchievements(playerTag: string) {
-  return useQuery({
-    queryKey: ['achievements', playerTag],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('user_achievements')
-        .select('*, achievements(*)')
-        .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
-        .order('unlocked_at', { ascending: false, nullsFirst: false });
-
-      if (error) throw error;
-      return data as unknown as UserAchievement[];
-    },
-    enabled: !!playerTag,
-  });
+  const account = useContext(SubscriptionUserContext);
+  return useQuery({ ...achievementOptions(account, playerTag), select: data => data.map(row => ({
+    ...row, achievements: row.achievement,
+  })) as unknown as UserAchievement[] });
 }
 
 export function useAchievementProgress(playerTag: string) {
@@ -134,6 +123,7 @@ export function useAllAchievements() {
 }
 
 export function useSyncAchievements(playerTag: string) {
+  const account = useContext(SubscriptionUserContext);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { mutate: createNotification } = useCreateNotification();
@@ -149,7 +139,7 @@ export function useSyncAchievements(playerTag: string) {
     },
     onSuccess: (data) => {
       // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['achievements', playerTag] });
+      queryClient.invalidateQueries({ queryKey: ['player-context', account] });
       queryClient.invalidateQueries({ queryKey: ['achievement-progress', playerTag] });
 
       if (data.newlyUnlocked && data.newlyUnlocked.length > 0) {

@@ -1,6 +1,7 @@
+import { useCardCollection } from '@/hooks/useCardCollection';
 import { nextUpgradeCopies } from '@/lib/upgradeCost';
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { syncCardCollection } from "@/lib/cardCollectionSync";
 import { useJourneyMeasurement } from "@/hooks/useJourneyMeasurement";
@@ -55,20 +56,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   const currentScope = useRef(scope); currentScope.current = scope;
   const qc = useQueryClient();
   const requestVersion = useRef(0);
-  const collectionQuery = useQuery({
-    queryKey: ['card-collection-view', userId, normalizedTag],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('card_collection').select('*')
-        .eq('user_id', userId).in('player_tag', [normalizedTag, '#' + normalizedTag])
-        .order('updated_at', { ascending: false });
-      if (error) throw error;
-      // Legacy tag spellings may coexist; display the most recently saved card.
-      const unique = new Map<number, CardCollectionItem>();
-      for (const card of data ?? []) if (!unique.has(card.card_id)) unique.set(card.card_id, card);
-      return [...unique.values()].sort((a, b) => a.rarity.localeCompare(b.rarity) || a.card_name.localeCompare(b.card_name));
-    },
-    enabled: !!userId && !!normalizedTag,
-  });
+  const collectionQuery = useCardCollection(playerTag, userId);
   const collection = collectionQuery.data ?? [], isLoading = collectionQuery.isLoading;
   const begin = useJourneyMeasurement('card_sync', scope, !!collectionQuery.data && !collectionQuery.isFetching, collectionQuery.isError);
   const pending = useRef<{ run: string; measurement: ReturnType<typeof begin>; reuse: 'joined' | 'unknown' }>();
@@ -96,7 +84,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         measurement.complete(result.status === 'cancelled' ? 'cancelled' : 'failed');
         return;
       }
-      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag] });
+      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag], refetchType: 'none' });
       const refreshed = await refetchCollection();
       if (!isCurrent()) return;
       if (refreshed.error) { measurement.complete('failed'); return; }
@@ -123,7 +111,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
     pending.current = undefined;
     setSyncState(syncProgress.status);
     if (syncProgress.status === 'completed') {
-      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag] });
+      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag], refetchType: 'none' });
       void refetchCollection().then(result => result.error ? waiting.measurement.complete('failed') : waiting.measurement.ready(waiting.reuse));
     } else waiting.measurement.complete(syncProgress.status === 'cancelled' ? 'cancelled' : 'failed');
   }, [syncProgress, refetchCollection]);

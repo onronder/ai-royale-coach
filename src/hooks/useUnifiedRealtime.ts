@@ -48,7 +48,7 @@ export function useUnifiedRealtime(userId: string | null, playerTag?: string) {
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          queryClient.invalidateQueries({ queryKey: ['achievements'] });
+          queryClient.invalidateQueries({ queryKey: ['player-context', userId] });
           // Check for new unlocks
           const newData = payload.new as AchievementPayload | undefined;
           const oldData = payload.old as AchievementPayload | undefined;

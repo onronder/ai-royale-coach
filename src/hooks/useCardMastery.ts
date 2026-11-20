@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { SubscriptionUserContext } from './useSubscription';
+import { masteryOptions } from '@/lib/playerQueries';
 import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,34 +32,15 @@ export interface CardMastery {
 }
 
 export const useCardMastery = (playerTag: string) => {
-  return useQuery({
-    queryKey: ['card-mastery', playerTag],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('card_mastery')
-        .select('*')
-          .eq('observation_scope', 'recent-battles-v2')
-        .eq('user_id', user.id)
-        .eq('player_tag', canonicalTag(playerTag))
-        .order('mastery_level', { ascending: false })
-        .order('times_used', { ascending: false });
-
-      if (error) throw error;
-
-      return (data || []).map(card => ({
-        ...card,
-        win_rate: card.times_used ? card.battles_won / card.times_used : 0,
-        crown_avg: card.times_used ? card.total_crowns / card.times_used : 0,
-      }));
-    },
-    enabled: !!playerTag,
-  });
+  const account = useContext(SubscriptionUserContext);
+  return useQuery({ ...masteryOptions(account, playerTag), select: data => data.map(card => ({
+    ...card, win_rate: card.times_used ? card.battles_won / card.times_used : 0,
+    crown_avg: card.times_used ? card.total_crowns / card.times_used : 0,
+  })) });
 };
 
 export const useCalculateCardMastery = (playerTag: string) => {
+  const account = useContext(SubscriptionUserContext);
   const queryClient = useQueryClient();
   const { mutate: createNotification } = useCreateNotification();
   const { progress } = useOperationProgress({
@@ -75,7 +59,7 @@ export const useCalculateCardMastery = (playerTag: string) => {
       return data;
     },
     onSuccess: (_, tag) => {
-      queryClient.invalidateQueries({ queryKey: ['card-mastery', tag] });
+      queryClient.invalidateQueries({ queryKey: ['player-context', account] });
       
       // Save to notification history
       createNotification({
@@ -99,6 +83,7 @@ export const useCalculateCardMastery = (playerTag: string) => {
 };
 
 export const useGenerateCardTips = () => {
+  const account = useContext(SubscriptionUserContext);
   const queryClient = useQueryClient();
   
   return useMutation({
@@ -162,7 +147,7 @@ export const useGenerateCardTips = () => {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['card-mastery', variables.playerTag] });
+      queryClient.invalidateQueries({ queryKey: ['player-context', account] });
       toast.success(i18n.t('cardMastery.tipsGenerated', { card: variables.cardName }), { id: `card-tips-${variables.cardId}` });
     },
     onError: (error: unknown, variables) => {

@@ -54,3 +54,6 @@ Local production build: main chunk 1,538.38 KB / gzip 490.88 KB before, 736.82 K
 ## Secondary panels
 Dashboard helper dialogs and chat defer code until first opening. Closing chat preserves its mounted state/draft. A failed helper import is contained to that panel and offers a user-triggered reload rather than silently reloading/losing other UI state. Ranking/collection/clan code loads with its selected tab.
 Local build Dashboard gzip: 190.65 KB before / 171.80 KB after. Actual Dashboard browser acceptance includes no closed-panel module requests, chat draft close/reopen at 390/1280 widths and a failed Help import.
+
+## Shared player context
+Collection, mastery and achievements share account/player-scoped query keys across coaching and their views. Saved decks remain account-scoped. Chat/builder context waits until used; failed reads remain errors. Collection writes refresh the shared result once. Actual-hook browser acceptance: zero initial context reads, four on demand, no duplicate collection read for a second observer, coherent refresh and player switching; 210 unit tests and types/build pass.

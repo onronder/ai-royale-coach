@@ -5,11 +5,11 @@ const base = 'http://127.0.0.1:5193';
 const account = '11111111-2222-4333-8444-555555555555';
 let passed = 0;
 try {
-  for (const scenario of ['success', 'http-error', 'false-success', 'count-error', 'two-players', 'two-observers', 'context-error', 'context-empty']) {
+  for (const scenario of ['success', 'http-error', 'false-success', 'count-error', 'two-players', 'two-observers', 'context-error', 'context-empty', 'context-demand']) {
     const context = await browser.newContext({ serviceWorkers: 'block' });
     await context.routeWebSocket('**', socket => socket.close());
-    const page = await context.newPage(); const calls = [], faults = [], external = [];
-    let repaired = false;
+    const page = await context.newPage(); const calls = [], faults = [], external = [], reads = [];
+    let repaired = false, cardVersion = 1;
     page.on('pageerror', e => faults.push(e.message));
     await page.addInitScript(account => {
       const user = { id: account, email: 'fixture@example.invalid', role: 'authenticated', aud: 'authenticated' };
@@ -35,6 +35,8 @@ try {
         return send({ success: scenario !== 'false-success' }, scenario === 'http-error' ? 503 : 200);
       }
       if (url.pathname.startsWith('/rest/')) {
+        reads.push({name,query:url.search});
+        if(scenario==='context-demand'&&name==='card_collection') return send([{id:'fixture',card_id:26000000,card_name:'Card '+cardVersion,rarity:'common',updated_at:'2026-11-20T12:00:00Z'}]);
         if (scenario === 'context-error' && name === 'card_collection' && !repaired) return send({ message: 'Unavailable' }, 503);
         return send([]);
       }
@@ -42,7 +44,19 @@ try {
     });
     await page.goto(base + '/tests/integration/maintenance/ui.html?' + scenario);
     await page.getByRole('button', { name: 'Switch player', exact: true }).waitFor();
-    if (scenario.startsWith('context')) {
+    if (scenario==='context-demand') {
+      await page.waitForTimeout(150); assert.equal(reads.length,0);
+      await page.getByRole('button',{name:'Open context',exact:true}).click();
+      await page.locator('output').filter({hasText:'context-ready:1'}).waitFor(); assert.equal(reads.length,4);
+      await page.getByRole('button',{name:'Open collection mirror',exact:true}).click();
+      await page.getByTestId('mirror').filter({hasText:'Card 1'}).waitFor(); assert.equal(reads.length,4);
+      cardVersion=2;await page.getByRole('button',{name:'Refresh shared context',exact:true}).click();
+      await page.getByTestId('context-card').filter({hasText:'Card 2'}).waitFor();await page.getByTestId('mirror').filter({hasText:'Card 2'}).waitFor();
+      assert.equal(reads.filter(r=>r.name==='card_collection').length,2);
+      await page.getByRole('button',{name:'Switch player',exact:true}).click();await page.locator('output').filter({hasText:'context-ready:1'}).waitFor();
+      assert.equal(reads.filter(r=>r.name==='saved_decks').length,2,'account-level saved decks reused on player switch');
+      assert(reads.filter(r=>r.name==='card_collection').every(r=>r.query.includes('user_id=eq.'+account)));
+    } else if (scenario.startsWith('context')) {
       await page.locator('output').filter({ hasText: scenario === 'context-error' ? 'context-error' : 'context-ready:0' }).waitFor();
       if (scenario === 'context-error') { repaired = true; await page.getByRole('button', { name: 'Retry context' }).click(); await page.locator('output').filter({ hasText: 'context-ready:0' }).waitFor(); }
     } else {

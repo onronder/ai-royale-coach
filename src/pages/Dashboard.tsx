@@ -86,7 +86,7 @@ const Dashboard = () => {
   };
 
   // Custom hooks for data management
-  const { user, playerContext, contextReady, contextError, retryContext, handleSignOut } = useDashboardData(playerTag);
+  const { user, playerContext, contextReady, contextError, retryContext, handleSignOut } = useDashboardData(playerTag, coachOpen || (activeTab === 'deck' && activeSubTab === 'builder'));
   const { newAchievement, dismissNotification } = useAchievementNotifications(playerTag || '');
   const { updateLastSeen } = usePlayerProfiles(user?.id || null);
   const { showWhatsNew, dismissWhatsNew } = useWhatsNew();
