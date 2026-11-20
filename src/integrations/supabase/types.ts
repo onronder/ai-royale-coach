@@ -1121,12 +1121,14 @@ export type Database = {
           cost_usd: number | null
           duration_ms: number | null
           error_code: string | null
+          failure_evidence: Json | null
           id: string
           input_tokens: number | null
           kind: string
           language: string
           model: string
           output_tokens: number | null
+          resolved_at: string | null
           run_id: string | null
           source_hash: string
           started_at: string
@@ -1139,12 +1141,14 @@ export type Database = {
           cost_usd?: number | null
           duration_ms?: number | null
           error_code?: string | null
+          failure_evidence?: Json | null
           id?: string
           input_tokens?: number | null
           kind: string
           language: string
           model: string
           output_tokens?: number | null
+          resolved_at?: string | null
           run_id?: string | null
           source_hash?: string
           started_at?: string
@@ -1157,12 +1161,14 @@ export type Database = {
           cost_usd?: number | null
           duration_ms?: number | null
           error_code?: string | null
+          failure_evidence?: Json | null
           id?: string
           input_tokens?: number | null
           kind?: string
           language?: string
           model?: string
           output_tokens?: number | null
+          resolved_at?: string | null
           run_id?: string | null
           source_hash?: string
           started_at?: string
@@ -3685,6 +3691,14 @@ export type Database = {
       reserve_trial_ai: {
         Args: { p_feature: string; p_request_key: string; p_user_id: string }
         Returns: Json
+      }
+      resolve_failed_first_value: {
+        Args: {
+          p_call: string
+          p_evidence: Json
+          p_provider_response_id: string
+        }
+        Returns: boolean
       }
       revenue_cohort: {
         Args: {
