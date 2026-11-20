@@ -234,7 +234,7 @@ export function CoachChatPanel({
       const { data, error } = await supabase.rpc('get_my_chat_days', {
         p_tag: playerTag, p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         p_limit: CHAT_DAY_PAGE_SIZE + 1,
-        ...(older && conversations.length ? { p_before: conversations.at(-1)!.id } : {}),
+        ...(older && conversations.length ? { p_before: conversations[conversations.length - 1].id } : {}),
       });
       if (error) throw error;
       if (!current()) return;
