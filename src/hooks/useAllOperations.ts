@@ -1,3 +1,5 @@
+import { useRealtimeReady } from './useUnifiedRealtime';
+import { operationPollInterval } from '@/lib/operationPolling';
 import { useContext } from "react";
 import { SubscriptionUserContext } from "./useSubscription";
 import { useTranslation } from "react-i18next";
@@ -35,6 +37,7 @@ export function useAllOperations() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const accountId = useContext(SubscriptionUserContext);
+  const realtimeReady = useRealtimeReady(accountId);
 
   // Use React Query for data fetching - realtime invalidation handled by useUnifiedRealtime
   const { data: operations = [], isLoading } = useQuery({
@@ -62,11 +65,7 @@ export function useAllOperations() {
       })) as Promise<OperationProgress[]>;
     },
     // Only poll when there are active operations
-    refetchInterval: (query) => {
-      const ops = query.state.data as OperationProgress[] | undefined;
-      const hasActiveOperations = ops?.some(op => op.status === 'running');
-      return hasActiveOperations ? 5000 : false;
-    },
+    refetchInterval: (query) => operationPollInterval(!!query.state.data?.some(op => op.status === 'running'), realtimeReady, 5000),
   });
 
   const cancelMutation = useMutation({

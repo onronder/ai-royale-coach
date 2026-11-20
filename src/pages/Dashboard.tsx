@@ -107,7 +107,7 @@ const Dashboard = () => {
   useBackgroundSync(user?.id || null, playerTag);
   
   // Unified realtime subscriptions (consolidated from 6 to 2 channels)
-  useUnifiedRealtime(user?.id || null, playerTag);
+  useUnifiedRealtime(user?.id || null, activeTab === 'coach' && activeSubTab === 'leaderboard' ? 'leaderboard' : activeTab === 'social' && activeSubTab === 'tournaments' ? 'tournaments' : undefined);
   
   // Memoized win rate calculation
   const { winRate, formattedWinRate, wins, losses } = useWinRate(battles, playerTag);

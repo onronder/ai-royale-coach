@@ -1,3 +1,5 @@
+import { useRealtimeReady } from './useUnifiedRealtime';
+import { operationPollInterval } from '@/lib/operationPolling';
 import { useContext } from "react";
 import { SubscriptionUserContext } from "./useSubscription";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +37,7 @@ export function useOperationProgress({
   enabled = true,
 }: UseOperationProgressOptions) {
   const accountId = useContext(SubscriptionUserContext);
+  const realtimeReady = useRealtimeReady(accountId);
   const { data: progress, isLoading } = useQuery({
     queryKey: ['operation-progress', accountId, playerTag, operationType],
     queryFn: async () => {
@@ -60,11 +63,7 @@ export function useOperationProgress({
       return data as OperationProgress | null;
     },
     enabled: enabled && !!accountId,
-    refetchInterval: (query) => {
-      // Poll more frequently when operation is running
-      const data = query.state.data;
-      return data?.status === 'running' ? 2000 : false;
-    },
+    refetchInterval: (query) => operationPollInterval(query.state.data?.status === 'running', realtimeReady, 2000),
     staleTime: 1000,
   });
 

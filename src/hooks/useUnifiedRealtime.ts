@@ -1,125 +1,65 @@
-import { useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { RealtimeChannel } from "@supabase/supabase-js";
 
-interface AchievementPayload {
-  unlocked_at: string | null;
+export function useRealtimeReady(account: string | null) {
+  return useQuery({ queryKey: ['realtime-ready', account], queryFn: () => false, enabled: false, initialData: false }).data;
 }
 
-/**
- * Consolidated realtime subscription hook
- * Reduces 6 separate channels to 2 unified channels for better scalability
- */
-export function useUnifiedRealtime(userId: string | null, playerTag?: string) {
+export function useUnifiedRealtime(userId: string | null, publicView?: 'leaderboard' | 'tournaments') {
   const queryClient = useQueryClient();
-  const channelsRef = useRef<RealtimeChannel[]>([]);
-
   useEffect(() => {
     if (!userId) return;
-
-    // Cleanup existing channels
-    channelsRef.current.forEach(channel => {
-      supabase.removeChannel(channel);
-    });
-    channelsRef.current = [];
-
-    // Channel 1: User-specific data (notifications, achievements, operation progress)
-    const userChannel = supabase
-      .channel(`user-data:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['notifications'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_achievements',
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          queryClient.invalidateQueries({ queryKey: ['player-context', userId] });
-          // Check for new unlocks
-          const newData = payload.new as AchievementPayload | undefined;
-          const oldData = payload.old as AchievementPayload | undefined;
-          if (payload.eventType === 'UPDATE' && newData?.unlocked_at && !oldData?.unlocked_at) {
-            queryClient.invalidateQueries({ queryKey: ['new-achievement'] });
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'operation_progress',
-          filter: `user_id=eq.${userId}`,
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['operations'] });
-          queryClient.invalidateQueries({ queryKey: ['operation-progress'] });
-        }
-      )
-      .subscribe();
-
-    channelsRef.current.push(userChannel);
-
-    // Channel 2: Public/shared data (leaderboard, tournaments)
-    const publicChannel = supabase
-      .channel('public-data')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'leaderboard_entries',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['leaderboard'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tournaments',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['tournaments'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tournament_registrations',
-        },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['tournaments'] });
-          queryClient.invalidateQueries({ queryKey: ['tournament-registrations'] });
-        }
-      )
-      .subscribe();
-
-    channelsRef.current.push(publicChannel);
-
-    return () => {
-      channelsRef.current.forEach(channel => {
-        supabase.removeChannel(channel);
-      });
-      channelsRef.current = [];
+    let active = true;
+    const refreshOperations = () => {
+      void queryClient.invalidateQueries({ queryKey: ['operations', userId] });
+      void queryClient.invalidateQueries({ queryKey: ['operation-progress', userId] });
     };
-  }, [userId, playerTag, queryClient]);
+    queryClient.setQueryData(['realtime-ready', userId], false);
+    const channel = supabase.channel(`user-data:${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, () => {
+        if (active) void queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_achievements', filter: `user_id=eq.${userId}` }, payload => {
+        if (!active) return;
+        void queryClient.invalidateQueries({ queryKey: ['player-context', userId] });
+        const next = payload.new as { unlocked_at?: string | null };
+        const previous = payload.old as { unlocked_at?: string | null };
+        if (payload.eventType === 'UPDATE' && next?.unlocked_at && !previous?.unlocked_at)
+          void queryClient.invalidateQueries({ queryKey: ['new-achievement'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'operation_progress', filter: `user_id=eq.${userId}` }, () => {
+        if (active) refreshOperations();
+      })
+      .subscribe(status => {
+        if (!active) return;
+        queryClient.setQueryData(['realtime-ready', userId], status === 'SUBSCRIBED');
+        if (status === 'SUBSCRIBED') {
+          // A reconnect must reconcile events missed while disconnected.
+          refreshOperations();
+          void queryClient.invalidateQueries({ queryKey: ['notifications'] });
+          void queryClient.invalidateQueries({ queryKey: ['player-context', userId] });
+        }
+      });
+    return () => {
+      active = false;
+      queryClient.setQueryData(['realtime-ready', userId], false);
+      void supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient]);
+
+  useEffect(() => {
+    if (!userId || !publicView) return;
+    let active = true;
+    const refresh = () => {
+      if (!active) return;
+      void queryClient.invalidateQueries({ queryKey: [publicView] });
+      if (publicView === 'tournaments') void queryClient.invalidateQueries({ queryKey: ['tournament-registrations'] });
+    };
+    const channel = supabase.channel(`public-data:${publicView}`);
+    const tables = publicView === 'leaderboard' ? ['leaderboard_entries'] : ['tournaments', 'tournament_registrations'];
+    for (const table of tables) channel.on('postgres_changes', { event: '*', schema: 'public', table }, refresh);
+    channel.subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });
+    return () => { active = false; void supabase.removeChannel(channel); };
+  }, [userId, publicView, queryClient]);
 }
