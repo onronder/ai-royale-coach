@@ -94,6 +94,8 @@ export function FloatingCoachButton({
     }
   }, [forceOpen]);
 
+  useEffect(() => { onOpenChange?.(isOpen); }, [isOpen, onOpenChange]);
+
   // Auto-open when match context is set
   useEffect(() => {
     if (matchContext) {
