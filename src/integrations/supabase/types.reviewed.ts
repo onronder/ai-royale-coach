@@ -2932,6 +2932,10 @@ export type Database = {
       }
     }
     Functions: {
+      get_my_chat_days: {
+        Args: { p_tag: string; p_timezone: string; p_before?: string; p_limit?: number };
+        Returns: { day: string; last_message_at: string; message_count: number }[];
+      };
       record_journey_measurement: {
         Args: { p_id: string; p_flow: string; p_trigger: string; p_outcome: string; p_duration_ms?: number | null; p_hidden?: boolean; p_reuse?: string; p_build?: string }
         Returns: undefined
