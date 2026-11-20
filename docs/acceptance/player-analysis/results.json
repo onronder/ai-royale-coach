@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Dashboard direct deck/current",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct deck/builder",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct deck/collection",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct coach/matches",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct coach/analytics",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct coach/leaderboard",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct social/clans",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard direct social/tournaments",
+    "passed": true,
+    "calls": 0
+  },
+  {
+    "name": "Dashboard trial overview renders",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "Dashboard paid overview renders",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "Dashboard expired overview renders",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "Dashboard error remains visible without navigation retry",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "free account does not bypass server rejection",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "missing data then readiness",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "in-flight tab switches share one request",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "late response while hidden is reused on return",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "error 401 cannot retry on navigation or invalidation",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "error 403 cannot retry on navigation or invalidation",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "error 409 cannot retry on navigation or invalidation",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "error 503 cannot retry on navigation or invalidation",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "lost response cannot retry on return",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "failed revalidation with existing data cannot retry on return",
+    "passed": true,
+    "calls": 2
+  },
+  {
+    "name": "hidden player and language changes defer the latest context",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "fresh result reused; changed evidence waits until overview",
+    "passed": true,
+    "calls": 2
+  },
+  {
+    "name": "late old-player response cannot replace current player",
+    "passed": true,
+    "calls": 2
+  },
+  {
+    "name": "failed key stays failed after another player or language",
+    "passed": true,
+    "calls": 3
+  },
+  {
+    "name": "simultaneous observers share one request",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "summary language en",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "summary language tr",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "summary language es",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "summary language pt",
+    "passed": true,
+    "calls": 1
+  },
+  {
+    "name": "summary language fr",
+    "passed": true,
+    "calls": 1
+  }
+]

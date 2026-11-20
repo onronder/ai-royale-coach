@@ -96,7 +96,9 @@ const Dashboard = () => {
   const { data: profile, isLoading: playerLoading, error: playerError, forceRefresh: forceRefreshPlayer, refreshAfterMatch, lastUpdated } = useClashRoyalePlayer(playerTag || null);
   const { data: battles, isLoading: battlesLoading, error: battlesError, forceRefresh: forceRefreshBattles } = useClashRoyaleBattles(playerTag || null);
   const player = useMemo(() => profile && battles ? withRecentLadderTrophies(profile, battles) : profile, [profile, battles]);
-  const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(player, battles);
+  const { data: analysis, isLoading: analysisLoading, error: analysisError } = usePlayerAnalysis(
+    player, battles, activeTab === 'coach' && activeSubTab === 'overview'
+  );
   const { achievements: battleAchievements } = usePlayerAchievements(battles || null, playerTag || '');
   
   // Background sync for first-time visitors
