@@ -23,11 +23,13 @@ export function useProactiveRecommendations({
   totalBattles
 }: UseProactiveRecommendationsProps): ProactiveSuggestion | null {
   const { t } = useTranslation();
-  const { data: recommendations } = useRecommendations(playerTag, trophies);
+  // Check the existing display rules before requesting a recommendation.
+  const eligible = totalBattles >= 10 && recentWinRate > 0 && recentWinRate < 55;
+  const { data: recommendations } = useRecommendations(playerTag, trophies, '', eligible);
 
   return useMemo(() => {
-    // No suggestions if not enough data
-    if (totalBattles < 10) return null;
+    // A disabled query can still return cached data from another consumer.
+    if (!eligible) return null;
     
     // No recommendations available
     if (!recommendations?.recommendations || recommendations.recommendations.length === 0) {
@@ -62,5 +64,5 @@ export function useProactiveRecommendations({
     }
 
     return null;
-  }, [recommendations, recentWinRate, totalBattles, t]);
+  }, [recommendations, recentWinRate, eligible, t]);
 }
