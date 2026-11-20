@@ -52,19 +52,22 @@ export function useDashboardData(playerTag: string | undefined) {
   }, [navigate]);
 
   // Fetch player context data with React Query for caching
-  const { data: playerContext } = useQuery({
-    queryKey: ['player-context', user?.id, playerTag],
+  const contextQuery = useQuery({
+    queryKey: ['player-context', user?.id, playerTag ? canonicalTag(playerTag).slice(1) : ''],
     queryFn: async (): Promise<PlayerContextData> => {
       if (!user?.id || !playerTag) return emptyContext;
       
       // Batch all context queries with Promise.all for better performance
       const [decksResult, masteryResult, achievementsResult, collectionResult] = await Promise.all([
         supabase.from('saved_decks').select('*').eq('user_id', user.id),
-        supabase.from('card_mastery').select('*').eq('observation_scope', 'recent-battles-v2').eq('player_tag', canonicalTag(playerTag)),
-        supabase.from('user_achievements').select('*, achievement:achievements(*)').eq('player_tag', playerTag),
-        supabase.from('card_collection').select('*').eq('player_tag', playerTag),
+        supabase.from('card_mastery').select('*').eq('observation_scope', 'recent-battles-v2').eq('user_id', user.id).eq('player_tag', canonicalTag(playerTag)),
+        supabase.from('user_achievements').select('*, achievement:achievements(*)').eq('user_id', user.id).in('player_tag', [canonicalTag(playerTag), canonicalTag(playerTag).slice(1)]),
+        supabase.from('card_collection').select('*').eq('user_id', user.id).in('player_tag', [canonicalTag(playerTag), canonicalTag(playerTag).slice(1)]),
       ]);
 
+      for (const result of [decksResult, masteryResult, achievementsResult, collectionResult]) {
+        if (result.error) throw result.error;
+      }
       return {
         savedDecks: (decksResult.data || []) as SavedDeckRow[],
         cardMastery: (masteryResult.data || []) as CardMasteryRow[],
@@ -83,11 +86,14 @@ export function useDashboardData(playerTag: string | undefined) {
   }, [navigate]);
 
   // Memoize the return value to prevent unnecessary re-renders
-  const stablePlayerContext = useMemo(() => playerContext || emptyContext, [playerContext]);
+  const stablePlayerContext = useMemo(() => contextQuery.data || emptyContext, [contextQuery.data]);
 
   return {
     user,
     playerContext: stablePlayerContext,
+    contextReady: contextQuery.isSuccess && !contextQuery.isError,
+    contextError: contextQuery.isError,
+    retryContext: contextQuery.refetch,
     handleSignOut,
   };
 }

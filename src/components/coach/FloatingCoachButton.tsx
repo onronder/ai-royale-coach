@@ -37,6 +37,9 @@ interface FloatingCoachButtonProps {
     losses: number;
     avgTrophyChange: string;
   };
+  contextReady?: boolean;
+  contextError?: boolean;
+  retryContext?: () => unknown;
   savedDecks?: SavedDeckRow[];
   cardMastery?: CardMasteryRow[];
   achievements?: UserAchievementWithDetails[];
@@ -49,6 +52,7 @@ export function FloatingCoachButton({
   playerTag, 
   playerStats, 
   recentMatches,
+  contextReady = true, contextError = false, retryContext,
   savedDecks,
   cardMastery,
   achievements,
@@ -208,6 +212,9 @@ export function FloatingCoachButton({
         playerTag={normalizedPlayerTag}
         playerStats={playerStats}
         recentMatches={recentMatches}
+        contextReady={contextReady}
+        contextError={contextError}
+        retryContext={retryContext}
         savedDecks={savedDecks}
         cardMastery={cardMastery}
         achievements={achievements}

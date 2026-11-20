@@ -96,6 +96,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
         measurement.complete(result.status === 'cancelled' ? 'cancelled' : 'failed');
         return;
       }
+      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag] });
       const refreshed = await refetchCollection();
       if (!isCurrent()) return;
       if (refreshed.error) { measurement.complete('failed'); return; }
@@ -122,6 +123,7 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
     pending.current = undefined;
     setSyncState(syncProgress.status);
     if (syncProgress.status === 'completed') {
+      void qc.invalidateQueries({ queryKey: ['player-context', userId, normalizedTag] });
       void refetchCollection().then(result => result.error ? waiting.measurement.complete('failed') : waiting.measurement.ready(waiting.reuse));
     } else waiting.measurement.complete(syncProgress.status === 'cancelled' ? 'cancelled' : 'failed');
   }, [syncProgress, refetchCollection]);
