@@ -125,6 +125,7 @@ export function useApiMetrics(timeframe: '15min' | '1hr' | '24hr' = '1hr') {
       const { data, error } = await supabase
         .from('api_request_logs')
         .select('*')
+        .or('metadata->>measurement.is.null,metadata->>measurement.neq.journey')
         .order('created_at', { ascending: false })
         .limit(100);
 

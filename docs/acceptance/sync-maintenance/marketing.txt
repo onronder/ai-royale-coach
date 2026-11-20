@@ -1,0 +1,90 @@
+bun test v1.4.5 (a7733435c)
+
+tests/integration/marketing/marketing.test.ts:
+(pass) marketing consent against the real SQL > empty box at sign-up: declined, no invite, nothing sendable [3360.03ms]
+(pass) marketing consent against the real SQL > checked box + address verification alone stays pending; explicit action grants with full proof [3535.47ms]
+(pass) marketing consent against the real SQL > three sign-ups to the same address create one record and cannot grant [2596.97ms]
+(pass) marketing consent against the real SQL > Google first sign-in grants once; repeat sign-in changes nothing; email accounts cannot use the Google path [2613.12ms]
+(pass) marketing consent against the real SQL > address change: old choice never carries over or activates [2456.87ms]
+(pass) marketing consent against the real SQL > pending expires after 7 days [2413.74ms]
+(pass) marketing consent against the real SQL > double click (same request) records one event [2471.71ms]
+(pass) marketing consent against the real SQL > stale tab consent and delayed request cannot override a newer withdrawal [2545.80ms]
+(pass) marketing consent against the real SQL > two accounts: no direct table access and no cross-account reads or writes; admin cannot consent for a user [2813.97ms]
+(pass) marketing consent against the real SQL > legacy trial sees one invite across two devices and tags; dismissal is account-wide; a new trial gets no second invite [3006.70ms]
+(pass) marketing consent against the real SQL > expired subscription can still withdraw [2398.52ms]
+(pass) marketing consent against the real SQL > trial-start snapshot: delayed webhook, duplicate webhook, second trial, legacy unknown, one count per account [2859.04ms]
+(pass) marketing consent against the real SQL > account deletion keeps minimal proof unlinked; a re-opened account with the same address starts not asked [2547.58ms]
+(pass) marketing consent against the real SQL > privacy requests: own only, admin tracks deadline and response [2600.06ms]
+(pass) marketing consent against the real SQL > signed unsubscribe link: GET-safe token, repeated unsubscribe is harmless [2640.97ms]
+(pass) marketing consent against the real SQL > sending switch off (production default): zero provider sends [2710.12ms]
+(pass) marketing consent against the real SQL > rechecks the adult confirmation after consent was granted, on regular and win-back sends [3037.86ms]
+(pass) marketing consent against the real SQL > market rule not approved: held [2551.26ms]
+(pass) marketing consent against the real SQL > direct call without consent and non-admin caller: zero sends [2906.11ms]
+(pass) marketing consent against the real SQL > withdrawn while queued, and blocked (suppressed) address: zero sends [3041.27ms]
+(pass) marketing consent against the real SQL > IYS record missing: held [2399.22ms]
+(pass) marketing consent against the real SQL > positive gate (test environment only): one acceptance even with retries and an unrecorded acceptance [2882.46ms]
+(pass) marketing consent against the real SQL > market or age rule not approved: no new consent, sign-up and coaching continue, existing consent can always be withdrawn [4176.42ms]
+(pass) marketing consent against the real SQL > Resend complaint and permanent bounce block the next send as a technical block, never a withdrawal [3644.92ms]
+(pass) marketing consent against the real SQL > ignores shared-team events whose sender is missing or belongs to a different product [2364.16ms]
+REVIEW hidden signup: state=not_asked, events=0
+(pass) marketing consent against the real SQL > review / signup while the optional checkbox is hidden [2471.59ms]
+REVIEW already shown, still invited=false
+(pass) marketing consent against the real SQL > review / second device after a view without dismissal [2549.75ms]
+REVIEW database did not record acceptance: UI result=uncertain
+(pass) marketing consent against the real SQL > review / recording the provider acceptance returned false [2532.78ms]
+REVIEW after 25h: provider acceptances=1
+(pass) marketing consent against the real SQL > review / one acceptance for an unresolved send after the provider window [2614.44ms]
+REVIEW same account, new confirmed address: provider acceptances=1
+(pass) marketing consent against the real SQL > review / an address update after an unresolved acceptance [2782.06ms]
+(pass) marketing consent against the real SQL > market scope: consent collection and sending follow the approved markets; IYS applies only to its markets [3718.22ms]
+(pass) marketing consent against the real SQL > unsubscribe link from an old email only affects the address that email was sent to [3126.14ms]
+HIDDEN_SIGNUP state=not_asked events=0
+(pass) marketing consent against the real SQL > independent / submitted signup after hidden checkbox and open collection on the server [2577.66ms]
+TWO_SCREENS desktop=true mobile=false laterRead=false
+(pass) marketing consent against the real SQL > independent / two coach screens read eligibility before either records a view [2516.00ms]
+PREFS_THEN_COACH prefs=false coach=true later=false state=not_asked events=0
+(pass) marketing consent against the real SQL > preferences read then coach claim → invite once, nothing recorded [2501.41ms]
+(pass) marketing consent against the real SQL > new / invite reaches active paid, running trial and renewal-off-until-end; not an expired account [2927.30ms]
+(pass) marketing consent against the real SQL > new / two tabs, two devices and two player tags claiming at the same moment produce one invite [2417.24ms]
+(pass) marketing consent against the real SQL > new / declined, withdrawn or "Not now" never see the invite again; preferences reading never consumes it [3481.83ms]
+(pass) marketing consent against the real SQL > new / unknown market, market outside the list, unknown age, IYS not ready and "global" all keep collection closed [4318.54ms]
+ACCEPTANCE sendable=0 provider_accepted=0
+(pass) marketing consent against the real SQL > new / acceptance with collection open and sending off: grant, not now, withdraw; 0 sendable, 0 provider acceptances [4014.03ms]
+(pass) marketing consent against the real SQL > new / admin reach counts accounts by status without addresses [4076.13ms]
+
+PASS empty box
+PASS verification only / explicit grant / proof readable
+PASS three sign-ups
+PASS Google first/repeat
+PASS address change
+PASS pending expiry
+PASS double click
+PASS two tabs / delayed request
+PASS two-account isolation / no admin consent
+PASS single invite / two devices / no re-invite
+PASS withdraw after expiry
+PASS trial-start snapshot / admin report
+PASS deletion / re-opened account
+PASS privacy requests
+PASS unsubscribe link
+PASS switch off → 0 sends
+PASS market rule pending → 0 sends
+PASS no consent / non-admin → 0 sends
+PASS withdrawn while queued / suppressed → 0 sends
+PASS IYS pending → 0 sends
+PASS positive gate / retry → exactly one acceptance per campaign
+PASS collection paused (market / age) → no new consent; sign-up, coaching and withdrawal continue
+PASS Resend complaint / hard bounce → technical block, next send blocked, no withdrawal recorded; forged/stale events rejected
+PASS market scope → collection/sending only in approved markets; IYS only in its markets; unknown market held
+PASS old unsubscribe link → only the address it was sent to
+PASS invite: paid / trial / renewal-off yes, expired no
+PASS concurrent claims → exactly one invite
+PASS no re-invite after decline / withdraw / not now; preferences read consumes nothing
+PASS unknown market / closed market / unknown age / IYS not ready / global → no new consent, coaching continues
+PASS acceptance: collection open, sending off → 0 sendable, 0 provider acceptances
+PASS reach counts
+network calls attempted: 0
+
+ 41 pass
+ 0 fail
+Ran 41 tests across 1 file. [119.51s]

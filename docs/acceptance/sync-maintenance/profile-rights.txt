@@ -1,0 +1,17 @@
+PASS before fix: own profile mutation grants AI trial (real checkAiAccess)
+PASS current 0038 blocks the ordinary table UPDATE path
+PASS current 0038 also clears the direct column UPDATE grant on this PostgreSQL version
+PASS reproduced: 0038 alone leaves inherited PUBLIC UPDATE
+PASS repeated migration preserves existing legitimate legacy entitlement/data
+PASS exploit rejected and inherited/column grants cleared; exactly eight writable preferences
+PASS admin metadata does not grant client entitlement writes
+PASS all eight preferences, own read, tour restart and server timestamp work
+PASS all system fields and mixed preference/entitlement write rejected
+PASS anonymous writes rejected even with a supplied subject
+PASS backend trial start and consumption still work
+PASS cross-account reads and preference updates remain isolated
+PASS email/Google profile creation ignores entitlement metadata
+PASS insert/upsert/delete/truncate cannot reset rights
+PASS rejected mixed update is atomic
+PASS security-definer Auth language trigger still works
+PASS probes rolled back; network calls attempted: 0

@@ -9,7 +9,7 @@ interface ProgressIndicatorProps {
   progress: number;
   total: number;
   currentStep?: string;
-  status: "running" | "completed" | "failed";
+  status: "running" | "completed" | "failed" | "cancelled";
   startedAt?: string;
   className?: string;
   variant?: "default" | "compact" | "detailed";
@@ -68,7 +68,7 @@ export function ProgressIndicator({
         {status === "completed" && (
           <Check className="h-4 w-4 text-success" />
         )}
-        {status === "failed" && (
+        {(status === "failed" || status === "cancelled") && (
           <AlertCircle className="h-4 w-4 text-destructive" />
         )}
         <div className="flex-1">
@@ -94,13 +94,14 @@ export function ProgressIndicator({
               {status === "completed" && (
                 <Check className="h-5 w-5 text-success" />
               )}
-              {status === "failed" && (
+              {(status === "failed" || status === "cancelled") && (
                 <AlertCircle className="h-5 w-5 text-destructive" />
               )}
               <span className="font-rajdhani font-semibold text-foreground">
                 {status === "running" && t("progress.processing")}
                 {status === "completed" && t("tournaments.completed")}
                 {status === "failed" && t("admin.events.failed")}
+                {status === "cancelled" && t("operations.cancelled")}
               </span>
             </div>
             <span className="text-2xl font-rajdhani font-bold text-primary">

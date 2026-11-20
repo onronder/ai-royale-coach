@@ -1,0 +1,12 @@
+{
+  "fixture": "120 cards; fake provider; 2ms per DB transport and provider call; 5 runs; auth excluded",
+  "old": {
+    "database_round_trips": 152,
+    "mean_ms": 383.98859159999995
+  },
+  "new": {
+    "database_round_trips": 2,
+    "mean_ms": 7.789525399999979
+  },
+  "limitation": "Controlled overhead demonstration only. Not production p50/p95, AI savings or a Lovable bill estimate."
+}

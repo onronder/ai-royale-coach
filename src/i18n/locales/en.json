@@ -2188,6 +2188,9 @@
     "noDataDesc": "Play battles to see your win rate."
   },
   "cardCollection": {
+    "refresh": "Refresh",
+    "freshness": "Collections are reused for 5 minutes. Refresh to check for new cards.",
+    "refreshFailed": "Sync did not complete. Your saved cards are still available. Use Refresh to retry.",
     "title": "Card Collection",
     "cards": "cards",
     "syncing": "Syncing...",

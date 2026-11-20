@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { SubscriptionUserContext } from "./useSubscription";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -6,7 +8,9 @@ export interface OperationProgress {
   user_id: string;
   player_tag: string;
   operation_type: string;
-  status: "running" | "completed" | "failed";
+  status: "running" | "completed" | "failed" | "cancelled";
+  run_id?: string | null;
+  last_successful_at?: string | null;
   progress: number;
   total: number;
   current_step: string | null;
@@ -30,11 +34,17 @@ export function useOperationProgress({
   operationType,
   enabled = true,
 }: UseOperationProgressOptions) {
+  const accountId = useContext(SubscriptionUserContext);
   const { data: progress, isLoading } = useQuery({
-    queryKey: ['operation-progress', playerTag, operationType],
+    queryKey: ['operation-progress', accountId, playerTag, operationType],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+      if (!user || user.id !== accountId) return null;
+      if (operationType === 'card_collection_sync') {
+        const { data, error } = await supabase.rpc('get_my_card_collection_sync', { p_tag: playerTag });
+        if (error) throw error;
+        return data as unknown as OperationProgress | null;
+      }
 
       const { data, error } = await supabase
         .from("operation_progress")
@@ -42,15 +52,14 @@ export function useOperationProgress({
         .eq("user_id", user.id)
         .eq("player_tag", playerTag)
         .eq("operation_type", operationType)
-        .eq("status", "running")
         .order("started_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (error) return null;
+      if (error) throw error;
       return data as OperationProgress | null;
     },
-    enabled: enabled,
+    enabled: enabled && !!accountId,
     refetchInterval: (query) => {
       // Poll more frequently when operation is running
       const data = query.state.data;
@@ -65,5 +74,6 @@ export function useOperationProgress({
     isRunning: progress?.status === "running",
     isCompleted: progress?.status === "completed",
     isFailed: progress?.status === "failed",
+    isCancelled: progress?.status === "cancelled",
   };
 }

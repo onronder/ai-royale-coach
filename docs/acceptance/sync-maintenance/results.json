@@ -1,0 +1,199 @@
+[
+  {
+    "language": "en",
+    "width": 390,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "en",
+    "width": 1280,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "tr",
+    "width": 390,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "tr",
+    "width": 1280,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "es",
+    "width": 390,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "es",
+    "width": 1280,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "fr",
+    "width": 390,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "fr",
+    "width": 1280,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "pt",
+    "width": 390,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "language": "pt",
+    "width": 1280,
+    "checks": "success / false HTTP200 / failure / joined completion / no overflow",
+    "journeys": 4
+  },
+  {
+    "scene": "free",
+    "metrics": [
+      {
+        "p_id": "e484aac5-20a6-42de-a1cf-e0209908ff70",
+        "p_flow": "free_coaching",
+        "p_trigger": "manual",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "running",
+        "p_duration_ms": null,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      },
+      {
+        "p_id": "e484aac5-20a6-42de-a1cf-e0209908ff70",
+        "p_flow": "free_coaching",
+        "p_trigger": "manual",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "success",
+        "p_duration_ms": 140,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      }
+    ]
+  },
+  {
+    "scene": "coaching",
+    "metrics": [
+      {
+        "p_id": "a5d58960-24a3-4fce-bbd3-cd67018c2941",
+        "p_flow": "first_coaching",
+        "p_trigger": "manual",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "running",
+        "p_duration_ms": null,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      },
+      {
+        "p_id": "a5d58960-24a3-4fce-bbd3-cd67018c2941",
+        "p_flow": "first_coaching",
+        "p_trigger": "manual",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "success",
+        "p_duration_ms": 178,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      }
+    ]
+  },
+  {
+    "scene": "recommendations",
+    "metrics": [
+      {
+        "p_id": "673eb912-3bc6-403e-91d0-b913ae8d9ace",
+        "p_flow": "deck_recommendation",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "running",
+        "p_duration_ms": null,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      },
+      {
+        "p_id": "673eb912-3bc6-403e-91d0-b913ae8d9ace",
+        "p_flow": "deck_recommendation",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "success",
+        "p_duration_ms": 154,
+        "p_hidden": false,
+        "p_reuse": "fresh"
+      }
+    ]
+  },
+  {
+    "scene": "lost-edge-response-readback",
+    "requests": 1
+  },
+  {
+    "scene": "background-completed",
+    "requests": 1
+  },
+  {
+    "scene": "background-failed",
+    "requests": 1
+  },
+  {
+    "scene": "cancel-running",
+    "metrics": [
+      {
+        "p_id": "61ff36d4-7249-4954-8708-dd46a37bc982",
+        "p_flow": "card_sync",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "running",
+        "p_duration_ms": null,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      },
+      {
+        "p_id": "61ff36d4-7249-4954-8708-dd46a37bc982",
+        "p_flow": "card_sync",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "cancelled",
+        "p_duration_ms": 178,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      }
+    ]
+  },
+  {
+    "scene": "unmount-interrupted",
+    "metrics": [
+      {
+        "p_id": "7dfe469c-b27f-4684-b54b-1ec8cb7d8e87",
+        "p_flow": "card_sync",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "running",
+        "p_duration_ms": null,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      },
+      {
+        "p_id": "7dfe469c-b27f-4684-b54b-1ec8cb7d8e87",
+        "p_flow": "card_sync",
+        "p_trigger": "automatic",
+        "p_build": "ff89823f1e1fcdfc199881af5594b2781f012b69-dirty",
+        "p_outcome": "interrupted",
+        "p_duration_ms": 120,
+        "p_hidden": false,
+        "p_reuse": "unknown"
+      }
+    ]
+  }
+]

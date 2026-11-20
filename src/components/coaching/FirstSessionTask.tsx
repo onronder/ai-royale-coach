@@ -1,3 +1,4 @@
+import { useJourneyMeasurement } from '@/hooks/useJourneyMeasurement';
 import { observeTrialStep } from '@/lib/trialObservation';
 import { useCardName } from '@/i18n/useCardName';
 import { useEffect, useRef, useState } from 'react';
@@ -69,11 +70,17 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
  const run=async(action:string,confirmedDeckIds?:number[])=>{
    if(busy)return;
+   const measurement = action === 'start' ? beginJourney('manual') : null;
    if (isTrialActive && action === 'start' && !confirmedDeckIds) observeTrialStep('recommendation_requested');
    setBusy(action);
    setError('');
    try{
      const data=await invoke(action,confirmedDeckIds);
+     if (measurement) {
+       if (data.deck_confirmation) measurement.complete('needs_input');
+       else if (data.task?.recommendation) measurement.ready();
+       else measurement.complete('failed');
+     }
      setConfirmation(data.deck_confirmation??null);
      qc.setQueryData(key,data);
      if(action==='check' && data.task?.battle_result) {
@@ -81,6 +88,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
        catch { setError('coaching.profileRefreshError'); }
      }
    }catch(e){
+     measurement?.complete('failed');
      setConfirmation(null);
      setError(e instanceof Error && ['coaching.unavailable', 'auth.signInRequired', 'subscription.requiredForAI', 'subscription.aiNotEnabledForAccount'].includes(e.message) ? e.message : 'coaching.error');
    }finally{setBusy(null);}
@@ -113,6 +121,8 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const text = reading && readingText(reading, localized.data);
  const reason = reading && [reading.facts, text?.reason].filter(Boolean).join(' ');
  const practice = text?.practice;
+ const beginJourney = useJourneyMeasurement('first_coaching', userId + ':' + playerTag + ':' + language,
+   !!task?.recommendation && !!text?.reason && !!practice && !busy, localized.isError);
  const answer = reading && (!reading.needed.answer || text?.answer) ? [reading.facts, text?.answer].filter(Boolean).join(' ') : '';
  const result=task?.battle_result;
  const previous=task?.previous_match;

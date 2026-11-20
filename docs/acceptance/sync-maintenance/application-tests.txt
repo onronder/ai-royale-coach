@@ -1,0 +1,296 @@
+bun test v1.4.5 (a7733435c)
+
+tests/aiProviderUsage.test.ts:
+(pass) observed gateway usage shape > preserves cache writes separately from reads (JSON) [6.06ms]
+(pass) observed gateway usage shape > preserves cache writes separately from reads (SSE) [4.44ms]
+
+tests/analysisError.test.ts:
+(pass) analysis gateway failures > preserves 402, top-up remedy and terminal props through the function client [4.39ms]
+(pass) analysis gateway failures > preserves 403 provider denial without retry or subscription misclassification [0.11ms]
+(pass) analysis gateway failures > keeps transient retries bounded [0.27ms]
+(pass) analysis gateway failures > does not reinterpret subscription errors [0.03ms]
+
+tests/automaticTrialAnalysis.test.ts:
+(pass) automatic first trial analysis > starts immediately for a live Polar trial with a linked player [0.83ms]
+(pass) automatic first trial analysis > does not automatically use another allowance after any previous AI usage [0.03ms]
+(pass) automatic first trial analysis > waits until the player links an account [0.01ms]
+(pass) automatic first trial analysis > never starts for an expired trial [0.01ms]
+(pass) automatic first trial analysis > never starts for a non-Polar subscription [0.01ms]
+(pass) automatic first trial analysis > lets the player choose when several tags are linked [0.64ms]
+(pass) automatic first trial analysis > redirects only once per account [0.88ms]
+
+tests/campaign.test.ts:
+(pass) Black Friday campaign window > is active at 30 Nov 23:59 Istanbul [0.04ms]
+(pass) Black Friday campaign window > ends at 1 Dec 00:00 Istanbul [0.01ms]
+(pass) Black Friday campaign window > uses code BLACKROYALE75 for 75% off [0.95ms]
+
+tests/cardSyncAdapter.test.ts:
+(pass) real Edge adapter aborts a stalled game request at the configured 15 s boundary [61.06ms]
+
+tests/coachingAdvice.test.ts:
+(pass) coaching swap and card levels > supplies the game level to the model and the card tile without leaking the raw level [0.25ms]
+(pass) coaching swap and card levels > keeps the outgoing card from the original deck when replacing a previous suggestion [0.31ms]
+(pass) coaching swap and card levels > rejects the observed wrong swap and level in both initial and follow-up prose [0.60ms]
+(pass) coaching swap and card levels > preserves tactical answers and inserts the chosen card name from the collection [0.33ms]
+
+tests/coachingCardTable.test.ts:
+(pass) compact coaching card input > preserves every candidate, order, identity, displayed level and elixir cost [0.79ms]
+(pass) compact coaching card input > keeps unknown values distinct from zero and translates raw levels exactly once [0.03ms]
+(pass) compact coaching card input > preserves names containing quotes, separators and non-English characters [0.21ms]
+(pass) compact coaching card input > never fills an empty collection or merges repeated entries [0.04ms]
+
+tests/coachingEmailProvider.test.ts:
+(pass) records only the exact tag, including paginated provider responses and SQL timestamps [2.05ms]
+(pass) sends the frozen tag and stable key on the wire and never treats a failed lookup as proof of delivery [0.94ms]
+
+tests/coachingMatch.test.ts:
+(pass) one-match coaching task > requires exactly one new match, not five [1.06ms]
+(pass) one-match coaching task > does not count a pre-recommendation match [0.04ms]
+(pass) one-match coaching task > does not count a match at the recommendation timestamp [0.02ms]
+(pass) one-match coaching task > does not count a different player [0.01ms]
+(pass) one-match coaching task > requires the exact recommended deck [0.02ms]
+(pass) one-match coaching task > compares decks independent of card order [0.03ms]
+(pass) one-match coaching task > selects the earliest qualifying match despite reverse API order and duplicates [0.03ms]
+(pass) one-match coaching task > keeps a stable identity for duplicate observations [0.03ms]
+(pass) one-match coaching task > keeps a loss result with actual score, opponent deck and trophy change [0.20ms]
+(pass) one-match coaching task > does not invent a trophy change when unavailable [0.03ms]
+(pass) one-match coaching task > handles wins and draws explicitly [0.03ms]
+(pass) one-match coaching task > rejects malformed times and team battles [0.03ms]
+
+tests/coachingReading.test.ts:
+(pass) reads the French follow-up in Turkish without replacing the saved question, deck or levels [0.17ms]
+(pass) separates first advice from the follow-up across all five reading languages [0.09ms]
+(pass) retains the previous protection for an unverified legacy card or level claim [0.31ms]
+
+tests/coachingSourceDeck.test.ts:
+(pass) source deck for a coaching recommendation > uses a complete profile without requesting battle history [0.22ms]
+(pass) source deck for a coaching recommendation > requires confirmation of the eight-card match and uses the owned Boss Bandit level [0.13ms]
+(pass) source deck for a coaching recommendation > revalidates on confirmation and re-prompts if the source has changed [0.06ms]
+(pass) source deck for a coaching recommendation > rejects a mismatched player, invalid cards, and absent collection without fetching history [0.07ms]
+(pass) source deck for a coaching recommendation > rejects unavailable fresh profile and battle data [0.04ms]
+(pass) source deck for a coaching recommendation > does not use other modes, sides, players, multiplayer games or malformed decks [0.16ms]
+(pass) source deck for a coaching recommendation > does not search older decks to force a match or silently reorder the seven profile cards [0.09ms]
+
+tests/coachingTrophies.test.ts:
+(pass) trophies after a coaching match > takes the latest ladder total and ignores event battles and other players [0.22ms]
+(pass) trophies after a coaching match > does not infer an absolute total from a delta or an older battle [0.03ms]
+(pass) trophies after a coaching match > reconciles a newly opened dashboard with the recent ladder log and ignores outdated battles [0.07ms]
+(pass) trophies after a coaching match > sets the absolute score once, preserves newer totals and updates the personal best [0.02ms]
+(pass) trophy chart > counts the first battle and retains exact changes in chronological order [0.34ms]
+(pass) trophy chart > omits unverified totals and non-ladder games even when crowns are present [0.02ms]
+
+tests/correctness.test.ts:
+(pass) inventory correctness contracts > ERR17: unverified legacy counts and NULL errors cannot become perfect accuracy [0.05ms]
+(pass) inventory correctness contracts > ERR10: saved profile read permits own cache and legacy public tag data only [0.07ms]
+(pass) inventory correctness contracts > ERR05: replay-only claims and timestamps rejected, practice retained [0.54ms]
+(pass) inventory correctness contracts > ERR01/14: one denominator across overview, decks, cards and DNA; draws retained [2.83ms]
+(pass) inventory correctness contracts > ERR14: team[1] and opponent-side players are located by normalized tag [0.08ms]
+(pass) inventory correctness contracts > ERR14: bad timestamp, missing opponent/card/crowns and missing player never enter denominator [0.09ms]
+(pass) inventory correctness contracts > ERR12: a repeated API window has ten facts on real dates, never twenty on fetch dates [0.56ms]
+(pass) inventory correctness contracts > ERR12: contradictory duplicate quarantined instead of choosing last value [0.14ms]
+(pass) inventory correctness contracts > ERR14: malformed nested participants/cards are excluded without crashing [0.06ms]
+(pass) inventory correctness contracts > ERR13: identical cards in different modes have separate aggregates [0.07ms]
+(pass) inventory correctness contracts > ERR02: documented heavy deck without X-Bow cannot become X-Bow [0.11ms]
+(pass) inventory correctness contracts > ERR03/23: one appearance has one sample and no synthetic mastery or skill [0.10ms]
+(pass) inventory correctness contracts > ERR06: lower level / unknown / missing cards are not ready [0.16ms]
+(pass) inventory correctness contracts > ERR06: one weak current card cannot hide an under-levelled recommendation [0.07ms]
+(pass) inventory correctness contracts > ERR06: median comparison preserves fractional levels and unknown evidence [0.16ms]
+(pass) inventory correctness contracts > ERR07: transferred deck uses canonical tab and survives URL round-trip [0.42ms]
+(pass) inventory correctness contracts > ERR07/08: invalid import never silently produces a partial deck [0.06ms]
+(pass) inventory correctness contracts > ERR09: target display level 16 has actual costs; absent data stays unknown [0.04ms]
+(pass) inventory correctness contracts > ERR10: collection/deck/tower/form/battle changes invalidate evidence [0.46ms]
+(pass) inventory correctness contracts > ERR11: unlocked evolution does not prove an active form, slot/tower remain in identity [0.07ms]
+(pass) inventory correctness contracts > ERR11: missing or impossible level is never treated as common [0.02ms]
+(pass) inventory correctness contracts > ERR15: fixed costs average 4; missing or Mirror stays unknown [0.03ms]
+(pass) inventory correctness contracts > ERR19: no data means no values or pro similarity [0.02ms]
+(pass) inventory correctness contracts > ERR22: missing trophies cannot award underdog; original indexes survive sorting [0.28ms]
+(pass) inventory correctness contracts > ERR25: unchanged deck retains readable practice without a fabricated swap [0.06ms]
+(pass) inventory correctness contracts > ERR26: conversation cannot inject system roles or unbounded payloads [0.07ms]
+(pass) inventory correctness contracts > ERR26: private task query is constrained to authenticated account and linked tag [0.20ms]
+(pass) inventory correctness contracts > ERR34: project mismatch, service key and invalid endpoint are rejected [0.99ms]
+(pass) inventory correctness contracts > all correctness copy exists in en [2.99ms]
+(pass) inventory correctness contracts > all correctness copy exists in tr [1.49ms]
+(pass) inventory correctness contracts > all correctness copy exists in es [1.39ms]
+(pass) inventory correctness contracts > all correctness copy exists in fr [1.45ms]
+(pass) inventory correctness contracts > all correctness copy exists in pt [1.30ms]
+(pass) additional observed-only regressions > ERR21: frequency is exactly observed share, no boost; empty is unknown [0.26ms]
+(pass) additional observed-only regressions > ERR28: years remain distinct; rate and trophies have independent units [0.09ms]
+(pass) additional observed-only regressions > ERR25: keep is allowed; half-null, unknown-level and unowned swaps rejected [0.12ms]
+
+tests/deckLink.test.ts:
+(pass) coaching deck transfer > keeps all eight cards in slot order using the in-game copy format [0.05ms]
+(pass) coaching deck transfer > uses the revised deck when a follow-up replaces a card [0.02ms]
+(pass) coaching deck transfer > skips incomplete, duplicate or invalid cards [0.04ms]
+
+tests/firstValueResponse.test.ts:
+(pass) First coaching streamed result > requires an explicit successful final result, not an HTTP 200 heartbeat [2.74ms]
+(pass) First coaching streamed result > reads a final result split between transport chunks [1.12ms]
+(pass) First coaching streamed result > keeps authentication failures separate [0.22ms]
+
+tests/helpTranslations.test.ts:
+(pass) resolves Help articles, dialog labels and coach excerpts in tr [2.22ms]
+(pass) resolves Help articles, dialog labels and coach excerpts in en [0.38ms]
+(pass) resolves Help articles, dialog labels and coach excerpts in es [0.39ms]
+(pass) resolves Help articles, dialog labels and coach excerpts in fr [0.32ms]
+(pass) resolves Help articles, dialog labels and coach excerpts in pt [0.30ms]
+
+tests/journeyMeasurement.test.ts:
+(pass) browser journey measurement > uses one id, no result before finish, monotonic total elapsed time, unknown cache [3.70ms]
+(pass) browser journey measurement > remembers any background time even when completion is visible [1.35ms]
+(pass) browser journey measurement > failed telemetry cannot fail product work and does not retry indefinitely [1.88ms]
+(pass) browser journey measurement > invalid/overlong elapsed time is unknown rather than zero [1.34ms]
+
+tests/legalAndConsentCopy.test.ts:
+(pass) 720-hour win-back rule: exact Turkish wording, all five languages say 720 hours [6.95ms]
+(pass) legal and consent keys exist in all five languages and are really translated [24.55ms]
+(pass) privacy and terms name the controller, the support address and the campaign clause; old claims are gone [5.92ms]
+
+tests/localeCoverage.test.ts:
+(pass) provides a local message with the original variables for every English key in en [4.77ms]
+(pass) provides a local message with the original variables for every English key in tr [6.64ms]
+(pass) provides a local message with the original variables for every English key in es [5.78ms]
+(pass) provides a local message with the original variables for every English key in fr [4.66ms]
+(pass) provides a local message with the original variables for every English key in pt [3.74ms]
+(pass) resolves literal translation calls throughout application source without English defaults [304.09ms]
+(pass) resolves runtime keys for trial actions, battle results, deck lessons and tournament formats in every language [13.68ms]
+(pass) uses the in-game card names in localized demo lessons and example coaching advice [9.01ms]
+
+tests/marketingConsentCache.test.ts:
+(pass) Preferences then Coach share no cached consent answer > Coach sends its own claiming request after Preferences and shows the invite once [0.96ms]
+
+tests/marketingConsentText.test.ts:
+(pass) shows the stored consent text for every language [4.27ms]
+
+tests/matchupPrediction.test.ts:
+(pass) shared Oracle/server contract preserves zero and fractional valid percentages [0.21ms]
+(pass) normalizes only valid finite positive-total pairs [0.09ms]
+(pass) wrong API field names or incomplete content cannot silently produce 50/50 [0.05ms]
+
+tests/metricSummary.test.ts:
+(pass) measured-only metrics (ERR29) > ignores missing durations instead of counting them as 0 ms [0.04ms]
+(pass) measured-only metrics (ERR29) > reports unknown when nothing was measured [0.03ms]
+(pass) measured-only metrics (ERR29) > does not treat an unrecorded cache flag as a miss [0.04ms]
+(pass) measured-only metrics (ERR29) > weights group averages by measured rows only [0.04ms]
+
+tests/migrationJournal.test.ts:
+(pass) every SQL migration is registered exactly once and in file order [0.21ms]
+(pass) journal indexes and timestamps cannot skip or reorder a migration [0.06ms]
+
+tests/notificationText.test.ts:
+(pass) reads existing system and named achievement notifications in each selected language and preserves custom text [12.94ms]
+
+tests/paymentRecovery.test.ts:
+(pass) routes a stale checkout for a past-due account to its own Polar customer session [0.29ms]
+(pass) a resolved recovery request never falls through to checkout and other ordinary purchases still work [0.10ms]
+(pass) a provider error returns no replacement checkout URL [0.13ms]
+
+tests/planSummary.test.ts:
+(pass) admin role wins over a 10-slot capacity [0.19ms]
+(pass) 10 slots without the admin role is not shown as admin [0.06ms]
+(pass) trial user sees trial state [0.03ms]
+(pass) en: admin, 1/2/3 AI tags and trial copy [7.75ms]
+(pass) tr: admin, 1/2/3 AI tags and trial copy [0.17ms]
+(pass) es: admin, 1/2/3 AI tags and trial copy [1.02ms]
+(pass) fr: admin, 1/2/3 AI tags and trial copy [0.75ms]
+(pass) pt: admin, 1/2/3 AI tags and trial copy [0.77ms]
+
+tests/polarMrr.test.ts:
+(pass) Polar daily MRR > reads the exact Istanbul day, using the three AI Royale products and only the MRR metric [0.92ms]
+(pass) Polar daily MRR > preserves a real zero and fractional cents [0.21ms]
+(pass) Polar daily MRR > leaves missing, ambiguous and wrong-day values unavailable [0.21ms]
+(pass) Polar daily MRR > does not broaden the product scope or conceal access or provider errors as zero [0.12ms]
+
+tests/polarReconciliation.test.ts:
+(pass) Polar reconciliation > matches the exact system payment on a later page and preserves its full timestamp [0.29ms]
+(pass) Polar reconciliation > syncs only configured products and distinguishes an undated positive order from a zero order [0.57ms]
+
+tests/productLanguage.test.ts:
+(pass) resolves regional browser, email and AI language codes without discarding the next browser preference [0.08ms]
+(pass) keeps unknown card names and localizes known cards consistently across the tile, swap and tactical text [0.17ms]
+
+tests/providerContract.test.ts:
+(pass) captured ladder identifies either side and preserves tower evidence [0.14ms]
+(pass) captured 2v2 preserves all opponents and the second player [0.07ms]
+(pass) captured duel/multideck series never count as single matches [0.06ms]
+(pass) collection evolution fields cannot establish active Hero/evolution slots [0.05ms]
+(pass) model output cannot author observed match facts or unknown counter cards [0.30ms]
+(pass) every counter explanation is bounded prospective advice [0.04ms]
+(pass) observed draws have factual labels in all five languages [0.05ms]
+
+tests/queryTiming.test.ts:
+(pass) real QueryClient: completion, cache, error, retry and monitoring exclusion [2.14ms]
+
+tests/revenueFunnel.test.ts:
+(pass) revenue funnel > shows a dash instead of a rate when the denominator is 0 [0.03ms]
+(pass) revenue funnel > compares transitions of the same accounts in chronological order [0.04ms]
+(pass) revenue funnel > does not infer a loss from unobserved or empty transitions
+(pass) revenue funnel > reports dates in Istanbul time (UTC+3) [0.14ms]
+
+tests/subscriptionAccess.test.ts:
+(pass) subscriptionAccess > trial with renewal on keeps trial access until the end date [0.04ms]
+(pass) subscriptionAccess > trial with renewal turned off in the first minute still has trial access until the end [0.01ms]
+(pass) subscriptionAccess > trial past its end date has no access
+(pass) subscriptionAccess > paid user with renewal off keeps paid access until period end [0.02ms]
+(pass) subscriptionAccess > paid user with renewal off loses access after period end
+(pass) subscriptionAccess > really ended subscriptions get no access even with a future date [0.01ms]
+
+tests/subscriptionEvents.test.ts:
+(pass) late end/revoke events > ignores an end event for an older subscription when a newer one is current [0.01ms]
+(pass) late end/revoke events > applies an end event for the current subscription
+(pass) late end/revoke events > applies when no subscription id is stored yet
+
+tests/trialQuota.test.ts:
+(pass) trial AI access > keeps every request available on consecutive and concurrent entitlement checks [0.36ms]
+(pass) trial AI access > allows a trial with renewal off until its end [0.03ms]
+(pass) trial AI access > denies new AI generation after expiry [0.05ms]
+(pass) trial AI access > preserves paid and admin access [0.03ms]
+
+tests/trialReminder.test.ts:
+(pass) one day-two coaching email > writes the localized reminder for en-GB [0.07ms]
+(pass) one day-two coaching email > writes the localized reminder for tr-TR [0.02ms]
+(pass) one day-two coaching email > writes the localized reminder for fr-FR
+(pass) one day-two coaching email > writes the localized reminder for es-ES
+(pass) one day-two coaching email > writes the localized reminder for pt-BR
+(pass) one day-two coaching email > rejects malformed requests before touching the database [0.14ms]
+(pass) preserves only an exact Clash Royale player tag across login [0.04ms]
+
+tests/trialStream.test.ts:
+(pass) successful trial chat generation > counts a complete visible answer [0.05ms]
+(pass) successful trial chat generation > does not count an interrupted answer [0.01ms]
+(pass) successful trial chat generation > does not count a successful HTTP response with empty output
+(pass) successful trial chat generation > does not count an in-stream error [0.01ms]
+(pass) successful trial chat generation > does not count a refusal
+
+tests/trialSummary.test.ts:
+(pass) end-of-trial coaching summary > says no matching match in en [0.27ms]
+(pass) end-of-trial coaching summary > says no matching match in tr [0.12ms]
+(pass) end-of-trial coaching summary > says no matching match in es [0.11ms]
+(pass) end-of-trial coaching summary > says no matching match in fr [0.08ms]
+(pass) end-of-trial coaching summary > says no matching match in pt [0.08ms]
+(pass) end-of-trial coaching summary > shows score and trophy change of the matching match [0.10ms]
+(pass) end-of-trial coaching summary > omits an English coach answer from a Turkish email without a saved translation [0.14ms]
+(pass) end-of-trial coaching summary > rejects malformed requests [0.12ms]
+
+tests/trialSummaryChoice.test.ts:
+(pass) summary choice: two players, two tabs > A's stale tab cannot remove B's current choice [0.04ms]
+(pass) summary choice: two players, two tabs > B's own tab removes B's choice
+(pass) summary choice: two players, two tabs > an old task of the same player does not count as the current choice
+(pass) summary choice errors in five languages > en [0.02ms]
+(pass) summary choice errors in five languages > tr
+(pass) summary choice errors in five languages > es
+(pass) summary choice errors in five languages > fr
+(pass) summary choice errors in five languages > pt
+(pass) summary choice errors in five languages > says the summary is still on in Turkish and offers Tekrar dene [0.02ms]
+
+tests/winbackAudience.test.ts:
+(pass) win-back audience > 30-day period: 3 in-app, 1 email [0.08ms]
+(pass) win-back audience > sending disabled (no recipients) gives 3 / 0 [0.01ms]
+(pass) win-back audience > withdrawn, blocked or past-due accounts are absent from server list and excluded [0.02ms]
+(pass) win-back audience > E only in a period that covers it [0.03ms]
+(pass) win-back audience > screens follow the server decision only (single source) [0.05ms]
+(pass) win-back audience > unknown consent states fall back to unknown [0.02ms]
+
+ 208 pass
+ 0 fail
+ 151 expect() calls
+Ran 208 tests across 41 files. [923.00ms]

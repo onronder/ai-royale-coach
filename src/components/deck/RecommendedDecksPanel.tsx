@@ -1,3 +1,4 @@
+import { useJourneyMeasurement } from '@/hooks/useJourneyMeasurement';
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCardName } from '@/i18n/useCardName';
@@ -268,12 +269,30 @@ export const RecommendedDecksPanel = memo(({
   onImportDeck,
   className 
 }: RecommendedDecksPanelProps) => {
-  const { t } = useTranslation();
-  const { data, isLoading, error } = useRecommendations(playerTag, trophies, snapshotKey);
+  const { t, i18n } = useTranslation();
+  const { data, isLoading, isFetching, error } = useRecommendations(playerTag, trophies, snapshotKey);
   const { mutate: refresh, isPending: isRefreshing } = useRefreshRecommendations();
   
+  const beginJourney = useJourneyMeasurement('deck_recommendation', playerTag + ':' + snapshotKey + ':' + i18n.resolvedLanguage,
+    !!data?.recommendations?.length && !isFetching && !isRefreshing, !!error);
+  const measuring = useRef<ReturnType<typeof beginJourney> | null>(null);
+  useEffect(() => {
+    return () => { measuring.current?.complete('interrupted'); measuring.current = null; };
+  }, [beginJourney]);
+  useEffect(() => {
+    if (isFetching && !measuring.current) measuring.current = beginJourney('automatic');
+    if (isFetching || isRefreshing || !measuring.current) return;
+    if (error || !data?.recommendations?.length) measuring.current.complete('failed');
+    else measuring.current.ready(data.fromCache ? 'fresh' : 'unknown');
+    measuring.current = null;
+  }, [beginJourney, isFetching, isRefreshing, data, error]);
   const handleRefresh = () => {
-    refresh({ playerTag, trophies, snapshotKey });
+    measuring.current = beginJourney('manual');
+    const measurement = measuring.current;
+    refresh({ playerTag, trophies, snapshotKey }, { onError: () => {
+      measurement.complete('failed');
+      if (measuring.current === measurement) measuring.current = null;
+    }});
   };
   
   if (isLoading) {

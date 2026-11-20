@@ -112,7 +112,7 @@ export function GlobalProgressCenter() {
                               {getOperationLabel(op.operation_type)}
                             </p>
                           <p className="text-xs text-muted-foreground truncate">
-                              {op.current_step || t('progress.processing')}
+                              {op.operation_type === 'card_collection_sync' ? t('cardCollection.syncing') : op.current_step || t('progress.processing')}
                             </p>
                           </div>
                         </div>

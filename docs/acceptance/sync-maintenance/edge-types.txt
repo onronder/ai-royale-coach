@@ -1,0 +1,2 @@
+Check supabase/functions/sync-card-collection/index.ts
+Check supabase/functions/recommend-deck/index.ts
