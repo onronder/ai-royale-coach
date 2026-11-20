@@ -57,3 +57,6 @@ Local build Dashboard gzip: 190.65 KB before / 171.80 KB after. Actual Dashboard
 
 ## Shared player context
 Collection, mastery and achievements share account/player-scoped query keys across coaching and their views. Saved decks remain account-scoped. Chat/builder context waits until used; failed reads remain errors. Collection writes refresh the shared result once. Actual-hook browser acceptance: zero initial context reads, four on demand, no duplicate collection read for a second observer, coherent refresh and player switching; 210 unit tests and types/build pass.
+
+## Realtime and fallback
+The account channel survives player/tab switches. Leaderboard and tournament subscriptions exist only while those views are selected. Running operations retain a 15-second safety poll with realtime connected, reverting to their existing 2/5-second intervals on disconnect. Idle/terminal operations do not poll. Reconnect refreshes missed operation/context state; old account callbacks are ignored. Actual-hook browser acceptance uses fake channel transport and clock: lost terminal event, healthy/disconnected fallback, reconnect, idle, account/player changes and relevant public tables; no real external services.
