@@ -298,12 +298,18 @@ serve(async (req) => {
 
     logger.info('Starting deck recommendation', { userId: user.id, playerTag });
 
-    const { data: freshPlayer, error: profileError } = await supabase.functions.invoke('clash-royale-api', { body: { endpoint: 'player', playerTag } });
+    const [playerResult, battlesResult, templatesResult, archetypesResult] = await Promise.all([
+      supabase.functions.invoke('clash-royale-api', { body: { endpoint: 'player', playerTag } }),
+      supabase.functions.invoke('clash-royale-api', { body: { endpoint: 'battles', playerTag } }),
+      supabase.from('deck_templates').select('*').order('popularity_score', { ascending: false }).order('id'),
+      supabase.from('deck_archetypes').select('name, counters, countered_by').order('name'),
+    ]);
+    const { data: freshPlayer, error: profileError } = playerResult;
+    const { data: freshBattles, error: battlesError } = battlesResult;
+    const { data: deckTemplates, error: templatesError } = templatesResult;
+    const { data: archetypes, error: archetypesError } = archetypesResult;
     if (profileError || !Array.isArray(freshPlayer?.cards) || freshPlayer.cards.length === 0) return errorResponse('Current collection is unavailable', 503);
-    const {data:freshBattles,error:battlesError} = await supabase.functions.invoke('clash-royale-api',{body:{endpoint:'battles',playerTag}});
     if (battlesError || !Array.isArray(freshBattles)) return errorResponse('Recent matches unavailable',503);
-    const { data: deckTemplates, error: templatesError } = await supabase.from('deck_templates').select('*').order('popularity_score', { ascending: false }).order('id');
-    const { data: archetypes, error: archetypesError } = await supabase.from('deck_archetypes').select('name, counters, countered_by').order('name');
     if (templatesError || archetypesError) return errorResponse('Deck catalog unavailable', 503);
     const inputFingerprint = await evidenceHash(JSON.stringify([evidenceKey(freshPlayer,freshBattles),deckTemplates,archetypes]));
     // ============= Step 1: Check Cache =============
