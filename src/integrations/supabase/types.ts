@@ -1752,11 +1752,15 @@ export type Database = {
           current_step: string | null
           error: string | null
           id: string
+          last_successful_at: string | null
+          lease_expires_at: string | null
           operation_type: string
           player_tag: string
           progress: number
+          run_id: string | null
           started_at: string
           status: string
+          synced_cards: number | null
           total: number
           updated_at: string
           user_id: string
@@ -1766,11 +1770,15 @@ export type Database = {
           current_step?: string | null
           error?: string | null
           id?: string
+          last_successful_at?: string | null
+          lease_expires_at?: string | null
           operation_type: string
           player_tag: string
           progress?: number
+          run_id?: string | null
           started_at?: string
           status?: string
+          synced_cards?: number | null
           total?: number
           updated_at?: string
           user_id: string
@@ -1780,11 +1788,15 @@ export type Database = {
           current_step?: string | null
           error?: string | null
           id?: string
+          last_successful_at?: string | null
+          lease_expires_at?: string | null
           operation_type?: string
           player_tag?: string
           progress?: number
+          run_id?: string | null
           started_at?: string
           status?: string
+          synced_cards?: number | null
           total?: number
           updated_at?: string
           user_id?: string
@@ -3246,6 +3258,17 @@ export type Database = {
         Args: { p_attempt: string; p_subscription: string; p_user: string }
         Returns: boolean
       }
+      cancel_card_collection_sync: {
+        Args: { p_operation: string; p_run: string }
+        Returns: Json
+      }
+      card_sync_result: {
+        Args: {
+          p: Database["public"]["Tables"]["operation_progress"]["Row"]
+          p_reused?: boolean
+        }
+        Returns: Json
+      }
       check_rate_limit: {
         Args: {
           p_identifier: string
@@ -3262,6 +3285,10 @@ export type Database = {
           p_tier: string
           p_user: string
         }
+        Returns: Json
+      }
+      claim_card_collection_sync: {
+        Args: { p_force?: boolean; p_tag: string; p_user: string }
         Returns: Json
       }
       claim_confirmed_welcome: {
@@ -3362,6 +3389,7 @@ export type Database = {
         Args: { p_limit?: number }
         Returns: number
       }
+      cleanup_journey_measurements: { Args: never; Returns: number }
       cleanup_old_api_logs: { Args: never; Returns: undefined }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }
@@ -3376,6 +3404,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      fail_card_collection_sync: {
+        Args: { p_code: string; p_run: string; p_user: string }
+        Returns: Json
+      }
       fail_first_value: {
         Args: { p_call: string; p_code: string; p_usage?: Json; p_user: string }
         Returns: undefined
@@ -3383,6 +3415,10 @@ export type Database = {
       finish_ai_generation: {
         Args: { p_id: string; p_result: Json }
         Returns: undefined
+      }
+      finish_card_collection_sync: {
+        Args: { p_player: Json; p_run: string; p_user: string }
+        Returns: Json
       }
       finish_first_value: {
         Args: { p_call: string; p_result: Json; p_usage: Json; p_user: string }
@@ -3474,6 +3510,7 @@ export type Database = {
         Returns: number
       }
       get_fraud_overview_stats: { Args: never; Returns: Json }
+      get_my_card_collection_sync: { Args: { p_tag: string }; Returns: Json }
       get_my_first_value: { Args: never; Returns: Json }
       get_my_marketing_consent: {
         Args: { p_claim_invite?: boolean }
@@ -3608,6 +3645,19 @@ export type Database = {
         Returns: Json
       }
       record_first_value_step: { Args: { p_step: string }; Returns: undefined }
+      record_journey_measurement: {
+        Args: {
+          p_build?: string
+          p_duration_ms?: number
+          p_flow: string
+          p_hidden?: boolean
+          p_id: string
+          p_outcome: string
+          p_reuse?: string
+          p_trigger: string
+        }
+        Returns: undefined
+      }
       record_marketing_delivery: {
         Args: {
           p_campaign: string
