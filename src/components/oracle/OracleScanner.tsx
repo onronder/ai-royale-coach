@@ -13,6 +13,7 @@ import { useOraclePrediction } from '@/hooks/useOraclePrediction';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { ClashRoyaleCard } from '@/services/clashRoyaleApi';
+import { parseMatchupPrediction } from '../../../supabase/functions/_shared/matchup-prediction';
 
 interface OracleScannerProps {
   initialOpponentTag?: string;
@@ -166,6 +167,7 @@ export function OracleScanner({
   const [savedPrediction, setMatchupPrediction] = useState<(MatchupPrediction & { language: string }) | null>(null);
   const matchupPrediction = savedPrediction?.language === i18n.language ? savedPrediction : null;
   const [isLoadingMatchup, setIsLoadingMatchup] = useState(false);
+  const [matchupFailed, setMatchupFailed] = useState(false);
 
   const { data: prediction, isLoading, error } = useOraclePrediction(searchTag);
 
@@ -192,6 +194,7 @@ export function OracleScanner({
     if (!prediction || !userCurrentDeck || userCurrentDeck.length !== 8) return;
     
     setIsLoadingMatchup(true);
+    setMatchupFailed(false);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
@@ -208,18 +211,17 @@ export function OracleScanner({
         }
       });
       
-      if (!error && data && language === i18n.language) {
+      if (error) throw error;
+      if (!data) throw new Error('No prediction returned');
+      if (language === i18n.language) {
         setMatchupPrediction({
+          ...parseMatchupPrediction(data),
           language,
-          deckAWinRate: data.predicted_win_rate_a || data.predictedWinRateA || 50,
-          deckBWinRate: data.predicted_win_rate_b || data.predictedWinRateB || 50,
-          confidence: data.confidence || 'medium',
-          explanation: data.explanation,
-          tips: data.tips
         });
       }
     } catch (err) {
       console.error('Matchup prediction failed:', err);
+      setMatchupFailed(true);
     } finally {
       setIsLoadingMatchup(false);
     }
@@ -230,6 +232,7 @@ export function OracleScanner({
     if (cleanTag.length >= 3) {
       setSearchTag(cleanTag);
       setMatchupPrediction(null); // Reset matchup on new search
+      setMatchupFailed(false);
     }
   }, [opponentTag]);
 
@@ -574,6 +577,10 @@ export function OracleScanner({
                           </ul>
                         </div>
                       )}
+                    </div>
+                  ) : matchupFailed ? (
+                    <div role="alert" className="text-center py-4 text-sm text-destructive">
+                      {t('deckComparison.predictionFailed')}
                     </div>
                   ) : (
                     <div className="text-center py-4 text-sm text-muted-foreground">
