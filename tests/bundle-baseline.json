@@ -1,0 +1,40 @@
+{
+  "before_revision": "7971079af77cb007b75329780d6ee58c2dde93fa",
+  "optimized_revision": "9a4a929d76f6f490fcfe699173177d3eba560950",
+  "before": {
+    "entry_en": 490496,
+    "dashboard_en": 943502,
+    "entry_tr": 490496,
+    "dashboard_tr": 943502,
+    "entry_es": 490496,
+    "dashboard_es": 943502,
+    "entry_fr": 490496,
+    "dashboard_fr": 943502,
+    "entry_pt": 490496,
+    "dashboard_pt": 943502
+  },
+  "optimized": {
+    "entry_en": 272207,
+    "dashboard_en": 697083,
+    "entry_tr": 321890,
+    "dashboard_tr": 746766,
+    "entry_es": 321602,
+    "dashboard_es": 746478,
+    "entry_fr": 322820,
+    "dashboard_fr": 747696,
+    "entry_pt": 321134,
+    "dashboard_pt": 746010
+  },
+  "limit": {
+    "entry_en": 299428,
+    "dashboard_en": 766792,
+    "entry_tr": 354079,
+    "dashboard_tr": 821443,
+    "entry_es": 353763,
+    "dashboard_es": 821126,
+    "entry_fr": 355102,
+    "dashboard_fr": 822466,
+    "entry_pt": 353248,
+    "dashboard_pt": 820612
+  }
+}
