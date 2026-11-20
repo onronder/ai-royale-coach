@@ -1,5 +1,5 @@
 import { createMeasuredAIFetch, type AIContext } from './ai-generation.ts'
-import { z } from 'npm:zod@3'
+import { z } from 'npm:zod@4.6.7'
 import { Output, streamText } from 'npm:ai@6'
 import { createOpenAI } from 'npm:@ai-sdk/openai@3'
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'

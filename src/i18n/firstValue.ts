@@ -44,6 +44,7 @@ export const firstValueTranslations = {
         'We could not verify eight cards and your collection. Open the game, check your deck and try again.',
       service_unavailable:
         'The service could not be reached. Your existing access is unchanged. Try again.',
+      failed: "The AI service could not complete this recommendation. There is no saved result, and generation will not restart automatically. Contact support for help. Your subscription and trial access are unchanged.",
       uncertain:
         'Your recommendation may still be processing, or its result could not be confirmed. Check the saved result; we will not start a second generation. Contact support if this persists.',
       closed: 'New free recommendations are not open right now. Saved results remain available.',
@@ -158,6 +159,7 @@ export const firstValueTranslations = {
       deck_unavailable:
         'Sekiz kartı ve koleksiyonunu doğrulayamadık. Oyunda desteni kontrol edip tekrar dene.',
       service_unavailable: 'Servise ulaşılamadı. Mevcut erişimin değişmedi. Tekrar dene.',
+      failed: "AI servisi bu öneriyi tamamlayamadı. Kayıtlı sonuç yok; üretim otomatik olarak yeniden başlamayacak. Yardım için desteğe ulaş. Abonelik ve deneme erişimin değişmedi.",
       uncertain:
         'Önerin hâlâ hazırlanıyor olabilir veya sonucu doğrulanamadı. Kayıtlı sonucu kontrol et; ikinci bir üretim başlatmayacağız. Devam ederse desteğe ulaş.',
       closed: 'Yeni ücretsiz öneriler şu an açık değil. Kayıtlı sonuçlara erişim sürer.',
@@ -273,6 +275,7 @@ export const firstValueTranslations = {
       deck_unavailable:
         'No pudimos verificar ocho cartas y tu colección. Revisa tu mazo en el juego y reintenta.',
       service_unavailable: 'No se pudo acceder al servicio. Tu acceso actual no cambia. Reintenta.',
+      failed: "El servicio de IA no pudo completar esta recomendación. No hay un resultado guardado y no se generará otro automáticamente. Contacta con soporte. Tu acceso de suscripción y prueba no ha cambiado.",
       uncertain:
         'Tu recomendación puede seguir procesándose o no pudo confirmarse. Consulta el resultado guardado; no iniciaremos otra generación. Contacta con soporte si persiste.',
       closed:
@@ -390,6 +393,7 @@ export const firstValueTranslations = {
       deck_unavailable:
         'Impossible de vérifier huit cartes et votre collection. Vérifiez le deck dans le jeu et réessayez.',
       service_unavailable: 'Service indisponible. Votre accès actuel ne change pas. Réessayez.',
+      failed: "Le service IA n’a pas pu terminer cette recommandation. Aucun résultat n’est enregistré et la génération ne redémarrera pas automatiquement. Contactez l’assistance. Vos accès à l’abonnement et à l’essai restent inchangés.",
       uncertain:
         'Votre conseil est peut-être en cours ou son résultat n’a pas pu être confirmé. Vérifiez le résultat enregistré ; aucune seconde génération ne sera lancée. Contactez le support si cela persiste.',
       closed:
@@ -506,6 +510,7 @@ export const firstValueTranslations = {
       deck_unavailable:
         'Não foi possível verificar oito cartas e sua coleção. Confira seu deck no jogo e tente novamente.',
       service_unavailable: 'Serviço indisponível. Seu acesso atual não muda. Tente novamente.',
+      failed: "O serviço de IA não conseguiu concluir esta recomendação. Não há resultado salvo e a geração não será reiniciada automaticamente. Contate o suporte. Seu acesso à assinatura e ao teste não mudou.",
       uncertain:
         'Sua recomendação pode estar em andamento ou o resultado não foi confirmado. Verifique o resultado salvo; não iniciaremos outra geração. Contate o suporte se persistir.',
       closed:

@@ -3,7 +3,7 @@ import { localizedCardName } from '../_shared/card-names.ts';
 import { coachingReading, readingFields, type ReadingText } from '../_shared/coaching-reading.ts';
 import { recordTrialUsage } from '../_shared/trial-usage.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
-import { z } from 'npm:zod@3';
+import { z } from 'npm:zod@4.6.7';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { checkAiAccess } from '../_shared/ai-access.ts';
 import { coachingCard, coachingCardTable, coachingSwap, formatCoachingAdvice, tacticalText, keepDeckAdvice, validCoachingChoice } from '../_shared/coaching-advice.ts';

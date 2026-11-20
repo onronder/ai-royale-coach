@@ -329,6 +329,39 @@ try {
       freshReport.costs.cost_usd === null,
     'uncertain calls and unknown cost are explicit',
   )
+  // Reconciliation never turns an unconfirmed attempt into a new free entitlement.
+  const failedCall = (await sql`SELECT * FROM first_value_calls WHERE user_id=${uncertain} AND kind='suggestion'`)[0]
+  const entitlementBefore = await sql`SELECT * FROM first_value_accounts WHERE user_id=${uncertain}`
+  const evidence = { status: 'failed', output_count: 0, error_code: 'server_is_overloaded', evidence_ref: 'fixture/provider-response.json', local_run_id: failedCall.run_id }
+  const resolveArgs = { p_call: failedCall.id, p_provider_response_id: 'resp_failed_fixture', p_evidence: evidence }
+  await assert.rejects(rpc('resolve_failed_first_value', resolveArgs, uncertain))
+  await assert.rejects(rpc('resolve_failed_first_value', resolveArgs, admin))
+  ok(true, 'neither player nor administrator session can reconcile a provider failure')
+  await assert.rejects(rpc('resolve_failed_first_value', { ...resolveArgs, p_evidence: { ...evidence, status: 'in_progress' } }))
+  await assert.rejects(rpc('resolve_failed_first_value', { ...resolveArgs, p_evidence: { ...evidence, output_count: 1 } }))
+  ok(true, 'pending or nonempty provider output cannot be marked failed')
+  ok(!await rpc('resolve_failed_first_value', { ...resolveArgs, p_evidence: { ...evidence, local_run_id: 'another-run' } }), 'mismatched local provider correlation is rejected')
+  ok(await rpc('resolve_failed_first_value', resolveArgs), 'verified empty failed provider response resolves the old attempt')
+  const failedState = await state(uncertain)
+  ok(failedState.outcome === 'failed' && failedState.task.status === 'failed' && !failedState.can_start && !failedState.task.recommendation, 'failed state is explicit without fabricating advice or a new entitlement')
+  assert.deepEqual(await sql`SELECT * FROM first_value_accounts WHERE user_id=${uncertain}`, entitlementBefore)
+  ok(true, 'reconciliation preserves the original account entitlement exactly')
+  const beforeReplay = calls
+  await request(uncertain, 'start')
+  await request(uncertain, 'start', { playerTag: 'Q0LY' })
+  ok(calls === beforeReplay, 'failed recommendation never triggers another generation')
+  const resolvedCall = (await sql`SELECT * FROM first_value_calls WHERE id=${failedCall.id}`)[0]
+  for (const field of ['started_at','completed_at','run_id','input_tokens','output_tokens','duration_ms','cost_usd']) assert.deepEqual(resolvedCall[field], failedCall[field])
+  ok(!!resolvedCall.resolved_at && resolvedCall.failure_evidence.provider_response_id === 'resp_failed_fixture', 'evidence retained separately; original timing, provider ID and unknown costs preserved')
+  ok(await rpc('resolve_failed_first_value', resolveArgs), 'identical reconciliation is idempotent')
+  ok(!await rpc('resolve_failed_first_value', { ...resolveArgs, p_provider_response_id: 'different-response' }), 'conflicting reconciliation cannot replace the evidence')
+  await rpc('finish_first_value', { p_user: uncertain, p_call: failedCall.id, p_result: {}, p_usage: {} })
+  await rpc('fail_first_value', { p_user: uncertain, p_call: failedCall.id, p_code: 'late-timeout' })
+  ok((await state(uncertain)).outcome === 'failed' && (await sql`SELECT error_code FROM first_value_calls WHERE id=${failedCall.id}`)[0].error_code === 'provider_failed_verified', 'late recording callbacks cannot overwrite a verified terminal failure')
+  const goodCall = (await sql`SELECT id FROM first_value_calls WHERE user_id=${user} AND kind='suggestion'`)[0]
+  ok(!await rpc('resolve_failed_first_value', { ...resolveArgs, p_call: goodCall.id }), 'a delivered recommendation cannot be marked failed')
+  const resolvedReport = await rpc('admin_first_value_report', { p_cohort: 'new' }, admin)
+  ok(resolvedReport.counts.uncertain === 1 && resolvedReport.errors.provider_failed_verified === 1, 'admin report separates the verified failure from still-uncertain output')
   ok(
     report.counts.paid14 === 0 && report.counts.pending14 > 0,
     'young accounts are pending, not lost',

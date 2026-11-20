@@ -1,17 +1,25 @@
-import { z } from 'npm:zod@3'
+import { z } from 'npm:zod@4.6.7'
 import { createCoachingAI } from '../../../supabase/functions/_shared/coaching-ai.ts'
 
 Deno.test('real coaching SDK persists a streamed result and replays without another provider call', async () => {
-  let calls = 0, saved: any = null
+  let calls = 0, saved: any = null, claimedHash = ''
   const db = { rpc: async (name: string, args: any) => {
-    if (name === 'claim_ai_generation') return { error: null, data: saved
+    if (name === 'claim_ai_generation') {
+      if (claimedHash && claimedHash !== args.p_hash) throw new Error('Structured schema changed the replay key')
+      claimedHash = args.p_hash
+      return { error: null, data: saved
       ? { decision: 'replay', body: saved.body, status: saved.status, headers: saved.headers }
       : { decision: 'acquired', id: 'fixture' } }
+    }
     saved = args.p_result
     return { data: null, error: null }
   } }
   const original = globalThis.fetch
-  globalThis.fetch = async (url) => {
+  globalThis.fetch = async (url, init) => {
+    const request = JSON.parse(String(init?.body))
+    const schema = request.text?.format?.schema
+    if (request.model !== 'openai/gpt-6-astra' || request.max_output_tokens !== 4096 || request.reasoning?.effort !== 'low') throw new Error('Model/options changed')
+    if (schema?.type !== 'object' || schema.properties?.answer?.type !== 'string' || schema.required?.join(',') !== 'answer' || schema.additionalProperties !== false) throw new Error('Structured output contract changed')
     if (!String(url).includes('/responses')) throw new Error('Unexpected network request')
     calls++
     const text = JSON.stringify({ answer: 'One specific practice' })

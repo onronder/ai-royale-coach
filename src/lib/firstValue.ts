@@ -8,7 +8,7 @@ export interface FirstValueState {
   enabled: boolean
   can_start: boolean
   can_read: boolean
-  outcome: 'available' | 'ready' | 'uncertain'
+  outcome: 'available' | 'ready' | 'uncertain' | 'failed'
   task: (Task & { player_tag: string; last_checked_at?: string }) | null
 }
 export interface FirstValueResponse extends FirstValueState {
