@@ -27,6 +27,7 @@ jobs:
           bun-version: '1.3.3'
       - run: npm ci
       - run: bun test ./tests/*.test.ts
+      - run: bun test tests/integration/recommendPreparation/handler.test.ts
       - run: npx tsc -b
       - run: npm run build
       - name: Install isolated browser runner
