@@ -1,3 +1,4 @@
+import { ensureHelp } from '@/i18n';
 import { CHAT_PAGE_SIZE, CHAT_DAY_PAGE_SIZE, chatDayBounds, chatDayKey, chatCursorFilter, type ChatCursor } from '@/lib/chatHistory';
 import { PlayerContextStatus } from './PlayerContextStatus';
 import { observeBattle, canonicalTag } from '../../../supabase/functions/_shared/battle-observation';
@@ -479,7 +480,8 @@ export function CoachChatPanel({
       
       if (helpMatch && helpMatch.confidence > 0.5) {
         // Generate help response without using AI quota
-        const helpResponse = generateHelpResponse(helpMatch, t);
+        await ensureHelp();
+        const helpResponse = generateHelpResponse(helpMatch, i18n.getFixedT(null, ['help', 'translation']));
         
         // Save user message
         const { data: userMsg, error: userError } = await supabase
@@ -518,7 +520,7 @@ export function CoachChatPanel({
         }
         
         // Show toast that this was answered from Help (no AI quota used)
-        toast.success(t('help.coachIntegration.answeredFromHelp'), {
+        toast.success(i18n.t('help.coachIntegration.answeredFromHelp', { ns: 'help' }), {
           icon: <BookOpen className="h-4 w-4" />,
         });
         

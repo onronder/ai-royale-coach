@@ -21,7 +21,7 @@ import {deckBuilderUrl} from '../../../src/lib/deckNavigation';
 import {clashRoyaleApi} from '../../../src/services/clashRoyaleApi';
 import {cards,battle,tag} from '../../fixtures/observedBattles';
 import {recentStatistics} from '../../../supabase/functions/_shared/recent-statistics';
-import '../../../src/i18n';
+import { i18nInit } from '../../../src/i18n';
 import '../../../src/index.css';
 const user='11111111-2222-4333-8444-555555555555';
 for(const match of Object.values(captured))for(const side of [match.team,match.opponent])for(const p of side)for(const c of p.cards)(c as any).iconUrls={medium:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50"/>'};
@@ -44,4 +44,5 @@ function Screen(){
  </main>;
 }
 document.documentElement.classList.add('dark');
+await i18nInit;
 createRoot(document.getElementById('root')!).render(<QueryClientProvider client={qc}><SubscriptionUserContext.Provider value={user}><TooltipProvider><BrowserRouter><Screen/></BrowserRouter></TooltipProvider></SubscriptionUserContext.Provider></QueryClientProvider>);

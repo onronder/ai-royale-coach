@@ -55,7 +55,7 @@ export function Navbar({ user, showAuth = true }: NavbarProps) {
 
         <div className="ml-auto flex items-center gap-2 lg:hidden">
           {showAuth && !user && <Button asChild size="sm" variant="golden"><Link to="/auth?mode=signup">{t("nav.getStarted")}</Link></Button>}
-          <Button ref={menuToggle} id="public-menu-toggle" size="icon" variant="ghost" aria-label={t("help.navigation")}
+          <Button ref={menuToggle} id="public-menu-toggle" size="icon" variant="ghost" aria-label={t("common.navigation")}
             aria-expanded={menuOpen} aria-controls="public-menu" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X /> : <Menu />}
           </Button>
