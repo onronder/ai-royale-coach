@@ -1,0 +1,26 @@
+PASS an auth identity without an application profile cannot acquire an AI generation
+PASS two workers -> one provider generation
+PASS duration and token components; missing price is NULL, not zero
+PASS completed provider response survives downstream save failure and replays without spend
+PASS JSON property order does not create a new analysis
+PASS accounts never share generated results
+PASS changed evidence gets a new analysis
+PASS model and full prompt are part of identity
+PASS one-time coaching cannot regenerate by changing evidence after acceptance
+PASS permitted historical translation is not misreported as a paying account
+PASS unavailable claim storage makes no provider call
+PASS ambiguous timeout never reissues, including after 48 hours
+PASS provider acceptance + both storage writes fail: durable claim blocks retry
+PASS explicit provider rejection permits a subsequent request and keeps both attempts
+PASS ambiguous provider 500 blocks automatic reissue
+PASS stream first chunk arrives before completion; terminal usage persisted
+PASS truncated stream is uncertain, never a cached success
+PASS consumer cancellation blocks a second generation
+PASS missing usage is not zero tokens
+PASS Responses API usage parsed without counting cache/reasoning twice
+PASS verified cost reconciliation is exact-run, idempotent and rejects conflicting evidence
+PASS players cannot read responses, claim, mutate or fabricate provider costs
+PASS server aggregation covers >1000 rows and excludes unmeasured values
+PASS unknown metrics remain unknown; report is admin-only with bounded windows
+PASS zero external network attempts
+{"passed":25,"network":0,"providerCalls":7}

@@ -316,6 +316,20 @@
       "when": 1795166185281,
       "tag": "0044_verified_free_coaching_failure",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1795204334649,
+      "tag": "0045_card_collection_sync",
+      "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1795204334650,
+      "tag": "0046_journey_measurements",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,36 @@
+bun test v1.4.5 (a7733435c)
+
+tests/integration/winback/winbackCooldown.test.ts:
+(pass) 720-hour boundary (UTC instants, fixed clock) > no history: allowed [163.12ms]
+(pass) 720-hour boundary (UTC instants, fixed clock) > 1 s before / exactly at / 1 s after 720 h [380.88ms]
+(pass) 720-hour boundary (UTC instants, fixed clock) > 1 s before / exactly at / 1 s after 720 h from a provider-verified acceptance [338.40ms]
+(pass) 720-hour boundary (UTC instants, fixed clock) > Istanbul and New York give the same decision for the same instant [698.40ms]
+[report] verified replay: accepted_at = 2026-11-20 13:01:39.785+03 next eligible = 2026-12-20T10:01:39.785+00:00
+(pass) first-acceptance time after a failed first write (fixes PR #15 review) > verified: 720 h counts from the provider first acceptance, not the late write [685.67ms]
+(pass) first-acceptance time after a failed first write (fixes PR #15 review) > legacy profile stamp cannot move the acceptance time forward [561.40ms]
+(pass) first-acceptance time after a failed first write (fixes PR #15 review) > unverifiable: safe (later) wait is kept and flagged as unverified [689.35ms]
+(pass) first-acceptance time after a failed first write (fixes PR #15 review) > implausible provider time (before the claim) is not trusted [422.25ms]
+(pass) first-acceptance time after a failed first write (fixes PR #15 review) > admin list: uncertain previous send is reported as such, not as never sent [253.69ms]
+(pass) full send path (real claim SQL + sender code) > no history sends once; a second campaign right after is held by the cooldown [403.08ms]
+(pass) full send path (real claim SQL + sender code) > last accepted 1 min inside vs 1 min past 720 h on the live clock [614.88ms]
+(pass) full send path (real claim SQL + sender code) > legacy profile stamp also counts [179.54ms]
+(pass) full send path (real claim SQL + sender code) > bulk loop: one held account, others sent once each [415.99ms]
+[report] concurrent campaigns → provider acceptances: 1 second admin reason: previous_uncertain
+(pass) full send path (real claim SQL + sender code) > two admins, two campaign codes, same account, at the same time: one provider acceptance [175.55ms]
+[report] accepted-then-write-failed → provider acceptances: 1
+(pass) full send path (real claim SQL + sender code) > provider accepted but local write failed: same campaign replays frozen key/body; new campaign is blocked [426.86ms]
+(pass) full send path (real claim SQL + sender code) > uncertain past the 23 h replay window stays unresolved and blocks other campaigns [381.01ms]
+(pass) full send path (real claim SQL + sender code) > consent and address blocks still apply after the cooldown [276.97ms]
+(pass) full send path (real claim SQL + sender code) > campaign keys outside the win-back namespace are refused by the claim [117.45ms]
+(pass) full send path (real claim SQL + sender code) > admin screen list shows the same decision as the sender [222.22ms]
+(pass) legacy send times recorded before this migration (created before it ran) > pre-0027 delivery without a verification flag: shown as "time not verified", still used for the wait [53.28ms]
+(pass) legacy send times recorded before this migration (created before it ran) > provider-verified first acceptance is kept and stays verified [52.70ms]
+(pass) legacy send times recorded before this migration (created before it ran) > profile-only stamp: unverified, still blocks inside 720 h [54.31ms]
+(pass) legacy send times recorded before this migration (created before it ran) > no history: time and verification state stay empty [52.38ms]
+(pass) legacy send times recorded before this migration (created before it ran) > admin screen shows the same verification state as the sender decision [52.49ms]
+(pass) "sent, time not verified" vs "outcome unknown" > unknown outcome blocks every other campaign, unverified time only waits 720 h [405.34ms]
+
+ 25 pass
+ 0 fail
+ 89 expect() calls
+Ran 25 tests across 1 file. [9.49s]

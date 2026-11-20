@@ -1,0 +1,18 @@
+PASS migration preserves all seeded accounts, payments, rights and campaign/free settings
+PASS authentication and bad input never contact the game
+PASS 120 cards and leaderboard commit together; original start is stable
+PASS fresh reuse does not call game; manual refresh does; expired cache refreshes
+PASS simultaneous normalized tags acquire one run and one provider request
+PASS cancellation beats late completion and is not reported as success
+PASS complete beats late cancellation; stale run cannot cancel replacement
+PASS real overlapping cancel/finish transactions have exactly one terminal winner
+PASS legacy hashed tag storage is reused without duplicating or losing cards
+PASS expired worker is fenced; failed automatic requests do not loop
+PASS card constraint and leaderboard failure each roll back ALL card writes
+PASS handler DB failure returns failed, preserves previous collection
+PASS lost commit response reads terminal result without fetching again
+PASS upstream failure/malformed response leave visible failure and no fake completion
+PASS users cannot forge freshness/success, claim, complete or cancel another account
+PASS 7-day telemetry, idempotent finish, trusted segments, no API metric pollution
+PASS server derives trial/paid/admin/test segments and rejects forged measurement writes
+17 acceptance scenarios passed; external network calls: 0

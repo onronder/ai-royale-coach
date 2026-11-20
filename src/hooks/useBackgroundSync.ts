@@ -1,3 +1,4 @@
+import { syncCardCollection } from '@/lib/cardCollectionSync';
 import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -39,8 +40,9 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
 
         if (collectionCount === 0) {
           try {
-            await supabase.functions.invoke('sync-card-collection', { body: { playerTag } });
-            toast.success(t('dashboard.sync.collectionSynced'));
+            const result = await syncCardCollection(userId, playerTag);
+            if (result.success && result.status === 'completed' && result.claimed && !result.joined)
+              toast.success(t('dashboard.sync.collectionSynced'));
           } catch (err) {
             console.error('Background sync failed:', err);
           }

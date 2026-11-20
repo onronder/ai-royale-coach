@@ -2017,6 +2017,9 @@
     "noDataDesc": "Kazanma oranını görmek için maç oyna."
   },
   "cardCollection": {
+    "refresh": "Yenile",
+    "freshness": "Koleksiyon 5 dakika boyunca yeniden kullanılır. Yeni kartları kontrol etmek için yenile.",
+    "refreshFailed": "Eşitleme tamamlanmadı. Kayıtlı kartların duruyor. Yenile ile tekrar dene.",
     "title": "Kart Koleksiyonu",
     "cards": "kart",
     "syncing": "Senkronize ediliyor...",

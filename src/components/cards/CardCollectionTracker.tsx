@@ -1,5 +1,9 @@
 import { nextUpgradeCopies } from '@/lib/upgradeCost';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { syncCardCollection } from "@/lib/cardCollectionSync";
+import { useJourneyMeasurement } from "@/hooks/useJourneyMeasurement";
 import { Translation, useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardImage } from "./CardImage";
 import { VirtualCardGrid } from "./VirtualCardGrid";
-import { Sparkles, ArrowUp } from "lucide-react";
+import { Sparkles, ArrowUp, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateNotification } from "@/hooks/useNotifications";
 import { useOperationProgress } from "@/hooks/useOperationProgress";
@@ -46,68 +50,81 @@ const RARITY_COLORS = {
 
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
   const { t } = useTranslation();
-  const [collection, setCollection] = useState<CardCollectionItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedRarity, setSelectedRarity] = useState<string>("all");
-  const { mutate: createNotification } = useCreateNotification();
-  const { progress: syncProgress } = useOperationProgress({
-    playerTag,
-    operationType: 'card_collection_sync',
-    enabled: true,
+  const normalizedTag = playerTag.trim().replace(/^#/, '').toUpperCase();
+  const scope = userId + ':' + normalizedTag;
+  const currentScope = useRef(scope); currentScope.current = scope;
+  const qc = useQueryClient();
+  const requestVersion = useRef(0);
+  const collectionQuery = useQuery({
+    queryKey: ['card-collection-view', userId, normalizedTag],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('card_collection').select('*')
+        .eq('user_id', userId).in('player_tag', [normalizedTag, '#' + normalizedTag])
+        .order('updated_at', { ascending: false });
+      if (error) throw error;
+      // Legacy tag spellings may coexist; display the most recently saved card.
+      const unique = new Map<number, CardCollectionItem>();
+      for (const card of data ?? []) if (!unique.has(card.card_id)) unique.set(card.card_id, card);
+      return [...unique.values()].sort((a, b) => a.rarity.localeCompare(b.rarity) || a.card_name.localeCompare(b.card_name));
+    },
+    enabled: !!userId && !!normalizedTag,
   });
-
-  useEffect(() => {
-    fetchCollection();
-    syncCollection();
-  }, [playerTag, userId]);
-
-  const fetchCollection = async () => {
-    setIsLoading(true);
-    const { data, error } = await supabase
-      .from('card_collection')
-      .select('*')
-      .eq('player_tag', playerTag)
-      .order('rarity')
-      .order('card_name');
-
-    if (error) {
-      console.error('Error fetching collection:', error);
-      toast.error(<Translation>{translate => translate('cardCollection.loadFailed')}</Translation>);
-    } else if (data) {
-      setCollection(data);
-    }
-    setIsLoading(false);
-  };
-
-  const syncCollection = async () => {
-    toast.loading(<Translation>{translate => translate('cardCollection.syncing')}</Translation>, { id: 'card-collection-sync' });
-    
+  const collection = collectionQuery.data ?? [], isLoading = collectionQuery.isLoading;
+  const begin = useJourneyMeasurement('card_sync', scope, !!collectionQuery.data && !collectionQuery.isFetching, collectionQuery.isError);
+  const pending = useRef<{ run: string; measurement: ReturnType<typeof begin>; reuse: 'joined' | 'unknown' }>();
+  const [syncState, setSyncState] = useState('');
+  const [selectedRarity, setSelectedRarity] = useState<string>('all');
+  const { mutate: createNotification } = useCreateNotification();
+  const { progress: syncProgress } = useOperationProgress({ playerTag, operationType: 'card_collection_sync' });
+  const refetchCollection = collectionQuery.refetch;
+  const syncCollection = useCallback(async (force = false) => {
+    const version = ++requestVersion.current;
+    const isCurrent = () => currentScope.current === scope && requestVersion.current === version;
+    const measurement = begin(force ? 'manual' : 'automatic');
+    setSyncState('running');
     try {
-      const { error } = await supabase.functions.invoke('sync-card-collection', {
-        body: { playerTag, userId }
-      });
-
-      if (error) {
-        console.error('Error syncing collection:', error);
-        toast.error(<Translation>{translate => translate('cardCollection.syncFailed')}</Translation>, { id: 'card-collection-sync' });
-      } else {
-        toast.success(<Translation>{translate => translate('cardCollection.syncSuccess')}</Translation>, { id: 'card-collection-sync' });
-        
-        createNotification({
-          player_tag: playerTag,
-          type: 'sync',
-          title: t('cardCollection.syncedTitle'),
-          message: t('cardCollection.syncedMessage'),
-          icon_name: 'sparkles'
-        });
-        
-        setTimeout(() => fetchCollection(), 500);
+      const result = await syncCardCollection(userId, normalizedTag, force);
+      if (!isCurrent()) return;
+      void qc.invalidateQueries({ queryKey: ['operation-progress', userId] });
+      void qc.invalidateQueries({ queryKey: ['operations', userId] });
+      setSyncState(result.status);
+      if (result.status === 'running') {
+        pending.current = { run: result.run_id, measurement, reuse: 'joined' };
+        return;
       }
-    } catch (error) {
-      console.error('Sync error:', error);
-      toast.error(<Translation>{translate => translate('cardCollection.syncFailed')}</Translation>, { id: 'card-collection-sync' });
+      if (result.status !== 'completed' || !result.success) {
+        measurement.complete(result.status === 'cancelled' ? 'cancelled' : 'failed');
+        return;
+      }
+      const refreshed = await refetchCollection();
+      if (!isCurrent()) return;
+      if (refreshed.error) { measurement.complete('failed'); return; }
+      measurement.ready(result.joined ? 'joined' : result.reused ? 'fresh' : 'generated');
+      if (result.claimed && !result.joined) {
+        if (force) toast.success(t('cardCollection.syncSuccess'));
+        createNotification({ player_tag: playerTag, type: 'sync', title: t('cardCollection.syncedTitle'),
+          message: t('cardCollection.syncedMessage'), icon_name: 'sparkles' });
+      }
+    } catch {
+      measurement.complete('failed');
+      if (isCurrent()) setSyncState('failed');
     }
-  };
+  }, [begin, userId, normalizedTag, scope, qc, refetchCollection, createNotification, playerTag, t]);
+  useEffect(() => {
+    currentScope.current = scope;
+    pending.current = undefined;
+    void syncCollection();
+    return () => { requestVersion.current++; currentScope.current = ''; pending.current = undefined; };
+  }, [syncCollection]);
+  useEffect(() => {
+    const waiting = pending.current;
+    if (!waiting || syncProgress?.run_id !== waiting.run || syncProgress.status === 'running') return;
+    pending.current = undefined;
+    setSyncState(syncProgress.status);
+    if (syncProgress.status === 'completed') {
+      void refetchCollection().then(result => result.error ? waiting.measurement.complete('failed') : waiting.measurement.ready(waiting.reuse));
+    } else waiting.measurement.complete(syncProgress.status === 'cancelled' ? 'cancelled' : 'failed');
+  }, [syncProgress, refetchCollection]);
 
   const calculateProgress = (card: CardCollectionItem) => {
     if (card.card_level >= card.max_level) {
@@ -148,11 +165,14 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
             {t('cardCollection.title')} ({collection.length} {t('cardCollection.cards')})
           </CardTitle>
+          <Button size="sm" variant="outline" className="min-h-11" disabled={syncState === 'running'} onClick={() => void syncCollection(true)}>
+            <RefreshCw className="mr-2 h-4 w-4" />{t('cardCollection.refresh')}
+          </Button>
           {syncProgress?.status === 'running' && (
             <Badge variant="secondary" className="animate-pulse">
               {<Translation>{translate => translate('cardCollection.syncing')}</Translation>} {Math.round((syncProgress.progress / syncProgress.total) * 100)}%
@@ -162,6 +182,12 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-xs text-muted-foreground">{t("correctness.copyCostOnly")}</p>
+        <p role={syncState === 'failed' || collectionQuery.isError ? 'alert' : 'status'} className="text-xs text-muted-foreground">
+          {collectionQuery.isError ? t('cardCollection.loadFailed') :
+            syncState === 'failed' ? t('cardCollection.refreshFailed') :
+            syncState === 'cancelled' ? t('operations.cancelled') :
+            syncState === 'running' ? t('cardCollection.syncing') : t('cardCollection.freshness')}
+        </p>
         {/* Progress Indicator */}
         {syncProgress && (
           <ProgressIndicator

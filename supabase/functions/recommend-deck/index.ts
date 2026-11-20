@@ -258,13 +258,7 @@ serve(async (req) => {
       return errorResponse('Invalid authentication', 401);
     }
 
-    // SUBSCRIPTION CHECK: Verify user has active subscription or trial
-    const { data: subscriptionData } = await supabase
-      .from('user_subscriptions')
-      .select('status')
-      .eq('user_id', user.id)
-      .single();
-
+    // Entitlement checks below remain authoritative.
     const { data: userProfile } = await supabase
       .from('profiles')
       .select('trial_ends_at')

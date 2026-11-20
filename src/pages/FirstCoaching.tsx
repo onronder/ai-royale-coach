@@ -1,3 +1,4 @@
+import { useJourneyMeasurement } from '@/hooks/useJourneyMeasurement'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -70,6 +71,8 @@ export default function FirstCoaching() {
     refetchOnWindowFocus: false,
   })
   const words = reading ? readingText(reading, tr.data) : null
+  const beginJourney = useJourneyMeasurement('free_coaching', (userId || '') + ':' + lang,
+    !!task?.recommendation && !!words?.reason && !!words?.practice && !busy, tr.isError)
   useEffect(() => {
     if (!userId || restored.current === userId) return
     restored.current = userId
@@ -191,6 +194,7 @@ export default function FirstCoaching() {
       }
   }
   const run = async (action: string) => {
+    const measurement = action === 'start' ? beginJourney('manual') : null
     setError('')
     setBusy(action)
     try {
@@ -198,6 +202,11 @@ export default function FirstCoaching() {
         playerTag: player?.tag || tag.trim(),
         ...(confirmation ? { confirmedDeckIds: confirmation.cards.map((c) => c.id) } : {}),
       })
+      if (measurement) {
+        if (result.deck_confirmation) measurement.complete('needs_input')
+        else if (result.task?.recommendation) measurement.ready()
+        else measurement.complete('failed')
+      }
       if (result.player) setPlayer(result.player)
       if (result.deck_confirmation) setConfirmation(result.deck_confirmation)
       if (result.reason) qc.setQueryData(key, result)
@@ -209,6 +218,7 @@ export default function FirstCoaching() {
         }
       }
     } catch (e) {
+      measurement?.complete('failed')
       setError(e instanceof FirstValueError ? e.code : 'service_unavailable')
       if (action === 'start') void q.refetch()
     } finally {

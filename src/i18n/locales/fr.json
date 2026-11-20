@@ -2017,6 +2017,9 @@
     "noDataDesc": "Joue pour voir ton taux de victoire."
   },
   "cardCollection": {
+    "refresh": "Actualiser",
+    "freshness": "La collection est réutilisée pendant 5 minutes. Actualisez pour vérifier les nouvelles cartes.",
+    "refreshFailed": "La synchronisation a échoué. Vos cartes enregistrées restent disponibles. Réessayez avec Actualiser.",
     "title": "Collection de Cartes",
     "cards": "cartes",
     "syncing": "Synchronisation...",

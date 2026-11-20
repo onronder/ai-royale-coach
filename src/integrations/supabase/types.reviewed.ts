@@ -1618,6 +1618,10 @@ export type Database = {
           completed_at: string | null
           current_step: string | null
           error: string | null
+          run_id: string | null
+          lease_expires_at: string | null
+          last_successful_at: string | null
+          synced_cards: number | null
           id: string
           operation_type: string
           player_tag: string
@@ -1632,6 +1636,10 @@ export type Database = {
           completed_at?: string | null
           current_step?: string | null
           error?: string | null
+          run_id?: string | null
+          lease_expires_at?: string | null
+          last_successful_at?: string | null
+          synced_cards?: number | null
           id?: string
           operation_type: string
           player_tag: string
@@ -1646,6 +1654,10 @@ export type Database = {
           completed_at?: string | null
           current_step?: string | null
           error?: string | null
+          run_id?: string | null
+          lease_expires_at?: string | null
+          last_successful_at?: string | null
+          synced_cards?: number | null
           id?: string
           operation_type?: string
           player_tag?: string
@@ -2920,6 +2932,13 @@ export type Database = {
       }
     }
     Functions: {
+      record_journey_measurement: {
+        Args: { p_id: string; p_flow: string; p_trigger: string; p_outcome: string; p_duration_ms?: number | null; p_hidden?: boolean; p_reuse?: string; p_build?: string }
+        Returns: undefined
+      }
+      get_my_card_collection_sync: { Args: { p_tag: string }; Returns: Json }
+      cancel_card_collection_sync: { Args: { p_operation: string; p_run: string | null }; Returns: Json }
+
       mark_recommendations_seen: { Args: { p_ids: string[] }; Returns: undefined }
 
       admin_api_measurements: { Args: { p_minutes?: number }; Returns: Json }
