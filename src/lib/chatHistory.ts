@@ -13,7 +13,10 @@ export function chatDayBounds(day: string) {
 }
 export type ChatCursor = { created_at: string; id: string };
 export function chatCursorFilter(cursor: ChatCursor) {
-  if (!/^[0-9a-f-]{36}$/i.test(cursor.id) || !Number.isFinite(Date.parse(cursor.created_at))) throw new Error('Invalid chat cursor');
-  const time = new Date(cursor.created_at).toISOString();
+  const time = cursor.created_at;
+  // Validate filter syntax without converting PostgreSQL microseconds to JS milliseconds.
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cursor.id) ||
+      !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(time) ||
+      /\s/.test(time) || !Number.isFinite(Date.parse(time))) throw new Error('Invalid chat cursor');
   return `created_at.lt.${time},and(created_at.eq.${time},id.lt.${cursor.id})`;
 }

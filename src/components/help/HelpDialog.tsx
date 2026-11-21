@@ -19,6 +19,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import {
   Accordion,
@@ -209,6 +210,7 @@ export function HelpDialog({ open, onOpenChange, initialSection }: HelpDialogPro
             <BookOpen className="h-6 w-6 text-primary" />
             {t("help.title")}
           </SheetTitle>
+          <SheetDescription className="sr-only">{t("help.subtitle")}</SheetDescription>
           <div className="relative mt-3">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
