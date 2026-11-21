@@ -1,4 +1,21 @@
 {
+  "practiceRepeat": {
+    "title": "Entraînement avec le même deck",
+    "first": "Premier match",
+    "second": "Deuxième match",
+    "accept": "Rejouer un match avec les 8 mêmes cartes",
+    "pending": "Joue avec les huit mêmes cartes, puis vérifie le résultat.",
+    "changed": "Le deck a changé. Cet entraînement est clos.",
+    "feedError": "Impossible d’actualiser tes derniers matchs. Réessaie.",
+    "noMatch": "Aucun match admissible parmi les matchs récents disponibles.",
+    "compare": "Ces deux scores ne mesurent pas l’effet de la tactique.",
+    "accepted": "Ont accepté / ont vu l’offre",
+    "returned": "Revenus lors d’une autre session / ont accepté",
+    "matched": "Second résultat trouvé / ont accepté",
+    "mature": "Les deux derniers taux concernent les joueurs ayant accepté depuis au moins sept jours complets.",
+    "trial": "Essai",
+    "paid": "Payant"
+  },
   "conversion": {
     "scope": "{{trials}} essais · {{accounts}} comptes distincts. Les comptes de test identifiés sont exclus.",
     "unclassified": "Abonnements exclus faute de début d’essai vérifié : {{count}}.",

@@ -1,3 +1,4 @@
+import { trackPracticeActivity } from '@/lib/practiceVisit';
 import { restoreAccountLanguage } from '@/i18n/changeLanguage';
 import { SubscriptionUserContext } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,6 +51,8 @@ const App = () => {
   useEffect(() => {
     if (accountId) return restoreAccountLanguage(accountId);
   }, [accountId]);
+
+  useEffect(() => accountId ? trackPracticeActivity(accountId) : undefined, [accountId]);
 
   const [i18nReady, setI18nReady] = useState(i18n.isInitialized);
 

@@ -1,4 +1,21 @@
 {
+  "practiceRepeat": {
+    "title": "Práctica con el mismo mazo",
+    "first": "Primera partida",
+    "second": "Segunda partida",
+    "accept": "Practicar otra partida con las mismas 8 cartas",
+    "pending": "Juega con las mismas ocho cartas y comprueba el resultado.",
+    "changed": "El mazo cambió. La repetición se cerró.",
+    "feedError": "No pudimos actualizar tus partidas recientes. Inténtalo de nuevo.",
+    "noMatch": "Aún no se encontró una partida válida entre las recientes disponibles.",
+    "compare": "Son los dos marcadores registrados. No miden el efecto de la táctica.",
+    "accepted": "Aceptaron / vieron la oferta",
+    "returned": "Volvieron en otra sesión / aceptaron",
+    "matched": "Segundo resultado encontrado / aceptaron",
+    "mature": "Las dos últimas tasas incluyen a quienes aceptaron hace al menos siete días completos.",
+    "trial": "Prueba",
+    "paid": "De pago"
+  },
   "conversion": {
     "scope": "{{trials}} pruebas · {{accounts}} cuentas distintas. Se excluyen las cuentas marcadas como pruebas internas.",
     "unclassified": "Suscripciones excluidas por no poder verificar el inicio de la prueba: {{count}}.",

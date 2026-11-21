@@ -1,3 +1,5 @@
+import { practiceGoal } from '../../../supabase/functions/_shared/practice-repeat';
+import { PracticeRepeat, type PracticeRequest } from './PracticeRepeat';
 import { useJourneyMeasurement } from '@/hooks/useJourneyMeasurement';
 import { observeTrialStep } from '@/lib/trialObservation';
 import { useCardName } from '@/i18n/useCardName';
@@ -21,8 +23,8 @@ import type { TrophySnapshot } from '@/lib/battleTrophies';
 import { coachingReading, readingText, type ReadingText } from '../../../supabase/functions/_shared/coaching-reading';
 import { coachingSwap } from '../../../supabase/functions/_shared/coaching-advice';
 
-interface MatchResult { outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
-export interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{decision?:"keep"|"swap";remove_id:number|null;add_id:number|null;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
+interface MatchResult { key?:string; battle_time?:string; outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
+export interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{decision?:"keep"|"swap";remove_id:number|null;add_id:number|null;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; matched_battle_key?:string|null; practice_seen_at?:string|null; practice_repeat?:{status:'pending'|'completed'|'deck_changed';accepted_at:string;session?:string|null;returned_at?:string;tip:string;language:string;first:MatchResult & {key:string};second?:MatchResult}|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
 interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  userId:string;playerTag:string;onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
@@ -50,15 +52,16 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const [busy,setBusy]=useState<string|null>(null);const [question,setQuestion]=useState('');const [error,setError]=useState('');const shown=useRef<string|null>(null);
  const [confirmation,setConfirmation]=useState<DeckConfirmation|null>(null);
  const [detailsOpen,setDetailsOpen]=useState(false);
- const invoke=async(action:string,confirmedDeckIds?:number[],requestLanguage=i18n.resolvedLanguage ?? 'en')=>{
+ const invoke=async(action:string,confirmedDeckIds?:number[],requestLanguage=i18n.resolvedLanguage ?? 'en',practiceRequest?:PracticeRequest)=>{
    const {data:{session}}=await supabase.auth.getSession();
    if(!session) throw new Error('auth.signInRequired');
-   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,confirmedDeckIds,language:requestLanguage,...(action==='follow-up'?{question}: {})})});
+   const response=await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/first-session-coaching`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`,apikey:import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({playerTag,action,...practiceRequest,confirmedDeckIds,language:requestLanguage,...(action==='follow-up'?{question}: {})})});
    const reader=response.body?.getReader(); if(!reader)throw new Error('coaching.error');
-   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;trophy_snapshot?:TrophySnapshot;deck_confirmation?:DeckConfirmation;translation?:Partial<ReadingText>;error?:string;deck_unavailable?:boolean}}|undefined;
+   const decoder=new TextDecoder();let buffer='';let final:{status:number;data:{task:Task|null;can_repeat?:boolean;repeat_checked?:boolean;trophy_snapshot?:TrophySnapshot;deck_confirmation?:DeckConfirmation;translation?:Partial<ReadingText>;error?:string;deck_unavailable?:boolean}}|undefined;
    while(true){const chunk=await reader.read();buffer+=decoder.decode(chunk.value,{stream:!chunk.done});const lines=buffer.split('\n');buffer=lines.pop()||'';for(const line of lines){if(line.trim()){const item=JSON.parse(line);if(item.status)final=item;}}if(chunk.done)break;}
    if(!final)throw new Error('coaching.error');
    if (final.status >= 400) {
+     if (final.data.error === 'battle_feed_unavailable') throw new Error('practiceRepeat.feedError');
      if (final.data.deck_unavailable) throw new Error('coaching.unavailable');
      if (final.status === 401) throw new Error('auth.signInRequired');
      if (final.data.error === 'Subscription required') throw new Error('subscription.requiredForAI');
@@ -68,21 +71,24 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    return final.data;
  };
  const query=useQuery({queryKey:key,queryFn:()=>invoke('get'),retry:false,refetchOnWindowFocus:true});const task=query.data?.task;
- const run=async(action:string,confirmedDeckIds?:number[])=>{
+ const [checkedRepeat,setCheckedRepeat]=useState('');
+ const run=async(action:string,confirmedDeckIds?:number[],practiceRequest?:PracticeRequest)=>{
    if(busy)return;
    const measurement = action === 'start' ? beginJourney('manual') : null;
    if (isTrialActive && action === 'start' && !confirmedDeckIds) observeTrialStep('recommendation_requested');
    setBusy(action);
+   setCheckedRepeat('');
    setError('');
    try{
-     const data=await invoke(action,confirmedDeckIds);
+     const data=await invoke(action,confirmedDeckIds,undefined,practiceRequest);
      if (measurement) {
        if (data.deck_confirmation) measurement.complete('needs_input');
        else if (data.task?.recommendation) measurement.ready();
        else measurement.complete('failed');
      }
      setConfirmation(data.deck_confirmation??null);
-     qc.setQueryData(key,data);
+     qc.setQueryData(key,{...data,can_repeat:data.can_repeat??query.data?.can_repeat});
+     if(action==='repeat-check' && data.repeat_checked && data.task?.practice_repeat?.status==='pending') setCheckedRepeat(data.task.id);
      if(action==='check' && data.task?.battle_result) {
        try { await onMatchResult(data.trophy_snapshot ?? undefined); }
        catch { setError('coaching.profileRefreshError'); }
@@ -90,10 +96,10 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    }catch(e){
      measurement?.complete('failed');
      setConfirmation(null);
-     setError(e instanceof Error && ['coaching.unavailable', 'auth.signInRequired', 'subscription.requiredForAI', 'subscription.aiNotEnabledForAccount'].includes(e.message) ? e.message : 'coaching.error');
+     setError(e instanceof Error && ['practiceRepeat.feedError','coaching.unavailable', 'auth.signInRequired', 'subscription.requiredForAI', 'subscription.aiNotEnabledForAccount'].includes(e.message) ? e.message : 'coaching.error');
    }finally{setBusy(null);}
  };
- useEffect(()=>{const revision=task?`${task.id}:${task.recommendation?.add_id}`:null;if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==revision){shown.current=revision;invoke('shown').then(data=>qc.setQueryData(key,data)).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,task?.recommendation?.add_id,hasAccess]);
+ useEffect(()=>{const revision=task?`${task.id}:${task.recommendation?.add_id}`:null;if(task?.recommendation&&!task.shown_at&&hasAccess&&shown.current!==revision){shown.current=revision;invoke('shown').then(data=>qc.setQueryData(key,{...data,can_repeat:query.data?.can_repeat})).catch(()=>{shown.current=null;});}},[task?.id,task?.shown_at,task?.recommendation?.add_id,hasAccess]);
  const time=(value:string|null|undefined)=>value?new Date(value).toLocaleString(i18n.language):t('coaching.never');
  const card=(c:ClashRoyaleCard,label?:string)=><div key={c.id} className="min-w-0 text-center">{label&&<p className="mb-2 text-xs font-semibold text-muted-foreground">{label}</p>}<img src={c.iconUrls?.medium} alt="" decoding="async" className="mx-auto aspect-[3/4] w-full max-w-20 object-contain" loading="lazy"/><p className="mt-1 break-words text-xs font-semibold leading-tight">{cardLabel(c.name)}</p>{label&&<p className="mt-1 text-xs text-muted-foreground">{t('coaching.level',{level:getDisplayLevel(c)})}</p>}</div>;
  const swap = task?.recommendation && coachingSwap(task.source_deck, task.recommended_deck, task.recommendation.remove_id);
@@ -166,7 +172,11 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground">{text?.question && <><span className="font-semibold">{t('coaching.you')}: </span>{text.question}</>}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p lang={language} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t(task.recommendation.decision==='keep'?'correctness.practiceQuestion':'coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t(task.recommendation.decision==='keep'?'correctness.askPractice':'coaching.ask')}</Button></form>}</div>
   </div>
  </div>;
- const summary=done&&removed&&added&&<div className="mt-4 flex flex-wrap items-center gap-3 text-sm"><img src={removed.iconUrls?.medium} alt={cardLabel(removed.name)} className="h-10 w-auto"/><ArrowRight className="h-4 w-4 text-primary"/><img src={added.iconUrls?.medium} alt={cardLabel(added.name)} className="h-10 w-auto"/><span className="font-rajdhani text-2xl font-bold">{result!.score.join(' – ')}</span><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result!.outcome}`)}</span></div>;
+ const goal=task && practiceGoal(task);
+ const canRepeat=hasAccess && !!query.data?.can_repeat;
+ const hasRepeatCard=!!task?.practice_repeat || !!(canRepeat && goal);
+ const showCurrentScore=done && (!hasRepeatCard || (task?.practice_repeat && task.practice_repeat.first.key!==task.matched_battle_key));
+ const summary=done&&((removed&&added)||showCurrentScore)&&<div className="mt-4 flex flex-wrap items-center gap-3 text-sm">{removed&&added&&<><img src={removed.iconUrls?.medium} alt={cardLabel(removed.name)} className="h-10 w-auto"/><ArrowRight className="h-4 w-4 text-primary"/><img src={added.iconUrls?.medium} alt={cardLabel(added.name)} className="h-10 w-auto"/></>}{showCurrentScore&&<><span className="font-rajdhani text-2xl font-bold">{result!.score.join(' – ')}</span><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result!.outcome}`)}</span></>}</div>;
  return <Card ref={cardRoot} aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
   {header}
   {needsTranslation && !localized.data && <div role="status" className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
@@ -189,7 +199,11 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
      </div>
    </details>}
    {!done&&stepper}
-   {done&&<p className="mt-3 text-sm text-muted-foreground">{t("correctness.singleResult")}</p>}
+   {hasRepeatCard&&<PracticeRepeat task={task} account={userId} tag={playerTag} allowed={canRepeat} goal={goal}
+      busy={!!busy} localizedTip={practice} action={(name,request)=>void run(name,undefined,request)}
+      view={request=>invoke('repeat-view',undefined,undefined,request)}/>}
+   {checkedRepeat===task.id && task.practice_repeat?.status==='pending' && <p role="status">{t('practiceRepeat.noMatch')}</p>}
+   {done&&!task.practice_repeat?.second&&<p className="mt-3 text-sm text-muted-foreground">{t("correctness.singleResult")}</p>}
    {done?<>{!open&&summary}{open&&body}<Button variant="ghost" size="sm" className="mt-3 -ml-2 h-8 px-2 text-xs" onClick={()=>setOpen(!open)}><ChevronDown className={`h-4 w-4 transition-transform ${open?'rotate-180':''}`}/>{open?t('coaching.hideDetails'):t('coaching.showDetails')}</Button></>:body}
   </>:hasAccess&&confirmation?<div className="mt-4 space-y-3" aria-live="polite">
     <p className="text-sm">{t(confirmation.from_battle?'coaching.partialDeck':'coaching.changedDeck')}</p>

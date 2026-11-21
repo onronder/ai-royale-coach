@@ -1,3 +1,4 @@
+import {PracticeRepeatReport} from '../../../src/components/admin/PracticeRepeatReport';
 import {MatchDetailView} from '../../../src/components/matches/MatchDetailView';
 import {MatchDiscussionProvider} from '../../../src/contexts/MatchDiscussionContext';
 import {CoachChatPanel} from '../../../src/components/coach/CoachChatPanel';
@@ -39,6 +40,7 @@ function Screen(){
   {scene==='builder'&&<DeckBuilder key={`${p.get('account')}:${p.get('deck')}`} userId={p.get('account')||user} playerTag={tag} currentDeck={cards} availableCards={cards} importedNames={p.get('deck')}/>}
   {scene==='recommendations'&&<><button onClick={()=>setSnapshot('collection-b')}>Change fixture collection</button><RecommendedDecksPanel snapshotKey={snapshot} playerTag={tag} trophies={6000} onImportDeck={names=>navigate('/tests/integration/correctness/ui.html?scene=builder&'+deckBuilderUrl(tag,names).split('?')[1])}/></>}
   {(scene==='coaching'||scene==='completed')&&<FirstSessionTask userId={user} playerTag={tag} onMatchResult={async()=>{}}/>}
+  {scene==='practice-report'&&<PracticeRepeatReport days={30}/>}
   {scene==='predictions'&&<PredictionAccuracyDashboard playerTag={tag}/> }
   {scene==='rankings'&&<><button onClick={()=>{setRank('loading');clashRoyaleApi.getGlobalTopLadder().then(rows=>setRank(rows.length?'rows':'empty')).catch(()=>setRank('error'))}}>Load ranking fixture</button><p role="status">{rank}</p></>}
  </main>;

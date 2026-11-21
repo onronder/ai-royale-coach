@@ -1,4 +1,21 @@
 {
+  "practiceRepeat": {
+    "title": "Aynı desteyle çalışma",
+    "first": "İlk maç",
+    "second": "İkinci maç",
+    "accept": "Aynı 8 kartla bir maç daha çalış",
+    "pending": "Aynı sekiz kartla oyna, sonra sonucu kontrol et.",
+    "changed": "Deste değişti. Bu tekrar kapandı.",
+    "feedError": "Son maçlarını güncelleyemedik. Tekrar dene.",
+    "noMatch": "Erişilebilen son maçlar arasında henüz uygun bir maç bulunamadı.",
+    "compare": "Bunlar iki maçın kaydedilen skorlarıdır. Taktiğin etkisini ölçmez.",
+    "accepted": "Kabul eden / teklifi gören",
+    "returned": "Sonraki oturumda dönen / kabul eden",
+    "matched": "İkinci sonucu eşleşen / kabul eden",
+    "mature": "Son iki oran, kabulün üzerinden yedi tam gün geçen oyuncuları kapsar.",
+    "trial": "Deneme",
+    "paid": "Ücretli"
+  },
   "conversion": {
     "scope": "{{trials}} deneme · {{accounts}} ayrı hesap. İşaretli test hesapları hariç.",
     "unclassified": "Deneme başlangıcı doğrulanamayan {{count}} abonelik bu ölçüme dahil edilmedi.",

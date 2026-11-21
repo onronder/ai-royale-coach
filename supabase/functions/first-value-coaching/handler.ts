@@ -55,8 +55,8 @@ export async function handleFirstValue(req: Request, d: FreeDependencies): Promi
         (task.last_checked_at && Date.now() - Date.parse(task.last_checked_at) < 30000)
       )
         return response(state)
-      const battles = await d.game(task.player_tag, 'battles')
-      if (!Array.isArray(battles)) return response({ error: 'game_unavailable' }, 503)
+      const battles = await d.game(task.player_tag, 'battles').catch(() => null)
+      if (!Array.isArray(battles)) return response({ error: 'battle_feed_unavailable' }, 503)
       const match = firstTaskBattle(task.player_tag, task.shown_at, task.recommended_deck, battles)
       return response(
         await rpc('record_first_value_match', { p_shown: task.shown_at, p_match: match }),

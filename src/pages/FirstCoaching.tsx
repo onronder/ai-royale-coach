@@ -174,9 +174,10 @@ export default function FirstCoaching() {
       if (Date.now() - returnCheck.current < 30000) return
       returnCheck.current = Date.now()
       setBusy('check')
+      setError('')
       void firstValueAction('check', lang)
         .then((result) => qc.setQueryData(['first-value', userId], result))
-        .catch(() => setError('service_unavailable'))
+        .catch(e => setError(e instanceof FirstValueError ? e.code : 'service_unavailable'))
         .finally(() => setBusy(null))
     }
     document.addEventListener('visibilitychange', onReturn)
@@ -414,7 +415,7 @@ export default function FirstCoaching() {
                 >
                   {t('firstValue.checkMatch')}
                 </Button>
-                {task.last_checked_at && <p role="status">{t('firstValue.noMatch')}</p>}
+                {task.last_checked_at && !error && <p role="status">{t('firstValue.noMatch')}</p>}
               </>
             )}
           </CardContent>
@@ -428,7 +429,7 @@ export default function FirstCoaching() {
       )}
       {error && (
         <div className="rounded-lg border border-destructive/40 p-4" role="alert">
-          {t(`firstValue.errors.${error}`, {
+          {t(error==='battle_feed_unavailable'?'practiceRepeat.feedError':`firstValue.errors.${error}`, {
             defaultValue: t('firstValue.errors.service_unavailable'),
           })}
         </div>

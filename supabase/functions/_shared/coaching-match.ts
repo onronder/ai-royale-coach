@@ -1,3 +1,4 @@
+import { observeBattles } from './battle-observation.ts';
 export type Battle = { battleTime: string; type?: string; gameMode?: { name?: string }; team: { tag: string; crowns: number; trophyChange?: number; startingTrophies?: number; cards: { id: number; name?: string; iconUrls?: { medium: string } }[] }[]; opponent: { tag: string; crowns: number; cards: { id: number; name?: string; iconUrls?: { medium: string } }[] }[] };
 export const normalizeTag = (tag: string) => tag.replace(/^#/, '').toUpperCase();
 export function battleTimestamp(value: string): number {
@@ -8,25 +9,20 @@ export function deckKey(cards: {id: number}[]): string { return cards.map(c => c
 export function firstTaskBattle(tag: string, shownAt: string, deck: {id: number}[], battles: Battle[]) {
   const cutoff = Date.parse(shownAt);
   if (!Number.isFinite(cutoff) || deck.length !== 8) return null;
-  const seen = new Set<string>();
-  const ordered = [...battles].sort((a,b) => battleTimestamp(a.battleTime)-battleTimestamp(b.battleTime));
-  for (const battle of ordered) {
-    const own = battle.team.find(p => normalizeTag(p.tag) === normalizeTag(tag));
-    if (!own || battle.team.length !== 1 || battle.opponent.length !== 1 || !(battleTimestamp(battle.battleTime) > cutoff) || deckKey(own.cards) !== deckKey(deck)) continue;
-    const key = `${normalizeTag(tag)}:${battle.battleTime}:${battle.opponent.map(p => normalizeTag(p.tag)).sort().join(',')}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const opponent = battle.opponent[0];
-    return { key, battle_time: new Date(battleTimestamp(battle.battleTime)).toISOString(), score: [own.crowns, opponent.crowns], outcome: own.crowns > opponent.crowns ? 'win' : own.crowns < opponent.crowns ? 'loss' : 'draw', trophy_change: own.trophyChange ?? null, opponent_deck: opponent.cards };
-  }
-  return null;
+  const target = deckKey(deck);
+  const candidates = observeBattles(battles, tag).battles.filter(b =>
+    b.format === '1v1' && Date.parse(b.time) > cutoff && deckKey(b.player.cards) === target);
+  const match = candidates.sort((a,b) => a.time.localeCompare(b.time) || a.key.localeCompare(b.key))[0];
+  if (!match) return null;
+  return { key: match.key, battle_time: match.time, score: [match.player.crowns, match.opponents[0].crowns],
+    outcome: match.outcome, trophy_change: match.trophyChange, opponent_deck: match.opponents[0].cards };
 }
 
 // A task can match an older battle. Only the most recent ladder battle can
 // corroborate a current trophy count; event and ranked modes use other scales.
 export function latestLadderTrophies(tag: string, battles: Battle[]) {
-  const latest = battles.filter(battle => battle.type === 'PvP' && battle.gameMode?.name === 'Ladder' &&
-    Number.isFinite(battleTimestamp(battle.battleTime)) && battle.team.length === 1 && battle.opponent.length === 1 &&
+  const latest = battles.filter(battle => battle?.type === 'PvP' && battle.gameMode?.name === 'Ladder' &&
+    Number.isFinite(battleTimestamp(battle.battleTime)) && battle.team?.length === 1 && battle.opponent?.length === 1 && typeof battle.team[0]?.tag === 'string' &&
     normalizeTag(battle.team[0].tag) === normalizeTag(tag))
     .sort((a, b) => battleTimestamp(b.battleTime) - battleTimestamp(a.battleTime))[0];
   if (!latest) return null;
