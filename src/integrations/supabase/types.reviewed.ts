@@ -328,7 +328,7 @@ export type Database = {
       }
       card_collection: {
         Row: {
-          card_count: number
+          card_count: number | null
           card_id: number
           card_level: number
           card_name: string
@@ -344,7 +344,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          card_count?: number
+          card_count?: number | null
           card_id: number
           card_level: number
           card_name: string
@@ -360,7 +360,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          card_count?: number
+          card_count?: number | null
           card_id?: number
           card_level?: number
           card_name?: string

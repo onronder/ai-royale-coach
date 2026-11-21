@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
 import postgres from 'postgres';
 import { handleCardSync, type SyncDependencies } from '../../../supabase/functions/sync-card-collection/handler';
 const socket = process.env.CARD_SYNC_PG, port = process.env.CARD_SYNC_PG_PORT || '55449';
@@ -63,8 +63,88 @@ try {
   await sql`insert into polar_orders(order_id,user_id,status,amount,currency,created_at) values('fixture-paid',${fixturePaid},'paid',499,'usd',now())`;
   const preservationTables=['auth.users','public.profiles','public.user_subscriptions','public.polar_orders','public.marketing_settings','public.first_value_settings'];
   const snapshot=async()=>Promise.all(preservationTables.map(table=>sql.unsafe("select coalesce(jsonb_agg(to_jsonb(t) order by to_jsonb(t)::text),'[]') rows from "+table+' t').then(rows=>rows[0].rows)));
+  const owner = '11111111-2222-4333-8444-555555555555';
+  await sql`insert into auth.users(id) values(${owner})`;
   const before=await snapshot();
-  for (const f of migrations.filter(f=>f>='0045')) await sql.unsafe(await read('../../../drizzle/migrations/'+f));
+  for (const f of migrations.filter(f=>f>='0045' && f<'0049')) await sql.unsafe(await read('../../../drizzle/migrations/'+f));
+  // Use the production read policy and timestamp trigger for the migration and browser fixtures.
+  const collectionDDL = await read('../../../supabase/migrations/20251126154619_075b40c6-b9a4-48d5-ba4c-89a0846451a2.sql');
+  const commonDDL = await read('../../../supabase/migrations/20251118105315_06cf775d-5db4-4698-9b03-1749a6b687f4.sql');
+  await sql.unsafe(commonDDL.slice(commonDDL.indexOf('CREATE OR REPLACE FUNCTION public.handle_updated_at()'), commonDDL.indexOf('-- Create trigger for profiles updated_at')));
+  await sql.unsafe(collectionDDL.slice(collectionDDL.indexOf('CREATE TRIGGER update_card_collection_updated_at')));
+  await sql`alter table card_collection enable row level security`;
+  await sql.unsafe(collectionDDL.slice(collectionDDL.indexOf('-- Card collection policies'), collectionDDL.indexOf('-- Indexes for performance')));
+  await sql`grant select on card_collection to authenticated`;
+  const tag = 'UY02YVY9G';
+  const icon = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
+  const old = { ...player(tag), cards: Array.from({length:51}, (_,i) => ({
+    id:26000000+i, name:'Fixture '+String(i).padStart(2,'0'), ...(i===0 ? {} : { count:80 }),
+    level:i===1 ? 0 : i===2 ? 12 : i===6 ? 11 : 7, maxLevel:i===1 ? 0 : i===6 ? 10 : i===50 ? 16 : 11,
+    rarity:i===50 ? 'common' : 'epic', iconUrls:{medium:icon},
+  })) };
+  const legacyRun = await claim(owner);
+  assert.equal((await finish(owner,legacyRun.run_id,old)).success,true);
+  const readCollection = () => sql.begin(async tx => {
+    await tx`select set_config('test.uid',${owner},true)`;
+    await tx`set local role authenticated`;
+    const rows = await tx`select to_jsonb(c) as card from card_collection c
+      where user_id=${owner} and player_tag in (${tag},${'#'+tag}) order by card_id`;
+    return rows.map(row => row.card);
+  });
+  const legacyRows = await readCollection();
+  assert.equal(legacyRows.length,51);
+  assert.equal(legacyRows[0].card_count,0);
+  for (const f of migrations.filter(f=>f>='0049')) await sql.unsafe(await read('../../../drizzle/migrations/'+f));
+  const migratedRows=await readCollection();
+  await test('legacy ambiguous zero becomes unknown without changing observation times or positive stock', async () => {
+    assert.equal(migratedRows[0].card_count,null);
+    assert.deepEqual(migratedRows.map(r=>r.updated_at),legacyRows.map(r=>r.updated_at));
+    assert.deepEqual(migratedRows.slice(1),legacyRows.slice(1));
+  });
+  // Slots 1 and 2 are untouched legacy levels. Refresh slot 0 with its count still omitted.
+  const fresh = old.cards.slice(3).map(({count,...c},i) => ({
+    ...c, ...(i===0 ? {} : {count:i===1 ? null : i===2 ? 0 : count}), maxLevel:i===3 ? 11 : c.maxLevel,
+  }));
+  const firstResult = await request(owner,true,{player:async()=>({...old,cards:[old.cards[0],...fresh]})});
+  const first = await readCollection();
+  await test('missing/null, explicit zero, and a real maximum survive SQL write and authenticated read', async () => {
+    assert.equal(firstResult.data.success,true);
+    assert.deepEqual(first.slice(3,8).map(r=>r.card_count),[null,null,0,80,80]);
+    assert.equal(first[6].card_level,11);
+  });
+  const secondResult = await request(owner,true,{player:async()=>({...old,cards:[
+    {...old.cards[0],count:23},{...old.cards[3],count:0},
+  ]})});
+  const second = await readCollection();
+  await test('consecutive refreshes preserve the row through unknown to zero and legacy zero to positive', async () => {
+    assert.equal(secondResult.data.success,true);
+    const counts = (index: number) => [legacyRows,migratedRows,first,second].map(rows => {
+      const row = rows.find(row => row.id === legacyRows[index].id);
+      assert.equal(row?.card_id, old.cards[index].id);
+      return row.card_count;
+    });
+    assert.deepEqual(counts(0),[0,null,null,23]);
+    assert.deepEqual(counts(3),[80,80,null,0]);
+    if (process.env.CARD_SYNC_ROWS_FILE) await writeFile(process.env.CARD_SYNC_ROWS_FILE,
+      JSON.stringify({legacy:legacyRows, before:migratedRows, after:first, second}));
+  });
+  await test('invalid levels preserve the full collection and last successful sync, including older writers', async () => {
+    const lastSuccess=()=>sql`select last_successful_at::text as stamp from operation_progress where user_id=${owner}`;
+    const stamp=await lastSuccess();
+    for(const [level,maxLevel] of [[0,0],[12,11]]) {
+      const invalid={...old,cards:[{...fresh[0],count:42},{...fresh[3],level,maxLevel}]};
+      const response=await request(owner,true,{player:async()=>invalid});
+      assert.equal(response.data.status,'failed');
+      assert.equal(response.data.error_code,'invalid_player');
+      assert.deepEqual(await readCollection(),second);
+      assert.deepEqual(await lastSuccess(),stamp);
+      const run=await claim(owner,true);
+      await assert.rejects(finish(owner,run.run_id,invalid));
+      await rpc('fail_card_collection_sync',{p_user:owner,p_run:run.run_id,p_code:'invalid_player'});
+      assert.deepEqual(await readCollection(),second);
+      assert.deepEqual(await lastSuccess(),stamp);
+    }
+  });
   await test('migration preserves all seeded accounts, payments, rights and campaign/free settings',async()=>{assert.deepEqual(await snapshot(),before)});
   await test('authentication and bad input never contact the game', async () => {
     const id=await user(), before=calls;

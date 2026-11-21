@@ -37,6 +37,7 @@ jobs:
           "$pg_bin/pg_ctl" -D "$socket/db" -l "$socket/server.log" -o "-k $socket -p 55486 -c listen_addresses=''" start
           trap '"$pg_bin/pg_ctl" -D "$socket/db" stop' EXIT
           FIRST_VALUE_PG="$socket" FIRST_VALUE_PG_PORT=55486 bun tests/integration/firstValue/run.ts
+          CARD_SYNC_PG="$socket" CARD_SYNC_PG_PORT=55486 CARD_SYNC_ROWS_FILE="$RUNNER_TEMP/collection-rows.json" bun tests/integration/cardSync/run.ts
       - run: npx tsc -b
       - run: npm run build -- --manifest
       - run: node scripts/check-bundle.mjs
@@ -63,3 +64,4 @@ jobs:
           node tests/integration/playerAnalysis/browser.mjs
           node tests/integration/featFixes/browser.mjs
           node tests/integration/practiceRepeat/browser.mjs
+          CARD_SYNC_ROWS_FILE="$RUNNER_TEMP/collection-rows.json" node tests/integration/cardSync/observations-browser.mjs

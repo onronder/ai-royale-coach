@@ -2226,6 +2226,8 @@
     "legendary": "Leg",
     "champion": "Champ",
     "toLevel": "to level",
+    "unknownLevel": "Card level unknown",
+    "unknownCopies": "Owned copies unknown",
     "cardsUntilLevel": "{{count}} more for level {{level}}",
     "max": "MAX",
     "noCardsFound": "No cards found for this rarity"
