@@ -130,6 +130,13 @@ export async function verifyPractice(sql: postgres.Sql, user: string, admin: str
     [3, 3, 3, 1, 1],
   );
   assert.deepEqual([paid.viewers, paid.acceptors, paid.mature].map(Number), [1, 0, 0]);
+  // An on-time match on another accepted tag counts for this person within their original window.
+  await sql`insert into coaching_tasks(user_id,player_tag,practice_seen_at,practice_seen_tier,practice_repeat)
+    select user_id,'P0P0',now()-interval '8 days','trial',jsonb_build_object(
+      'accepted_at',now()-interval '7 days','matched_at',now()-interval '6 days')
+    from coaching_tasks where id=${third}`;
+  const multiTag=(await report(admin))[1];
+  assert.deepEqual([multiTag.viewers,multiTag.acceptors,multiTag.mature,multiTag.matched].map(Number),[3,3,3,2]);
   console.log(
     'PASS practice: promoted task ID, concurrent acceptance, frozen snapshot, both writer orders, same-session match, mature cohorts, owner and admin isolation',
   );

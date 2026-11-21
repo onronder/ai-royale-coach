@@ -12,7 +12,7 @@ The original follow-up still owns alternative-card selection. A different set of
 
 ## Pilot measurement
 
-Admin → Trials uses its selected first-exposure window (7/30/90 days). Each tier counts distinct accounts. Tier is fixed at the first offer on each task. A user with several tasks in a tier counts once, with outcomes taken from their first accepted task in that tier. An account exposed in both tiers may appear in each; the rows should not be summed as unique people. Administrator exposures are excluded.
+Admin → Trials uses its selected first-exposure window (7/30/90 days). Each tier counts distinct accounts. Tier is fixed at the first offer on each task. A user with several tasks in a tier counts once, with a single 168-hour window anchored to their first acceptance. A return or a second score on any of their accepted tasks in that tier counts once within that window. An account exposed in both tiers may appear in each; the rows should not be summed as unique people. Administrator exposures are excluded.
 
 - Acceptance: accepted accounts / accounts shown the offer. At least half of the button must enter the visible viewport. A successful acceptance also proves exposure if the display event was interrupted.
 - Seven-day return: accepted accounts observed on the same task in a later app visit / accepted accounts with a full 168 hours of observation.

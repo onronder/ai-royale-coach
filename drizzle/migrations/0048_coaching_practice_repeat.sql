@@ -91,20 +91,16 @@ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = '' AS $$
 BEGIN
   IF NOT coalesce(public.is_admin(auth.uid()),false) THEN RAISE EXCEPTION 'Unauthorized' USING ERRCODE='42501'; END IF;
   RETURN QUERY
-  WITH exposures AS (
-    SELECT t.user_id, t.practice_seen_tier grp, min(t.practice_seen_at) first_seen
-    FROM public.coaching_tasks t WHERE t.practice_seen_tier IN ('trial','paid')
+  WITH accounts AS (
+    SELECT t.user_id,t.practice_seen_tier grp,min(t.practice_seen_at) first_seen,
+      min((t.practice_repeat->>'accepted_at')::timestamptz) accepted,
+      min((t.practice_repeat->>'returned_at')::timestamptz) revisit,
+      min((t.practice_repeat->>'matched_at')::timestamptz) matched_at
+    FROM public.coaching_tasks t WHERE t.practice_seen_at IS NOT NULL AND t.practice_seen_tier IN ('trial','paid')
     GROUP BY t.user_id,t.practice_seen_tier
-  ), accepts AS (
-    SELECT DISTINCT ON (t.user_id,t.practice_seen_tier) t.user_id,t.practice_seen_tier grp,
-      (t.practice_repeat->>'accepted_at')::timestamptz accepted,
-      (t.practice_repeat->>'returned_at')::timestamptz revisit,(t.practice_repeat->>'matched_at')::timestamptz matched_at
-    FROM public.coaching_tasks t WHERE t.practice_repeat IS NOT NULL
-    ORDER BY t.user_id,t.practice_seen_tier,(t.practice_repeat->>'accepted_at')::timestamptz,t.id
   ), people AS (
-    SELECT e.grp,a.accepted,a.accepted + interval '168 hours' deadline,a.revisit,a.matched_at
-    FROM exposures e LEFT JOIN accepts a USING (user_id,grp)
-    WHERE e.first_seen >= now() - make_interval(hours=>24*greatest(1,least(90,p_days)))
+    SELECT a.*,a.accepted+interval '168 hours' deadline FROM accounts a
+    WHERE a.first_seen >= now() - make_interval(hours=>24*greatest(1,least(90,p_days)))
   )
   SELECT g.name,count(p.grp),count(p.accepted),count(*) FILTER(WHERE p.deadline<=now()),
     count(*) FILTER(WHERE p.deadline<=now() AND p.revisit BETWEEN p.accepted AND p.deadline),
