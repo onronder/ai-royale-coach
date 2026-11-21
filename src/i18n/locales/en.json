@@ -1423,6 +1423,7 @@
     "rateLimitExceeded": "Rate limit exceeded. Please wait a moment.",
     "creditsExhausted": "AI credits exhausted. Please add credits.",
     "failedToGetResponse": "Failed to get response from coach",
+    "failedToSaveResponse": "The reply could not be saved. It will not appear in your chat history. No new reply was requested.",
     "failedToSend": "Failed to send message",
     "failedToSendMatchContext": "Failed to send match context",
     "signInRequired": "Please sign in to use AI Coach",

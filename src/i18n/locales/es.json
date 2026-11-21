@@ -1423,6 +1423,7 @@
     "rateLimitExceeded": "Límite de velocidad excedido. Espera un momento.",
     "creditsExhausted": "Créditos de IA agotados. Por favor agrega créditos.",
     "failedToGetResponse": "Error al obtener respuesta del coach",
+    "failedToSaveResponse": "No se pudo guardar la respuesta. No aparecerá en tu historial de chat. No se solicitó una nueva respuesta.",
     "failedToSend": "Error al enviar mensaje",
     "failedToSendMatchContext": "Error al enviar contexto del partido",
     "signInRequired": "Inicia sesión para usar el Coach IA",

@@ -1423,6 +1423,7 @@
     "rateLimitExceeded": "Limite de taux dépassée. Veuillez patienter.",
     "creditsExhausted": "Crédits IA épuisés. Veuillez ajouter des crédits.",
     "failedToGetResponse": "Échec de la réponse du coach",
+    "failedToSaveResponse": "La réponse n’a pas pu être enregistrée. Elle n’apparaîtra pas dans votre historique. Aucune nouvelle réponse n’a été demandée.",
     "failedToSend": "Échec de l'envoi du message",
     "failedToSendMatchContext": "Échec de l'envoi du contexte du match",
     "signInRequired": "Connectez-vous pour utiliser le Coach IA",

@@ -52,3 +52,4 @@ jobs:
           node tests/integration/realtime/browser.mjs
           FIXTURE_URL=http://127.0.0.1:5193 node tests/integration/correctness/chat-browser.mjs
           node tests/integration/playerAnalysis/browser.mjs
+          node tests/integration/featFixes/browser.mjs
