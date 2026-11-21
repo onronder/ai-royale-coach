@@ -3,6 +3,7 @@
     "title": "Práctica con el mismo mazo",
     "first": "Primera partida",
     "second": "Segunda partida",
+    "unavailable": "El resultado de tu primera partida está guardado. Por ahora no puedes añadir una segunda partida a esta tarea.",
     "accept": "Practicar otra partida con las mismas 8 cartas",
     "pending": "Juega con las mismas ocho cartas y comprueba el resultado.",
     "changed": "El mazo cambió. La repetición se cerró.",

@@ -3,6 +3,7 @@
     "title": "Treino com o mesmo deck",
     "first": "Primeira partida",
     "second": "Segunda partida",
+    "unavailable": "O resultado da sua primeira partida está salvo. No momento, não é possível adicionar uma segunda partida a este treino.",
     "accept": "Treinar mais uma partida com as mesmas 8 cartas",
     "pending": "Jogue com as mesmas oito cartas e confira o resultado.",
     "changed": "O deck mudou. Este treino foi encerrado.",

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { coachingTranslations } from '../../../src/i18n/coaching.ts';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const base = process.env.FIXTURE_URL || 'http://127.0.0.1:5193';
 assert.equal(new URL(base).hostname, '127.0.0.1');
@@ -140,6 +141,10 @@ try {
       });
       const section = page.getByRole('region', { name: copy.title }),
         button = section.getByRole('button', { name: copy.accept });
+      const coaching = coachingTranslations[language];
+      const showDetails = page.getByRole('button', { name: coaching.showDetails, exact: true });
+      const nextAdvice = page.getByText(coaching.nextLoss, { exact: false });
+      const unavailable = page.getByText(copy.unavailable, { exact: true });
       for (const decision of ['keep', 'swap']) {
         calls.length = 0;
         allowed = true;
@@ -170,13 +175,14 @@ try {
         await section.getByText('Save your spell.').waitFor();
         assert.equal(calls.some((c) => c.action === 'repeat-accept'), false);
         // The existing follow-up is still available in task details.
-        const details = page.getByRole('button').filter({ has: page.locator('svg.lucide-chevron-down') })
-          .last();
-        await details.click();
+        await showDetails.click();
+        await nextAdvice.waitFor();
+        assert.equal(await unavailable.count(), 0);
         await page.locator('#task-question').waitFor();
         assert.equal(await page.locator('#task-question').isEnabled(), true);
         await button.click();
         await section.getByText(copy.pending).waitFor();
+        assert.equal(await nextAdvice.count(), 0);
         const accepted = calls.find((c) => c.action === 'repeat-accept');
         assert.equal(accepted.taskId, id);
         assert.match(accepted.visitId, /^[0-9a-f-]{36}$/);
@@ -235,16 +241,31 @@ try {
       delete task.practice_seen_at;
       task.matched_battle_key = legacy;
       task.battle_result = { ...first, key: legacy };
-      calls.length = 0;
-      await page.reload();
-      await page.getByText('1 – 2', { exact: true }).waitFor();
-      assert.equal(await section.count(), 0);
-      assert.equal(calls.some(c => c.action.startsWith('repeat-')), false);
-      task.reverified_legacy_key = legacy;
+      task.previous_match = { battle_result: { ...first, score: [3, 1], outcome: 'win' }, recommended_deck: task.source_deck };
+      for (const issue of ['unverified-match', 'missing-tip']) {
+        if (issue === 'missing-tip') {
+          task.reverified_legacy_key = legacy;
+          task.recommendation.practice = '';
+        }
+        calls.length = 0;
+        await page.reload();
+        await page.getByText('1 – 2', { exact: true }).waitFor();
+        await unavailable.waitFor();
+        await page.locator('summary').filter({ hasText: '3 – 1' }).waitFor();
+        await showDetails.click();
+        await page.locator('#task-question').waitFor();
+        assert.equal(await unavailable.isVisible(), true);
+        assert.equal(await nextAdvice.count(), 0);
+        assert.equal(await section.count(), 0);
+        assert.equal(calls.some(c => c.action.startsWith('repeat-')), false);
+      }
+      task.recommendation.practice = 'Save your spell.';
       await page.reload();
       await button.waitFor();
       await section.getByText('1 – 2').waitFor();
-      await page.getByRole('button').filter({ has: page.locator('svg.lucide-chevron-down') }).last().click();
+      await showDetails.click();
+      await nextAdvice.waitFor();
+      assert.equal(await unavailable.count(), 0);
       await page.locator('#task-question').fill('Can I keep this deck?');
       await page.locator('form').filter({ has: page.locator('#task-question') }).getByRole('button').click();
       await page.getByText(/Use the saved goal\./).waitFor();

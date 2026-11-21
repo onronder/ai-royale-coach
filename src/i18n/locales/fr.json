@@ -3,6 +3,7 @@
     "title": "Entraînement avec le même deck",
     "first": "Premier match",
     "second": "Deuxième match",
+    "unavailable": "Le résultat de ton premier match est enregistré. Pour le moment, tu ne peux pas ajouter de deuxième match à cet exercice.",
     "accept": "Rejouer un match avec les 8 mêmes cartes",
     "pending": "Joue avec les huit mêmes cartes, puis vérifie le résultat.",
     "changed": "Le deck a changé. Cet entraînement est clos.",
