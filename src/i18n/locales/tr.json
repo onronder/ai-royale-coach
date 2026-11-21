@@ -2055,6 +2055,8 @@
     "legendary": "Efsan",
     "champion": "Şamp",
     "toLevel": "seviyeye",
+    "unknownLevel": "Kart seviyesi bilinmiyor",
+    "unknownCopies": "Eldeki kopya sayısı bilinmiyor",
     "cardsUntilLevel": "{{level}}. seviye için {{count}} kart eksik",
     "max": "MAKS",
     "noCardsFound": "Bu nadirlik için kart bulunamadı"

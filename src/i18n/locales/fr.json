@@ -2055,6 +2055,8 @@
     "legendary": "Lég",
     "champion": "Champ",
     "toLevel": "au niveau",
+    "unknownLevel": "Niveau de la carte inconnu",
+    "unknownCopies": "Nombre de copies en ta possession inconnu",
     "cardsUntilLevel": "Encore {{count}} pour atteindre le niveau {{level}}",
     "max": "MAX",
     "noCardsFound": "Aucune carte trouvée pour cette rareté"

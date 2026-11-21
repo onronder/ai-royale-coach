@@ -2055,6 +2055,8 @@
     "legendary": "Lend",
     "champion": "Camp",
     "toLevel": "para nível",
+    "unknownLevel": "Nível da carta desconhecido",
+    "unknownCopies": "Quantidade de cópias disponíveis desconhecida",
     "cardsUntilLevel": "Faltam {{count}} para o nível {{level}}",
     "max": "MÁX",
     "noCardsFound": "Nenhuma carta encontrada para esta raridade"

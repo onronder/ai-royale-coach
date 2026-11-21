@@ -145,7 +145,7 @@ export const CardImage = memo(function CardImage({
             )}
           </div>
           <p className="text-xs text-muted-foreground capitalize">
-            {t(`landing.demo.cards.rarities.${rarity}`, { defaultValue: rarity })} • {card.elixirCost != null && <>{t('cards.elixirCost', { cost: card.elixirCost })} • </>}{t('cards.displayLevel', { level: displayLevel })}
+            {t(`landing.demo.cards.rarities.${rarity}`, { defaultValue: rarity })} • {card.elixirCost != null && <>{t('cards.elixirCost', { cost: card.elixirCost })} • </>}{t('cards.displayLevel', { level: displayLevel ?? '—' })}
           </p>
           {isEvolved && (
             <p className="text-xs text-[hsl(45_100%_55%)] border-t border-border pt-2">
@@ -168,6 +168,7 @@ export const CardImage = memo(function CardImage({
   return (
     prevProps.card.id === nextProps.card.id &&
     prevProps.card.level === nextProps.card.level &&
+    prevProps.card.maxLevel === nextProps.card.maxLevel &&
     prevProps.card.evolutionLevel === nextProps.card.evolutionLevel &&
     prevProps.card.activeForm === nextProps.card.activeForm &&
     prevProps.size === nextProps.size &&

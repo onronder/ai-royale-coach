@@ -1,5 +1,4 @@
 import { useCardCollection } from '@/hooks/useCardCollection';
-import { nextUpgradeCopies } from '@/lib/upgradeCost';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -9,45 +8,22 @@ import { Translation, useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CardImage } from "./CardImage";
+import { CollectionCard } from "./CollectionCard";
 import { VirtualCardGrid } from "./VirtualCardGrid";
-import { Sparkles, ArrowUp, RefreshCw } from "lucide-react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateNotification } from "@/hooks/useNotifications";
 import { useOperationProgress } from "@/hooks/useOperationProgress";
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { DataLoader } from "@/components/ui/data-loader";
-import { getDisplayLevel } from "@/utils/cardLevelCalculator";
 
 const VIRTUAL_SCROLL_THRESHOLD = 50;
-
-interface CardCollectionItem {
-  id: string;
-  card_id: number;
-  card_name: string;
-  card_level: number;
-  card_count: number;
-  max_level: number;
-  rarity: string;
-  elixir_cost: number | null;
-  icon_url: string | null;
-  evolution_level: number | null;
-}
 
 interface CardCollectionTrackerProps {
   playerTag: string;
   userId: string;
 }
-
-const RARITY_COLORS = {
-  common: "bg-gray-500",
-  rare: "bg-orange-500",
-  epic: "bg-purple-500",
-  legendary: "bg-yellow-500",
-  champion: "bg-pink-500"
-};
 
 export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrackerProps) {
   const { t } = useTranslation();
@@ -115,17 +91,6 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
       void refetchCollection().then(result => result.error ? waiting.measurement.complete('failed') : waiting.measurement.ready(waiting.reuse));
     } else waiting.measurement.complete(syncProgress.status === 'cancelled' ? 'cancelled' : 'failed');
   }, [syncProgress, refetchCollection]);
-
-  const calculateProgress = (card: CardCollectionItem) => {
-    if (card.card_level >= card.max_level) {
-      return 100;
-    }
-
-    const required = nextUpgradeCopies(card);
-    return required === null ? 0 : Math.min(card.card_count / required * 100, 100);
-  };
-
-  const getNextLevelRequirement = nextUpgradeCopies;
 
   const filteredCards = selectedRarity === "all" 
     ? collection 
@@ -214,70 +179,10 @@ export function CardCollectionTracker({ playerTag, userId }: CardCollectionTrack
 
         {/* Cards Grid - Use virtual scrolling for large collections */}
         {filteredCards.length > VIRTUAL_SCROLL_THRESHOLD ? (
-          <VirtualCardGrid
-            cards={filteredCards}
-            calculateProgress={calculateProgress}
-            getNextLevelRequirement={getNextLevelRequirement}
-          />
+          <VirtualCardGrid cards={filteredCards} />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filteredCards.map((card) => {
-              const progress = calculateProgress(card);
-              const nextLevelReq = getNextLevelRequirement(card);
-              const isMaxLevel = card.card_level >= card.max_level;
-
-              return (
-                <div key={card.id} className="space-y-2">
-                  {card.icon_url && (
-                    <CardImage
-                      card={{
-                        id: card.card_id,
-                        name: card.card_name,
-                        level: card.card_level,
-                        maxLevel: card.max_level,
-                        iconUrls: { medium: card.icon_url },
-                        elixirCost: card.elixir_cost || undefined,
-                        evolutionLevel: card.evolution_level || undefined,
-                        rarity: card.rarity,
-                      }}
-                      size="md"
-                      showLevel={true}
-                      showElixir={true}
-                    />
-                  )}
-                  
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between gap-1">
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs ${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/10 border-${RARITY_COLORS[card.rarity.toLowerCase() as keyof typeof RARITY_COLORS]}/20`}
-                      >
-                        {t(`landing.demo.cards.rarities.${card.rarity.toLowerCase()}`, { defaultValue: card.rarity })}
-                      </Badge>
-                      {!isMaxLevel && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <ArrowUp className="w-3 h-3" />
-                          <span>{card.card_count}/{nextLevelReq ?? "—"}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {!isMaxLevel ? (
-                      <div className="space-y-1">
-                        <Progress value={progress} className="h-1.5" />
-                        <p className="text-xs text-center text-muted-foreground">
-                          {nextLevelReq === null ? t('correctness.unknownCost') : t('cardCollection.cardsUntilLevel', { count: Math.max(0, nextLevelReq! - card.card_count), level: getDisplayLevel({ level: card.card_level + 1, maxLevel: card.max_level, rarity: card.rarity }) })}
-                        </p>
-                      </div>
-                    ) : (
-                      <Badge variant="default" className="w-full justify-center bg-green-500 hover:bg-green-600">
-                        {t('cardCollection.max')}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {filteredCards.map(card => <CollectionCard key={card.id} card={card} />)}
           </div>
         )}
 

@@ -1,3 +1,4 @@
+import { cardDisplayLevel } from '../_shared/card-display-level.ts';
 import { handleCors, jsonResponse } from '../_shared/cors.ts';
 
 export interface SyncResult {
@@ -24,7 +25,7 @@ export function validCollection(value: unknown, tag: string): boolean {
     Array.isArray(p.cards) && p.cards.length > 0 && p.cards.length <= 500 &&
     new Set(p.cards.map((c: any) => c?.id)).size === p.cards.length &&
     p.cards.every((c: any) => c && integer(c.id) && c.id > 0 && typeof c.name === 'string' &&
-      c.name.length > 0 && integer(c.level) && integer(c.maxLevel) && typeof c.rarity === 'string' &&
+      c.name.length > 0 && cardDisplayLevel(c) !== null && typeof c.rarity === 'string' &&
       (c.count == null || integer(c.count)) && (c.elixirCost == null || integer(c.elixirCost)) &&
       (c.evolutionLevel == null || integer(c.evolutionLevel)));
 }

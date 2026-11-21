@@ -2055,6 +2055,8 @@
     "legendary": "Leg",
     "champion": "Camp",
     "toLevel": "al nivel",
+    "unknownLevel": "Nivel de la carta desconocido",
+    "unknownCopies": "Cantidad de copias disponibles desconocida",
     "cardsUntilLevel": "Faltan {{count}} para el nivel {{level}}",
     "max": "MÁX",
     "noCardsFound": "No se encontraron cartas para esta rareza"
