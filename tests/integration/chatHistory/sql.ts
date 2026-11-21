@@ -1,6 +1,7 @@
 import postgres from 'postgres';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {chatCursorFilter} from '../../../src/lib/chatHistory';
 const socket=process.env.CHAT_PG,port=process.env.CHAT_PORT||'55458';
 assert(socket?.startsWith('/'),'Disposable Unix socket required');
 globalThis.fetch=async()=>{throw Error('No network permitted')};
@@ -30,6 +31,22 @@ try {
  const next=await days('UTC',first[29].day);assert.equal(next.length,10);assert.equal(new Set([...first.slice(0,30),...next].map(r=>r.day)).size,40);
  assert.equal((await days('Europe/Istanbul'))[0].day,'2026-11-21');
  assert.equal((await days('UTC',null,9999)).length,31);
+ // Real PostgreSQL ordering, not a JS Date-based imitation of timestamptz.
+ for (const tied of [true,false]) {
+  await sql`insert into chat_messages(id,user_id,player_tag,created_at,content)
+   select ('00000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,${uid},'MICRO',
+   '2026-11-20T12:00:00.123456Z'::timestamptz + (case when ${tied} then 0 else n/2 end)*interval '1 microsecond',n::text from generate_series(0,69)n`;
+  const firstPage=await sql`select to_jsonb(m) as message from chat_messages m where player_tag='MICRO' order by created_at desc,id desc limit 50`;
+  const last=firstPage.at(-1)!.message;
+  const filter=chatCursorFilter(last);
+  const match=filter.match(/^created_at\.lt\.([^,]+),and\(created_at\.eq\.([^,]+),id\.lt\.([\da-f-]+)\)$/)!;
+  assert.equal(match[1],match[2]);
+  const secondPage=await sql`select to_jsonb(m) as message from chat_messages m where player_tag='MICRO'
+   and (created_at<${match[1]}::timestamptz or (created_at=${match[2]}::timestamptz and id<${match[3]}::uuid)) order by created_at desc,id desc limit 50`;
+  assert.equal(secondPage.length,20);
+  assert.equal(new Set([...firstPage,...secondPage].map(r=>r.message.id)).size,70);
+  await sql`delete from chat_messages where player_tag='MICRO'`;
+ }
  await assert.rejects(sql.begin(async t=>{await t.unsafe('SET LOCAL ROLE anon');return t`select * from get_my_chat_days('Q0','UTC')`}),/permission denied/);
- console.log('PASS real SQL: own account/player, timezone, bounded days, stable pagination, anonymous rejection, unchanged messages; network=0');
+ console.log('PASS real SQL: own account/player, timezone, bounded days, 70-message microsecond ties/ordering, anonymous rejection, unchanged original messages; network=0');
 } finally {await sql.end();await root.unsafe('DROP DATABASE '+name);await root.end()}

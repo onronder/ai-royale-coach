@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=process.env.FIXTURE_URL||'http://127.0.0.1:5193';const browser=await chromium.launch({headless:true});let cases=0;
 try{for(const language of ['en','tr','es','fr','pt']){
- const ctx=await browser.newContext({viewport:{width:390,height:844}}),page=await ctx.newPage(),loads=[],unexpected=[];
+ const ctx=await browser.newContext({viewport:{width:390,height:844}}),page=await ctx.newPage(),loads=[],unexpected=[],accessibilityWarnings=[];
+ page.on('console',m=>{if(/Missing.*Description|aria-describedby|DialogContent.*requires/i.test(m.text()))accessibilityWarnings.push(m.text())});
  await page.addInitScript(l=>localStorage.setItem('i18nextLng',l),language);
  await ctx.route('**/*',async r=>{const u=new URL(r.request().url());if(u.origin===base){if(u.pathname.includes('/locales/'))loads.push(u.pathname);return r.continue()}
  if(['fonts.googleapis.com','fonts.gstatic.com'].includes(u.hostname))return r.abort();
@@ -11,6 +12,11 @@ try{for(const language of ['en','tr','es','fr','pt']){
  await page.goto(base+'/tests/integration/loading/ui.html');await page.getByTestId('language').filter({hasText:language}).waitFor();
  assert.deepEqual([...new Set(loads.map(p=>p.split('/').at(-1)))].sort(),[...new Set([language+'.json','en.json'])].sort());
  await page.getByRole('button',{name:'Open help',exact:true}).click();await page.getByRole('dialog').waitFor();
+ const description=await page.getByRole('dialog').evaluate(el=>document.getElementById(el.getAttribute('aria-describedby'))?.textContent);
+ const expected=JSON.parse(await (await import('node:fs/promises')).readFile(new URL(`../../../src/i18n/locales/${language}.help.json`,import.meta.url),'utf8')).help.subtitle;
+ assert.equal(description,expected,'Help dialog has its translated accessible description');
+ await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});
+ assert.deepEqual(accessibilityWarnings,[]);
  assert(loads.some(p=>p.endsWith(language+'.help.json')));assert.equal(await page.getByText(/^help\./).count(),0);assert.deepEqual(unexpected,[]);cases++;
  await ctx.close();
  }
