@@ -1,3 +1,4 @@
+import { verifyPractice } from '../practiceRepeat/sql'
 import assert from 'node:assert/strict'
 import { readFile, readdir } from 'node:fs/promises'
 import postgres from 'postgres'
@@ -156,6 +157,8 @@ try {
     'platform.sql',
     '../correctness/platform.sql',
     '../../../drizzle/migrations/0006_first_session_coaching.sql',
+    '../../../drizzle/migrations/0009_trial_coaching_followup.sql',
+    '../../../drizzle/migrations/0011_retain_completed_coaching_match.sql',
     '../../../drizzle/migrations/0014_coaching_translations.sql',
   ])
     await sql.unsafe(await read(f))
@@ -228,7 +231,9 @@ try {
   ok(calls === 1, 'deleting a tag cannot reset free entitlement')
   await request(user, 'shown')
   saved = await state(user)
-  const shown = saved.task.shown_at
+  // The simulated match finishes between exposure and the later server check.
+  await sql`update coaching_tasks set shown_at=now()-interval '2 minutes' where id=${saved.task.id}`
+  const shown = (await state(user)).task.shown_at
   ok(!!shown, 'shown time recorded')
   const matchDeck = saved.task.recommended_deck
   const battle = (time: Date, tag = saved.task.player_tag, cards = matchDeck) => ({
@@ -239,7 +244,15 @@ try {
     team: [{ tag: '#' + tag, crowns: 3, cards, trophyChange: 20 }],
     opponent: [{ tag: '#QQQQ', crowns: 0, cards: deck }],
   })
+  gameFail=true
+  const staleCheck=await request(user,'check')
+  ok(staleCheck.status===503 && staleCheck.data.error==='battle_feed_unavailable' && !(await state(user)).task.battle_result,'failed history refresh keeps a free task pending')
+  gameFail=false
+  const conflict=battle(new Date(Date.parse(shown)+30000))
   battles = [
+    {...conflict,type:'riverRaceDuel'},
+    {...conflict,team:[{...conflict.team[0],crowns:4}]},
+    conflict,{...conflict,team:[{...conflict.team[0],crowns:2}]},
     battle(new Date(Date.parse(shown) - 60000)),
     battle(new Date(Date.parse(shown) + 60000), 'CCCC'),
     battle(new Date(Date.parse(shown) + 60000), saved.task.player_tag, deck),
@@ -249,7 +262,8 @@ try {
     'old / other-player / different-deck battles rejected',
   )
   await sql`UPDATE coaching_tasks SET last_checked_at=now()-interval '1 minute' WHERE user_id=${user}`
-  battles = [battle(new Date(Date.parse(shown) + 60000))]
+  const mirrored=battle(new Date(Date.parse(shown) + 60000))
+  battles = [{...mirrored,team:mirrored.opponent,opponent:mirrored.team}]
   ok(
     (await request(user, 'check')).data.task.battle_result.score[0] === 3 && calls === 1,
     'one matching result without a second AI call',
@@ -501,6 +515,7 @@ try {
     !(await sql`SELECT sending_enabled FROM marketing_settings`)[0].sending_enabled,
     'campaign sending remains off',
   )
+  await verifyPractice(sql,user,admin,(await state(user)).task)
   ok(network === 0, 'zero external network calls')
   console.log(
     `First-value acceptance: ${passed} checks passed; ${calls} fake generation calls; ${translations} fake translations.`,

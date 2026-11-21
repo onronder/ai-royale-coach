@@ -62,7 +62,7 @@ export function createMeasuredAIFetch(context: AIContext, upstream: typeof fetch
     const url = new URL(input instanceof Request ? input.url : input.toString())
     if (url.origin !== 'https://ai.gateway.lovable.dev' || !['/v1/chat/completions', '/v1/responses'].includes(url.pathname))
       throw new Error('Unsupported AI endpoint')
-    if (!context.userId || !context.feature || typeof init?.body !== 'string') throw new Error('Missing AI context')
+    if (!context.userId || !context.feature || !init || !('body' in init) || typeof init.body !== 'string') throw new Error('Missing AI context')
     const request = JSON.parse(init.body)
     const bytes = await crypto.subtle.digest('SHA-256', encoder.encode(canonical({ version: 1, path: url.pathname, request })))
     const hash = Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, '0')).join('')

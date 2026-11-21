@@ -1,3 +1,4 @@
+import { practiceGoal, checkPracticeMatch, confirmLegacyPractice } from '../_shared/practice-repeat.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { localizedCardName } from '../_shared/card-names.ts';
 import { coachingReading, readingFields, type ReadingText } from '../_shared/coaching-reading.ts';
@@ -10,7 +11,7 @@ import { coachingCard, coachingCardTable, coachingSwap, formatCoachingAdvice, ta
 import { resolveCoachingDeck } from '../_shared/coaching-source-deck.ts';
 import { firstTaskBattle, latestLadderTrophies, normalizeTag } from '../_shared/coaching-match.ts';
 import { createCoachingAI } from '../_shared/coaching-ai.ts';
-const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up','translate']), language:z.string().optional().transform(productLanguage), question:z.string().trim().min(1).max(500).optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
+const Input = z.object({ playerTag:z.string().regex(/^#?[0289PYLQGRJCUV]{3,15}$/i), action:z.enum(['get','start','shown','check','follow-up','translate','repeat-view','repeat-accept','repeat-check']), language:z.string().optional().transform(productLanguage), question:z.string().trim().min(1).max(500).optional(), automatic:z.boolean().optional(), taskId:z.string().uuid().optional(), firstKey:z.string().max(512).optional(), visitId:z.string().uuid().optional(), confirmedDeckIds:z.array(z.number().int().positive()).length(8).optional() });
 const Suggestion = z.object({ remove_id:z.number().nullable(), add_id:z.number().nullable(), reason:z.string(), practice:z.string() });
 const Answer = z.object({ answer:z.string(), alternative_id:z.number().nullable(), reason:z.string().nullable(), practice:z.string().nullable() });
 const reply = (data:unknown,status=200,headers?:HeadersInit) => new Response(JSON.stringify(data),{status,headers:{...corsHeaders,'Content-Type':'application/json',...Object.fromEntries(new Headers(headers))}});
@@ -30,21 +31,65 @@ async function handleRequest(req: Request): Promise<Response> {
  const {data:storedTask,error:readError}=await db.from('coaching_tasks').select('*').eq('user_id',user.id).eq('player_tag',tag).maybeSingle();
  if(readError) return reply({error:'Unable to load task'},503);
  let task=storedTask;
- if(action==='get') return reply({task,read_only:!access.allowed});
+ const offersOpen = Deno.env.get('COACHING_PRACTICE_REPEAT_ENABLED') === 'true';
+ const canRepeat = access.allowed && (access.isTrial || access.isAdmin || !!owner.ai_enabled) && (offersOpen || !!task?.practice_repeat);
+ // Check the locally available original game only for a legacy offer. Reads do not rewrite old scores.
+ const storedKey = task?.matched_battle_key;
+ const offering = action === 'get' || (
+   (action === 'repeat-view' || action === 'repeat-accept') &&
+   parsed.data.taskId === task?.id && parsed.data.firstKey === storedKey
+ );
+ if (offering && canRepeat && !task?.practice_repeat && typeof storedKey === 'string' &&
+     storedKey.startsWith(tag + ':') && task.battle_result?.key === storedKey) {
+   const { data: cache, error } = await db.from('player_cache').select('battles_data').eq('player_tag', tag).maybeSingle();
+   const proof = !error && confirmLegacyPractice(task, tag, cache?.battles_data);
+   if (proof) task = { ...task, reverified_legacy_key: proof };
+ }
+ if(action==='get') return reply({task,read_only:!access.allowed,can_repeat:canRepeat});
+ const readVisit = action==='repeat-view' && !!task?.practice_repeat;
+
  if(action==='translate'&&!access.allowed) {
    const {data:free,error}=await db.rpc('first_value_state',{p_user:user.id});
    if(error || (task && free?.task?.id===task.id)) return reply({error:'Use the first coaching screen',subscription_required:true},403);
  }
- if(action !== 'translate' && !access.allowed) return reply({error:'Subscription required',subscription_required:true},403);
- if(action !== 'translate' && !access.isTrial&&!access.isAdmin&&!owner.ai_enabled) return reply({error:'AI not enabled for this player'},403);
+ if(action !== 'translate' && !readVisit && !access.allowed) return reply({error:'Subscription required',subscription_required:true},403);
+ if(action !== 'translate' && !readVisit && !access.isTrial&&!access.isAdmin&&!owner.ai_enabled) return reply({error:'AI not enabled for this player'},403);
  let generationOwned=false; let followUpOwned=false;
  const event=async(name:string,props:Record<string,unknown>)=>{await db.from('product_events').insert({user_id:user.id,event_name:name,props:{player_tag:tag,...props}});};
  const gameData=async(type:'player'|'battles',force=false)=>{
    const {data,error,response}=await db.functions.invoke('clash-royale-api',{body:{endpoint:type,playerTag:tag,forceRefresh:force}});
+   if(type==='battles' && (action==='check'||action==='repeat-check') &&
+     (error || response?.headers.get('X-Cache-Stale')!=='false' || !Array.isArray(data))) throw new Error('battle_feed_unavailable');
    if(error) throw new Error('Game data unavailable');
    if((action==='start' || action==='follow-up') && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;
  };
+ if (action.startsWith('repeat-')) {
+   const {taskId,firstKey,visitId}=parsed.data;
+   if (!task || task.id!==taskId || !firstKey) return reply({error:'Invalid practice task'},400);
+   const repeat=task.practice_repeat;
+   if (!repeat && !offersOpen) return reply({task,can_repeat:false});
+   const goal=practiceGoal(task,tag);
+   if (!repeat && (!goal || task.matched_battle_key!==firstKey)) return reply({task,can_repeat:canRepeat});
+   let match=null;
+   if (action==='repeat-check') {
+     if (repeat?.status!=='pending' || repeat.first.key!==firstKey) return reply({task,can_repeat:canRepeat});
+     if (parsed.data.automatic) {
+       const claim=await db.rpc('claim_practice_return_check',{p_user:user.id,p_tag:tag,p_task:taskId,p_key:firstKey});
+       if(claim.error) return reply({error:'Practice unavailable'},503);
+       if(!claim.data) return reply({task,can_repeat:canRepeat});
+     }
+     try { match=await checkPracticeMatch(tag,repeat,()=>gameData('battles',true)); }
+     catch { return reply({error:'battle_feed_unavailable'},503); }
+   }
+   const {data:updated,error}=await db.rpc('update_practice_repeat',{
+     p_user:user.id,p_tag:tag,p_task:taskId,p_action:action.slice(7),p_key:firstKey,
+     p_tier:access.isAdmin?'admin':access.isTrial?'trial':access.isPaid?'paid':null,p_session:visitId??null,
+     p_tip:goal?.tip??null,p_language:goal?.language??null,p_match:match,p_reverified_key:task.reverified_legacy_key??null,
+   });
+   if(error) return reply({error:'Practice unavailable'},503);
+   return reply({task:updated,can_repeat:canRepeat,repeat_checked:action==='repeat-check'});
+ }
  const ai=createCoachingAI(aiKey,req.signal,language,false,{db,userId:user.id,tier:access.isAdmin?'admin':access.isTrial?'trial':access.isPaid?'paid':'inactive',feature:'first-session-coaching:'+action+':'+tag});
  try {
    if (action === 'translate') {
@@ -180,6 +225,7 @@ async function handleRequest(req: Request): Promise<Response> {
  }catch(e){
    if(generationOwned&&task)await db.from('coaching_tasks').update({status:'failed'}).eq('id',task.id).is('recommendation',null);
    if(followUpOwned&&task)await db.from('coaching_tasks').update({follow_up_started_at:null}).eq('id',task.id).is('follow_up_answer',null);
+   if (action==='check' && e instanceof Error && e.message==='battle_feed_unavailable') return reply({error:e.message},503);
    if (action !== 'translate') await event('ai_generation_failed',{task_id:task?.id,action});
    const status=typeof e==='object'&&e!==null&&'statusCode'in e?Number(e.statusCode):500;
    const message=e instanceof Error?e.message:'Coaching unavailable';

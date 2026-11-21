@@ -587,6 +587,10 @@ export type Database = {
           last_checked_at: string | null
           matched_battle_key: string | null
           player_tag: string
+          practice_auto_checked_at: string | null
+          practice_seen_at: string | null
+          practice_seen_tier: string | null
+          practice_repeat: Json | null
           previous_match: Json | null
           prompt_tokens: number
           recommendation: Json | null
@@ -611,6 +615,10 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag: string
+          practice_auto_checked_at?: string | null
+          practice_seen_at?: string | null
+          practice_seen_tier?: string | null
+          practice_repeat?: Json | null
           previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
@@ -635,6 +643,10 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag?: string
+          practice_auto_checked_at?: string | null
+          practice_seen_at?: string | null
+          practice_seen_tier?: string | null
+          practice_repeat?: Json | null
           previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
@@ -2932,6 +2944,8 @@ export type Database = {
       }
     }
     Functions: {
+      admin_practice_repeat: { Args: { p_days: number }; Returns: {tier:string;viewers:number;acceptors:number;mature:number;returned:number;matched:number;exposure_from:string;exposure_through:string;accepted_from:string;accepted_through:string}[] }
+
       get_my_chat_days: {
         Args: { p_tag: string; p_timezone: string; p_before?: string; p_limit?: number };
         Returns: { day: string; last_message_at: string; message_count: number }[];

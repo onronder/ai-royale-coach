@@ -1,4 +1,22 @@
 {
+  "practiceRepeat": {
+    "title": "Same-deck practice",
+    "first": "First match",
+    "second": "Second match",
+    "accept": "Practise one more match with the same 8 cards",
+    "pending": "Play with the same eight cards, then check your result.",
+    "changed": "Deck changed. This repeat is closed.",
+    "feedError": "We couldn’t refresh your recent matches. Try again.",
+    "noMatch": "No eligible match in the available recent matches yet.",
+    "compare": "These are the two recorded scores. They do not measure the effect of the tactic.",
+    "accepted": "Accepted / saw the offer",
+    "returned": "Returned in a later visit / accepted",
+    "matched": "Second result matched / accepted",
+    "exposureWindow": "Acceptance rate · First offer shown from {{from}} to {{through}} UTC.",
+    "mature": "Return and match rates · First accepted from {{from}} to {{through}} UTC, with seven full days of follow-up.",
+    "trial": "Trial",
+    "paid": "Paid"
+  },
   "conversion": {
     "scope": "{{trials}} trials · {{accounts}} distinct accounts. Marked test accounts are excluded.",
     "unclassified": "Subscriptions omitted because the trial start could not be verified: {{count}}.",

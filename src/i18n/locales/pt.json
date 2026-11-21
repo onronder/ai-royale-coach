@@ -1,4 +1,22 @@
 {
+  "practiceRepeat": {
+    "title": "Treino com o mesmo deck",
+    "first": "Primeira partida",
+    "second": "Segunda partida",
+    "accept": "Treinar mais uma partida com as mesmas 8 cartas",
+    "pending": "Jogue com as mesmas oito cartas e confira o resultado.",
+    "changed": "O deck mudou. Este treino foi encerrado.",
+    "feedError": "Não foi possível atualizar suas partidas recentes. Tente novamente.",
+    "noMatch": "Nenhuma partida válida entre as partidas recentes disponíveis.",
+    "compare": "Estes são os dois placares registrados. Eles não medem o efeito da tática.",
+    "accepted": "Aceitaram / viram a oferta",
+    "returned": "Voltaram em outra sessão / aceitaram",
+    "matched": "Segundo resultado encontrado / aceitaram",
+    "exposureWindow": "Taxa de aceitação · Primeira oferta exibida de {{from}} a {{through}} UTC.",
+    "mature": "Taxas de retorno e de partida · Primeira aceitação de {{from}} a {{through}} UTC, com sete dias completos de acompanhamento.",
+    "trial": "Teste",
+    "paid": "Pago"
+  },
   "conversion": {
     "scope": "{{trials}} testes · {{accounts}} contas distintas. Contas de teste interno marcadas são excluídas.",
     "unclassified": "Assinaturas excluídas porque não foi possível confirmar o início do teste: {{count}}.",

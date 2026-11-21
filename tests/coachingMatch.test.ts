@@ -1,7 +1,7 @@
 import {describe,it} from 'node:test';
 import assert from 'node:assert/strict';
 import {firstTaskBattle,battleTimestamp,deckKey} from '../supabase/functions/_shared/coaching-match';
-const deck=Array.from({length:8},(_,i)=>({id:i+1}));
+const deck=Array.from({length:8},(_,i)=>({id:i+1,name:`Card ${i}`}));
 const shown='2026-11-14T13:00:00Z';
 const battle=(time='20261114T130100.000Z',tag='#P0LY',cards=deck,crowns=1)=>({battleTime:time,team:[{tag,crowns,cards,trophyChange:-22}],opponent:[{tag:'#QQQQ',crowns:2,cards:deck}]});
 describe('one-match coaching task',()=>{
@@ -9,7 +9,7 @@ describe('one-match coaching task',()=>{
  it('does not count a pre-recommendation match',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle('20261114T125900.000Z')]),null);});
  it('does not count a match at the recommendation timestamp',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle('20261114T130000.000Z')]),null);});
  it('does not count a different player',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle(undefined,'#AAAA')]),null);});
- it('requires the exact recommended deck',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle(undefined,undefined,[...deck.slice(0,7),{id:99}])]),null);});
+ it('requires the exact recommended deck',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle(undefined,undefined,[...deck.slice(0,7),{id:99,name:"Other"}])]),null);});
  it('compares decks independent of card order',()=>{assert.equal(deckKey(deck),deckKey([...deck].reverse()));assert.ok(firstTaskBattle('P0LY',shown,deck,[battle(undefined,undefined,[...deck].reverse())]));});
  it('selects the earliest qualifying match despite reverse API order and duplicates',()=>{const first=battle();const later=battle('20261114T130300.000Z');assert.equal(firstTaskBattle('P0LY',shown,deck,[later,first,first])?.battle_time,'2026-11-14T13:01:00.000Z');});
  it('keeps a stable identity for duplicate observations',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle()])?.key,firstTaskBattle('#P0LY',shown,deck,[battle(),battle()])?.key);});
@@ -17,4 +17,21 @@ describe('one-match coaching task',()=>{
  it('does not invent a trophy change when unavailable',()=>{const b=battle();delete (b.team[0] as {trophyChange?:number}).trophyChange;assert.equal(firstTaskBattle('P0LY',shown,deck,[b])?.trophy_change,null);});
  it('handles wins and draws explicitly',()=>{assert.equal(firstTaskBattle('P0LY',shown,deck,[battle(undefined,undefined,undefined,3)])?.outcome,'win');assert.equal(firstTaskBattle('P0LY',shown,deck,[battle(undefined,undefined,undefined,2)])?.outcome,'draw');});
  it('rejects malformed times and team battles',()=>{assert.ok(Number.isNaN(battleTimestamp('invalid')));const b=battle();b.team.push({...b.team[0],tag:'#OTHER'});assert.equal(firstTaskBattle('P0LY',shown,deck,[b]),null);});
+});
+
+describe('FEAT_FIX_003',()=>{
+ const pick=(rows:ReturnType<typeof battle>[])=>firstTaskBattle('P0LY',shown,deck,rows);
+ it('rejects four crowns',()=>assert.equal(pick([battle(undefined,undefined,undefined,4)]),null));
+ it('excludes eight-card duel series',()=>{const duel={...battle(),type:'riverRaceDuel'};assert.equal(pick([duel]),null);});
+ it('uses the linked player perspective on either side',()=>{const b=battle();assert.deepEqual(pick([{...b,team:b.opponent,opponent:b.team} as typeof b])?.score,[1,2]);});
+ it('scopes the result to each linked player and keeps the key stable across perspectives',()=>{
+   const b=battle();
+   const other=firstTaskBattle('#qqqq',shown,deck,[b]);
+   const own=pick([b]);
+   assert.ok(own && other);
+   assert.notEqual(own.key,other.key);
+   assert.deepEqual([own.score,other.score],[[1,2],[2,1]]);
+   assert.equal(firstTaskBattle('QQQQ',shown,deck,[{...b,team:b.opponent,opponent:b.team} as typeof b])?.key,other.key);
+ });
+ it('excludes contradicting identities in either order',()=>{const a=battle(),b=battle(undefined,undefined,undefined,3);for(const rows of [[a,b],[b,a]])assert.equal(pick(rows),null);});
 });

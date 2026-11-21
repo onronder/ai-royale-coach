@@ -28,6 +28,15 @@ jobs:
       - run: npm ci
       - run: bun test ./tests/*.test.ts
       - run: bun test tests/integration/recommendPreparation/handler.test.ts
+      - run: bun test tests/integration/practiceRepeat/handler.test.ts
+      - name: Verify coaching and repeat rights with isolated PostgreSQL
+        run: |
+          pg_bin="$(pg_config --bindir)"
+          socket="$(mktemp -d /tmp/practice-XXXXXX)"
+          "$pg_bin/initdb" -D "$socket/db" -A trust -U postgres --no-locale > /dev/null
+          "$pg_bin/pg_ctl" -D "$socket/db" -l "$socket/server.log" -o "-k $socket -p 55486 -c listen_addresses=''" start
+          trap '"$pg_bin/pg_ctl" -D "$socket/db" stop' EXIT
+          FIRST_VALUE_PG="$socket" FIRST_VALUE_PG_PORT=55486 bun tests/integration/firstValue/run.ts
       - run: npx tsc -b
       - run: npm run build -- --manifest
       - run: node scripts/check-bundle.mjs
@@ -53,3 +62,4 @@ jobs:
           FIXTURE_URL=http://127.0.0.1:5193 node tests/integration/correctness/chat-browser.mjs
           node tests/integration/playerAnalysis/browser.mjs
           node tests/integration/featFixes/browser.mjs
+          node tests/integration/practiceRepeat/browser.mjs

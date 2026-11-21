@@ -1,3 +1,4 @@
+import { PracticeRepeatReport } from './PracticeRepeatReport';
 import { useState } from 'react';
 import type { Database } from '@/integrations/supabase/types';
 import { useTranslation } from 'react-i18next';
@@ -138,6 +139,7 @@ export function TrialAnalyticsPanel() {
           <Button key={d} size="sm" variant={d === days ? 'default' : 'outline'} onClick={() => setDays(d)}>{t('admin.trials.daysRange', { days: d })}</Button>
         ))}
       </div>
+      <PracticeRepeatReport days={days}/>
       {isLoading ? (
         <div className="space-y-4" aria-busy="true">
           <div className="grid gap-4 md:grid-cols-3">{[0, 1, 2].map(i => <Skeleton key={i} className="h-28 rounded-lg" />)}</div>
