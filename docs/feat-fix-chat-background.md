@@ -64,7 +64,9 @@ Regression coverage:
 
 Local validation: 223 application tests and 6 handler tests passed; type check,
 production build and five-language bundle budgets passed. All 45 new browser
-scenarios passed, plus 70 existing chat and 9 history-pagination scenarios.
+scenarios passed, plus 70 existing chat, 9 history-pagination and 9 maintenance
+scenarios. The maintenance regression includes failure/unknown outcomes and
+shared context reads; it confirms the existing success notifications are kept.
 
 The stream tests also compare the completion verdict with the existing server
 predicate and ensure a terminal marker does not prematurely cancel EOF. The
