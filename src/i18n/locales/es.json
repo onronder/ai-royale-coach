@@ -12,7 +12,8 @@
     "accepted": "Aceptaron / vieron la oferta",
     "returned": "Volvieron en otra sesión / aceptaron",
     "matched": "Segundo resultado encontrado / aceptaron",
-    "mature": "Las dos últimas tasas incluyen a quienes aceptaron hace al menos siete días completos.",
+    "exposureWindow": "Tasa de aceptación · Primera oferta mostrada del {{from}} al {{through}} UTC.",
+    "mature": "Tasas de regreso y de partida · Primera aceptación del {{from}} al {{through}} UTC, con siete días completos de seguimiento.",
     "trial": "Prueba",
     "paid": "De pago"
   },

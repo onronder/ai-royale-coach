@@ -24,7 +24,7 @@ import { coachingReading, readingText, type ReadingText } from '../../../supabas
 import { coachingSwap } from '../../../supabase/functions/_shared/coaching-advice';
 
 interface MatchResult { key?:string; battle_time?:string; outcome:'win'|'loss'|'draw'; score:number[]; trophy_change:number|null; opponent_deck:ClashRoyaleCard[] }
-export interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{decision?:"keep"|"swap";remove_id:number|null;add_id:number|null;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; matched_battle_key?:string|null; practice_seen_at?:string|null; practice_repeat?:{status:'pending'|'completed'|'deck_changed';accepted_at:string;session?:string|null;returned_at?:string;tip:string;language:string;first:MatchResult & {key:string};second?:MatchResult}|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
+export interface Task { id:string; language?:string; status:string; source_deck:ClashRoyaleCard[]; recommended_deck:ClashRoyaleCard[]; recommendation:{decision?:"keep"|"swap";remove_id:number|null;add_id:number|null;reason:string;practice:string;verified_swap?:boolean;follow_up_verified?:boolean;language?:string;follow_up_language?:string}|null; shown_at:string|null; follow_up_answer:string|null; follow_up_question:string|null; last_checked_at:string|null; battles_fetched_at:string|null; battle_result:MatchResult|null; matched_battle_key?:string|null; reverified_legacy_key?:string; practice_seen_at?:string|null; practice_repeat?:{status:'pending'|'completed'|'deck_changed';accepted_at:string;session?:string|null;returned_at?:string;tip:string;language:string;first:MatchResult & {key:string};second?:MatchResult}|null; previous_match?:{ battle_result:MatchResult; recommended_deck:ClashRoyaleCard[] }|null; }
 interface DeckConfirmation { cards: ClashRoyaleCard[]; from_battle: boolean }
 export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  userId:string;playerTag:string;onMatchResult:(snapshot?:TrophySnapshot)=>Promise<unknown>;
@@ -87,7 +87,12 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
        else measurement.complete('failed');
      }
      setConfirmation(data.deck_confirmation??null);
-     qc.setQueryData(key,{...data,can_repeat:data.can_repeat??query.data?.can_repeat});
+     // A follow-up can return the same saved match without the read-time legacy proof.
+     const savedProof = query.data?.task?.reverified_legacy_key;
+     const sameLegacy = action === 'follow-up' && savedProof && data.task?.id === task?.id &&
+       data.task?.matched_battle_key === savedProof;
+     qc.setQueryData(key,{...data,task:sameLegacy ? {...data.task,reverified_legacy_key:savedProof} : data.task,
+       can_repeat:data.can_repeat??query.data?.can_repeat});
      if(action==='repeat-check' && data.repeat_checked && data.task?.practice_repeat?.status==='pending') setCheckedRepeat(data.task.id);
      if(action==='check' && data.task?.battle_result) {
        try { await onMatchResult(data.trophy_snapshot ?? undefined); }
@@ -172,7 +177,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground">{text?.question && <><span className="font-semibold">{t('coaching.you')}: </span>{text.question}</>}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p lang={language} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t(task.recommendation.decision==='keep'?'correctness.practiceQuestion':'coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t(task.recommendation.decision==='keep'?'correctness.askPractice':'coaching.ask')}</Button></form>}</div>
   </div>
  </div>;
- const goal=task && practiceGoal(task);
+ const goal=task && practiceGoal(task,playerTag);
  const canRepeat=hasAccess && !!query.data?.can_repeat;
  const hasRepeatCard=!!task?.practice_repeat || !!(canRepeat && goal);
  const showCurrentScore=done && (!hasRepeatCard || (task?.practice_repeat && task.practice_repeat.first.key!==task.matched_battle_key));

@@ -2944,7 +2944,7 @@ export type Database = {
       }
     }
     Functions: {
-      admin_practice_repeat: { Args: { p_days: number }; Returns: {tier:string;viewers:number;acceptors:number;mature:number;returned:number;matched:number}[] }
+      admin_practice_repeat: { Args: { p_days: number }; Returns: {tier:string;viewers:number;acceptors:number;mature:number;returned:number;matched:number;exposure_from:string;exposure_through:string;accepted_from:string;accepted_through:string}[] }
 
       get_my_chat_days: {
         Args: { p_tag: string; p_timezone: string; p_before?: string; p_limit?: number };

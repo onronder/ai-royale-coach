@@ -24,5 +24,14 @@ describe('FEAT_FIX_003',()=>{
  it('rejects four crowns',()=>assert.equal(pick([battle(undefined,undefined,undefined,4)]),null));
  it('excludes eight-card duel series',()=>{const duel={...battle(),type:'riverRaceDuel'};assert.equal(pick([duel]),null);});
  it('uses the linked player perspective on either side',()=>{const b=battle();assert.deepEqual(pick([{...b,team:b.opponent,opponent:b.team} as typeof b])?.score,[1,2]);});
+ it('scopes the result to each linked player and keeps the key stable across perspectives',()=>{
+   const b=battle();
+   const other=firstTaskBattle('#qqqq',shown,deck,[b]);
+   const own=pick([b]);
+   assert.ok(own && other);
+   assert.notEqual(own.key,other.key);
+   assert.deepEqual([own.score,other.score],[[1,2],[2,1]]);
+   assert.equal(firstTaskBattle('QQQQ',shown,deck,[{...b,team:b.opponent,opponent:b.team} as typeof b])?.key,other.key);
+ });
  it('excludes contradicting identities in either order',()=>{const a=battle(),b=battle(undefined,undefined,undefined,3);for(const rows of [[a,b],[b,a]])assert.equal(pick(rows),null);});
 });

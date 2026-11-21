@@ -1,6 +1,8 @@
 import { observeBattles } from './battle-observation.ts';
 export type Battle = { battleTime: string; type?: string; gameMode?: { name?: string }; team: { tag: string; crowns: number; trophyChange?: number; startingTrophies?: number; cards: { id: number; name?: string; iconUrls?: { medium: string } }[] }[]; opponent: { tag: string; crowns: number; cards: { id: number; name?: string; iconUrls?: { medium: string } }[] }[] };
 export const normalizeTag = (tag: string) => tag.replace(/^#/, '').toUpperCase();
+// Only the validated 1v1 matcher issues this player-scoped result key.
+export const coachingMatchPrefix = (tag: string) => `coach-1v1-v1:${normalizeTag(tag)}:`;
 export function battleTimestamp(value: string): number {
   const compact = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(\.\d+)?Z$/.exec(value);
   return Date.parse(compact ? `${compact[1]}-${compact[2]}-${compact[3]}T${compact[4]}:${compact[5]}:${compact[6]}${compact[7] || ''}Z` : value);
@@ -14,7 +16,7 @@ export function firstTaskBattle(tag: string, shownAt: string, deck: {id: number}
     b.format === '1v1' && Date.parse(b.time) > cutoff && deckKey(b.player.cards) === target);
   const match = candidates.sort((a,b) => a.time.localeCompare(b.time) || a.key.localeCompare(b.key))[0];
   if (!match) return null;
-  return { key: match.key, battle_time: match.time, score: [match.player.crowns, match.opponents[0].crowns],
+  return { key: coachingMatchPrefix(tag) + match.key, battle_time: match.time, score: [match.player.crowns, match.opponents[0].crowns],
     outcome: match.outcome, trophy_change: match.trophyChange, opponent_deck: match.opponents[0].cards };
 }
 

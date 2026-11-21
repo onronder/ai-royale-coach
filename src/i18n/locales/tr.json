@@ -12,7 +12,8 @@
     "accepted": "Kabul eden / teklifi gören",
     "returned": "Sonraki oturumda dönen / kabul eden",
     "matched": "İkinci sonucu eşleşen / kabul eden",
-    "mature": "Son iki oran, kabulün üzerinden yedi tam gün geçen oyuncuları kapsar.",
+    "exposureWindow": "Kabul oranı · İlk teklifin gösterildiği dönem {{from}} – {{through}} UTC.",
+    "mature": "Geri dönüş ve maç eşleşmesi · İlk kabulü {{from}} – {{through}} UTC döneminde olan hesaplar yedi tam gün izlendi.",
     "trial": "Deneme",
     "paid": "Ücretli"
   },

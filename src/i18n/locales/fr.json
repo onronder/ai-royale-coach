@@ -12,7 +12,8 @@
     "accepted": "Ont accepté / ont vu l’offre",
     "returned": "Revenus lors d’une autre session / ont accepté",
     "matched": "Second résultat trouvé / ont accepté",
-    "mature": "Les deux derniers taux concernent les joueurs ayant accepté depuis au moins sept jours complets.",
+    "exposureWindow": "Taux d’acceptation · Première offre affichée du {{from}} au {{through}} UTC.",
+    "mature": "Taux de retour et de match · Première acceptation du {{from}} au {{through}} UTC, avec sept jours complets de suivi.",
     "trial": "Essai",
     "paid": "Payant"
   },

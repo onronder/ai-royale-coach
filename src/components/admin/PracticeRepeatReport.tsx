@@ -18,6 +18,11 @@ export function PracticeRepeatReport({ days }: { days: number }) {
     (d
       ? new Intl.NumberFormat(i18n.language, { style: 'percent', maximumFractionDigits: 1 }).format(n / d)
       : '—') + ' (' + n + '/' + d + ')';
+  const window = report.data?.[0];
+  const utc = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+  const dates = (from: string, through: string) => ({
+    from: utc.format(new Date(from)), through: utc.format(new Date(through)),
+  });
   return (
     <Card>
       <CardHeader>
@@ -54,7 +59,10 @@ export function PracticeRepeatReport({ days }: { days: number }) {
                   </section>
                 ))}
               </div>
-              <p className='mt-2 text-xs text-muted-foreground'>{t('practiceRepeat.mature')}</p>
+              {window && <div className='mt-2 space-y-1 text-xs text-muted-foreground'>
+                <p>{t('practiceRepeat.exposureWindow', dates(window.exposure_from, window.exposure_through))}</p>
+                <p>{t('practiceRepeat.mature', dates(window.accepted_from, window.accepted_through))}</p>
+              </div>}
             </>
           )}
       </CardContent>

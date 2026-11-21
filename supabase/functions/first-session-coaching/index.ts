@@ -1,4 +1,4 @@
-import { practiceGoal, checkPracticeMatch } from '../_shared/practice-repeat.ts';
+import { practiceGoal, checkPracticeMatch, confirmLegacyPractice } from '../_shared/practice-repeat.ts';
 import { productLanguage } from "../_shared/language.ts";
 import { localizedCardName } from '../_shared/card-names.ts';
 import { coachingReading, readingFields, type ReadingText } from '../_shared/coaching-reading.ts';
@@ -33,6 +33,18 @@ async function handleRequest(req: Request): Promise<Response> {
  let task=storedTask;
  const offersOpen = Deno.env.get('COACHING_PRACTICE_REPEAT_ENABLED') === 'true';
  const canRepeat = access.allowed && (access.isTrial || access.isAdmin || !!owner.ai_enabled) && (offersOpen || !!task?.practice_repeat);
+ // Check the locally available original game only for a legacy offer. Reads do not rewrite old scores.
+ const storedKey = task?.matched_battle_key;
+ const offering = action === 'get' || (
+   (action === 'repeat-view' || action === 'repeat-accept') &&
+   parsed.data.taskId === task?.id && parsed.data.firstKey === storedKey
+ );
+ if (offering && canRepeat && !task?.practice_repeat && typeof storedKey === 'string' &&
+     storedKey.startsWith(tag + ':') && task.battle_result?.key === storedKey) {
+   const { data: cache, error } = await db.from('player_cache').select('battles_data').eq('player_tag', tag).maybeSingle();
+   const proof = !error && confirmLegacyPractice(task, tag, cache?.battles_data);
+   if (proof) task = { ...task, reverified_legacy_key: proof };
+ }
  if(action==='get') return reply({task,read_only:!access.allowed,can_repeat:canRepeat});
  const readVisit = action==='repeat-view' && !!task?.practice_repeat;
 
@@ -57,7 +69,7 @@ async function handleRequest(req: Request): Promise<Response> {
    if (!task || task.id!==taskId || !firstKey) return reply({error:'Invalid practice task'},400);
    const repeat=task.practice_repeat;
    if (!repeat && !offersOpen) return reply({task,can_repeat:false});
-   const goal=practiceGoal(task);
+   const goal=practiceGoal(task,tag);
    if (!repeat && (!goal || task.matched_battle_key!==firstKey)) return reply({task,can_repeat:canRepeat});
    let match=null;
    if (action==='repeat-check') {
@@ -73,7 +85,7 @@ async function handleRequest(req: Request): Promise<Response> {
    const {data:updated,error}=await db.rpc('update_practice_repeat',{
      p_user:user.id,p_tag:tag,p_task:taskId,p_action:action.slice(7),p_key:firstKey,
      p_tier:access.isAdmin?'admin':access.isTrial?'trial':access.isPaid?'paid':null,p_session:visitId??null,
-     p_tip:goal?.tip??null,p_language:goal?.language??null,p_match:match,
+     p_tip:goal?.tip??null,p_language:goal?.language??null,p_match:match,p_reverified_key:task.reverified_legacy_key??null,
    });
    if(error) return reply({error:'Practice unavailable'},503);
    return reply({task:updated,can_repeat:canRepeat,repeat_checked:action==='repeat-check'});

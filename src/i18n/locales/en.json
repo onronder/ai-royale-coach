@@ -12,7 +12,8 @@
     "accepted": "Accepted / saw the offer",
     "returned": "Returned in a later visit / accepted",
     "matched": "Second result matched / accepted",
-    "mature": "The last two rates include only players with seven full days since acceptance.",
+    "exposureWindow": "Acceptance rate · First offer shown from {{from}} to {{through}} UTC.",
+    "mature": "Return and match rates · First accepted from {{from}} to {{through}} UTC, with seven full days of follow-up.",
     "trial": "Trial",
     "paid": "Paid"
   },

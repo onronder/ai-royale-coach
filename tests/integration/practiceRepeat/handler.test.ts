@@ -1,11 +1,12 @@
 import { beforeEach, expect, mock, test } from 'bun:test';
 import { z } from 'zod';
+import { firstTaskBattle } from '../../../supabase/functions/_shared/coaching-match';
 import { battle, cards, tag } from '../../fixtures/observedBattles';
 let handle: (req: Request) => Promise<Response>;
 const account = '11111111-1111-4111-8111-111111111111',
   id = crypto.randomUUID(),
   visitId = crypto.randomUUID();
-const first = { key: 'first', battle_time: '2026-11-17T09:00:00.000Z', score: [2, 1], outcome: 'win' };
+const first = firstTaskBattle(tag, '2026-11-16T12:00:00Z', cards, [battle('20261117T090000.000Z', 2, 1)])!;
 const base = {
   id,
   matched_battle_key: first.key,
@@ -16,6 +17,7 @@ const base = {
   recommendation: { decision: 'keep', language: 'en', practice: 'Save elixir. Wait.', reason: 'Defend.' },
 };
 let offers = true;
+let history: any[], cacheReads: number;
 let task: any,
   sub: string | null,
   linked: boolean,
@@ -50,6 +52,7 @@ mock.module('https://esm.sh/@supabase/supabase-js@2.81.1', () => ({
   createClient: () => ({
     auth: { getUser: async () => ({ data: { user: { id: account } } }) },
     from: (name: string) => {
+      if (name === 'player_cache') cacheReads++;
       const chain: any = {
         select: () => chain,
         eq: () => chain,
@@ -59,6 +62,7 @@ mock.module('https://esm.sh/@supabase/supabase-js@2.81.1', () => ({
             user_subscriptions: sub ? { status: sub, current_period_end: '2099-01-01T00:00:00Z' } : null,
             profiles: null,
             coaching_tasks: task,
+            player_cache: { battles_data: history },
           }[name],
         }),
       };
@@ -93,7 +97,7 @@ const send = async (action: string, extra = {}) => {
       body: JSON.stringify({
         playerTag: tag,
         taskId: id,
-        firstKey: 'first',
+        firstKey: first.key,
         visitId,
         action,
         ...extra,
@@ -104,6 +108,8 @@ const send = async (action: string, extra = {}) => {
 };
 beforeEach(() => {
   offers = true;
+  history = [];
+  cacheReads = 0;
   task = structuredClone(base);
   sub = 'active';
   enabled = linked = true;
@@ -138,7 +144,7 @@ test('trial and paid accept the same task without fetching battles or generating
     });
   }
   expect((await send('repeat-accept', { taskId: crypto.randomUUID() })).status).toBe(400);
-  expect(requests.length + ai).toBe(0);
+  expect(requests.length + ai + cacheReads).toBe(0);
 });
 test('fresh observations only, after acceptance, using the earliest accessible valid 1v1', async () => {
   task.practice_repeat = {
@@ -182,6 +188,49 @@ test('initial match checks reject stale game history and leave saved legacy resu
   expect(work).toHaveLength(0);
   task.battle_result = null;
   expect((await send('check')).data.error).toBe('battle_feed_unavailable');
+});
+test('an old duel stays readable before and after trial upgrade without offering a repeat', async () => {
+  const legacyKey = 'UY02YVY9G:20261117T090000.000Z:UQRCGQJR2';
+  task.matched_battle_key = legacyKey;
+  task.battle_result = { ...first, key: legacyKey, score: [1, 2], outcome: 'loss' };
+  history = [{ ...battle('20261117T090000.000Z', 1, 2), type: 'riverRaceDuel' }];
+  for (sub of [null, 'trialing', 'active']) {
+    const saved = (await send('get')).data.task;
+    expect(saved.id).toBe(id);
+    expect(saved.battle_result.score).toEqual([1, 2]);
+    for (const action of ['repeat-view', 'repeat-accept'])
+      await send(action, { firstKey: legacyKey, reverified_legacy_key: legacyKey, p_reverified_key: legacyKey });
+  }
+  expect(work).toHaveLength(0);
+  expect(requests.length + ai).toBe(0);
+  offers = false;
+  cacheReads = 0;
+  await send('get');
+  await send('repeat-accept', { firstKey: legacyKey });
+  expect(cacheReads).toBe(0);
+});
+test('revalidates an accessible legacy single game from the promoted player’s perspective', async () => {
+  sub = 'trialing';
+  const raw = battle('20261117T090000.000Z', 2, 1);
+  const oldKey = 'UY02YVY9G:20261117T090000.000Z:UQRCGQJR2';
+  task.matched_battle_key = oldKey;
+  task.battle_result = { ...first, key: oldKey };
+  for (history of [[], [battle('20261117T090001.000Z', 2, 1)], [battle(raw.battleTime, 1, 2)],
+    [{ ...raw, opponent: [{ ...raw.opponent[0], tag: '#QQQQ' }] }],
+    [{ ...raw, team: [{ ...raw.team[0], cards: raw.team[0].cards.map((c: any) => ({ ...c, id: c.id+10 })) }] }],
+    [raw, battle(raw.battleTime, 1, 1)], [raw, { ...raw, type: 'riverRaceDuel' }],
+  ]) {
+    const saved = (await send('get')).data.task;
+    expect(saved.reverified_legacy_key).toBeUndefined();
+    await send('repeat-accept', { firstKey: oldKey });
+  }
+  expect(work).toHaveLength(0);
+  history = [{ ...raw, team: raw.opponent, opponent: raw.team }];
+  expect((await send('get')).data.task.reverified_legacy_key).toBe(oldKey);
+  expect(work).toHaveLength(0);
+  await send('repeat-accept', { firstKey: oldKey });
+  expect(work.at(-1)).toMatchObject({ p_task: id, p_reverified_key: oldKey, p_tier: 'trial' });
+  expect(requests.length + ai).toBe(0);
 });
 test('a former subscriber can revisit an accepted task but cannot check another battle', async () => {
   sub = 'canceled';

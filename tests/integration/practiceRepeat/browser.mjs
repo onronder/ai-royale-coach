@@ -6,12 +6,16 @@ assert.equal(new URL(base).hostname, '127.0.0.1');
 const browser = await chromium.launch();
 const uid = '11111111-2222-4333-8444-555555555555', id = '33333333-3333-4333-8333-333333333333';
 const first = {
-  key: 'first',
+  key: 'coach-1v1-v1:UY02YVY9G:fixture-first',
   battle_time: '2026-11-20T12:00:00.000Z',
   score: [1, 2],
   outcome: 'loss',
   trophy_change: null,
   opponent_deck: [],
+};
+const windows = {
+  exposure_from: '2026-11-14T10:00:00Z', exposure_through: '2026-11-21T10:00:00Z',
+  accepted_from: '2026-11-07T10:00:00Z', accepted_through: '2026-11-14T10:00:00Z',
 };
 const headers = {
   'access-control-allow-origin': '*',
@@ -66,12 +70,13 @@ try {
         }
         if (req.method() === 'OPTIONS') return route.fulfill({ headers, status: 200 });
         if (u.pathname.endsWith('/rpc/admin_practice_repeat')) {
+          assert.equal(req.postDataJSON().p_days, 7);
           return route.fulfill({
             headers,
             contentType: 'application/json',
             body: JSON.stringify([
-              { tier: 'trial', viewers: 4, acceptors: 3, mature: 2, returned: 1, matched: 0 },
-              { tier: 'paid', viewers: 0, acceptors: 0, mature: 0, returned: 0, matched: 0 },
+              { ...windows, tier: 'trial', viewers: 4, acceptors: 3, mature: 2, returned: 1, matched: 0 },
+              { ...windows, tier: 'paid', viewers: 0, acceptors: 0, mature: 0, returned: 0, matched: 0 },
             ]),
           });
         }
@@ -84,6 +89,12 @@ try {
         let status = 200, error;
         switch (input.action) {
           case 'get':
+            break;
+          case 'follow-up':
+            task.follow_up_question = input.question;
+            task.follow_up_answer = 'Use the saved goal.';
+            task.recommendation.follow_up_language = language;
+            delete task.reverified_legacy_key;
             break;
           case 'repeat-view':
             task.practice_seen_at ??= new Date().toISOString();
@@ -134,7 +145,7 @@ try {
         allowed = true;
         task = {
           id,
-          matched_battle_key: 'first',
+          matched_battle_key: first.key,
           battle_result: first,
           shown_at: first.battle_time,
           status: 'completed',
@@ -217,8 +228,36 @@ try {
         assert.equal(await section.getByRole('button').count(), 0);
         passed++;
       }
+      // A normal-range score from the old matcher still renders with the pilot open.
+      const legacy = 'UY02YVY9G:20261120T120000.000Z:UQRCGQJR2';
+      allowed = true;
+      delete task.practice_repeat;
+      delete task.practice_seen_at;
+      task.matched_battle_key = legacy;
+      task.battle_result = { ...first, key: legacy };
+      calls.length = 0;
+      await page.reload();
+      await page.getByText('1 – 2', { exact: true }).waitFor();
+      assert.equal(await section.count(), 0);
+      assert.equal(calls.some(c => c.action.startsWith('repeat-')), false);
+      task.reverified_legacy_key = legacy;
+      await page.reload();
+      await button.waitFor();
+      await section.getByText('1 – 2').waitFor();
+      await page.getByRole('button').filter({ has: page.locator('svg.lucide-chevron-down') }).last().click();
+      await page.locator('#task-question').fill('Can I keep this deck?');
+      await page.locator('form').filter({ has: page.locator('#task-question') }).getByRole('button').click();
+      await page.getByText(/Use the saved goal\./).waitFor();
+      await button.waitFor();
       await page.goto(base + '/tests/integration/correctness/ui.html?scene=practice-report');
-      await page.getByText(copy.mature).waitFor();
+      const utc = new Intl.DateTimeFormat(language, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' });
+      for (const [label, from, through] of [
+        [copy.exposureWindow, windows.exposure_from, windows.exposure_through],
+        [copy.mature, windows.accepted_from, windows.accepted_through],
+      ]) {
+        const range = label.replace('{{from}}', utc.format(new Date(from))).replace('{{through}}', utc.format(new Date(through)));
+        await page.getByText(range, { exact: true }).waitFor();
+      }
       await page.getByText(/\(3\/4\)/).waitFor();
       await page.getByText(/\(1\/2\)/).waitFor();
       assert.equal(await page.getByText('— (0/0)', { exact: true }).count(), 3);
@@ -228,7 +267,7 @@ try {
   }
   console.log(
     'PASS ' + passed +
-      ' real component flows: keep/swap, five languages, 390/1280px, opt-in, reload, stale/empty, two scores, later visit, changed deck; all external services blocked',
+      ' real component flows: keep/swap, five languages, 390/1280px, opt-in, reload, stale/empty, two scores, later visit, changed deck; legacy evidence and both UTC cohort windows at every locale/width; all external services blocked',
   );
 } finally {
   await browser.close();
