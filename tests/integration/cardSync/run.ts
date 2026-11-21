@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import postgres from 'postgres';
+import { calculateDeckUpgradePlan } from '../../../src/lib/deckUpgradePlan';
 import { handleCardSync, type SyncDependencies } from '../../../supabase/functions/sync-card-collection/handler';
 const socket = process.env.CARD_SYNC_PG, port = process.env.CARD_SYNC_PG_PORT || '55449';
 assert(socket?.startsWith('/'), 'Use a disposable socket-only database');
@@ -111,6 +112,18 @@ try {
     assert.equal(firstResult.data.success,true);
     assert.deepEqual(first.slice(3,8).map(r=>r.card_count),[null,null,0,80,80]);
     assert.equal(first[6].card_level,11);
+  });
+  await test('upgrade costs use the real completed run, including updated rows but excluding omitted cards', async () => {
+    const sync = await rpc('get_my_card_collection_sync', { p_tag: tag }, owner);
+    const snapshot = { userId: owner, playerTag: tag, sync, cards: first };
+    const ids = first.slice(3, 11).map(card => card.card_id);
+    const plan = calculateDeckUpgradePlan(snapshot, { cards: ids, targetLevel: 13 }, { cards: ids, targetLevel: 14 });
+    assert.equal(plan.status, 'ready');
+    assert.equal(plan.gold.additional.total, 7 * 60000); // one level-16 card and seven level-12 epics
+    assert.deepEqual(plan.rows.slice(0, 5).map(row => row.additional.missingCopies), [null, null, 100, 0, 90]);
+    const omitted = calculateDeckUpgradePlan(snapshot, { cards: [first[1].card_id, ...ids.slice(1)], targetLevel: 13 });
+    assert.equal(omitted.status, 'invalid');
+    assert.equal(omitted.error, 'unresolved_card');
   });
   const secondResult = await request(owner,true,{player:async()=>({...old,cards:[
     {...old.cards[0],count:23},{...old.cards[3],count:0},
