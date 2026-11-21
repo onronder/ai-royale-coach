@@ -138,6 +138,10 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
  const result=task?.battle_result;
  const previous=task?.previous_match;
  const done=!!result;
+ const goal=task && practiceGoal(task,playerTag);
+ const canRepeat=hasAccess && !!query.data?.can_repeat;
+ const offerRepeat=canRepeat && !!goal && !task?.practice_repeat;
+ const hasRepeatCard=!!task?.practice_repeat || offerRepeat;
  const step=!task?.recommendation?0:done?3:2;
  const outcomeTone=result?.outcome==='win'?'border-success/60 bg-success/10':result?.outcome==='loss'?'border-destructive/60 bg-destructive/10':'border-border bg-muted/30';
  const outcomeText=result?.outcome==='win'?'text-success':result?.outcome==='loss'?'text-destructive':'text-muted-foreground';
@@ -162,7 +166,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    <div className={`rounded-lg border p-4 ${result?outcomeTone:'border-border'}`} aria-live="polite">{result?<>
      <h3 className="text-sm font-semibold">{t('coaching.result')}</h3>
      <div className="my-2 flex items-baseline gap-3"><strong className="font-rajdhani text-4xl">{result.score.join(' – ')}</strong><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result.outcome}`)}</span>{result.trophy_change!==null&&<span className="ml-auto text-sm text-muted-foreground">{t('coaching.trophies')}: <span className="font-semibold text-foreground">{result.trophy_change>0?'+':''}{result.trophy_change}</span></span>}</div>
-     <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{t('coaching.next')}: </span>{t(result.outcome==='win'?'coaching.nextWin':result.outcome==='loss'?'coaching.nextLoss':'coaching.nextDraw')}</p>
+     {offerRepeat&&<p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">{t('coaching.next')}: </span>{t(result.outcome==='win'?'coaching.nextWin':result.outcome==='loss'?'coaching.nextLoss':'coaching.nextDraw')}</p>}
      {result.opponent_deck.length>0&&<Collapsible className="mt-3"><CollapsibleTrigger asChild><Button variant="ghost" size="sm" className="group -ml-2 h-8 px-2 text-xs"><ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180"/>{t('coaching.showOpponent')}</Button></CollapsibleTrigger><CollapsibleContent><div className="mt-2 grid grid-cols-4 gap-2">{result.opponent_deck.map(c=>mini(c))}</div></CollapsibleContent></Collapsible>}
     </>:<>
      <p className="text-sm font-semibold">{t('coaching.waiting')}</p>
@@ -177,9 +181,6 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
    <div className="rounded-lg border border-border p-4">{task.follow_up_answer?<><h3 className="mb-3 text-sm font-semibold">{t('coaching.saved')}</h3><p className="mb-3 break-words text-sm text-muted-foreground">{text?.question && <><span className="font-semibold">{t('coaching.you')}: </span>{text.question}</>}</p><div className="rounded-md border-l-2 border-primary bg-primary/5 p-3"><p className="mb-1 text-xs font-semibold text-primary">{t('coaching.coach')}</p><p lang={language} className="whitespace-pre-wrap break-words text-sm leading-relaxed">{answer}</p></div></>:<form onSubmit={e=>{e.preventDefault();void run('follow-up');}}><label htmlFor="task-question" className="mb-2 block text-sm font-semibold">{t('coaching.followUp')}</label><Textarea id="task-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={500} placeholder={t(task.recommendation.decision==='keep'?'correctness.practiceQuestion':'coaching.placeholder')} disabled={!hasAccess||!!busy}/><Button type="submit" variant="outline" disabled={!hasAccess||!!busy||!question.trim()} className="mt-3 h-auto min-h-11 w-full whitespace-normal py-2"><Send/>{t(task.recommendation.decision==='keep'?'correctness.askPractice':'coaching.ask')}</Button></form>}</div>
   </div>
  </div>;
- const goal=task && practiceGoal(task,playerTag);
- const canRepeat=hasAccess && !!query.data?.can_repeat;
- const hasRepeatCard=!!task?.practice_repeat || !!(canRepeat && goal);
  const showCurrentScore=done && (!hasRepeatCard || (task?.practice_repeat && task.practice_repeat.first.key!==task.matched_battle_key));
  const summary=done&&((removed&&added)||showCurrentScore)&&<div className="mt-4 flex flex-wrap items-center gap-3 text-sm">{removed&&added&&<><img src={removed.iconUrls?.medium} alt={cardLabel(removed.name)} className="h-10 w-auto"/><ArrowRight className="h-4 w-4 text-primary"/><img src={added.iconUrls?.medium} alt={cardLabel(added.name)} className="h-10 w-auto"/></>}{showCurrentScore&&<><span className="font-rajdhani text-2xl font-bold">{result!.score.join(' – ')}</span><span className={`font-semibold ${outcomeText}`}>{t(`coaching.${result!.outcome}`)}</span></>}</div>;
  return <Card ref={cardRoot} aria-label={t('coaching.intro')} className="mb-6 min-w-0 border-border/60 bg-card/80 p-4 pb-6 sm:p-6">
@@ -208,6 +209,7 @@ export function FirstSessionTask({userId,playerTag,onMatchResult}:{
       busy={!!busy} localizedTip={practice} action={(name,request)=>void run(name,undefined,request)}
       view={request=>invoke('repeat-view',undefined,undefined,request)}/>}
    {checkedRepeat===task.id && task.practice_repeat?.status==='pending' && <p role="status">{t('practiceRepeat.noMatch')}</p>}
+   {done && canRepeat && !hasRepeatCard && <p className="mt-3 text-sm text-muted-foreground">{t('practiceRepeat.unavailable')}</p>}
    {done&&!task.practice_repeat?.second&&<p className="mt-3 text-sm text-muted-foreground">{t("correctness.singleResult")}</p>}
    {done?<>{!open&&summary}{open&&body}<Button variant="ghost" size="sm" className="mt-3 -ml-2 h-8 px-2 text-xs" onClick={()=>setOpen(!open)}><ChevronDown className={`h-4 w-4 transition-transform ${open?'rotate-180':''}`}/>{open?t('coaching.hideDetails'):t('coaching.showDetails')}</Button></>:body}
   </>:hasAccess&&confirmation?<div className="mt-4 space-y-3" aria-live="polite">

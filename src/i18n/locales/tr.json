@@ -3,6 +3,7 @@
     "title": "Aynı desteyle çalışma",
     "first": "İlk maç",
     "second": "İkinci maç",
+    "unavailable": "İlk maçının skoru kayıtlı. Şu anda bu göreve ikinci bir maç eklenemiyor.",
     "accept": "Aynı 8 kartla bir maç daha çalış",
     "pending": "Aynı sekiz kartla oyna, sonra sonucu kontrol et.",
     "changed": "Deste değişti. Bu tekrar kapandı.",
