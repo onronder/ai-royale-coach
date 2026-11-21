@@ -20,7 +20,7 @@ let task: any,
   sub: string | null,
   linked: boolean,
   enabled: boolean,
-  stale: boolean,
+  stale: boolean | undefined,
   failed: boolean,
   rows: any[],
   requests: any[],
@@ -78,7 +78,7 @@ mock.module('https://esm.sh/@supabase/supabase-js@2.81.1', () => ({
         return {
           data: rows,
           error: failed ? 'offline' : null,
-          response: new Response(null, { headers: { 'X-Cache-Stale': String(stale) } }),
+          response: new Response(null, { headers: stale===undefined?{}:{ 'X-Cache-Stale': String(stale) } }),
         };
       },
     },
@@ -155,6 +155,8 @@ test('fresh observations only, after acceptance, using the earliest accessible v
   }];
   expect((await send('repeat-check', { automatic: true })).data.repeat_checked).toBeUndefined();
   expect(requests).toHaveLength(0);
+  stale = undefined;
+  expect((await send('repeat-check')).data.error).toBe('battle_feed_unavailable');
   stale = true;
   expect((await send('repeat-check')).data.error).toBe('battle_feed_unavailable');
   stale = false;

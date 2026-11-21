@@ -47,7 +47,7 @@ async function handleRequest(req: Request): Promise<Response> {
  const gameData=async(type:'player'|'battles',force=false)=>{
    const {data,error,response}=await db.functions.invoke('clash-royale-api',{body:{endpoint:type,playerTag:tag,forceRefresh:force}});
    if(type==='battles' && (action==='check'||action==='repeat-check') &&
-     (error || response?.headers.get('X-Cache-Stale')==='true' || !Array.isArray(data))) throw new Error('battle_feed_unavailable');
+     (error || response?.headers.get('X-Cache-Stale')!=='false' || !Array.isArray(data))) throw new Error('battle_feed_unavailable');
    if(error) throw new Error('Game data unavailable');
    if((action==='start' || action==='follow-up') && response?.headers.get('X-Cache-Stale')==='true') return null;
    return data;

@@ -2,6 +2,11 @@ import { coachingReading, type SavedAdvice } from './coaching-reading.ts';
 import { firstTaskBattle } from './coaching-match.ts';
 
 type Result = { score: number[]; key?: string; battle_time?: string };
+export function firstPracticeSentence(text: string) {
+  const boundary = /[.!?]\s/u.exec(text);
+  return boundary ? text.slice(0, boundary.index + 1) : text;
+}
+
 export function practiceGoal(
   task: SavedAdvice & { battle_result: Result | null; matched_battle_key?: string | null },
 ) {
@@ -18,7 +23,7 @@ export function practiceGoal(
   const reading = coachingReading(task, task.recommendation?.language ?? task.language ?? 'en');
   const tip = reading?.originals.practice.trim();
   if (!reading || !tip) return null;
-  return { tip: tip.split(/(?<=[.!?])\s+/u)[0], language: reading.adviceLanguage };
+  return { tip: firstPracticeSentence(tip), language: reading.adviceLanguage };
 }
 
 export async function checkPracticeMatch(

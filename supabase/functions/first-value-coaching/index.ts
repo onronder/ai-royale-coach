@@ -49,7 +49,8 @@ Deno.serve(async (req) => {
               headers: { Authorization: req.headers.get('authorization') || '' },
             })
             if (response?.status === 404 || error?.context?.status === 404) return null
-            if (error || response?.headers.get('X-Cache-Stale') === 'true')
+            const stale = response?.headers.get('X-Cache-Stale')
+            if (error || stale === 'true' || (endpoint === 'battles' && stale !== 'false'))
               throw new Error('Game unavailable')
             return data
           },

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { practiceVisit } from '@/lib/practiceVisit';
-import type { practiceGoal } from '../../../supabase/functions/_shared/practice-repeat';
+import { firstPracticeSentence, type practiceGoal } from '../../../supabase/functions/_shared/practice-repeat';
 import { DeckTransfer } from './DeckTransfer';
 import type { Task } from './FirstSessionTask';
 
@@ -108,7 +108,7 @@ export function PracticeRepeat({ task, account, tag, allowed, busy, action, view
     action(name, { taskId: task.id, firstKey, visitId: await practiceVisit(account) ?? undefined });
   const tip = repeat?.tip ?? goal?.tip;
   const translated = localizedTip && goal?.tip === tip && task.matched_battle_key === firstKey
-    ? localizedTip.split(/(?<=[.!?])\s+/u)[0]
+    ? firstPracticeSentence(localizedTip)
     : null;
   const first = repeat?.first ?? task.battle_result!;
   return (
