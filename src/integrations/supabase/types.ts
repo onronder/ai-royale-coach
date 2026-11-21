@@ -720,6 +720,10 @@ export type Database = {
           last_checked_at: string | null
           matched_battle_key: string | null
           player_tag: string
+          practice_auto_checked_at: string | null
+          practice_repeat: Json | null
+          practice_seen_at: string | null
+          practice_seen_tier: string | null
           previous_match: Json | null
           prompt_tokens: number
           recommendation: Json | null
@@ -744,6 +748,10 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag: string
+          practice_auto_checked_at?: string | null
+          practice_repeat?: Json | null
+          practice_seen_at?: string | null
+          practice_seen_tier?: string | null
           previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
@@ -768,6 +776,10 @@ export type Database = {
           last_checked_at?: string | null
           matched_battle_key?: string | null
           player_tag?: string
+          practice_auto_checked_at?: string | null
+          practice_repeat?: Json | null
+          practice_seen_at?: string | null
+          practice_seen_tier?: string | null
           previous_match?: Json | null
           prompt_tokens?: number
           recommendation?: Json | null
@@ -3114,6 +3126,21 @@ export type Database = {
         Returns: Json
       }
       admin_marketing_reach: { Args: never; Returns: Json }
+      admin_practice_repeat: {
+        Args: { p_days: number }
+        Returns: {
+          accepted_from: string
+          accepted_through: string
+          acceptors: number
+          exposure_from: string
+          exposure_through: string
+          matched: number
+          mature: number
+          returned: number
+          tier: string
+          viewers: number
+        }[]
+      }
       admin_privacy_requests: {
         Args: never
         Returns: {
@@ -3327,6 +3354,10 @@ export type Database = {
         Returns: boolean
       }
       claim_polar_order_sync: { Args: { p_ticket: string }; Returns: number }
+      claim_practice_return_check: {
+        Args: { p_key: string; p_tag: string; p_task: string; p_user: string }
+        Returns: boolean
+      }
       claim_reminder_attempt: {
         Args: { p_ticket: string }
         Returns: {
@@ -3621,6 +3652,7 @@ export type Database = {
         Args: { p_amount: number; p_refunded: number; p_status: string }
         Returns: number
       }
+      practice_card_ids: { Args: { deck: Json }; Returns: Json }
       queue_confirmed_welcomes: {
         Args: { anon_key: string; project_url: string }
         Returns: undefined
@@ -3852,6 +3884,22 @@ export type Database = {
       unsubscribe_marketing_delivery: {
         Args: { p_campaign: string; p_user: string }
         Returns: string
+      }
+      update_practice_repeat: {
+        Args: {
+          p_action: string
+          p_key: string
+          p_language?: string
+          p_match?: Json
+          p_reverified_key?: string
+          p_session: string
+          p_tag: string
+          p_task: string
+          p_tier: string
+          p_tip?: string
+          p_user: string
+        }
+        Returns: Json
       }
       update_trial_coaching: {
         Args: { p_action: string; p_subscription: string; p_value?: string }
