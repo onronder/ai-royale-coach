@@ -16,6 +16,7 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
   const tag = playerTag ? canonicalTag(playerTag) : '';
   const key = userId + ':' + tag;
   const current = useRef(key); current.current = key;
+  const translate = useRef(t); translate.current = t;
   const attempted = useRef(new Set<string>());
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
     attempted.current.add(key);
     let mounted = true;
     const joined = pending.has(key);
+    const notices: Completed[] = [];
     const sessionForAccount = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error || session?.user.id !== userId) throw new Error('Account changed');
@@ -47,14 +49,17 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
           const session = await sessionForAccount();
           if (!step.fn) {
             const result = await syncCardCollection(userId, tag);
-            if (result.success && result.status === 'completed' && result.claimed && !result.joined)
+            if (result.success && result.status === 'completed') {
               completed.push(step.label);
+              if (result.claimed && !result.joined) notices.push(step.label);
+            }
           } else {
             const { data, error } = await supabase.functions.invoke(step.fn, {
               headers: { Authorization: 'Bearer ' + session.access_token }, body: { playerTag: tag },
             });
             if (error || data?.success !== true) throw error || new Error('Operation did not complete');
             completed.push(step.label);
+            notices.push(step.label);
           }
           if (step.table !== 'deck_usage_stats') await new Promise(resolve => setTimeout(resolve, 2000));
         } catch (error) {
@@ -66,16 +71,25 @@ export function useBackgroundSync(userId: string | null, playerTag: string | und
     };
     let request = pending.get(key);
     if (!request) {
-      request = run().finally(() => { if (pending.get(key) === request) pending.delete(key); });
+      request = run().then(async completed => {
+        // Refresh the operation's cache even if its initiating view has left.
+        // Only this owner does it; joined observers must not duplicate refetches.
+        try { await sessionForAccount(); } catch { return completed; }
+        if (completed.some(label => label === 'collectionSynced' || label === 'masteryCalculated'))
+          void client.invalidateQueries({ queryKey: ['player-context', userId, tag.slice(1)] });
+        if (completed.includes('deckStatsTracked'))
+          void client.invalidateQueries({ predicate: query => query.queryKey[0] === 'deck-stats' &&
+            typeof query.queryKey[1] === 'string' && canonicalTag(query.queryKey[1]) === tag });
+        return completed;
+      }).finally(() => { if (pending.get(key) === request) pending.delete(key); });
       pending.set(key, request);
     }
     void request.then(async completed => {
       if (!mounted || current.current !== key || joined || !completed.length) return;
       try { await sessionForAccount(); } catch { return; }
       if (!mounted || current.current !== key) return;
-      void client.invalidateQueries({ queryKey: ['player-context', userId, tag.slice(1)] });
-      for (const label of completed) toast.success(t('dashboard.sync.' + label));
+      for (const label of notices) toast.success(translate.current('dashboard.sync.' + label));
     });
     return () => { mounted = false; };
-  }, [userId, tag, key, client, t]);
+  }, [userId, tag, key, client]);
 }

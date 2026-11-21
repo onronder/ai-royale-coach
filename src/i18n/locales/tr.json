@@ -1423,6 +1423,7 @@
     "rateLimitExceeded": "Hız limiti aşıldı. Lütfen biraz bekleyin.",
     "creditsExhausted": "AI kredileri tükendi. Lütfen kredi ekleyin.",
     "failedToGetResponse": "Koçtan yanıt alınamadı",
+    "failedToSaveResponse": "Yanıt kaydedilemedi. Sohbet geçmişinde görünmeyecek. Yeni bir yanıt istenmedi.",
     "failedToSend": "Mesaj gönderilemedi",
     "failedToSendMatchContext": "Maç bağlamı gönderilemedi",
     "signInRequired": "AI Koçu kullanmak için lütfen giriş yapın",

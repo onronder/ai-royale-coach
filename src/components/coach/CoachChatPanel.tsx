@@ -1,4 +1,5 @@
 import { ensureHelp } from '@/i18n';
+import { readCoachChatStream } from '@/lib/coachChatStream';
 import { CHAT_PAGE_SIZE, CHAT_DAY_PAGE_SIZE, chatDayBounds, chatDayKey, chatCursorFilter, type ChatCursor } from '@/lib/chatHistory';
 import { PlayerContextStatus } from './PlayerContextStatus';
 import { observeBattle, canonicalTag } from '../../../supabase/functions/_shared/battle-observation';
@@ -127,6 +128,8 @@ export function CoachChatPanel({
   const messageRequest = useRef(0);
   const dayRequest = useRef(0);
   const selectedDay = useRef(currentConversationId); selectedDay.current = currentConversationId;
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
   
   // Feature access control - uses the new 3-layer check
   const { logUsage, canAccess, remainingUses } = useFeatureAccess('ai_coach', playerTag);
@@ -296,12 +299,17 @@ export function CoachChatPanel({
   const streamChat = async (userMessage: string, history: Message[] = messages) => {
     if (!userId) return;
 
+    const scope = historyScope;
+    const responseDay = selectedDay.current === 'new' ? chatDayKey() : selectedDay.current;
+    const current = () => mounted.current && scopeRef.current === scope && selectedDay.current === responseDay;
+    const tempId = `temp-${crypto.randomUUID()}`;
+    let saving = false;
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/coach-chat`;
     
     try {
       // Get the current user's session token for auth
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
+      if (!session?.access_token || session.user.id !== userId) {
         toast.error(t('coach.signInRequired'));
         return;
       }
@@ -373,64 +381,21 @@ export function CoachChatPanel({
 
       if (!resp.body) throw new Error("No response body");
 
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-      let streamDone = false;
-      let assistantContent = "";
-
-      const tempId = `temp-${Date.now()}`;
-      setMessages(prev => [...prev, {
-        id: tempId,
-        role: "assistant",
-        content: "",
-        created_at: new Date().toISOString()
+      if (current()) setMessages(prev => [...prev, {
+        id: tempId, role: "assistant", content: "", created_at: new Date().toISOString()
       }]);
-
-      while (!streamDone) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") {
-            streamDone = true;
-            break;
-          }
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              assistantContent += content;
-              setMessages(prev => {
-                const newMessages = [...prev];
-                const lastMsg = newMessages[newMessages.length - 1];
-                if (lastMsg?.id === tempId) {
-                  lastMsg.content = assistantContent;
-                }
-                return newMessages;
-              });
-            }
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
-        }
-      }
+      const assistantContent = await readCoachChatStream(resp.body, content => {
+        if (current()) setMessages(prev => prev.map(message =>
+          message.id === tempId ? { ...message, content } : message));
+      });
+      // A completed reply belongs to the requesting account/player, even if its
+      // panel is no longer visible. Never persist it under a replacement session.
+      const { data: { session: ownerSession } } = await supabase.auth.getSession();
+      if (ownerSession?.user.id !== userId) throw new Error('Account changed');
 
       // Save to database and log usage
       if (assistantContent) {
+        saving = true;
         const { data: assistantMsg, error: assistantError } = await supabase
           .from("chat_messages")
           .insert({
@@ -442,11 +407,14 @@ export function CoachChatPanel({
           .select()
           .single();
 
-        if (!assistantError && assistantMsg) {
-          setMessages(prev => {
-            const newMessages = prev.filter(m => m.id !== tempId);
-            return [...newMessages, assistantMsg as Message];
-          });
+        if (assistantError || !assistantMsg) throw assistantError || new Error('Reply was not saved');
+        saving = false;
+        if (current()) setMessages(prev => [
+          ...prev.filter(message => message.id !== tempId && message.id !== assistantMsg.id),
+          assistantMsg as Message,
+        ]);
+        const { data: { session: completedSession } } = await supabase.auth.getSession();
+        if (completedSession?.user.id === userId) {
           
           // Log AI usage after successful response
           try {
@@ -455,14 +423,14 @@ export function CoachChatPanel({
             console.error('Failed to log AI usage:', error);
           }
           
-          // Refresh conversations list
-          loadConversations();
+          // Refresh only the view that initiated this response.
+          if (current()) void loadConversations();
         }
       }
     } catch (error) {
       console.error("Stream error:", error);
-      toast.error(t('coach.failedToGetResponse'));
-      setMessages(prev => prev.filter(m => !m.id.startsWith("temp-")));
+      if (current()) toast.error(t(saving ? 'coach.failedToSaveResponse' : 'coach.failedToGetResponse'));
+      setMessages(prev => prev.filter(m => m.id !== tempId));
     }
   };
 
