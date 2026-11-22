@@ -59,7 +59,7 @@ function PlanDisclosure({ account, tag, cards }: { account: string; tag: string;
     }
   }
   return <>
-    <Button variant="outline" className="mb-3 min-h-11 gap-2" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+    <Button variant="outline" className="min-h-11 gap-2" aria-haspopup="dialog" onClick={() => setOpen(true)}>
       <Layers aria-hidden="true" size={17} />{t('upgradePlan.title')}<ChevronRight aria-hidden="true" size={16} />
     </Button>
     {open && <dialog ref={dialog} onClose={close} aria-labelledby={titleId}
