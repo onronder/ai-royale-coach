@@ -153,7 +153,15 @@ export function calculateDeckUpgradePlan(snapshot: CollectionSnapshot, main: Dec
     sync.user_id !== userId || canonicalTag(sync.player_tag) !== tag) ? 'unavailable' : 'waiting';
   if (!collection) return { status: missingData } as const;
 
-  const freshness: 'current' | 'previous' = collection === current ? 'current' : 'previous';
+  // A late completed read cannot invalidate a newer verified collection. With split
+  // responses, either a newer operation or a newer row can still be outstanding.
+  const latestVerified = current !== null || (
+    sync?.status === 'completed' && sync.user_id === userId && canonicalTag(sync.player_tag) === tag &&
+    epochMicros(sync.last_successful_at) <= collection.end &&
+    !snapshot.cards.some(card => card.user_id === userId && canonicalTag(card.player_tag) === tag &&
+      epochMicros(card.updated_at) > collection.end)
+  );
+  const freshness: 'current' | 'previous' = latestVerified ? 'current' : 'previous';
   const observation = { asOf: collection.asOf, freshness, priceVersion: UPGRADE_COST_VERSION };
   const primary = resolveGoal(main, collection.cards);
   if ('error' in primary) {

@@ -244,6 +244,44 @@ describe('deck upgrade plan', () => {
     assert.equal(delayed.rows[0].additional.missingCopies, 90);
   });
 
+  for (const [deck, missingId] of [['main', 8], ['second', 16]] as const) {
+    it('keeps the verified missing slot in the ' + deck + ' deck when an older response arrives late', () => {
+      const older = collection(0);
+      const end = '2026-11-21T01:00:00.123599Z';
+      const newer = {
+        ...collection(80),
+        sync: { ...sync, started_at: '2026-11-21T01:00:00.123500Z', last_successful_at: end, synced_cards: 15 },
+        cards: collection(80).cards.filter(c => c.card_id !== missingId).map(c => ({ ...c, updated_at: end })),
+      };
+      const expected = calculateDeckUpgradePlan({ ...newer, previous: older }, main, second);
+      assert.equal(expected.status, 'invalid');
+      assert.equal(expected.deck, deck);
+      assert.equal(expected.error, 'unresolved_card');
+      assert.equal(expected.slot, 7);
+      assert.equal(expected.reference, missingId);
+      assert.equal(expected.asOf, end);
+      assert.equal(expected.freshness, 'current');
+      if (expected.deck === 'second') assert.equal(expected.mainPlan.gold.total, 40000);
+
+      // Metadata and rows can arrive separately, including from the older request.
+      for (const incoming of [older, { ...older, cards: newer.cards }, { ...newer, cards: older.cards }]) {
+        assert.deepEqual(calculateDeckUpgradePlan({ ...incoming, previous: newer }, main, second), expected);
+      }
+      const future = '2026-11-21T01:00:00.123699Z';
+      for (const pending of [
+        { ...newer, sync: { ...newer.sync, started_at: '2026-11-21T01:00:00.123600Z', last_successful_at: future } },
+        { ...older, cards: newer.cards.map(c => ({ ...c, updated_at: future })) },
+      ]) {
+        const result = calculateDeckUpgradePlan({ ...pending, previous: newer }, main, second);
+        assert.equal(result.status, 'waiting');
+        assert.equal(result.freshness, 'previous');
+        assert.equal(result.asOf, end);
+        assert.equal('slot' in result, false);
+        if (deck === 'second') assert.equal(result.mainPlan?.gold.total, 40000);
+      }
+    });
+  }
+
   it('never reuses an incomplete collection or one verified for another account or player', () => {
     const saved = collection();
     for (const previous of [
