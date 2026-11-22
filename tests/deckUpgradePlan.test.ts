@@ -6,7 +6,7 @@ import { nextUpgradeCopies, upgradeStep } from '../src/lib/upgradeCost';
 const userId = 'fixture-account';
 const playerTag = '#UY02YVY9G';
 const sync = {
-  user_id: userId, player_tag: playerTag, status: 'completed',
+  user_id: userId, player_tag: playerTag, status: 'completed', synced_cards: 16,
   started_at: '2026-11-21T01:00:00.123400Z', last_successful_at: '2026-11-21T01:00:00.123499Z',
 };
 const mainIds = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -143,7 +143,12 @@ describe('deck upgrade plan', () => {
       assert.equal(row.main.gold, null);
       assert.equal(row.combined.missingCopies, null);
       assert.equal(row.additional.gold, 0);
-      assert.equal(row.sharedNextUpgrade, false);
+      assert.equal(row.sharedNextUpgrade, null);
+      assert.equal(ready(snapshot, main, goal(mainIds, 13)).sharedNextUpgrade, null);
+      assert.equal(ready(snapshot).rows[0].sharedNextUpgrade, false);
+      assert.equal(ready(snapshot, main, goal(otherIds, 14)).sharedNextUpgrade, false);
+      snapshot.cards[1] = card(2, 12);
+      assert.equal(ready(snapshot, main, goal(mainIds, 13)).sharedNextUpgrade, true);
     }
     assert.equal(ready().rows[1].level, 16);
   });
@@ -156,7 +161,16 @@ describe('deck upgrade plan', () => {
     assert.equal(run(goal([...mainIds.slice(1), 'Epic 8'], 14)).error, 'duplicate_card');
     for (const target of [0, 17, 13.5, NaN]) assert.equal(run(goal(mainIds, target)).error, 'invalid_target');
     const missing = goal([...mainIds.slice(1), 'Missing card'], 14);
-    assert.deepEqual(run(missing), { status: 'invalid', deck: 'second', error: 'unresolved_card', slot: 7, reference: 'Missing card' });
+    const partial = run(missing);
+    assert.equal(partial.status, 'invalid');
+    assert.equal(partial.deck, 'second');
+    assert.equal(partial.error, 'unresolved_card');
+    assert.equal(partial.slot, 7);
+    assert.equal(partial.reference, 'Missing card');
+    const single = ready(snap);
+    assert.deepEqual(partial.mainPlan, { rows: single.rows, gold: single.gold.main });
+    assert.equal(partial.asOf, sync.last_successful_at);
+    assert.equal('gold' in partial, false); // no combined or incremental price
     snap.cards[1].card_name = 'Epic 1';
     assert.equal(run(second).error, 'unresolved_card');
   });
@@ -167,14 +181,79 @@ describe('deck upgrade plan', () => {
     snap.cards.unshift(
       { ...base, card_count: 0, player_tag: '#QQQ' }, { ...base, card_count: 0, user_id: 'other' },
       { ...base, card_count: 0, updated_at: '2026-11-21T01:00:00.123399Z' },
-      { ...base, card_count: 0, updated_at: '2026-11-21T01:00:00.123500Z' },
     );
     assert.equal(ready(snap, main, second).rows[0].additional.missingCopies, 90);
-    for (const syncState of [null, { ...sync, status: 'failed' }, { ...sync, user_id: 'other' }, { ...sync, player_tag: '#QQQ' }]) {
+    for (const syncState of [{ ...sync, status: 'failed' }, { ...sync, user_id: 'other' }, { ...sync, player_tag: '#QQQ' }]) {
       assert.equal(calculateDeckUpgradePlan({ ...snap, sync: syncState }, main).status, 'unavailable');
     }
     const other = { ...snap, playerTag: '#QQQ', sync: { ...sync, player_tag: '#QQQ' }, cards: collection(0).cards.map(c => ({ ...c, player_tag: '#QQQ' })) };
     assert.equal(ready(other, main, second).rows[0].additional.missingCopies, 100);
+  });
+
+  it('waits for both reads and the full distinct card count before resolving any deck slots', () => {
+    const old = collection(0);
+    const newer = {
+      ...sync, started_at: '2026-11-21T02:00:00.000001Z', last_successful_at: '2026-11-21T02:00:00.000003Z',
+    };
+    const newCards = collection(80).cards.map(c => ({ ...c, updated_at: newer.last_successful_at }));
+    const run = (cards: typeof newCards, op = newer) =>
+      calculateDeckUpgradePlan({ ...old, sync: op, cards }, main, second);
+    for (const cards of [old.cards, newCards.slice(0, 8), [...newCards.slice(1), newCards[1]]]) {
+      assert.equal(run(cards).status, 'waiting');
+    }
+    assert.equal(run(newCards, sync).status, 'waiting'); // rows arrived before operation
+    assert.equal(run([...old.cards, { ...newCards[0], card_id: 99 }], sync).status, 'waiting');
+    assert.equal(calculateDeckUpgradePlan({ ...old, sync: null }, main).status, 'waiting');
+    const current = run(newCards);
+    assert.equal(current.status, 'ready');
+    assert.equal(current.asOf, newer.last_successful_at);
+    assert.equal(current.freshness, 'current');
+    assert.equal(current.rows[0].additional.missingCopies, 90);
+  });
+
+  it('reuses a verified earlier collection with its own date while refreshing or after failure', () => {
+    const previous = collection(0);
+    const fresh = collection(80);
+    const newer = {
+      ...sync, started_at: '2026-11-22T02:00:00Z', last_successful_at: '2026-11-22T02:00:01Z',
+    };
+    const currentCards = fresh.cards.map(c => ({ ...c, updated_at: newer.last_successful_at }));
+    for (const status of ['running', 'failed', 'cancelled', 'completed']) {
+      const progress = status === 'completed' ? newer : { ...newer, status, synced_cards: null, last_successful_at: sync.last_successful_at };
+      const input = { ...fresh, sync: progress, cards: previous.cards, previous };
+      const plan = calculateDeckUpgradePlan(input, main, second);
+      assert.equal(plan.status, 'ready');
+      assert.equal(plan.freshness, 'previous');
+      assert.equal(plan.asOf, sync.last_successful_at);
+      assert.equal(plan.rows[0].additional.missingCopies, 100);
+      const withoutCurrentCard = status === 'failed' || status === 'cancelled' ? 'unavailable' : 'waiting';
+      assert.equal(calculateDeckUpgradePlan(input, goal(['new card', ...mainIds.slice(1)], 13)).status, withoutCurrentCard);
+      const partial = calculateDeckUpgradePlan(input, main, goal([...mainIds.slice(1), 'new card'], 14));
+      assert.equal(partial.status, withoutCurrentCard);
+      assert.equal(partial.mainPlan.gold.total, 40000);
+      assert.equal('error' in partial, false);
+    }
+    const current = calculateDeckUpgradePlan({ ...fresh, sync: newer, cards: currentCards, previous }, main, second);
+    assert.equal(current.freshness, 'current');
+    assert.equal(current.asOf, newer.last_successful_at);
+    assert.equal(current.rows[0].additional.missingCopies, 90);
+    const delayed = calculateDeckUpgradePlan({
+      ...previous, previous: { sync: newer, cards: currentCards },
+    }, main, second);
+    assert.equal(delayed.asOf, newer.last_successful_at);
+    assert.equal(delayed.rows[0].additional.missingCopies, 90);
+  });
+
+  it('never reuses an incomplete collection or one verified for another account or player', () => {
+    const saved = collection();
+    for (const previous of [
+      { ...saved, cards: saved.cards.slice(0, 8) }, { ...saved, sync: { ...sync, synced_cards: null } },
+      { ...saved, sync: { ...sync, user_id: 'another-account' } }, { ...saved, sync: { ...sync, player_tag: '#QQQ' } },
+    ]) {
+      const result = calculateDeckUpgradePlan({ ...saved, sync: { ...sync, status: 'failed' }, previous }, main);
+      assert.equal(result.status, 'unavailable');
+      assert.equal('asOf' in result, false);
+    }
   });
 
   it('uses the same 50 legal copy steps as Collection, including rarity-specific gold', () => {

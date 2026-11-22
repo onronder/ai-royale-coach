@@ -113,22 +113,48 @@ try {
     assert.deepEqual(first.slice(3,8).map(r=>r.card_count),[null,null,0,80,80]);
     assert.equal(first[6].card_level,11);
   });
+  const firstSync = await rpc('get_my_card_collection_sync', { p_tag: tag }, owner);
+  const firstSnapshot = { userId: owner, playerTag: tag, sync: firstSync, cards: first };
   await test('upgrade costs use the real completed run, including updated rows but excluding omitted cards', async () => {
-    const sync = await rpc('get_my_card_collection_sync', { p_tag: tag }, owner);
-    const snapshot = { userId: owner, playerTag: tag, sync, cards: first };
     const ids = first.slice(3, 11).map(card => card.card_id);
-    const plan = calculateDeckUpgradePlan(snapshot, { cards: ids, targetLevel: 13 }, { cards: ids, targetLevel: 14 });
+    const plan = calculateDeckUpgradePlan(firstSnapshot, { cards: ids, targetLevel: 13 }, { cards: ids, targetLevel: 14 });
     assert.equal(plan.status, 'ready');
     assert.equal(plan.gold.additional.total, 7 * 60000); // one level-16 card and seven level-12 epics
     assert.deepEqual(plan.rows.slice(0, 5).map(row => row.additional.missingCopies), [null, null, 100, 0, 90]);
-    const omitted = calculateDeckUpgradePlan(snapshot, { cards: [first[1].card_id, ...ids.slice(1)], targetLevel: 13 });
+    const omitted = calculateDeckUpgradePlan(firstSnapshot, { cards: [first[1].card_id, ...ids.slice(1)], targetLevel: 13 });
     assert.equal(omitted.status, 'invalid');
     assert.equal(omitted.error, 'unresolved_card');
+  });
+  const goal = { cards: first.slice(3, 11).map(row => row.card_id), targetLevel: 13 };
+  await test('a failed refresh preserves the dated plan from the verified previous collection', async () => {
+    const failure = await request(owner, true, { player: async () => { throw new Error('fixture offline'); } });
+    assert.equal(failure.data.status, 'failed');
+    const sync = await rpc('get_my_card_collection_sync', { p_tag: tag }, owner);
+    assert.equal(sync.synced_cards, null);
+    const plan = calculateDeckUpgradePlan({ ...firstSnapshot, sync, cards: await readCollection(), previous: firstSnapshot }, goal);
+    assert.equal(plan.status, 'ready');
+    assert.equal(plan.asOf, firstSync.last_successful_at);
+    assert.equal(plan.freshness, 'previous');
+    assert.equal(plan.gold.main.total, 7 * 40000);
   });
   const secondResult = await request(owner,true,{player:async()=>({...old,cards:[
     {...old.cards[0],count:23},{...old.cards[3],count:0},
   ]})});
   const second = await readCollection();
+  await test('a missing slot becomes a deck error only after the two reads agree', async () => {
+    const sync = await rpc('get_my_card_collection_sync', { p_tag: tag }, owner);
+    assert.equal(sync.synced_cards, 2);
+    const lagging = { ...firstSnapshot, sync };
+    assert.equal(calculateDeckUpgradePlan(lagging, goal).status, 'waiting');
+    const cached = calculateDeckUpgradePlan({ ...lagging, previous: firstSnapshot }, goal);
+    assert.equal(cached.status, 'ready');
+    assert.equal(cached.asOf, firstSnapshot.sync.last_successful_at);
+    const current = calculateDeckUpgradePlan({ ...lagging, cards: second, previous: firstSnapshot }, goal);
+    assert.equal(current.status, 'invalid');
+    assert.equal(current.error, 'unresolved_card');
+    assert.equal(current.slot, 1);
+    assert.equal(current.asOf, sync.last_successful_at);
+  });
   await test('consecutive refreshes preserve the row through unknown to zero and legacy zero to positive', async () => {
     assert.equal(secondResult.data.success,true);
     const counts = (index: number) => [legacyRows,migratedRows,first,second].map(rows => {
