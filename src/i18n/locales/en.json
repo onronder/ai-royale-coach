@@ -1,5 +1,12 @@
 {
   "upgradePlan": {
+    "deckTarget": "{{deck}} Lv. {{level}}",
+    "edit": "Edit",
+    "addDeck": "Add deck",
+    "copiesToCollect": "Cards to collect",
+    "breakdown": "Cost breakdown",
+    "backToPlan": "Back to upgrade plan",
+    "viewPlan": "View plan",
     "title": "Upgrade plan",
     "scope": "Collection for {{tag}} · Standard upgrades for the eight permanent card levels.",
     "mainLevel": "Main deck target level",

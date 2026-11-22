@@ -61,10 +61,10 @@ export function DeckTab({
               <p className="text-muted-foreground">{t('dashboard.failedLoadDeck')}</p>
             ) : player?.currentDeck && player.currentDeck.length > 0 ? (
               <>
-                <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
                 {import.meta.env.VITE_DECK_UPGRADE_PLAN_PILOT === 'true' && (
                   <UpgradePlanEntry playerTag={playerTag} player={player} />
                 )}
+                <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
               </>
             ) : (
               <p className="text-muted-foreground">{t('common.noData')}</p>

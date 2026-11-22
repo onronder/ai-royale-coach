@@ -1,5 +1,12 @@
 {
   "upgradePlan": {
+    "deckTarget": "{{deck}} niv. {{level}}",
+    "edit": "Editar",
+    "addDeck": "Añadir mazo",
+    "copiesToCollect": "Cartas por reunir",
+    "breakdown": "Desglose de costes",
+    "backToPlan": "Volver al plan de mejora",
+    "viewPlan": "Ver el plan",
     "title": "Plan de mejoras",
     "scope": "Colección de {{tag}} · Costes estándar para los niveles permanentes de las ocho cartas.",
     "mainLevel": "Nivel objetivo del mazo principal",

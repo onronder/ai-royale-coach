@@ -1,6 +1,8 @@
-import { type ReactNode, useEffect, useId, useState } from 'react';
+import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { ChevronDown, Coins, Layers, Pencil } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCardName } from '@/i18n/useCardName';
 import { savedDeckOptions } from '@/lib/playerQueries';
@@ -114,22 +116,53 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
     {row.combined.missingCopies === null && row.combined.copies !== null &&
       <p className="text-sm text-muted-foreground">{t('upgradePlan.gross', { amount: number(row.combined.copies) })}</p>}
   </li>;
-  return <section aria-label={t('upgradePlan.title')} className="mt-4 min-w-0 space-y-4">
-    <p className="text-sm text-muted-foreground">{t('upgradePlan.scope', { tag })}</p>
-    <div className="grid items-end gap-3 sm:grid-cols-3">
-      {levelField('main', t('upgradePlan.mainLevel'))}
-      <PlanSelect label={t('upgradePlan.secondDeck')} value={draft.deck}
-        onChange={deck => { setChanged(false); edit({ deck, priority: 0 }); }}>
-        <option value="">{t('upgradePlan.none')}</option>
-        {unresolvedSelection && <option value={draft.deck}>{t('upgradePlan.selectedDeck')}</option>}
-        {saved.data?.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-      </PlanSelect>
-      {draft.deck && levelField('second', t('upgradePlan.secondLevel'))}
+  const settings = useRef<HTMLDetailsElement>(null);
+  const art = first && cards.find(card => card.id === first.cardId)?.iconUrls?.medium;
+  const disclosure = 'flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-semibold focus-visible:outline-primary [&::-webkit-details-marker]:hidden';
+  const arrow = <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground group-open:rotate-180" />;
+  return <section aria-label={t('upgradePlan.title')} className="min-w-0 space-y-3">
+    <div className="rounded-xl border border-border bg-card px-4">
+      <details className="group" ref={settings}>
+        <summary className={disclosure}>
+          <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 text-left">
+            <span>{t('upgradePlan.deckTarget', { deck: t('upgradePlan.mainDeck'), level: draft.main })}</span>
+            {draft.deck && <span className="min-w-0 break-words"><span aria-hidden="true" className="mr-2 text-muted-foreground">/</span>
+              {t('upgradePlan.deckTarget', { deck: deck?.name ?? t('upgradePlan.selectedDeck'), level: draft.second })}</span>}
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-primary"><Pencil aria-hidden="true" size={14} />{t(!draft.deck && saved.data?.length ? 'upgradePlan.addDeck' : 'upgradePlan.edit')}</span>
+        </summary>
+        <div className="grid gap-3 border-t border-border py-3 sm:grid-cols-2">
+          {levelField('main', t('upgradePlan.mainLevel'))}
+          <PlanSelect label={t('upgradePlan.secondDeck')} value={draft.deck}
+            onChange={deck => { setChanged(false); edit({ deck, priority: 0 }); }}>
+            <option value="">{t('upgradePlan.none')}</option>
+            {unresolvedSelection && <option value={draft.deck}>{t('upgradePlan.selectedDeck')}</option>}
+            {saved.data?.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </PlanSelect>
+          {draft.deck && levelField('second', t('upgradePlan.secondLevel'))}
+          {shared.length > 1 && <PlanSelect label={t('upgradePlan.priority')}
+            value={shared.some(c => c.row.cardId === draft.priority) ? draft.priority : 0}
+            onChange={priority => edit({ priority: Number(priority) })}>
+            <option value={0}>{t('upgradePlan.automatic')}</option>
+            {shared.map(({ row }) => <option key={row.cardId} value={row.cardId}>{cardName(row.name)}</option>)}
+          </PlanSelect>}
+          <Button variant="secondary" className="min-h-11 sm:col-span-2" onClick={() => {
+            if (settings.current) {
+              settings.current.open = false;
+              settings.current.querySelector('summary')?.focus();
+            }
+          }}>{t('upgradePlan.viewPlan')}</Button>
+        </div>
+      </details>
     </div>
     {saved.isError ? <div role="status">{t('upgradePlan.savedError')} <Button variant="outline" size="sm" onClick={() => void saved.refetch()}>{t('common.retry')}</Button></div>
       : unresolvedSelection ? <p role="status">{t(saved.isPending ? 'common.loading' : 'upgradePlan.deletedDeck')}</p>
-      : saved.isSuccess && !saved.data.length && <p className="text-sm text-muted-foreground">{t('upgradePlan.noSaved')}</p>}
-    {asOf && <p className="text-sm text-muted-foreground">{t(outdated ? 'upgradePlan.previous' : 'upgradePlan.observed', {
+      : saved.isSuccess && !saved.data.length && <div className="text-sm">
+        <p>{t('upgradePlan.noSaved')}</p>
+        <Link to="?tab=deck&subtab=builder" state={{ returnToUpgradePlan: { account, tag } }}
+          className="inline-flex min-h-11 items-center font-semibold text-primary underline">{t('deck.builder')}</Link>
+      </div>}
+    {asOf && outdated && <p className="text-sm text-muted-foreground">{t('upgradePlan.previous', {
       when: new Date(asOf).toLocaleString(i18n.language),
     })}</p>}
     {changed && <p role="status">{t('upgradePlan.changed')}</p>}
@@ -147,36 +180,55 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
           : plan.reference ? cardName(plan.reference) : t('common.unknown'),
       })}
     </p>}
-    {comparison && plan.status === 'ready' && <section aria-label={t('upgradePlan.extraCost')}
-      className="space-y-2 rounded-lg border border-gold/50 bg-gold/5 p-3">
-      <h4 className="text-lg font-bold">{plan.gold.additional.total === null ? t('upgradePlan.unknownExtraGold')
-        : t('upgradePlan.extraGold', { amount: number(plan.gold.additional.total) })}</h4>
-      {plan.gold.additional.total === null && <p>{t('upgradePlan.subtotal', { amount: number(plan.gold.additional.known) })}</p>}
-      {extraCopies.length ? <ul className="space-y-1 text-sm">{extraCopies.map(row =>
-        <li key={row.cardId}>{row.additional.missingCopies === null
-          ? t('upgradePlan.unknownCopies', { card: cardName(row.name) })
-          : t(row.additional.missingCopies === 1 ? 'upgradePlan.collect_one' : 'upgradePlan.collect_other',
-            { card: cardName(row.name), amount: number(row.additional.missingCopies) })}</li>
-      )}</ul> : <p className="text-sm">{t('upgradePlan.noExtraCopies')}</p>}
-    </section>}
-    {comparison && plan.status === 'ready' && <div className="rounded-lg border border-border p-3">
-      <h4 className="font-semibold">{t('upgradePlan.nextShared')}</h4>
-      <p className="mt-1">{first ? cardName(first.name) + ' · ' + first.level + ' → ' + (first.level! + 1)
-        : t(plan.sharedNextUpgrade === null ? 'upgradePlan.unknownShared' : 'upgradePlan.noShared')}</p>
-      {shared.length > 1 && <PlanSelect label={t('upgradePlan.priority')}
-        value={shared.some(c => c.row.cardId === draft.priority) ? draft.priority : 0}
-        onChange={priority => edit({ priority: Number(priority) })}>
-        <option value={0}>{t('upgradePlan.automatic')}</option>
-        {shared.map(({ row }) => <option key={row.cardId} value={row.cardId}>{cardName(row.name)}</option>)}
-      </PlanSelect>}
-    </div>}
-    {primary && <dl aria-label={t('upgradePlan.title')} className="grid gap-2 sm:grid-cols-2">
-      {amount(t('upgradePlan.mainCost'), primary.gold)}
-      {comparison && plan.status === 'ready' && amount(t('upgradePlan.totalCost'), plan.gold.combined)}
-    </dl>}
-    {!!unfinished.length && <ul aria-label={t('upgradePlan.cards')}>{unfinished.map(cardRow)}</ul>}
-    {!!completed.length && <details><summary className="min-h-11 cursor-pointer py-2 text-sm font-medium">{t('upgradePlan.completed', { amount: completed.length })}</summary>
-      <ul>{completed.map(cardRow)}</ul>
+    {comparison && plan.status === 'ready' ? <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <section aria-label={t('upgradePlan.extraCost')} className="bg-gradient-to-br from-gold/10 to-transparent p-4 sm:p-5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold"><Coins size={18} aria-hidden="true" className="text-gold" />{t('upgradePlan.extraCost')}</h3>
+        <p className="mt-1 break-words text-3xl font-bold tracking-tight text-gold tabular-nums">
+          {plan.gold.additional.total === null ? t('common.unknown') : t('upgradePlan.gold', { amount: number(plan.gold.additional.total) })}
+        </p>
+        {plan.gold.additional.total === null && <p className="text-sm">{t('upgradePlan.subtotal', { amount: number(plan.gold.additional.known) })}</p>}
+      </section>
+      <section aria-label={t('upgradePlan.nextShared')} className="flex items-center gap-3 border-t border-border p-4 sm:p-5">
+        {first && <div aria-hidden="true" className="relative grid h-16 w-14 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          <Layers size={22} />{art && <img key={art} src={art} alt="" className="absolute inset-0 h-full w-full object-contain"
+            onError={e => { e.currentTarget.hidden = true; }} />}
+        </div>}
+        <div className="min-w-0">
+          <h3 className="text-sm font-medium text-muted-foreground">{t('upgradePlan.nextShared')}</h3>
+          <p className={first ? 'mt-1 break-words text-xl font-bold' : 'mt-1 text-sm'}>
+            {first ? <>{cardName(first.name)} <span className="whitespace-nowrap text-primary">{first.level} → {first.level! + 1}</span></>
+              : t(plan.sharedNextUpgrade === null ? 'upgradePlan.unknownShared' : 'upgradePlan.noShared')}
+          </p>
+        </div>
+      </section>
+    </div> : primary && <dl>{amount(t('upgradePlan.mainCost'), primary.gold)}</dl>}
+    {comparison && <details className="group rounded-xl border border-border bg-card px-4">
+      <summary className={disclosure}>{t('upgradePlan.copiesToCollect')}{arrow}</summary>
+      <div className="border-t border-border py-3">
+        {extraCopies.length ? <ul className="space-y-1 text-sm">{extraCopies.map(row =>
+          <li key={row.cardId}>{row.additional.missingCopies === null
+            ? t('upgradePlan.unknownCopies', { card: cardName(row.name) })
+            : t(row.additional.missingCopies === 1 ? 'upgradePlan.collect_one' : 'upgradePlan.collect_other',
+              { card: cardName(row.name), amount: number(row.additional.missingCopies) })}</li>
+        )}</ul> : <p className="text-sm">{t('upgradePlan.noExtraCopies')}</p>}
+      </div>
+    </details>}
+    {primary && <details className="group rounded-xl border border-border bg-card px-4">
+      <summary className={disclosure}>{t('upgradePlan.breakdown')}{arrow}</summary>
+      <div className="space-y-3 border-t border-border py-3">
+        {comparison && plan.status === 'ready' && <dl className="grid gap-2 sm:grid-cols-2">
+          {amount(t('upgradePlan.mainCost'), primary.gold)}
+          {amount(t('upgradePlan.totalCost'), plan.gold.combined)}
+        </dl>}
+        <p className="text-sm text-muted-foreground">{t('upgradePlan.scope', { tag })}</p>
+        {asOf && !outdated && <p className="text-sm text-muted-foreground">{t('upgradePlan.observed', {
+          when: new Date(asOf).toLocaleString(i18n.language),
+        })}</p>}
+        {!!unfinished.length && <ul aria-label={t('upgradePlan.cards')}>{unfinished.map(cardRow)}</ul>}
+        {!!completed.length && <details><summary className="min-h-11 cursor-pointer py-2 text-sm font-medium">{t('upgradePlan.completed', { amount: completed.length })}</summary>
+          <ul>{completed.map(cardRow)}</ul>
+        </details>}
+      </div>
     </details>}
   </section>;
 }
