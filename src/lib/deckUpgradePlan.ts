@@ -1,6 +1,7 @@
 import type { CardCollectionRow } from '../types/dashboard.types';
 import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
 import { cardDisplayLevel, GAME_MAX_DISPLAY_LEVEL } from '../../supabase/functions/_shared/card-display-level';
+import { resolveDeckCards } from './savedDeckCards';
 import { upgradeStep, UPGRADE_COST_VERSION } from './upgradeCost';
 
 type CollectionCard = Pick<CardCollectionRow,
@@ -27,8 +28,7 @@ interface CollectionSnapshot extends CollectionRead {
 }
 
 interface DeckGoal {
-  // Base IDs from the current deck or unfiltered names from a saved deck.
-  cards: readonly (number | string)[];
+  cards: readonly unknown[];
   targetLevel: number;
 }
 
@@ -65,16 +65,12 @@ function resolveGoal(goal: DeckGoal, cards: readonly CollectionCard[]) {
     return { error: 'invalid_target' } as const;
   }
   if (goal.cards.length !== 8) return { error: 'invalid_size' } as const;
-  const resolved = new Map<number, CollectionCard>();
-  for (const [slot, reference] of goal.cards.entries()) {
-    const matches = cards.filter(card => typeof reference === 'number'
-      ? card.card_id === reference : card.card_name === reference);
-    if (matches.length !== 1) return { error: 'unresolved_card', slot, reference } as const;
-    const card = matches[0];
-    if (resolved.has(card.card_id)) return { error: 'duplicate_card', slot, reference } as const;
-    resolved.set(card.card_id, card);
+  const resolved = resolveDeckCards(goal.cards, cards);
+  if (resolved.issues.length) {
+    const { error, slot, reference } = resolved.issues[0];
+    return { error, slot, reference };
   }
-  return { cards: resolved } as const;
+  return { cards: resolved.cards };
 }
 
 // knownGold is the priced portion; gold is exact only if every step is priced.
@@ -183,7 +179,7 @@ export function calculateDeckUpgradePlan(snapshot: CollectionSnapshot, main: Dec
     primary.cards.has(card.card_id) ? main.targetLevel : 0,
     second && secondary?.cards.has(card.card_id) ? second.targetLevel : 0));
   return {
-    status: 'ready', ...observation, rows,
+    status: 'ready', ...observation, rows, secondCardIds: Array.from(secondary?.cards.keys() ?? []),
     sharedNextUpgrade: rows.some(row => row.sharedNextUpgrade === true) ? true
       : rows.some(row => row.sharedNextUpgrade === null) ? null : false,
     gold: { main: sumGold(rows, 'main'), combined: sumGold(rows, 'combined'), additional: sumGold(rows, 'additional') },

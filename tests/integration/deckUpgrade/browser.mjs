@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { localizedCardName } from '../../../supabase/functions/_shared/card-names.ts';
 import { mkdir, readFile } from 'node:fs/promises';
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -45,7 +46,7 @@ async function scene(lang, width, tier, run) {
     assert(['fixture-first', 'fixture-second'].includes(account));
     const tag = u.searchParams.get('player_tag')?.includes('PPP') ? '#PPP' : '#QQQ';
     reads.push([table, account, tag]);
-    if (table === 'saved_decks') return send(state.noDecks ? [] : saved);
+    if (table === 'saved_decks') return send(state.noDecks ? [] : state.savedDecks ?? saved);
     if (table === 'operation_progress') {
       if (state.noSync) return send([]);
       return state.fail ? send({ message: 'fixture failure' }, 500) : send([{ user_id: account, player_tag: tag,
@@ -109,6 +110,85 @@ async function testClosedPilot() {
   }
   console.log(passed + ' pilot-off browser scenarios passed.');
 }
+async function testSavedDeckFormats(lang) {
+  const strings = JSON.parse(await readFile(new URL('../../../src/i18n/locales/' + lang + '.json', import.meta.url)));
+  const asObjects = secondary.map(name => ({ id: names.indexOf(name) + 1, name, level: 1, count: 0 }));
+  const records = [
+    { id: 'names', name: 'Names', cards: secondary },
+    { id: 'ids', name: 'IDs', cards: asObjects.map(c => c.id) },
+    { id: 'objects', name: 'Objects', cards: asObjects },
+    { id: 'mixed', name: 'Mixed', cards: [asObjects[0], asObjects[1].id, ...secondary.slice(2)] },
+  ];
+  const invalid = [
+    { id: 'unknown', name: 'Unknown eighth', cards: [...secondary.slice(0, 7), 'Legacy Card'] },
+    { id: 'conflict', name: 'Mismatched eighth', cards: [...secondary.slice(0, 7), { id: 2, name: 'Mirror' }] },
+  ];
+  const badSlot = (w, deck, rec) => w.missing.replace('{{deck}}', deck).replace('{{slot}}', '8')
+    .replace('{{card}}', rec.id === 'conflict' ? localizedCardName('Mirror', lang) : 'Legacy Card');
+  await scene(lang, 390, 'paid', async ({ page, open, choose, w, state, gold, panel, details, external }) => {
+    state.savedDecks = [...records, ...invalid];
+    await open(); await choose(w.mainLevel, '13'); await gold(w.mainCost, 40000);
+    for (const rec of records) {
+      await choose(w.secondDeck, rec.id); await choose(w.secondLevel, '14');
+      await gold(w.extraCost, 60000); await details(); await gold(w.mainCost, 40000); await gold(w.totalCost, 100000);
+    }
+    if (lang === 'en') {
+      const storageKey = 'deck-upgrade:fixture-first:#QQQ:composition';
+      await page.evaluate(({ key, names }) => {
+        const previous = JSON.parse(localStorage.getItem(key));
+        const [version, main] = JSON.parse(previous.signature);
+        localStorage.setItem(key, JSON.stringify({ deck: previous.deck, signature: JSON.stringify([version, main, names]) }));
+      }, { key: storageKey, names: secondary });
+      await external('Switch tab'); await external('Switch tab'); await open();
+      await gold(w.extraCost, 60000);
+      await page.waitForFunction(key => JSON.parse(localStorage.getItem(key))?.format === 2, storageKey);
+      assert.equal(await panel().getByText(w.changed, { exact: true }).count(), 0);
+      const mixed = records[3];
+      const reloadRecord = async (name, cards) => {
+        state.savedDecks = [...records.slice(0, 3), { ...mixed, name, cards }, ...invalid];
+        await external('Saved deck event');
+        await page.waitForFunction(label => Array.from(document.querySelectorAll('option')).some(o => o.text === label), name);
+      };
+      await reloadRecord('Same composition', asObjects);
+      assert.equal(await panel().getByText(w.changed, { exact: true }).count(), 0);
+      await reloadRecord('New order', asObjects.toReversed());
+      await panel().getByText(w.changed, { exact: true }).waitFor();
+    }
+    for (const rec of invalid) {
+      await choose(w.secondDeck, rec.id);
+      await panel().getByText(badSlot(w, w.secondDeck, rec), { exact: true }).waitFor();
+      await gold(w.mainCost, 40000);
+      assert.equal(await panel().getByRole('region', { name: w.extraCost }).count(), 0);
+    }
+    state.savedDecks = [...records, ...invalid];
+    await page.goto(base + '/tests/integration/deckUpgrade/ui.html?tier=paid&subtab=builder');
+    await page.getByRole('tab', { name: strings.deck.compare, exact: true }).click();
+    const select = async rec => {
+      await page.getByRole('combobox').click();
+      await page.getByRole('option', { name: rec.name, exact: true }).click();
+    };
+    const result = page.getByRole('heading', { name: strings.deckComparison.deckB, exact: true });
+    const expected = secondary.map(name => localizedCardName(name, lang));
+    for (const rec of records) {
+      await select(rec); await result.waitFor();
+      const images = page.getByRole('tabpanel').locator('img');
+      const labels = await images.evaluateAll(nodes => nodes.map(n => n.alt));
+      assert.equal(labels.length, 16);
+      const second = labels.slice(8);
+      assert.deepEqual(second, expected);
+    }
+    for (const rec of invalid) {
+      await select(rec);
+      await page.getByText(badSlot(w, rec.name, rec), { exact: true }).waitFor();
+      await page.getByText(rec.name + ' · 7/8', { exact: true }).waitFor();
+      assert.equal(await result.count(), 0);
+      assert.equal(await page.getByText(strings.deckComparison.selectToCompare, { exact: true }).count(), 0);
+    }
+    state.savedDecks = [{ ...invalid[1], cards: asObjects }];
+    await external('Saved deck event'); await result.waitFor();
+  });
+}
+
 async function testOpenPilot() {
   for (const lang of locales) for (const width of [390, 1280]) {
     await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({ page, open, panel, choose, gold, w, reads, show, details }) => {
@@ -195,13 +275,25 @@ async function testOpenPilot() {
     await panel().getByText(w.noSaved).waitFor();
     assert.equal(await panel().getByRole('link').getAttribute('href'), '/tests/integration/deckUpgrade/ui.html?tab=deck&subtab=builder');
     await panel().getByRole('link').click();
-    await page.getByRole('link', {name: w.backToPlan}).click();
+    const [returnRead] = await Promise.all([
+      page.waitForResponse(r => r.request().method() === 'GET' && new URL(r.url()).pathname.endsWith('/operation_progress')),
+      page.getByRole('link', {name: w.backToPlan}).click(),
+    ]);
+    await returnRead.finished();
     await panel().getByText(w.noSync).waitFor();
     assert.equal(await panel().getByText(w.mainCost).count(), 0);
     state.noSync = false;
     await button(w.reread).click();
     await choose(w.mainLevel, '13');
     await gold(w.mainCost, 40000);
+  });
+  await scene('en', 390, 'paid', async ({open, panel, choose, gold, w, state, external}) => {
+    state.noSync = true;
+    await open(); await panel().getByText(w.noSync).waitFor();
+    state.noSync = false;
+    await external('Operation event');
+    await choose(w.mainLevel, '13'); await gold(w.mainCost, 40000);
+    assert.equal(await panel().getByText(w.reread, { exact: true }).count(), 0);
   });
   await scene('en', 390, 'paid', async ({open, panel, choose, gold, w, state, button, details, external}) => {
     await open(); await choose(w.mainLevel, '13'); await choose(w.secondDeck, 'good'); await choose(w.secondLevel, '14');
@@ -259,6 +351,7 @@ async function testOpenPilot() {
     await trPanel.getByText(words.tr.mainCost, { exact: true }).waitFor();
     assert(reads.some(([table, account]) => table === 'card_collection' && account === 'fixture-second'));
   });
+  for (const lang of locales) await testSavedDeckFormats(lang);
   console.log(passed + ' upgrade plan browser scenarios passed; no writes, AI or real service requests.');
 }
 try {

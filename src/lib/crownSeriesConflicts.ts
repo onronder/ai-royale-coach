@@ -2,6 +2,7 @@ import type { Json } from '@/integrations/supabase/types';
 import type { ClashRoyalePlayer } from '@/services/clashRoyaleApi';
 import type { SavedDeckRow } from '@/types/dashboard.types';
 import { canonicalTag } from '../../supabase/functions/_shared/battle-observation';
+import { resolveCardReference } from './savedDeckCards';
 import { completedCollection, type CollectionRead } from './deckUpgradePlan';
 
 type SavedDeck = Pick<SavedDeckRow, 'id' | 'user_id' | 'cards'>;
@@ -48,22 +49,15 @@ export function checkCrownSeriesConflicts(
     for (let slot = 1; slot <= 8; slot++) {
       const reference = deck.cards[slot - 1] ?? null;
       const location = { deckNumber, savedDeckId: deck.id, slot, reference };
-      if (reference === null || (typeof reference === 'string' && !reference.trim())) {
-        unresolved.push({ ...location, reason: 'empty' });
+      // A live deck supplies base IDs only. A malformed ID must never match a card by name.
+      const catalog = deck.id === null && typeof reference !== 'number' ? [] : snapshot.cards;
+      const match = resolveCardReference(reference, catalog);
+      if (match.reason !== 'empty') filledSlots++;
+      if (match.reason) {
+        unresolved.push({ ...location, reason: match.reason });
         continue;
       }
-      filledSlots++;
-      // Older saved decks may store the full API card. Both identity fields must agree.
-      const legacyCard = deck.id !== null && typeof reference === 'object' && !Array.isArray(reference)
-        ? reference : undefined;
-      const matches = snapshot.cards.filter(card => legacyCard
-        ? legacyCard.id === card.card_id && legacyCard.name === card.card_name
-        : reference === card.card_id || (deck.id !== null && reference === card.card_name));
-      const card = matches[0];
-      if (matches.length !== 1 || !Number.isSafeInteger(card.card_id) || card.card_id <= 0) {
-        unresolved.push({ ...location, reason: matches.length > 1 ? 'ambiguous' : 'unrecognized' });
-        continue;
-      }
+      const card = match.card;
       const group = byCard.get(card.card_id);
       if (group) group.locations.push(location);
       else byCard.set(card.card_id, { cardId: card.card_id, name: card.card_name, locations: [location] });
