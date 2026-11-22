@@ -63,6 +63,20 @@ describe('Crown Series base-card conflicts', () => {
     }
   });
 
+  it('recognizes historical saved decks of full API cards without changing the original slot', () => {
+    const b = second();
+    b.cards = ids(9).map(id => ({ id, name: cardName(id), level: 8, rarity: 'epic' }));
+    const original = { id: 3, name: 'Knight', evolutionLevel: 1 };
+    b.cards[6] = original;
+    const result = compare([b, third()]);
+    assert.equal(result.uniqueCards, 23);
+    assert.deepEqual(result.unresolved, []);
+    assert.deepEqual(result.acrossDecks[0].locations, [
+      { deckNumber: 1, savedDeckId: null, slot: 3, reference: 3 },
+      { deckNumber: 2, savedDeckId: b.id, slot: 7, reference: original },
+    ]);
+  });
+
   it('separates repetition within one deck from a card shared across decks', () => {
     const b = second();
     b.cards[5] = 9;
@@ -127,7 +141,7 @@ describe('Crown Series base-card conflicts', () => {
     const collection = snapshot(), b = second();
     collection.cards[31].card_name = 'Knight';
     b.cards[1] = 'Knight';
-    b.cards[2] = { name: 'Rage', id: 2 };
+    b.cards[2] = { name: 'Knight', id: 2 };
     b.cards[3] = 'Knight Evolution';
     b.cards.pop();
     const malformedMain = structuredClone(main);
@@ -136,7 +150,7 @@ describe('Crown Series base-card conflicts', () => {
     assert.equal(result.status, 'compared');
     assert.deepEqual(result.unresolved.map(s => [s.slot, s.reference, s.reason]), [
       [1, 'Rage', 'unrecognized'],
-      [2, 'Knight', 'ambiguous'], [3, { name: 'Rage', id: 2 }, 'unrecognized'],
+      [2, 'Knight', 'ambiguous'], [3, { name: 'Knight', id: 2 }, 'unrecognized'],
       [4, 'Knight Evolution', 'unrecognized'], [8, null, 'empty'],
     ]);
     assert.equal(result.filledSlots, 23);

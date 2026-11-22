@@ -53,8 +53,12 @@ export function checkCrownSeriesConflicts(
         continue;
       }
       filledSlots++;
-      // Saved decks contain original API names. Never infer a base ID from a form label or a translated name.
-      const matches = snapshot.cards.filter(card => reference === card.card_id || (deck.id !== null && reference === card.card_name));
+      // Older saved decks may store the full API card. Both identity fields must agree.
+      const legacyCard = deck.id !== null && typeof reference === 'object' && !Array.isArray(reference)
+        ? reference : undefined;
+      const matches = snapshot.cards.filter(card => legacyCard
+        ? legacyCard.id === card.card_id && legacyCard.name === card.card_name
+        : reference === card.card_id || (deck.id !== null && reference === card.card_name));
       const card = matches[0];
       if (matches.length !== 1 || !Number.isSafeInteger(card.card_id) || card.card_id <= 0) {
         unresolved.push({ ...location, reason: matches.length > 1 ? 'ambiguous' : 'unrecognized' });
