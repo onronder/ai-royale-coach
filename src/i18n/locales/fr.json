@@ -1,5 +1,12 @@
 {
   "upgradePlan": {
+    "deckTarget": "{{deck}} niv. {{level}}",
+    "edit": "Modifier",
+    "addDeck": "Ajouter un deck",
+    "copiesToCollect": "Cartes à collecter",
+    "breakdown": "Détail des coûts",
+    "backToPlan": "Revenir au plan",
+    "viewPlan": "Voir le plan",
     "title": "Plan d’amélioration",
     "scope": "Collection de {{tag}} · Coûts standard pour les niveaux permanents des huit cartes.",
     "mainLevel": "Niveau cible du deck principal",

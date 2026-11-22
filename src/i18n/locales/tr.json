@@ -1,5 +1,12 @@
 {
   "upgradePlan": {
+    "deckTarget": "{{deck}} Sv. {{level}}",
+    "edit": "Düzenle",
+    "addDeck": "Deste ekle",
+    "copiesToCollect": "Toplanacak kartlar",
+    "breakdown": "Hesap ayrıntıları",
+    "backToPlan": "Yükseltme planına dön",
+    "viewPlan": "Planı göster",
     "title": "Yükseltme planı",
     "scope": "{{tag}} koleksiyonu · Destedeki sekiz kartın kalıcı seviyeleri için standart maliyetler.",
     "mainLevel": "Ana destenin hedef seviyesi",

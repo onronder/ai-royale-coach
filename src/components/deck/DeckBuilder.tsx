@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { fixedElixir } from '../../../supabase/functions/_shared/battle-observation';
+import { Link, useLocation } from 'react-router-dom';
+import { canonicalTag, fixedElixir } from '../../../supabase/functions/_shared/battle-observation';
 import { importedDeck } from '@/lib/deckNavigation';
 import { useCardName } from '@/i18n/useCardName';
 import { useState, useEffect } from "react";
@@ -71,6 +72,7 @@ export function DeckBuilder({
   playerTrophies = 0
 }: DeckBuilderProps) {
   const queryClient = useQueryClient();
+  const returnPlan = useLocation().state?.returnToUpgradePlan;
   const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { hasAccess } = useSubscription();
@@ -230,6 +232,11 @@ export function DeckBuilder({
 
   return (
     <div className="space-y-6">
+      {returnPlan?.account === userId && returnPlan.tag === canonicalTag(playerTag) &&
+        <Link to="?tab=deck&subtab=current" state={{ openUpgradePlan: returnPlan }}
+          className="inline-flex min-h-11 items-center text-sm font-semibold text-primary underline">
+          {t('upgradePlan.backToPlan')}
+        </Link>}
       {importedNames && !importedDeck(importedNames, availableCards) && <p role="alert">{t('correctness.invalidDeck')}</p>}
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" onClick={() => { setSelectedCards(currentDeck?.length === 8 ? currentDeck : []); setAnalysis(null); setAdvancedAnalysis(null); }}>{t('correctness.editCurrentDeck')}</Button>
