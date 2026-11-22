@@ -155,7 +155,8 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
       {extraCopies.length ? <ul className="space-y-1 text-sm">{extraCopies.map(row =>
         <li key={row.cardId}>{row.additional.missingCopies === null
           ? t('upgradePlan.unknownCopies', { card: cardName(row.name) })
-          : t('upgradePlan.collect', { card: cardName(row.name), amount: number(row.additional.missingCopies), count: row.additional.missingCopies })}</li>
+          : t(row.additional.missingCopies === 1 ? 'upgradePlan.collect_one' : 'upgradePlan.collect_other',
+            { card: cardName(row.name), amount: number(row.additional.missingCopies) })}</li>
       )}</ul> : <p className="text-sm">{t('upgradePlan.noExtraCopies')}</p>}
     </section>}
     {comparison && plan.status === 'ready' && <div className="rounded-lg border border-border p-3">
