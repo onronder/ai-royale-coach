@@ -13,6 +13,7 @@ const mainIds = [1, 2, 3, 4, 5, 6, 7, 8];
 const otherIds = [9, 10, 11, 12, 13, 14, 15, 16];
 const goal = (cards: readonly (string | number)[], targetLevel: number) => ({ cards, targetLevel });
 const card = (id: number, level = 16, owned: number | null = 0) => ({
+  id: 'collection-row-' + id,
   card_id: id, card_name: 'Epic ' + id, rarity: 'epic', card_level: level - 5, max_level: 11,
   card_count: owned, user_id: userId, player_tag: playerTag.slice(1), updated_at: '2026-11-21T01:00:00.123450Z',
 });

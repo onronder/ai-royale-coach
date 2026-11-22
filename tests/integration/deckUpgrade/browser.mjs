@@ -54,7 +54,7 @@ async function scene(lang, width, tier, run) {
         synced_cards: ids.length - Number(state.drop) }]);
     }
     const rows = ids.filter(id => !state.drop || id !== 15).map(id => ({ user_id: account, player_tag: tag.slice(1),
-      card_id: id, card_name: names[id-1], rarity: 'epic', max_level: 11,
+      id: 'collection-row-' + id, card_id: id, card_name: names[id-1], rarity: 'epic', max_level: 11,
       card_level: id === 1 ? state.level : id === 2 && state.noPrice ? 1 : id === 2 && state.otherShared ? 7 : 11,
       card_count: id === 1 ? (tag === '#PPP' || account === 'fixture-second' ? 0 : state.stock) : 0,
       updated_at: day(state.rowDay) }));

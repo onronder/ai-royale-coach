@@ -1,7 +1,8 @@
 type CardIdentity = { id: number; name: string } | { card_id: number; card_name: string };
 
 function idOf(card: CardIdentity) {
-  return 'id' in card ? card.id : card.card_id;
+  // A stored collection row also has its own id, distinct from the game card ID.
+  return 'card_id' in card ? card.card_id : card.id;
 }
 
 export function resolveCardReference<T extends CardIdentity>(reference: unknown, catalog: readonly T[]) {
@@ -12,7 +13,7 @@ export function resolveCardReference<T extends CardIdentity>(reference: unknown,
   const legacy = typeof reference === 'object' && 'id' in reference && 'name' in reference ? reference : null;
   const matches = catalog.filter(card => {
     const id = idOf(card);
-    const name = 'name' in card ? card.name : card.card_name;
+    const name = 'card_id' in card ? card.card_name : card.name;
     return legacy ? legacy.id === id && legacy.name === name : reference === id || reference === name;
   });
   if (matches.length > 1) return { reason: 'ambiguous' } as const;
