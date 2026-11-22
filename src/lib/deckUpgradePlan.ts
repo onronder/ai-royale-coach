@@ -6,7 +6,7 @@ import { upgradeStep, UPGRADE_COST_VERSION } from './upgradeCost';
 type CollectionCard = Pick<CardCollectionRow,
   'user_id' | 'player_tag' | 'updated_at' | 'card_id' | 'card_name' | 'rarity' | 'card_level' | 'max_level' | 'card_count'>;
 
-interface CollectionRead {
+export interface CollectionRead {
   // Operation metadata and collection rows are fetched independently.
   sync: {
     user_id: string;
@@ -40,7 +40,7 @@ function epochMicros(timestamp: string | null) {
   return Date.parse(timestamp) * 1000 + Number(fraction.padEnd(6, '0').slice(3));
 }
 
-function completedCollection(read: CollectionRead, userId: string, tag: string) {
+export function completedCollection(read: CollectionRead, userId: string, tag: string) {
   const { sync } = read;
   if (sync?.status !== 'completed' || sync.user_id !== userId || canonicalTag(sync.player_tag) !== tag ||
       !sync.last_successful_at || !Number.isInteger(sync.synced_cards) || (sync.synced_cards ?? 0) < 1) return null;

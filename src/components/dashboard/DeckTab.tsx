@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageTransition } from "@/components/ui/loading-states";
 import { DataLoader } from "@/components/ui/data-loader";
+import { UpgradePlanEntry } from "@/components/deck/UpgradePlanEntry";
 import { DeckGrid } from "@/components/cards/DeckGrid";
 import { DeckAnalysisPanel } from "@/components/deck/DeckAnalysisPanel";
 import { RecommendedDecksPanel } from "@/components/deck/RecommendedDecksPanel";
@@ -59,7 +60,12 @@ export function DeckTab({
             ) : playerError ? (
               <p className="text-muted-foreground">{t('dashboard.failedLoadDeck')}</p>
             ) : player?.currentDeck && player.currentDeck.length > 0 ? (
-              <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
+              <>
+                <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
+                {import.meta.env.VITE_DECK_UPGRADE_PLAN_PILOT === 'true' && (
+                  <UpgradePlanEntry playerTag={playerTag} player={player} />
+                )}
+              </>
             ) : (
               <p className="text-muted-foreground">{t('common.noData')}</p>
             )}
