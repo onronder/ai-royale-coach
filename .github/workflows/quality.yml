@@ -49,6 +49,13 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/browser-tools" playwright@1.56.1
           "$RUNNER_TEMP/browser-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Verify closed upgrade pilot in five languages
+        run: |
+          VITE_DECK_UPGRADE_PLAN_PILOT=false npm run dev -- --host 127.0.0.1 --port 5194 --strictPort > /tmp/upgrade-off-vite.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for n in $(seq 1 60); do curl -fsS http://127.0.0.1:5194/tests/integration/deckUpgrade/ui.html > /dev/null && break; sleep 1; done
+          PLAYWRIGHT_MODULE="$RUNNER_TEMP/browser-tools/node_modules/playwright/index.mjs" FIXTURE_URL=http://127.0.0.1:5194 PILOT_OFF_ONLY=true node tests/integration/deckUpgrade/browser.mjs
       - name: Run browser acceptance (real services blocked)
         run: |
           VITE_DECK_UPGRADE_PLAN_PILOT=true npm run dev -- --host 127.0.0.1 --port 5193 --strictPort > /tmp/fixture-vite.log 2>&1 &

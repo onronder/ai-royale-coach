@@ -23,6 +23,7 @@ async function scene(lang, width, tier, run) {
   const ctx = await browser.newContext({ viewport: { width, height: 900 }, locale: lang });
   await ctx.addInitScript(l => localStorage.setItem('i18nextLng', l), lang);
   const page = await ctx.newPage();
+  await page.clock.install();
   page.setDefaultTimeout(7000);
   const errors = [], unexpected = [], reads = [];
   const state = { opDay: 20, rowDay: 20, stock: 80, progress: 'completed', level: 7, drop: false, noPrice: false, fail: false };
@@ -66,6 +67,11 @@ async function scene(lang, width, tier, run) {
   const panel = () => page.getByRole('region', { name: w.title });
   const choose = async (name, value) => panel().getByLabel(name, { exact: true }).selectOption(value);
   const gold = async (label, value) => {
+    if (label === w.extraCost) {
+      const result = panel().getByRole('region', {name: w.extraCost});
+      await result.getByRole('heading', {name: w.extraGold.replace('{{amount}}', Number(value).toLocaleString(lang))}).waitFor();
+      return;
+    }
     const dt = panel().locator('dt').getByText(label, { exact: true });
     await dt.waitFor();
     await dt.locator('..').getByText(w.gold.replace('{{amount}}', Number(value).toLocaleString(lang)), { exact: true }).waitFor();
@@ -80,7 +86,19 @@ async function scene(lang, width, tier, run) {
     throw error;
   } finally { await ctx.close(); }
 }
-try {
+async function testClosedPilot() {
+  for (const lang of locales) for (const width of [390, 1280]) {
+    const strings = JSON.parse(await readFile(new URL('../../../src/i18n/locales/' + lang + '.json', import.meta.url)));
+    await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({page, button, w, reads}) => {
+      await page.getByText(strings.dashboard.currentDeck, {exact: true}).first().waitFor();
+      await page.clock.fastForward(600000);
+      assert.equal(await button(w.title).count(), 0);
+      assert.deepEqual(reads, []);
+    });
+  }
+  console.log(passed + ' pilot-off browser scenarios passed.');
+}
+async function testOpenPilot() {
   for (const lang of locales) for (const width of [390, 1280]) {
     await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({ page, open, panel, choose, gold, w, reads }) => {
       await page.getByRole('button', { name: w.title, exact: true }).waitFor();
@@ -92,6 +110,13 @@ try {
       await gold(w.extraCost, 60000); await gold(w.totalCost, 100000);
       const row = panel().getByRole('list', { name: w.cards }).getByRole('listitem');
       assert.equal(await row.count(), 1);
+      const result = panel().getByRole('region', {name: w.extraCost});
+      const card = await row.locator('strong').innerText();
+      await result.getByText(w.collect_other.replace('{{amount}}', '90').replace('{{card}}', card), {exact:true}).waitFor();
+      assert(await result.evaluate(el => !!(el.compareDocumentPosition(el.parentElement.querySelector('dl')) & Node.DOCUMENT_POSITION_FOLLOWING)));
+      const settled = reads.length;
+      await page.clock.fastForward(600000);
+      assert.equal(reads.length, settled);
       await row.getByText(w.extraMissing.replace('{{amount}}', '90'), { exact: true }).waitFor();
       await row.getByText(w.sharedStep.replace('{{level}}', '13'), { exact: true }).waitFor();
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -102,7 +127,7 @@ try {
       await choose(w.secondDeck, 'missing');
       await gold(w.mainCost, 40000);
       await panel().getByText(w.missing.replace('{{deck}}', w.secondDeck).replace('{{slot}}', '8').replace('{{card}}', 'Legacy Card')).waitFor();
-      assert.equal(await panel().getByText(w.extraCost, { exact: true }).count(), 0);
+      assert.equal(await panel().getByRole('region', { name: w.extraCost }).count(), 0);
       if (process.env.PROOF_DIR && lang === 'tr' && width === 390) await panel().screenshot({ animations: 'disabled', path: process.env.PROOF_DIR + '/missing-slot.png' });
       await choose(w.secondDeck, '');
       assert.equal(await panel().getByText(w.nextShared, { exact: true }).count(), 0);
@@ -119,12 +144,18 @@ try {
     const list = panel().getByRole('list', {name: w.cards});
     assert.equal(await list.getByRole('listitem').count(), 2);
   });
-  for (const tier of ['free', 'expired']) {
+  for (const tier of ['free', 'expired', 'stale-trial', 'admin-only']) {
     await scene('en', 390, tier, async ({page, button, w, reads}) => {
       await page.getByText('Current Deck', {exact:true}).first().waitFor();
       assert.equal(await button(w.title).count(), 0); assert.equal(reads.length, 0);
     });
   }
+  await scene('en', 390, 'ending-trial', async ({page, open, panel, gold, choose, w, button}) => {
+    await open(); await choose(w.mainLevel, '13'); await gold(w.mainCost, 40000);
+    await page.clock.fastForward(61000);
+    assert.equal(await panel().count(), 0);
+    assert.equal(await button(w.title).count(), 0);
+  });
   await scene('en', 390, 'paid', async ({open, panel, choose, gold, w, state, button}) => {
     state.noDecks = true;
     state.noSync = true;
@@ -152,6 +183,7 @@ try {
     await button(w.reread).click();
     await gold(w.mainCost, 0);
     await panel().getByText(w.noShared).waitFor();
+    await panel().getByText(w.secondStep.replace('{{from}}', '13').replace('{{to}}','14')).waitFor();
     await panel().getByText(w.extraMissing.replace('{{amount}}', '90')).waitFor();
     state.level = 7; state.stock = null; state.noPrice = true; state.opDay = state.rowDay = 22;
     await button('Operation event').click();
@@ -189,4 +221,8 @@ try {
     assert(reads.some(([table, account]) => table === 'card_collection' && account === 'fixture-second'));
   });
   console.log(passed + ' upgrade plan browser scenarios passed; no writes, AI or real service requests.');
+}
+try {
+  if (process.env.PILOT_OFF_ONLY === 'true') await testClosedPilot();
+  else await testOpenPilot();
 } finally { await browser.close(); }

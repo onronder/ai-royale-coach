@@ -75,6 +75,7 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
 
   const rows = primary?.rows ?? [];
   const unfinished = rows.filter(r => r.level === null || r.level < Math.max(r.mainTarget ?? 0, r.secondTarget ?? 0));
+  const extraCopies = rows.filter(row => row.additional.missingCopies !== 0);
   const completed = rows.filter(r => !unfinished.includes(r));
   const catalog = new Map(collection.knownCards.map(c => [c.card_id, c]));
   const shared = unfinished.filter(r => r.sharedNextUpgrade === true).map(r => {
@@ -88,8 +89,8 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
     <PlanSelect label={label} value={draft[field]} onChange={value => edit({ [field]: Number(value) })}>
       {levels.map(n => <option key={n} value={n}>{n}</option>)}
     </PlanSelect>;
-  const amount = (label: string, sum: { total: number | null; known: number }, accent = false) =>
-    <div className={'min-w-0 rounded-lg border p-3 ' + (accent ? 'border-gold/50 bg-gold/5' : 'border-border bg-muted/20')}>
+  const amount = (label: string, sum: { total: number | null; known: number }) =>
+    <div className="min-w-0 rounded-lg border border-border bg-muted/20 p-3">
       <dt className="text-sm text-muted-foreground">{label}</dt>
       <dd className="mt-1 break-words text-xl font-bold tabular-nums">{sum.total === null ? t('common.unknown') : t('upgradePlan.gold', { amount: number(sum.total) })}</dd>
       {sum.total === null && <dd className="text-sm text-muted-foreground">{t('upgradePlan.subtotal', { amount: number(sum.known) })}</dd>}
@@ -102,6 +103,9 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
     {comparison && <p className="text-xs font-medium">{row.mainTarget && row.secondTarget
       ? t('upgradePlan.bothDecks') : row.mainTarget ? t('upgradePlan.mainDeck') : t('upgradePlan.secondDeck')}</p>}
     {row.sharedNextUpgrade === true && <p className="text-sm text-primary">{t('upgradePlan.sharedStep', { level: row.level! + 1 })}</p>}
+    {comparison && row.level !== null && row.secondTarget !== null && row.level < row.secondTarget &&
+      row.level >= (row.mainTarget ?? 0) &&
+      <p className="text-sm">{t('upgradePlan.secondStep', { from: row.level, to: row.level + 1 })}</p>}
     <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
       {row.mainTarget && <span>{t('upgradePlan.mainMissing', { amount: number(row.main.missingCopies) })}</span>}
       {comparison && <span>{t('upgradePlan.extraMissing', { amount: number(row.additional.missingCopies) })}</span>}
@@ -135,13 +139,6 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
           ? 'upgradePlan.readError' : collection.noSync ? 'upgradePlan.noSync' : 'upgradePlan.waiting')}
         {!collection.loading && <Button className="min-h-11" variant="outline" onClick={() => void collection.refresh()}>{t('upgradePlan.reread')}</Button>}
       </div>}
-    {primary && <dl aria-label={t('upgradePlan.title')} className="grid gap-2 sm:grid-cols-3">
-      {amount(t('upgradePlan.mainCost'), primary.gold)}
-      {comparison && plan.status === 'ready' && <>
-        {amount(t('upgradePlan.extraCost'), plan.gold.additional, true)}
-        {amount(t('upgradePlan.totalCost'), plan.gold.combined)}
-      </>}
-    </dl>}
     {plan.status === 'invalid' && <p role="status" className="rounded-md border border-border p-3">
       {t('upgradePlan.' + (plan.error === 'invalid_size' ? 'invalidSize' : plan.error === 'duplicate_card' ? 'duplicate' : 'missing'), {
         deck: t(plan.deck === 'main' ? 'upgradePlan.mainDeck' : 'upgradePlan.secondDeck'),
@@ -150,6 +147,17 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
           : plan.reference ? cardName(plan.reference) : t('common.unknown'),
       })}
     </p>}
+    {comparison && plan.status === 'ready' && <section aria-label={t('upgradePlan.extraCost')}
+      className="space-y-2 rounded-lg border border-gold/50 bg-gold/5 p-3">
+      <h4 className="text-lg font-bold">{plan.gold.additional.total === null ? t('upgradePlan.unknownExtraGold')
+        : t('upgradePlan.extraGold', { amount: number(plan.gold.additional.total) })}</h4>
+      {plan.gold.additional.total === null && <p>{t('upgradePlan.subtotal', { amount: number(plan.gold.additional.known) })}</p>}
+      {extraCopies.length ? <ul className="space-y-1 text-sm">{extraCopies.map(row =>
+        <li key={row.cardId}>{row.additional.missingCopies === null
+          ? t('upgradePlan.unknownCopies', { card: cardName(row.name) })
+          : t('upgradePlan.collect', { card: cardName(row.name), amount: number(row.additional.missingCopies), count: row.additional.missingCopies })}</li>
+      )}</ul> : <p className="text-sm">{t('upgradePlan.noExtraCopies')}</p>}
+    </section>}
     {comparison && plan.status === 'ready' && <div className="rounded-lg border border-border p-3">
       <h4 className="font-semibold">{t('upgradePlan.nextShared')}</h4>
       <p className="mt-1">{first ? cardName(first.name) + ' · ' + first.level + ' → ' + (first.level! + 1)
@@ -161,6 +169,10 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
         {shared.map(({ row }) => <option key={row.cardId} value={row.cardId}>{cardName(row.name)}</option>)}
       </PlanSelect>}
     </div>}
+    {primary && <dl aria-label={t('upgradePlan.title')} className="grid gap-2 sm:grid-cols-2">
+      {amount(t('upgradePlan.mainCost'), primary.gold)}
+      {comparison && plan.status === 'ready' && amount(t('upgradePlan.totalCost'), plan.gold.combined)}
+    </dl>}
     {!!unfinished.length && <ul aria-label={t('upgradePlan.cards')}>{unfinished.map(cardRow)}</ul>}
     {!!completed.length && <details><summary className="min-h-11 cursor-pointer py-2 text-sm font-medium">{t('upgradePlan.completed', { amount: completed.length })}</summary>
       <ul>{completed.map(cardRow)}</ul>

@@ -11,10 +11,11 @@ import type { ClashRoyalePlayer } from '../../../src/services/clashRoyaleApi';
 
 const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 const tier = new URLSearchParams(location.search).get('tier') ?? 'paid';
-const allowed = tier === 'paid' || tier === 'trial';
+const allowed = ['paid', 'trial', 'stale-trial', 'ending-trial', 'admin-only'].includes(tier);
 const ids = ['fixture-first', 'fixture-second'];
 for (const id of ids) qc.setQueryData(['subscription-status', id], {
-  hasAccess: allowed, trial: { isActive: tier === 'trial' }, subscription: { status: tier === 'paid' ? 'active' : tier },
+  hasAccess: allowed, trial: { isActive: ['trial', 'stale-trial', 'ending-trial'].includes(tier),
+    endsAt: new Date(Date.now() + (tier === 'stale-trial' ? -1 : tier === 'ending-trial' ? 60000 : 86400000)).toISOString() }, subscription: { status: tier === 'paid' ? 'active' : tier },
 });
 const names = ['Baby Dragon', 'Knight', 'Fireball', 'Archers', 'Golem', 'Witch', 'Wizard', 'Zap'];
 function Screen() {
