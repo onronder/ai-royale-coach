@@ -1,4 +1,5 @@
 import { beforeEach, expect, mock, test } from 'bun:test';
+import { requirePaidPlayerSlot } from '../../../supabase/functions/_shared/paid-player-slot';
 import { evidenceHash, evidenceKey } from '../../../supabase/functions/_shared/deck-evidence';
 
 type Row = Record<string, unknown>;
@@ -24,6 +25,7 @@ function from(table: string) {
     gte: (col: string, value: string) => { rows = rows.filter(r => String(r[col]) >= value); return query; },
     order: (col: string) => { rows = [...rows].sort((a,b) => String(b[col]).localeCompare(String(a[col]))); return query; },
     limit: (n: number) => { rows = rows.slice(0,n); return query; },
+    then: (resolve: (value: { data: Row[]; error: null }) => unknown) => resolve({ data: rows, error: null }),
     maybeSingle: async () => cacheReadError && table === 'analyses'
       ? { data: null, error: { code: 'unavailable' } } : { data: rows[0] ?? null, error: null },
     insert: async (row: Row) => { tables[table].push(row); return { error: null }; },
@@ -106,4 +108,15 @@ test('a failed cache read never starts another generation', async () => {
   cacheReadError = true;
   expect((await analyzeMine()).status).toBe(503);
   expect(aiCalls).toBe(0);
+});
+
+test('older deck-only requests can use a sole selected link; multiple links require a player choice', async () => {
+  const paid = { allowed: true, isPaid: true, isAdmin: false, isTrial: false };
+  const db = client as unknown as Parameters<typeof requirePaidPlayerSlot>[0];
+  expect(await requirePaidPlayerSlot(db, owner, paid, undefined, { allowSoleLink: true })).toBeNull();
+  tables.player_profiles.push({ user_id: owner, player_tag: 'P28', ai_enabled: false });
+  expect((await requirePaidPlayerSlot(db, owner, paid, undefined, { allowSoleLink: true }))?.status).toBe(403);
+  expect((await requirePaidPlayerSlot(db, owner, paid, 'P28'))?.status).toBe(403);
+  expect((await requirePaidPlayerSlot(db, owner, paid, undefined))?.status).toBe(400);
+  expect(await requirePaidPlayerSlot(db, owner, paid, '#P22')).toBeNull();
 });

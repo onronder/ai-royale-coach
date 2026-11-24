@@ -1,3 +1,4 @@
+import { requirePaidPlayerSlot } from '../_shared/paid-player-slot.ts';
 import { classifyDeck, evidenceKey, evidenceHash } from '../_shared/deck-evidence.ts';
 import { observeBattles } from '../_shared/battle-observation.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
@@ -89,29 +90,8 @@ serve(async (req) => {
     const { playerData, battles, language: requestedLanguage }: DeckAnalysisRequest & { language?: string } = await req.json();
     const language = productLanguage(requestedLanguage);
 
-    // Helper to normalize player tags (database stores without #)
-    const normalizePlayerTag = (tag: string): string => {
-      return tag.replace(/^#/, '').toUpperCase();
-    };
-
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
-    if (playerData?.tag && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const playerTag = normalizePlayerTag(playerData.tag);
-      const { data: playerProfile } = await supabase
-        .from('player_profiles')
-        .select('ai_enabled')
-        .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
-        .single();
-
-      if (!playerProfile?.ai_enabled) {
-        return errorResponse('AI not enabled for this account', 403, {
-          ai_not_enabled: true,
-          player_tag: playerData.tag
-        });
-      }
-    }
-
+    const slotError = await requirePaidPlayerSlot(supabase, user.id, aiAccess, playerData?.tag);
+    if (slotError) return slotError;
     // Language instruction based on user preference
     const languageInstructions: Record<string, string> = {
       en: 'Respond in English. All text content must be in English.',

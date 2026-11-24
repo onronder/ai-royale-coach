@@ -20,6 +20,7 @@ interface Suggestion {
 }
 
 interface CardReplacementSuggesterProps {
+  playerTag: string;
   currentDeck: string[];
   targetCard: string;
   userCollection?: string[];
@@ -27,6 +28,7 @@ interface CardReplacementSuggesterProps {
 }
 
 export function CardReplacementSuggester({
+  playerTag,
   currentDeck,
   targetCard,
   userCollection,
@@ -52,6 +54,7 @@ export function CardReplacementSuggester({
     try {
       const { data, error } = await supabase.functions.invoke("suggest-card-replacements", {
         body: {
+          playerTag,
           currentDeck,
           targetCard,
           availableCards: userCollection,

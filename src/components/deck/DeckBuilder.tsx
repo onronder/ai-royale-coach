@@ -150,10 +150,10 @@ export function DeckBuilder({
     try {
       const [basicResult, advancedResult] = await Promise.all([
         supabase.functions.invoke('analyze-deck-builder', {
-          body: { cards: selectedCards, language }
+          body: { cards: selectedCards, playerTag, language }
         }),
         supabase.functions.invoke('analyze-deck-advanced', {
-          body: { cards: selectedCards, language }
+          body: { cards: selectedCards, playerTag, language }
         })
       ]);
 

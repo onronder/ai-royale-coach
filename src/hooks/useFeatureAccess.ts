@@ -77,23 +77,29 @@ export function useFeatureAccess(
   const normalizedTag = normalizePlayerTag(playerTag);
   const dailyLimit = FEATURE_LIMITS[featureName];
 
-  const userId = useContext(SubscriptionUserContext);
-  const usageKey = ['feature-usage', userId, featureName, normalizedTag, todayDate];
-  const { data: usageCount = 0, isLoading: isUsageLoading, isError: usageFailed, refetch } = useQuery({
+  const accountId = useContext(SubscriptionUserContext);
+  const usageKey = ['feature-usage', accountId, featureName, normalizedTag, todayDate];
+  const { data: usage, isLoading: isUsageLoading, isError: authFailed, refetch } = useQuery({
     queryKey: usageKey,
-    enabled: !!userId,
+    enabled: !!accountId,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || user.id !== accountId) return { userId: null, count: 0 };
+
       const { data, error } = await supabase.rpc('get_daily_feature_usage', {
-        p_user_id: userId!,
+        p_user_id: user.id,
         p_feature_name: featureName,
         p_date: todayDate,
       });
-      if (error || data == null) throw error || new Error('Usage unavailable');
-      return data;
+      return { userId: user.id, count: error ? null : data };
     },
     staleTime: 1000 * 60,
     refetchOnWindowFocus: true,
   });
+
+  const userId = usage?.userId;
+  const usageFailed = usage?.count === null;
+  const usageCount = usage?.count ?? 0;
 
   // Integrate fraud status for velocity checks and reduced limits
   const { 
@@ -125,6 +131,7 @@ export function useFeatureAccess(
   // Determine current access status without async checks
   const getStaticAccessResult = (): AccessResult | null => {
     if (isLoading) return null;
+    if (authFailed) return unavailable;
     
     if (!userId) {
       return { allowed: false, reason: 'not_authenticated', message: 'Please sign in to use this feature.' };

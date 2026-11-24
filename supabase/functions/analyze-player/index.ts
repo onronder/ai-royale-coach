@@ -1,6 +1,7 @@
+import { aiPlayerTag, requirePaidPlayerSlot } from '../_shared/paid-player-slot.ts';
 import { cardDisplayLevel as getDisplayLevel } from '../_shared/card-display-level.ts';
 import { observeBattles } from '../_shared/battle-observation.ts';
-import { evidenceKey, evidenceHash, profileAnalysisTag } from '../_shared/deck-evidence.ts';
+import { evidenceKey, evidenceHash } from '../_shared/deck-evidence.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -63,7 +64,7 @@ serve(async (req) => {
     if (!playerData || typeof playerData.tag !== 'string' || !Array.isArray(battles)) {
       return errorResponse('Player data and battles are required', 400);
     }
-    const tagKey = profileAnalysisTag(playerData.tag);
+    const tagKey = aiPlayerTag(playerData.tag);
     if (!tagKey) return errorResponse('Invalid player tag', 400);
     const tagSpellings = [...new Set([playerData.tag, tagKey, '#' + tagKey])];
 
@@ -97,19 +98,8 @@ serve(async (req) => {
       return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true, trial_ended: !!pastSub });
     }
 
-    // PER-PLAYER AI ACCESS CHECK
-    if (playerData.tag && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const { data: playerProfile } = await supabase
-        .from('player_profiles')
-        .select('ai_enabled')
-        .eq('user_id', user.id)
-        .in('player_tag', tagSpellings)
-        .eq('ai_enabled', true).limit(1).maybeSingle();
-
-      if (!playerProfile?.ai_enabled) {
-        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerData.tag });
-      }
-    }
+    const slotError = await requirePaidPlayerSlot(supabase, user.id, aiAccess, playerData?.tag);
+    if (slotError) return slotError;
 
     // Language instruction
     const languageInstructions: Record<string, string> = {

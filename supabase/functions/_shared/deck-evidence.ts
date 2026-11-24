@@ -45,9 +45,3 @@ export function evidenceKey(player: any, battles: unknown = []) {
 export async function evidenceHash(value: string) {
   return [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)))].map(v => v.toString(16).padStart(2, '0')).join('');
 }
-
-export function profileAnalysisTag(tag: unknown): string | null {
-  if (typeof tag !== 'string') return null;
-  const normalized = tag.replace(/^#/, '').toUpperCase();
-  return /^[0289PYLQGRJCUV]{3,15}$/.test(normalized) ? normalized : null;
-}
