@@ -1,3 +1,4 @@
+import { requirePaidPlayerSlot } from '../_shared/paid-player-slot.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -56,26 +57,8 @@ serve(async (req) => {
     const { deck, targetTrophies, playerTag, language: requestedLanguage } = await req.json();
     const language = productLanguage(requestedLanguage);
 
-    // Helper to normalize player tags
-    const normalizePlayerTag = (tag: string): string => {
-      return tag.replace(/^#/, '').toUpperCase();
-    };
-
-    // PER-PLAYER AI ACCESS CHECK
-    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const normalizedTag = normalizePlayerTag(playerTag);
-      const { data: playerProfile } = await supabase
-        .from('player_profiles')
-        .select('ai_enabled')
-        .eq('user_id', user.id)
-        .eq('player_tag', normalizedTag)
-        .single();
-
-      if (!playerProfile?.ai_enabled) {
-        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
-      }
-    }
-
+    const slotError = await requirePaidPlayerSlot(supabase, user.id, aiAccess, playerTag, { allowSoleLink: true });
+    if (slotError) return slotError;
     if (!deck || deck.length !== 8) {
       return errorResponse('Deck must contain exactly 8 cards', 400);
     }

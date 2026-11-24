@@ -1,0 +1,124 @@
+-- Deploy these transactional writers before switching the account and billing Edge functions.
+SET LOCAL lock_timeout = '2s';
+CREATE FUNCTION public.select_my_ai_profiles(p_ids uuid[]) RETURNS jsonb
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE
+  actor uuid := auth.uid();
+  slots integer;
+  chosen integer := cardinality(p_ids);
+  owned integer;
+BEGIN
+  IF actor IS NULL THEN RAISE EXCEPTION 'Sign in required' USING ERRCODE = '42501'; END IF;
+  SELECT greatest(account_slots, 0) INTO slots FROM public.user_subscriptions
+    WHERE user_id = actor FOR UPDATE;
+  IF NOT FOUND OR NOT public.marketing_subscription_access(actor) THEN
+    RAISE EXCEPTION 'No active subscription' USING ERRCODE = '22023';
+  END IF;
+  IF chosen IS NULL OR chosen > slots OR coalesce(array_ndims(p_ids), 1) <> 1 THEN
+    RAISE EXCEPTION 'Invalid profile selection' USING ERRCODE = '22023', DETAIL = slots::text;
+  END IF;
+  SELECT count(*) INTO owned FROM (
+    SELECT id FROM public.player_profiles WHERE user_id = actor AND id = ANY(p_ids)
+      ORDER BY id FOR UPDATE
+  ) locked;
+  IF owned <> chosen THEN RAISE EXCEPTION 'Invalid profile selection' USING ERRCODE = '22023'; END IF;
+
+  UPDATE public.player_profiles SET ai_enabled = (id = ANY(p_ids))
+    WHERE user_id = actor AND ai_enabled IS DISTINCT FROM (id = ANY(p_ids));
+  UPDATE public.user_subscriptions SET needs_ai_selection = false
+    WHERE user_id = actor AND needs_ai_selection IS DISTINCT FROM false;
+  RETURN jsonb_build_object('success', true, 'enabledCount', chosen, 'maxSlots', slots);
+END $$;
+REVOKE ALL ON FUNCTION public.select_my_ai_profiles(uuid[]) FROM PUBLIC, anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.select_my_ai_profiles(uuid[]) TO authenticated;
+--> statement-breakpoint
+-- Keep billing recovery preferences separate from effective, enforceable AI access.
+CREATE SCHEMA ai_royale_private;
+REVOKE ALL ON SCHEMA ai_royale_private FROM PUBLIC, anon, authenticated, service_role;
+CREATE TABLE ai_royale_private.suspended_ai_selections (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  profile_ids uuid[] NOT NULL,
+  previous_slots integer NOT NULL,
+  needs_choice boolean NOT NULL
+);
+REVOKE ALL ON ai_royale_private.suspended_ai_selections FROM PUBLIC, anon, authenticated, service_role;
+ALTER TABLE ai_royale_private.suspended_ai_selections ENABLE ROW LEVEL SECURITY;
+--> statement-breakpoint
+-- Billing and manual selection share the subscription row lock. Replayed billing
+-- events must not overwrite a suspended choice or open a dismissed selection.
+CREATE FUNCTION public.sync_subscription_ai_profiles() RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE
+  has_access boolean := public.marketing_subscription_access(NEW.user_id);
+  slots integer := greatest(NEW.account_slots, 0);
+  same_plan boolean := TG_OP = 'UPDATE' AND OLD.polar_subscription_id IS NOT DISTINCT FROM NEW.polar_subscription_id;
+  activation boolean := NOT same_plan OR OLD.status NOT IN ('active', 'trialing')
+    OR (OLD.status = 'trialing' AND NEW.status = 'active');
+  linked integer;
+  selected uuid[];
+  saved ai_royale_private.suspended_ai_selections%ROWTYPE;
+  needs_choice boolean := false;
+BEGIN
+  PERFORM pg_advisory_xact_lock(hashtextextended(NEW.user_id::text, 50));
+  SELECT count(*), coalesce(array_agg(id ORDER BY id) FILTER (WHERE ai_enabled), '{}'::uuid[])
+    INTO linked, selected FROM public.player_profiles WHERE user_id = NEW.user_id;
+
+  IF NEW.status = 'past_due' AND same_plan AND OLD.status IN ('active','trialing')
+      AND cardinality(selected) <= greatest(OLD.account_slots, 0) THEN
+    INSERT INTO ai_royale_private.suspended_ai_selections VALUES
+      (NEW.user_id, selected, greatest(OLD.account_slots, 0), coalesce(OLD.needs_ai_selection, false))
+      ON CONFLICT (user_id) DO UPDATE SET profile_ids = EXCLUDED.profile_ids,
+        previous_slots = EXCLUDED.previous_slots, needs_choice = EXCLUDED.needs_choice;
+  ELSIF NEW.status IS DISTINCT FROM 'past_due' OR NOT same_plan THEN
+    DELETE FROM ai_royale_private.suspended_ai_selections WHERE user_id = NEW.user_id RETURNING * INTO saved;
+  END IF;
+
+  IF NOT has_access OR slots = 0 THEN
+    selected := '{}';
+  ELSIF same_plan AND OLD.status = 'past_due' AND saved.user_id IS NOT NULL THEN
+    SELECT coalesce(array_agg(id ORDER BY id), '{}'::uuid[]) INTO selected FROM public.player_profiles
+      WHERE user_id = NEW.user_id AND id = ANY(saved.profile_ids);
+    needs_choice := saved.needs_choice OR cardinality(selected) <> cardinality(saved.profile_ids)
+      OR slots > saved.previous_slots;
+    needs_choice := needs_choice AND cardinality(selected) < least(linked, slots);
+  ELSIF same_plan AND OLD.status = 'past_due' THEN
+    -- No valid preference was recorded for this interruption.
+    selected := '{}';
+    needs_choice := linked > 0;
+  ELSIF TG_OP = 'UPDATE' AND OLD.status IN ('active','trialing') AND slots > greatest(OLD.account_slots, 0) THEN
+    -- Checkout can replace the Polar subscription ID while upgrading the same account.
+    needs_choice := cardinality(selected) < least(linked, slots);
+  ELSIF activation AND linked <= slots THEN
+    SELECT coalesce(array_agg(id ORDER BY id), '{}'::uuid[]) INTO selected FROM public.player_profiles
+      WHERE user_id = NEW.user_id;
+  ELSIF activation THEN
+    needs_choice := cardinality(selected) <> slots;
+  ELSE
+    needs_choice := coalesce(OLD.needs_ai_selection, false);
+  END IF;
+  IF cardinality(selected) > slots THEN
+    selected := '{}';
+    needs_choice := true;
+  END IF;
+
+  UPDATE public.player_profiles SET ai_enabled = (id = ANY(selected))
+    WHERE user_id = NEW.user_id AND ai_enabled IS DISTINCT FROM (id = ANY(selected));
+  UPDATE public.user_subscriptions SET needs_ai_selection = needs_choice
+    WHERE user_id = NEW.user_id AND needs_ai_selection IS DISTINCT FROM needs_choice;
+  RETURN NULL;
+END $$;
+REVOKE ALL ON FUNCTION public.sync_subscription_ai_profiles() FROM PUBLIC, anon, authenticated, service_role;
+CREATE TRIGGER sync_subscription_ai_profiles AFTER INSERT OR UPDATE OF
+  account_slots, status, polar_subscription_id, current_period_end, cancel_at_period_end, ends_at
+  ON public.user_subscriptions FOR EACH ROW EXECUTE FUNCTION public.sync_subscription_ai_profiles();
+--> statement-breakpoint
+-- CREATE TRIGGER already holds the subscription write lock until commit. Finish any
+-- in-flight profile writes before reading the flags left by the previous webhook.
+LOCK TABLE public.player_profiles IN SHARE MODE;
+INSERT INTO ai_royale_private.suspended_ai_selections (user_id, profile_ids, previous_slots, needs_choice)
+SELECT s.user_id, array_agg(p.id ORDER BY p.id), s.account_slots, coalesce(s.needs_ai_selection, false)
+FROM public.user_subscriptions s
+JOIN public.player_profiles p ON p.user_id = s.user_id AND p.ai_enabled
+WHERE s.status = 'past_due' AND s.account_slots > 0
+GROUP BY s.user_id, s.account_slots, s.needs_ai_selection
+HAVING count(*) <= s.account_slots;

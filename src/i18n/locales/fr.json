@@ -2702,6 +2702,9 @@
       "title": "T’abonner maintenant ?",
       "description": "Jours d’essai restants : {{days}}. Si tu continues, ton abonnement payant commence immédiatement."
     },
+    "accountRestricted": "L’accès à ce compte est restreint.",
+    "verificationUnavailable": "Impossible de vérifier l’accès. Veuillez réessayer.",
+    "tagAccessUnavailable": "Ce compte ne peut pas utiliser l’essai pour cet identifiant de joueur.",
     "tagClaimedTitle": "Identifiant déjà associé",
     "featureLocked": "Fonction verrouillée",
     "dailyLimitMessage": "Tu as atteint la limite du jour.",

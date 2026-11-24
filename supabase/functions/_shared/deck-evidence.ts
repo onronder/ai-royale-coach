@@ -45,12 +45,3 @@ export function evidenceKey(player: any, battles: unknown = []) {
 export async function evidenceHash(value: string) {
   return [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)))].map(v => v.toString(16).padStart(2, '0')).join('');
 }
-
-// Old summaries contain public game data and used a tag-only identity. Keep them
-// readable for a linked player, but never select another account's new cache.
-export function savedProfileFilter(userId: string, tag: string): string | null {
-  const normalized = tag.replace(/^#/, '').toUpperCase();
-  if (!/^[A-Z0-9]+$/.test(normalized) || !/^[a-f0-9-]{36}$/i.test(userId)) return null;
-  return [`profile_${userId}_`, `profile_#${normalized}_`, `profile_${normalized}_`]
-    .map(prefix => `input_fingerprint.like.${prefix.replace(/_/g, '\\_')}%`).join(',');
-}

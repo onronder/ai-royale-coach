@@ -53,7 +53,7 @@ const db = {
         error: cacheError ? { code: 'fixture_read_failure' } : null };
       throw new Error(`Unexpected read ${table}`);
     };
-    const query: any = { select: () => query, eq: (key: string, value: unknown) => { filters[key] = value; return query; },
+    const query: any = { select: () => query, in: () => query, eq: (key: string, value: unknown) => { filters[key] = value; return query; },
       gte: () => query, order: () => query, limit: () => query, maybeSingle: read, single: read,
       insert: async (row: any) => {
         if (table === 'daily_usage_logs') { usageWrites++; return { error: null }; }
@@ -71,7 +71,7 @@ mock.module('https://esm.sh/@supabase/supabase-js@2.81.1', () => ({ createClient
 await import('../../../supabase/functions/predict-deck-matchup/index.ts');
 const request = (auth = true) => new Request('https://fixture.invalid', { method: 'POST',
   headers: { 'Content-Type': 'application/json', ...(auth ? { Authorization: 'Bearer fixture' } : {}) },
-  body: JSON.stringify({ deckA, deckB, playerTag: '#FIXTURE', language: 'en' }) });
+  body: JSON.stringify({ deckA, deckB, playerTag: '#P0LY', language: 'en' }) });
 beforeEach(() => {
   tier = 'paid'; aiEnabled = true; authenticated = true; content = JSON.stringify(valid());
   saveError = saveThrows = cacheError = false; providerCalls = usageWrites = 0;

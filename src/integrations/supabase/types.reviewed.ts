@@ -246,6 +246,7 @@ export type Database = {
           id: string
           input_fingerprint: string
           output: Json
+          user_id: string
           player_tag: string
         }
         Insert: {
@@ -254,6 +255,7 @@ export type Database = {
           id?: string
           input_fingerprint: string
           output: Json
+          user_id: string
           player_tag: string
         }
         Update: {
@@ -262,6 +264,7 @@ export type Database = {
           id?: string
           input_fingerprint?: string
           output?: Json
+          user_id?: string
           player_tag?: string
         }
         Relationships: []
@@ -1723,22 +1726,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          ai_enabled?: boolean | null
-          created_at?: string | null
-          id?: string
           last_seen_at?: string | null
           note?: string | null
           player_tag: string
           user_id: string
         }
         Update: {
-          ai_enabled?: boolean | null
-          created_at?: string | null
-          id?: string
           last_seen_at?: string | null
           note?: string | null
-          player_tag?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -3224,6 +3219,7 @@ export type Database = {
         Returns: number
       }
       cleanup_old_api_logs: { Args: never; Returns: undefined }
+      select_my_ai_profiles: { Args: { p_ids: string[] }; Returns: Json }
       detect_multi_account_abuse: {
         Args: { p_fingerprint_hash: string; p_user_id: string }
         Returns: boolean

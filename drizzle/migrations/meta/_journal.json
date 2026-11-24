@@ -351,6 +351,48 @@
       "when": 1795286743627,
       "tag": "0049_card_collection_observations",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1795507200000,
+      "tag": "0050_prepare_ai_profile_selection",
+      "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1795507201000,
+      "tag": "0051_ai_profile_slots",
+      "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1795507202000,
+      "tag": "0052_trial_and_fraud_permissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1795507203000,
+      "tag": "0053_analysis_ownership",
+      "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1795507204000,
+      "tag": "0054_backfill_analysis_owners",
+      "breakpoints": true
+    },
+    {
+      "idx": 55,
+      "version": "7",
+      "when": 1795507205000,
+      "tag": "0055_finalize_analysis_owners",
+      "breakpoints": true
     }
   ]
 }

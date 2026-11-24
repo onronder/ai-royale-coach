@@ -2702,6 +2702,9 @@
       "title": "Assinar agora?",
       "description": "Dias restantes no teste: {{days}}. Se continuar, sua assinatura paga começará imediatamente."
     },
+    "accountRestricted": "O acesso desta conta está restrito.",
+    "verificationUnavailable": "Não foi possível verificar o acesso. Tente novamente.",
+    "tagAccessUnavailable": "Esta conta não pode usar o período de teste para esta tag de jogador.",
     "tagClaimedTitle": "Tag já vinculada",
     "featureLocked": "Recurso bloqueado",
     "dailyLimitMessage": "Você atingiu o limite de hoje.",

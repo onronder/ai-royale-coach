@@ -399,36 +399,6 @@ serve(async (req) => {
 
         const isNewSubscription = !existingSub;
 
-        // Get user's linked player profiles
-        const { data: profiles, error: profilesError } = await supabase
-          .from('player_profiles')
-          .select('id, player_tag, last_seen_at')
-          .eq('user_id', userId)
-          .order('last_seen_at', { ascending: false });
-
-        if (profilesError) {
-          log('warn', 'Error fetching player profiles', { error: profilesError.message });
-        }
-
-        const profileCount = profiles?.length || 0;
-        const needsAISelection = profileCount > accountSlots;
-
-        // Auto-enable AI on profiles if user has <= slots
-        if (!needsAISelection && profiles && profiles.length > 0) {
-          const profilesToEnable = profiles.slice(0, accountSlots);
-          for (const profile of profilesToEnable) {
-            const { error: enableError } = await supabase
-              .from('player_profiles')
-              .update({ ai_enabled: true })
-              .eq('id', profile.id);
-            
-            if (enableError) {
-              log('warn', 'Error enabling AI on profile', { profileId: profile.id, error: enableError.message });
-            }
-          }
-          log('info', 'Auto-enabled AI on profiles', { count: profilesToEnable.length, userId });
-        }
-
         // Upsert subscription
         const { error: upsertError } = await supabase
           .from('user_subscriptions')
@@ -442,7 +412,6 @@ serve(async (req) => {
             current_period_start: subscription?.current_period_start || null,
             current_period_end: subscription?.current_period_end || null,
             account_slots: accountSlots,
-            needs_ai_selection: needsAISelection,
             pending_account_slots: null,
             pending_change_effective_at: null,
             ...cancelFields(subscription),
@@ -459,7 +428,7 @@ serve(async (req) => {
           });
         }
 
-        log('info', 'Subscription activated', { userId, accountSlots, needsAISelection, isTrialing });
+        log('info', 'Subscription activated', { userId, accountSlots, isTrialing });
 
         // Update trial info if trialing - trial_used stays false until trial ends
         if (isTrialing) {
@@ -530,7 +499,6 @@ serve(async (req) => {
         // Log successful processing
         await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
           accountSlots,
-          needsAISelection,
           isTrialing,
           isNewSubscription
         });
@@ -552,37 +520,6 @@ serve(async (req) => {
         log('info', 'Processing subscription update', { userId, status: subscription?.status });
         
         const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
-
-        // Get current subscription to check for tier changes
-        const { data: currentSub } = await supabase
-          .from('user_subscriptions')
-          .select('account_slots, pending_account_slots')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        // Handle tier downgrade
-        if (currentSub?.pending_account_slots && currentSub.pending_account_slots !== currentSub.account_slots) {
-          const { data: profiles } = await supabase
-            .from('player_profiles')
-            .select('id, ai_enabled')
-            .eq('user_id', userId);
-
-          const enabledCount = profiles?.filter(p => p.ai_enabled).length || 0;
-
-          if (enabledCount > accountSlots) {
-            await supabase
-              .from('player_profiles')
-              .update({ ai_enabled: false })
-              .eq('user_id', userId);
-            
-            await supabase
-              .from('user_subscriptions')
-              .update({ needs_ai_selection: true })
-              .eq('user_id', userId);
-            
-            log('info', 'Disabled AI due to downgrade', { userId, oldSlots: enabledCount, newSlots: accountSlots });
-          }
-        }
 
         // Determine status - handle various Polar status values
         if (await isStaleEvent(supabase, userId, subscription)) {
@@ -607,7 +544,6 @@ serve(async (req) => {
             current_period_end: subscription?.current_period_end,
             pending_account_slots: null,
             pending_change_effective_at: null,
-            needs_ai_selection: false,
             ...cancelFields(subscription),
             updated_at: new Date().toISOString(),
           }, {
@@ -772,25 +708,22 @@ serve(async (req) => {
           break;
         }
 
-        // Disable AI on all profiles
-        const { error: disableError } = await supabase
-          .from('player_profiles')
-          .update({ ai_enabled: false })
-          .eq('user_id', userId);
-
-        if (disableError) {
-          log('warn', 'Error disabling AI on profiles', { error: disableError.message });
-        }
-
-        const { error: revokeError } = await supabase
+        const revoke = supabase
           .from('user_subscriptions')
           .update({
             status: 'expired',
             account_slots: 0,
-            needs_ai_selection: false,
             updated_at: new Date().toISOString(),
           })
           .eq('user_id', userId);
+
+        const { data: revoked, error: revokeError } = await (currentSub?.polar_subscription_id
+          ? revoke.eq('polar_subscription_id', currentSub.polar_subscription_id)
+          : revoke.is('polar_subscription_id', null)).select('id').maybeSingle();
+        if (!revokeError && !revoked) {
+          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'subscription_changed');
+          break;
+        }
 
         if (revokeError) {
           log('error', 'Error revoking subscription', { error: revokeError.message });

@@ -2691,6 +2691,9 @@
       "title": "Subscribe now?",
       "description": "Days remaining in your trial: {{days}}. If you continue, your paid subscription starts immediately."
     },
+    "accountRestricted": "Access is restricted for this account.",
+    "verificationUnavailable": "We couldn’t verify access. Please try again.",
+    "tagAccessUnavailable": "This account cannot use trial access for this player tag.",
     "tagClaimedTitle": "Player tag already linked",
     "featureLocked": "Feature locked",
     "dailyLimitMessage": "You’ve reached today’s usage limit.",

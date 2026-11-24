@@ -270,6 +270,7 @@ export default function DreamArena() {
     // Check access before starting
     const access = await checkAccess();
     if (!access.allowed) {
+      if (access.message) toast.error(access.message);
       return;
     }
 
@@ -567,6 +568,9 @@ export default function DreamArena() {
           </Collapsible>
 
           {/* Feature Usage Indicator */}
+          {!canAccess && (accessResult?.reason === 'verification_unavailable' || accessResult?.reason === 'blocked') && (
+            <p role="status" className="text-sm text-muted-foreground">{accessResult.message}</p>
+          )}
           {!canAccess && accessResult?.reason === 'quota_exceeded' && (
             <div className="mb-6 p-4 rounded-lg bg-destructive/10 border border-destructive/30 text-center">
               <p className="text-destructive font-medium mb-2">
