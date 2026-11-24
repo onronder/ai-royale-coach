@@ -37,6 +37,10 @@ export function DeckTab({
   return (
     <PageTransition delay={100}>
       <div className="space-y-6">
+        {import.meta.env.VITE_DECK_UPGRADE_PLAN_PILOT === 'true' && !playerLoading && !playerError && !!player?.currentDeck?.length && (
+          <UpgradePlanEntry playerTag={playerTag} player={player} />
+        )}
+
         {/* Personalized Recommendations - Feature Gated */}
         {player && (
           <FeatureGate feature="recommend_deck" playerTag={playerTag}>
@@ -60,12 +64,7 @@ export function DeckTab({
             ) : playerError ? (
               <p className="text-muted-foreground">{t('dashboard.failedLoadDeck')}</p>
             ) : player?.currentDeck && player.currentDeck.length > 0 ? (
-              <>
-                {import.meta.env.VITE_DECK_UPGRADE_PLAN_PILOT === 'true' && (
-                  <UpgradePlanEntry playerTag={playerTag} player={player} />
-                )}
-                <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
-              </>
+              <DeckGrid cards={player.currentDeck} showElixir={true} size="md" />
             ) : (
               <p className="text-muted-foreground">{t('common.noData')}</p>
             )}

@@ -6,8 +6,8 @@ const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright')
 const base = process.env.FIXTURE_URL || 'http://127.0.0.1:5193';
 assert.equal(new URL(base).hostname, '127.0.0.1');
 const locales = ['en', 'tr', 'es', 'fr', 'pt'];
-const words = Object.fromEntries(await Promise.all(locales.map(async lang => [lang,
-  JSON.parse(await readFile(new URL('../../../src/i18n/locales/' + lang + '.json', import.meta.url))).upgradePlan])));
+const strings = Object.fromEntries(await Promise.all(locales.map(async lang => [lang,
+  JSON.parse(await readFile(new URL('../../../src/i18n/locales/' + lang + '.json', import.meta.url)))])));
 const names = ['Baby Dragon', 'Knight', 'Fireball', 'Archers', 'Golem', 'Witch', 'Wizard', 'Zap',
   'Guards', 'Prince', 'Hunter', 'Tesla', 'Rage', 'Freeze', 'Mirror'];
 const ids = names.map((_, i) => i+1);
@@ -61,7 +61,7 @@ async function scene(lang, width, tier, run) {
     if (state.hold && tag === '#QQQ') { const held = state.hold; state.hold = null; held.started(); await held.promise; }
     return send(rows);
   });
-  const w = words[lang];
+  const w = strings[lang].upgradePlan;
   const go = () => page.goto(base + '/tests/integration/deckUpgrade/ui.html?tier=' + tier);
   const button = name => page.getByRole('button', { name, exact: true });
   const open = async () => { await button(w.title).click(); };
@@ -100,9 +100,8 @@ async function scene(lang, width, tier, run) {
 }
 async function testClosedPilot() {
   for (const lang of locales) for (const width of [390, 1280]) {
-    const strings = JSON.parse(await readFile(new URL('../../../src/i18n/locales/' + lang + '.json', import.meta.url)));
     await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({page, button, w, reads}) => {
-      await page.getByText(strings.dashboard.currentDeck, {exact: true}).first().waitFor();
+      await page.getByText(strings[lang].dashboard.currentDeck, {exact: true}).first().waitFor();
       await page.clock.fastForward(600000);
       assert.equal(await button(w.title).count(), 0);
       assert.deepEqual(reads, []);
@@ -191,10 +190,21 @@ async function testSavedDeckFormats(lang) {
 
 async function testOpenPilot() {
   for (const lang of locales) for (const width of [390, 1280]) {
-    await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({ page, open, panel, choose, gold, w, reads, show, details }) => {
-      await page.getByRole('button', { name: w.title, exact: true }).waitFor();
+    await scene(lang, width, width === 390 ? 'trial' : 'paid', async ({ page, button, panel, choose, gold, w, reads, show, details }) => {
+      const entry = button(w.title);
+      await entry.waitFor();
+      const recommendations = page.getByText(strings[lang].recommendations.noRecommendations, {exact: true});
+      await recommendations.waitFor();
+      const bounds = await entry.boundingBox();
+      const viewport = page.viewportSize();
+      assert.equal(await page.evaluate(() => window.scrollY), 0);
+      assert(bounds.x >= 0 && bounds.y >= 0 && bounds.x + bounds.width <= viewport.width &&
+        bounds.y + bounds.height <= viewport.height, 'The entire plan entry must be visible before scrolling');
+      assert(bounds.y + bounds.height <= (await recommendations.boundingBox()).y, 'The plan entry must precede recommendations');
       assert.equal(reads.length, 0);
-      await open();
+      // Locator.click() scrolls its target into view and would hide a regression.
+      await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+      await page.getByRole('dialog', {name: w.title}).waitFor();
       await choose(w.mainLevel, '13');
       await gold(w.mainCost, 40000);
       await choose(w.secondDeck, 'good'); await choose(w.secondLevel, '14');
@@ -343,12 +353,12 @@ async function testOpenPilot() {
     await details();
     await panel().getByText(extra).waitFor();
     await external('Switch language');
-    await page.getByText(words.tr.extraMissing.replace('{{amount}}','100')).waitFor();
-    await external('Switch account'); await button(words.tr.title).click();
-    const trPanel = page.getByRole('region', {name: words.tr.title});
+    await page.getByText(strings.tr.upgradePlan.extraMissing.replace('{{amount}}','100')).waitFor();
+    await external('Switch account'); await button(strings.tr.upgradePlan.title).click();
+    const trPanel = page.getByRole('region', {name: strings.tr.upgradePlan.title});
     await trPanel.locator('details').filter({has: page.locator('select')}).locator('summary').click();
-    assert.equal(await trPanel.getByLabel(words.tr.secondDeck, {exact:true}).inputValue(), '');
-    await trPanel.getByText(words.tr.mainCost, { exact: true }).waitFor();
+    assert.equal(await trPanel.getByLabel(strings.tr.upgradePlan.secondDeck, {exact:true}).inputValue(), '');
+    await trPanel.getByText(strings.tr.upgradePlan.mainCost, { exact: true }).waitFor();
     assert(reads.some(([table, account]) => table === 'card_collection' && account === 'fixture-second'));
   });
   for (const lang of locales) await testSavedDeckFormats(lang);
