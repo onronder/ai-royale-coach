@@ -130,6 +130,11 @@ test('older deck-only requests can use a sole selected link; multiple links requ
 
 test('global meta catalog works without a linked player, tagged catalog enforces the paid selection', async () => {
   tables.player_profiles = [];
+  const untagged = (body?: string) => new Request('https://fixture.invalid', {
+    method: 'POST', headers: { Authorization: 'Bearer fixture' }, body,
+  });
+  expect((await meta(untagged())).status).toBe(200);
+  expect((await meta(untagged('{'))).status).toBe(400);
   expect((await (await meta(request({ language: 'tr' }))).json()).trends[0]).toMatchObject({ archetype: 'cycle', template_count: 1 });
   expect((await meta(request({ playerTag: 'P22' }))).status).toBe(403);
   expect((await meta(request({ playerTag: null }))).status).toBe(400);

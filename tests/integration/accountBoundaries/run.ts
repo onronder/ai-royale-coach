@@ -48,12 +48,10 @@ async function finishContended<T>(first: Connection, secondPid: number, query: P
 
 async function checkImpactCounts() {
   const script = await read('../../../scripts/sql/pr57-impact.sql');
-  const results = await db.unsafe(script).simple();
-  const selections = results.flat().find(r => 'accounts_requiring_reselection' in r);
-  const history = results.flat().find(r => 'analyses_to_archive' in r);
-  assert.equal(Number(selections?.accounts_requiring_reselection), 1);
-  assert.equal(Number(selections?.newly_prompted_accounts), 1);
-  assert.deepEqual([history?.total_analyses, history?.attributable_analyses, history?.analyses_to_archive].map(Number), [5, 2, 3]);
+  const [impact] = await db.unsafe(script).simple();
+  assert.equal(Number(impact.accounts_requiring_reselection), 1);
+  assert.equal(Number(impact.newly_prompted_accounts), 1);
+  assert.deepEqual([impact.total_analyses, impact.attributable_analyses, impact.analyses_to_archive].map(Number), [5, 2, 3]);
   console.log('PASS preflight forecasts legacy selection and archive impact');
 }
 

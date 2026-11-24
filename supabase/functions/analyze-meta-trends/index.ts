@@ -34,7 +34,9 @@ serve(async (req) => {
 
     // The global catalog has no player input. A tagged request uses the same
     // paid-player entitlement as the other player-scoped entry points.
-    const body = await req.json().catch(() => null);
+    const body = await req.text()
+      .then(text => text.trim() ? JSON.parse(text) : {})
+      .catch(() => null);
     if (!body || typeof body !== 'object' || Array.isArray(body)) return errorResponse('Invalid request', 400);
     if (Object.prototype.hasOwnProperty.call(body, 'playerTag')) {
       const tag = aiPlayerTag(body.playerTag);
