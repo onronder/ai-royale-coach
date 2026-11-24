@@ -83,7 +83,7 @@ serve(async (req) => {
         if (ownerError) return errorResponse('Unable to verify linked player', 503);
         if (owned) {
           const { data: last, error: savedError } = await supabase
-            .from('analyses').select('output, created_at, input_fingerprint')
+            .from('verified_profile_summaries').select('output, created_at, input_fingerprint')
             .eq('user_id', user.id)
             .in('player_tag', tagSpellings)
             .eq('analysis_type', 'profile_summary')
@@ -116,7 +116,7 @@ serve(async (req) => {
 
     // Check cache
     const { data: cached, error: cacheError } = await supabase
-      .from('analyses')
+      .from('verified_profile_summaries')
       .select('output')
       .eq('user_id', user.id)
       .in('player_tag', tagSpellings)
@@ -222,9 +222,8 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
       }
     };
 
-    // Cache the result
+    // The DB derives the owner from this server-built fingerprint, including during rollout.
     const { error: saveError } = await supabase.from('analyses').insert({
-      user_id: user.id,
       player_tag: playerData.tag,
       analysis_type: 'profile_summary',
       input_fingerprint: fingerprint,

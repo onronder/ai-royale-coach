@@ -31,42 +31,72 @@ END $$;
 REVOKE ALL ON FUNCTION public.select_my_ai_profiles(uuid[]) FROM PUBLIC, anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.select_my_ai_profiles(uuid[]) TO authenticated;
 --> statement-breakpoint
--- AFTER sees the actual INSERT or conflict UPDATE and shares its subscription row lock
--- with manual selection. A renewal of the same plan preserves even an empty selection.
+-- Keep billing recovery preferences separate from effective, enforceable AI access.
+CREATE SCHEMA ai_royale_private;
+REVOKE ALL ON SCHEMA ai_royale_private FROM PUBLIC, anon, authenticated, service_role;
+CREATE TABLE ai_royale_private.suspended_ai_selections (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  profile_ids uuid[] NOT NULL,
+  previous_slots integer NOT NULL,
+  needs_choice boolean NOT NULL
+);
+REVOKE ALL ON ai_royale_private.suspended_ai_selections FROM PUBLIC, anon, authenticated, service_role;
+ALTER TABLE ai_royale_private.suspended_ai_selections ENABLE ROW LEVEL SECURITY;
+--> statement-breakpoint
+-- Billing and manual selection share the subscription row lock. Replayed billing
+-- events must not overwrite a suspended choice or open a dismissed selection.
 CREATE FUNCTION public.sync_subscription_ai_profiles() RETURNS trigger
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE
   has_access boolean := public.marketing_subscription_access(NEW.user_id);
   slots integer := greatest(NEW.account_slots, 0);
-  activation boolean;
-  fill_open_choice boolean := false;
+  same_plan boolean := TG_OP = 'UPDATE' AND OLD.polar_subscription_id IS NOT DISTINCT FROM NEW.polar_subscription_id;
+  activation boolean := NOT same_plan OR OLD.status NOT IN ('active', 'trialing')
+    OR (OLD.status = 'trialing' AND NEW.status = 'active');
   linked integer;
-  enabled integer;
-  needs_choice boolean;
+  selected uuid[];
+  saved ai_royale_private.suspended_ai_selections%ROWTYPE;
+  needs_choice boolean := false;
 BEGIN
-  IF TG_OP = 'INSERT' THEN
-    activation := true;
-  ELSE
-    fill_open_choice := coalesce(OLD.needs_ai_selection, false) AND slots > greatest(OLD.account_slots, 0);
-    activation := OLD.polar_subscription_id IS DISTINCT FROM NEW.polar_subscription_id
-      OR OLD.status NOT IN ('active', 'trialing')
-      OR (OLD.status = 'trialing' AND NEW.status = 'active');
-  END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended(NEW.user_id::text, 50));
-  SELECT count(*), count(*) FILTER (WHERE ai_enabled) INTO linked, enabled
-    FROM public.player_profiles WHERE user_id = NEW.user_id;
-  IF NOT has_access OR slots = 0 OR enabled > slots THEN
-    UPDATE public.player_profiles SET ai_enabled = false WHERE user_id = NEW.user_id AND ai_enabled;
-    needs_choice := has_access AND slots > 0 AND linked > slots;
-  ELSIF (activation OR fill_open_choice) AND linked <= slots THEN
-    UPDATE public.player_profiles SET ai_enabled = true
-      WHERE user_id = NEW.user_id AND ai_enabled IS DISTINCT FROM true;
-    needs_choice := false;
+  SELECT count(*), coalesce(array_agg(id ORDER BY id) FILTER (WHERE ai_enabled), '{}'::uuid[])
+    INTO linked, selected FROM public.player_profiles WHERE user_id = NEW.user_id;
+
+  IF NEW.status = 'past_due' AND same_plan AND OLD.status IN ('active','trialing')
+      AND cardinality(selected) <= greatest(OLD.account_slots, 0) THEN
+    INSERT INTO ai_royale_private.suspended_ai_selections VALUES
+      (NEW.user_id, selected, greatest(OLD.account_slots, 0), coalesce(OLD.needs_ai_selection, false))
+      ON CONFLICT (user_id) DO UPDATE SET profile_ids = EXCLUDED.profile_ids,
+        previous_slots = EXCLUDED.previous_slots, needs_choice = EXCLUDED.needs_choice;
+  ELSIF NEW.status IS DISTINCT FROM 'past_due' OR NOT same_plan THEN
+    DELETE FROM ai_royale_private.suspended_ai_selections WHERE user_id = NEW.user_id RETURNING * INTO saved;
+  END IF;
+
+  IF NOT has_access OR slots = 0 THEN
+    selected := '{}';
+  ELSIF same_plan AND OLD.status = 'past_due' AND saved.user_id IS NOT NULL THEN
+    SELECT coalesce(array_agg(id ORDER BY id), '{}'::uuid[]) INTO selected FROM public.player_profiles
+      WHERE user_id = NEW.user_id AND id = ANY(saved.profile_ids);
+    needs_choice := saved.needs_choice OR cardinality(selected) <> cardinality(saved.profile_ids)
+      OR slots > saved.previous_slots;
+    needs_choice := needs_choice AND cardinality(selected) < least(linked, slots);
+  ELSIF same_plan AND OLD.status IN ('active','trialing') AND slots > greatest(OLD.account_slots, 0) THEN
+    needs_choice := cardinality(selected) < least(linked, slots);
+  ELSIF activation AND linked <= slots THEN
+    SELECT coalesce(array_agg(id ORDER BY id), '{}'::uuid[]) INTO selected FROM public.player_profiles
+      WHERE user_id = NEW.user_id;
   ELSIF activation THEN
-    needs_choice := enabled <> slots;
+    needs_choice := cardinality(selected) <> slots;
   ELSE
     needs_choice := coalesce(OLD.needs_ai_selection, false);
   END IF;
+  IF cardinality(selected) > slots THEN
+    selected := '{}';
+    needs_choice := true;
+  END IF;
+
+  UPDATE public.player_profiles SET ai_enabled = (id = ANY(selected))
+    WHERE user_id = NEW.user_id AND ai_enabled IS DISTINCT FROM (id = ANY(selected));
   UPDATE public.user_subscriptions SET needs_ai_selection = needs_choice
     WHERE user_id = NEW.user_id AND needs_ai_selection IS DISTINCT FROM needs_choice;
   RETURN NULL;

@@ -1,35 +1,21 @@
--- Legacy writers accepted tags in both spellings. Only the UUID + evidence digest
--- format identifies the authenticated author. Linking an old tag is not attribution.
-CREATE SCHEMA ai_royale_private;
-REVOKE ALL ON SCHEMA ai_royale_private FROM PUBLIC, anon, authenticated, service_role;
+-- Metadata only. Apply this file in one transaction, after the new reader is running.
+SET LOCAL lock_timeout = '2s';
+LOCK TABLE public.analyses IN ACCESS EXCLUSIVE MODE;
 CREATE TABLE ai_royale_private.unattributed_analyses (LIKE public.analyses, PRIMARY KEY (id));
 REVOKE ALL ON ai_royale_private.unattributed_analyses FROM PUBLIC, anon, authenticated, service_role;
 ALTER TABLE ai_royale_private.unattributed_analyses ENABLE ROW LEVEL SECURITY;
-CREATE FUNCTION ai_royale_private.summary_author(kind text, tag text, fingerprint text)
-RETURNS uuid LANGUAGE sql IMMUTABLE STRICT SET search_path = '' AS $$
-  SELECT CASE WHEN kind = 'profile_summary' AND tag ~ '^#?[A-Za-z0-9]+$' THEN
-    substring(fingerprint FROM '^profile_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_[0-9a-f]{64}_[A-Za-z]{2}(-[A-Za-z]{2})?$')::uuid END
-$$;
-REVOKE ALL ON FUNCTION ai_royale_private.summary_author(text,text,text) FROM PUBLIC, anon, authenticated, service_role;
---> statement-breakpoint
-ALTER TABLE public.analyses ADD COLUMN user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE;
-UPDATE public.analyses a SET user_id = u.id FROM auth.users u
-  WHERE u.id = ai_royale_private.summary_author(a.analysis_type, a.player_tag, a.input_fingerprint);
--- One statement moves every unresolved row, preserving the original id, timestamp and payload.
-WITH moved AS (
-  DELETE FROM public.analyses WHERE user_id IS NULL
-    RETURNING id, player_tag, analysis_type, input_fingerprint, output, created_at
-)
-INSERT INTO ai_royale_private.unattributed_analyses(id, player_tag, analysis_type, input_fingerprint, output, created_at)
-  SELECT id, player_tag, analysis_type, input_fingerprint, output, created_at FROM moved;
-ALTER TABLE public.analyses ALTER COLUMN user_id SET NOT NULL;
+ALTER TABLE public.analyses ADD COLUMN user_id uuid,
+  ADD CONSTRAINT analyses_owner_fk FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE NOT VALID,
+  ADD CONSTRAINT analyses_owner_present CHECK (user_id IS NOT NULL) NOT VALID;
 REVOKE ALL ON public.analyses FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.analyses TO authenticated;
 DROP POLICY "Users can view own analyses" ON public.analyses;
+GRANT EXECUTE ON FUNCTION ai_royale_private.summary_author(text,text,text) TO authenticated;
 CREATE POLICY "Owner reads linked player analyses" ON public.analyses FOR SELECT TO authenticated
-  USING (user_id = (SELECT auth.uid()) AND EXISTS (SELECT 1 FROM public.player_profiles p
+  USING (coalesce(user_id, ai_royale_private.summary_author(analysis_type, player_tag, input_fingerprint)) = (SELECT auth.uid()) AND EXISTS (SELECT 1 FROM public.player_profiles p
     WHERE p.user_id = (SELECT auth.uid()) AND upper(ltrim(p.player_tag, '#')) = upper(ltrim(analyses.player_tag, '#'))));
-CREATE INDEX analyses_owner_player_history ON public.analyses(user_id, analysis_type, player_tag, created_at DESC);
+-- A stale Edge reader cannot scan the raw table. Fingerprint-based inserts still work.
+REVOKE SELECT ON public.analyses FROM service_role;
 --> statement-breakpoint
 -- Old Edge instances still write the verified account into their fingerprint.
 CREATE FUNCTION ai_royale_private.enforce_analysis_author() RETURNS trigger
@@ -43,7 +29,8 @@ BEGIN
     END IF;
     NEW.user_id := author;
   END IF;
-  IF TG_OP = 'UPDATE' AND NEW.user_id IS DISTINCT FROM OLD.user_id THEN
+  IF TG_OP = 'UPDATE' AND NEW.user_id IS DISTINCT FROM OLD.user_id AND (OLD.user_id IS NOT NULL OR
+      ai_royale_private.summary_author(OLD.analysis_type, OLD.player_tag, OLD.input_fingerprint) IS DISTINCT FROM NEW.user_id) THEN
     RAISE EXCEPTION 'Analysis owner cannot change' USING ERRCODE = '23514';
   END IF;
   RETURN NEW;
@@ -101,7 +88,7 @@ LEFT JOIN LATERAL (
 ) pay ON true
 LEFT JOIN LATERAL (
   SELECT count(*)::integer AS linked_tags, coalesce(bool_or(EXISTS (
-    SELECT 1 FROM public.analyses a WHERE a.user_id=t.user_id AND a.analysis_type='profile_summary'
+    SELECT 1 FROM public.verified_profile_summaries a WHERE a.user_id=t.user_id AND a.analysis_type='profile_summary'
       AND upper(ltrim(a.player_tag,'#'))=upper(ltrim(pp.player_tag,'#'))
   )), false) AS has_saved_summary FROM public.player_profiles pp WHERE pp.user_id=t.user_id AND s.user_id IS NOT NULL
 ) tags ON true

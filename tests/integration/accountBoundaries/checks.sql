@@ -1,3 +1,4 @@
+BEGIN;
 SET search_path TO public, boundary_fixture;
 SELECT check_that((SELECT count(*)=0 FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
   AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'overallocated account requires choice');
@@ -29,7 +30,18 @@ UPDATE player_profiles SET note='practice', last_seen_at=now() WHERE id=profile(
 SELECT check_that((SELECT note='practice' FROM player_profiles WHERE id=profile(11)), 'metadata update');
 RESET ROLE;
 SELECT set_config('request.jwt.claim.sub','',false);
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(1);
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(1) AND ai_enabled),
+  'past due immediately disables effective access');
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(1);
+UPDATE user_subscriptions SET status='active' WHERE user_id=account(1);
+SELECT check_that((SELECT array_agg(id)=ARRAY[profile(12)] FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
+  AND NOT (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'same subscription restores its previous choice');
+
 UPDATE user_subscriptions SET account_slots=3 WHERE user_id=account(1);
+UPDATE user_subscriptions SET account_slots=3 WHERE user_id=account(1);
+SELECT check_that((SELECT array_agg(id)=ARRAY[profile(12)] FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
+  AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'upgrade preserves selected profiles and prompts for the rest');
 SET ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub',account(1)::text,false);
 DO $$ BEGIN
@@ -47,6 +59,10 @@ SELECT set_config('request.jwt.claim.sub',account(1)::text,false);
 SELECT select_my_ai_profiles('{}');
 RESET ROLE;
 SELECT set_config('request.jwt.claim.sub','',false);
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(1);
+UPDATE user_subscriptions SET status='active' WHERE user_id=account(1);
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
+  AND NOT (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'recovery preserves a confirmed empty choice');
 UPDATE user_subscriptions SET cancel_at_period_end=true WHERE user_id=account(1);
 SELECT check_that((SELECT count(*)=0 FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
   AND NOT (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'renewal preserves explicit empty choice');
@@ -64,6 +80,31 @@ DO $$ BEGIN
 END $$;
 RESET ROLE;
 SELECT set_config('request.jwt.claim.sub','',false);
+
+-- Each scenario rolls back to the same valid choice before the next event.
+SAVEPOINT recovery_choice;
+UPDATE user_subscriptions SET cancel_at_period_end=false WHERE user_id=account(2);
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(2);
+DELETE FROM player_profiles WHERE id=profile(21);
+UPDATE user_subscriptions SET status='active' WHERE user_id=account(2);
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(2) AND ai_enabled)
+  AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(2)), 'deleted choice prompts instead of granting a different link');
+ROLLBACK TO SAVEPOINT recovery_choice;
+RELEASE SAVEPOINT recovery_choice;
+SAVEPOINT recovery_choice;
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(2);
+UPDATE user_subscriptions SET status='active', polar_subscription_id='replacement' WHERE user_id=account(2);
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(2) AND ai_enabled)
+  AND NOT EXISTS (SELECT FROM ai_royale_private.suspended_ai_selections WHERE user_id=account(2)), 'replacement cannot restore a suspended selection');
+ROLLBACK TO SAVEPOINT recovery_choice;
+RELEASE SAVEPOINT recovery_choice;
+
+SELECT check_that(NOT has_any_column_privilege('authenticated','user_fraud_status','UPDATE')
+  AND has_table_privilege('service_role','user_fraud_status','UPDATE'), 'fraud administration writes use the service role');
+SELECT check_that(NOT has_table_privilege('service_role','analyses','SELECT') AND
+  has_table_privilege('service_role','verified_profile_summaries','SELECT') AND
+  NOT has_table_privilege('authenticated','verified_profile_summaries','SELECT') AND
+  NOT has_table_privilege('anon','verified_profile_summaries','SELECT'), 'only the Edge service can read the verified summary view');
 
 SELECT check_that(bool_and(NOT has_function_privilege('anon',f,'EXECUTE')) AND
   bool_and(has_function_privilege('authenticated',f,'EXECUTE') = browser) AND
@@ -140,7 +181,7 @@ INSERT INTO analyses(player_tag,analysis_type,input_fingerprint,output) VALUES
   ('P20','profile_summary',fingerprint(2),'{"record":"rolling-writer"}');
 INSERT INTO analyses(user_id,player_tag,analysis_type,input_fingerprint,output) VALUES
   (account(2),'P20','profile_summary',fingerprint(2),'{"record":"explicit-owner"}');
-SELECT check_that((SELECT count(*)=2 FROM analyses WHERE user_id=account(2) AND player_tag='P20'), 'old and new trusted writers');
+SELECT check_that((SELECT count(*)=2 FROM verified_profile_summaries WHERE user_id=account(2) AND player_tag='P20'), 'old and new trusted writers');
 DO $$ BEGIN
   BEGIN INSERT INTO analyses(user_id,player_tag,analysis_type,input_fingerprint,output)
     VALUES (account(3),'P20','profile_summary',fingerprint(2),'{}'); RAISE EXCEPTION 'mismatch accepted';
@@ -196,3 +237,4 @@ INSERT INTO user_subscriptions(user_id,status,account_slots,polar_subscription_i
 SELECT check_that(NOT (SELECT ai_enabled FROM player_profiles WHERE id=profile(71)), 'conflict upsert does not replay automatic activation');
 DELETE FROM auth.users WHERE id=account(1);
 SELECT check_that(NOT EXISTS (SELECT FROM analyses WHERE user_id=account(1)), 'account deletion removes its attributed summaries');
+COMMIT;

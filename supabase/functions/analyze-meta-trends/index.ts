@@ -1,7 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
-import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
+import { handleCors, jsonResponse, errorResponse } from "../_shared/cors.ts";
 import { checkAiAccess } from "../_shared/ai-access.ts";
+import { aiPlayerTag, requirePaidPlayerSlot } from "../_shared/paid-player-slot.ts";
 import { logger } from "../_shared/logger.ts";
 
 serve(async (req) => {
@@ -26,44 +27,20 @@ serve(async (req) => {
       return errorResponse('Unauthorized - invalid token', 401);
     }
 
-    // Check subscription status
-    const { data: subscription } = await supabase
-      .from('user_subscriptions')
-      .select('status')
-      .eq('user_id', user.id)
-      .single();
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('trial_ends_at, trial_used')
-      .eq('id', user.id)
-      .single();
-
-    const now = new Date();
-    const isTrialActive = profile?.trial_ends_at && 
-      new Date(profile.trial_ends_at) > now;
     const aiAccess = await checkAiAccess(supabase, user.id);
-    const hasAccess = aiAccess.allowed;
-
-    if (!hasAccess) {
+    if (!aiAccess.allowed) {
       return errorResponse('Subscription required for meta analysis', 403, { subscription_required: true });
     }
 
-    // PER-PLAYER AI ACCESS CHECK
-    const requestBody = await req.json().catch(() => ({}));
-    const { playerTag } = requestBody;
-    
-    if (playerTag && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const { data: playerProfile } = await supabase
-        .from('player_profiles')
-        .select('ai_enabled')
-        .eq('user_id', user.id)
-        .eq('player_tag', playerTag)
-        .single();
-
-      if (!playerProfile?.ai_enabled) {
-        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
-      }
+    // The global catalog has no player input. A tagged request uses the same
+    // paid-player entitlement as the other player-scoped entry points.
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== 'object' || Array.isArray(body)) return errorResponse('Invalid request', 400);
+    if (Object.prototype.hasOwnProperty.call(body, 'playerTag')) {
+      const tag = aiPlayerTag(body.playerTag);
+      if (!tag) return errorResponse('A valid player tag is required', 400);
+      const slotError = await requirePaidPlayerSlot(supabase, user.id, aiAccess, tag);
+      if (slotError) return slotError;
     }
 
     // Fetch deck archetypes from database

@@ -9,7 +9,8 @@ const player = { tag: '#P22', name: 'Fixture' };
 const fp = 'profile_' + owner + '_' + await evidenceHash(evidenceKey(player, [])) + '_tr';
 const tables: Record<string, Row[]> = {};
 const clients: string[] = [];
-let aiCalls = 0, cacheReadError = false;
+let aiCalls = 0;
+let unavailableTable: string | undefined;
 let call: { name: string; args: Row } | undefined;
 let selectionError: { code: string; message: string; details: string } | null = null;
 const handlers: Array<(req: Request) => Promise<Response>> = [];
@@ -17,7 +18,9 @@ const handlers: Array<(req: Request) => Promise<Response>> = [];
 // The Edge handlers get a service client with no row filtering, as in production.
 // Only their explicit read predicates can isolate rows in this fixture.
 function from(table: string) {
-  let rows = tables[table] ?? [];
+  let rows = table === 'verified_profile_summaries'
+    ? tables.analyses.map(row => ({ ...row, user_id: row.user_id ?? String(row.input_fingerprint).split('_')[1] }))
+    : tables[table] ?? [];
   const query = {
     select: () => query,
     eq: (col: string, value: unknown) => { rows = rows.filter(r => r[col] === value); return query; },
@@ -26,7 +29,7 @@ function from(table: string) {
     order: (col: string) => { rows = [...rows].sort((a,b) => String(b[col]).localeCompare(String(a[col]))); return query; },
     limit: (n: number) => { rows = rows.slice(0,n); return query; },
     then: (resolve: (value: { data: Row[]; error: null }) => unknown) => resolve({ data: rows, error: null }),
-    maybeSingle: async () => cacheReadError && table === 'analyses'
+    maybeSingle: async () => unavailableTable === table
       ? { data: null, error: { code: 'unavailable' } } : { data: rows[0] ?? null, error: null },
     insert: async (row: Row) => { tables[table].push(row); return { error: null }; },
   };
@@ -57,15 +60,18 @@ mock.module('../../../supabase/functions/_shared/ai-generation.ts', () => ({
 }));
 await import('../../../supabase/functions/manage-ai-accounts/index.ts');
 await import('../../../supabase/functions/analyze-player/index.ts');
-const [manage, analyze] = handlers;
+await import('../../../supabase/functions/analyze-meta-trends/index.ts');
+const [manage, analyze, meta] = handlers;
 const request = (body: unknown) => new Request('https://fixture.invalid', {
   method: 'POST', headers: { Authorization: 'Bearer fixture' }, body: JSON.stringify(body),
 });
 const analyzeMine = () => analyze(request({ playerData: player, battles: [], language: 'tr', user_id: peer }));
 beforeEach(() => {
-  aiCalls = 0; cacheReadError = false; call = undefined; selectionError = null; clients.length = 0;
+  aiCalls = 0; unavailableTable = undefined; call = undefined; selectionError = null; clients.length = 0;
   tables.user_subscriptions = [{ id: 'plan', user_id: owner, status: 'active' }];
   tables.profiles = [];
+  tables.deck_archetypes = [{ name: 'cycle' }];
+  tables.deck_templates = [{ archetype: 'cycle', popularity_score: 4 }];
   tables.player_profiles = [{ id: 'link', user_id: owner, player_tag: 'P22', ai_enabled: true }];
   tables.analyses = [{ user_id: peer, player_tag: '#P22', analysis_type: 'profile_summary',
     input_fingerprint: fp.replace(owner,peer), created_at: new Date().toISOString(), output: { analysis: 'Other account' } }];
@@ -99,13 +105,14 @@ test('paid generation saves the verified owner and can replay its cache', async 
   expect(generated.status).toBe(200);
   expect(aiCalls).toBe(1);
   const saved = tables.analyses.at(-1)!;
-  expect(saved).toMatchObject({ user_id: owner, input_fingerprint: fp });
+  expect(saved.input_fingerprint).toBe(fp);
+  expect(saved).not.toHaveProperty('user_id'); // Compatible with the pre-column schema.
   saved.created_at = new Date().toISOString();
   expect((await (await analyzeMine()).json()).analysis).toBe('Generated');
   expect(aiCalls).toBe(1);
 });
 test('a failed cache read never starts another generation', async () => {
-  cacheReadError = true;
+  unavailableTable = 'verified_profile_summaries';
   expect((await analyzeMine()).status).toBe(503);
   expect(aiCalls).toBe(0);
 });
@@ -119,4 +126,18 @@ test('older deck-only requests can use a sole selected link; multiple links requ
   expect((await requirePaidPlayerSlot(db, owner, paid, 'P28'))?.status).toBe(403);
   expect((await requirePaidPlayerSlot(db, owner, paid, undefined))?.status).toBe(400);
   expect(await requirePaidPlayerSlot(db, owner, paid, '#P22')).toBeNull();
+});
+
+test('global meta catalog works without a linked player, tagged catalog enforces the paid selection', async () => {
+  tables.player_profiles = [];
+  expect((await (await meta(request({ language: 'tr' }))).json()).trends[0]).toMatchObject({ archetype: 'cycle', template_count: 1 });
+  expect((await meta(request({ playerTag: 'P22' }))).status).toBe(403);
+  expect((await meta(request({ playerTag: null }))).status).toBe(400);
+  tables.player_profiles = [{ user_id: owner, player_tag: 'P22', ai_enabled: true }];
+  expect((await meta(request({ playerTag: '#p22' }))).status).toBe(200);
+  unavailableTable = 'player_profiles';
+  expect((await meta(request({ playerTag: 'P22' }))).status).toBe(503);
+  tables.user_subscriptions[0].status = 'expired';
+  expect((await meta(request({ language: 'tr' }))).status).toBe(403);
+  expect(aiCalls).toBe(0);
 });

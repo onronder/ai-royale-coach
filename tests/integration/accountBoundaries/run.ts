@@ -46,17 +46,85 @@ async function finishContended<T>(first: Connection, secondPid: number, query: P
   return outcome.value;
 }
 
+async function checkImpactCounts() {
+  const script = await read('../../../scripts/sql/pr57-impact.sql');
+  const results = await db.unsafe(script).simple();
+  const selections = results.flat().find(r => 'accounts_requiring_reselection' in r);
+  const history = results.flat().find(r => 'analyses_to_archive' in r);
+  assert.equal(Number(selections?.accounts_requiring_reselection), 1);
+  assert.equal(Number(selections?.newly_prompted_accounts), 1);
+  assert.deepEqual([history?.total_analyses, history?.attributable_analyses, history?.analyses_to_archive].map(Number), [5, 2, 3]);
+  console.log('PASS preflight forecasts legacy selection and archive impact');
+}
+
+async function checkExpansionTimeout(sql: string) {
+  const reader = await db.reserve();
+  try {
+    await reader`BEGIN READ ONLY`;
+    await reader`SELECT count(*) FROM public.analyses`;
+    await assert.rejects(db.unsafe(sql).simple(), { code: '55P03' });
+    assert.equal((await db`SELECT count(*)::int AS n FROM pg_attribute
+      WHERE attrelid='public.analyses'::regclass AND attname='user_id' AND NOT attisdropped`)[0].n, 0);
+    console.log('PASS a long reader causes a clean cutover timeout before any ownership change');
+  } finally {
+    await reader`ROLLBACK`;
+    reader.release();
+  }
+}
+
+async function backfillWithTraffic(sql: string) {
+  const migration = await db.reserve();
+  const newId = '30000000-0000-4000-8000-000000000001';
+  try {
+    await migration`BEGIN`;
+    await migration.unsafe(sql).simple();
+    // The migration holds all of its locks until the commit below. Independent
+    // readers and a new Edge write must finish while that transaction is open.
+    await db.begin(async traffic => {
+      await traffic`SET LOCAL lock_timeout = '500ms'`;
+      await traffic`SET LOCAL ROLE service_role`;
+      const rows = await traffic`SELECT output->>'record' AS name FROM public.verified_profile_summaries
+        WHERE user_id=boundary_fixture.account(1)`;
+      assert.deepEqual(rows.map(r => r.name), ['owner1']);
+      await traffic`INSERT INTO public.analyses(id,player_tag,analysis_type,input_fingerprint,output)
+        VALUES (${newId},'P88','profile_summary',boundary_fixture.fingerprint(1),'{}')`;
+    });
+    await db.begin(async browser => {
+      await browser`SET LOCAL lock_timeout = '500ms'`;
+      await browser`SET LOCAL ROLE authenticated`;
+      await browser`SELECT set_config('request.jwt.claim.sub',boundary_fixture.account(1)::text,true)`;
+      const rows = await browser`SELECT output->>'record' AS name FROM public.analyses WHERE player_tag IN ('P22','#P22')`;
+      assert.deepEqual(rows.map(r => r.name), ['owner1']);
+    });
+    await migration`COMMIT`;
+    assert.equal((await db`SELECT user_id=boundary_fixture.account(1) AS owned FROM public.analyses WHERE id=${newId}`)[0].owned, true);
+    console.log('PASS Edge history, owner RLS and new inserts continue during uncommitted backfill');
+  } finally {
+    await migration`ROLLBACK`;
+    migration.release();
+    await db`DELETE FROM public.analyses WHERE id=${newId}`;
+  }
+}
+
 try {
   await apply('platform.sql');
   let count = 0;
   for (const directory of ['../../../supabase/migrations/', '../../../drizzle/migrations/']) {
     const names = (await readdir(new URL(directory, import.meta.url))).filter(n => n.endsWith('.sql')).sort();
     for (const name of names) {
-      if (name === '0050_prepare_ai_profile_selection.sql') await apply('legacy.sql');
-      await apply(directory + name);
+      if (name.startsWith('0050_')) {
+        await apply('legacy.sql');
+        await checkImpactCounts();
+      }
+      if (name.startsWith('0053_')) await checkExpansionTimeout(await read(directory + name));
+      if (name.startsWith('0054_')) await backfillWithTraffic(await read(directory + name));
+      else await apply(directory + name);
       count++;
     }
   }
+  await apply('../../../scripts/sql/pr57-analysis-index.sql');
+  assert.equal((await db`SELECT indisready AND indisvalid AS ready FROM pg_index
+    WHERE indexrelid='public.analyses_owner_player_history'::regclass`)[0].ready, true);
   await apply('checks.sql');
   console.log('Passed role, ownership, legacy-record and rollback checks on ' + count + ' migrations');
 

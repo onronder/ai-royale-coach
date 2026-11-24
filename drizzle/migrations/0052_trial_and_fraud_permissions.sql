@@ -17,9 +17,8 @@ DROP POLICY "Users can claim unclaimed tags" ON public.player_tag_claims;
 REVOKE ALL ON public.player_tag_claims, public.fraud_signals, public.user_fraud_status,
   public.api_rate_limits FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.player_tag_claims, public.fraud_signals, public.user_fraud_status TO authenticated;
--- Preserve the admin RLS update policy. Fingerprint registration and API logging
--- retain their existing row policies, without granting table-wide operations.
-GRANT UPDATE ON public.user_fraud_status TO authenticated;
+-- Administrative decisions are written by the admin-fraud-action service.
+DROP POLICY IF EXISTS "Admins can update fraud status" ON public.user_fraud_status;
 REVOKE TRUNCATE, REFERENCES, TRIGGER ON public.device_fingerprints, public.api_request_logs,
   public.daily_usage_logs, public.admin_roles FROM PUBLIC, anon, authenticated;
 --> statement-breakpoint
@@ -173,3 +172,19 @@ BEGIN
     last_signal_at = now(), updated_at = now() WHERE user_id = p_user_id;
   RETURN score;
 END $$;
+--> statement-breakpoint
+-- Install a service-only read surface before deploying analyze-player. The verified
+-- owner in an existing fingerprint is sufficient even before the column is added.
+CREATE FUNCTION ai_royale_private.summary_author(kind text, tag text, fingerprint text)
+RETURNS uuid LANGUAGE sql IMMUTABLE STRICT SET search_path = '' AS $$
+  SELECT CASE WHEN kind = 'profile_summary' AND tag ~ '^#?[A-Za-z0-9]+$' THEN
+    substring(fingerprint FROM '^profile_([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})_[0-9a-f]{64}_[A-Za-z]{2}(-[A-Za-z]{2})?$')::uuid END
+$$;
+REVOKE ALL ON FUNCTION ai_royale_private.summary_author(text,text,text) FROM PUBLIC, anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION ai_royale_private.summary_author(text,text,text) TO service_role;
+CREATE VIEW public.verified_profile_summaries AS
+SELECT u.id AS user_id, a.player_tag, a.analysis_type, a.input_fingerprint, a.output, a.created_at
+FROM public.analyses a JOIN auth.users u
+  ON u.id = ai_royale_private.summary_author(a.analysis_type, a.player_tag, a.input_fingerprint);
+REVOKE ALL ON public.verified_profile_summaries FROM PUBLIC, anon, authenticated, service_role;
+GRANT SELECT ON public.verified_profile_summaries TO service_role;
