@@ -80,7 +80,12 @@ BEGIN
     needs_choice := saved.needs_choice OR cardinality(selected) <> cardinality(saved.profile_ids)
       OR slots > saved.previous_slots;
     needs_choice := needs_choice AND cardinality(selected) < least(linked, slots);
-  ELSIF same_plan AND OLD.status IN ('active','trialing') AND slots > greatest(OLD.account_slots, 0) THEN
+  ELSIF same_plan AND OLD.status = 'past_due' THEN
+    -- A payment already overdue when the migration was installed has no saved choice.
+    selected := '{}';
+    needs_choice := linked > 0;
+  ELSIF TG_OP = 'UPDATE' AND OLD.status IN ('active','trialing') AND slots > greatest(OLD.account_slots, 0) THEN
+    -- Checkout can replace the Polar subscription ID while upgrading the same account.
     needs_choice := cardinality(selected) < least(linked, slots);
   ELSIF activation AND linked <= slots THEN
     SELECT coalesce(array_agg(id ORDER BY id), '{}'::uuid[]) INTO selected FROM public.player_profiles

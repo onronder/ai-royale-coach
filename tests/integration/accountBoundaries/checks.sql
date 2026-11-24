@@ -99,6 +99,23 @@ SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(
 ROLLBACK TO SAVEPOINT recovery_choice;
 RELEASE SAVEPOINT recovery_choice;
 
+SAVEPOINT replacement_upgrade;
+INSERT INTO user_subscriptions(user_id, status, account_slots, polar_subscription_id)
+  VALUES(account(2),'active',3,'checkout-upgrade') ON CONFLICT (user_id) DO UPDATE SET
+  status=excluded.status, account_slots=excluded.account_slots, polar_subscription_id=excluded.polar_subscription_id;
+SELECT check_that((SELECT array_agg(id)=ARRAY[profile(21)] FROM player_profiles WHERE user_id=account(2) AND ai_enabled)
+  AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(2)), 'replacement checkout also prompts on upgrade');
+ROLLBACK TO SAVEPOINT replacement_upgrade;
+RELEASE SAVEPOINT replacement_upgrade;
+SAVEPOINT historical_recovery;
+UPDATE user_subscriptions SET status='past_due' WHERE user_id=account(2);
+DELETE FROM ai_royale_private.suspended_ai_selections WHERE user_id=account(2);
+UPDATE user_subscriptions SET status='active', account_slots=3 WHERE user_id=account(2);
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id=account(2) AND ai_enabled)
+  AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(2)), 'recovery without historical preferences asks the account holder');
+ROLLBACK TO SAVEPOINT historical_recovery;
+RELEASE SAVEPOINT historical_recovery;
+
 SELECT check_that(NOT has_any_column_privilege('authenticated','user_fraud_status','UPDATE')
   AND has_table_privilege('service_role','user_fraud_status','UPDATE'), 'fraud administration writes use the service role');
 SELECT check_that(NOT has_table_privilege('service_role','analyses','SELECT') AND
