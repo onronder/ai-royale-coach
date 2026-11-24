@@ -52,7 +52,26 @@ async function checkImpactCounts() {
   assert.equal(Number(impact.accounts_requiring_reselection), 1);
   assert.equal(Number(impact.newly_prompted_accounts), 1);
   assert.deepEqual([impact.total_analyses, impact.attributable_analyses, impact.analyses_to_archive].map(Number), [5, 2, 3]);
-  console.log('PASS preflight forecasts legacy selection and archive impact');
+  assert.equal(Number(impact.tag_based_analyses_to_archive), 1);
+
+  const fixture = await db.reserve();
+  try {
+    await fixture`BEGIN`;
+    await fixture.unsafe(await read('impact.sql')).simple();
+    const [groups] = await fixture.unsafe(script).simple();
+    const expected = {
+      total_analyses: 14, attributable_analyses: 4, analyses_to_archive: 10, tag_based_analyses_to_archive: 4,
+      archived_api_player_rows: 1, archived_api_battle_rows: 1,
+      paid_legacy_only_accounts: 3, paid_selected_legacy_only_accounts: 1, trial_legacy_only_accounts: 2,
+      read_only_lose_all_accounts: 5, read_only_partial_loss_accounts: 1,
+      expired_or_cancelled_in_read_only_lose_all: 2, past_due_in_read_only_lose_all: 1,
+    };
+    for (const [metric, count] of Object.entries(expected)) assert.equal(Number(groups[metric]), count, metric);
+  } finally {
+    await fixture`ROLLBACK`;
+    fixture.release();
+  }
+  console.log('PASS preflight forecasts selection, archive rows and distinct paid, trial and read-only accounts');
 }
 
 async function checkExpansionTimeout(sql: string) {

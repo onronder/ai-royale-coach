@@ -1,4 +1,4 @@
-import { beforeEach, expect, mock, test } from 'bun:test';
+import { beforeEach, expect, mock, spyOn, test } from 'bun:test';
 import { requirePaidPlayerSlot } from '../../../supabase/functions/_shared/paid-player-slot';
 import { evidenceHash, evidenceKey } from '../../../supabase/functions/_shared/deck-evidence';
 
@@ -62,6 +62,7 @@ await import('../../../supabase/functions/manage-ai-accounts/index.ts');
 await import('../../../supabase/functions/analyze-player/index.ts');
 await import('../../../supabase/functions/analyze-meta-trends/index.ts');
 const [manage, analyze, meta] = handlers;
+const { logger } = await import('../../../supabase/functions/_shared/logger.ts');
 const request = (body: unknown) => new Request('https://fixture.invalid', {
   method: 'POST', headers: { Authorization: 'Bearer fixture' }, body: JSON.stringify(body),
 });
@@ -115,6 +116,38 @@ test('a failed cache read never starts another generation', async () => {
   unavailableTable = 'verified_profile_summaries';
   expect((await analyzeMine()).status).toBe(503);
   expect(aiCalls).toBe(0);
+});
+
+test('rollout logs distinguish a successful view read from an error on either path', async () => {
+  const info = spyOn(logger, 'info').mockImplementation(() => {});
+  const error = spyOn(logger, 'error').mockImplementation(() => {});
+  try {
+    expect((await analyzeMine()).status).toBe(200);
+    const saved = tables.analyses.at(-1)!;
+    saved.created_at = new Date().toISOString();
+    expect((await analyzeMine()).status).toBe(200);
+    unavailableTable = 'verified_profile_summaries';
+    expect((await analyzeMine()).status).toBe(503);
+    tables.user_subscriptions[0].status = 'expired';
+    expect((await analyzeMine()).status).toBe(503);
+    unavailableTable = undefined;
+    expect((await analyzeMine()).status).toBe(200);
+    tables.analyses = [];
+    expect((await analyzeMine()).status).toBe(403);
+    const source = 'verified_profile_summaries';
+    expect(info.mock.calls.filter(([msg]) => msg === 'Profile summary read').map(([, data]) => data)).toEqual([
+      { source, lookup: 'cache', outcome: 'miss' }, { source, lookup: 'cache', outcome: 'hit' },
+      { source, lookup: 'history', outcome: 'hit' }, { source, lookup: 'history', outcome: 'miss' },
+    ]);
+    expect(error.mock.calls.filter(([msg]) => msg === 'Profile summary read').map(([, data]) => data)).toEqual([
+      { source, lookup: 'cache', outcome: 'error', code: 'unavailable' },
+      { source, lookup: 'history', outcome: 'error', code: 'unavailable' },
+    ]);
+    expect(aiCalls).toBe(1);
+  } finally {
+    info.mockRestore();
+    error.mockRestore();
+  }
 });
 
 test('older deck-only requests can use a sole selected link; multiple links require a player choice', async () => {

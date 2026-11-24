@@ -12,6 +12,17 @@ import { corsHeaders, handleCors, jsonResponse, errorResponse } from "../_shared
 import { checkAiAccess } from "../_shared/ai-access.ts";
 import { logger } from "../_shared/logger.ts";
 
+const summaryView = 'verified_profile_summaries';
+
+function logSummaryRead(lookup: 'cache' | 'history', row: unknown, error: { code: string } | null) {
+  const context = { source: summaryView, lookup };
+  if (error) {
+    logger.error('Profile summary read', { ...context, outcome: 'error', code: error.code });
+  } else {
+    logger.info('Profile summary read', { ...context, outcome: row == null ? 'miss' : 'hit' });
+  }
+}
+
 serve(async (req) => {
   const corsResp = handleCors(req);
   if (corsResp) return corsResp;
@@ -83,11 +94,12 @@ serve(async (req) => {
         if (ownerError) return errorResponse('Unable to verify linked player', 503);
         if (owned) {
           const { data: last, error: savedError } = await supabase
-            .from('verified_profile_summaries').select('output, created_at, input_fingerprint')
+            .from(summaryView).select('output, created_at, input_fingerprint')
             .eq('user_id', user.id)
             .in('player_tag', tagSpellings)
             .eq('analysis_type', 'profile_summary')
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          logSummaryRead('history', last, savedError);
           if (savedError) return errorResponse('Unable to read saved analysis', 503);
           if (last) {
             const savedLanguage = /_(en|tr|es|fr|pt)(?:-[a-z]{2})?$/i.exec(last.input_fingerprint ?? '')?.[1];
@@ -116,7 +128,7 @@ serve(async (req) => {
 
     // Check cache
     const { data: cached, error: cacheError } = await supabase
-      .from('verified_profile_summaries')
+      .from(summaryView)
       .select('output')
       .eq('user_id', user.id)
       .in('player_tag', tagSpellings)
@@ -125,11 +137,9 @@ serve(async (req) => {
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false }).limit(1).maybeSingle();
 
+    logSummaryRead('cache', cached, cacheError);
     if (cacheError) return errorResponse('Unable to read analysis cache', 503);
-    if (cached) {
-      logger.info('Returning cached analysis');
-      return jsonResponse(cached.output);
-    }
+    if (cached) return jsonResponse(cached.output);
 
     const recentBattles = battles;
     const observed = observeBattles(battles, playerData.tag);
