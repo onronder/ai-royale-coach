@@ -13,6 +13,7 @@ const mainIds = [1, 2, 3, 4, 5, 6, 7, 8];
 const otherIds = [9, 10, 11, 12, 13, 14, 15, 16];
 const goal = (cards: readonly (string | number)[], targetLevel: number) => ({ cards, targetLevel });
 const card = (id: number, level = 16, owned: number | null = 0) => ({
+  id: 'collection-row-' + id,
   card_id: id, card_name: 'Epic ' + id, rarity: 'epic', card_level: level - 5, max_level: 11,
   card_count: owned, user_id: userId, player_tag: playerTag.slice(1), updated_at: '2026-11-21T01:00:00.123450Z',
 });
@@ -151,6 +152,34 @@ describe('deck upgrade plan', () => {
       assert.equal(ready(snapshot, main, goal(mainIds, 13)).sharedNextUpgrade, true);
     }
     assert.equal(ready().rows[1].level, 16);
+  });
+
+  it('prices raw names, IDs and historical API cards in the same order using only verified stock and levels', () => {
+    const snapshot = collection();
+    const ids = [1, ...otherIds.slice(0, 7)];
+    const records = ids.map(id => ({ id, name: 'Epic ' + id, count: 90000, level: 1 }));
+    const expected = ready(snapshot, main, goal(ids, 14));
+    for (const refs of [records, records.map(c => c.name), [records[0], ids[1], ...records.slice(2)]]) {
+      const result = calculateDeckUpgradePlan(snapshot, main, { cards: refs, targetLevel: 14 });
+      assert.deepEqual(result, expected);
+    }
+    assert.deepEqual(expected.secondCardIds, ids);
+    assert.deepEqual([expected.gold.main.total, expected.gold.additional.total, expected.gold.combined.total], [40000, 60000, 100000]);
+    assert.equal(expected.rows[0].additional.missingCopies, 90);
+  });
+
+  it('retains the main plan and pinpoints a conflicting ID and known name without guessing', () => {
+    const snapshot = collection();
+    for (const slot of [0, 3, 7]) {
+      const cards = otherIds.map(id => ({ id, name: 'Epic ' + id }));
+      cards[slot] = { id: cards[slot].id, name: 'Epic 1' };
+      const result = calculateDeckUpgradePlan(snapshot, main, { cards, targetLevel: 14 });
+      assert.equal(result.status, 'invalid');
+      assert.equal(result.error, 'unresolved_card');
+      assert.equal(result.slot, slot);
+      assert.equal(result.reference, 'Epic 1');
+      assert.equal(result.mainPlan.gold.total, 40000);
+    }
   });
 
   it('never prices fewer than eight unique identified cards or an invalid target', () => {

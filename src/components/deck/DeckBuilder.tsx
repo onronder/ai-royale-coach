@@ -22,21 +22,14 @@ import { DeckTemplatesLibrary } from "./DeckTemplatesLibrary";
 import { DeckComparison } from "./DeckComparison";
 import { useSubscription } from "@/hooks/useSubscription";
 import { PricingModal } from "@/components/subscription/PricingModal";
-
-interface SavedDeck {
-  id: string;
-  name: string;
-  cards: ClashRoyaleCard[];
-  avg_elixir?: number;
-  archetype?: string;
-}
+import type { SavedDeckRow } from '@/types/dashboard.types';
 
 interface DeckBuilderProps {
   availableCards: ClashRoyaleCard[];
   playerTag: string;
   importedNames?: string | null;
   userId: string;
-  savedDecks?: SavedDeck[];
+  savedDecks?: Pick<SavedDeckRow, 'id' | 'name' | 'cards'>[];
   currentDeck?: ClashRoyaleCard[] | null;
   userCollection?: string[];
   playerTrophies?: number;
@@ -157,10 +150,10 @@ export function DeckBuilder({
     try {
       const [basicResult, advancedResult] = await Promise.all([
         supabase.functions.invoke('analyze-deck-builder', {
-          body: { cards: selectedCards, language }
+          body: { cards: selectedCards, playerTag, language }
         }),
         supabase.functions.invoke('analyze-deck-advanced', {
-          body: { cards: selectedCards, language }
+          body: { cards: selectedCards, playerTag, language }
         })
       ]);
 
@@ -404,6 +397,7 @@ export function DeckBuilder({
           {selectedCards.length === 8 ? (
             <DeckComparison
               builderDeck={selectedCards}
+              availableCards={availableCards}
               savedDecks={savedDecks}
               currentDeck={currentDeck}
             />

@@ -2702,6 +2702,9 @@
       "title": "¿Suscribirte ahora?",
       "description": "Días de prueba restantes: {{days}}. Si continúas, tu suscripción de pago empieza ahora."
     },
+    "accountRestricted": "El acceso de esta cuenta está restringido.",
+    "verificationUnavailable": "No pudimos verificar el acceso. Inténtalo de nuevo.",
+    "tagAccessUnavailable": "Esta cuenta no puede usar la prueba con esta etiqueta de jugador.",
     "tagClaimedTitle": "Etiqueta ya vinculada",
     "featureLocked": "Función bloqueada",
     "dailyLimitMessage": "Has alcanzado el límite de hoy.",

@@ -3,36 +3,18 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { ClashRoyaleCard } from "@/services/clashRoyaleApi";
 import { Gamepad2, Save } from "lucide-react";
 
-interface SavedDeck {
-  id: string;
-  name: string;
-  cards: ClashRoyaleCard[];
-  avg_elixir?: number;
-}
-
 interface DeckSelectorProps {
-  savedDecks: SavedDeck[];
+  savedDecks: { id: string; name: string }[];
   currentDeck: ClashRoyaleCard[] | null;
   selectedDeckId: string | null;
-  onSelectDeck: (deckId: string, cards: ClashRoyaleCard[]) => void;
+  onSelectDeck: (deckId: string) => void;
 }
 
 export function DeckSelector({ savedDecks, currentDeck, selectedDeckId, onSelectDeck }: DeckSelectorProps) {
   const { t } = useTranslation();
 
-  const handleSelect = (value: string) => {
-    if (value === "current" && currentDeck) {
-      onSelectDeck("current", currentDeck);
-    } else {
-      const deck = savedDecks.find(d => d.id === value);
-      if (deck) {
-        onSelectDeck(deck.id, deck.cards);
-      }
-    }
-  };
-
   return (
-    <Select value={selectedDeckId || ""} onValueChange={handleSelect}>
+    <Select value={selectedDeckId || ""} onValueChange={onSelectDeck}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder={t('deckComparison.selectDeckB')} />
       </SelectTrigger>

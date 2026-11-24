@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useCardName } from '@/i18n/useCardName';
 import { savedDeckOptions } from '@/lib/playerQueries';
 import { useUpgradeCollection } from '@/hooks/useUpgradeCollection';
+import { resolveDeckCards } from '@/lib/savedDeckCards';
 import { calculateDeckUpgradePlan } from '@/lib/deckUpgradePlan';
 import { upgradeStep, UPGRADE_COST_VERSION } from '@/lib/upgradeCost';
 import { GAME_MAX_DISPLAY_LEVEL } from '../../../supabase/functions/_shared/card-display-level';
@@ -51,9 +52,7 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
   const saved = useQuery(savedDeckOptions(account, tag));
   const collection = useUpgradeCollection(account, tag);
   const deck = saved.data?.find(d => d.id === draft.deck);
-  // Keep unresolved references in their original slots, including malformed legacy entries.
-  const secondRefs = Array.isArray(deck?.cards)
-    ? deck.cards.map(c => typeof c === 'string' || typeof c === 'number' ? c : '') : [];
+  const secondRefs = Array.isArray(deck?.cards) ? deck.cards : [];
   const ids = cards.map(c => c.id);
   const plan = calculateDeckUpgradePlan(collection.snapshot, { cards: ids, targetLevel: draft.main },
     deck && { cards: secondRefs, targetLevel: draft.second });
@@ -63,17 +62,26 @@ export default function UpgradePlan({ account, tag, cards }: { account: string; 
   const asOf = 'asOf' in plan ? plan.asOf : null;
   const outdated = ('freshness' in plan && plan.freshness === 'previous') || collection.failed;
   const [changed, setChanged] = useState(false);
-  const signature = JSON.stringify([UPGRADE_COST_VERSION, ids, secondRefs]);
+  const signature = plan.status === 'ready' ? JSON.stringify([UPGRADE_COST_VERSION, ids, plan.secondCardIds]) : null;
   useEffect(() => {
-    if (!asOf || outdated || unresolvedSelection) return;
+    if (!signature || !asOf || outdated || unresolvedSelection) return;
     // Keep the last deck composition, never stock or prices, across visits.
     const signatureKey = key + ':composition';
     try {
       const last = JSON.parse(localStorage.getItem(signatureKey) || 'null');
-      if (last?.deck === draft.deck && last.signature !== signature) setChanged(true);
-      remember(signatureKey, { deck: draft.deck, signature });
-    } catch { /* Storage is optional. */ }
-  }, [key, draft.deck, signature, asOf, outdated, unresolvedSelection]);
+      if (last?.deck === draft.deck && last.signature !== signature) {
+        let prior = last.signature;
+        if (last.format !== 2) {
+          // Earlier versions stored names, IDs or blanks for unresolved legacy objects.
+          const [version, main, refs] = JSON.parse(prior);
+          const old = resolveDeckCards(refs, collection.knownCards);
+          prior = old.issues.length ? null : JSON.stringify([version, main, [...old.cards.keys()]]);
+        }
+        if (prior && prior !== signature) setChanged(true);
+      }
+    } catch { /* An unreadable baseline can be replaced by the verified composition. */ }
+    remember(signatureKey, { format: 2, deck: draft.deck, signature });
+  }, [key, draft.deck, signature, asOf, outdated, unresolvedSelection, collection.knownCards]);
 
   const rows = primary?.rows ?? [];
   const unfinished = rows.filter(r => r.level === null || r.level < Math.max(r.mainTarget ?? 0, r.secondTarget ?? 0));

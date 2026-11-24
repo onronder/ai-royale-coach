@@ -21,11 +21,12 @@ interface WinRatePrediction {
 }
 
 interface TrophyWinRatePredictorProps {
+  playerTag: string;
   deck: string[];
   currentTrophies?: number;
 }
 
-export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyWinRatePredictorProps) {
+export function TrophyWinRatePredictor({ playerTag, deck, currentTrophies = 5000 }: TrophyWinRatePredictorProps) {
   const { t, i18n } = useTranslation();
   const [targetTrophies, setTargetTrophies] = useState(currentTrophies);
   const [predictions, setPredictions] = useState<WinRatePrediction[]>([]);
@@ -46,7 +47,7 @@ export function TrophyWinRatePredictor({ deck, currentTrophies = 5000 }: TrophyW
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("predict-deck-performance", {
-        body: { deck, targetTrophies, language },
+        body: { deck, playerTag, targetTrophies, language },
       });
 
       // Check for subscription_required in response

@@ -1,3 +1,4 @@
+import { requirePaidPlayerSlot } from '../_shared/paid-player-slot.ts';
 import { recentStatistics } from '../_shared/recent-statistics.ts';
 import { canonicalTag } from '../_shared/battle-observation.ts';
 import { deckReadiness, evidenceKey, evidenceHash } from '../_shared/deck-evidence.ts';
@@ -242,7 +243,7 @@ serve(async (req) => {
     const { playerTag, trophies = 5000, forceRefresh = false, language: requestedLanguage } = await req.json();
     const language = productLanguage(requestedLanguage);
 
-    if (!playerTag) {
+    if (typeof playerTag !== 'string' || !playerTag) {
       return errorResponse('playerTag is required', 400);
     }
 
@@ -258,43 +259,16 @@ serve(async (req) => {
       return errorResponse('Invalid authentication', 401);
     }
 
-    // Entitlement checks below remain authoritative.
-    const { data: userProfile } = await supabase
-      .from('profiles')
-      .select('trial_ends_at')
-      .eq('id', user.id)
-      .single();
-
-    const now = new Date();
-    const isTrialActive = userProfile?.trial_ends_at && 
-      new Date(userProfile.trial_ends_at) > now;
     const aiAccess = await checkAiAccess(supabase, user.id);
     const hasAccess = aiAccess.allowed;
-
-    // Helper to normalize player tags (database stores without #)
-    const normalizePlayerTag = (tag: string): string => {
-      return tag.replace(/^#/, '').toUpperCase();
-    };
-
-    const normalizedPlayerTag = normalizePlayerTag(playerTag);
-
-    // PER-PLAYER AI ACCESS CHECK (bypassed for trial users - all accounts get AI during trial)
-    if (!isTrialActive && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const { data: playerProfile } = await supabase
-        .from('player_profiles')
-        .select('ai_enabled')
-        .eq('user_id', user.id)
-        .eq('player_tag', normalizedPlayerTag)
-        .single();
-
-      if (!playerProfile?.ai_enabled) {
-        return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerTag });
-      }
-    }
 
     if (!hasAccess) {
       return errorResponse('Subscription required to use AI features', 403, { subscription_required: true });
     }
+
+    const slotError = await requirePaidPlayerSlot(supabase, user.id, aiAccess, playerTag);
+    if (slotError) return slotError;
+
 
     logger.info('Starting deck recommendation', { userId: user.id, playerTag });
 

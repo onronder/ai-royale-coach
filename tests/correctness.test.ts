@@ -1,3 +1,4 @@
+import {aiPlayerTag} from '../supabase/functions/_shared/paid-player-slot';
 import {predictionEvidence,measuredPredictionErrors} from '../src/lib/predictionEvidence';
 import {resultOnlyAdvice} from '../supabase/functions/_shared/match-advice';
 import {analyzeBattleHistory} from '../src/lib/observedDeckHistory';
@@ -8,7 +9,7 @@ import assert from 'node:assert/strict';
 import {battle,cards,tag} from './fixtures/observedBattles';
 import {observeBattles,observeBattle,observedTime,observedDeck,fixedElixir} from '../supabase/functions/_shared/battle-observation';
 import {recentStatistics} from '../supabase/functions/_shared/recent-statistics';
-import {classifyDeck,deckReadiness,evidenceKey,savedProfileFilter} from '../supabase/functions/_shared/deck-evidence';
+import {classifyDeck,deckReadiness,evidenceKey} from '../supabase/functions/_shared/deck-evidence';
 import {cardObservation} from '../supabase/functions/_shared/card-observation';
 import {cardDisplayLevel} from '../supabase/functions/_shared/card-display-level';
 import {dashboardDestination,importedDeck,deckBuilderUrl} from '../src/lib/deckNavigation';
@@ -29,10 +30,11 @@ describe('inventory correctness contracts',()=>{
   assert.equal(measuredPredictionErrors([current]).length,0);
   assert.equal(measuredPredictionErrors([{actualBattlesTotal:2,predictionError:0}]).length,1);
  });
- it('ERR10: saved profile read permits own cache and legacy public tag data only',()=>{
-  const user='11111111-1111-4111-8111-111111111111';
-  assert.equal(savedProfileFilter(user,'#uy02yvy9g'),`input_fingerprint.like.profile\\_${user}\\_%,input_fingerprint.like.profile\\_#UY02YVY9G\\_%,input_fingerprint.like.profile\\_UY02YVY9G\\_%`);
-  assert.equal(savedProfileFilter(user,'bad,or.query'),null);
+ it('ERR10: saved profile lookup normalizes player tags and rejects malformed input',()=>{
+  assert.equal(aiPlayerTag('#uy02yvy9g'),'UY02YVY9G');
+  assert.equal(aiPlayerTag('UY02YVY9G'),'UY02YVY9G');
+  assert.equal(aiPlayerTag('bad,or.query'),null);
+  assert.equal(aiPlayerTag(null),null);
  });
  it('ERR05: replay-only claims and timestamps rejected, practice retained',()=>{
   for (const text of ['At 45 seconds you misplaced Tesla.','You played Knight late.','12 saniyede yanlış yerleştirdin.','Colocaste mal la carta.']) assert.equal(resultOnlyAdvice(text),'');

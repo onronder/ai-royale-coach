@@ -77,7 +77,7 @@ export function useFraudStatus(userId: string | null) {
   }, [userId, fingerprint]);
 
   // Fetch fraud status
-  const { data: fraudStatus, isLoading, refetch } = useQuery({
+  const { data: fraudStatus, isLoading, isError, refetch } = useQuery({
     queryKey: ['fraud-status', userId],
     queryFn: async () => {
       if (!userId) return null;
@@ -89,8 +89,7 @@ export function useFraudStatus(userId: string | null) {
         .maybeSingle();
 
       if (error) {
-        console.error('Failed to fetch fraud status:', error);
-        return null;
+        throw error;
       }
 
       return data as UserFraudStatus | null;
@@ -105,24 +104,13 @@ export function useFraudStatus(userId: string | null) {
 
   // Check velocity abuse
   const checkVelocity = useMutation({
-    mutationFn: async ({ featureName, windowSeconds = 60, maxRequests = 10 }: {
-      featureName: string;
-      windowSeconds?: number;
-      maxRequests?: number;
-    }) => {
-      if (!userId) return false;
-
+    mutationFn: async ({ featureName }: { featureName: string }) => {
+      if (!userId) throw new Error('Sign in required');
       const { data, error } = await supabase.rpc('detect_velocity_abuse', {
         p_user_id: userId,
         p_feature_name: featureName,
-        p_window_seconds: windowSeconds,
-        p_max_requests: maxRequests,
       });
-
-      if (error) {
-        console.error('Velocity check failed:', error);
-        return false;
-      }
+      if (error || data == null) throw error || new Error('Velocity check unavailable');
 
       if (data === true) {
         // Refresh fraud status after detection
@@ -157,6 +145,7 @@ export function useFraudStatus(userId: string | null) {
     fraudStatus,
     signals: [] as FraudSignal[], // Always empty for security - admins use FraudReviewPanel
     isLoading,
+    isError,
     refetch,
     checkVelocity: checkVelocity.mutateAsync,
     getFeatureLimit,

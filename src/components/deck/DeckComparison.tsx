@@ -22,18 +22,13 @@ import {
   ArrowRight, TrendingUp, TrendingDown, Minus, Zap, ChevronDown, ChevronUp, 
   Gauge, Flame, Crown, Sparkles, Loader2, Shield, Swords, Info, History, Database, Lock
 } from "lucide-react";
-
-interface SavedDeck {
-  id: string;
-  name: string;
-  cards: ClashRoyaleCard[];
-  avg_elixir?: number;
-  archetype?: string;
-}
+import type { SavedDeckRow } from '@/types/dashboard.types';
+import { resolveDeckCards } from '@/lib/savedDeckCards';
 
 interface DeckComparisonProps {
   builderDeck: ClashRoyaleCard[];
-  savedDecks: SavedDeck[];
+  savedDecks: Pick<SavedDeckRow, 'id' | 'name' | 'cards'>[];
+  availableCards: ClashRoyaleCard[];
   currentDeck: ClashRoyaleCard[] | null;
 }
 
@@ -57,7 +52,7 @@ interface MatchupPrediction {
   fromCache?: boolean;
 }
 
-export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckComparisonProps) {
+export function DeckComparison({ builderDeck, savedDecks, currentDeck, availableCards }: DeckComparisonProps) {
   const cardLabel = useCardName();
   const { t, i18n } = useTranslation();
   const { playerTag } = useParams<{ playerTag: string }>();
@@ -66,22 +61,23 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   const { data: predictionHistory, isLoading: isLoadingHistory } = usePredictionHistory(playerTag || null);
   
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
-  const [comparisonCards, setComparisonCards] = useState<ClashRoyaleCard[]>([]);
+  const selected = savedDecks.find(deck => deck.id === selectedDeckId);
+  const refs = selectedDeckId === 'current' ? currentDeck?.map(card => card.id) : selected?.cards;
+  const references = Array.isArray(refs) ? refs : [];
+  const catalog = selectedDeckId === 'current' ? currentDeck ?? [] : availableCards;
+  const resolved = resolveDeckCards(references, catalog);
+  const complete = references.length === 8 && !resolved.issues.length;
+  const comparisonCards = complete ? Array.from(resolved.cards.values()) : [];
+  const selectionKey = JSON.stringify([selectedDeckId, builderDeck.map(c => c.id), comparisonCards.map(c => c.id), i18n.language]);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showPredictionHistory, setShowPredictionHistory] = useState(false);
   const [showPricingModal, setShowPricingModal] = useState(false);
   
   // AI Matchup prediction state
-  const [savedPrediction, setMatchupPrediction] = useState<(MatchupPrediction & { language: string }) | null>(null);
-  const matchupPrediction = savedPrediction?.language === i18n.language ? savedPrediction : null;
+  const [savedPrediction, setMatchupPrediction] = useState<(MatchupPrediction & { selectionKey: string }) | null>(null);
+  const matchupPrediction = savedPrediction?.selectionKey === selectionKey ? savedPrediction : null;
   const [isLoadingPrediction, setIsLoadingPrediction] = useState(false);
   const [showMatchupAnalysis, setShowMatchupAnalysis] = useState(true);
-
-  const handleSelectDeck = (deckId: string, cards: ClashRoyaleCard[]) => {
-    setSelectedDeckId(deckId);
-    setComparisonCards(cards);
-    setMatchupPrediction(null); // Reset prediction when deck changes
-  };
 
   const calculateAvgElixir = (cards: ClashRoyaleCard[]) => {
     if (cards.length === 0) return 0;
@@ -112,6 +108,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   };
 
   const predictMatchup = async () => {
+    if (!complete || builderDeck.length !== 8) return;
     const language = i18n.language;
     // Check subscription first
     if (!hasAccess) {
@@ -162,7 +159,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       if (error) throw error;
       if (!data) throw new Error('No prediction returned');
 
-      setMatchupPrediction({ ...data, language });
+      setMatchupPrediction({ ...data, selectionKey });
       // Only increment usage if it was a fresh prediction (not cached)
       if (!data.fromCache) {
         await incrementUsage();
@@ -194,11 +191,8 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
   const deck2Breakdown = getElixirBreakdown(comparisonCards);
   const elixirComparison = getComparison(deck1Elixir, deck2Elixir, true);
 
-  const getSelectedDeckName = () => {
-    if (selectedDeckId === "current") return t('deckComparison.currentInGameDeck');
-    const deck = savedDecks.find(d => d.id === selectedDeckId);
-    return deck?.name || t('deckComparison.selectDeckB');
-  };
+  const selectedName = selectedDeckId === 'current' ? t('deckComparison.currentInGameDeck')
+    : selected?.name || t('deckComparison.selectDeckB');
 
   const getConfidenceBadgeVariant = (confidence: string) => {
     switch (confidence) {
@@ -216,7 +210,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
     }
   };
 
-  const canPredict = builderDeck.length === 8 && comparisonCards.length === 8;
+  const canPredict = builderDeck.length === 8 && complete;
 
   return (
     <div className="space-y-4">
@@ -232,13 +226,25 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
             savedDecks={savedDecks}
             currentDeck={currentDeck}
             selectedDeckId={selectedDeckId}
-            onSelectDeck={handleSelectDeck}
+            onSelectDeck={id => { setSelectedDeckId(id); setMatchupPrediction(null); }}
           />
         </CardContent>
       </Card>
 
+      {selectedDeckId && !complete && <div role="status" className="space-y-1 rounded-md border border-border p-3">
+        {!selected && selectedDeckId !== 'current' ? t('upgradePlan.deletedDeck')
+          : references.length !== 8 ? t('upgradePlan.invalidSize', { deck: selectedName })
+          : <>
+            <p>{selectedName} · {resolved.cards.size}/8</p>
+            {resolved.issues.map(issue => <p key={issue.slot}>{t(issue.error === 'duplicate_card' ? 'upgradePlan.duplicate' : 'upgradePlan.missing', {
+              deck: selectedName, slot: issue.slot + 1,
+              card: issue.reference != null && issue.reference !== '' ? cardLabel(String(issue.reference)) : t('common.unknown'),
+            })}</p>)}
+          </>}
+      </div>}
+
       {/* Comparison View */}
-      {comparisonCards.length === 8 && (
+      {complete && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -260,7 +266,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
               </div>
               <div className="text-center">
                 <h3 className="font-heading text-lg text-foreground">{t('deckComparison.deckB')}</h3>
-                <p className="text-sm text-muted-foreground">{getSelectedDeckName()}</p>
+                <p className="text-sm text-muted-foreground">{selectedName}</p>
               </div>
             </div>
 
@@ -569,7 +575,7 @@ export function DeckComparison({ builderDeck, savedDecks, currentDeck }: DeckCom
       )}
 
       {/* Empty State */}
-      {comparisonCards.length === 0 && (
+      {!selectedDeckId && (
         <Card>
           <CardContent className="py-12 text-center">
             <ArrowRight className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
