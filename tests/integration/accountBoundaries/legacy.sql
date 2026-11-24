@@ -32,3 +32,14 @@ VALUES ('#P22','profile_summary',boundary_fixture.fingerprint(1),'{"record":"own
        ('#P22','profile_summary','profile_#P22_100_20260101_en','{"record":"old-tag"}'),
        ('P22','profile_summary',boundary_fixture.fingerprint(99),'{"record":"missing-owner"}'),
        ('P22','profile_summary','profile_'||boundary_fixture.account(1)||'_invalid_tr','{"record":"malformed"}');
+
+-- One valid subset, one inflated selection and one account without a selection.
+INSERT INTO auth.users(id,email)
+SELECT boundary_fixture.account(n), 'overdue'||n||'@example.invalid' FROM generate_series(30,32) n;
+INSERT INTO public.user_subscriptions(user_id,status,account_slots,polar_subscription_id)
+SELECT boundary_fixture.account(n), 'past_due', 1, 'past-due-'||n FROM generate_series(30,32) n;
+INSERT INTO public.player_profiles(id,user_id,player_tag,ai_enabled)
+SELECT boundary_fixture.profile(id), boundary_fixture.account(owner), tag, enabled FROM (VALUES
+  (301,30,'QG2',false),(302,30,'QG8',true),
+  (311,31,'QG2',true),(312,31,'QG8',true),(321,32,'QG2',false)
+) p(id,owner,tag,enabled);

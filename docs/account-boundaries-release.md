@@ -2,16 +2,16 @@
 
 Use the live Lovable Cloud project linked from the README. Run the rollout in a low-traffic window. Each numbered migration file is atomic and must commit before the next file starts. Use the same migration ledger as the installation, recording each file only after a successful application. Keep the webhook and Edge versions paired with the stages below.
 
-1. Check the migration history of the target database as described below. Before 0051 changes any flags, run [the read-only impact query](../scripts/sql/pr57-impact.sql). It returns counts of affected accounts and the archive inventory in a single snapshot. Repeat it immediately before release.
-2. Apply 0050. Deploy `manage-ai-accounts` and `polar-webhook`. Wait for these versions to serve traffic, then apply 0051 and 0052 individually. A billing recovery restores the still-linked choices on the same subscription. An upgrade keeps the current selection, including when checkout replaces the Polar subscription ID. The player selection screen prompts when another linked player can use a new slot. If payment was already overdue before 0050, the account holder chooses again on recovery when linked profiles exist.
+1. Check the target migration history as described below. Immediately before 0050, run the [account and archive impact query](../scripts/sql/pr57-impact.sql) and the [payment recovery and trial cohort query](../scripts/sql/pr57-recovery-and-trials.sql). Save their timestamped aggregate results with the release record.
+2. Apply 0050. It captures the enabled profile IDs of already overdue accounts when the selection is nonempty and fits the recorded slot allowance. The capture and the billing trigger commit together, so a recovery or repeated overdue event between 0050 and 0051 can use that preference. Only still-linked IDs can be restored on the same subscription, subject to its current capacity. Missing or inflated historical selections prompt a new choice when paid access returns and links exist. The capture waits up to two seconds for a conflicting lock. On timeout roll back the file and retry. Deploy `manage-ai-accounts` and `polar-webhook`. Wait for these versions to serve traffic, then apply 0051 and 0052 individually. An upgrade preserves the current selection, including when checkout replaces the Polar subscription ID, and prompts when another linked player can use a new slot.
 3. After 0052 commits, deploy `analyze-player` with its shared dependencies. Deploy `analyze-deck`, `analyze-deck-builder`, `analyze-deck-advanced`, `analyze-match`, `generate-card-tips`, `predict-deck-matchup`, `predict-deck-performance`, `recommend-deck`, `suggest-card-replacements` and `analyze-meta-trends`. Publish the web client that sends the selected tag in deck requests. Confirm the deployed revision is serving traffic using the reader checks below. This reader and its fingerprint-based writer work on both sides of 0053.
-4. Apply 0053 alone. It adds the nullable owner, guards new writes and replaces the read policies. Lock acquisition times out after two seconds. If it times out, roll back and retry during a quieter window. Monitor the API and database logs during the first 15 minutes after this commit as described below.
+4. Immediately before 0053, save a fresh result from the payment recovery and trial cohort query. Apply 0053 alone. It adds the nullable owner, guards new writes and replaces the read policies. Lock acquisition times out after two seconds. If it times out, roll back and retry during a quieter window. After commit, rerun the cohort query. For each open or scheduled experiment compare its observed eligibility with the pre-release projection. Compare the two saved-summary counts for every cohort in the new snapshot; they should agree. Record any population changes between snapshots. Monitor the API and database logs during the first 15 minutes after this commit as described below.
 5. Apply 0054 alone. It attributes verified rows, atomically moves every other row into the private archive, and validates both ownership constraints. Readers and new inserts can continue. If the transaction fails, roll it back and retry 0054. Application roles cannot read the archive.
 6. Apply 0055 alone. The validated check lets PostgreSQL make the column required without scanning the table under an exclusive lock. Run [the owner index statement](../scripts/sql/pr57-analysis-index.sql) as a single top-level command outside a transaction. The existing player-history index serves lookups during this build.
 
 ## Account impact
 
-At **12:33:19 UTC on 24 November 2026**, the live Cloud database contained 354 analysis rows. Eleven had a verified account owner. The 343 scheduled for the private archive consisted of 304 tag-based profile summaries, 16 player API cache entries and 23 battle API cache entries. The number of over-capacity accounts was zero. A separate live count found six already past-due accounts with at least one linked player and enough slots for all their links. On recovery without a recorded preference, the owner chooses which profiles receive AI access.
+At **12:33:19 UTC on 24 November 2026**, the live Cloud database contained 354 analysis rows. Eleven had a verified account owner. The 343 scheduled for the private archive consisted of 304 tag-based profile summaries, 16 player API cache entries and 23 battle API cache entries. The number of over-capacity accounts with access was zero.
 
 | Account measure | Unique accounts |
 | --- | ---: |
@@ -27,9 +27,24 @@ The query counts each account once per measure and matches verified history to b
 
 The paid cache on main already required the requesting account's UUID, matching evidence and language, and a result within 24 hours. Opening Coach Overview can cause a normal cache miss. The paid-account figure measures legacy-only history and does not predict extra generations from archiving. The read-only figure measures a change in what an account can retrieve while it has no generation access.
 
+## Payment recovery and saved-summary baseline
+
+At **13:52:07 UTC on 24 November 2026**, seven subscriptions were already past due. Six accounts had at least one link and enough slots for all links. One of those six had one enabled profile. It was also the only overdue account with any enabled profile, and its choice fit the slot limit. The previous overdue handler changed the billing status and timestamps. The flag records the effective selection at cutover; it does not establish who originally set it.
+
+There were **zero active and zero planned return experiment windows**. Seventeen distinct non-test accounts were in `expired_winback`. All 17 met the current saved-summary condition and one met the verified-owner condition. These are eligibility counts on the same live data. Enrollment requires an open window and an actual call to `my_return_experiment()`. The measurement only reads the tables. For a planned window the query reports the audience at measurement time; remeasure when the window opens.
+
+| Trial start range | Trial periods | Saved summary before 0053 | Projected with verified ownership |
+| --- | ---: | ---: | ---: |
+| Last 7 days | 8 | 5 | 1 |
+| Last 30 days | 40 | 35 | 1 |
+| Last 90 days | 49 | 44 | 1 |
+| All history | 62 | 53 | 1 |
+
+The [frozen weekly baseline](acceptance/account-boundaries/2026-11-24-trial-baseline.csv) contains every nonempty UTC trial-start week. Each period has the same admin and test exclusions as the default conversion report. Its `has_saved_summary` flag reflects the links and available summaries at query time. Changing the ownership rule therefore changes historical counts. The visible funnel's first-analysis step counts periods with trial AI usage; the recorded recommendation-viewed step uses its own event. Neither uses this flag.
+
 ## Checking migration history
 
-The project's ordinary Lovable preview shares production services. Check each independently persisted test or staging database against its own ledger. Migrations 0050, 0052 and 0053 changed after `f7100de`. Compare each recorded SHA-256, where available, with the file in the revision being released. For example, run `shasum -a 256 drizzle/migrations/005{0,2,3}_*.sql` in that checkout. These read-only catalog checks also help identify a partially applied target.
+The project's ordinary Lovable preview shares production services. Check each independently persisted test or staging database against its own ledger. Migrations 0050, 0052 and 0053 changed after `f7100de`; 0050 also changed after `6c2bd2e`. Compare each recorded SHA-256, where available, with the file in the revision being released. For example, run `shasum -a 256 drizzle/migrations/005{0,2,3}_*.sql` in that checkout. If an older 0050 ran there, check for an existing private preference before reconciling. Once the earlier 0051 has cleared a flag, recover its previous value only from a verified pre-cutover record. Otherwise let the account holder choose. These read-only catalog checks also help identify a partially applied target.
 
 ```sql
 SELECT to_regprocedure('public.select_my_ai_profiles(uuid[])') IS NOT NULL AS selection_rpc,

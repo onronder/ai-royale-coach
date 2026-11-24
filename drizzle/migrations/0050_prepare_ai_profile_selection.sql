@@ -1,4 +1,5 @@
 -- Deploy these transactional writers before switching the account and billing Edge functions.
+SET LOCAL lock_timeout = '2s';
 CREATE FUNCTION public.select_my_ai_profiles(p_ids uuid[]) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 DECLARE
@@ -81,7 +82,7 @@ BEGIN
       OR slots > saved.previous_slots;
     needs_choice := needs_choice AND cardinality(selected) < least(linked, slots);
   ELSIF same_plan AND OLD.status = 'past_due' THEN
-    -- A payment already overdue when the migration was installed has no saved choice.
+    -- No valid preference was recorded for this interruption.
     selected := '{}';
     needs_choice := linked > 0;
   ELSIF TG_OP = 'UPDATE' AND OLD.status IN ('active','trialing') AND slots > greatest(OLD.account_slots, 0) THEN
@@ -110,3 +111,14 @@ REVOKE ALL ON FUNCTION public.sync_subscription_ai_profiles() FROM PUBLIC, anon,
 CREATE TRIGGER sync_subscription_ai_profiles AFTER INSERT OR UPDATE OF
   account_slots, status, polar_subscription_id, current_period_end, cancel_at_period_end, ends_at
   ON public.user_subscriptions FOR EACH ROW EXECUTE FUNCTION public.sync_subscription_ai_profiles();
+--> statement-breakpoint
+-- CREATE TRIGGER already holds the subscription write lock until commit. Finish any
+-- in-flight profile writes before reading the flags left by the previous webhook.
+LOCK TABLE public.player_profiles IN SHARE MODE;
+INSERT INTO ai_royale_private.suspended_ai_selections (user_id, profile_ids, previous_slots, needs_choice)
+SELECT s.user_id, array_agg(p.id ORDER BY p.id), s.account_slots, coalesce(s.needs_ai_selection, false)
+FROM public.user_subscriptions s
+JOIN public.player_profiles p ON p.user_id = s.user_id AND p.ai_enabled
+WHERE s.status = 'past_due' AND s.account_slots > 0
+GROUP BY s.user_id, s.account_slots, s.needs_ai_selection
+HAVING count(*) <= s.account_slots;

@@ -1,5 +1,7 @@
 BEGIN;
 SET search_path TO public, boundary_fixture;
+SELECT check_that(NOT EXISTS (SELECT FROM player_profiles WHERE user_id IN (account(30), account(31), account(32))
+  AND ai_enabled), '0051 disables all effective flags on already overdue accounts');
 SELECT check_that((SELECT count(*)=0 FROM player_profiles WHERE user_id=account(1) AND ai_enabled)
   AND (SELECT needs_ai_selection FROM user_subscriptions WHERE user_id=account(1)), 'overallocated account requires choice');
 SELECT check_that((SELECT ai_enabled FROM player_profiles WHERE id=profile(21)) AND

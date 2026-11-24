@@ -89,6 +89,49 @@ async function checkExpansionTimeout(sql: string) {
   }
 }
 
+async function checkPreferenceCutoverTimeout(sql: string) {
+  await db.begin(async writer => {
+    await writer`UPDATE public.player_profiles SET ai_enabled = ai_enabled WHERE id = boundary_fixture.profile(302)`;
+    await assert.rejects(db.unsafe(sql).simple(), { code: '55P03' });
+    const [state] = await writer`SELECT to_regclass('ai_royale_private.suspended_ai_selections') AS preferences,
+      to_regprocedure('public.select_my_ai_profiles(uuid[])') AS selector`;
+    assert.deepEqual([state.preferences, state.selector], [null, null]);
+  });
+  console.log('PASS 0050 rolls back cleanly when an existing profile writer holds the lock');
+}
+
+async function checkTrialBaseline(afterOwnership: boolean) {
+  const query = await read('../../../scripts/sql/pr57-recovery-and-trials.sql');
+  const fixture = await db.reserve();
+  try {
+    await fixture`BEGIN`;
+    await fixture`UPDATE public.trial_conversion_periods SET started_at = now() - interval '4 days',
+      ends_at = now() - interval '1 day' WHERE subscription_id IN ('test-plan-2', 'test-plan-3')`;
+    await fixture`UPDATE public.user_subscriptions SET status = 'expired', canceled_at = now() - interval '2 days'
+      WHERE polar_subscription_id IN ('test-plan-2', 'test-plan-3')`;
+    await fixture`INSERT INTO public.product_events (user_id, event_name, created_at)
+      SELECT boundary_fixture.account(n), 'ai_recommendation_viewed', now() - interval '3 days' FROM generate_series(2,3) n`;
+    await fixture`INSERT INTO public.return_experiments VALUES
+      ('running', tstzrange(now() - interval '1 day', now() + interval '1 day')),
+      ('planned', tstzrange(now() + interval '1 day', now() + interval '2 days'))`;
+    const rows = await fixture.unsafe(query).simple();
+    const scope = (name: string) => rows.find(row => row.scope === name)?.counts;
+    const current = afterOwnership ? 1 : 2;
+    assert.deepEqual(scope('current audience'), { segment_accounts: 2, current_eligible: current, owner_eligible: 1,
+      active_windows: 1, planned_windows: 1 });
+    assert.equal(scope('running').state, 'active');
+    assert.equal(scope('planned').state, 'planned');
+    assert.equal(scope('planned').owner_eligible, 1);
+    assert.deepEqual(scope('7 days'), { periods: 2, current_saved: current, owner_saved: 1 });
+    if (!afterOwnership) assert.deepEqual(scope('all past_due'), { accounts: 3, links_fit_slots: 1, links_fit_with_enabled: 0,
+      any_enabled_accounts: 2, valid_enabled_accounts: 1, valid_enabled_profiles: 1, over_capacity_accounts: 1 });
+    assert.equal((await fixture`SELECT count(*)::int AS n FROM public.return_experiment_accounts`)[0].n, 0);
+  } finally {
+    await fixture`ROLLBACK`;
+    fixture.release();
+  }
+}
+
 async function backfillWithTraffic(sql: string) {
   const migration = await db.reserve();
   const newId = '30000000-0000-4000-8000-000000000001';
@@ -132,7 +175,10 @@ try {
       if (name.startsWith('0050_')) {
         await apply('legacy.sql');
         await checkImpactCounts();
+        await checkTrialBaseline(false);
+        await checkPreferenceCutoverTimeout(await read(directory + name));
       }
+      if (name.startsWith('0051_')) await apply('historicalRecovery.sql');
       if (name.startsWith('0053_')) await checkExpansionTimeout(await read(directory + name));
       if (name.startsWith('0054_')) await backfillWithTraffic(await read(directory + name));
       else await apply(directory + name);
@@ -142,6 +188,9 @@ try {
   await apply('../../../scripts/sql/pr57-analysis-index.sql');
   assert.equal((await db`SELECT indisready AND indisvalid AS ready FROM pg_index
     WHERE indexrelid='public.analyses_owner_player_history'::regclass`)[0].ready, true);
+  await apply('historicalRecovery.sql');
+  await checkTrialBaseline(true);
+  console.log('PASS historical recovery across the rollout and saved-summary forecast against the installed view');
   await apply('checks.sql');
   console.log('Passed role, ownership, legacy-record and rollback checks on ' + count + ' migrations');
 
