@@ -196,3 +196,103 @@ CREATE SCHEMA cron;
 CREATE TABLE cron.job(jobid bigint GENERATED ALWAYS AS IDENTITY,jobname text,schedule text,command text);
 CREATE FUNCTION cron.unschedule(bigint) RETURNS boolean LANGUAGE sql AS $$ DELETE FROM cron.job WHERE jobid=$1 RETURNING true $$;
 CREATE FUNCTION cron.schedule(text,text,text) RETURNS bigint LANGUAGE sql AS $$ INSERT INTO cron.job(jobname,schedule,command) VALUES($1,$2,$3) RETURNING jobid $$;
+ALTER TABLE public.user_subscriptions ADD account_slots integer DEFAULT 1, ADD needs_ai_selection boolean DEFAULT false;
+ALTER TABLE public.player_profiles ADD id uuid DEFAULT gen_random_uuid() PRIMARY KEY, ADD ai_enabled boolean DEFAULT false, ADD last_seen_at timestamptz, ADD note text;
+ALTER TABLE public.analyses ADD id uuid DEFAULT gen_random_uuid() PRIMARY KEY, ADD input_fingerprint text DEFAULT 'fixture-legacy', ADD output jsonb DEFAULT '{}', ADD created_at timestamptz DEFAULT now();
+ALTER TABLE public.user_fraud_status ADD fraud_score integer DEFAULT 0, ADD reviewed_at timestamptz, ADD signals_count integer, ADD last_signal_at timestamptz, ADD updated_at timestamptz;
+CREATE TABLE public.player_tag_claims (
+  player_tag TEXT PRIMARY KEY,
+  claimed_by_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  claimed_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS public.fraud_signals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  signal_type TEXT NOT NULL,
+  severity TEXT NOT NULL DEFAULT 'low',
+  details JSONB NOT NULL DEFAULT '{}',
+  ip_address TEXT,
+  fingerprint_hash TEXT,
+  player_tag TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS public.device_fingerprints (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  fingerprint_hash TEXT NOT NULL,
+  user_id UUID NOT NULL,
+  first_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  user_agent TEXT,
+  screen_resolution TEXT,
+  timezone TEXT,
+  language TEXT,
+  seen_count INTEGER DEFAULT 1,
+  UNIQUE(fingerprint_hash, user_id)
+);
+CREATE TABLE IF NOT EXISTS public.api_rate_limits (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  identifier text NOT NULL,
+  request_count integer NOT NULL DEFAULT 1,
+  window_start timestamp with time zone NOT NULL DEFAULT now(),
+  created_at timestamp with time zone DEFAULT now(),
+  UNIQUE(identifier)
+);
+CREATE POLICY "Users can manage own player profiles"
+  ON public.player_profiles FOR ALL
+  USING (auth.uid() = user_id);
+CREATE POLICY "Users can view own analyses" ON public.analyses
+  FOR SELECT
+  USING (player_tag IN (
+    SELECT player_tag FROM public.player_profiles WHERE user_id = auth.uid()
+  ));
+CREATE POLICY "Users can claim unclaimed tags"
+  ON public.player_tag_claims
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = claimed_by_user_id);
+CREATE OR REPLACE FUNCTION public.check_rate_limit(
+  p_identifier text,
+  p_max_requests integer DEFAULT 30,
+  p_window_seconds integer DEFAULT 60
+) RETURNS boolean
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.cleanup_old_api_logs()
+RETURNS void
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.get_daily_feature_usage(
+  p_user_id UUID,
+  p_feature_name TEXT,
+  p_date DATE DEFAULT CURRENT_DATE
+)
+RETURNS INTEGER
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.is_player_tag_available_for_trial(
+  p_player_tag TEXT,
+  p_user_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.claim_player_tag_for_trial(
+  p_player_tag TEXT,
+  p_user_id UUID
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.detect_multi_account_abuse(
+  p_fingerprint_hash TEXT,
+  p_user_id UUID
+) RETURNS BOOLEAN
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.detect_velocity_abuse(
+  p_user_id UUID,
+  p_feature_name TEXT,
+  p_window_seconds INTEGER DEFAULT 60,
+  p_max_requests INTEGER DEFAULT 10
+) RETURNS BOOLEAN
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.update_user_fraud_score(p_user_id UUID)
+RETURNS INTEGER
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
+CREATE OR REPLACE FUNCTION public.get_fraud_overview_stats()
+RETURNS JSONB
+LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Use the full account-boundary fixture for this routine'; END $$;
