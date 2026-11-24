@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useSubscription } from "./useSubscription";
+import { useContext } from "react";
+import { useTranslation } from "react-i18next";
+import { SubscriptionUserContext, useSubscription } from "./useSubscription";
 import { useFraudStatus } from "./useFraudStatus";
 
 // Daily limits for each premium feature (for free/expired users)
@@ -31,6 +33,8 @@ type AccessReason =
   | 'quota_exceeded'   // Daily limit reached
   | 'velocity_exceeded' // Rate limiting triggered
   | 'soft_blocked'     // User is soft-blocked due to fraud
+  | 'blocked'
+  | 'verification_unavailable'
   | 'not_authenticated'; // User not logged in
 
 export interface AccessResult {
@@ -67,38 +71,30 @@ export function useFeatureAccess(
   playerTag: string
 ): UseFeatureAccessReturn {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const { hasAccess: hasPaidAccess, isTrialActive, isLoading: isSubLoading } = useSubscription();
   const todayDate = getTodayDateString();
   const normalizedTag = normalizePlayerTag(playerTag);
   const dailyLimit = FEATURE_LIMITS[featureName];
 
-  // Query for today's usage count
-  const { data: usageData, isLoading: isUsageLoading, refetch } = useQuery({
-    queryKey: ['feature-usage', featureName, normalizedTag, todayDate],
+  const userId = useContext(SubscriptionUserContext);
+  const usageKey = ['feature-usage', userId, featureName, normalizedTag, todayDate];
+  const { data: usageCount = 0, isLoading: isUsageLoading, isError: usageFailed, refetch } = useQuery({
+    queryKey: usageKey,
+    enabled: !!userId,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { usageCount: 0, userId: null };
-
       const { data, error } = await supabase.rpc('get_daily_feature_usage', {
-        p_user_id: user.id,
+        p_user_id: userId!,
         p_feature_name: featureName,
         p_date: todayDate,
       });
-
-      if (error) {
-        console.error('Error fetching feature usage:', error);
-        return { usageCount: 0, userId: user.id };
-      }
-
-      return { usageCount: data || 0, userId: user.id };
+      if (error || data == null) throw error || new Error('Usage unavailable');
+      return data;
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
     refetchOnWindowFocus: true,
   });
 
-  const usageCount = usageData?.usageCount ?? 0;
-  const userId = usageData?.userId;
-  
   // Integrate fraud status for velocity checks and reduced limits
   const { 
     fraudStatus, 
@@ -106,6 +102,8 @@ export function useFeatureAccess(
     checkVelocity, 
     isSoftBlocked, 
     isWarned,
+    isError: fraudFailed,
+    refetch: refetchFraud,
     isLoading: isFraudLoading 
   } = useFraudStatus(userId || null);
   
@@ -115,9 +113,14 @@ export function useFeatureAccess(
   const effectiveLimit = getFeatureLimit(featureName, dailyLimit);
   
   // Calculate remaining uses based on effective limit
-  const remainingUses = (hasPaidAccess || isTrialActive) && !isSoftBlocked
+  const remainingUses = fraudStatus?.status === 'blocked' ? 0 : (hasPaidAccess || isTrialActive) && !isSoftBlocked
     ? Infinity
     : Math.max(0, effectiveLimit - usageCount);
+
+  const blocked: AccessResult = { allowed: false, reason: 'blocked', message: t('subscription.accountRestricted') };
+  const unavailable: AccessResult = {
+    allowed: false, reason: 'verification_unavailable', message: t('subscription.verificationUnavailable'),
+  };
 
   // Determine current access status without async checks
   const getStaticAccessResult = (): AccessResult | null => {
@@ -126,6 +129,9 @@ export function useFeatureAccess(
     if (!userId) {
       return { allowed: false, reason: 'not_authenticated', message: 'Please sign in to use this feature.' };
     }
+
+    if (fraudStatus?.status === 'blocked') return blocked;
+    if (fraudFailed || (usageFailed && (isSoftBlocked || !hasPaidAccess))) return unavailable;
 
     // Check for soft-blocked users - they can still use with reduced limits
     if (isSoftBlocked) {
@@ -174,36 +180,41 @@ export function useFeatureAccess(
       return { allowed: false, reason: 'not_authenticated', message: 'Please sign in to use this feature.' };
     }
 
-    // Check for velocity abuse (rate limiting) - applies to all users
+    if (user.id !== userId || isLoading || fraudFailed) return unavailable;
+    if (fraudStatus?.status === 'blocked') return blocked;
     try {
-      const isVelocityAbuse = await checkVelocity({
-        featureName,
-        windowSeconds: 60,
-        maxRequests: 15, // Max 15 requests per minute per feature
-      });
-      
-      if (isVelocityAbuse) {
+      if (await checkVelocity({ featureName })) {
         return {
-          allowed: false,
-          reason: 'velocity_exceeded',
-          message: 'Too many requests. Please slow down and try again in a minute.',
+          allowed: false, reason: 'velocity_exceeded', message: 'Too many requests. Please try again in a minute.',
         };
       }
-    } catch (error) {
-      console.error('Velocity check error:', error);
-      // Fail open - don't block on velocity check errors
+    } catch {
+      return unavailable;
+    }
+
+    // Only a verified trial can create a permanent claim. Free access checks the link
+    // and existing claims. A competing trial claim returns false from the database.
+    if (isTrialActive || !hasPaidAccess) {
+      const operation = isTrialActive ? 'claim_player_tag_for_trial' : 'is_player_tag_available_for_trial';
+      const { data, error } = await supabase.rpc(operation, { p_player_tag: normalizedTag, p_user_id: user.id });
+      if (error || data == null) return unavailable;
+      if (!data) return {
+        allowed: false, reason: 'fraud_detected',
+        message: t('subscription.tagAccessUnavailable'),
+      };
     }
 
     // Check soft-blocked status
     if (isSoftBlocked) {
       const currentLimit = getFeatureLimit(featureName, dailyLimit);
-      const { data: currentUsage } = await supabase.rpc('get_daily_feature_usage', {
+      const { data: currentUsage, error } = await supabase.rpc('get_daily_feature_usage', {
         p_user_id: user.id,
         p_feature_name: featureName,
         p_date: todayDate,
       });
       
-      if ((currentUsage || 0) < currentLimit) {
+      if (error || currentUsage == null) return unavailable;
+      if (currentUsage < currentLimit) {
         return { 
           allowed: true, 
           reason: 'soft_blocked', 
@@ -223,33 +234,6 @@ export function useFeatureAccess(
       return { allowed: true, reason: 'pro', reducedLimits: isWarned };
     }
 
-    // Layer 2: Fraud check (The Golden Rule for trial abuse)
-    const { data: isAvailable, error: availError } = await supabase.rpc('is_player_tag_available_for_trial', {
-      p_player_tag: normalizedTag,
-      p_user_id: user.id,
-    });
-
-    if (availError) {
-      console.error('Error checking tag availability:', availError);
-      // Fail open for errors - allow access but log the issue
-    } else if (!isAvailable) {
-      return {
-        allowed: false,
-        reason: 'fraud_detected',
-        message: 'This player tag was claimed by another account during their trial period.',
-      };
-    }
-
-    // Claim the tag for this user (if not already claimed)
-    const { error: claimError } = await supabase.rpc('claim_player_tag_for_trial', {
-      p_player_tag: normalizedTag,
-      p_user_id: user.id,
-    });
-
-    if (claimError) {
-      console.error('Error claiming player tag:', claimError);
-    }
-
     // Layer 3: Trial check
     if (isTrialActive) {
       return { allowed: true, reason: 'trial', reducedLimits: isWarned };
@@ -263,12 +247,8 @@ export function useFeatureAccess(
       p_date: todayDate,
     });
 
-    if (usageError) {
-      console.error('Error fetching usage:', usageError);
-      return { allowed: true, reason: 'daily_free', reducedLimits: isWarned }; // Fail open
-    }
-
-    if ((currentUsage || 0) < currentLimit) {
+    if (usageError || currentUsage == null) return unavailable;
+    if (currentUsage < currentLimit) {
       return { allowed: true, reason: 'daily_free', reducedLimits: isWarned };
     }
 
@@ -297,7 +277,7 @@ export function useFeatureAccess(
 
     // Invalidate usage query to update count
     queryClient.invalidateQueries({ 
-      queryKey: ['feature-usage', featureName, normalizedTag, todayDate] 
+      queryKey: usageKey
     });
   };
 
@@ -313,7 +293,7 @@ export function useFeatureAccess(
     remainingUses,
     checkAccess,
     logUsage,
-    refetch,
+    refetch: () => { void refetch(); void refetchFraud(); },
     fraudStatus: fraudStatus?.status || null,
   };
 }

@@ -1,6 +1,6 @@
 import { cardDisplayLevel as getDisplayLevel } from '../_shared/card-display-level.ts';
 import { observeBattles } from '../_shared/battle-observation.ts';
-import { evidenceKey, evidenceHash, savedProfileFilter } from '../_shared/deck-evidence.ts';
+import { evidenceKey, evidenceHash, profileAnalysisTag } from '../_shared/deck-evidence.ts';
 import { analysisErrorResponse } from '../_shared/analysis-error.ts';
 import { createMeasuredAIFetch } from '../_shared/ai-generation.ts';
 import { productLanguage } from "../_shared/language.ts";
@@ -63,8 +63,9 @@ serve(async (req) => {
     if (!playerData || typeof playerData.tag !== 'string' || !Array.isArray(battles)) {
       return errorResponse('Player data and battles are required', 400);
     }
-    const savedFilter = savedProfileFilter(user.id, playerData.tag);
-    if (!savedFilter) return errorResponse('Invalid player tag', 400);
+    const tagKey = profileAnalysisTag(playerData.tag);
+    if (!tagKey) return errorResponse('Invalid player tag', 400);
+    const tagSpellings = [...new Set([playerData.tag, tagKey, '#' + tagKey])];
 
     // Validate access before reading a saved result, without consuming another analysis.
     const aiAccess = await checkAiAccess(supabase, user.id);
@@ -72,19 +73,21 @@ serve(async (req) => {
 
     if (!hasAccess) {
       // Ended trial / lapsed subscription: return the last saved analysis read-only, never generate a new one.
-      const { data: pastSub } = await supabase
+      const { data: pastSub, error: subError } = await supabase
         .from('user_subscriptions').select('id').eq('user_id', user.id).maybeSingle();
-      const tagKey = String(playerData.tag).replace(/^#/, '').toUpperCase();
+      if (subError) return errorResponse('Unable to verify subscription', 503);
       if (pastSub) {
-        const { data: owned } = await supabase
-          .from('player_profiles').select('id').eq('user_id', user.id).eq('player_tag', tagKey).maybeSingle();
+        const { data: owned, error: ownerError } = await supabase
+          .from('player_profiles').select('id').eq('user_id', user.id).in('player_tag', tagSpellings).limit(1).maybeSingle();
+        if (ownerError) return errorResponse('Unable to verify linked player', 503);
         if (owned) {
-          const { data: last } = await supabase
+          const { data: last, error: savedError } = await supabase
             .from('analyses').select('output, created_at, input_fingerprint')
-            .in('player_tag', [playerData.tag, `#${tagKey}`, tagKey])
+            .eq('user_id', user.id)
+            .in('player_tag', tagSpellings)
             .eq('analysis_type', 'profile_summary')
-            .or(savedFilter)
             .order('created_at', { ascending: false }).limit(1).maybeSingle();
+          if (savedError) return errorResponse('Unable to read saved analysis', 503);
           if (last) {
             const savedLanguage = /_(en|tr|es|fr|pt)(?:-[a-z]{2})?$/i.exec(last.input_fingerprint ?? '')?.[1];
             return jsonResponse({ ...(last.output as Record<string, unknown>), language: savedLanguage?.toLowerCase(), read_only: true, analyzed_at: last.created_at });
@@ -94,20 +97,14 @@ serve(async (req) => {
       return errorResponse('Subscription required for AI analysis', 403, { subscription_required: true, trial_ended: !!pastSub });
     }
 
-    // Helper to normalize player tags
-    const normalizePlayerTag = (tag: string): string => {
-      return tag.replace(/^#/, '').toUpperCase();
-    };
-
     // PER-PLAYER AI ACCESS CHECK
     if (playerData.tag && !aiAccess.isTrial && !aiAccess.isAdmin) {
-      const normalizedTag = normalizePlayerTag(playerData.tag);
       const { data: playerProfile } = await supabase
         .from('player_profiles')
         .select('ai_enabled')
         .eq('user_id', user.id)
-        .eq('player_tag', normalizedTag)
-        .single();
+        .in('player_tag', tagSpellings)
+        .eq('ai_enabled', true).limit(1).maybeSingle();
 
       if (!playerProfile?.ai_enabled) {
         return errorResponse('AI not enabled for this account', 403, { ai_not_enabled: true, player_tag: playerData.tag });
@@ -128,15 +125,17 @@ serve(async (req) => {
     const fingerprint = `profile_${user.id}_${await evidenceHash(evidenceKey(playerData, battles))}_${language}`;
 
     // Check cache
-    const { data: cached } = await supabase
+    const { data: cached, error: cacheError } = await supabase
       .from('analyses')
       .select('output')
-      .eq('player_tag', playerData.tag)
+      .eq('user_id', user.id)
+      .in('player_tag', tagSpellings)
       .eq('analysis_type', 'profile_summary')
       .eq('input_fingerprint', fingerprint)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-      .single();
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
 
+    if (cacheError) return errorResponse('Unable to read analysis cache', 503);
     if (cached) {
       logger.info('Returning cached analysis');
       return jsonResponse(cached.output);
@@ -234,13 +233,15 @@ Be specific, competitive, and encouraging. Focus on actionable insights.`;
     };
 
     // Cache the result
-    await supabase.from('analyses').insert({
+    const { error: saveError } = await supabase.from('analyses').insert({
+      user_id: user.id,
       player_tag: playerData.tag,
       analysis_type: 'profile_summary',
       input_fingerprint: fingerprint,
       output: result,
     });
 
+    if (saveError) logger.error('Could not save profile analysis', { code: saveError.code });
     return jsonResponse(result);
 
   } catch (error) {

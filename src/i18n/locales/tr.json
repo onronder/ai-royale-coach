@@ -2702,6 +2702,9 @@
       "title": "Şimdi abone olmak istiyor musun?",
       "description": "Denemende kalan gün: {{days}}. Devam edersen ücretli aboneliğin hemen başlar."
     },
+    "accountRestricted": "Bu hesabın erişimi kısıtlandı.",
+    "verificationUnavailable": "Erişim doğrulanamadı. Lütfen tekrar deneyin.",
+    "tagAccessUnavailable": "Bu hesap, bu oyuncu etiketi için deneme erişimini kullanamıyor.",
     "tagClaimedTitle": "Oyuncu etiketi zaten bağlı",
     "featureLocked": "Özellik kilitli",
     "dailyLimitMessage": "Bugünkü kullanım sınırına ulaştın.",

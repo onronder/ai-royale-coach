@@ -30,6 +30,7 @@ export function FeatureGate({
     canAccess,
     isLoading,
     accessResult,
+    refetch,
     usageCount,
     dailyLimit,
     remainingUses,
@@ -63,6 +64,17 @@ export function FeatureGate({
   // Access denied - show fallback or locked state
   if (fallback) {
     return <>{fallback}</>;
+  }
+
+  if (accessResult?.reason === 'verification_unavailable' || accessResult?.reason === 'blocked') {
+    return (
+      <div role="status" className={cn("space-y-2 text-center text-sm", className)}>
+        <p>{accessResult.message}</p>
+        {accessResult.reason === 'verification_unavailable' && (
+          <Button variant="outline" onClick={refetch}>{t('common.retry')}</Button>
+        )}
+      </div>
+    );
   }
 
   // Default locked state
