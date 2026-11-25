@@ -1,18 +1,18 @@
 -- Apply this whole file in one transaction before deploying its webhook caller.
-ALTER TABLE public.user_subscriptions ADD COLUMN polar_resource_created_at timestamptz;
-CREATE TABLE ai_royale_private.closed_polar_subscriptions (
+CREATE TABLE ai_royale_private.polar_subscription_lifecycles (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   subscription_id text NOT NULL,
-  reason text NOT NULL CHECK (reason IN ('ended','replaced')),
+  closed_reason text CHECK (closed_reason IN ('ended','replaced')),
   last_event_at timestamptz,
+  provider_created_at timestamptz,
   PRIMARY KEY (user_id, subscription_id)
 );
-ALTER TABLE ai_royale_private.closed_polar_subscriptions ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON ai_royale_private.closed_polar_subscriptions FROM PUBLIC, anon, authenticated, service_role;
+ALTER TABLE ai_royale_private.polar_subscription_lifecycles ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON ai_royale_private.polar_subscription_lifecycles FROM PUBLIC, anon, authenticated, service_role;
 
 -- Earlier receipts have a receipt time, not an authenticated provider event time.
 -- Seed only processed ends with independent evidence of the resource/owner pair.
-INSERT INTO ai_royale_private.closed_polar_subscriptions (user_id, subscription_id, reason)
+INSERT INTO ai_royale_private.polar_subscription_lifecycles (user_id, subscription_id, closed_reason)
 SELECT DISTINCT e.user_id, e.event_id, 'ended'
 FROM public.webhook_events e JOIN auth.users u ON u.id=e.user_id
 WHERE e.status='processed' AND e.event_type IN ('subscription.revoked','subscription.ended')
@@ -32,6 +32,7 @@ DECLARE
   first_end boolean;
   resource_start timestamptz := (p_fields->>'provider_created_at')::timestamptz;
   replacement_allowed boolean;
+  previous_resource_start timestamptz;
   terminal boolean := p_kind IN ('subscription.revoked','subscription.ended');
   start_event boolean := p_kind IN ('subscription.created','subscription.active');
   full_update boolean := start_event OR p_kind='subscription.updated';
@@ -59,20 +60,24 @@ BEGIN
     SELECT * INTO previous FROM public.user_subscriptions WHERE user_id=p_user_id FOR UPDATE;
     -- Different resources have independent modification clocks. A late end on the old
     -- resource can have a later timestamp than the purchase that replaced it.
+    SELECT provider_created_at INTO previous_resource_start FROM ai_royale_private.polar_subscription_lifecycles
+      WHERE user_id=p_user_id AND subscription_id=previous.polar_subscription_id;
     replacement_allowed := CASE
       WHEN previous.polar_subscription_id IS NULL THEN true
-      WHEN previous.polar_resource_created_at IS NOT NULL AND resource_start IS NOT NULL
-        THEN resource_start>previous.polar_resource_created_at
+      WHEN previous_resource_start IS NOT NULL AND resource_start IS NOT NULL
+        THEN resource_start>previous_resource_start
       ELSE previous.last_event_at IS NULL OR coalesce(resource_start,p_event_at)>previous.last_event_at
     END;
 
 
     IF terminal THEN
-      SELECT NOT EXISTS (SELECT FROM ai_royale_private.closed_polar_subscriptions
-        WHERE user_id=p_user_id AND subscription_id=p_subscription_id AND reason='ended') INTO first_end;
+      SELECT NOT EXISTS (SELECT FROM ai_royale_private.polar_subscription_lifecycles
+        WHERE user_id=p_user_id AND subscription_id=p_subscription_id AND closed_reason='ended') INTO first_end;
       closed_at := greatest(p_event_at, CASE WHEN previous.polar_subscription_id=p_subscription_id THEN previous.last_event_at END);
-      INSERT INTO ai_royale_private.closed_polar_subscriptions AS c VALUES (p_user_id,p_subscription_id,'ended',closed_at)
-      ON CONFLICT (user_id,subscription_id) DO UPDATE SET reason='ended',last_event_at=greatest(c.last_event_at,excluded.last_event_at)
+      INSERT INTO ai_royale_private.polar_subscription_lifecycles AS c
+        (user_id,subscription_id,closed_reason,last_event_at,provider_created_at) VALUES (p_user_id,p_subscription_id,'ended',closed_at,resource_start)
+      ON CONFLICT (user_id,subscription_id) DO UPDATE SET closed_reason='ended',last_event_at=greatest(c.last_event_at,excluded.last_event_at),
+        provider_created_at=coalesce(c.provider_created_at,excluded.provider_created_at)
       RETURNING last_event_at INTO closed_at;
 
       UPDATE public.user_subscriptions SET status='expired', account_slots=0,
@@ -85,7 +90,7 @@ BEGIN
         UPDATE public.profiles SET trial_used=true, updated_at=now() WHERE id=p_user_id AND trial_used IS DISTINCT FROM true;
         decision := CASE WHEN first_end THEN 'ended' ELSE 'duplicate' END;
       END IF;
-    ELSIF EXISTS (SELECT FROM ai_royale_private.closed_polar_subscriptions WHERE user_id=p_user_id AND subscription_id=p_subscription_id) THEN
+    ELSIF EXISTS (SELECT FROM ai_royale_private.polar_subscription_lifecycles WHERE user_id=p_user_id AND subscription_id=p_subscription_id AND closed_reason IS NOT NULL) THEN
       decision := 'closed_id';
     ELSIF NOT full_update AND previous.polar_subscription_id IS DISTINCT FROM p_subscription_id THEN
       decision := 'pending_current_subscription';
@@ -97,10 +102,9 @@ BEGIN
     ELSIF (p_kind<>'subscription.past_due' AND incoming_status IS NULL) OR (full_update AND slots IS NULL) THEN
       decision := 'pending_status_or_product';
     ELSIF start_event AND previous.polar_subscription_id=p_subscription_id AND previous.status=incoming_status THEN
-      UPDATE public.user_subscriptions SET last_event_at=greatest(last_event_at,p_event_at),
-        polar_resource_created_at=coalesce(polar_resource_created_at,resource_start)
+      UPDATE public.user_subscriptions SET last_event_at=greatest(last_event_at,p_event_at)
       WHERE user_id=p_user_id AND polar_subscription_id=p_subscription_id
-        AND (last_event_at IS NULL OR last_event_at<p_event_at OR (polar_resource_created_at IS NULL AND resource_start IS NOT NULL));
+        AND (last_event_at IS NULL OR last_event_at<p_event_at);
       decision := 'duplicate';
     ELSIF p_kind='subscription.past_due' THEN
       UPDATE public.user_subscriptions SET status='past_due', last_event_at=p_event_at, updated_at=now()
@@ -108,12 +112,12 @@ BEGIN
       decision := CASE WHEN FOUND THEN 'applied' ELSE 'stale' END;
     ELSE
       INSERT INTO public.user_subscriptions AS s (user_id,polar_subscription_id,polar_customer_id,polar_customer_external_id,
-        status,variant_id,account_slots,current_period_start,current_period_end,cancel_at_period_end,canceled_at,ends_at,last_event_at,polar_resource_created_at)
+        status,variant_id,account_slots,current_period_start,current_period_end,cancel_at_period_end,canceled_at,ends_at,last_event_at)
       SELECT p_user_id,p_subscription_id,p_fields->>'customer_id',p_user_id::text,
         incoming_status,p_fields->>'product_id',coalesce(slots,1),period_start,period_end,
         coalesce((p_fields->>'cancel_at_period_end')::boolean,false),(p_fields->>'canceled_at')::timestamptz,
-        (p_fields->>'ends_at')::timestamptz,p_event_at,resource_start
-      WHERE NOT EXISTS (SELECT FROM ai_royale_private.closed_polar_subscriptions WHERE user_id=p_user_id AND subscription_id=p_subscription_id)
+        (p_fields->>'ends_at')::timestamptz,p_event_at
+      WHERE NOT EXISTS (SELECT FROM ai_royale_private.polar_subscription_lifecycles WHERE user_id=p_user_id AND subscription_id=p_subscription_id AND closed_reason IS NOT NULL)
       ON CONFLICT (user_id) DO UPDATE SET
         polar_subscription_id=excluded.polar_subscription_id, polar_customer_id=excluded.polar_customer_id,
         polar_customer_external_id=excluded.polar_customer_external_id, status=excluded.status,
@@ -124,16 +128,16 @@ BEGIN
         current_period_start=CASE WHEN p_fields ? 'current_period_start' THEN excluded.current_period_start ELSE s.current_period_start END,
         current_period_end=CASE WHEN p_fields ? 'current_period_end' THEN excluded.current_period_end ELSE s.current_period_end END,
         cancel_at_period_end=excluded.cancel_at_period_end,canceled_at=excluded.canceled_at,ends_at=excluded.ends_at,
-        polar_resource_created_at=CASE WHEN s.polar_subscription_id IS DISTINCT FROM excluded.polar_subscription_id
-          THEN excluded.polar_resource_created_at ELSE coalesce(s.polar_resource_created_at,excluded.polar_resource_created_at) END,
         last_event_at=excluded.last_event_at,updated_at=now()
       WHERE (s.polar_subscription_id IS NOT DISTINCT FROM p_subscription_id AND (s.last_event_at IS NULL OR s.last_event_at<=excluded.last_event_at))
          OR (s.polar_subscription_id IS DISTINCT FROM p_subscription_id AND full_update AND replacement_allowed);
       IF FOUND THEN
         decision := CASE WHEN previous.id IS NULL THEN 'created' ELSE 'applied' END;
         IF previous.polar_subscription_id IS NOT NULL AND previous.polar_subscription_id<>p_subscription_id THEN
-          INSERT INTO ai_royale_private.closed_polar_subscriptions VALUES (p_user_id,previous.polar_subscription_id,'replaced',previous.last_event_at)
-          ON CONFLICT DO NOTHING;
+          INSERT INTO ai_royale_private.polar_subscription_lifecycles AS c
+            (user_id,subscription_id,closed_reason,last_event_at) VALUES (p_user_id,previous.polar_subscription_id,'replaced',previous.last_event_at)
+          ON CONFLICT (user_id,subscription_id) DO UPDATE SET closed_reason='replaced',last_event_at=greatest(c.last_event_at,excluded.last_event_at)
+          WHERE c.closed_reason IS NULL;
         END IF;
         IF full_update AND incoming_status='trialing' THEN
           UPDATE public.profiles SET trial_started_at=coalesce(period_start,p_event_at),trial_ends_at=period_end,
@@ -145,6 +149,13 @@ BEGIN
         decision := 'stale';
       END IF;
     END IF;
+  END IF;
+
+  IF NOT terminal AND resource_start IS NOT NULL AND decision IN ('created','applied','duplicate') THEN
+    INSERT INTO ai_royale_private.polar_subscription_lifecycles AS c (user_id,subscription_id,provider_created_at)
+      VALUES (p_user_id,p_subscription_id,resource_start)
+    ON CONFLICT (user_id,subscription_id) DO UPDATE SET provider_created_at=excluded.provider_created_at
+      WHERE c.provider_created_at IS NULL AND c.closed_reason IS NULL;
   END IF;
 
   -- Preserve data used by existing revenue queries. Include the raw provider status
