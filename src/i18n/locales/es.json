@@ -1674,7 +1674,7 @@
     "noAITooltip": "Mejora o habilita IA para esta cuenta en Configuración",
     "onTrial": "En Periodo de Prueba",
     "onTrialTooltip": "Todas las funciones de IA están disponibles durante tu prueba de 72 horas",
-    "trialExpired": "Prueba Expirada",
+    "trialExpired": "Acceso a la IA finalizado",
     "trialExpiredTooltip": "Suscríbete a AI Royale PRO para desbloquear funciones de IA",
     "proBadge": "PRO",
     "proBadgeTooltip": "Esta cuenta tiene acceso completo a IA con tu suscripción"
@@ -2591,7 +2591,7 @@
     "upgradeToPro": "Mejorar a Pro",
     "unlockFeature": "Desbloquear {{feature}}",
     "premiumDescription": "Obtén acceso completo al coaching de IA, análisis de mazos y recomendaciones personalizadas.",
-    "trialExpiredDescription": "Tu prueba gratuita ha terminado. Suscríbete para seguir usando las funciones de IA.",
+    "trialExpiredDescription": "Elige un plan para usar esta función de IA.",
     "startFreeTrial": "Prueba 3 días · luego 4,99 USD/mes",
     "subscribePro": "Suscribirse a Pro",
     "priceInfo": "$4.99/mes • Cancela cuando quieras",
@@ -2645,7 +2645,7 @@
     "freeTrial": "Prueba Gratuita",
     "trialDaysLeft": "{{days}} días restantes",
     "noSubscription": "Sin Suscripción Activa",
-    "trialExpired": "Tu prueba gratuita ha terminado",
+    "trialExpired": "Tu acceso a la IA ha terminado",
     "startTrialPrompt": "Comienza tu prueba gratuita hoy",
     "subscribe": "Suscribirse",
     "startTrial": "Iniciar Prueba Gratuita",
@@ -2665,7 +2665,7 @@
     "previewTitle": "Vista Previa del Análisis IA",
     "previewDescription": "Mejora para ver los análisis completos",
     "seeFull": "Ver Análisis Completo",
-    "trialExpiredPreview": "Tu prueba ha terminado. Suscríbete para ver el análisis completo.",
+    "trialExpiredPreview": "Elige un plan para generar nuevos análisis con IA.",
     "aiSelector": {
       "title": "Seleccionar Cuentas con IA Habilitada",
       "description": "Elige cuáles {{count}} cuenta(s) tendrán acceso a las funciones de IA.",
@@ -3601,9 +3601,9 @@
     }
   },
   "trialEnded": {
-    "title": "Tu prueba ha terminado",
-    "description": "Aún puedes ver tu último análisis. Suscríbete para ejecutar nuevos análisis con IA.",
-    "cta": "Suscribirse de nuevo"
+    "title": "Tu acceso a la IA ha terminado",
+    "description": "Elige un plan para generar nuevos análisis con IA.",
+    "cta": "Ver Planes"
   },
   "loading": {
     "playerData": "Obteniendo datos del jugador…",

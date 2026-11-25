@@ -50,7 +50,7 @@ export function AIFeaturePreview({
               </h3>
               
               <p className="text-sm text-muted-foreground mb-4">
-                {t('subscription.trialExpiredPreview', 'Your trial has ended. Subscribe to see the full analysis.')}
+                {t('subscription.trialExpiredPreview', 'Choose a plan to run new AI analyses.')}
               </p>
               
               <Button
@@ -58,7 +58,7 @@ export function AIFeaturePreview({
                 className="bg-gradient-to-r from-gold to-warning text-warning-foreground hover:opacity-90 gap-2"
               >
                 <Crown className="h-4 w-4" />
-                {t('subscription.seeFull', 'See Full Analysis')}
+                {t('subscription.viewPlans')}
               </Button>
             </div>
           </div>

@@ -1674,7 +1674,7 @@
     "noAITooltip": "Améliorez ou activez l'IA pour ce compte dans les Paramètres",
     "onTrial": "En Période d'Essai",
     "onTrialTooltip": "Toutes les fonctionnalités IA sont disponibles pendant votre essai de 72 heures",
-    "trialExpired": "Essai Expiré",
+    "trialExpired": "Accès à l’IA terminé",
     "trialExpiredTooltip": "Abonnez-vous à AI Royale PRO pour débloquer les fonctionnalités IA",
     "proBadge": "PRO",
     "proBadgeTooltip": "Ce compte a un accès IA complet avec votre abonnement"
@@ -2591,7 +2591,7 @@
     "upgradeToPro": "Passer à Pro",
     "unlockFeature": "Débloquer {{feature}}",
     "premiumDescription": "Obtenez un accès complet au coaching IA, à l'analyse de decks et aux recommandations personnalisées.",
-    "trialExpiredDescription": "Votre essai gratuit est terminé. Abonnez-vous pour continuer à utiliser les fonctionnalités IA.",
+    "trialExpiredDescription": "Choisissez une formule pour utiliser cette fonctionnalité d’IA.",
     "startFreeTrial": "Essai 3 jours · puis 4,99 USD/mois",
     "subscribePro": "S'abonner à Pro",
     "priceInfo": "$4.99/mois • Annulez à tout moment",
@@ -2645,7 +2645,7 @@
     "freeTrial": "Essai Gratuit",
     "trialDaysLeft": "{{days}} jours restants",
     "noSubscription": "Pas d'Abonnement Actif",
-    "trialExpired": "Votre essai gratuit est terminé",
+    "trialExpired": "Votre accès à l’IA a pris fin",
     "startTrialPrompt": "Commencez votre essai gratuit aujourd'hui",
     "subscribe": "S'abonner",
     "startTrial": "Commencer l'Essai Gratuit",
@@ -2665,7 +2665,7 @@
     "previewTitle": "Aperçu de l'Analyse IA",
     "previewDescription": "Passez à Pro pour voir l'analyse complète",
     "seeFull": "Voir l'Analyse Complète",
-    "trialExpiredPreview": "Votre essai est terminé. Abonnez-vous pour voir l'analyse complète.",
+    "trialExpiredPreview": "Choisissez une formule pour lancer de nouvelles analyses IA.",
     "aiSelector": {
       "title": "Sélectionner les Comptes avec IA Activée",
       "description": "Choisissez quels {{count}} compte(s) auront accès aux fonctionnalités IA.",
@@ -3601,9 +3601,9 @@
     }
   },
   "trialEnded": {
-    "title": "Votre essai est terminé",
-    "description": "Vous pouvez toujours consulter votre dernière analyse. Abonnez-vous pour lancer de nouvelles analyses IA.",
-    "cta": "Se réabonner"
+    "title": "Votre accès à l’IA a pris fin",
+    "description": "Choisissez une formule pour lancer de nouvelles analyses IA.",
+    "cta": "Voir les Plans"
   },
   "loading": {
     "playerData": "Récupération des données du joueur…",

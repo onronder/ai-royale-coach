@@ -1674,7 +1674,7 @@
     "noAITooltip": "Ayarlar'dan bu hesap için yapay zekayı yükseltin veya etkinleştirin",
     "onTrial": "Deneme Süresinde",
     "onTrialTooltip": "72 saatlik deneme sürenizde tüm yapay zeka özellikleri aktif",
-    "trialExpired": "Deneme Sona Erdi",
+    "trialExpired": "Yapay zekâ erişimi sona erdi",
     "trialExpiredTooltip": "Yapay zeka özelliklerini etkinleştirmek için AI Royale PRO'ya abone olun",
     "proBadge": "PRO",
     "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zeka erişimine sahip"
@@ -2591,7 +2591,7 @@
     "upgradeToPro": "Pro'ya Yükselt",
     "unlockFeature": "{{feature}} Kilidi Aç",
     "premiumDescription": "Yapay zeka koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
-    "trialExpiredDescription": "Ücretsiz denemeniz sona erdi. Yapay zeka özelliklerini kullanmaya devam etmek için abone olun.",
+    "trialExpiredDescription": "Bu yapay zekâ özelliğini kullanmak için bir plan seçin.",
     "startFreeTrial": "3 Gün Dene · ardından 4,99 USD/ay",
     "subscribePro": "Pro'ya Abone Ol",
     "priceInfo": "$4.99/ay • İstediğiniz zaman iptal edin",
@@ -2645,7 +2645,7 @@
     "freeTrial": "Ücretsiz Deneme",
     "trialDaysLeft": "{{days}} gün kaldı",
     "noSubscription": "Aktif Abonelik Yok",
-    "trialExpired": "Ücretsiz denemeniz sona erdi",
+    "trialExpired": "Yapay zekâ erişiminiz sona erdi",
     "startTrialPrompt": "Bugün ücretsiz denemenizi başlatın",
     "subscribe": "Abone Ol",
     "startTrial": "Ücretsiz Denemeyi Başlat",
@@ -2665,7 +2665,7 @@
     "previewTitle": "AI Analiz Önizlemesi",
     "previewDescription": "Tam analizi görmek için yükseltin",
     "seeFull": "Tam Analizi Gör",
-    "trialExpiredPreview": "Denemeniz sona erdi. Tam analizi görmek için abone olun.",
+    "trialExpiredPreview": "Yeni analizler oluşturmak için bir plan seçin.",
     "aiSelector": {
       "title": "AI Etkin Hesapları Seçin",
       "description": "Hangi {{count}} hesabın AI özelliklerine erişeceğini seçin.",
@@ -3601,9 +3601,9 @@
     }
   },
   "trialEnded": {
-    "title": "Deneme süreniz sona erdi",
-    "description": "Son analizinizi görüntülemeye devam edebilirsiniz. Yeni AI analizleri için abone olun.",
-    "cta": "Yeniden abone ol"
+    "title": "Yapay zekâ erişiminiz sona erdi",
+    "description": "Yeni analizler oluşturmak için bir plan seçin.",
+    "cta": "Planları Görüntüle"
   },
   "loading": {
     "playerData": "Oyuncu verileri alınıyor…",
