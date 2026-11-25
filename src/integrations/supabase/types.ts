@@ -3834,6 +3834,7 @@ export type Database = {
         Args: { c: Record<string, unknown>; p_at: string; p_metric: string }
         Returns: boolean
       }
+      select_my_ai_profiles: { Args: { p_ids: string[] }; Returns: Json }
       set_my_marketing_consent: {
         Args: {
           p_action: string
