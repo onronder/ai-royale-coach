@@ -1,10 +1,11 @@
 -- Synthetic operators and player links in the disposable PostgreSQL database.
-CREATE FUNCTION boundary_fixture.polar_event(n int, sub text, kind text, event_second int, state text DEFAULT 'active')
+CREATE FUNCTION boundary_fixture.polar_event(n int, sub text, kind text, event_second int, state text DEFAULT 'active', resource_second int DEFAULT NULL)
 RETURNS text LANGUAGE sql AS $$
   SELECT public.apply_polar_subscription_event(boundary_fixture.account(n),sub,'subscription.'||kind,
     timestamptz '2026-01-01 12:00:00+00' + event_second * interval '1 second',
     'delivery-'||n||'-'||kind||'-'||event_second,
-    jsonb_build_object('provider_status',state,'status',state,'account_slots',2,'product_id','two',
+    jsonb_build_object('provider_created_at',timestamptz '2026-01-01 12:00:00+00' + resource_second * interval '1 second',
+      'provider_status',state,'status',state,'account_slots',2,'product_id','two',
       'cancel_at_period_end',kind='canceled','ends_at',CASE WHEN kind='canceled' THEN now()+interval '1 month' END,
       'current_period_start',now()-interval '1 day','current_period_end',now()+interval '1 month'))
 $$;
@@ -18,9 +19,9 @@ RETURNS void LANGUAGE sql AS $$
       AND u.trial_used AND (SELECT count(*) FROM public.player_profiles p WHERE p.user_id=s.user_id AND p.ai_enabled)=enabled
   ), 'subscription, trial state, access, slot count, profile flags and watermark for test '||n)
 $$;
-INSERT INTO auth.users(id,email) SELECT boundary_fixture.account(n), 'polar'||n||'@example.invalid' FROM generate_series(301,311) n;
+INSERT INTO auth.users(id,email) SELECT boundary_fixture.account(n), 'polar'||n||'@example.invalid' FROM generate_series(301,316) n;
 INSERT INTO public.player_profiles(user_id,player_tag)
-  SELECT boundary_fixture.account(n),tag FROM generate_series(301,311) n CROSS JOIN (VALUES ('#22PP'),('#22YY')) tags(tag);
+  SELECT boundary_fixture.account(n),tag FROM generate_series(301,316) n CROSS JOIN (VALUES ('#22PP'),('#22YY')) tags(tag);
 SELECT boundary_fixture.polar_event(n,'old-'||n,'active',10) FROM generate_series(301,309) n;
 SELECT boundary_fixture.check_polar(n,'old-'||n,'active',2,2,true,10) FROM generate_series(301,309) n;
 
@@ -62,6 +63,16 @@ SELECT boundary_fixture.polar_event(311,'open','uncanceled',30);
 SELECT boundary_fixture.check_that((SELECT NOT cancel_at_period_end AND ends_at IS NULL FROM public.user_subscriptions
   WHERE user_id=boundary_fixture.account(311)),'renewal restored before end');
 SELECT boundary_fixture.check_polar(311,'open','active',2,2,true,30);
+
+-- A newer resource was purchased before a delayed end on the old one.
+SELECT boundary_fixture.polar_event(316,'previous','created',10,'active',5);
+SELECT boundary_fixture.polar_event(316,'previous','revoked',50,'expired',5);
+SELECT boundary_fixture.check_that(boundary_fixture.polar_event(316,'replacement','created',30,'active',25)='applied','distinct provider clocks');
+SELECT boundary_fixture.check_polar(316,'replacement','active',2,2,true,30);
+-- A late update for an unseen older purchase cannot displace the current lifecycle.
+SELECT boundary_fixture.check_that(boundary_fixture.polar_event(316,'older','updated',60,'active',1)='pending_subscription_order','older resource');
+SELECT boundary_fixture.check_polar(316,'replacement','active',2,2,true,30);
+SELECT boundary_fixture.polar_event(n,'old-'||n,'active',10) FROM generate_series(312,315) n;
 
 SELECT boundary_fixture.check_that(NOT has_function_privilege('authenticated',
   'public.apply_polar_subscription_event(uuid,text,text,timestamptz,text,jsonb)','EXECUTE')

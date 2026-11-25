@@ -263,7 +263,7 @@ serve(async (req) => {
             p_event_at: providerTime && Number.isFinite(Date.parse(providerTime)) ? providerTime : null,
             p_delivery_id: webhookId,
             p_fields: {
-              provider_status: sub.status, status: mappedStatus(sub.status), account_slots: accountSlots,
+              provider_status: sub.status, provider_created_at: sub.created_at, status: mappedStatus(sub.status), account_slots: accountSlots,
               customer_id: sub.customer?.id, product_id: sub.product_id,
               current_period_start: sub.current_period_start, current_period_end: sub.current_period_end,
               cancel_at_period_end: !uncanceled && !!sub.cancel_at_period_end,

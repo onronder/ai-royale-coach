@@ -202,15 +202,21 @@ try {
     const pid = (await second`SELECT pg_backend_pid() AS pid`)[0].pid;
     await apply('polarOrder.sql');
     // Run both lock orders on separate PostgreSQL backends. Observe the wait before commit.
-    for (const [n, firstEvent, secondEvent] of [[308, 'revoked', 'updated'], [309, 'updated', 'revoked']] as const) {
+    const races = [
+      [308, 'revoked', 20, 'updated', 20], [309, 'updated', 20, 'revoked', 20],
+      [312, 'revoked', 20, 'updated', 15], [313, 'updated', 15, 'revoked', 20],
+      [314, 'revoked', 20, 'uncanceled', 25], [315, 'uncanceled', 25, 'revoked', 20],
+    ] as const;
+    for (const [n, firstEvent, firstTime, secondEvent, secondTime] of races) {
       await first`BEGIN`;
       await second`BEGIN`;
       await first`SET LOCAL ROLE service_role`;
       await second`SET LOCAL ROLE service_role`;
-      await first`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${firstEvent},20)`;
-      await finishContended(first, pid, second`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${secondEvent},20)`);
+      await first`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${firstEvent},${firstTime})`;
+      await finishContended(first, pid, second`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${secondEvent},${secondTime})`);
       await second`COMMIT`;
-      await db`SELECT boundary_fixture.check_polar(${n},${'old-' + n},'expired',0,0,false,20)`;
+      const watermark = firstEvent === 'revoked' ? firstTime : Math.max(firstTime, secondTime);
+      await db`SELECT boundary_fixture.check_polar(${n},${'old-' + n},'expired',0,0,false,${watermark})`;
     }
     console.log('PASS terminal subscription events keep access, slots and both profile flags closed in both concurrent delivery orders');
 

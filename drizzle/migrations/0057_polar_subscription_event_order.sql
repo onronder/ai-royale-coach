@@ -1,4 +1,5 @@
 -- Apply this whole file in one transaction before deploying its webhook caller.
+ALTER TABLE public.user_subscriptions ADD COLUMN polar_resource_created_at timestamptz;
 CREATE TABLE ai_royale_private.closed_polar_subscriptions (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   subscription_id text NOT NULL,
@@ -29,6 +30,8 @@ DECLARE
   closed_at timestamptz;
   decision text;
   first_end boolean;
+  resource_start timestamptz := (p_fields->>'provider_created_at')::timestamptz;
+  replacement_allowed boolean;
   terminal boolean := p_kind IN ('subscription.revoked','subscription.ended');
   start_event boolean := p_kind IN ('subscription.created','subscription.active');
   full_update boolean := start_event OR p_kind='subscription.updated';
@@ -54,6 +57,15 @@ BEGIN
       RAISE EXCEPTION 'Subscriber profile unavailable' USING ERRCODE='40001';
     END IF;
     SELECT * INTO previous FROM public.user_subscriptions WHERE user_id=p_user_id FOR UPDATE;
+    -- Different resources have independent modification clocks. A late end on the old
+    -- resource can have a later timestamp than the purchase that replaced it.
+    replacement_allowed := CASE
+      WHEN previous.polar_subscription_id IS NULL THEN true
+      WHEN previous.polar_resource_created_at IS NOT NULL AND resource_start IS NOT NULL
+        THEN resource_start>previous.polar_resource_created_at
+      ELSE previous.last_event_at IS NULL OR coalesce(resource_start,p_event_at)>previous.last_event_at
+    END;
+
 
     IF terminal THEN
       SELECT NOT EXISTS (SELECT FROM ai_royale_private.closed_polar_subscriptions
@@ -78,15 +90,17 @@ BEGIN
     ELSIF NOT full_update AND previous.polar_subscription_id IS DISTINCT FROM p_subscription_id THEN
       decision := 'pending_current_subscription';
     ELSIF previous.polar_subscription_id IS DISTINCT FROM p_subscription_id AND previous.polar_subscription_id IS NOT NULL
-          AND previous.last_event_at >= p_event_at THEN
+          AND NOT replacement_allowed THEN
       decision := 'pending_subscription_order';
     ELSIF previous.polar_subscription_id=p_subscription_id AND previous.last_event_at>p_event_at THEN
       decision := 'stale';
     ELSIF (p_kind<>'subscription.past_due' AND incoming_status IS NULL) OR (full_update AND slots IS NULL) THEN
       decision := 'pending_status_or_product';
     ELSIF start_event AND previous.polar_subscription_id=p_subscription_id AND previous.status=incoming_status THEN
-      UPDATE public.user_subscriptions SET last_event_at=p_event_at WHERE user_id=p_user_id AND polar_subscription_id=p_subscription_id
-        AND (last_event_at IS NULL OR last_event_at<p_event_at);
+      UPDATE public.user_subscriptions SET last_event_at=greatest(last_event_at,p_event_at),
+        polar_resource_created_at=coalesce(polar_resource_created_at,resource_start)
+      WHERE user_id=p_user_id AND polar_subscription_id=p_subscription_id
+        AND (last_event_at IS NULL OR last_event_at<p_event_at OR (polar_resource_created_at IS NULL AND resource_start IS NOT NULL));
       decision := 'duplicate';
     ELSIF p_kind='subscription.past_due' THEN
       UPDATE public.user_subscriptions SET status='past_due', last_event_at=p_event_at, updated_at=now()
@@ -94,11 +108,11 @@ BEGIN
       decision := CASE WHEN FOUND THEN 'applied' ELSE 'stale' END;
     ELSE
       INSERT INTO public.user_subscriptions AS s (user_id,polar_subscription_id,polar_customer_id,polar_customer_external_id,
-        status,variant_id,account_slots,current_period_start,current_period_end,cancel_at_period_end,canceled_at,ends_at,last_event_at)
+        status,variant_id,account_slots,current_period_start,current_period_end,cancel_at_period_end,canceled_at,ends_at,last_event_at,polar_resource_created_at)
       SELECT p_user_id,p_subscription_id,p_fields->>'customer_id',p_user_id::text,
         incoming_status,p_fields->>'product_id',coalesce(slots,1),period_start,period_end,
         coalesce((p_fields->>'cancel_at_period_end')::boolean,false),(p_fields->>'canceled_at')::timestamptz,
-        (p_fields->>'ends_at')::timestamptz,p_event_at
+        (p_fields->>'ends_at')::timestamptz,p_event_at,resource_start
       WHERE NOT EXISTS (SELECT FROM ai_royale_private.closed_polar_subscriptions WHERE user_id=p_user_id AND subscription_id=p_subscription_id)
       ON CONFLICT (user_id) DO UPDATE SET
         polar_subscription_id=excluded.polar_subscription_id, polar_customer_id=excluded.polar_customer_id,
@@ -110,9 +124,11 @@ BEGIN
         current_period_start=CASE WHEN p_fields ? 'current_period_start' THEN excluded.current_period_start ELSE s.current_period_start END,
         current_period_end=CASE WHEN p_fields ? 'current_period_end' THEN excluded.current_period_end ELSE s.current_period_end END,
         cancel_at_period_end=excluded.cancel_at_period_end,canceled_at=excluded.canceled_at,ends_at=excluded.ends_at,
+        polar_resource_created_at=CASE WHEN s.polar_subscription_id IS DISTINCT FROM excluded.polar_subscription_id
+          THEN excluded.polar_resource_created_at ELSE coalesce(s.polar_resource_created_at,excluded.polar_resource_created_at) END,
         last_event_at=excluded.last_event_at,updated_at=now()
-      WHERE (s.last_event_at IS NULL OR s.last_event_at<=excluded.last_event_at)
-        AND (s.polar_subscription_id IS NOT DISTINCT FROM p_subscription_id OR full_update);
+      WHERE (s.polar_subscription_id IS NOT DISTINCT FROM p_subscription_id AND (s.last_event_at IS NULL OR s.last_event_at<=excluded.last_event_at))
+         OR (s.polar_subscription_id IS DISTINCT FROM p_subscription_id AND full_update AND replacement_allowed);
       IF FOUND THEN
         decision := CASE WHEN previous.id IS NULL THEN 'created' ELSE 'applied' END;
         IF previous.polar_subscription_id IS NOT NULL AND previous.polar_subscription_id<>p_subscription_id THEN
