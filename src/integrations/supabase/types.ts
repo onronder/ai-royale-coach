@@ -45,7 +45,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "achievement_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       achievements: {
         Row: {
@@ -99,7 +107,15 @@ export type Database = {
           step?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "acquisition_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       acquisition_settings: {
         Row: {
@@ -508,7 +524,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "card_collection_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       card_mastery: {
         Row: {
@@ -604,7 +628,15 @@ export type Database = {
           role?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       clan_join_requests: {
         Row: {
@@ -647,6 +679,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "clans"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clan_join_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -864,7 +903,15 @@ export type Database = {
           ticket?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "confirmed_welcome_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       daily_usage_logs: {
         Row: {
@@ -891,7 +938,15 @@ export type Database = {
           used_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "daily_usage_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       deck_archetypes: {
         Row: {
@@ -1125,6 +1180,13 @@ export type Database = {
             referencedRelation: "current_trial_coaching"
             referencedColumns: ["task_id"]
           },
+          {
+            foreignKeyName: "first_value_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       first_value_calls: {
@@ -1203,6 +1265,13 @@ export type Database = {
             referencedRelation: "current_trial_coaching"
             referencedColumns: ["task_id"]
           },
+          {
+            foreignKeyName: "first_value_calls_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       first_value_errors: {
@@ -1227,7 +1296,15 @@ export type Database = {
           id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "first_value_errors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       first_value_events: {
         Row: {
@@ -1245,7 +1322,15 @@ export type Database = {
           step?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "first_value_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       first_value_rate_limits: {
         Row: {
@@ -1263,7 +1348,15 @@ export type Database = {
           user_id?: string
           window_started_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "first_value_rate_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       first_value_settings: {
         Row: {
@@ -1377,7 +1470,15 @@ export type Database = {
           source?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "marketing_account_ages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       marketing_account_markets: {
         Row: {
@@ -1398,7 +1499,15 @@ export type Database = {
           source?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "marketing_account_markets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       marketing_consent_events: {
         Row: {
@@ -1450,6 +1559,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "marketing_consent_texts"
             referencedColumns: ["version", "language"]
+          },
+          {
+            foreignKeyName: "marketing_consent_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1564,7 +1680,15 @@ export type Database = {
           shown_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "marketing_prompts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       marketing_provider_events: {
         Row: {
@@ -1908,7 +2032,15 @@ export type Database = {
           player_tag?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "player_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       player_tag_claims: {
         Row: {
@@ -1926,7 +2058,15 @@ export type Database = {
           claimed_by_user_id?: string
           player_tag?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "player_tag_claims_claimed_by_user_id_fkey"
+            columns: ["claimed_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       polar_order_sync: {
         Row: {
@@ -2052,7 +2192,15 @@ export type Database = {
           status?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "privacy_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       product_events: {
         Row: {
@@ -2133,7 +2281,15 @@ export type Database = {
           whats_new_seen_version?: string | null
           winback_email_sent_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       recommendation_history: {
         Row: {
@@ -2266,6 +2422,13 @@ export type Database = {
             referencedRelation: "return_experiments"
             referencedColumns: ["experiment_key"]
           },
+          {
+            foreignKeyName: "return_experiment_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       return_experiments: {
@@ -2332,7 +2495,15 @@ export type Database = {
           user_id?: string
           win_rate?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "saved_decks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       tournament_brackets: {
         Row: {
@@ -2447,6 +2618,13 @@ export type Database = {
             referencedRelation: "tournaments"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tournament_registrations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       tournaments: {
@@ -2495,7 +2673,15 @@ export type Database = {
           tournament_type?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tournaments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       trial_coaching_followup: {
         Row: {
@@ -2620,6 +2806,13 @@ export type Database = {
             referencedRelation: "current_trial_coaching"
             referencedColumns: ["task_id"]
           },
+          {
+            foreignKeyName: "trial_coaching_followup_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       trial_conversion_periods: {
@@ -2647,7 +2840,15 @@ export type Database = {
           superseded_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trial_conversion_periods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       trial_marketing_snapshots: {
         Row: {
@@ -2671,7 +2872,15 @@ export type Database = {
           trial_started_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trial_marketing_snapshots_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       trial_surface_visits: {
         Row: {
@@ -2725,7 +2934,15 @@ export type Database = {
         Update: {
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trial_test_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       user_achievements: {
         Row: {
@@ -2765,6 +2982,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "achievements"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -3077,6 +3301,13 @@ export type Database = {
             referencedRelation: "current_trial_coaching"
             referencedColumns: ["task_id"]
           },
+          {
+            foreignKeyName: "trial_coaching_followup_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       trial_conversion_facts: {
@@ -3107,6 +3338,25 @@ export type Database = {
           uncertain_d7: boolean | null
           user_id: string | null
           within_d7: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_conversion_periods_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "verified_profile_summaries"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      verified_profile_summaries: {
+        Row: {
+          analysis_type: string | null
+          created_at: string | null
+          input_fingerprint: string | null
+          output: Json | null
+          player_tag: string | null
+          user_id: string | null
         }
         Relationships: []
       }
