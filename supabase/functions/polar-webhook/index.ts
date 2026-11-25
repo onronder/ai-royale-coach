@@ -1,8 +1,6 @@
-import { isStaleEndEvent } from '../_shared/subscription-events.ts';
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.81.1";
 import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
-import { handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
 import { logger } from '../_shared/logger.ts';
 
 // Extended CORS headers for webhook-specific headers
@@ -11,29 +9,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, webhook-id, webhook-timestamp, webhook-signature',
 };
 
-// Map product IDs to account slots with validation
-function getAccountSlotsFromProductId(productId: string | undefined | null): number {
-  if (!productId) {
-    logger.warn('No product ID provided, defaulting to 1 slot');
-    return 1;
-  }
-
-  const productId1 = Deno.env.get('POLAR_PRODUCT_ID_1');
-  const productId2 = Deno.env.get('POLAR_PRODUCT_ID_2');
-  const productId3 = Deno.env.get('POLAR_PRODUCT_ID_3');
-  
-  if (productId === productId1) return 1;
-  if (productId === productId2) return 2;
-  if (productId === productId3) return 3;
-  
-  logger.warn(`Unknown product ID: ${productId}, defaulting to 1 slot`);
-  return 1;
-}
-
 // Subscription data structure from Polar webhook
 interface PolarSubscription {
   id?: string;
   modified_at?: string;
+  created_at?: string;
+  canceled_at?: string;
+  ends_at?: string;
   customer?: {
     id?: string;
     external_id?: string;
@@ -100,44 +82,20 @@ function validateEnv(): { valid: boolean; missing: string[] } {
   return { valid: missing.length === 0, missing };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SupabaseAdminClient = ReturnType<typeof createClient>;
-
-// Log webhook event to database for monitoring
-
-// Map Polar status to our status. A subscription with cancel_at_period_end keeps
-// its real status (trialing/active) until Polar revokes it.
-function mapPolarStatus(s: string | undefined | null): string {
-  if (s === 'trialing') return 'trialing';
-  if (s === 'past_due') return 'past_due';
-  if (s === 'canceled' || s === 'cancelled') return 'cancelled';
-  if (s === 'revoked' || s === 'ended' || s === 'incomplete_expired' || s === 'unpaid') return 'expired';
-  return 'active';
+function slotCount(productId?: string): number | null {
+  if (!productId) return null;
+  const products = [1, 2, 3].map(n => Deno.env.get('POLAR_PRODUCT_ID_' + n));
+  const index = products.indexOf(productId);
+  if (index >= 0) return index + 1;
+  if (products.some(id => !id)) throw new Error('Polar product configuration incomplete');
+  return null;
 }
 
-// Fields describing renewal/cancellation state, plus an event timestamp used to
-// ignore late or duplicate deliveries.
-// deno-lint-ignore no-explicit-any
-function cancelFields(sub: any) {
-  return {
-    cancel_at_period_end: !!sub?.cancel_at_period_end,
-    canceled_at: sub?.canceled_at || null,
-    ends_at: sub?.ends_at || (sub?.cancel_at_period_end ? sub?.current_period_end : null) || null,
-    last_event_at: sub?.modified_at || sub?.created_at || new Date().toISOString(),
-  };
-}
-
-// True when the stored row already reflects a newer event for the same subscription.
-// deno-lint-ignore no-explicit-any
-async function isStaleEvent(supabase: any, userId: string, sub: any): Promise<boolean> {
-  const { data } = await supabase.from('user_subscriptions')
-    .select('polar_subscription_id, last_event_at').eq('user_id', userId).maybeSingle();
-  if (!data?.last_event_at || !sub?.modified_at) return false;
-  if (data.polar_subscription_id && sub?.id && data.polar_subscription_id !== sub.id) {
-    // Event for an older/different subscription: ignore if stored row is newer.
-    return new Date(sub.modified_at) < new Date(data.last_event_at);
-  }
-  return new Date(sub.modified_at) < new Date(data.last_event_at);
+function mappedStatus(status?: string): string | null {
+  if (status === 'active' || status === 'trialing' || status === 'past_due') return status;
+  if (status === 'canceled' || status === 'cancelled') return 'cancelled';
+  if (['revoked', 'ended', 'incomplete_expired', 'unpaid'].includes(status ?? '')) return 'expired';
+  return null;
 }
 
 async function logWebhookEvent(
@@ -230,29 +188,7 @@ serve(async (req) => {
 
     // Polar webhook secrets: the standardwebhooks library expects a base64-encoded secret
     // Per Polar SDK source: we must base64-encode the ENTIRE secret (including polar_whs_ prefix)
-    let secretKey: string;
-    if (webhookSecret.startsWith('polar_whs_')) {
-      // Base64 encode the ENTIRE secret including the prefix
-      secretKey = btoa(webhookSecret);
-      log('info', 'Base64 encoded entire polar_whs_ secret', { 
-        originalLength: webhookSecret.length,
-        encodedLength: secretKey.length 
-      });
-    } else if (webhookSecret.startsWith('whsec_')) {
-      // Supabase/Svix format: strip prefix (rest is already base64)
-      secretKey = webhookSecret.slice(6);
-      log('info', 'Stripped whsec_ prefix from webhook secret');
-    } else {
-      // Fallback: encode the entire secret
-      secretKey = btoa(webhookSecret);
-      log('info', 'Base64 encoded raw webhook secret');
-    }
-
-    log('info', 'Attempting signature verification', { 
-      secretPrefix: webhookSecret.substring(0, Math.min(12, webhookSecret.length)) + '...',
-      secretKeyLength: secretKey.length,
-      payloadLength: payload.length 
-    });
+    const secretKey = webhookSecret.startsWith('whsec_') ? webhookSecret.slice(6) : btoa(webhookSecret);
 
     // Initialize Webhook verifier
     let wh: Webhook;
@@ -261,8 +197,7 @@ serve(async (req) => {
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : String(err);
       log('error', 'Failed to initialize Webhook verifier', { 
-        error: errorMsg,
-        secretKeyLength: secretKey.length
+        error: errorMsg
       });
       return new Response(JSON.stringify({ 
         error: 'Webhook configuration error', 
@@ -286,8 +221,7 @@ serve(async (req) => {
       const errorMsg = err instanceof Error ? err.message : String(err);
       log('error', 'Webhook signature verification failed', { 
         error: errorMsg,
-        webhookId,
-        signaturePrefix: webhookSignature?.substring(0, 20) + '...'
+        webhookId
       });
       return new Response(JSON.stringify({ 
         error: 'Invalid signature', 
@@ -307,474 +241,72 @@ serve(async (req) => {
     // Process event
     switch (event.type) {
       case 'subscription.created':
-      case 'subscription.active': {
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-        
-        if (!userId) {
-          log('error', 'No user_id found in subscription data', { 
-            hasCustomer: !!subscription?.customer,
-            hasMetadata: !!subscription?.metadata,
-            subscriptionId: subscription?.id
-          });
-          // Return 400 - this is a permanent error, don't retry
-          return new Response(JSON.stringify({ 
-            error: 'No user_id in subscription', 
-            requestId,
-            hint: 'Ensure customerExternalId is set during checkout'
-          }), {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        log('info', 'Processing subscription activation', { 
-          userId, 
-          subscriptionId: subscription?.id,
-          status: subscription?.status,
-          productId: subscription?.product_id
-        });
-
-        // Check if user exists in profiles table - they should be created by auth trigger
-        const { data: userProfile, error: profileCheckError } = await supabase
-          .from('profiles')
-          .select('id, email')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (profileCheckError) {
-          log('error', 'Error checking user profile', { error: profileCheckError.message, userId });
-          // Return 202 to signal Polar should retry later
-          return new Response(JSON.stringify({ 
-            received: true, 
-            status: 'pending',
-            message: 'User profile not ready, will process on retry',
-            requestId 
-          }), {
-            status: 202,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        if (!userProfile) {
-          log('warn', 'User profile not found, will retry later', { userId });
-          // Return 202 Accepted - Polar should retry this webhook later
-          // This handles the race condition where webhook arrives before user signup completes
-          return new Response(JSON.stringify({ 
-            received: true, 
-            status: 'pending',
-            message: 'User profile not found, awaiting user signup completion',
-            requestId 
-          }), {
-            status: 202,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        log('info', 'User profile verified', { userId, email: userProfile.email });
-
-        const isTrialing = subscription?.status === 'trialing';
-        const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
-
-        // Check if subscription already exists (idempotency)
-        const { data: existingSub, error: existingError } = await supabase
-          .from('user_subscriptions')
-          .select('id, created_at, polar_subscription_id, status')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        if (existingError) {
-          log('warn', 'Error checking existing subscription', { error: existingError.message });
-        }
-
-        // Skip if we already processed this exact subscription with same status
-        const isSameStatus = (existingSub?.status === 'active' && !isTrialing) || 
-                             (existingSub?.status === 'trialing' && isTrialing);
-        if (existingSub?.polar_subscription_id === subscription?.id && isSameStatus) {
-          log('info', 'Subscription already processed (idempotent skip)', { userId, status: existingSub?.status });
-          return new Response(JSON.stringify({ received: true, skipped: 'already_processed', requestId }), {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        const isNewSubscription = !existingSub;
-
-        // Upsert subscription
-        const { error: upsertError } = await supabase
-          .from('user_subscriptions')
-          .upsert({
-            user_id: userId,
-            polar_subscription_id: subscription?.id || null,
-            polar_customer_id: subscription?.customer?.id || null,
-            polar_customer_external_id: userId,
-            status: isTrialing ? 'trialing' : 'active',
-            variant_id: subscription?.product_id || null,
-            current_period_start: subscription?.current_period_start || null,
-            current_period_end: subscription?.current_period_end || null,
-            account_slots: accountSlots,
-            pending_account_slots: null,
-            pending_change_effective_at: null,
-            ...cancelFields(subscription),
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'user_id',
-          });
-
-        if (upsertError) {
-          log('error', 'Error upserting subscription', { error: upsertError.message, userId });
-          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        log('info', 'Subscription activated', { userId, accountSlots, isTrialing });
-
-        // Update trial info if trialing - trial_used stays false until trial ends
-        if (isTrialing) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              trial_started_at: subscription?.current_period_start || new Date().toISOString(),
-              trial_ends_at: subscription?.current_period_end || null,
-              trial_used: false, // User is actively trialing, not finished yet
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId);
-
-          if (profileError) {
-            log('warn', 'Error updating profile trial', { error: profileError.message, userId });
-          }
-        } else if (subscription?.status === 'active') {
-          // User converted from trial to paid - mark trial as used
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              trial_used: true,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId);
-
-          if (profileError) {
-            log('warn', 'Error updating profile trial_used on conversion', { error: profileError.message, userId });
-          }
-        }
-
-        // Send subscription confirmation email for NEW subscriptions only
-        if (isNewSubscription && !isTrialing) {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('email, preferred_language')
-              .eq('id', userId)
-              .single();
-
-            if (profile?.email) {
-              log('info', 'Sending subscription email', { email: profile.email });
-              
-              const { error: emailError } = await supabase.functions.invoke('send-email', {
-                body: {
-                  email: profile.email,
-                  type: 'subscription',
-                  language: profile.preferred_language || 'en',
-                  subscriptionData: {
-                    accountSlots,
-                    renewalDate: subscription?.current_period_end,
-                  }
-                }
-              });
-
-              if (emailError) {
-                log('warn', 'Failed to send subscription email', { error: emailError.message });
-              } else {
-                log('info', 'Subscription email sent');
-              }
-            }
-          } catch (emailErr) {
-            log('warn', 'Exception sending subscription email', { 
-              error: emailErr instanceof Error ? emailErr.message : String(emailErr) 
-            });
-          }
-        }
-        // Log successful processing
-        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
-          accountSlots,
-          isTrialing,
-          isNewSubscription
-        });
-        break;
-      }
-
-      case 'subscription.updated': {
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-
-        if (!userId) {
-          log('error', 'No user_id found in subscription update');
-          return new Response(JSON.stringify({ error: 'No user_id in subscription update', requestId }), {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        log('info', 'Processing subscription update', { userId, status: subscription?.status });
-        
-        const accountSlots = getAccountSlotsFromProductId(subscription?.product_id);
-
-        // Determine status - handle various Polar status values
-        if (await isStaleEvent(supabase, userId, subscription)) {
-          log('info', 'Ignoring stale subscription.updated', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
-          break;
-        }
-        const status = mapPolarStatus(subscription?.status);
-
-        // Use UPSERT to handle case where subscription.created wasn't received (common for trials)
-        const { error: upsertError } = await supabase
-          .from('user_subscriptions')
-          .upsert({
-            user_id: userId,
-            polar_subscription_id: subscription?.id || null,
-            polar_customer_id: subscription?.customer?.id || null,
-            polar_customer_external_id: userId,
-            status,
-            variant_id: subscription?.product_id || null,
-            account_slots: accountSlots,
-            current_period_start: subscription?.current_period_start,
-            current_period_end: subscription?.current_period_end,
-            pending_account_slots: null,
-            pending_change_effective_at: null,
-            ...cancelFields(subscription),
-            updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'user_id',
-          });
-
-        if (upsertError) {
-          log('error', 'Error upserting subscription', { error: upsertError.message, userId });
-          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-
-        // Update profile trial fields for trialing subscriptions
-        if (status === 'trialing') {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              trial_started_at: subscription?.current_period_start || new Date().toISOString(),
-              trial_ends_at: subscription?.current_period_end || null,
-              trial_used: false, // User is actively trialing, not finished yet
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId);
-
-          if (profileError) {
-            log('warn', 'Error updating profile trial', { error: profileError.message, userId });
-          }
-        } else if (status === 'active') {
-          // User converted from trial to paid - mark trial as used
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              trial_used: true,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId);
-
-          if (profileError) {
-            log('warn', 'Error updating profile trial_used on conversion', { error: profileError.message, userId });
-          }
-        }
-
-        // Send payment failed email when status is past_due
-        if (status === 'past_due') {
-          // Check if we already sent a payment_failed email recently (within 24 hours)
-          const { data: recentEvent } = await supabase
-            .from('webhook_events')
-            .select('created_at')
-            .eq('user_id', userId)
-            .eq('event_type', 'payment_failed_email_sent')
-            .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-            .maybeSingle();
-
-          if (!recentEvent) {
-            // Fetch user profile for email
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('email, preferred_language')
-              .eq('id', userId)
-              .single();
-
-            if (profile?.email) {
-              log('info', 'Sending payment failed email', { email: profile.email, userId });
-              
-              const { error: emailError } = await supabase.functions.invoke('send-email', {
-                body: {
-                  email: profile.email,
-                  type: 'payment_failed',
-                  language: profile.preferred_language || 'en',
-                  updatePaymentUrl: 'https://polar.sh/purchases/subscriptions',
-                }
-              });
-
-              if (emailError) {
-                log('warn', 'Failed to send payment failed email', { error: emailError.message });
-              } else {
-                log('info', 'Payment failed email sent');
-                // Log that we sent this email to prevent duplicates
-                await logWebhookEvent(supabase, 'payment_failed_email_sent', null, userId, 'processed');
-              }
-            }
-          } else {
-            log('info', 'Skipping payment failed email - already sent within 24 hours', { userId });
-          }
-        }
-
-        log('info', 'Subscription updated/created', { userId, status, accountSlots });
-        
-        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
-          status,
-          accountSlots
-        });
-        break;
-      }
-
+      case 'subscription.active':
+      case 'subscription.updated':
       case 'subscription.canceled':
-      case 'subscription.uncanceled': {
-        // canceled = renewal turned off (access continues until period end);
-        // uncanceled = renewal turned back on. Keep Polar's real status.
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-        if (!userId) {
-          log('error', `No user_id found in ${event.type}`);
-          break;
-        }
-        if (await isStaleEvent(supabase, userId, subscription)) {
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale_ignored');
-          break;
-        }
-        const { error: cErr } = await supabase
-          .from('user_subscriptions')
-          .upsert({
-            user_id: userId,
-            polar_subscription_id: subscription?.id || null,
-            polar_customer_id: subscription?.customer?.id || null,
-            polar_customer_external_id: userId,
-            status: mapPolarStatus(subscription?.status),
-            current_period_start: subscription?.current_period_start,
-            current_period_end: subscription?.current_period_end,
-            ...cancelFields(subscription),
-            ...(event.type === 'subscription.uncanceled' ? { cancel_at_period_end: false, canceled_at: null, ends_at: null } : {}),
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'user_id' });
-        if (cErr) {
-          log('error', `Error processing ${event.type}`, { error: cErr.message, userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', cErr.message);
-          return new Response(JSON.stringify({ error: 'Database error', requestId }), {
-            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          });
-        }
-        await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed', undefined, {
-          status: subscription?.status, cancelAtPeriodEnd: !!subscription?.cancel_at_period_end,
-        });
-        break;
-      }
-
+      case 'subscription.uncanceled':
       case 'subscription.revoked':
-      case 'subscription.ended': {
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-
-        if (!userId) {
-          log('error', `No user_id found in ${event.type}`);
-          break;
-        }
-
-        log('info', `Processing ${event.type}`, { userId });
-
-        // A late end/revoke for an older subscription must not close a newer one.
-        const { data: currentSub } = await supabase
-          .from('user_subscriptions')
-          .select('polar_subscription_id')
-          .eq('user_id', userId)
-          .maybeSingle();
-        if (isStaleEndEvent(currentSub?.polar_subscription_id, subscription?.id)) {
-          log('info', 'Ignoring end event for a non-current subscription', {
-            userId, eventSub: subscription?.id, currentSub: currentSub?.polar_subscription_id,
+      case 'subscription.ended':
+      case 'subscription.past_due': {
+        const sub = event.data as PolarSubscription;
+        const owner = extractUserId(sub);
+        const userId = owner && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(owner) ? owner : null;
+        const providerTime = sub.modified_at || event.timestamp || (event.type === 'subscription.created' ? sub.created_at : null);
+        const starts = event.type === 'subscription.created' || event.type === 'subscription.active';
+        const uncanceled = event.type === 'subscription.uncanceled';
+        let decision: string;
+        let accountSlots: number | null;
+        try {
+          accountSlots = starts || event.type === 'subscription.updated' ? slotCount(sub.product_id) : null;
+          const result = await supabase.rpc('apply_polar_subscription_event', {
+            p_user_id: userId, p_subscription_id: sub.id ?? null, p_kind: event.type,
+            p_event_at: providerTime && Number.isFinite(Date.parse(providerTime)) ? providerTime : null,
+            p_delivery_id: webhookId,
+            p_fields: {
+              provider_status: sub.status, status: mappedStatus(sub.status), account_slots: accountSlots,
+              customer_id: sub.customer?.id, product_id: sub.product_id,
+              current_period_start: sub.current_period_start, current_period_end: sub.current_period_end,
+              cancel_at_period_end: !uncanceled && !!sub.cancel_at_period_end,
+              canceled_at: uncanceled ? null : sub.canceled_at ?? null,
+              ends_at: uncanceled ? null : sub.ends_at ?? (sub.cancel_at_period_end ? sub.current_period_end : null),
+            },
           });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'stale: not the current subscription');
-          break;
+          if (result.error || typeof result.data !== 'string') throw new Error('Subscription write unavailable');
+          decision = result.data;
+        } catch {
+          log('error', 'Could not commit subscription event', { eventType: event.type });
+          return new Response(JSON.stringify({ error: 'Subscription processing unavailable', requestId }), {
+            status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
 
-        const revoke = supabase
-          .from('user_subscriptions')
-          .update({
-            status: 'expired',
-            account_slots: 0,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', userId);
+        if (!userId || !['created', 'applied', 'ended'].includes(decision)) break;
+        const sendConfirmation = starts && decision === 'created' && sub.status === 'active';
+        const checkPaymentFailure = event.type === 'subscription.updated' && sub.status === 'past_due';
+        if (!sendConfirmation && !checkPaymentFailure && decision !== 'ended') break;
 
-        const { data: revoked, error: revokeError } = await (currentSub?.polar_subscription_id
-          ? revoke.eq('polar_subscription_id', currentSub.polar_subscription_id)
-          : revoke.is('polar_subscription_id', null)).select('id').maybeSingle();
-        if (!revokeError && !revoked) {
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'skipped', 'subscription_changed');
-          break;
-        }
-
-        if (revokeError) {
-          log('error', 'Error revoking subscription', { error: revokeError.message });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', revokeError.message);
-        } else {
-          log('info', 'Subscription revoked, AI disabled', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
-
-          // Mark trial as used since subscription has ended
-          const { error: trialUsedError } = await supabase
-            .from('profiles')
-            .update({
-              trial_used: true,
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId);
-
-          if (trialUsedError) {
-            log('warn', 'Error setting trial_used on subscription end', { error: trialUsedError.message, userId });
+        // The state and its receipt have committed. Keep service notices on their existing route.
+        try {
+          if (checkPaymentFailure) {
+            const { data: recent, error } = await supabase.from('webhook_events').select('created_at')
+              .eq('user_id', userId).eq('event_type', 'payment_failed_email_sent')
+              .gte('created_at', new Date(Date.now() - 86_400_000).toISOString()).limit(1);
+            if (error || recent?.length) break;
           }
-          
-          // Send trial expired email
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('email, preferred_language')
-              .eq('id', userId)
-              .single();
-
-            if (profile?.email) {
-              log('info', 'Sending trial expired email', { email: profile.email });
-              
-              const { error: emailError } = await supabase.functions.invoke('send-email', {
-                body: {
-                  email: profile.email,
-                  type: 'trial_expired',
-                  language: profile.preferred_language || 'en',
-                }
-              });
-
-              if (emailError) {
-                log('warn', 'Failed to send trial expired email', { error: emailError.message });
-              } else {
-                log('info', 'Trial expired email sent');
-              }
-            }
-          } catch (emailErr) {
-            log('warn', 'Exception sending trial expired email', { 
-              error: emailErr instanceof Error ? emailErr.message : String(emailErr) 
-            });
-          }
+          const { data: profile } = await supabase.from('profiles').select('email, preferred_language').eq('id', userId).single();
+          if (!profile?.email) break;
+          const notice = sendConfirmation
+            ? { type: 'subscription', subscriptionData: { accountSlots, renewalDate: sub.current_period_end } }
+            : checkPaymentFailure
+              ? { type: 'payment_failed', updatePaymentUrl: 'https://polar.sh/purchases/subscriptions' }
+              : { type: 'trial_expired' };
+          const { error } = await supabase.functions.invoke('send-email', {
+            body: { ...notice, email: profile.email, language: profile.preferred_language || 'en' },
+          });
+          if (error) log('warn', 'Subscription notice unavailable', { type: notice.type });
+          else if (checkPaymentFailure) await logWebhookEvent(supabase, 'payment_failed_email_sent', null, userId, 'processed');
+        } catch {
+          log('warn', 'Subscription notice unavailable', { eventType: event.type });
         }
         break;
       }
@@ -819,46 +351,6 @@ serve(async (req) => {
         await logWebhookEvent(supabase, event.type, order?.id, orderUserId, 'processed', undefined, {
           orderId: order?.id, amount: order?.net_amount ?? order?.amount, billingReason: order?.billing_reason,
         });
-        break;
-      }
-
-      case 'subscription.past_due': {
-        const subscription = event.data;
-        const userId = extractUserId(subscription);
-
-        if (!userId) {
-          log('error', 'No user_id found in subscription.past_due');
-          break;
-        }
-
-        log('warn', 'Subscription past due', { userId, subscriptionId: subscription?.id });
-
-        if (!subscription.id) throw new Error('Missing past-due subscription ID');
-        const eventTime = subscription.modified_at || event.timestamp;
-        if (!eventTime || !Number.isFinite(Date.parse(eventTime))) throw new Error('Missing past-due event time');
-        const timestamp = new Date(eventTime).toISOString();
-        const { data: updated, error: pastDueError } = await supabase
-          .from('user_subscriptions')
-          .update({
-            status: 'past_due',
-            last_event_at: timestamp,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('user_id', userId)
-          .eq('polar_subscription_id', subscription.id)
-          .or('last_event_at.is.null,last_event_at.lte.' + timestamp)
-          .select('user_id').maybeSingle();
-
-        if (pastDueError) {
-          log('error', 'Error updating past_due status', { error: pastDueError.message, userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'failed', pastDueError.message);
-          throw new Error('Failed to record past-due subscription');
-        } else if (!updated) {
-          await logWebhookEvent(supabase, event.type, subscription.id, userId, 'skipped', 'not current');
-        } else {
-          log('info', 'Subscription marked as past_due', { userId });
-          await logWebhookEvent(supabase, event.type, subscription?.id, userId, 'processed');
-        }
         break;
       }
 

@@ -30,6 +30,7 @@ jobs:
       - run: bun test tests/integration/recommendPreparation/handler.test.ts
       - run: bun test tests/integration/practiceRepeat/handler.test.ts
       - run: bun test tests/integration/accountBoundaries/handlers.test.ts
+      - run: bun test tests/integration/polarOrdering/handler.test.ts
       - name: Verify coaching and repeat rights with isolated PostgreSQL
         run: |
           pg_bin="$(pg_config --bindir)"

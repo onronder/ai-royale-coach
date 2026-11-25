@@ -200,6 +200,20 @@ try {
   const first = await db.reserve(), second = await db.reserve();
   try {
     const pid = (await second`SELECT pg_backend_pid() AS pid`)[0].pid;
+    await apply('polarOrder.sql');
+    // Run both lock orders on separate PostgreSQL backends. Observe the wait before commit.
+    for (const [n, firstEvent, secondEvent] of [[308, 'revoked', 'updated'], [309, 'updated', 'revoked']] as const) {
+      await first`BEGIN`;
+      await second`BEGIN`;
+      await first`SET LOCAL ROLE service_role`;
+      await second`SET LOCAL ROLE service_role`;
+      await first`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${firstEvent},20)`;
+      await finishContended(first, pid, second`SELECT boundary_fixture.polar_event(${n},${'old-' + n},${secondEvent},20)`);
+      await second`COMMIT`;
+      await db`SELECT boundary_fixture.check_polar(${n},${'old-' + n},'expired',0,0,false,20)`;
+    }
+    console.log('PASS terminal subscription events keep access, slots and both profile flags closed in both concurrent delivery orders');
+
     await asUser(first, 5);
     await asUser(second, 5);
     await first`INSERT INTO public.player_profiles(user_id,player_tag) VALUES (auth.uid(),'PL9')`;
