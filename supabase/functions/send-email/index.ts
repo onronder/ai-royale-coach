@@ -15,6 +15,7 @@ import { deliverPromo, sqlPromoStore, winbackCampaignKey, winbackRpc, type Promo
 import { signUnsubscribe } from '../_shared/unsubscribe-token.ts'
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string)
+const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
 
 interface EmailRequest {
   email?: string
@@ -71,7 +72,6 @@ Deno.serve(async (req) => {
 
     let html: string
     let subject: string
-    const appUrl = Deno.env.get('APP_URL') || 'https://vraqbzokccvqhthixoof.lovableproject.com'
 
     switch (type) {
       case 'subscription':
@@ -184,7 +184,6 @@ async function sendPromo(req: Request, body: EmailRequest): Promise<Response> {
   const campaignKey = winbackCampaignKey(code, body.campaignKey)
   const { data: profile } = userId ? await admin.from('profiles').select('preferred_language, email').eq('id', userId).maybeSingle() : { data: null }
   const language = productLanguage(profile?.preferred_language ?? undefined)
-  const appUrl = Deno.env.get('APP_URL') || 'https://ai-royale.com'
   const secret = Deno.env.get('MARKETING_UNSUBSCRIBE_SECRET') ?? ''
   const rpc = winbackRpc(async (fn: string, args: Record<string, unknown>) => { const { data, error } = await admin.rpc(fn, args); if (error) throw error; return data })
   const resend = { async send(mail: PromoMail, key: string) {
