@@ -2954,6 +2954,11 @@ export type Database = {
 
       mark_recommendations_seen: { Args: { p_ids: string[] }; Returns: undefined }
 
+      admin_resolve_polar_receipt: { Args: { p_receipt_id: string; p_note: string }; Returns: boolean }
+      admin_polar_webhook_health: {
+        Args: Record<PropertyKey, never>
+        Returns: { window_name: string; total: number; processed: number; failed: number; skipped: number; pending: number; overdue_pending: number }[]
+      }
       admin_api_measurements: { Args: { p_minutes?: number }; Returns: Json }
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
       admin_first_value_report: {

@@ -3151,6 +3151,14 @@
       "mean": "Tempo médio de recuperação"
     },
     "events": {
+      "pending": "Pendentes",
+      "resolved": "Resolvido",
+      "resolutionNote": "Nota de resolução",
+      "resolve": "Marcar como resolvido",
+      "resolutionError": "Não foi possível salvar a resolução. Tente novamente.",
+      "pending24": "Pendentes (24 h)",
+      "pendingOverdue": "Registros pendentes há pelo menos uma hora ({{count}})",
+      "healthError": "Não foi possível carregar os dados dos webhooks.",
       "processed": "Processado",
       "failed": "Falhou",
       "skipped": "Ignorado",

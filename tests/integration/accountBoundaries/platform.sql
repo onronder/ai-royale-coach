@@ -12,6 +12,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO anon,aut
 CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, created_at timestamptz default now(),updated_at timestamptz default now(),email_confirmed_at timestamptz, invited_at timestamptz, last_sign_in_at timestamptz,raw_user_meta_data jsonb default '{}',raw_app_meta_data jsonb default '{}');
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 CREATE TABLE cron.job (jobid bigserial primary key,jobname text unique,schedule text,command text);
+CREATE TABLE cron.job_run_details(jobid bigint,end_time timestamptz);
 CREATE FUNCTION cron.schedule(text,text,text) RETURNS bigint LANGUAGE sql AS $$ INSERT INTO cron.job(jobname,schedule,command) VALUES ($1,$2,$3) ON CONFLICT(jobname) DO UPDATE SET command=EXCLUDED.command RETURNING jobid $$;
 CREATE FUNCTION cron.unschedule(bigint) RETURNS boolean LANGUAGE sql AS $$ WITH j AS (DELETE FROM cron.job WHERE jobid=$1 RETURNING 1) SELECT EXISTS(SELECT 1 FROM j) $$;
 CREATE FUNCTION vault.create_secret(text,text,text default null) RETURNS uuid LANGUAGE sql AS $$ SELECT null::uuid $$;

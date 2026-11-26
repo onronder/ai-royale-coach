@@ -1,9 +1,10 @@
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,9 +34,34 @@ interface WebhookEvent {
   processed_at: string;
 }
 
-type StatusFilter = 'all' | 'processed' | 'failed' | 'skipped';
+type StatusFilter = 'all' | 'processed' | 'failed' | 'skipped' | 'pending' | 'resolved';
 
-export function WebhookEventsPanel() {
+function ResolveReceipt({ id }: { id: string }) {
+  const { t } = useTranslation();
+  const [note, setNote] = useState('');
+  const cache = useQueryClient();
+  const resolution = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc('admin_resolve_polar_receipt', { p_receipt_id: id, p_note: note.trim() });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => Promise.all([
+      cache.invalidateQueries({ queryKey: ['webhook-events'] }),
+      cache.invalidateQueries({ queryKey: ['webhook-stats'] }),
+    ]),
+  });
+  return (
+    <form className="space-y-2" onSubmit={event => { event.preventDefault(); resolution.mutate(); }}>
+      <label htmlFor={`resolution-${id}`}>{t('admin.events.resolutionNote')}</label>
+      <Textarea id={`resolution-${id}`} maxLength={1000} value={note} onChange={e => setNote(e.target.value)} required />
+      {resolution.isError && <p role="alert">{t('admin.events.resolutionError')}</p>}
+      <Button type="submit" size="sm" disabled={!note.trim() || resolution.isPending}>{t('admin.events.resolve')}</Button>
+    </form>
+  );
+}
+
+export function WebhookEventsPanel({ isAdmin }: { isAdmin: boolean }) {
   const { t, i18n } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
@@ -60,44 +86,17 @@ export function WebhookEventsPanel() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats, isError: statsError, refetch: refreshStats } = useQuery({
     queryKey: ['webhook-stats'],
     queryFn: async () => {
-      const now = new Date();
-      const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
-      const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-      // Get counts for last 24 hours
-      const { data: last24hData } = await supabase
-        .from('webhook_events')
-        .select('status')
-        .gte('created_at', last24h);
-
-      // Get counts for last 7 days
-      const { data: last7dData } = await supabase
-        .from('webhook_events')
-        .select('status')
-        .gte('created_at', last7d);
-
-      const countByStatus = (data: { status: string }[] | null, status: string) =>
-        data?.filter(e => e.status === status).length || 0;
-
-      return {
-        last24h: {
-          total: last24hData?.length || 0,
-          processed: countByStatus(last24hData, 'processed'),
-          failed: countByStatus(last24hData, 'failed'),
-          skipped: countByStatus(last24hData, 'skipped'),
-        },
-        last7d: {
-          total: last7dData?.length || 0,
-          processed: countByStatus(last7dData, 'processed'),
-          failed: countByStatus(last7dData, 'failed'),
-          skipped: countByStatus(last7dData, 'skipped'),
-        },
-      };
+      const { data, error } = await supabase.rpc('admin_polar_webhook_health', {});
+      if (error) throw error;
+      const last24h = data?.find(row => row.window_name === 'last24h');
+      const last7d = data?.find(row => row.window_name === 'last7d');
+      if (!last24h || !last7d) throw new Error('Incomplete webhook health response');
+      return { last24h, last7d };
     },
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 60000,
   });
 
   const toggleExpanded = (id: string) => {
@@ -118,6 +117,8 @@ export function WebhookEventsPanel() {
         return <CheckCircle2 className="h-4 w-4 text-green-500" />;
       case 'failed':
         return <XCircle className="h-4 w-4 text-destructive" />;
+      case 'pending':
+        return <Clock className="h-4 w-4 text-amber-600" />;
       case 'skipped':
         return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
       default:
@@ -131,6 +132,10 @@ export function WebhookEventsPanel() {
         return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">{t('admin.events.processed')}</Badge>;
       case 'failed':
         return <Badge variant="destructive">{t('admin.events.failed')}</Badge>;
+      case 'pending':
+        return <Badge variant="outline" className="text-amber-700">{t('admin.events.pending')}</Badge>;
+      case 'resolved':
+        return <Badge variant="secondary">{t('admin.events.resolved')}</Badge>;
       case 'skipped':
         return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">{t('admin.events.skipped')}</Badge>;
       default:
@@ -148,8 +153,13 @@ export function WebhookEventsPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      {statsError && <p role="alert" className="text-destructive">{t('admin.events.healthError')}</p>}
+      {stats && stats.last24h.overdue_pending > 0 && (
+        <p role="alert" className="text-destructive">
+          {t('admin.events.pendingOverdue', { count: stats.last24h.overdue_pending })}
+        </p>
+      )}
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{t('admin.events.total24')}</CardDescription>
@@ -183,6 +193,14 @@ export function WebhookEventsPanel() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription className="flex items-center gap-1">
+              <Clock className="h-3 w-3 text-amber-600" />{t('admin.events.pending24')}
+            </CardDescription>
+            <CardTitle className="text-2xl">{stats?.last24h.pending ?? <Skeleton className="h-8 w-16" />}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1">
               <AlertTriangle className="h-3 w-3 text-yellow-500" />
               {t('admin.events.skipped24')}
             </CardDescription>
@@ -204,7 +222,7 @@ export function WebhookEventsPanel() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => refetch()}
+              onClick={() => { void refetch(); void refreshStats(); }}
               disabled={isFetching}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
@@ -217,10 +235,12 @@ export function WebhookEventsPanel() {
         </CardHeader>
         <CardContent>
           <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-            <TabsList className="mb-4">
+            <TabsList className="mb-4 h-auto flex-wrap">
               <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
               <TabsTrigger value="processed">{t('admin.events.processed')}</TabsTrigger>
               <TabsTrigger value="failed">{t('admin.events.failed')}</TabsTrigger>
+              <TabsTrigger value="pending">{t('admin.events.pending')}</TabsTrigger>
+              <TabsTrigger value="resolved">{t('admin.events.resolved')}</TabsTrigger>
               <TabsTrigger value="skipped">{t('admin.events.skipped')}</TabsTrigger>
             </TabsList>
 
@@ -296,6 +316,8 @@ export function WebhookEventsPanel() {
                               </div>
                             )}
 
+                            {isAdmin && event.status === 'pending' && <ResolveReceipt id={event.id} />}
+
                             {event.payload_summary && (
                               <div className="bg-muted rounded p-2 mt-2">
                                 <span className="text-muted-foreground font-medium">{t('admin.events.payload')}</span>
@@ -322,7 +344,7 @@ export function WebhookEventsPanel() {
           <CardTitle className="text-lg">{t('admin.events.week')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
             <div className="text-center">
               <div className="text-2xl font-bold">{stats?.last7d.total ?? '-'}</div>
               <div className="text-sm text-muted-foreground">{t('admin.events.total')}</div>
@@ -334,6 +356,10 @@ export function WebhookEventsPanel() {
             <div className="text-center">
               <div className="text-2xl font-bold text-destructive">{stats?.last7d.failed ?? '-'}</div>
               <div className="text-sm text-muted-foreground">{t('admin.events.failed')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-amber-700">{stats?.last7d.pending ?? '-'}</div>
+              <div className="text-sm text-muted-foreground">{t('admin.events.pending')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">{stats?.last7d.skipped ?? '-'}</div>

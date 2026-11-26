@@ -10,3 +10,8 @@ CREATE SCHEMA net;
 CREATE TABLE net.requests(body jsonb);
 CREATE FUNCTION net.http_post(url text, headers jsonb, body jsonb, timeout_milliseconds integer)
 RETURNS bigint LANGUAGE sql AS $$ INSERT INTO net.requests VALUES (body) RETURNING 1::bigint $$;
+
+-- Billing fields used by the terminal-event seed and pending dashboard.
+ALTER TABLE public.user_subscriptions ADD updated_at timestamptz DEFAULT now();
+ALTER TABLE public.webhook_events ADD id uuid DEFAULT gen_random_uuid(),
+  ADD payload_summary jsonb, ADD error_message text;

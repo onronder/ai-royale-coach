@@ -3151,6 +3151,14 @@
       "mean": "Délai moyen de recouvrement"
     },
     "events": {
+      "pending": "En attente",
+      "resolved": "Résolu",
+      "resolutionNote": "Note de résolution",
+      "resolve": "Marquer comme résolu",
+      "resolutionError": "Impossible d’enregistrer la résolution. Réessayez.",
+      "pending24": "En attente (24 h)",
+      "pendingOverdue": "Événements en attente depuis au moins une heure ({{count}})",
+      "healthError": "Impossible de charger le suivi des webhooks.",
       "processed": "Traité",
       "failed": "Échec",
       "skipped": "Ignoré",
