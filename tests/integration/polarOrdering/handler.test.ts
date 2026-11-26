@@ -51,8 +51,23 @@ test('a storage failure is retriable; committed ends alone initiate the notice',
 });
 test('an early created event with no confirmed active status cannot send payment confirmation', async () => {
   decision = 'pending_status_or_product';
-  await dispatch('created', { status: 'incomplete', modified_at: null });
-  expect(calls[0]).toMatchObject({ p_event_at: '2026-01-01T12:00:02Z',
+  await dispatch('created', { status: 'incomplete', modified_at: null, created_at: providerTime });
+  expect(calls[0]).toMatchObject({ p_event_at: providerTime,
     p_fields: { status: null, provider_status: 'incomplete' } });
+  expect(notices).toEqual([]);
+});
+
+test('publication time cannot mask a subsequent resource update in the checkout event bundle', async () => {
+  const first = '2026-01-01T12:00:00.000001Z';
+  const next = '2026-01-01T12:00:00.000002Z';
+  await dispatch('created', { created_at: first, modified_at: null });
+  await dispatch('updated', { created_at: first, modified_at: next });
+  expect(calls.map(call => call.p_event_at)).toEqual([first, next]);
+});
+
+test('a missing resource clock reaches the pending receipt path even with a publication timestamp', async () => {
+  decision = 'pending_reference';
+  expect((await dispatch('revoked', { modified_at: null, created_at: null })).status).toBe(200);
+  expect(calls[0].p_event_at).toBeNull();
   expect(notices).toEqual([]);
 });

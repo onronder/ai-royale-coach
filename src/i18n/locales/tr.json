@@ -3151,6 +3151,10 @@
       "mean": "Ortalama kurtarma süresi"
     },
     "events": {
+      "pending": "Beklemede",
+      "pending24": "Beklemede (24 sa.)",
+      "pendingOverdue": "{{count}} kayıt en az bir saattir çözüm bekliyor.",
+      "healthError": "Webhook izleme verileri yüklenemedi.",
       "processed": "İşlendi",
       "failed": "Başarısız",
       "skipped": "Atlandı",

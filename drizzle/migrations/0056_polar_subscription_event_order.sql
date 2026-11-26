@@ -1,4 +1,6 @@
--- Apply this whole file in one transaction before deploying its webhook caller.
+-- First statement fails before any DDL if the runner autocommits individual statements.
+-- Readers can continue. Retry the whole transaction if a writer holds this lock.
+LOCK TABLE public.user_subscriptions IN EXCLUSIVE MODE NOWAIT;
 CREATE TABLE ai_royale_private.polar_subscription_lifecycles (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   subscription_id text NOT NULL,
@@ -10,16 +12,64 @@ CREATE TABLE ai_royale_private.polar_subscription_lifecycles (
 ALTER TABLE ai_royale_private.polar_subscription_lifecycles ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON ai_royale_private.polar_subscription_lifecycles FROM PUBLIC, anon, authenticated, service_role;
 
--- Earlier receipts have a receipt time, not an authenticated provider event time.
--- Seed only processed ends with independent evidence of the resource/owner pair.
-INSERT INTO ai_royale_private.polar_subscription_lifecycles (user_id, subscription_id, closed_reason)
-SELECT DISTINCT e.user_id, e.event_id, 'ended'
+-- Legacy receipts contain ingestion time but no signed delivery ID or resource clock.
+CREATE VIEW ai_royale_private.confirmed_legacy_polar_ends AS
+SELECT DISTINCT e.user_id, e.event_id AS subscription_id
 FROM public.webhook_events e JOIN auth.users u ON u.id=e.user_id
 WHERE e.status='processed' AND e.event_type IN ('subscription.revoked','subscription.ended')
-  AND e.event_id IS NOT NULL AND (
+  AND e.event_id IS NOT NULL AND e.payload_summary->>'webhookId' IS NULL AND (
     EXISTS (SELECT FROM public.user_subscriptions s WHERE s.user_id=e.user_id AND s.polar_subscription_id=e.event_id)
     OR EXISTS (SELECT FROM public.polar_orders o WHERE o.user_id=e.user_id AND o.subscription_id=e.event_id)
   );
+REVOKE ALL ON ai_royale_private.confirmed_legacy_polar_ends FROM PUBLIC, anon, authenticated, service_role;
+
+-- Used by this transaction and by the operator once the old Edge revision has drained.
+CREATE FUNCTION ai_royale_private.seed_polar_subscription_ends()
+RETURNS TABLE (inserted bigint, marked_ended bigint, repaired bigint)
+LANGUAGE plpgsql SET search_path='' AS $$
+DECLARE january_fingerprint constant bytea := decode('0119da79ca387850e603a8ae1eda8f07ceb87768c3056389caba3cb72510d541','hex');
+BEGIN
+  LOCK TABLE public.user_subscriptions IN EXCLUSIVE MODE NOWAIT;
+  LOCK TABLE public.webhook_events IN SHARE ROW EXCLUSIVE MODE NOWAIT;
+
+  INSERT INTO ai_royale_private.polar_subscription_lifecycles(user_id,subscription_id,closed_reason)
+    SELECT e.user_id,e.subscription_id,'ended' FROM ai_royale_private.confirmed_legacy_polar_ends e
+    ON CONFLICT (user_id,subscription_id) DO NOTHING;
+  GET DIAGNOSTICS inserted = ROW_COUNT;
+
+  -- A row that already holds provider creation evidence must also acquire its end marker.
+  UPDATE ai_royale_private.polar_subscription_lifecycles c SET closed_reason='ended'
+    FROM ai_royale_private.confirmed_legacy_polar_ends e
+    WHERE c.user_id=e.user_id AND c.subscription_id=e.subscription_id AND c.closed_reason IS DISTINCT FROM 'ended';
+  GET DIAGNOSTICS marked_ended = ROW_COUNT;
+
+  IF EXISTS (
+    SELECT FROM public.user_subscriptions s JOIN ai_royale_private.polar_subscription_lifecycles c
+      ON c.user_id=s.user_id AND c.subscription_id=s.polar_subscription_id
+    WHERE c.closed_reason='ended' AND s.status IN ('active','trialing')
+  ) THEN
+    RAISE EXCEPTION 'Confirmed Polar end matches an active or trialing local subscription; reconcile before rollout' USING ERRCODE='23514';
+  END IF;
+
+  -- Only the provider-confirmed 14 January 2026 end, also referenced by the January repair.
+  -- Match the resource fingerprint and current facts. Preserve orders, receipts and provider clocks.
+  UPDATE public.user_subscriptions s SET status='expired', account_slots=0, updated_at=now()
+    FROM ai_royale_private.polar_subscription_lifecycles c
+    WHERE c.user_id=s.user_id AND c.subscription_id=s.polar_subscription_id AND c.closed_reason='ended'
+      AND sha256(convert_to(s.polar_subscription_id,'UTF8'))=january_fingerprint
+      AND s.status='cancelled' AND s.account_slots>0 AND NOT public.marketing_subscription_access(s.user_id)
+      AND NOT EXISTS (SELECT FROM public.player_profiles p WHERE p.user_id=s.user_id AND p.ai_enabled);
+  GET DIAGNOSTICS repaired = ROW_COUNT;
+  IF EXISTS (
+    SELECT FROM public.user_subscriptions s WHERE s.status='cancelled' AND s.account_slots>0
+      AND sha256(convert_to(s.polar_subscription_id,'UTF8'))=january_fingerprint
+  ) THEN
+    RAISE EXCEPTION 'January repair no longer matches its verified end or entitlement checks. Reconcile before rollout.' USING ERRCODE='23514';
+  END IF;
+  RETURN NEXT;
+END $$;
+REVOKE ALL ON FUNCTION ai_royale_private.seed_polar_subscription_ends() FROM PUBLIC, anon, authenticated, service_role;
+SELECT * FROM ai_royale_private.seed_polar_subscription_ends();
 
 CREATE FUNCTION public.apply_polar_subscription_event(
   p_user_id uuid, p_subscription_id text, p_kind text, p_event_at timestamptz,
@@ -54,6 +104,12 @@ BEGIN
     -- All webhook subscription writers enter this account-only gate, including a first
     -- delivery with no parent row. Other workflows never acquire this billing gate.
     PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::text, 57));
+    -- Pin a real owner through the transaction. A completed deletion cannot recreate billing.
+    PERFORM 1 FROM auth.users WHERE id=p_user_id FOR KEY SHARE;
+    IF NOT FOUND THEN decision := 'pending_unknown_user'; END IF;
+  END IF;
+
+  IF decision IS NULL THEN
     IF NOT EXISTS (SELECT FROM public.profiles WHERE id=p_user_id) THEN
       RAISE EXCEPTION 'Subscriber profile unavailable' USING ERRCODE='40001';
     END IF;
@@ -69,6 +125,14 @@ BEGIN
       ELSE previous.last_event_at IS NULL OR coalesce(resource_start,p_event_at)>previous.last_event_at
     END;
 
+    IF NOT terminal THEN
+      -- An old worker may have recorded an end after the first seed and before this delivery.
+      INSERT INTO ai_royale_private.polar_subscription_lifecycles AS c (user_id,subscription_id,closed_reason)
+        SELECT e.user_id,e.subscription_id,'ended' FROM ai_royale_private.confirmed_legacy_polar_ends e
+        WHERE e.user_id=p_user_id AND e.subscription_id=p_subscription_id
+        ON CONFLICT (user_id,subscription_id) DO UPDATE SET closed_reason='ended'
+          WHERE c.closed_reason IS DISTINCT FROM 'ended';
+    END IF;
 
     IF terminal THEN
       SELECT NOT EXISTS (SELECT FROM ai_royale_private.polar_subscription_lifecycles
@@ -92,6 +156,9 @@ BEGIN
       END IF;
     ELSIF EXISTS (SELECT FROM ai_royale_private.polar_subscription_lifecycles WHERE user_id=p_user_id AND subscription_id=p_subscription_id AND closed_reason IS NOT NULL) THEN
       decision := 'closed_id';
+    ELSIF previous.polar_subscription_id=p_subscription_id AND previous.status='expired' AND previous.account_slots=0 THEN
+      -- The old handler commits the end before writing its separate receipt.
+      decision := 'pending_unconfirmed_end';
     ELSIF NOT full_update AND previous.polar_subscription_id IS DISTINCT FROM p_subscription_id THEN
       decision := 'pending_current_subscription';
     ELSIF previous.polar_subscription_id IS DISTINCT FROM p_subscription_id AND previous.polar_subscription_id IS NOT NULL
@@ -168,7 +235,7 @@ BEGIN
     summary := summary || jsonb_build_object('status',p_fields->>'provider_status','cancelAtPeriodEnd',p_fields->'cancel_at_period_end');
   END IF;
   INSERT INTO public.webhook_events(event_type,event_id,user_id,status,error_message,payload_summary)
-  VALUES (p_kind,p_subscription_id,p_user_id,
+  VALUES (p_kind,p_subscription_id,CASE WHEN decision='pending_unknown_user' THEN NULL ELSE p_user_id END,
     CASE WHEN decision LIKE 'pending%' THEN 'pending' WHEN decision IN ('created','applied','ended','recorded_end') THEN 'processed' ELSE 'skipped' END,
     CASE WHEN decision IN ('created','applied','ended') THEN NULL ELSE decision END, summary);
   RETURN decision;
@@ -176,3 +243,40 @@ END $$;
 
 REVOKE ALL ON FUNCTION public.apply_polar_subscription_event(uuid,text,text,timestamptz,text,jsonb) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.apply_polar_subscription_event(uuid,text,text,timestamptz,text,jsonb) TO service_role;
+
+-- The same unbounded backlog count powers the operator panel and the scheduled alarm.
+CREATE FUNCTION ai_royale_private.overdue_polar_receipts() RETURNS bigint
+LANGUAGE sql STABLE SET search_path='' AS $$
+  SELECT count(*) FROM public.webhook_events WHERE status='pending' AND created_at<=now()-interval '1 hour'
+$$;
+REVOKE ALL ON FUNCTION ai_royale_private.overdue_polar_receipts() FROM PUBLIC, anon, authenticated, service_role;
+
+CREATE FUNCTION public.admin_polar_webhook_health()
+RETURNS TABLE (window_name text, total bigint, processed bigint, failed bigint, skipped bigint, pending bigint, overdue_pending bigint)
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path='' AS $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM public.admin_roles WHERE user_id=auth.uid() AND role IN ('admin','moderator')) THEN
+    RAISE EXCEPTION 'Operator access required' USING ERRCODE='42501';
+  END IF;
+  RETURN QUERY SELECT w.label,count(e.id),count(*) FILTER (WHERE e.status='processed'),
+    count(*) FILTER (WHERE e.status='failed'),count(*) FILTER (WHERE e.status='skipped'),
+    count(*) FILTER (WHERE e.status='pending'),ai_royale_private.overdue_polar_receipts()
+  FROM (VALUES ('last24h',interval '24 hours'),('last7d',interval '7 days')) w(label,span)
+  LEFT JOIN public.webhook_events e ON e.created_at>=now()-w.span
+  GROUP BY w.label;
+END $$;
+REVOKE ALL ON FUNCTION public.admin_polar_webhook_health() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.admin_polar_webhook_health() TO authenticated;
+
+CREATE FUNCTION ai_royale_private.check_polar_pending_age() RETURNS void
+LANGUAGE plpgsql SET search_path='' AS $$
+DECLARE n bigint := ai_royale_private.overdue_polar_receipts();
+BEGIN
+  IF n>0 THEN
+    -- pg_cron persists the failed check and its aggregate reason in job_run_details.
+    RAISE EXCEPTION 'polar_pending_overdue: % unresolved receipt(s) at least one hour old', n;
+  END IF;
+END $$;
+REVOKE ALL ON FUNCTION ai_royale_private.check_polar_pending_age() FROM PUBLIC, anon, authenticated, service_role;
+SELECT cron.schedule('polar-pending-age','*/5 * * * *','SELECT ai_royale_private.check_polar_pending_age()');
+NOTIFY pgrst,'reload schema';

@@ -3151,6 +3151,10 @@
       "mean": "Tiempo medio de recuperación"
     },
     "events": {
+      "pending": "Pendientes",
+      "pending24": "Pendientes (24 h)",
+      "pendingOverdue": "Registros pendientes desde hace al menos una hora ({{count}})",
+      "healthError": "No se pudieron cargar los datos de los webhooks.",
       "processed": "Procesado",
       "failed": "Fallido",
       "skipped": "Omitido",

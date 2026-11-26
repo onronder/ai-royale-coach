@@ -46,6 +46,22 @@ async function finishContended<T>(first: Connection, secondPid: number, query: P
   return outcome.value;
 }
 
+async function checkPolarCutoverGuard(migration: string) {
+  for (const status of ['active', 'trialing']) {
+    await assert.rejects(db.begin(async tx => {
+      await tx`INSERT INTO auth.users(id,email) VALUES (boundary_fixture.account(400),'stop@example.invalid')`;
+      await tx`INSERT INTO public.user_subscriptions(user_id,polar_subscription_id,status,account_slots)
+        VALUES (boundary_fixture.account(400),'stop-seed',${status},2)`;
+      await tx`INSERT INTO public.webhook_events(user_id,event_id,event_type,status)
+        VALUES (boundary_fixture.account(400),'stop-seed','subscription.revoked','processed')`;
+      await tx.unsafe(migration).simple();
+    }), { code: '23514' });
+    const [clean] = await db`SELECT to_regclass('ai_royale_private.polar_subscription_lifecycles') IS NULL AS rolled_back`;
+    assert.equal(clean.rolled_back, true);
+  }
+  console.log('PASS confirmed ends with active and trialing rows roll back the entire Polar migration');
+}
+
 async function checkImpactCounts() {
   const script = await read('../../../scripts/sql/pr57-impact.sql');
   const [impact] = await db.unsafe(script).simple();
@@ -179,6 +195,7 @@ try {
         await checkPreferenceCutoverTimeout(await read(directory + name));
       }
       if (name.startsWith('0051_')) await apply('historicalRecovery.sql');
+      if (name.endsWith('_polar_subscription_event_order.sql')) await checkPolarCutoverGuard(await read(directory + name));
       if (name.startsWith('0053_')) await checkExpansionTimeout(await read(directory + name));
       if (name.startsWith('0054_')) await backfillWithTraffic(await read(directory + name));
       else await apply(directory + name);
@@ -201,6 +218,15 @@ try {
   try {
     const pid = (await second`SELECT pg_backend_pid() AS pid`)[0].pid;
     await apply('polarOrder.sql');
+    const januaryMigration = await read('../../../supabase/migrations/20260112185044_8b71acb7-84be-4376-8b1e-9ca27589bfac.sql');
+    const januaryId = januaryMigration.match(/polar_subscription_id\s*=\s*'([^']+)'/)?.[1];
+    assert.ok(januaryId);
+    await db.begin(async tx => {
+      await tx`SELECT set_config('fixture.january_resource',${januaryId},true)`;
+      await tx.unsafe(await read('polarCutover.sql')).simple();
+    });
+    console.log('PASS idempotent cutover and targeted repair, deleted and unfinished signups, private overdue alarm');
+
     // Run both lock orders on separate PostgreSQL backends. Observe the wait before commit.
     const races = [
       [308, 'revoked', 20, 'updated', 20], [309, 'updated', 20, 'revoked', 20],

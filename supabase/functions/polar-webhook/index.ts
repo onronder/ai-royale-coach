@@ -251,7 +251,9 @@ serve(async (req) => {
         const sub = event.data as PolarSubscription;
         const owner = extractUserId(sub);
         const userId = owner && /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(owner) ? owner : null;
-        const providerTime = sub.modified_at || event.timestamp || (event.type === 'subscription.created' ? sub.created_at : null);
+        // Publication and delivery time are separate from the subscription's resource clock.
+        const providerTime = sub.modified_at || sub.created_at;
+        const resourceCreatedAt = sub.created_at && Number.isFinite(Date.parse(sub.created_at)) ? sub.created_at : null;
         const starts = event.type === 'subscription.created' || event.type === 'subscription.active';
         const uncanceled = event.type === 'subscription.uncanceled';
         let decision: string;
@@ -263,7 +265,7 @@ serve(async (req) => {
             p_event_at: providerTime && Number.isFinite(Date.parse(providerTime)) ? providerTime : null,
             p_delivery_id: webhookId,
             p_fields: {
-              provider_status: sub.status, provider_created_at: sub.created_at, status: mappedStatus(sub.status), account_slots: accountSlots,
+              provider_status: sub.status, provider_created_at: resourceCreatedAt, status: mappedStatus(sub.status), account_slots: accountSlots,
               customer_id: sub.customer?.id, product_id: sub.product_id,
               current_period_start: sub.current_period_start, current_period_end: sub.current_period_end,
               cancel_at_period_end: !uncanceled && !!sub.cancel_at_period_end,

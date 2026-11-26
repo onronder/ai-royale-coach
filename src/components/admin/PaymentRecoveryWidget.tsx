@@ -36,6 +36,7 @@ export function PaymentRecoveryWidget() {
       const { data: pastDueEvents, error: pastDueError } = await supabase
         .from('webhook_events')
         .select('user_id, created_at')
+        .eq('status', 'processed')
         .in('event_type', ['subscription.past_due', 'payment_failed_email_sent'])
         .order('created_at', { ascending: true });
 
@@ -48,6 +49,7 @@ export function PaymentRecoveryWidget() {
       const { data: recoveryEvents, error: recoveryError } = await supabase
         .from('webhook_events')
         .select('user_id, created_at')
+        .eq('status', 'processed')
         .in('event_type', ['subscription.updated', 'subscription.active'])
         .order('created_at', { ascending: true });
 

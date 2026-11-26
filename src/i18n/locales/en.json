@@ -3140,6 +3140,10 @@
       "mean": "Avg Recovery Time"
     },
     "events": {
+      "pending": "Pending",
+      "pending24": "Pending (24h)",
+      "pendingOverdue": "Receipts awaiting resolution for at least one hour ({{count}})",
+      "healthError": "Webhook health could not be loaded.",
       "processed": "Processed",
       "failed": "Failed",
       "skipped": "Skipped",
