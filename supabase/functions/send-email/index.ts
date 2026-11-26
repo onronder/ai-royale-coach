@@ -7,7 +7,7 @@ import { corsHeaders, handleCors, jsonResponse, errorResponse } from '../_shared
 import { logger } from '../_shared/logger.ts'
 import { SubscriptionEmail } from './_templates/subscription-email.tsx'
 import { PasswordResetEmail } from './_templates/password-reset-email.tsx'
-import { TrialExpiredEmail } from './_templates/trial-expired-email.tsx'
+import { TrialExpiredEmail, getAccessEndedCopy } from './_templates/trial-expired-email.tsx'
 import { WinbackPromoEmail } from './_templates/winback-promo-email.tsx'
 import { PaymentFailedEmail } from './_templates/payment-failed-email.tsx'
 import { CancellationEmail } from './_templates/cancellation-email.tsx'
@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
         break
 
       case 'trial_expired':
-        subject = getTrialExpiredSubject(language)
+        subject = getAccessEndedCopy(language).preview
         html = await renderAsync(
           React.createElement(TrialExpiredEmail, {
             name,
@@ -249,17 +249,6 @@ function getAccountUpdateSubject(language: string): string {
     pt: 'Conta Atualizada - AI Royale',
     tr: 'Hesap Güncellendi - AI Royale',
     fr: 'Compte Mis à Jour - AI Royale',
-  }
-  return subjects[language] || subjects.en
-}
-
-function getTrialExpiredSubject(language: string): string {
-  const subjects: Record<string, string> = {
-    en: 'Your AI Royale trial has ended',
-    es: 'Tu prueba de AI Royale ha terminado',
-    pt: 'Seu teste do AI Royale terminou',
-    tr: 'AI Royale deneme süren sona erdi',
-    fr: 'Votre essai AI Royale est terminé',
   }
   return subjects[language] || subjects.en
 }

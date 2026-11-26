@@ -1674,7 +1674,7 @@
     "noAITooltip": "Atualize ou ative a IA para esta conta nas Configurações",
     "onTrial": "Em Período de Teste",
     "onTrialTooltip": "Todos os recursos de IA estão disponíveis durante seu teste de 72 horas",
-    "trialExpired": "Teste Expirado",
+    "trialExpired": "Acesso à IA encerrado",
     "trialExpiredTooltip": "Assine o AI Royale PRO para desbloquear recursos de IA",
     "proBadge": "PRO",
     "proBadgeTooltip": "Esta conta tem acesso completo à IA com sua assinatura"
@@ -2591,7 +2591,7 @@
     "upgradeToPro": "Atualizar para Pro",
     "unlockFeature": "Desbloquear {{feature}}",
     "premiumDescription": "Obtenha acesso completo ao coaching de IA, análise de decks e recomendações personalizadas.",
-    "trialExpiredDescription": "Seu período de teste gratuito terminou. Assine para continuar usando os recursos de IA.",
+    "trialExpiredDescription": "Escolha um plano para usar este recurso de IA.",
     "startFreeTrial": "Teste 3 dias · depois US$ 4,99/mês",
     "subscribePro": "Assinar Pro",
     "priceInfo": "$4.99/mês • Cancele a qualquer momento",
@@ -2645,7 +2645,7 @@
     "freeTrial": "Teste Grátis",
     "trialDaysLeft": "{{days}} dias restantes",
     "noSubscription": "Sem Assinatura Ativa",
-    "trialExpired": "Seu teste grátis terminou",
+    "trialExpired": "Seu acesso à IA terminou",
     "startTrialPrompt": "Comece seu teste grátis hoje",
     "subscribe": "Assinar",
     "startTrial": "Iniciar Teste Grátis",
@@ -2665,7 +2665,7 @@
     "previewTitle": "Prévia da Análise IA",
     "previewDescription": "Atualize para ver a análise completa",
     "seeFull": "Ver Análise Completa",
-    "trialExpiredPreview": "Seu teste terminou. Assine para ver a análise completa.",
+    "trialExpiredPreview": "Escolha um plano para gerar novas análises com IA.",
     "aiSelector": {
       "title": "Selecionar Contas com IA Habilitada",
       "description": "Escolha quais {{count}} conta(s) terão acesso aos recursos de IA.",
@@ -3605,9 +3605,9 @@
     }
   },
   "trialEnded": {
-    "title": "Seu teste terminou",
-    "description": "Você ainda pode ver sua última análise. Assine para executar novas análises com IA.",
-    "cta": "Assinar novamente"
+    "title": "Seu acesso à IA terminou",
+    "description": "Escolha um plano para gerar novas análises com IA.",
+    "cta": "Ver Planos"
   },
   "loading": {
     "playerData": "Buscando dados do jogador…",
