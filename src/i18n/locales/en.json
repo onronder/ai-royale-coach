@@ -1655,7 +1655,7 @@
     "noAITooltip": "Upgrade or enable AI for this account in Settings",
     "onTrial": "On Trial",
     "onTrialTooltip": "All AI features are available during your 72-hour trial",
-    "trialExpired": "Trial Expired",
+    "trialExpired": "AI access ended",
     "trialExpiredTooltip": "Subscribe to AI Royale PRO to unlock AI features",
     "proBadge": "PRO",
     "proBadgeTooltip": "This account has full AI access with your subscription",
@@ -2580,7 +2580,7 @@
     "upgradeToPro": "Upgrade to Pro",
     "unlockFeature": "Unlock {{feature}}",
     "premiumDescription": "Get full access to AI coaching, deck analysis, and personalized recommendations.",
-    "trialExpiredDescription": "Your free trial has ended. Subscribe to continue using AI features.",
+    "trialExpiredDescription": "Choose a plan to use this AI feature.",
     "startFreeTrial": "Start 3-Day Trial · then $4.99/mo",
     "subscribePro": "Subscribe to Pro",
     "priceInfo": "$4.99/month • Cancel anytime",
@@ -2634,7 +2634,7 @@
     "freeTrial": "Free Trial",
     "trialDaysLeft": "{{days}} days left",
     "noSubscription": "No Active Subscription",
-    "trialExpired": "Your free trial has ended",
+    "trialExpired": "Your AI access has ended",
     "startTrialPrompt": "Start your free trial today",
     "subscribe": "Subscribe",
     "startTrial": "Start Free Trial",
@@ -2654,7 +2654,7 @@
     "previewTitle": "Preview of AI Analysis",
     "previewDescription": "Upgrade to see the full insights",
     "seeFull": "See Full Analysis",
-    "trialExpiredPreview": "Your trial has ended. Subscribe to see the full analysis.",
+    "trialExpiredPreview": "Choose a plan to run new AI analyses.",
     "aiSelector": {
       "title": "Select AI-Enabled Accounts",
       "description": "Choose which {{count}} account(s) will have access to AI features.",
@@ -3590,9 +3590,9 @@
     }
   },
   "trialEnded": {
-    "title": "Your trial has ended",
-    "description": "You can still view your last analysis. Subscribe to run new AI analyses.",
-    "cta": "Subscribe again"
+    "title": "Your AI access has ended",
+    "description": "Choose a plan to run new AI analyses.",
+    "cta": "View Plans"
   },
   "charts": {
     "noData": "No data available",
