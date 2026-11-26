@@ -342,6 +342,7 @@ export type Database = {
           input_fingerprint: string
           output: Json
           player_tag: string
+          user_id: string
         }
         Insert: {
           analysis_type: string
@@ -350,6 +351,7 @@ export type Database = {
           input_fingerprint: string
           output: Json
           player_tag: string
+          user_id: string
         }
         Update: {
           analysis_type?: string
@@ -358,6 +360,7 @@ export type Database = {
           input_fingerprint?: string
           output?: Json
           player_tag?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -3110,6 +3113,33 @@ export type Database = {
         }
         Relationships: []
       }
+      verified_profile_summaries: {
+        Row: {
+          analysis_type: string | null
+          created_at: string | null
+          input_fingerprint: string | null
+          output: Json | null
+          player_tag: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analysis_type?: string | null
+          created_at?: string | null
+          input_fingerprint?: string | null
+          output?: Json | null
+          player_tag?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analysis_type?: string | null
+          created_at?: string | null
+          input_fingerprint?: string | null
+          output?: Json | null
+          player_tag?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
@@ -3834,6 +3864,7 @@ export type Database = {
         Args: { c: Record<string, unknown>; p_at: string; p_metric: string }
         Returns: boolean
       }
+      select_my_ai_profiles: { Args: { p_ids: string[] }; Returns: Json }
       set_my_marketing_consent: {
         Args: {
           p_action: string
