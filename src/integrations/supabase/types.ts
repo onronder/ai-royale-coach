@@ -342,6 +342,7 @@ export type Database = {
           input_fingerprint: string
           output: Json
           player_tag: string
+          user_id: string
         }
         Insert: {
           analysis_type: string
@@ -350,6 +351,7 @@ export type Database = {
           input_fingerprint: string
           output: Json
           player_tag: string
+          user_id: string
         }
         Update: {
           analysis_type?: string
@@ -358,6 +360,7 @@ export type Database = {
           input_fingerprint?: string
           output?: Json
           player_tag?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -3110,6 +3113,33 @@ export type Database = {
         }
         Relationships: []
       }
+      verified_profile_summaries: {
+        Row: {
+          analysis_type: string | null
+          created_at: string | null
+          input_fingerprint: string | null
+          output: Json | null
+          player_tag: string | null
+          user_id: string | null
+        }
+        Insert: {
+          analysis_type?: string | null
+          created_at?: string | null
+          input_fingerprint?: string | null
+          output?: Json | null
+          player_tag?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          analysis_type?: string | null
+          created_at?: string | null
+          input_fingerprint?: string | null
+          output?: Json | null
+          player_tag?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       acquisition_is_first: { Args: { p_user: string }; Returns: boolean }
@@ -3126,6 +3156,18 @@ export type Database = {
         Returns: Json
       }
       admin_marketing_reach: { Args: never; Returns: Json }
+      admin_polar_webhook_health: {
+        Args: never
+        Returns: {
+          failed: number
+          overdue_pending: number
+          pending: number
+          processed: number
+          skipped: number
+          total: number
+          window_name: string
+        }[]
+      }
       admin_practice_repeat: {
         Args: { p_days: number }
         Returns: {
@@ -3162,6 +3204,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      admin_resolve_polar_receipt: {
+        Args: { p_note: string; p_receipt_id: string }
+        Returns: boolean
       }
       admin_return_results: {
         Args: { p_currency?: string; p_days: number; p_key: string }
@@ -3273,6 +3319,17 @@ export type Database = {
         Returns: Json
       }
       admin_winback_candidates: { Args: never; Returns: Json[] }
+      apply_polar_subscription_event: {
+        Args: {
+          p_delivery_id: string
+          p_event_at: string
+          p_fields: Json
+          p_kind: string
+          p_subscription_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       begin_confirmed_welcome: {
         Args: { p_payload: Json; p_user: string }
         Returns: Json
@@ -3352,6 +3409,15 @@ export type Database = {
       claim_player_tag_for_trial: {
         Args: { p_player_tag: string; p_user_id: string }
         Returns: boolean
+      }
+      claim_polar_operation: {
+        Args: { p_ticket: string }
+        Returns: {
+          created_at: string
+          id: string
+          kind: string
+          overdue_count: number
+        }[]
       }
       claim_polar_order_sync: { Args: { p_ticket: string }; Returns: number }
       claim_practice_return_check: {
@@ -3454,6 +3520,10 @@ export type Database = {
       finish_first_value: {
         Args: { p_call: string; p_result: Json; p_usage: Json; p_user: string }
         Returns: undefined
+      }
+      finish_polar_operation: {
+        Args: { p_result: Json; p_ticket: string }
+        Returns: boolean
       }
       finish_polar_order_sync: {
         Args: { p_more: boolean; p_ticket: string }
@@ -3834,6 +3904,7 @@ export type Database = {
         Args: { c: Record<string, unknown>; p_at: string; p_metric: string }
         Returns: boolean
       }
+      select_my_ai_profiles: { Args: { p_ids: string[] }; Returns: Json }
       set_my_marketing_consent: {
         Args: {
           p_action: string
