@@ -3141,6 +3141,10 @@
     },
     "events": {
       "pending": "Pending",
+      "resolved": "Resolved",
+      "resolutionNote": "Resolution note",
+      "resolve": "Mark as resolved",
+      "resolutionError": "Could not save the resolution. Try again.",
       "pending24": "Pending (24h)",
       "pendingOverdue": "Receipts awaiting resolution for at least one hour ({{count}})",
       "healthError": "Webhook health could not be loaded.",

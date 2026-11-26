@@ -1,6 +1,15 @@
 -- First statement fails before any DDL if the runner autocommits individual statements.
 -- Readers can continue. Retry the whole transaction if a writer holds this lock.
 LOCK TABLE public.user_subscriptions IN EXCLUSIVE MODE NOWAIT;
+-- The deploying role will own the SECURITY DEFINER writer. Check that actual role
+-- before any DDL, even on a target with different managed auth grants.
+DO $$ BEGIN
+  IF NOT has_any_column_privilege(current_user,'auth.users','UPDATE') THEN
+    RAISE EXCEPTION 'Migration owner cannot lock auth.users' USING ERRCODE='42501';
+  END IF;
+  PERFORM 1 FROM auth.users LIMIT 1 FOR KEY SHARE NOWAIT;
+END $$;
+
 CREATE TABLE ai_royale_private.polar_subscription_lifecycles (
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   subscription_id text NOT NULL,
@@ -268,15 +277,103 @@ END $$;
 REVOKE ALL ON FUNCTION public.admin_polar_webhook_health() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.admin_polar_webhook_health() TO authenticated;
 
+CREATE FUNCTION public.admin_resolve_polar_receipt(p_receipt_id uuid, p_note text)
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
+DECLARE
+  actor uuid := auth.uid();
+  note text := regexp_replace(p_note,'^[[:space:]]+|[[:space:]]+$','','g');
+  receipt public.webhook_events%ROWTYPE;
+BEGIN
+  IF NOT EXISTS (SELECT FROM public.admin_roles WHERE user_id=actor AND role='admin') THEN
+    RAISE EXCEPTION 'Administrator required' USING ERRCODE='42501';
+  END IF;
+  IF note IS NULL OR length(note) NOT BETWEEN 1 AND 1000 THEN
+    RAISE EXCEPTION 'Provide a resolution note of up to 1000 characters' USING ERRCODE='22023';
+  END IF;
+  UPDATE public.webhook_events SET status='resolved'
+    WHERE id=p_receipt_id AND status='pending' RETURNING * INTO receipt;
+  IF NOT FOUND THEN RETURN false; END IF;
+  INSERT INTO public.admin_audit_log(admin_id,action,target_user_id,details)
+    VALUES(actor,'resolve_polar_receipt',receipt.user_id,jsonb_build_object(
+      'receipt_id',receipt.id,'event_type',receipt.event_type,'reason',receipt.error_message,'note',note));
+  RETURN true;
+END $$;
+REVOKE ALL ON FUNCTION public.admin_resolve_polar_receipt(uuid,text) FROM PUBLIC,anon,service_role;
+GRANT EXECUTE ON FUNCTION public.admin_resolve_polar_receipt(uuid,text) TO authenticated;
+
+-- The same worker receives only a one-use ticket, never a recipient or an arbitrary message.
+CREATE TABLE ai_royale_private.polar_operations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind text NOT NULL CHECK (kind IN ('overdue','recovered','overlap')),
+  created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+  scan_day date UNIQUE,
+  overdue_count bigint NOT NULL CHECK (overdue_count>=0),
+  ticket uuid UNIQUE, queued_at timestamptz, claimed_at timestamptz, first_claim_at timestamptz,
+  finished_at timestamptz, result jsonb,
+  CHECK ((kind='overlap')=(scan_day IS NOT NULL))
+);
+REVOKE ALL ON ai_royale_private.polar_operations FROM PUBLIC,anon,authenticated,service_role;
+ALTER TABLE ai_royale_private.polar_operations ENABLE ROW LEVEL SECURITY;
+
 CREATE FUNCTION ai_royale_private.check_polar_pending_age() RETURNS void
 LANGUAGE plpgsql SET search_path='' AS $$
-DECLARE n bigint := ai_royale_private.overdue_polar_receipts();
+DECLARE
+  n bigint; last_notice text; task record; key uuid;
+  project_url text; anon_key text;
 BEGIN
-  IF n>0 THEN
-    -- pg_cron persists the failed check and its aggregate reason in job_run_details.
-    RAISE EXCEPTION 'polar_pending_overdue: % unresolved receipt(s) at least one hour old', n;
+  IF NOT pg_try_advisory_xact_lock(hashtextextended('polar-operations',0)) THEN RETURN; END IF;
+  n := ai_royale_private.overdue_polar_receipts();
+  SELECT kind INTO last_notice FROM ai_royale_private.polar_operations
+    WHERE kind IN ('overdue','recovered') ORDER BY created_at DESC,id DESC LIMIT 1;
+  IF n>0 AND last_notice IS DISTINCT FROM 'overdue' THEN
+    INSERT INTO ai_royale_private.polar_operations(kind,overdue_count) VALUES ('overdue',n);
+  ELSIF n=0 AND last_notice='overdue' THEN
+    INSERT INTO ai_royale_private.polar_operations(kind,overdue_count) VALUES ('recovered',0);
   END IF;
+  INSERT INTO ai_royale_private.polar_operations(kind,overdue_count,scan_day)
+    VALUES ('overlap',0,(now() AT TIME ZONE 'UTC')::date) ON CONFLICT (scan_day) DO NOTHING;
+  IF FOUND THEN
+    DELETE FROM cron.job_run_details WHERE jobid=(SELECT jobid FROM cron.job WHERE jobname='polar-pending-age')
+      AND end_time<now()-interval '14 days';
+    DELETE FROM ai_royale_private.polar_operations WHERE kind='overlap' AND finished_at<now()-interval '90 days';
+  END IF;
+
+  -- Send alert transitions in order. A failing provider reconciliation must never hold up an alert.
+  FOR task IN
+    SELECT * FROM (SELECT DISTINCT ON (kind='overlap') id,kind,first_claim_at,queued_at,created_at FROM ai_royale_private.polar_operations
+      WHERE finished_at IS NULL ORDER BY (kind='overlap'),created_at,id) next_tasks
+    WHERE (queued_at IS NULL OR queued_at<=now()-interval '10 minutes')
+      AND (kind='overlap' OR first_claim_at IS NULL OR first_claim_at>now()-interval '23 hours')
+  LOOP
+    SELECT decrypted_secret INTO project_url FROM vault.decrypted_secrets WHERE name='project_url';
+    SELECT decrypted_secret INTO anon_key FROM vault.decrypted_secrets WHERE name='anon_key';
+    IF nullif(project_url,'') IS NULL OR nullif(anon_key,'') IS NULL THEN
+      RAISE EXCEPTION 'Polar operations transport settings missing';
+    END IF;
+    key := gen_random_uuid();
+    UPDATE ai_royale_private.polar_operations SET ticket=key,queued_at=now(),claimed_at=NULL WHERE id=task.id;
+    PERFORM net.http_post(url:=rtrim(project_url,'/')||'/functions/v1/backfill-polar-orders',
+      headers:=jsonb_build_object('Authorization','Bearer '||anon_key,'Content-Type','application/json'),
+      body:=jsonb_build_object('operations_ticket',key),timeout_milliseconds:=90000);
+  END LOOP;
 END $$;
-REVOKE ALL ON FUNCTION ai_royale_private.check_polar_pending_age() FROM PUBLIC, anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION ai_royale_private.check_polar_pending_age() FROM PUBLIC,anon,authenticated,service_role;
+
+CREATE FUNCTION public.claim_polar_operation(p_ticket uuid)
+RETURNS TABLE (id uuid,kind text,created_at timestamptz,overdue_count bigint)
+LANGUAGE sql SECURITY DEFINER SET search_path='' AS $$
+  UPDATE ai_royale_private.polar_operations AS o SET claimed_at=clock_timestamp(),first_claim_at=coalesce(o.first_claim_at,clock_timestamp())
+    WHERE o.ticket=p_ticket AND o.finished_at IS NULL AND o.claimed_at IS NULL AND o.queued_at>now()-interval '10 minutes'
+    RETURNING o.id,o.kind,o.created_at,o.overdue_count
+$$;
+CREATE FUNCTION public.finish_polar_operation(p_ticket uuid,p_result jsonb)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path='' AS $$
+  WITH done AS (
+    UPDATE ai_royale_private.polar_operations SET finished_at=clock_timestamp(),result=p_result,ticket=NULL
+      WHERE ticket=p_ticket AND claimed_at IS NOT NULL AND finished_at IS NULL RETURNING 1
+  ) SELECT EXISTS(SELECT FROM done)
+$$;
+REVOKE ALL ON FUNCTION public.claim_polar_operation(uuid),public.finish_polar_operation(uuid,jsonb) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.claim_polar_operation(uuid),public.finish_polar_operation(uuid,jsonb) TO service_role;
 SELECT cron.schedule('polar-pending-age','*/5 * * * *','SELECT ai_royale_private.check_polar_pending_age()');
 NOTIFY pgrst,'reload schema';

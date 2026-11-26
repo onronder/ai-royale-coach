@@ -3152,6 +3152,10 @@
     },
     "events": {
       "pending": "Beklemede",
+      "resolved": "Çözüldü",
+      "resolutionNote": "Çözüm notu",
+      "resolve": "Çözüldü olarak işaretle",
+      "resolutionError": "Çözüm kaydedilemedi. Tekrar deneyin.",
       "pending24": "Beklemede (24 sa.)",
       "pendingOverdue": "{{count}} kayıt en az bir saattir çözüm bekliyor.",
       "healthError": "Webhook izleme verileri yüklenemedi.",

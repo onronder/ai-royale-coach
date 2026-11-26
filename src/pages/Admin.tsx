@@ -126,7 +126,7 @@ export default function Admin() {
             <PrivacyRequestsPanel />
             <section aria-labelledby="webhooks-heading" className="space-y-3">
               <h2 id="webhooks-heading" className="text-lg font-semibold flex items-center gap-2"><Webhook className="h-5 w-5" />{t('admin.navigation.webhooks')}</h2>
-              <WebhookEventsPanel />
+              <WebhookEventsPanel isAdmin={isAdmin} />
             </section>
             <section aria-labelledby="metrics-heading" className="space-y-3">
               <h2 id="metrics-heading" className="text-lg font-semibold flex items-center gap-2"><Activity className="h-5 w-5" />{t('admin.apiMetrics.title')}</h2>

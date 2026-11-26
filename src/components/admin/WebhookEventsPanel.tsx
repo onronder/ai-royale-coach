@@ -1,9 +1,10 @@
 import { getDateLocale } from '@/i18n/dateLocale';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,9 +34,34 @@ interface WebhookEvent {
   processed_at: string;
 }
 
-type StatusFilter = 'all' | 'processed' | 'failed' | 'skipped' | 'pending';
+type StatusFilter = 'all' | 'processed' | 'failed' | 'skipped' | 'pending' | 'resolved';
 
-export function WebhookEventsPanel() {
+function ResolveReceipt({ id }: { id: string }) {
+  const { t } = useTranslation();
+  const [note, setNote] = useState('');
+  const cache = useQueryClient();
+  const resolution = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc('admin_resolve_polar_receipt', { p_receipt_id: id, p_note: note.trim() });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => Promise.all([
+      cache.invalidateQueries({ queryKey: ['webhook-events'] }),
+      cache.invalidateQueries({ queryKey: ['webhook-stats'] }),
+    ]),
+  });
+  return (
+    <form className="space-y-2" onSubmit={event => { event.preventDefault(); resolution.mutate(); }}>
+      <label htmlFor={`resolution-${id}`}>{t('admin.events.resolutionNote')}</label>
+      <Textarea id={`resolution-${id}`} maxLength={1000} value={note} onChange={e => setNote(e.target.value)} required />
+      {resolution.isError && <p role="alert">{t('admin.events.resolutionError')}</p>}
+      <Button type="submit" size="sm" disabled={!note.trim() || resolution.isPending}>{t('admin.events.resolve')}</Button>
+    </form>
+  );
+}
+
+export function WebhookEventsPanel({ isAdmin }: { isAdmin: boolean }) {
   const { t, i18n } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
@@ -108,6 +134,8 @@ export function WebhookEventsPanel() {
         return <Badge variant="destructive">{t('admin.events.failed')}</Badge>;
       case 'pending':
         return <Badge variant="outline" className="text-amber-700">{t('admin.events.pending')}</Badge>;
+      case 'resolved':
+        return <Badge variant="secondary">{t('admin.events.resolved')}</Badge>;
       case 'skipped':
         return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">{t('admin.events.skipped')}</Badge>;
       default:
@@ -212,6 +240,7 @@ export function WebhookEventsPanel() {
               <TabsTrigger value="processed">{t('admin.events.processed')}</TabsTrigger>
               <TabsTrigger value="failed">{t('admin.events.failed')}</TabsTrigger>
               <TabsTrigger value="pending">{t('admin.events.pending')}</TabsTrigger>
+              <TabsTrigger value="resolved">{t('admin.events.resolved')}</TabsTrigger>
               <TabsTrigger value="skipped">{t('admin.events.skipped')}</TabsTrigger>
             </TabsList>
 
@@ -286,6 +315,8 @@ export function WebhookEventsPanel() {
                                 <span className="text-destructive/90">{event.error_message}</span>
                               </div>
                             )}
+
+                            {isAdmin && event.status === 'pending' && <ResolveReceipt id={event.id} />}
 
                             {event.payload_summary && (
                               <div className="bg-muted rounded p-2 mt-2">

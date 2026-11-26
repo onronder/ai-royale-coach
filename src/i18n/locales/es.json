@@ -3152,6 +3152,10 @@
     },
     "events": {
       "pending": "Pendientes",
+      "resolved": "Resuelto",
+      "resolutionNote": "Nota de resolución",
+      "resolve": "Marcar como resuelto",
+      "resolutionError": "No se pudo guardar la resolución. Inténtalo de nuevo.",
       "pending24": "Pendientes (24 h)",
       "pendingOverdue": "Registros pendientes desde hace al menos una hora ({{count}})",
       "healthError": "No se pudieron cargar los datos de los webhooks.",

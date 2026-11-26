@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.81.1';
 import { handleCors, jsonResponse, errorResponse } from '../_shared/cors.ts';
 import { reconcilePage } from './reconcile.ts';
+import { runPolarOperation, type PolarOperation } from './operations.ts';
 
 Deno.serve(async req => {
   const cors = handleCors(req);
@@ -13,10 +14,25 @@ Deno.serve(async req => {
     const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const raw = await req.text();
     let ticket: unknown;
+    let operationsTicket: unknown;
     try {
-      ticket = raw ? JSON.parse(raw)?.ticket : null;
+      const input = raw ? JSON.parse(raw) : {};
+      ticket = input?.ticket;
+      operationsTicket = input?.operations_ticket;
     } catch {
       return errorResponse('Invalid request body', 400);
+    }
+    if (operationsTicket != null) {
+      if (ticket != null || typeof operationsTicket !== 'string' || !/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(operationsTicket)) {
+        return errorResponse('Forbidden', 403);
+      }
+      const claim = await admin.rpc('claim_polar_operation', { p_ticket: operationsTicket }).maybeSingle();
+      if (claim.error) throw claim.error;
+      if (!claim.data) return errorResponse('Forbidden', 403);
+      const result = await runPolarOperation(claim.data as PolarOperation, name => Deno.env.get(name), fetch);
+      const finish = await admin.rpc('finish_polar_operation', { p_ticket: operationsTicket, p_result: result });
+      if (finish.error || !finish.data) throw new Error('Polar operation acknowledgement failed');
+      return jsonResponse({ completed: true });
     }
     let page = 1;
     if (ticket != null) {
