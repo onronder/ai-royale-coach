@@ -269,14 +269,14 @@
   "landing": {
     "hero": {
       "title": "Arenayı Domine Et",
-      "titleHighlight": "Yapay Zeka Destekli Strateji",
-      "subtitle": "Gelişmiş yapay zeka destekli kişisel Clash Royale koçun. Gerçek zamanlı deste analizi, savaş öngörüleri al ve daha hızlı yüksel.",
+      "titleHighlight": "Yapay Zekâ Destekli Strateji",
+      "subtitle": "Gelişmiş yapay zekâ destekli kişisel Clash Royale koçun. Gerçek zamanlı deste analizi, savaş öngörüleri al ve daha hızlı yüksel.",
       "cta": "Kazanmaya Başla",
       "secondaryCta": "Nasıl Çalışır",
       "playerCount": "Rekabetçi oyunculara katıl",
       "selectAccount": "Hesap Seç",
       "manageAccounts": "3 oyuncu hesabına kadar yönet",
-      "enterTag": "Yapay zeka içgörülerinin kilidini açmak için oyuncu etiketini gir",
+      "enterTag": "Yapay zekâ içgörülerinin kilidini açmak için oyuncu etiketini gir",
       "analyze": "Analiz Et",
       "errors": {
         "enterTag": "Lütfen bir oyuncu etiketi girin",
@@ -291,16 +291,16 @@
       "badge": "Özellikler",
       "subtitle": "Güçlü özelliklerimizi keşfetmek için herhangi bir kategoriye tıklayın",
       "smartAnalysis": "Akıllı Analiz",
-      "smartAnalysisDesc": "Yapay zeka destekli savaş analizi ve eşleşme tahminleri",
+      "smartAnalysisDesc": "Yapay zekâ destekli savaş analizi ve eşleşme tahminleri",
       "deckOptimization": "Deste Optimizasyonu",
       "deckOptimizationDesc": "Kart değişiklik önerileriyle kazanan desteler oluştur",
       "performanceTracking": "Performans Takibi",
       "performanceTrackingDesc": "Detaylı istatistiklerle ilerlemenizi takip edin",
-      "aiPowered": "Yapay Zeka Destekli",
-      "aiPoweredDesc": "Yapay zeka koçuyla kişiselleştirilmiş rehberlik",
+      "aiPowered": "Yapay Zekâ Destekli",
+      "aiPoweredDesc": "Yapay zekâ koçuyla kişiselleştirilmiş rehberlik",
       "analysis": {
         "battleHistory": "Savaş Geçmişi Analizi",
-        "battleHistoryDesc": "Yapay zeka destekli içgörülerle son maçlarınızı derinlemesine inceleyin",
+        "battleHistoryDesc": "Yapay zekâ destekli içgörülerle son maçlarınızı derinlemesine inceleyin",
         "matchReplay": "Maç Tekrarı İçgörüleri",
         "matchReplayDesc": "Desteler ve maç sonucundan olası eşleşme yorumları.",
         "counterDeck": "Counter-Deste Analizi",
@@ -341,14 +341,14 @@
         "achievementBadgesDesc": "Beceri kilometre taşlarının kilidini açın ve ilerlemeyi gösterin"
       },
       "ai": {
-        "coachChat": "Yapay Zeka Koç Sohbeti",
+        "coachChat": "Yapay Zekâ Koç Sohbeti",
         "coachChatDesc": "Strateji hakkında her şeyi sorun ve uzman tavsiyesi alın",
         "personalizedAnalysis": "Kişiselleştirilmiş Analiz",
         "personalizedAnalysisDesc": "Özel oyun tarzınıza uyarlanmış içgörüler",
         "matchCoaching": "Maç Maç Koçluk",
         "matchCoachingDesc": "Detaylı analizlerle her oyundan öğrenin",
         "strategicRecommendations": "Stratejik Öneriler",
-        "strategicRecommendationsDesc": "Yapay zeka verilerinize dayalı iyileştirmeler önerir",
+        "strategicRecommendationsDesc": "Yapay zekâ verilerinize dayalı iyileştirmeler önerir",
         "counterStrategy": "Counter-Strateji Oluşturma",
         "counterStrategyDesc": "Belirli rakipleri yenmek için tasarlanmış desteler oluşturun",
         "realtimeTips": "Gerçek Zamanlı İpuçları",
@@ -363,8 +363,8 @@
       "step1Desc": "Ücretsiz kaydol ve AI Royale arenasına katıl",
       "step2Title": "Oyuncu Etiketini Gir",
       "step2Desc": "Clash Royale hesabını oyuncu etiketinle bağla",
-      "step3Title": "Yapay Zeka Analizi",
-      "step3Desc": "Yapay zekamız savaşlarını, destelerini ve oyun tarzını analiz eder",
+      "step3Title": "Yapay Zekâ Analizi",
+      "step3Desc": "Yapay zekâmız savaşlarını, destelerini ve oyun tarzını analiz eder",
       "step4Title": "Arenayı Domine Et",
       "step4Desc": "Merdiveni tırmanmak için kişiselleştirilmiş koçluk al"
     },
@@ -876,7 +876,7 @@
     },
     "valueHighlights": {
       "aiCoach": {
-        "title": "Yapay Zeka Koç Rehberliği",
+        "title": "Yapay Zekâ Koç Rehberliği",
         "desc": "Her oyundan sonra kişiselleştirilmiş ipuçları"
       },
       "analytics": {
@@ -910,7 +910,7 @@
           "role": "Top 1000 Oyuncu"
         },
         "2": {
-          "quote": "Yapay zeka koçunun savaş analizleri gözlerimi açtı. Sonunda ne yanlış yaptığımı anladım.",
+          "quote": "Yapay zekâ koçunun savaş analizleri gözlerimi açtı. Sonunda ne yanlış yaptığımı anladım.",
           "author": "ArenaKnight",
           "role": "Klan Lideri"
         },
@@ -938,9 +938,9 @@
     "demoTeaser": {
       "badge": "Canlı Önizleme",
       "title": "AI Royale'i İş Başında Gör",
-      "subtitle": "Kaydolmadan önce örnek destelerle yapay zeka analizimizi önizle",
+      "subtitle": "Kaydolmadan önce örnek destelerle yapay zekâ analizimizi önizle",
       "statsTitle": "Performans İstatistikleri",
-      "aiInsightTitle": "Yapay Zeka Koç İpucu",
+      "aiInsightTitle": "Yapay Zekâ Koç İpucu",
       "aiInsightPreview": "Gerçek oyun verilerine dayalı kişiselleştirilmiş koçluk ipuçları ve stratejik öneriler al...",
       "exploreButton": "Tam Demoyu Keşfet"
     },
@@ -952,18 +952,18 @@
       "getPersonalized": "Kişiselleştirilmiş Analiz Al",
       "readyBadge": "Başlamaya Hazır Mısın?",
       "ctaTitle": "Bu ipucunu SENİN oyununa uyarlanmış hayal et",
-      "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zeka koçluğunu açmak için ücretsiz hesap oluştur.",
+      "ctaSubtitle": "Oyuncu etiketini bağlamak ve gerçek savaşlarına dayalı kişiselleştirilmiş yapay zekâ koçluğunu açmak için ücretsiz hesap oluştur.",
       "startFree": "3 Gün Dene",
       "backToHome": "Ana Sayfaya Dön",
       "noCreditCard": "✓ Demo: kredi kartı gerekmez ✓ Kendi desten: 3 gün deneme, ardından 4,99 USD/ay",
       "aiFeatures": {
-        "badge": "Gelişmiş Yapay Zeka Teknolojisi",
-        "title": "Gelişmiş Yapay Zeka ile Güçlendirilmiş",
-        "featureCount": "11 Yapay Zeka Özelliği",
+        "badge": "Gelişmiş Yapay Zekâ Teknolojisi",
+        "title": "Gelişmiş Yapay Zekâ ile Güçlendirilmiş",
+        "featureCount": "11 Yapay Zekâ Özelliği",
         "categories": {
           "smartAnalysis": {
             "title": "Akıllı Analiz",
-            "description": "Her savaştan derin yapay zeka içgörüleri, kalıpları ve gelişim fırsatlarını tespit eder.",
+            "description": "Her savaştan derin yapay zekâ içgörüleri, kalıpları ve gelişim fırsatlarını tespit eder.",
             "count": "{{count}} özellik"
           },
           "predictions": {
@@ -973,7 +973,7 @@
           },
           "deckIntelligence": {
             "title": "Deste Zekası",
-            "description": "Koleksiyonunuza ve oyun tarzınıza göre yapay zeka önerileriyle mükemmel desteyi oluşturun.",
+            "description": "Koleksiyonunuza ve oyun tarzınıza göre yapay zekâ önerileriyle mükemmel desteyi oluşturun.",
             "count": "{{count}} özellik"
           },
           "personalCoaching": {
@@ -1009,7 +1009,7 @@
           },
           "counterDeck": {
             "title": "Karşı Deste Oluşturucu",
-            "description": "Yapay zeka rakiplerinizi yenmek için özel 8 kartlık desteler tasarlar"
+            "description": "Yapay zekâ rakiplerinizi yenmek için özel 8 kartlık desteler tasarlar"
           },
           "personalizedRecs": {
             "title": "Kişiselleştirilmiş Öneriler",
@@ -1024,7 +1024,7 @@
             "description": "Kazanma koşulları, döngü kartları ve büyü dengesi analizi"
           },
           "coachChat": {
-            "title": "Yapay Zeka Koç Sohbeti",
+            "title": "Yapay Zekâ Koç Sohbeti",
             "description": "Oyun verilerinize tam erişimle bağlam bilincine sahip koçluk"
           }
         },
@@ -1037,7 +1037,7 @@
           "cardCollection": "Kart Koleksiyonu"
         },
         "pipeline": {
-          "title": "Yapay Zekamız Nasıl Çalışır",
+          "title": "Yapay Zekâmız Nasıl Çalışır",
           "subtitle": "Savaşlarınızdan kişiselleştirilmiş içgörülere saniyeler içinde",
           "clickHint": "Daha fazla bilgi için herhangi bir adıma tıklayın",
           "steps": {
@@ -1062,8 +1062,8 @@
               ]
             },
             "aiAnalysis": {
-              "title": "Yapay Zeka Analizi",
-              "description": "Gelişmiş yapay zeka modellerimiz verilerinizi analiz eder, kalıpları belirler, eşleşme tahminlerini hesaplar ve stratejik içgörüler üretir.",
+              "title": "Yapay Zekâ Analizi",
+              "description": "Gelişmiş yapay zekâ modellerimiz verilerinizi analiz eder, kalıpları belirler, eşleşme tahminlerini hesaplar ve stratejik içgörüler üretir.",
               "details": [
                 "Kalıp tanıma",
                 "Eşleşme hesaplamaları",
@@ -1094,7 +1094,7 @@
           }
         },
         "stats": {
-          "aiFeatures": "yapay zeka özelliği",
+          "aiFeatures": "yapay zekâ özelliği",
           "battlesAnalyzed": "analiz edilen savaş",
           "accuracy": "tahmin doğruluğu"
         },
@@ -1106,15 +1106,15 @@
         "items": {
           "deckAnalysis": {
             "title": "Deste Analizi",
-            "description": "Kart sinerjilerini ve meta eşleşmelerini analiz eden yapay zeka motorumuz tarafından desteklenmektedir"
+            "description": "Kart sinerjilerini ve meta eşleşmelerini analiz eden yapay zekâ motorumuz tarafından desteklenmektedir"
           },
           "winRates": {
             "title": "Kazanma Oranı Tahminleri",
-            "description": "Yapay zeka benzer deste eşleşmelerinden ve oyuncu geçmişinden olasılıkları hesaplar"
+            "description": "Yapay zekâ benzer deste eşleşmelerinden ve oyuncu geçmişinden olasılıkları hesaplar"
           },
           "coachTips": {
             "title": "Koç İpuçları",
-            "description": "Tam uygulamada kişiselleştirilmiş rehberlik sağlayan aynı yapay zeka"
+            "description": "Tam uygulamada kişiselleştirilmiş rehberlik sağlayan aynı yapay zekâ"
           }
         }
       }
@@ -1122,7 +1122,7 @@
     "finalCTA": {
       "badge": "Bugün Kazanmaya Başla",
       "title": "Clash Royale Potansiyelini Serbest Bırakmaya Hazır Mısın?",
-      "subtitle": "Yapay zeka destekli koçlukla oyunlarını geliştiren binlerce oyuncuya katıl. İlk savaşından itibaren kişiselleştirilmiş içgörüler al.",
+      "subtitle": "Yapay zekâ destekli koçlukla oyunlarını geliştiren binlerce oyuncuya katıl. İlk savaşından itibaren kişiselleştirilmiş içgörüler al.",
       "primaryButton": "3 Gün Dene",
       "secondaryButton": "Önce Demoyu Dene",
       "trustText": "✓ Kartsız demo ✓ Kendi destenle 3 gün dene, ardından 4,99 USD/ay ✓ Yenilemeyi istediğin zaman kapat"
@@ -1208,19 +1208,19 @@
       },
       "serviceDescription": {
         "title": "Hizmet Açıklaması",
-        "content": "AI Royale, Clash Royale oyuncuları için bağımsız, üçüncü taraf yapay zeka destekli bir analiz aracıdır. Deste analizi, savaş içgörüleri ve stratejik öneriler sunuyoruz.\n\nTüm oyun verileri YALNIZCA Supercell'in resmi halka açık Clash Royale API'si aracılığıyla elde edilir. Resmi API aracılığıyla kamuya açık olanın ötesinde hiçbir dahili Supercell sistemine, oyuncu hesabına veya özel veriye ERİŞMİYORUZ.\n\nAI Royale, oyuncuların oyun deneyimlerini geliştirmelerine yardımcı olmak için oluşturulmuş bir hayran yapımı araçtır."
+        "content": "AI Royale, Clash Royale oyuncuları için bağımsız, üçüncü taraf yapay zekâ destekli bir analiz aracıdır. Deste analizi, savaş içgörüleri ve stratejik öneriler sunuyoruz.\n\nTüm oyun verileri YALNIZCA Supercell'in resmi halka açık Clash Royale API'si aracılığıyla elde edilir. Resmi API aracılığıyla kamuya açık olanın ötesinde hiçbir dahili Supercell sistemine, oyuncu hesabına veya özel veriye ERİŞMİYORUZ.\n\nAI Royale, oyuncuların oyun deneyimlerini geliştirmelerine yardımcı olmak için oluşturulmuş bir hayran yapımı araçtır."
       },
       "dataProcessing": {
         "title": "Veri İşleme",
         "content": "AI Royale; hesabını yönetmek, koçluk sunmak ve aboneliğini yürütmek için hesap bilgilerini, Supercell’in resmi API’sinden gelen oyun verilerini ve kullanım etkinliğini işler. E-posta adresin hesap ve abonelik bildirimleri, istediğin koçluk e-postaları ve yalnızca izin verirsen kampanya e-postaları için kullanılır. Ayrıntılar Gizlilik Politikası’ndadır."
       },
       "aiDisclaimer": {
-        "title": "Yapay Zeka Önerileri Uyarısı",
-        "content": "AI Royale tarafından sağlanan tüm analizler, tahminler ve öneriler YALNIZCA BİLGİLENDİRME VE EĞLENCE AMAÇLIDIR.\n\nÖNEMLİ: Yapay zeka tarafından üretilen çıktıların doğru olduğu garanti edilmez. Yapay zeka, kalıplara ve kamuya açık oyun verilerine dayalı öneriler sunar, ancak gerçek oyun sonuçları oyuncu becerisi, zamanlama, rakip davranışı ve oyun içi koşullar dahil birçok faktöre bağlıdır.\n\nŞunları kabul ediyorsunuz:\n• Yapay zeka önerileri yalnızca önerilerdir, garantili kazanma stratejileri değildir\n• Yapay zeka tavsiyelerini takip etmek gelişmiş oyun performansını garanti etmez\n• Oyun sonuçları yapay zeka analizinin ötesindeki faktörlerden etkilenir\n• Yapay zeka önerilerini kendi takdirinize ve riskinize göre kullanırsınız\n\nAI Royale, yapay zeka önerilerini takip etmekten kaynaklanan hiçbir oyun içi karar, kupa değişikliği veya sonuçtan sorumlu değildir."
+        "title": "Yapay Zekâ Önerileri Uyarısı",
+        "content": "AI Royale tarafından sağlanan tüm analizler, tahminler ve öneriler YALNIZCA BİLGİLENDİRME VE EĞLENCE AMAÇLIDIR.\n\nÖNEMLİ: Yapay zekâ tarafından üretilen çıktıların doğru olduğu garanti edilmez. Yapay zekâ, kalıplara ve kamuya açık oyun verilerine dayalı öneriler sunar, ancak gerçek oyun sonuçları oyuncu becerisi, zamanlama, rakip davranışı ve oyun içi koşullar dahil birçok faktöre bağlıdır.\n\nŞunları kabul ediyorsunuz:\n• Yapay zekâ önerileri yalnızca önerilerdir, garantili kazanma stratejileri değildir\n• Yapay zekâ tavsiyelerini takip etmek gelişmiş oyun performansını garanti etmez\n• Oyun sonuçları yapay zekâ analizinin ötesindeki faktörlerden etkilenir\n• Yapay zekâ önerilerini kendi takdirinize ve riskinize göre kullanırsınız\n\nAI Royale, yapay zekâ önerilerini takip etmekten kaynaklanan hiçbir oyun içi karar, kupa değişikliği veya sonuçtan sorumlu değildir."
       },
       "liability": {
         "title": "Sorumluluk Sınırlaması",
-        "content": "Yasaların izin verdiği azami ölçüde, Fittechs Yazılım Anonim Şirketi, AI Royale kullanımınızdan kaynaklanan dolaylı, arızi, özel, sonuç olarak ortaya çıkan veya cezai zararlardan sorumlu olmayacaktır.\n\nBu, yapay zeka önerilerini takip etmekten kaynaklanan kayıplar, kupa değişiklikleri veya analizimize dayalı oyun içi kararlar dahil ancak bunlarla sınırlı değildir.\n\nFittechs Yazılım Anonim Şirketi, yapay zeka tarafından sağlanan herhangi bir hatalı analiz veya tahmin için sorumlu değildir."
+        "content": "Yasaların izin verdiği azami ölçüde, Fittechs Yazılım Anonim Şirketi, AI Royale kullanımınızdan kaynaklanan dolaylı, arızi, özel, sonuç olarak ortaya çıkan veya cezai zararlardan sorumlu olmayacaktır.\n\nBu, yapay zekâ önerilerini takip etmekten kaynaklanan kayıplar, kupa değişiklikleri veya analizimize dayalı oyun içi kararlar dahil ancak bunlarla sınırlı değildir.\n\nFittechs Yazılım Anonim Şirketi, yapay zekâ tarafından sağlanan herhangi bir hatalı analiz veya tahmin için sorumlu değildir."
       },
       "governingLaw": {
         "title": "Geçerli Yasa",
@@ -1300,8 +1300,8 @@
       "manage": "Hesapları Yönet"
     },
     "tabHelp": {
-      "overview": "Kupalarını, kazanma oranını ve yapay zeka destekli performans özetini görüntüle",
-      "matches": "Son savaşlarına göz at ve detaylı yapay zeka analizi al",
+      "overview": "Kupalarını, kazanma oranını ve yapay zekâ destekli performans özetini görüntüle",
+      "matches": "Son savaşlarına göz at ve detaylı yapay zekâ analizi al",
       "deck": "Mevcut desteni sinerji içgörüleri ve önerilerle analiz et",
       "builder": "Şablonlarla özel desteler oluştur, karşılaştır ve kaydet",
       "analytics": "Deste performansını, kart ustalığını ve başarıları takip et",
@@ -1668,16 +1668,16 @@
     "maxAccounts": "Maksimum 3 hesaba ulaşıldı",
     "invalidTag": "Geçersiz oyuncu etiketi",
     "playerNotFound": "Oyuncu bulunamadı",
-    "aiEnabled": "Yapay Zeka Etkin",
-    "noAI": "Yapay Zeka Yok",
-    "aiEnabledTooltip": "Bu hesap yapay zeka özelliklerine erişebilir",
-    "noAITooltip": "Ayarlar'dan bu hesap için yapay zekayı yükseltin veya etkinleştirin",
+    "aiEnabled": "Yapay Zekâ Etkin",
+    "noAI": "Yapay Zekâ Yok",
+    "aiEnabledTooltip": "Bu hesap yapay zekâ özelliklerine erişebilir",
+    "noAITooltip": "Ayarlar'dan bu hesap için yapay zekâyı yükseltin veya etkinleştirin",
     "onTrial": "Deneme Süresinde",
-    "onTrialTooltip": "72 saatlik deneme sürenizde tüm yapay zeka özellikleri aktif",
+    "onTrialTooltip": "72 saatlik deneme sürenizde tüm yapay zekâ özellikleri aktif",
     "trialExpired": "Yapay zekâ erişimi sona erdi",
-    "trialExpiredTooltip": "Yapay zeka özelliklerini etkinleştirmek için AI Royale PRO'ya abone olun",
+    "trialExpiredTooltip": "Yapay zekâ özelliklerini etkinleştirmek için AI Royale PRO'ya abone olun",
     "proBadge": "PRO",
-    "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zeka erişimine sahip"
+    "proBadgeTooltip": "Bu hesap aboneliğinizle tam yapay zekâ erişimine sahip"
   },
   "settings": {
     "whatsNew": {
@@ -1725,15 +1725,15 @@
       "resumeSuccess": "Yenileme tekrar açıldı"
     },
     "aiAccounts": {
-      "title": "Yapay Zeka Etkin Hesaplar",
-      "description": "Hangi hesapların yapay zeka koçluk özelliklerine erişeceğini seçin",
-      "slotsUsed": "Kullanılan Yapay Zeka Slotları",
-      "slotsDescription": "{{count}} hesaba kadar yapay zekayı etkinleştirebilirsiniz",
-      "enabled": "Yapay Zeka Etkin",
-      "disabled": "Yapay Zeka Erişimi Yok",
-      "manage": "Yapay Zeka Hesaplarını Yönet",
+      "title": "Yapay Zekâ Etkin Hesaplar",
+      "description": "Hangi hesapların yapay zekâ koçluk özelliklerine erişeceğini seçin",
+      "slotsUsed": "Kullanılan Yapay Zekâ Slotları",
+      "slotsDescription": "{{count}} hesaba kadar yapay zekâyı etkinleştirebilirsiniz",
+      "enabled": "Yapay Zekâ Etkin",
+      "disabled": "Yapay Zekâ Erişimi Yok",
+      "manage": "Yapay Zekâ Hesaplarını Yönet",
       "trialAccess": "Deneme Erişimi",
-      "trialNote": "Deneme süresi boyunca tüm hesaplar yapay zeka erişimine sahip"
+      "trialNote": "Deneme süresi boyunca tüm hesaplar yapay zekâ erişimine sahip"
     },
     "chatRetention": {
       "title": "Sohbet Geçmişi",
@@ -2563,7 +2563,7 @@
     "tryDeck": "Bu Desteyi Dene",
     "whyThisDeck": "Neden bu deste?",
     "fromCache": "Önbellekten",
-    "aiEnhanced": "Yapay Zeka Destekli",
+    "aiEnhanced": "Yapay Zekâ Destekli",
     "refresh": "Yenile",
     "yourProfile": "Profiliniz",
     "skillLevel": "Kupa kategorisi",
@@ -2590,18 +2590,18 @@
     "metaAnalysisRequiresPro": "Meta analizi AI Royale Pro aboneliği gerektirir",
     "upgradeToPro": "Pro'ya Yükselt",
     "unlockFeature": "{{feature}} Kilidi Aç",
-    "premiumDescription": "Yapay zeka koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
+    "premiumDescription": "Yapay zekâ koçluğu, deste analizi ve kişiselleştirilmiş önerilere tam erişim elde edin.",
     "trialExpiredDescription": "Bu yapay zekâ özelliğini kullanmak için bir plan seçin.",
     "startFreeTrial": "3 Gün Dene · ardından 4,99 USD/ay",
     "subscribePro": "Pro'ya Abone Ol",
     "priceInfo": "$4.99/ay • İstediğiniz zaman iptal edin",
     "trialStarted": "3 günlük ücretsiz denemeniz başladı!",
     "trialStartedAuto": "Hoş geldiniz! Ücretsiz denemeniz başladı",
-    "trialStartedAutoDescription": "Tüm yapay zeka özellikleri {{days}} gün boyunca açık. Tüm hesaplarınızda yapay zeka koçluğunun keyfini çıkarın!",
+    "trialStartedAutoDescription": "Tüm yapay zekâ özellikleri {{days}} gün boyunca açık. Tüm hesaplarınızda yapay zekâ koçluğunun keyfini çıkarın!",
     "trialError": "Deneme başlatılamadı. Lütfen tekrar deneyin.",
     "checkoutError": "Ödeme oluşturulamadı. Lütfen tekrar deneyin.",
     "unlockPro": "AI Royale Pro Kilidi Aç",
-    "proDescription": "Yapay zeka koçluğu ve gelişmiş analize sınırsız erişim elde edin.",
+    "proDescription": "Yapay zekâ koçluğu ve gelişmiş analize sınırsız erişim elde edin.",
     "month": "ay",
     "perAccount": "hesap",
     "accounts": "{{count}} Hesap",
@@ -2619,11 +2619,11 @@
     "switchToAIAccount": "AI etkin bir hesaba geç",
     "viewPlans": "Planları Görüntüle",
     "features": {
-      "aiCoach": "Yapay Zeka Koçu",
+      "aiCoach": "Yapay Zekâ Koçu",
       "deckAnalysis": "Deste Analizi",
       "matchPredictions": "Maç Tahminleri",
       "multiAccount": "Çoklu Hesaplar",
-      "aiAnalysis": "Yapay Zeka Analizi",
+      "aiAnalysis": "Yapay Zekâ Analizi",
       "deckRecommendations": "Deste Önerileri",
       "metaAnalysis": "Meta Analizi",
       "cardReplacements": "Kart Değişimleri",
@@ -2653,7 +2653,7 @@
     "upgrade": "Yükselt",
     "tryFree": "Ücretsiz Dene",
     "subscriptionSuccess": "AI Royale Pro'ya Hoş Geldiniz!",
-    "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zeka özelliklerinin tadını çıkarın!",
+    "subscriptionSuccessDescription": "Aboneliğiniz artık aktif. Sınırsız yapay zekâ özelliklerinin tadını çıkarın!",
     "navBadge": {
       "pro": "PRO",
       "proEnabled": "PRO ETKİN",
@@ -2728,7 +2728,7 @@
     "steps": {
       "welcome": {
         "title": "AI Royale'e Hoş Geldiniz!",
-        "description": "Yapay zeka destekli Clash Royale yardımcınız. Kişiselleştirilmiş içgörüler ve koçluk ile arenaya hükmetmeye hazır olun."
+        "description": "Yapay zekâ destekli Clash Royale yardımcınız. Kişiselleştirilmiş içgörüler ve koçluk ile arenaya hükmetmeye hazır olun."
       },
       "playerTag": {
         "title": "Oyuncu Etiketinizi Ekleyin",
